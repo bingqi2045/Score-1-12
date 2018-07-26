@@ -1,2 +1,17 @@
 server:
   port: 9000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/oagi?useSSL=false
+    username: oagi
+    password: oagi
+
+  session:
+    store-type: redis
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
