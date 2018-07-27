@@ -19,10 +19,24 @@ public class ContextCategoryController {
         return service.getContextCategoryList();
     }
 
+    @RequestMapping(value = "/simple_context_categories", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SimpleContextCategory> getSimpleContextCategoryList() {
+        return service.getSimpleContextCategoryList();
+    }
+
+
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ContextCategory getContextCategory(@PathVariable("id") long id) {
         return service.getContextCategory(id);
+    }
+
+    @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
+    public ResponseEntity create(
+            @RequestBody ContextCategory contextCategory) {
+        service.insert(contextCategory);
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.POST)
