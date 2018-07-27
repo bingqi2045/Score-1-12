@@ -5,19 +5,20 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 @Configuration
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
@@ -45,9 +46,15 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.applyPermitDefaultValues();
+        corsConfiguration.setAllowedMethods(
+                Arrays.asList(
+                        HttpMethod.GET.name(), HttpMethod.HEAD.name(),
+                        HttpMethod.POST.name(), HttpMethod.PUT.name(),
+                        HttpMethod.DELETE.name())
+        );
+        corsConfiguration.setAllowCredentials(true);
         corsConfiguration.addExposedHeader("X-Auth-Token");
         source.registerCorsConfiguration("/**", corsConfiguration);
-
         return source;
     }
 
@@ -72,9 +79,7 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
                 .cors()
                 .configurationSource(corsConfigurationSource())
                 .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
+                .csrf().disable()
                 .rememberMe().rememberMeServices(rememberMeServices());
     }
 }

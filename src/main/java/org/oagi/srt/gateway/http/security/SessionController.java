@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.controller;
+package org.oagi.srt.gateway.http.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
