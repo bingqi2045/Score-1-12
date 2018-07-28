@@ -5,10 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,11 +21,34 @@ public class ContextSchemeController {
         return service.getContextSchemeList();
     }
 
+    @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ContextScheme getContextScheme(@PathVariable("id") long id) {
+        return service.getContextScheme(id);
+    }
+
     @RequestMapping(value = "/context_scheme", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,
             @RequestBody ContextScheme contextScheme) {
         service.insert(user, contextScheme);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.POST)
+    public ResponseEntity update(
+            @PathVariable("id") long id,
+            @AuthenticationPrincipal User user,
+            @RequestBody ContextScheme contextScheme) {
+        contextScheme.setCtxSchemeId(id);
+        service.update(user, contextScheme);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity delete(
+            @PathVariable("id") long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

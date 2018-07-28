@@ -1,6 +1,8 @@
 package org.oagi.srt.gateway.http.context_management;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class ContextScheme {
     private long ctxSchemeId;
@@ -13,6 +15,7 @@ public class ContextScheme {
     private String schemeVersionId;
     private String description;
     private Date lastUpdateTimestamp;
+    private List<ContextSchemeValue> ctxSchemeValues;
 
     public long getCtxSchemeId() {
         return ctxSchemeId;
@@ -92,5 +95,13 @@ public class ContextScheme {
 
     public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
+    }
+
+    public List<ContextSchemeValue> getCtxSchemeValues() {
+        return (ctxSchemeValues != null) ? ctxSchemeValues : Collections.emptyList();
+    }
+
+    public void setCtxSchemeValues(List<ContextSchemeValue> ctxSchemeValues) {
+        this.ctxSchemeValues = ctxSchemeValues;
     }
 }
