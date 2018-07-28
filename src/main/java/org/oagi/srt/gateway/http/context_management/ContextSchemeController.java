@@ -27,6 +27,18 @@ public class ContextSchemeController {
         return service.getContextScheme(id);
     }
 
+    @RequestMapping(value = "/context_category/{id}/simple_context_schemes", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SimpleContextScheme> getSimpleContextSchemeList(@PathVariable("id") long ctxCategoryId) {
+        return service.getSimpleContextSchemeList(ctxCategoryId);
+    }
+
+    @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(@PathVariable("id") long ctxSchemeId) {
+        return service.getSimpleContextSchemeValueList(ctxSchemeId);
+    }
+
     @RequestMapping(value = "/context_scheme", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,

@@ -66,7 +66,7 @@ public class ContextSchemeService {
     }
 
     private String GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT =
-            "SELECT ctx_scheme_value_id, guid, value, meaning FROM ctx_scheme_value " +
+            "SELECT ctx_scheme_value_id, guid, `value`, meaning FROM ctx_scheme_value " +
                     "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
 
     public List<ContextSchemeValue> getContextSchemeValuesByOwnerCtxSchemeId(long ctxSchemeId) {
@@ -75,6 +75,30 @@ public class ContextSchemeService {
 
         return jdbcTemplate.query(GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT, parameterSource,
                 new BeanPropertyRowMapper(ContextSchemeValue.class));
+    }
+
+    private String GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT =
+            "SELECT ctx_scheme_id, scheme_name, scheme_id, scheme_agency_id, scheme_version_id " +
+                    "FROM ctx_scheme WHERE ctx_category_id = :ctx_category_id";
+
+    public List<SimpleContextScheme> getSimpleContextSchemeList(long ctxCategoryId) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("ctx_category_id", ctxCategoryId);
+
+        return jdbcTemplate.query(GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT, parameterSource,
+                new BeanPropertyRowMapper(SimpleContextScheme.class));
+    }
+
+    private String GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT =
+            "SELECT ctx_scheme_value_id, `value`, meaning FROM ctx_scheme_value " +
+                    "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
+
+    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
+
+        return jdbcTemplate.query(GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT, parameterSource,
+                new BeanPropertyRowMapper(SimpleContextSchemeValue.class));
     }
 
     @Transactional
@@ -193,7 +217,7 @@ public class ContextSchemeService {
     }
 
     private String UPDATE_CONTEXT_SCHEME_VALUE_STATEMENT =
-            "UPDATE ctx_scheme_value SET value = :value, meaning = :meaning " +
+            "UPDATE ctx_scheme_value SET `value` = :value, meaning = :meaning " +
                     "WHERE ctx_scheme_value_id = :ctx_scheme_value_id AND owner_ctx_scheme_id = :ctx_scheme_id";
 
     @Transactional
