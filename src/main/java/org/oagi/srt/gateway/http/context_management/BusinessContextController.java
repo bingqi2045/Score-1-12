@@ -27,6 +27,18 @@ public class BusinessContextController {
         return service.getBusinessContext(id);
     }
 
+    @RequestMapping(value = "/simple_business_contexts", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SimpleBusinessContext> getSimpleBusinessContextList() {
+        return service.getSimpleBusinessContextList();
+    }
+
+    @RequestMapping(value = "/simple_business_context/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public SimpleBusinessContext getSimpleBusinessContext(@PathVariable("id") long id) {
+        return service.getSimpleBusinessContext(id);
+    }
+
     @RequestMapping(value = "/business_context", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,

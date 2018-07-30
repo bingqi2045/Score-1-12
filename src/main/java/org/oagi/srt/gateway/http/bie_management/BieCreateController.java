@@ -4,10 +4,10 @@ import org.oagi.srt.gateway.http.module_management.ModuleService;
 import org.oagi.srt.gateway.http.module_management.SimpleModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +45,18 @@ public class BieCreateController {
 
                     return copy;
                 }).collect(Collectors.toList());
+    }
+
+
+
+    @RequestMapping(value = "/profile_bie/create", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity create(
+            @AuthenticationPrincipal User user,
+            @RequestBody BieCreateRequest bieCreateRequest) {
+
+        bieService.createBie(user, bieCreateRequest);
+        return ResponseEntity.noContent().build();
     }
 
 }

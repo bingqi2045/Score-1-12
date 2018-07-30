@@ -61,6 +61,32 @@ public class BusinessContextService {
         return bizCtx;
     }
 
+    private String GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT =
+            "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx";
+
+    public List<SimpleBusinessContext> getSimpleBusinessContextList() {
+        return jdbcTemplate.query(GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT,
+                new BeanPropertyRowMapper(SimpleBusinessContext.class));
+    }
+
+    private String GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT =
+            "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx WHERE biz_ctx_id = :biz_ctx_id";
+
+    public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("biz_ctx_id", bizCtxId);
+
+        List<SimpleBusinessContext> res =
+                jdbcTemplate.query(GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT, parameterSource,
+                        new BeanPropertyRowMapper(SimpleBusinessContext.class));
+
+        if (res.isEmpty()) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        return res.get(0);
+    }
+
     private String GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT =
             "SELECT biz_ctx_value_id, " +
                     "ctx_category.ctx_category_id, ctx_category.name as ctx_category_name, " +
