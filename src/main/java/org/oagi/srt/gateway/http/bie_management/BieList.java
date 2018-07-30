@@ -1,17 +1,19 @@
 package org.oagi.srt.gateway.http.bie_management;
 
+import java.util.Date;
+
 public class BieList {
 
     private long topLevelAbieId;
-    private String name;
-    private String release;
-    private String context;
-    private long businessContextId;
+    private String propertyTerm;
+    private String releaseNum;
+    private long bizCtxId;
+    private String bizCtxName;
     private String owner;
     private String version;
     private String status;
-    private long lastUpdateTime;
-    private String state;
+    private Date lastUpdateTimestamp;
+    private Object state;
 
     public long getTopLevelAbieId() {
         return topLevelAbieId;
@@ -21,36 +23,36 @@ public class BieList {
         this.topLevelAbieId = topLevelAbieId;
     }
 
-    public String getName() {
-        return name;
+    public String getPropertyTerm() {
+        return propertyTerm;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPropertyTerm(String propertyTerm) {
+        this.propertyTerm = propertyTerm;
     }
 
-    public String getRelease() {
-        return release;
+    public String getReleaseNum() {
+        return releaseNum;
     }
 
-    public void setRelease(String release) {
-        this.release = release;
+    public void setReleaseNum(String releaseNum) {
+        this.releaseNum = releaseNum;
     }
 
-    public String getContext() {
-        return context;
+    public long getBizCtxId() {
+        return bizCtxId;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setBizCtxId(long bizCtxId) {
+        this.bizCtxId = bizCtxId;
     }
 
-    public long getBusinessContextId() {
-        return businessContextId;
+    public String getBizCtxName() {
+        return bizCtxName;
     }
 
-    public void setBusinessContextId(long businessContextId) {
-        this.businessContextId = businessContextId;
+    public void setBizCtxName(String bizCtxName) {
+        this.bizCtxName = bizCtxName;
     }
 
     public String getOwner() {
@@ -77,19 +79,19 @@ public class BieList {
         this.status = status;
     }
 
-    public long getLastUpdateTime() {
-        return lastUpdateTime;
+    public Date getLastUpdateTimestamp() {
+        return lastUpdateTimestamp;
     }
 
-    public void setLastUpdateTime(long lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
+    public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
+        this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 
-    public String getState() {
+    public Object getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(Object state) {
         this.state = state;
     }
 }

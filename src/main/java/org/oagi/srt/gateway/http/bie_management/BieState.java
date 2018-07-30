@@ -16,4 +16,13 @@ public enum BieState {
         return value;
     }
 
+    public static BieState valueOf(int value) {
+        for (BieState state : BieState.values()) {
+            if (state.getValue() == value) {
+                return state;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value: " + value);
+    }
+    
 }

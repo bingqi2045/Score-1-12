@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +96,7 @@ public class BieService {
 
     private String FIND_ROLE_OF_ACC_BY_ASCCP_ID_STATEMENT =
             "SELECT acc.acc_id, acc.guid, acc.revision_num, acc.revision_tracking_num, acc.revision_action, acc.release_id " +
-            "FROM acc JOIN asccp ON acc.current_acc_id = asccp.role_of_acc_id WHERE asccp.asccp_id = :asccp_id";
+                    "FROM acc JOIN asccp ON acc.current_acc_id = asccp.role_of_acc_id WHERE asccp.asccp_id = :asccp_id";
 
     private AccForBie findRoleOfAccByAsccpId(long asccpId, long releaseId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
@@ -178,9 +177,39 @@ public class BieService {
 
 
     private String GET_BIE_LIST_STATEMENT =
-            "";
+            "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
+                    "app_user.login_id as owner, abie.version, abie.`status`, abie.last_update_timestamp, top_level_abie.state " +
+                    "FROM top_level_abie JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
+                    "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
+                    "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
+                    "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
+                    "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
+                    "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
     public List<BieList> getBieList() {
-        return Collections.emptyList();
+        return jdbcTemplate.query(GET_BIE_LIST_STATEMENT,
+                new BeanPropertyRowMapper(BieList.class));
+    }
+
+    @Transactional
+    public void deleteBieList(List<Long> topLevelAbieIds) {
+        if (topLevelAbieIds == null || topLevelAbieIds.isEmpty()) {
+            return;
+        }
+
+        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 0", rse -> null);
+
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("owner_top_level_abie_ids", topLevelAbieIds);
+
+        jdbcTemplate.update("DELETE FROM abie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM asbie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM asbiep WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM bbie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM bbiep WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM bbie_sc WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+        jdbcTemplate.update("DELETE FROM top_level_abie WHERE top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
+
+        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1", rse -> null);
     }
 }
