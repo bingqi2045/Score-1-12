@@ -1,10 +1,16 @@
 package org.oagi.srt.gateway.http.bie_management;
 
+import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditAbieNode;
+import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditAsbiepNode;
+import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditBbiepNode;
+import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -24,20 +30,22 @@ public class BieEditController {
         return service.getRootNode(topLevelAbieId);
     }
 
-    @RequestMapping(value = "/profile_bie/node/{type}/{top_level_abie_id}/{cc_id}/children", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/abie/children", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getChildren(@PathVariable("type") String type,
-                                         @PathVariable("top_level_abie_id") long topLevelAbieId,
-                                         @PathVariable("cc_id") long ccId,
-                                         @RequestParam("bie_id") Long bieId) {
+    public List<BieEditNode> getChildren(BieEditAbieNode abieNode) {
+        return service.getAbieChildren(abieNode);
+    }
 
-        BieEditNode node = new BieEditNode();
-        node.setTopLevelAbieId(topLevelAbieId);
-        node.setType(type);
-        node.setBieId(bieId);
-        node.setCcId(ccId);
+    @RequestMapping(value = "/profile_bie/node/asbiep/children", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieEditNode> getChildren(BieEditAsbiepNode asbiepNode) {
+        return service.getAsbiepChildren(asbiepNode);
+    }
 
-        return service.getChildren(node);
+    @RequestMapping(value = "/profile_bie/node/bbiep/children", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieEditNode> getChildren(BieEditBbiepNode bbiepNode) {
+        return service.getBbiepChildren(bbiepNode);
     }
 
 }

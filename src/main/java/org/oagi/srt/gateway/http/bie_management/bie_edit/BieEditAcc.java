@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.Trackable;
 public class BieEditAcc extends Trackable {
     private long accId;
     private String guid;
+    private int oagisComponentType;
     private Long basedAccId;
     private long currentAccId;
 
@@ -22,6 +23,14 @@ public class BieEditAcc extends Trackable {
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    public int getOagisComponentType() {
+        return oagisComponentType;
+    }
+
+    public void setOagisComponentType(int oagisComponentType) {
+        this.oagisComponentType = oagisComponentType;
     }
 
     public long getBasedAccId() {

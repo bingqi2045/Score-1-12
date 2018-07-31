@@ -1,12 +1,10 @@
-package org.oagi.srt.gateway.http.bie_management;
+package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
 public class BieEditNode {
 
     private long topLevelAbieId;
     private long releaseId;
     private String type;
-    private long bieId;
-    private long ccId;
     private String name;
     private boolean hasChild;
 
@@ -32,22 +30,6 @@ public class BieEditNode {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public long getBieId() {
-        return bieId;
-    }
-
-    public void setBieId(long bieId) {
-        this.bieId = bieId;
-    }
-
-    public long getCcId() {
-        return ccId;
-    }
-
-    public void setCcId(long ccId) {
-        this.ccId = ccId;
     }
 
     public String getName() {

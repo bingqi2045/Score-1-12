@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.bie_management;
 
 import org.oagi.srt.gateway.http.bie_management.bie_edit.*;
 import org.oagi.srt.gateway.http.cc_management.CcUtility;
+import org.oagi.srt.gateway.http.helper.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,164 +30,255 @@ public class BieEditService {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private BieRepository repository;
+
     private String GET_ROOT_NODE_STATEMENT =
-            "SELECT 'abie' as type, asbiep.asbiep_id as bie_id, asbiep.based_asccp_id as cc_id, asccp.property_term as name " +
+            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, asccp.property_term as name, " +
+                    "asbiep.asbiep_id, asbiep.based_asccp_id as asccp_id, abie.abie_id, abie.based_acc_id as acc_id " +
                     "FROM top_level_abie JOIN abie ON top_level_abie.abie_id = abie.abie_id " +
                     "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
                     "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
                     "WHERE top_level_abie_id = :top_level_abie_id";
 
-    public BieEditNode getRootNode(long topLevelAbieId) {
+    public BieEditAbieNode getRootNode(long topLevelAbieId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("top_level_abie_id", topLevelAbieId);
 
-        List<BieEditNode> res = jdbcTemplate.query(GET_ROOT_NODE_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(BieEditNode.class));
+        List<BieEditAbieNode> res = jdbcTemplate.query(GET_ROOT_NODE_STATEMENT, parameterSource,
+                new BeanPropertyRowMapper(BieEditAbieNode.class));
         if (res.isEmpty()) {
             throw new EmptyResultDataAccessException(1);
         }
 
-        BieEditNode rootNode = res.get(0);
-        rootNode.setTopLevelAbieId(topLevelAbieId);
-
-        long accId = jdbcTemplate.queryForObject("SELECT acc.current_acc_id " +
-                "FROM abie JOIN top_level_abie ON abie.abie_id = top_level_abie.abie_id " +
-                "JOIN acc ON abie.based_acc_id = acc.acc_id " +
-                "WHERE top_level_abie_id = :top_level_abie_id", parameterSource, Long.class);
-
-        TopLevelAbie topLevelAbie = getTopLevelAbie(topLevelAbieId);
-        long releaseId = topLevelAbie.getReleaseId();
-        rootNode.setHasChild(hasChild(releaseId, "ACC", accId));
+        BieEditAbieNode rootNode = res.get(0);
+        rootNode.setHasChild(hasChild(rootNode));
 
         return rootNode;
     }
 
-    public List<BieEditNode> getChildren(BieEditNode node) {
+    public List<BieEditNode> getAsbiepChildren(BieEditAsbiepNode asbiepNode) {
+        Map<Long, BieEditAsbie> asbieMap;
+        Map<Long, BieEditBbie> bbieMap;
+
+        long currentAccId = repository.getAcc(asbiepNode.getAccId()).getCurrentAccId();
+        long abieId = asbiepNode.getAbieId();
+        if (abieId > 0L) {
+            asbieMap = getAsbieListByFromAbieId(abieId, asbiepNode).stream()
+                    .collect(toMap(BieEditAsbie::getBasedAsccpId, Function.identity()));
+            bbieMap = getBbieListByFromAbieId(abieId, asbiepNode).stream()
+                    .collect(toMap(BieEditBbie::getBasedBccId, Function.identity()));
+        } else {
+            asbieMap = Collections.emptyMap();
+            bbieMap = Collections.emptyMap();
+        }
+
+        List<BieEditNode> children = getChildren(asbieMap, bbieMap, currentAccId, asbiepNode);
+        return children;
+    }
+
+    public List<BieEditNode> getBbiepChildren(BieEditBbiepNode bbiepNode) {
+        long bbiepId = bbiepNode.getBbiepId();
+        BieEditBccp bccp;
+        if (bbiepId > 0L) {
+            BieEditBbiep bbiep = repository.getBbiep(bbiepId, bbiepNode.getTopLevelAbieId());
+            bccp = repository.getBccp(bbiep.getBasedBccpId());
+        } else {
+            bccp = repository.getBccp(bbiepNode.getBccpId());
+        }
+
+        List<BieEditNode> children = new ArrayList();
+        List<BieEditBdtSc> bdtScList = repository.getBdtScListByOwnerDtId(bccp.getBdtId());
+        long bbieId = bbiepNode.getBbieId();
+        for (BieEditBdtSc bdtSc : bdtScList) {
+            BieEditBbieScNode bbieScNode = new BieEditBbieScNode();
+
+            bbieScNode.setTopLevelAbieId(bbiepNode.getTopLevelAbieId());
+            bbieScNode.setReleaseId(bbiepNode.getReleaseId());
+            bbieScNode.setType("bbie_sc");
+
+            String name;
+            if (bdtSc.getRepresentationTerm().equalsIgnoreCase("Text") ||
+                    bdtSc.getPropertyTerm().contains(bdtSc.getRepresentationTerm())) {
+                name = Utility.spaceSeparator(bdtSc.getPropertyTerm());
+            } else {
+                name = Utility.spaceSeparator(bdtSc.getPropertyTerm().concat(bdtSc.getRepresentationTerm()));
+            }
+
+            bbieScNode.setName(name);
+            if (bbieId > 0L) {
+                bbieScNode.setBbieScId(repository.getBbieScIdByBbieIdAndDtScId(
+                        bbieId, bdtSc.getDtScId(), bbiepNode.getTopLevelAbieId()));
+            }
+            bbieScNode.setDtScId(bdtSc.getDtScId());
+
+            children.add(bbieScNode);
+        }
+
+        return children;
+    }
+
+    private Stack<BieEditAcc> getAccStack(long currentAccId, long releaseId) {
+        Stack<BieEditAcc> accStack = new Stack();
+        BieEditAcc acc = repository.getAccByCurrentAccId(currentAccId, releaseId);
+        accStack.push(acc);
+
+        while (acc.getBasedAccId() > 0L) {
+            acc = repository.getAccByCurrentAccId(acc.getBasedAccId(), releaseId);
+            accStack.push(acc);
+        }
+
+        return accStack;
+    }
+
+    private List<SeqKeySupportable> getAssociationsByCurrentAccId(long currentAccId, long releaseId) {
+        Stack<BieEditAcc> accStack = getAccStack(currentAccId, releaseId);
+
+        List<BieEditBcc> attributeBccList = new ArrayList();
+        List<SeqKeySupportable> assocList = new ArrayList();
+
+        while (!accStack.isEmpty()) {
+            BieEditAcc acc = accStack.pop();
+
+            long fromAccId = acc.getCurrentAccId();
+            List<BieEditAscc> asccList = getAsccListByFromAccId(fromAccId, releaseId);
+            List<BieEditBcc> bccList = getBccListByFromAccId(fromAccId, releaseId);
+
+            attributeBccList.addAll(
+                    bccList.stream().filter(e -> e.isAttribute()).collect(Collectors.toList()));
+
+            List<SeqKeySupportable> tmpAssocList = new ArrayList();
+            tmpAssocList.addAll(asccList);
+            tmpAssocList.addAll(
+                    bccList.stream().filter(e -> !e.isAttribute()).collect(Collectors.toList()));
+            assocList.addAll(tmpAssocList.stream()
+                    .sorted(Comparator.comparingInt(SeqKeySupportable::getSeqKey))
+                    .collect(Collectors.toList()));
+        }
+
+        assocList.addAll(0, attributeBccList);
+        return assocList;
+    }
+
+    public List<BieEditNode> getAbieChildren(BieEditAbieNode abieNode) {
+        Map<Long, BieEditAsbie> asbieMap;
+        Map<Long, BieEditBbie> bbieMap;
+
+        long currentAccId;
+        long asbiepId = abieNode.getAsbiepId();
+        if (asbiepId > 0L) {
+            long abieId = getAbieByAsbiepId(asbiepId).getAbieId();
+            asbieMap = getAsbieListByFromAbieId(abieId, abieNode).stream()
+                    .collect(toMap(BieEditAsbie::getBasedAsccpId, Function.identity()));
+            bbieMap = getBbieListByFromAbieId(abieId, abieNode).stream()
+                    .collect(toMap(BieEditBbie::getBasedBccId, Function.identity()));
+
+            currentAccId = getRoleOfAccIdByAsbiepId(asbiepId);
+        } else {
+            asbieMap = Collections.emptyMap();
+            bbieMap = Collections.emptyMap();
+
+            long asccpId = abieNode.getAsccpId();
+            currentAccId = getRoleOfAccIdByAsccpId(asccpId);
+        }
+
+        List<BieEditNode> children = getChildren(asbieMap, bbieMap, currentAccId, abieNode);
+        return children;
+    }
+
+    public List<BieEditNode> getChildren(
+            Map<Long, BieEditAsbie> asbieMap,
+            Map<Long, BieEditBbie> bbieMap,
+            long currentAccId,
+            BieEditNode node) {
+        List<BieEditNode> children = new ArrayList();
         TopLevelAbie topLevelAbie = getTopLevelAbie(node.getTopLevelAbieId());
-        node.setReleaseId(topLevelAbie.getReleaseId());
 
-        switch (node.getType().toLowerCase()) {
-            case "abie": {
-                long asbiepId = node.getBieId();
-                long asccpId = node.getCcId();
+        List<SeqKeySupportable> assocList = getAssociationsByCurrentAccId(currentAccId, node.getReleaseId());
+        for (SeqKeySupportable assoc : assocList) {
+            if (assoc instanceof BieEditAscc) {
+                BieEditAscc ascc = (BieEditAscc) assoc;
+                BieEditAsbie asbie = asbieMap.get(ascc.getAsccId());
+                BieEditAsbiepNode asbiepNode = createAsbiepNode(topLevelAbie, asbie, ascc);
 
-                Map<Long, BieEditAsbie> asbieMap;
-                Map<Long, BieEditBbie> bbieMap;
-
-                long accId;
-                if (asbiepId > 0L) {
-                    long abieId = getAbieIdByAsbiepId(asbiepId);
-                    asbieMap = getAsbieListByFromAbieId(abieId, node).stream()
-                            .collect(toMap(BieEditAsbie::getBasedAsccpId, Function.identity()));
-                    bbieMap = getBbieListByFromAbieId(abieId, node).stream()
-                            .collect(toMap(BieEditBbie::getBasedBccId, Function.identity()));
-
-                    accId = getRoleOfAccIdByAsbiepId(asbiepId);
+                OagisComponentType oagisComponentType = repository.getOagisComponentTypeByAccId(asbiepNode.getAccId());
+                if (oagisComponentType.isGroup()) {
+                    children.addAll(getAsbiepChildren(asbiepNode));
                 } else {
-                    asbieMap = Collections.emptyMap();
-                    bbieMap = Collections.emptyMap();
-
-                    accId = getRoleOfAccIdByAsccpId(asccpId);
+                    children.add(asbiepNode);
                 }
-
-                Stack<BieEditAcc> accStack = new Stack();
-                BieEditAcc acc = getAccByCurrentAccId(accId, node.getReleaseId());
-                accStack.push(acc);
-
-                while (acc.getBasedAccId() > 0L) {
-                    acc = getAccByCurrentAccId(acc.getBasedAccId(), node.getReleaseId());
-                    accStack.push(acc);
-                }
-
-
-                List<BieEditBcc> attributeBccList = new ArrayList();
-                List<SeqKeySupportable> assocList = new ArrayList();
-
-                while (!accStack.isEmpty()) {
-                    acc = accStack.pop();
-                    long fromAccId = acc.getCurrentAccId();
-                    List<BieEditAscc> asccList = getAsccListByFromAccId(fromAccId, node);
-                    List<BieEditBcc> bccList = getBccListByFromAccId(fromAccId, node);
-
-                    attributeBccList.addAll(
-                            bccList.stream().filter(e -> e.isAttribute()).collect(Collectors.toList()));
-
-                    List<SeqKeySupportable> tmpAssocList = new ArrayList();
-                    tmpAssocList.addAll(asccList);
-                    tmpAssocList.addAll(
-                            bccList.stream().filter(e -> !e.isAttribute()).collect(Collectors.toList()));
-                    assocList.addAll(tmpAssocList.stream()
-                            .sorted(Comparator.comparingInt(SeqKeySupportable::getSeqKey))
-                            .collect(Collectors.toList()));
-                }
-
-                List<BieEditNode> children = new ArrayList();
-
-                for (BieEditBcc attributeBcc : attributeBccList) {
-                    BieEditBbie bbie = bbieMap.get(attributeBcc.getBccId());
-
-                    BieEditNode child = new BieEditNode();
-                    child.setType("bbiep");
-                    if (bbie != null) {
-                        child.setBieId(bbie.getBbieId());
-                        child.setName(getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
-                    }
-
-                    child.setCcId(attributeBcc.getBccId());
-                    if (StringUtils.isEmpty(child.getName())) {
-                        BieEditBccp bccp = getBccpByCurrentBccpId(attributeBcc.getToBccpId(), node.getReleaseId());
-                        child.setName(bccp.getPropertyTerm());
-                    }
-
-                    children.add(child);
-                }
-
-                for (SeqKeySupportable assoc : assocList) {
-                    if (assoc instanceof BieEditAscc) {
-                        BieEditAscc ascc = (BieEditAscc) assoc;
-
-                        BieEditAsbie asbie = asbieMap.get(ascc.getAsccId());
-
-                        BieEditNode child = new BieEditNode();
-                        child.setType("asbiep");
-                        if (asbie != null) {
-                            child.setBieId(asbie.getAsbieId());
-                            child.setName(getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
-                        }
-
-                        child.setCcId(ascc.getAsccId());
-                        if (StringUtils.isEmpty(child.getName())) {
-                            BieEditAsccp asccp = getAsccpByCurrentAsccpId(ascc.getToAsccpId(), node.getReleaseId());
-                            child.setName(asccp.getPropertyTerm());
-                        }
-
-                        children.add(child);
-
-                    } else {
-                        BieEditBcc bcc = (BieEditBcc) assoc;
-                        BieEditBbie bbie = bbieMap.get(bcc.getBccId());
-
-                        BieEditNode child = new BieEditNode();
-                        child.setType("BBIEP");
-                        if (bbie != null) {
-                            child.setBieId(bbie.getBbieId());
-                            child.setName(getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
-                        }
-
-                        child.setCcId(bcc.getBccId());
-                        if (StringUtils.isEmpty(child.getName())) {
-                            BieEditBccp bccp = getBccpByCurrentBccpId(bcc.getToBccpId(), node.getReleaseId());
-                            child.setName(bccp.getPropertyTerm());
-                        }
-
-                        children.add(child);
-                    }
-                }
-
-                return children;
+            } else {
+                BieEditBcc bcc = (BieEditBcc) assoc;
+                BieEditBbie bbie = bbieMap.get(bcc.getBccId());
+                BieEditBbiepNode bbiepNode = createBbiepNode(topLevelAbie, bbie, bcc);
+                children.add(bbiepNode);
             }
         }
-        return Collections.emptyList();
+
+        return children;
+    }
+
+    public BieEditAsbiepNode createAsbiepNode(TopLevelAbie topLevelAbie, BieEditAsbie asbie, BieEditAscc ascc) {
+        BieEditAsbiepNode asbiepNode = new BieEditAsbiepNode();
+
+        asbiepNode.setTopLevelAbieId(topLevelAbie.getTopLevelAbieId());
+        asbiepNode.setReleaseId(topLevelAbie.getReleaseId());
+        asbiepNode.setType("asbiep");
+
+        if (asbie != null) {
+            asbiepNode.setAsbieId(asbie.getAsbieId());
+            asbiepNode.setAsbiepId(asbie.getToAsbiepId());
+
+            BieEditAbie abie = getAbieByAsbiepId(asbie.getToAsbiepId());
+            asbiepNode.setAbieId(abie.getAbieId());
+            asbiepNode.setAccId(abie.getBasedAccId());
+
+            asbiepNode.setName(getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
+        }
+
+        asbiepNode.setAsccId(ascc.getAsccId());
+        BieEditAsccp asccp = getAsccpByCurrentAsccpId(ascc.getToAsccpId(), topLevelAbie.getReleaseId());
+        asbiepNode.setAsccpId(asccp.getAsccpId());
+
+        if (StringUtils.isEmpty(asbiepNode.getName())) {
+            asbiepNode.setName(asccp.getPropertyTerm());
+        }
+        if (asbiepNode.getAccId() == 0L) {
+            BieEditAcc acc = repository.getAccByCurrentAccId(asccp.getRoleOfAccId(), topLevelAbie.getReleaseId());
+            asbiepNode.setAccId(acc.getAccId());
+        }
+
+        asbiepNode.setHasChild(hasChild(asbiepNode));
+
+        return asbiepNode;
+    }
+
+    public BieEditBbiepNode createBbiepNode(TopLevelAbie topLevelAbie, BieEditBbie bbie, BieEditBcc bcc) {
+        BieEditBbiepNode bbiepNode = new BieEditBbiepNode();
+
+        bbiepNode.setTopLevelAbieId(topLevelAbie.getTopLevelAbieId());
+        bbiepNode.setReleaseId(topLevelAbie.getReleaseId());
+        bbiepNode.setType("bbiep");
+        bbiepNode.setAttribute(bcc.isAttribute());
+
+        if (bbie != null) {
+            bbiepNode.setBbieId(bbie.getBbieId());
+            bbiepNode.setBbiepId(bbie.getToBbiepId());
+
+            bbiepNode.setName(getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
+        }
+
+        bbiepNode.setBccId(bcc.getBccId());
+        BieEditBccp bccp = getBccpByCurrentBccpId(bcc.getToBccpId(), topLevelAbie.getReleaseId());
+        bbiepNode.setBccpId(bccp.getBccpId());
+
+        if (StringUtils.isEmpty(bbiepNode.getName())) {
+            bbiepNode.setName(bccp.getPropertyTerm());
+        }
+
+        bbiepNode.setHasChild(hasChild(bbiepNode));
+
+        return bbiepNode;
     }
 
     public String getAsccpPropertyTermByAsbiepId(long asbiepId) {
@@ -210,8 +302,8 @@ public class BieEditService {
         parameterSource.addValue("current_asccp_id", currentAsccpId);
         List<BieEditAsccp> asccpList =
                 jdbcTemplate.query("SELECT asccp_id, guid, property_term, role_of_acc_id, current_asccp_id, " +
-                        "revision_num, revision_tracking_num, revision_action, release_id " +
-                        "FROM asccp WHERE revision_num > 0 AND current_asccp_id = :current_asccp_id",
+                                "revision_num, revision_tracking_num, revision_action, release_id " +
+                                "FROM asccp WHERE revision_num > 0 AND current_asccp_id = :current_asccp_id",
                         parameterSource, new BeanPropertyRowMapper(BieEditAsccp.class));
         return CcUtility.getLatestEntity(releaseId, asccpList);
     }
@@ -226,12 +318,17 @@ public class BieEditService {
         return CcUtility.getLatestEntity(releaseId, bccpList);
     }
 
-    public long getAbieIdByAsbiepId(long asbiepId) {
+    public BieEditAbie getAbieByAsbiepId(long asbiepId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("asbiep_id", asbiepId);
-        return jdbcTemplate.queryForObject("SELECT abie.abie_id " +
+        List<BieEditAbie> res = jdbcTemplate.query("SELECT abie.abie_id, abie.based_acc_id " +
                 "FROM asbiep JOIN abie ON asbiep.role_of_abie_id = abie.abie_id " +
-                "WHERE asbiep.asbiep_id = :asbiep_id", parameterSource, Long.class);
+                "WHERE asbiep.asbiep_id = :asbiep_id", parameterSource, new BeanPropertyRowMapper(BieEditAbie.class));
+        if (res.isEmpty()) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        return res.get(0);
     }
 
     public List<BieEditAsbie> getAsbieListByFromAbieId(long fromAbieId, BieEditNode node) {
@@ -267,8 +364,7 @@ public class BieEditService {
                 "FROM asccp WHERE asccp_id = :asccp_id", parameterSource, Long.class);
     }
 
-    public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, BieEditNode node) {
-        long releaseId = node.getReleaseId();
+    public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("from_acc_id", fromAccId);
         parameterSource.addValue("release_id", releaseId);
@@ -282,8 +378,7 @@ public class BieEditService {
                 .filter(e -> e != null).collect(Collectors.toList());
     }
 
-    public List<BieEditBcc> getBccListByFromAccId(long fromAccId, BieEditNode node) {
-        long releaseId = node.getReleaseId();
+    public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("from_acc_id", fromAccId);
         parameterSource.addValue("release_id", releaseId);
@@ -297,76 +392,46 @@ public class BieEditService {
                 .filter(e -> e != null).collect(Collectors.toList());
     }
 
-    public boolean hasChild(long releaseId, String type, long id) {
-        switch (type) {
-            case "ACC": {
-                long fromAccId = id;
-                if (getAsccListByFromAccId(fromAccId, releaseId).size() > 0) {
-                    return true;
-                }
-                if (getBccListByFromAccId(fromAccId, releaseId).size() > 0) {
-                    return true;
-                }
+    public boolean hasChild(BieEditAbieNode abieNode) {
+        long fromAccId;
+        if (abieNode.getTopLevelAbieId() > 0L) {
+            fromAccId = repository.getCurrentAccIdByTopLevelAbieId(abieNode.getTopLevelAbieId());
+        } else {
+            fromAccId = abieNode.getAccId();
+        }
 
-                long currentAccId = id;
-                BieEditAcc acc = getAccByCurrentAccId(currentAccId, releaseId);
-                if (acc.getBasedAccId() > 0L) {
-                    return hasChild(releaseId, "ACC", acc.getBasedAccId());
-                }
-            }
-            break;
+        long releaseId = abieNode.getReleaseId();
+        if (getAsccListByFromAccId(fromAccId, releaseId).size() > 0) {
+            return true;
+        }
+        if (getBccListByFromAccId(fromAccId, releaseId).size() > 0) {
+            return true;
+        }
+
+        long currentAccId = fromAccId;
+        BieEditAcc acc = repository.getAccByCurrentAccId(currentAccId, releaseId);
+        if (acc.getBasedAccId() > 0L) {
+            BieEditAbieNode basedAbieNode = new BieEditAbieNode();
+            basedAbieNode.setReleaseId(releaseId);
+            basedAbieNode.setAccId(acc.getBasedAccId());
+            return hasChild(basedAbieNode);
         }
 
         return false;
     }
 
-    private String GET_ACC_LIST_BY_CURRENT_ACC_ID_STATEMENT =
-            "SELECT acc_id, guid, based_acc_id, current_acc_id, " +
-                    "revision_num, revision_tracking_num, revision_action, release_id FROM acc " +
-                    "WHERE revision_num > 0 AND current_acc_id = :current_acc_id";
+    public boolean hasChild(BieEditAsbiepNode asbiepNode) {
+        BieEditAbieNode abieNode = new BieEditAbieNode();
+        abieNode.setTopLevelAbieId(asbiepNode.getTopLevelAbieId());
+        abieNode.setReleaseId(asbiepNode.getReleaseId());
+        abieNode.setAccId(asbiepNode.getAccId());
 
-    public BieEditAcc getAccByCurrentAccId(long currentAccId, long releaseId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("current_acc_id", currentAccId);
-        List<BieEditAcc> accList =
-                jdbcTemplate.query(GET_ACC_LIST_BY_CURRENT_ACC_ID_STATEMENT, parameterSource,
-                        new BeanPropertyRowMapper(BieEditAcc.class));
-        return CcUtility.getLatestEntity(releaseId, accList);
+        return hasChild(abieNode);
     }
 
-
-    private String GET_ASCC_LIST_BY_FROM_ACC_ID_STATEMENT =
-            "SELECT ascc_id, guid, from_acc_id, to_asccp_id, seq_key, current_ascc_id, " +
-                    "revision_num, revision_tracking_num, revision_action, release_id FROM ascc " +
-                    "WHERE revision_num > 0 AND from_acc_id = :from_acc_id";
-
-    public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("from_acc_id", fromAccId);
-
-        List<BieEditAscc> asccList = jdbcTemplate.query(GET_ASCC_LIST_BY_FROM_ACC_ID_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(BieEditAscc.class));
-
-        return asccList.stream().collect(groupingBy(BieEditAscc::getGuid)).values()
-                .stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).filter(e -> e != null)
-                .collect(Collectors.toList());
-    }
-
-    private String GET_BCC_LIST_BY_FROM_ACC_ID_STATEMENT =
-            "SELECT bcc_id, guid, from_acc_id, to_bccp_id, seq_key, entity_type, current_bcc_id, " +
-                    "revision_num, revision_tracking_num, revision_action, release_id FROM bcc " +
-                    "WHERE revision_num > 0 AND from_acc_id = :from_acc_id";
-
-    public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("from_acc_id", fromAccId);
-
-        List<BieEditBcc> bccList = jdbcTemplate.query(GET_BCC_LIST_BY_FROM_ACC_ID_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(BieEditBcc.class));
-
-        return bccList.stream().collect(groupingBy(BieEditBcc::getGuid)).values()
-                .stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).filter(e -> e != null)
-                .collect(Collectors.toList());
+    public boolean hasChild(BieEditBbiepNode bbiepNode) {
+        BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId());
+        return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
     }
 
 
