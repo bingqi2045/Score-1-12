@@ -4,7 +4,7 @@ public class BieEditAsbie {
     private long asbieId;
     private long fromAbieId;
     private long toAsbiepId;
-    private long basedAsccId;
+    private long basedAsccpId;
     private boolean used;
 
     public long getAsbieId() {
@@ -31,12 +31,12 @@ public class BieEditAsbie {
         this.toAsbiepId = toAsbiepId;
     }
 
-    public long getBasedAsccId() {
-        return basedAsccId;
+    public long getBasedAsccpId() {
+        return basedAsccpId;
     }
 
-    public void setBasedAsccId(long basedAsccId) {
-        this.basedAsccId = basedAsccId;
+    public void setBasedAsccpId(long basedAsccpId) {
+        this.basedAsccpId = basedAsccpId;
     }
 
     public boolean isUsed() {

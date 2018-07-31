@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.bie_management;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BieTreeNode {
@@ -39,7 +40,7 @@ public class BieTreeNode {
     }
 
     public List<BieTreeNode> getChildren() {
-        return children;
+        return (children != null) ? children : Collections.emptyList();
     }
 
     public void setChildren(List<BieTreeNode> children) {

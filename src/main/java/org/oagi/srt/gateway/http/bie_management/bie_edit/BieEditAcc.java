@@ -5,7 +5,7 @@ import org.oagi.srt.gateway.http.Trackable;
 public class BieEditAcc extends Trackable {
     private long accId;
     private String guid;
-    private long basedAccId;
+    private Long basedAccId;
     private long currentAccId;
 
     public long getAccId() {
@@ -25,10 +25,10 @@ public class BieEditAcc extends Trackable {
     }
 
     public long getBasedAccId() {
-        return basedAccId;
+        return (basedAccId != null) ? basedAccId : 0L;
     }
 
-    public void setBasedAccId(long basedAccId) {
+    public void setBasedAccId(Long basedAccId) {
         this.basedAccId = basedAccId;
     }
 

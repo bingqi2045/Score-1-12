@@ -80,6 +80,10 @@ public class CcUtility {
     };
 
     public static <T extends Trackable> T getLatestEntity(long releaseId, List<T> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return null;
+        }
+
         Stream<T> filteredEntities;
         if (releaseId == 0L) {
             filteredEntities = entities.stream()

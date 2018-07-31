@@ -2,7 +2,7 @@ package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
 import org.oagi.srt.gateway.http.Trackable;
 
-public class BieEditBcc extends Trackable {
+public class BieEditBcc extends Trackable implements SeqKeySupportable {
     private long bccId;
     private String guid;
     private long fromAccId;
@@ -53,6 +53,10 @@ public class BieEditBcc extends Trackable {
 
     public int getEntityType() {
         return entityType;
+    }
+
+    public boolean isAttribute() {
+        return (entityType == 0);
     }
 
     public void setEntityType(int entityType) {

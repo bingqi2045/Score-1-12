@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
 public class BieEditBbie {
+
     private long bbieId;
     private long fromAbieId;
     private long toBbiepId;
