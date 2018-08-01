@@ -1,5 +1,7 @@
 package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
+import org.oagi.srt.gateway.http.helper.Utility;
+
 public class BieEditBdtSc {
 
     private long dtScId;
@@ -46,5 +48,16 @@ public class BieEditBdtSc {
 
     public void setOwnerDtId(long ownerDtId) {
         this.ownerDtId = ownerDtId;
+    }
+
+    public String getName() {
+        String name;
+        if (getRepresentationTerm().equalsIgnoreCase("Text") ||
+                getPropertyTerm().contains(getRepresentationTerm())) {
+            name = Utility.spaceSeparator(getPropertyTerm());
+        } else {
+            name = Utility.spaceSeparator(getPropertyTerm().concat(getRepresentationTerm()));
+        }
+        return name;
     }
 }

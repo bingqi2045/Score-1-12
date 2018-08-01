@@ -4,6 +4,7 @@ public class BieEditNode {
 
     private long topLevelAbieId;
     private long releaseId;
+
     private String type;
     private String name;
     private boolean hasChild;
