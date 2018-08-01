@@ -1,17 +1,12 @@
 package org.oagi.srt.gateway.http.bie_management;
 
-import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditAbieNode;
-import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditAsbiepNode;
-import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditBbiepNode;
-import org.oagi.srt.gateway.http.bie_management.bie_edit.BieEditNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.oagi.srt.gateway.http.bie_management.bie_edit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class BieEditController {
@@ -19,6 +14,8 @@ public class BieEditController {
     @Autowired
     private BieEditService service;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
 //    public BieTree getBieTree(@PathVariable("id") long topLevelAbieId) {
 //        return service.getBieTree(topLevelAbieId);
@@ -32,20 +29,39 @@ public class BieEditController {
 
     @RequestMapping(value = "/profile_bie/node/abie/children", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getChildren(BieEditAbieNode abieNode) {
+    public List<BieEditNode> getAbieChildren(@RequestParam("data") String data) {
+        BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
         return service.getAbieChildren(abieNode);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/abie/detail", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BieEditAbieNodeDetail getAbieDetail(@RequestParam("data") String data) {
+        BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
+        return service.getAbieDetail(abieNode);
     }
 
     @RequestMapping(value = "/profile_bie/node/asbiep/children", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getChildren(BieEditAsbiepNode asbiepNode) {
+    public List<BieEditNode> getAsbiepChildren(@RequestParam("data") String data) {
+        BieEditAsbiepNode asbiepNode = convertValue(data, BieEditAsbiepNode.class);
         return service.getAsbiepChildren(asbiepNode);
     }
 
     @RequestMapping(value = "/profile_bie/node/bbiep/children", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getChildren(BieEditBbiepNode bbiepNode) {
+    public List<BieEditNode> getBbiepChildren(@RequestParam("data") String data) {
+        BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
         return service.getBbiepChildren(bbiepNode);
+    }
+
+    private <T> T convertValue(String data, Class<T> clazz) {
+        Map<String, Object> params = new HashMap();
+        Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
+            String[] keyValue = e.split("=");
+            params.put(keyValue[0], keyValue[1]);
+        });
+        return objectMapper.convertValue(params, clazz);
     }
 
 }

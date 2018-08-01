@@ -7,6 +7,7 @@ public class BieEditNode {
 
     private String type;
     private String name;
+    private boolean used;
     private boolean hasChild;
 
     public long getTopLevelAbieId() {
@@ -39,6 +40,14 @@ public class BieEditNode {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 
     public boolean isHasChild() {

@@ -62,7 +62,7 @@ public class BieEditService {
         long abieId = asbiepNode.getAbieId();
         if (abieId > 0L) {
             asbieMap = repository.getAsbieListByFromAbieId(abieId, asbiepNode).stream()
-                    .collect(toMap(BieEditAsbie::getBasedAsccpId, Function.identity()));
+                    .collect(toMap(BieEditAsbie::getBasedAsccId, Function.identity()));
             bbieMap = repository.getBbieListByFromAbieId(abieId, asbiepNode).stream()
                     .collect(toMap(BieEditBbie::getBasedBccId, Function.identity()));
         } else {
@@ -96,8 +96,10 @@ public class BieEditService {
             bbieScNode.setName(bdtSc.getName());
 
             if (bbieId > 0L) {
-                bbieScNode.setBbieScId(repository.getBbieScIdByBbieIdAndDtScId(
-                        bbieId, bdtSc.getDtScId(), bbiepNode.getTopLevelAbieId()));
+                BieEditBbieSc bbieSc = repository.getBbieScIdByBbieIdAndDtScId(
+                        bbieId, bdtSc.getDtScId(), bbiepNode.getTopLevelAbieId());
+                bbieScNode.setBbieScId(bbieSc.getBbieScId());
+                bbieScNode.setUsed(bbieSc.isUsed());
             }
             bbieScNode.setDtScId(bdtSc.getDtScId());
 
@@ -158,7 +160,7 @@ public class BieEditService {
         if (asbiepId > 0L) {
             long abieId = repository.getAbieByAsbiepId(asbiepId).getAbieId();
             asbieMap = repository.getAsbieListByFromAbieId(abieId, abieNode).stream()
-                    .collect(toMap(BieEditAsbie::getBasedAsccpId, Function.identity()));
+                    .collect(toMap(BieEditAsbie::getBasedAsccId, Function.identity()));
             bbieMap = repository.getBbieListByFromAbieId(abieId, abieNode).stream()
                     .collect(toMap(BieEditBbie::getBasedBccId, Function.identity()));
 
@@ -223,6 +225,7 @@ public class BieEditService {
             asbiepNode.setAccId(abie.getBasedAccId());
 
             asbiepNode.setName(repository.getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
+            asbiepNode.setUsed(asbie.isUsed());
         }
 
         asbiepNode.setAsccId(ascc.getAsccId());
@@ -255,6 +258,7 @@ public class BieEditService {
             bbiepNode.setBbiepId(bbie.getToBbiepId());
 
             bbiepNode.setName(repository.getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
+            bbiepNode.setUsed(bbie.isUsed());
         }
 
         bbiepNode.setBccId(bcc.getBccId());
@@ -310,6 +314,28 @@ public class BieEditService {
     public boolean hasChild(BieEditBbiepNode bbiepNode) {
         BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId());
         return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
+    }
+
+
+
+
+
+    /*
+     * For Detail
+     */
+
+    public BieEditAbieNodeDetail getAbieDetail(BieEditAbieNode abieNode) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("abie_id", abieNode.getAbieId());
+        List<BieEditAbieNodeDetail> res =
+                jdbcTemplate.query("SELECT version, status, remark, biz_term, definition " +
+                        "FROM abie WHERE abie_id = :abie_id", parameterSource, new BeanPropertyRowMapper(BieEditAbieNodeDetail.class));
+        if (res.isEmpty()) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        BieEditAbieNodeDetail detail = res.get(0);
+        return detail.append(abieNode);
     }
 
 }

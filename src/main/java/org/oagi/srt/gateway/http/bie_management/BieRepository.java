@@ -114,15 +114,22 @@ public class BieRepository {
                 parameterSource, new BeanPropertyRowMapper(BieEditBdtSc.class));
     }
 
-    public long getBbieScIdByBbieIdAndDtScId(long bbieId, long dtScId, long topLevelAbieId) {
+    public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(long bbieId, long dtScId, long topLevelAbieId) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("bbie_id", bbieId)
                 .addValue("dt_sc_id", dtScId)
                 .addValue("owner_top_level_abie_id", topLevelAbieId);
 
-        return jdbcTemplate.queryForObject(
-                "SELECT bbie_sc_id FROM bbie_sc WHERE bbie_id = :bbie_id AND dt_sc_id = :dt_sc_id " +
-                        "AND owner_top_level_abie_id = :owner_top_level_abie_id", parameterSource, Long.class);
+        List<BieEditBbieSc> res = jdbcTemplate.query(
+                "SELECT bbie_sc_id, bbie_id, dt_sc_id, is_used as used " +
+                        "FROM bbie_sc WHERE bbie_id = :bbie_id AND dt_sc_id = :dt_sc_id " +
+                        "AND owner_top_level_abie_id = :owner_top_level_abie_id",
+                parameterSource, new BeanPropertyRowMapper(BieEditBbieSc.class));
+        if (res.isEmpty()) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        return res.get(0);
     }
 
 
