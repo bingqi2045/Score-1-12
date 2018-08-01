@@ -55,6 +55,13 @@ public class BieEditController {
         return service.getBbiepChildren(bbiepNode);
     }
 
+    @RequestMapping(value = "/profile_bie/node/bbiep/detail", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BieEditAbieBbiepDetail getBbiepDetail(@RequestParam("data") String data) {
+        BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
+        return service.getBbiepDetail(bbiepNode);
+    }
+
     private <T> T convertValue(String data, Class<T> clazz) {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {

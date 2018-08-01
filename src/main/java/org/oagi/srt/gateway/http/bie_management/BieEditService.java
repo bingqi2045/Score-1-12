@@ -327,15 +327,49 @@ public class BieEditService {
     public BieEditAbieNodeDetail getAbieDetail(BieEditAbieNode abieNode) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("abie_id", abieNode.getAbieId());
-        List<BieEditAbieNodeDetail> res =
-                jdbcTemplate.query("SELECT version, status, remark, biz_term, definition " +
-                        "FROM abie WHERE abie_id = :abie_id", parameterSource, new BeanPropertyRowMapper(BieEditAbieNodeDetail.class));
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
+        BieEditAbieNodeDetail detail =
+                jdbcTemplate.queryForObject("SELECT version, status, remark, biz_term, definition " +
+                                "FROM abie WHERE abie_id = :abie_id", parameterSource,
+                        new BeanPropertyRowMapper<>(BieEditAbieNodeDetail.class));
+        return detail.append(abieNode);
+    }
+
+    public BieEditAbieBbiepDetail getBbiepDetail(BieEditBbiepNode bbiepNode) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("bbie_id", bbiepNode.getBbieId())
+                .addValue("bbiep_id", bbiepNode.getBbiepId())
+                .addValue("bcc_id", bbiepNode.getBccId())
+                .addValue("bccp_id", bbiepNode.getBccpId());
+
+        BieEditAbieBbiepDetail detail;
+        if (bbiepNode.getBbieId() > 0L) {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, " +
+                            "is_nillable as nillable, fixed_value, definition as context_definition " +
+                            "FROM bbie WHERE bbie_id = :bbie_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditAbieBbiepDetail.class));
+        } else {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                            "FROM bcc WHERE bcc_id = :bcc_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditAbieBbiepDetail.class));
         }
 
-        BieEditAbieNodeDetail detail = res.get(0);
-        return detail.append(abieNode);
+        if (bbiepNode.getBbiepId() > 0L) {
+            jdbcTemplate.query("SELECT biz_term, remark FROM bbiep WHERE bbiep_id = :bbiep_id",
+                    parameterSource, rs -> {
+                        detail.setBizTerm(rs.getString("biz_term"));
+                        detail.setRemark(rs.getString("remark"));
+                    });
+        }
+
+        jdbcTemplate.query("SELECT definition FROM bcc WHERE bcc_id = :bcc_id", parameterSource, rs -> {
+            detail.setAssociationDefinition(rs.getString("definition"));
+        });
+
+        jdbcTemplate.query("SELECT definition FROM bccp WHERE bccp_id = :bccp_id", parameterSource, rs -> {
+            detail.setComponentDefinition(rs.getString("definition"));
+        });
+
+        return detail.append(bbiepNode);
     }
 
 }
