@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
 public class BieEditAbieNode extends BieEditNode {
+
     private long asbiepId;
     private long abieId;
     private long asccpId;

@@ -6,6 +6,7 @@ public class BieEditBbiepNode extends BieEditNode {
     private long bccId;
     private long bbiepId;
     private long bccpId;
+    private long bdtId;
     private boolean attribute;
 
     public long getBbieId() {
@@ -38,6 +39,14 @@ public class BieEditBbiepNode extends BieEditNode {
 
     public void setBccpId(long bccpId) {
         this.bccpId = bccpId;
+    }
+
+    public long getBdtId() {
+        return bdtId;
+    }
+
+    public void setBdtId(long bdtId) {
+        this.bdtId = bdtId;
     }
 
     public boolean isAttribute() {

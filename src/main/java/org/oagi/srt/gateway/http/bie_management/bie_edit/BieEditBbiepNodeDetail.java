@@ -1,6 +1,6 @@
 package org.oagi.srt.gateway.http.bie_management.bie_edit;
 
-public class BieEditAbieBbiepDetail extends BieEditBbiepNode {
+public class BieEditBbiepNodeDetail extends BieEditBbiepNode {
 
     private int cardinalityMin;
     private int cardinalityMax;
@@ -8,6 +8,7 @@ public class BieEditAbieBbiepDetail extends BieEditBbiepNode {
     private String fixedValue;
     private String bizTerm;
     private String remark;
+    private long bdtId;
 
     private String contextDefinition;
     private String associationDefinition;
@@ -61,6 +62,14 @@ public class BieEditAbieBbiepDetail extends BieEditBbiepNode {
         this.remark = remark;
     }
 
+    public long getBdtId() {
+        return bdtId;
+    }
+
+    public void setBdtId(long bdtId) {
+        this.bdtId = bdtId;
+    }
+
     public String getContextDefinition() {
         return contextDefinition;
     }
@@ -85,7 +94,7 @@ public class BieEditAbieBbiepDetail extends BieEditBbiepNode {
         this.componentDefinition = componentDefinition;
     }
 
-    public BieEditAbieBbiepDetail append(BieEditBbiepNode bbiepNode) {
+    public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 
         this.setTopLevelAbieId(bbiepNode.getTopLevelAbieId());
         this.setReleaseId(bbiepNode.getReleaseId());

@@ -264,6 +264,7 @@ public class BieEditService {
         bbiepNode.setBccId(bcc.getBccId());
         BieEditBccp bccp = repository.getBccpByCurrentBccpId(bcc.getToBccpId(), topLevelAbie.getReleaseId());
         bbiepNode.setBccpId(bccp.getBccpId());
+        bbiepNode.setBdtId(bccp.getBdtId());
 
         if (StringUtils.isEmpty(bbiepNode.getName())) {
             bbiepNode.setName(bccp.getPropertyTerm());
@@ -276,13 +277,16 @@ public class BieEditService {
 
     public boolean hasChild(BieEditAbieNode abieNode) {
         long fromAccId;
+
+        long releaseId = abieNode.getReleaseId();
+        BieEditAcc acc = null;
         if (abieNode.getTopLevelAbieId() > 0L) {
             fromAccId = repository.getCurrentAccIdByTopLevelAbieId(abieNode.getTopLevelAbieId());
         } else {
-            fromAccId = abieNode.getAccId();
+            acc = repository.getAcc(abieNode.getAccId());
+            fromAccId = acc.getCurrentAccId();
         }
 
-        long releaseId = abieNode.getReleaseId();
         if (repository.getAsccListByFromAccId(fromAccId, releaseId).size() > 0) {
             return true;
         }
@@ -291,11 +295,15 @@ public class BieEditService {
         }
 
         long currentAccId = fromAccId;
-        BieEditAcc acc = repository.getAccByCurrentAccId(currentAccId, releaseId);
-        if (acc.getBasedAccId() > 0L) {
+        if (acc == null) {
+            acc = repository.getAccByCurrentAccId(currentAccId, releaseId);
+        }
+        if (acc != null && acc.getBasedAccId() > 0L) {
             BieEditAbieNode basedAbieNode = new BieEditAbieNode();
             basedAbieNode.setReleaseId(releaseId);
-            basedAbieNode.setAccId(acc.getBasedAccId());
+
+            acc = repository.getAccByCurrentAccId(acc.getBasedAccId(), releaseId);
+            basedAbieNode.setAccId(acc.getAccId());
             return hasChild(basedAbieNode);
         }
 
@@ -304,7 +312,6 @@ public class BieEditService {
 
     public boolean hasChild(BieEditAsbiepNode asbiepNode) {
         BieEditAbieNode abieNode = new BieEditAbieNode();
-        abieNode.setTopLevelAbieId(asbiepNode.getTopLevelAbieId());
         abieNode.setReleaseId(asbiepNode.getReleaseId());
         abieNode.setAccId(asbiepNode.getAccId());
 
@@ -334,31 +341,81 @@ public class BieEditService {
         return detail.append(abieNode);
     }
 
-    public BieEditAbieBbiepDetail getBbiepDetail(BieEditBbiepNode bbiepNode) {
+    public BieEditAsbiepNodeDetail getAsbiepDetail(BieEditAsbiepNode asbiepNode) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("asbie_id", asbiepNode.getAsbieId())
+                .addValue("asbiep_id", asbiepNode.getAsbiepId())
+                .addValue("ascc_id", asbiepNode.getAsccId())
+                .addValue("asccp_id", asbiepNode.getAsccpId())
+                .addValue("acc_id", asbiepNode.getAccId());
+
+        BieEditAsbiepNodeDetail detail;
+        if (asbiepNode.getAsbieId() > 0L) {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
+                            "is_nillable as nillable, definition as context_definition " +
+                            "FROM asbie WHERE asbie_id = :asbie_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditAsbiepNodeDetail.class));
+        } else {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                            "FROM ascc WHERE ascc_id = :ascc_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditAsbiepNodeDetail.class));
+        }
+
+        if (asbiepNode.getAsbiepId() > 0L) {
+            jdbcTemplate.query("SELECT biz_term, remark FROM asbiep WHERE asbiep_id = :asbiep_id",
+                    parameterSource, rs -> {
+                        detail.setBizTerm(rs.getString("biz_term"));
+                        detail.setRemark(rs.getString("remark"));
+                    });
+        }
+
+        jdbcTemplate.query("SELECT definition FROM ascc WHERE ascc_id = :ascc_id", parameterSource, rs -> {
+            detail.setAssociationDefinition(rs.getString("definition"));
+        });
+
+        jdbcTemplate.query("SELECT definition FROM asccp WHERE asccp_id = :asccp_id", parameterSource, rs -> {
+            detail.setComponentDefinition(rs.getString("definition"));
+        });
+
+        jdbcTemplate.query("SELECT definition FROM acc WHERE acc_id = :acc_id", parameterSource, rs -> {
+            detail.setTypeDefinition(rs.getString("definition"));
+        });
+
+        return detail.append(asbiepNode);
+    }
+
+    public BieEditBbiepNodeDetail getBbiepDetail(BieEditBbiepNode bbiepNode) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("bbie_id", bbiepNode.getBbieId())
                 .addValue("bbiep_id", bbiepNode.getBbiepId())
                 .addValue("bcc_id", bbiepNode.getBccId())
                 .addValue("bccp_id", bbiepNode.getBccpId());
 
-        BieEditAbieBbiepDetail detail;
+        BieEditBbiepNodeDetail detail;
         if (bbiepNode.getBbieId() > 0L) {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, " +
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
                             "is_nillable as nillable, fixed_value, definition as context_definition " +
                             "FROM bbie WHERE bbie_id = :bbie_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditAbieBbiepDetail.class));
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbiepNodeDetail.class));
         } else {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
                             "FROM bcc WHERE bcc_id = :bcc_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditAbieBbiepDetail.class));
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbiepNodeDetail.class));
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
-            jdbcTemplate.query("SELECT biz_term, remark FROM bbiep WHERE bbiep_id = :bbiep_id",
+            jdbcTemplate.query("SELECT bbiep.biz_term, bbiep.remark, bccp.bdt_id " +
+                            "FROM bbiep JOIN bccp ON bbiep.based_bccp_id = bccp.bccp_id " +
+                            "WHERE bbiep_id = :bbiep_id",
                     parameterSource, rs -> {
                         detail.setBizTerm(rs.getString("biz_term"));
                         detail.setRemark(rs.getString("remark"));
+                        detail.setBdtId(rs.getLong("bdt_id"));
                     });
+        } else {
+            jdbcTemplate.query("SELECT bdt_id FROM bccp WHERE bccp_id = :bccp_id", parameterSource, rs -> {
+                detail.setBdtId(rs.getLong("bdt_id"));
+            });
         }
 
         jdbcTemplate.query("SELECT definition FROM bcc WHERE bcc_id = :bcc_id", parameterSource, rs -> {
@@ -372,4 +429,36 @@ public class BieEditService {
         return detail.append(bbiepNode);
     }
 
+    public BieEditBbieScNodeDetail getBbieScDetail(BieEditBbieScNode bbieScNode) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+                .addValue("bbie_sc_id", bbieScNode.getBbieScId())
+                .addValue("dt_sc_id", bbieScNode.getDtScId());
+
+        BieEditBbieScNodeDetail detail;
+        if (bbieScNode.getBbieScId() > 0L) {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
+                            "default_value, fixed_value, biz_term, remark, definition as context_definition " +
+                            "FROM bbie_sc WHERE bbie_sc_id = :bbie_sc_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbieScNodeDetail.class));
+        } else {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                            "FROM dt_sc WHERE dt_sc_id = :dt_sc_id",
+                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbieScNodeDetail.class));
+        }
+
+        jdbcTemplate.query("SELECT definition FROM dt_sc WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
+            detail.setComponentDefinition(rs.getString("definition"));
+        });
+
+        return detail.append(bbieScNode);
+    }
+
+
+    public BdtPriRestri getBdtPriRestri(long bdtId) {
+        return null;
+    }
+
+    public BdtScPriRestri getBdtScPriRestri(long dtScId) {
+        return null;
+    }
 }
