@@ -1,0 +1,17 @@
+package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.oagi.srt.gateway.http.api.common.data.Trackable;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class BieEditAcc extends Trackable {
+
+    private long accId;
+    private String guid;
+    private int oagisComponentType;
+    private Long basedAccId;
+    private long currentAccId;
+
+}
