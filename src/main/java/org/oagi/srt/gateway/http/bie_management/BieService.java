@@ -3,11 +3,10 @@ package org.oagi.srt.gateway.http.bie_management;
 import org.oagi.srt.gateway.http.cc_management.CcState;
 import org.oagi.srt.gateway.http.cc_management.CcUtility;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.oagi.srt.gateway.http.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ public class BieService {
     private DataSource dataSource;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -42,8 +42,7 @@ public class BieService {
 
     public List<AsccpForBie> getAsccpListForBie(long releaseId) {
         List<AsccpForBie> asccpForBieList =
-                jdbcTemplate.query(GET_ASCCP_LIST_FOR_BIE_STATEMENT,
-                        new BeanPropertyRowMapper(AsccpForBie.class));
+                jdbcTemplate.queryForList(GET_ASCCP_LIST_FOR_BIE_STATEMENT, AsccpForBie.class);
 
         Map<String, List<AsccpForBie>> groupingByGuidAsccpForBieList =
                 asccpForBieList.stream()
@@ -70,15 +69,15 @@ public class BieService {
 
         long userId = sessionService.userId(user);
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("top_level_abie")
                 .usingColumns("owner_user_id", "release_id", "state")
                 .usingGeneratedKeyColumns("top_level_abie_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("owner_user_id", userId);
-        parameterSource.addValue("release_id", releaseId);
-        parameterSource.addValue("state", BieState.Editing.getValue());
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("owner_user_id", userId)
+                .addValue("release_id", releaseId)
+                .addValue("state", BieState.Editing.getValue());
 
         long topLevelAbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
@@ -86,9 +85,9 @@ public class BieService {
         long abieId = createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
         createAsbiep(user, asccpId, abieId, topLevelAbieId);
 
-        parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("abie_id", abieId);
-        parameterSource.addValue("top_level_abie_id", topLevelAbieId);
+        parameterSource = newSqlParameterSource()
+                .addValue("abie_id", abieId)
+                .addValue("top_level_abie_id", topLevelAbieId);
 
         jdbcTemplate.update(UPDATE_ABIE_ID_STATEMENT, parameterSource);
     }
@@ -99,12 +98,12 @@ public class BieService {
                     "FROM acc JOIN asccp ON acc.current_acc_id = asccp.role_of_acc_id WHERE asccp.asccp_id = :asccp_id";
 
     private AccForBie findRoleOfAccByAsccpId(long asccpId, long releaseId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("asccp_id", asccpId);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("asccp_id", asccpId);
 
         List<AccForBie> accForBieList =
-                jdbcTemplate.query(FIND_ROLE_OF_ACC_BY_ASCCP_ID_STATEMENT, parameterSource,
-                        new BeanPropertyRowMapper(AccForBie.class));
+                jdbcTemplate.queryForList(FIND_ROLE_OF_ACC_BY_ASCCP_ID_STATEMENT, parameterSource,
+                        AccForBie.class);
 
         Map<String, List<AccForBie>> groupingByGuidAccForBieList =
                 accForBieList.stream()
@@ -121,26 +120,26 @@ public class BieService {
 
     @Transactional
     public long createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
-        long userId = sessionService.userId(user);
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("asbiep")
                 .usingColumns("guid", "based_asccp_id", "role_of_abie_id",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
                         "owner_top_level_abie_id")
                 .usingGeneratedKeyColumns("asbiep_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("guid", SrtGuid.randomGuid());
-        parameterSource.addValue("based_asccp_id", asccpId);
-        parameterSource.addValue("role_of_abie_id", abieId);
-        parameterSource.addValue("owner_top_level_abie_id", topLevelAbieId);
-
+        long userId = sessionService.userId(user);
         Date timestamp = new Date();
-        parameterSource.addValue("created_by", userId);
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("creation_timestamp", timestamp);
-        parameterSource.addValue("last_update_timestamp", timestamp);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("based_asccp_id", asccpId)
+                .addValue("role_of_abie_id", abieId)
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
 
         long asbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return asbiepId;
@@ -149,8 +148,6 @@ public class BieService {
     @Transactional
     public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
 
-        long userId = sessionService.userId(user);
-
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("abie")
                 .usingColumns("guid", "based_acc_id", "biz_ctx_id",
@@ -158,18 +155,19 @@ public class BieService {
                         "state", "owner_top_level_abie_id")
                 .usingGeneratedKeyColumns("abie_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("guid", SrtGuid.randomGuid());
-        parameterSource.addValue("based_acc_id", basedAccId);
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
-        parameterSource.addValue("state", BieState.Editing.getValue());
-        parameterSource.addValue("owner_top_level_abie_id", topLevelAbieId);
-
+        long userId = sessionService.userId(user);
         Date timestamp = new Date();
-        parameterSource.addValue("created_by", userId);
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("creation_timestamp", timestamp);
-        parameterSource.addValue("last_update_timestamp", timestamp);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("based_acc_id", basedAccId)
+                .addValue("biz_ctx_id", bizCtxId)
+                .addValue("state", BieState.Editing.getValue())
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
 
         long abieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return abieId;
@@ -187,8 +185,7 @@ public class BieService {
                     "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
     public List<BieList> getBieList() {
-        return jdbcTemplate.query(GET_BIE_LIST_STATEMENT,
-                new BeanPropertyRowMapper(BieList.class));
+        return jdbcTemplate.queryForList(GET_BIE_LIST_STATEMENT, BieList.class);
     }
 
     @Transactional
@@ -197,10 +194,10 @@ public class BieService {
             return;
         }
 
-        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 0", rse -> null);
+        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 0");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("owner_top_level_abie_ids", topLevelAbieIds);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("owner_top_level_abie_ids", topLevelAbieIds);
 
         jdbcTemplate.update("DELETE FROM abie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
         jdbcTemplate.update("DELETE FROM asbie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
@@ -210,6 +207,6 @@ public class BieService {
         jdbcTemplate.update("DELETE FROM bbie_sc WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
         jdbcTemplate.update("DELETE FROM top_level_abie WHERE top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
 
-        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1", rse -> null);
+        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1");
     }
 }

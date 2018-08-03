@@ -1,13 +1,11 @@
 package org.oagi.srt.gateway.http.bie_management;
 
 import org.oagi.srt.gateway.http.bie_management.bie_edit.*;
+import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -17,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
+import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,7 +24,7 @@ public class BieEditService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private BieRepository repository;
@@ -39,16 +38,8 @@ public class BieEditService {
                     "WHERE top_level_abie_id = :top_level_abie_id";
 
     public BieEditAbieNode getRootNode(long topLevelAbieId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("top_level_abie_id", topLevelAbieId);
-
-        List<BieEditAbieNode> res = jdbcTemplate.query(GET_ROOT_NODE_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(BieEditAbieNode.class));
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        BieEditAbieNode rootNode = res.get(0);
+        BieEditAbieNode rootNode = jdbcTemplate.queryForObject(GET_ROOT_NODE_STATEMENT, newSqlParameterSource()
+                .addValue("top_level_abie_id", topLevelAbieId), BieEditAbieNode.class);
         rootNode.setHasChild(hasChild(rootNode));
 
         return rootNode;
@@ -332,17 +323,16 @@ public class BieEditService {
      */
 
     public BieEditAbieNodeDetail getAbieDetail(BieEditAbieNode abieNode) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
-                .addValue("abie_id", abieNode.getAbieId());
         BieEditAbieNodeDetail detail =
                 jdbcTemplate.queryForObject("SELECT version, status, remark, biz_term, definition " +
-                                "FROM abie WHERE abie_id = :abie_id", parameterSource,
-                        new BeanPropertyRowMapper<>(BieEditAbieNodeDetail.class));
+                                "FROM abie WHERE abie_id = :abie_id", newSqlParameterSource()
+                                .addValue("abie_id", abieNode.getAbieId()),
+                        BieEditAbieNodeDetail.class);
         return detail.append(abieNode);
     }
 
     public BieEditAsbiepNodeDetail getAsbiepDetail(BieEditAsbiepNode asbiepNode) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("asbie_id", asbiepNode.getAsbieId())
                 .addValue("asbiep_id", asbiepNode.getAsbiepId())
                 .addValue("ascc_id", asbiepNode.getAsccId())
@@ -354,11 +344,11 @@ public class BieEditService {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
                             "is_nillable as nillable, definition as context_definition " +
                             "FROM asbie WHERE asbie_id = :asbie_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditAsbiepNodeDetail.class));
+                    parameterSource, BieEditAsbiepNodeDetail.class);
         } else {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
                             "FROM ascc WHERE ascc_id = :ascc_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditAsbiepNodeDetail.class));
+                    parameterSource, BieEditAsbiepNodeDetail.class);
         }
 
         if (asbiepNode.getAsbiepId() > 0L) {
@@ -385,7 +375,7 @@ public class BieEditService {
     }
 
     public BieEditBbiepNodeDetail getBbiepDetail(BieEditBbiepNode bbiepNode) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("bbie_id", bbiepNode.getBbieId())
                 .addValue("bbiep_id", bbiepNode.getBbiepId())
                 .addValue("bcc_id", bbiepNode.getBccId())
@@ -396,11 +386,11 @@ public class BieEditService {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
                             "is_nillable as nillable, fixed_value, definition as context_definition " +
                             "FROM bbie WHERE bbie_id = :bbie_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbiepNodeDetail.class));
+                    parameterSource, BieEditBbiepNodeDetail.class);
         } else {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
                             "FROM bcc WHERE bcc_id = :bcc_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbiepNodeDetail.class));
+                    parameterSource, BieEditBbiepNodeDetail.class);
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
@@ -430,7 +420,7 @@ public class BieEditService {
     }
 
     public BieEditBbieScNodeDetail getBbieScDetail(BieEditBbieScNode bbieScNode) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource()
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("bbie_sc_id", bbieScNode.getBbieScId())
                 .addValue("dt_sc_id", bbieScNode.getDtScId());
 
@@ -439,11 +429,11 @@ public class BieEditService {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
                             "default_value, fixed_value, biz_term, remark, definition as context_definition " +
                             "FROM bbie_sc WHERE bbie_sc_id = :bbie_sc_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbieScNodeDetail.class));
+                    parameterSource, BieEditBbieScNodeDetail.class);
         } else {
             detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
                             "FROM dt_sc WHERE dt_sc_id = :dt_sc_id",
-                    parameterSource, new BeanPropertyRowMapper<>(BieEditBbieScNodeDetail.class));
+                    parameterSource, BieEditBbieScNodeDetail.class);
         }
 
         jdbcTemplate.query("SELECT definition FROM dt_sc WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {

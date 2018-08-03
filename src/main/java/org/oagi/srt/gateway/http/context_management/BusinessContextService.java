@@ -1,34 +1,30 @@
 package org.oagi.srt.gateway.http.context_management;
 
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.oagi.srt.gateway.http.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.sql.DataSource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
+
 @Service
 @Transactional(readOnly = true)
 public class BusinessContextService {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -37,8 +33,7 @@ public class BusinessContextService {
             "SELECT biz_ctx_id, guid, `name`, last_update_timestamp FROM biz_ctx";
 
     public List<BusinessContext> getBusinessContextList() {
-        return jdbcTemplate.query(GET_BUSINESS_CONTEXT_LIST_STATEMENT,
-                new BeanPropertyRowMapper(BusinessContext.class));
+        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_LIST_STATEMENT, BusinessContext.class);
     }
 
     private String GET_BUSINESS_CONTEXT_STATEMENT =
@@ -46,17 +41,11 @@ public class BusinessContextService {
                     "WHERE biz_ctx_id = :biz_ctx_id";
 
     public BusinessContext getBusinessContext(long bizCtxId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
+        BusinessContext bizCtx =
+                jdbcTemplate.queryForObject(GET_BUSINESS_CONTEXT_STATEMENT,
+                        newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
+                        BusinessContext.class);
 
-        List<BusinessContext> res =
-                jdbcTemplate.query(GET_BUSINESS_CONTEXT_STATEMENT, parameterSource,
-                        new BeanPropertyRowMapper(BusinessContext.class));
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        BusinessContext bizCtx = res.get(0);
         bizCtx.setBizCtxValues(getBusinessContextValuesByBizCtxId(bizCtxId));
         return bizCtx;
     }
@@ -65,26 +54,17 @@ public class BusinessContextService {
             "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx";
 
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return jdbcTemplate.query(GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT,
-                new BeanPropertyRowMapper(SimpleBusinessContext.class));
+        return jdbcTemplate.queryForList(GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT,
+                SimpleBusinessContext.class);
     }
 
     private String GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT =
             "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx WHERE biz_ctx_id = :biz_ctx_id";
 
     public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
-
-        List<SimpleBusinessContext> res =
-                jdbcTemplate.query(GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT, parameterSource,
-                        new BeanPropertyRowMapper(SimpleBusinessContext.class));
-
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        return res.get(0);
+        return jdbcTemplate.queryForObject(GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT,
+                newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
+                SimpleBusinessContext.class);
     }
 
     private String GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT =
@@ -98,11 +78,9 @@ public class BusinessContextService {
                     "WHERE biz_ctx_id = :biz_ctx_id";
 
     public List<BusinessContextValue> getBusinessContextValuesByBizCtxId(long bizCtxId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
-
-        return jdbcTemplate.query(GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(BusinessContextValue.class));
+        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT,
+                newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
+                BusinessContextValue.class);
     }
 
     @Transactional
@@ -111,23 +89,21 @@ public class BusinessContextService {
             bizCtx.setGuid(SrtGuid.randomGuid());
         }
 
-        long userId = sessionService.userId(user);
-
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("biz_ctx")
                 .usingColumns("guid", "name",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp")
                 .usingGeneratedKeyColumns("biz_ctx_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("guid", bizCtx.getGuid());
-        parameterSource.addValue("name", bizCtx.getName());
-
+        long userId = sessionService.userId(user);
         Date timestamp = new Date();
-        parameterSource.addValue("created_by", userId);
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("creation_timestamp", timestamp);
-        parameterSource.addValue("last_update_timestamp", timestamp);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", bizCtx.getGuid())
+                .addValue("name", bizCtx.getName())
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
 
         long bizCtxId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         for (BusinessContextValue bizCtxValue : bizCtx.getBizCtxValues()) {
@@ -137,15 +113,13 @@ public class BusinessContextService {
 
     @Transactional
     public void insert(long bizCtxId, BusinessContextValue bizCtxValue) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("biz_ctx_value")
                 .usingColumns("biz_ctx_id", "ctx_scheme_value_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
-        parameterSource.addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId());
-
-        jdbcInsert.execute(parameterSource);
+        jdbcInsert.execute(newSqlParameterSource()
+                .addValue("biz_ctx_id", bizCtxId)
+                .addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId()));
     }
 
     private String UPDATE_BUSINESS_CONTEXT_STATEMENT =
@@ -153,17 +127,11 @@ public class BusinessContextService {
 
     @Transactional
     public void update(User user, BusinessContext bizCtx) {
-        long userId = sessionService.userId(user);
-
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtx.getBizCtxId());
-        parameterSource.addValue("name", bizCtx.getName());
-
-        Date timestamp = new Date();
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("last_update_timestamp", timestamp);
-
-        jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_STATEMENT, parameterSource);
+        jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_STATEMENT, newSqlParameterSource()
+                .addValue("biz_ctx_id", bizCtx.getBizCtxId())
+                .addValue("name", bizCtx.getName())
+                .addValue("last_updated_by", sessionService.userId(user))
+                .addValue("last_update_timestamp", new Date()));
 
         update(bizCtx.getBizCtxId(), bizCtx.getBizCtxValues());
     }
@@ -173,8 +141,8 @@ public class BusinessContextService {
 
     @Transactional
     public void update(final long bizCtxId, List<BusinessContextValue> bizCtxValues) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("biz_ctx_id", bizCtxId);
 
         List<Long> oldBizCtxValueIds =
                 jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_VALUE_ID_LIST_STATEMENT,
@@ -206,10 +174,10 @@ public class BusinessContextService {
 
     @Transactional
     public void update(long bizCtxId, BusinessContextValue bizCtxValue) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_value_id", bizCtxValue.getBizCtxValueId());
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
-        parameterSource.addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId());
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("biz_ctx_value_id", bizCtxValue.getBizCtxValueId())
+                .addValue("biz_ctx_id", bizCtxId)
+                .addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId());
 
         jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_VALUE_STATEMENT, parameterSource);
     }
@@ -220,9 +188,9 @@ public class BusinessContextService {
 
     @Transactional
     public void delete(long bizCtxId, long bizCtxValueId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_value_id", bizCtxValueId);
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("biz_ctx_value_id", bizCtxValueId)
+                .addValue("biz_ctx_id", bizCtxId);
 
         jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_VALUE_STATEMENT, parameterSource);
     }
@@ -235,8 +203,8 @@ public class BusinessContextService {
 
     @Transactional
     public void delete(long bizCtxId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("biz_ctx_id", bizCtxId);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("biz_ctx_id", bizCtxId);
 
         jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_VALUES_STATEMENT, parameterSource);
         jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_STATEMENT, parameterSource);

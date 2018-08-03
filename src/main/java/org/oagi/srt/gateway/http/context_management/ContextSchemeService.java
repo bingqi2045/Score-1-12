@@ -1,12 +1,10 @@
 package org.oagi.srt.gateway.http.context_management;
 
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.oagi.srt.gateway.http.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
+
 @Service
 @Transactional(readOnly = true)
 public class ContextSchemeService {
@@ -28,7 +28,7 @@ public class ContextSchemeService {
     private DataSource dataSource;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -39,8 +39,7 @@ public class ContextSchemeService {
                     "FROM ctx_scheme JOIN ctx_category ON ctx_scheme.ctx_category_id = ctx_category.ctx_category_id";
 
     public List<ContextScheme> getContextSchemeList() {
-        return jdbcTemplate.query(GET_CONTEXT_SCHEME_LIST_STATEMENT,
-                new BeanPropertyRowMapper(ContextScheme.class));
+        return jdbcTemplate.queryForList(GET_CONTEXT_SCHEME_LIST_STATEMENT, ContextScheme.class);
     }
 
     private String GET_CONTEXT_SCHEME_STATEMENT =
@@ -50,17 +49,9 @@ public class ContextSchemeService {
                     "WHERE ctx_scheme_id = :ctx_scheme_id";
 
     public ContextScheme getContextScheme(long ctxSchemeId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-
-        List<ContextScheme> res =
-                jdbcTemplate.query(GET_CONTEXT_SCHEME_STATEMENT, parameterSource,
-                        new BeanPropertyRowMapper(ContextScheme.class));
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        ContextScheme contextScheme = res.get(0);
+        ContextScheme contextScheme = jdbcTemplate.queryForObject(GET_CONTEXT_SCHEME_STATEMENT,
+                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
+                ContextScheme.class);
         contextScheme.setCtxSchemeValues(getContextSchemeValuesByOwnerCtxSchemeId(ctxSchemeId));
         return contextScheme;
     }
@@ -70,11 +61,9 @@ public class ContextSchemeService {
                     "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
 
     public List<ContextSchemeValue> getContextSchemeValuesByOwnerCtxSchemeId(long ctxSchemeId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-
-        return jdbcTemplate.query(GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(ContextSchemeValue.class));
+        return jdbcTemplate.queryForList(GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT,
+                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
+                ContextSchemeValue.class);
     }
 
     private String GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT =
@@ -82,11 +71,9 @@ public class ContextSchemeService {
                     "FROM ctx_scheme WHERE ctx_category_id = :ctx_category_id";
 
     public List<SimpleContextScheme> getSimpleContextSchemeList(long ctxCategoryId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_category_id", ctxCategoryId);
-
-        return jdbcTemplate.query(GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(SimpleContextScheme.class));
+        return jdbcTemplate.queryForList(GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT,
+                newSqlParameterSource().addValue("ctx_category_id", ctxCategoryId),
+                SimpleContextScheme.class);
     }
 
     private String GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT =
@@ -94,11 +81,9 @@ public class ContextSchemeService {
                     "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
 
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-
-        return jdbcTemplate.query(GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT, parameterSource,
-                new BeanPropertyRowMapper(SimpleContextSchemeValue.class));
+        return jdbcTemplate.queryForList(GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT,
+                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
+                SimpleContextSchemeValue.class);
     }
 
     @Transactional
@@ -107,7 +92,6 @@ public class ContextSchemeService {
             contextScheme.setGuid(SrtGuid.randomGuid());
         }
 
-        long userId = sessionService.userId(user);
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("ctx_scheme")
@@ -116,20 +100,21 @@ public class ContextSchemeService {
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp")
                 .usingGeneratedKeyColumns("ctx_scheme_id");
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("guid", contextScheme.getGuid());
-        parameterSource.addValue("scheme_name", contextScheme.getSchemeName());
-        parameterSource.addValue("ctx_category_id", contextScheme.getCtxCategoryId());
-        parameterSource.addValue("scheme_id", contextScheme.getSchemeId());
-        parameterSource.addValue("scheme_agency_id", contextScheme.getSchemeAgencyId());
-        parameterSource.addValue("scheme_version_id", contextScheme.getSchemeVersionId());
-        parameterSource.addValue("description", contextScheme.getDescription());
-
+        long userId = sessionService.userId(user);
         Date timestamp = new Date();
-        parameterSource.addValue("created_by", userId);
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("creation_timestamp", timestamp);
-        parameterSource.addValue("last_update_timestamp", timestamp);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", contextScheme.getGuid())
+                .addValue("scheme_name", contextScheme.getSchemeName())
+                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                .addValue("scheme_id", contextScheme.getSchemeId())
+                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                .addValue("description", contextScheme.getDescription())
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
 
         long ctxSchemeId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         for (ContextSchemeValue contextSchemeValue : contextScheme.getCtxSchemeValues()) {
@@ -147,13 +132,11 @@ public class ContextSchemeService {
             contextSchemeValue.setGuid(SrtGuid.randomGuid());
         }
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("guid", contextSchemeValue.getGuid());
-        parameterSource.addValue("value", contextSchemeValue.getValue());
-        parameterSource.addValue("meaning", contextSchemeValue.getMeaning());
-        parameterSource.addValue("owner_ctx_scheme_id", ctxSchemeId);
-
-        jdbcInsert.execute(parameterSource);
+        jdbcInsert.execute(newSqlParameterSource()
+                .addValue("guid", contextSchemeValue.getGuid())
+                .addValue("value", contextSchemeValue.getValue())
+                .addValue("meaning", contextSchemeValue.getMeaning())
+                .addValue("owner_ctx_scheme_id", ctxSchemeId));
     }
 
     private String UPDATE_CONTEXT_SCHEME_STATEMENT =
@@ -164,22 +147,16 @@ public class ContextSchemeService {
 
     @Transactional
     public void update(User user, ContextScheme contextScheme) {
-        long userId = sessionService.userId(user);
-
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", contextScheme.getCtxSchemeId());
-        parameterSource.addValue("scheme_name", contextScheme.getSchemeName());
-        parameterSource.addValue("ctx_category_id", contextScheme.getCtxCategoryId());
-        parameterSource.addValue("scheme_id", contextScheme.getSchemeId());
-        parameterSource.addValue("scheme_agency_id", contextScheme.getSchemeAgencyId());
-        parameterSource.addValue("scheme_version_id", contextScheme.getSchemeVersionId());
-        parameterSource.addValue("description", contextScheme.getDescription());
-
-        Date timestamp = new Date();
-        parameterSource.addValue("last_updated_by", userId);
-        parameterSource.addValue("last_update_timestamp", timestamp);
-
-        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, parameterSource);
+        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, newSqlParameterSource()
+                .addValue("ctx_scheme_id", contextScheme.getCtxSchemeId())
+                .addValue("scheme_name", contextScheme.getSchemeName())
+                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                .addValue("scheme_id", contextScheme.getSchemeId())
+                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                .addValue("description", contextScheme.getDescription())
+                .addValue("last_updated_by", sessionService.userId(user))
+                .addValue("last_update_timestamp", new Date()));
 
         update(contextScheme.getCtxSchemeId(), contextScheme.getCtxSchemeValues());
     }
@@ -189,12 +166,10 @@ public class ContextSchemeService {
 
     @Transactional
     public void update(final long ctxSchemeId, List<ContextSchemeValue> contextSchemeValues) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-
-        List<Long> oldCtxSchemeValueIds =
-                jdbcTemplate.queryForList(GET_CONTEXT_SCHEME_VALUE_ID_LIST_STATEMENT,
-                        parameterSource, Long.class);
+        List<Long> oldCtxSchemeValueIds = jdbcTemplate.queryForList(
+                GET_CONTEXT_SCHEME_VALUE_ID_LIST_STATEMENT,
+                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
+                Long.class);
 
         Map<Long, ContextSchemeValue> newCtxSchemeValues = contextSchemeValues.stream()
                 .filter(e -> e.getCtxSchemeValueId() > 0L)
@@ -222,13 +197,11 @@ public class ContextSchemeService {
 
     @Transactional
     public void update(long ctxSchemeId, ContextSchemeValue contextSchemeValue) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_value_id", contextSchemeValue.getCtxSchemeValueId());
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-        parameterSource.addValue("value", contextSchemeValue.getValue());
-        parameterSource.addValue("meaning", contextSchemeValue.getMeaning());
-
-        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_VALUE_STATEMENT, parameterSource);
+        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_VALUE_STATEMENT, newSqlParameterSource()
+                .addValue("ctx_scheme_value_id", contextSchemeValue.getCtxSchemeValueId())
+                .addValue("ctx_scheme_id", ctxSchemeId)
+                .addValue("value", contextSchemeValue.getValue())
+                .addValue("meaning", contextSchemeValue.getMeaning()));
     }
 
     private String DELETE_CONTEXT_SCHEME_VALUE_STATEMENT =
@@ -237,11 +210,9 @@ public class ContextSchemeService {
 
     @Transactional
     public void delete(long ctxSchemeId, long ctxSchemeValueId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_value_id", ctxSchemeValueId);
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
-
-        jdbcTemplate.update(DELETE_CONTEXT_SCHEME_VALUE_STATEMENT, parameterSource);
+        jdbcTemplate.update(DELETE_CONTEXT_SCHEME_VALUE_STATEMENT, newSqlParameterSource()
+                .addValue("ctx_scheme_value_id", ctxSchemeValueId)
+                .addValue("ctx_scheme_id", ctxSchemeId));
     }
 
     private String DELETE_CONTEXT_SCHEME_VALUES_STATEMENT =
@@ -252,8 +223,8 @@ public class ContextSchemeService {
 
     @Transactional
     public void delete(long ctxSchemeId) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("ctx_scheme_id", ctxSchemeId);
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("ctx_scheme_id", ctxSchemeId);
 
         jdbcTemplate.update(DELETE_CONTEXT_SCHEME_VALUES_STATEMENT, parameterSource);
         jdbcTemplate.update(DELETE_CONTEXT_SCHEME_STATEMENT, parameterSource);
