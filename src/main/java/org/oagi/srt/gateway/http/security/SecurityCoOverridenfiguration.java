@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -53,7 +54,6 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
                         HttpMethod.DELETE.name())
         );
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addExposedHeader("X-Auth-Token");
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
@@ -79,7 +79,8 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
                 .cors()
                 .configurationSource(corsConfigurationSource())
                 .and()
-                .csrf().disable()
+                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and()
                 .rememberMe().rememberMeServices(rememberMeServices());
     }
 }
