@@ -3,9 +3,10 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
 import lombok.Data;
 
 @Data
-public class Xbt {
+public class BieEditXbt {
 
-    private long xbtId;
+    private long priRestriId;
+    private boolean isDefault;
     private String xbtName;
 
 }

@@ -74,8 +74,9 @@ public class BieEditController {
 
     @RequestMapping(value = "/profile_bie/node/bbiep/pri_restri", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BdtPriRestri getBdtPriRestri(@RequestParam("bdt_id") long bdtId) {
-        return service.getBdtPriRestri(bdtId);
+    public BieEditBdtPriRestri getBdtPriRestri(@RequestParam("data") String data) {
+        BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
+        return service.getBdtPriRestri(bbiepNode);
     }
 
     @RequestMapping(value = "/profile_bie/node/bbie_sc/detail", method = RequestMethod.GET,
@@ -87,8 +88,9 @@ public class BieEditController {
 
     @RequestMapping(value = "/profile_bie/node/bbie_sc/pri_restri", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BdtScPriRestri getBdtScPriRestri(@RequestParam("dt_sc_id") long dtScId) {
-        return service.getBdtScPriRestri(dtScId);
+    public BieEditBdtScPriRestri getBdtScPriRestri(@RequestParam("data") String data) {
+        BieEditBbieScNode bbieScNode = convertValue(data, BieEditBbieScNode.class);
+        return service.getBdtScPriRestri(bbieScNode);
     }
 
     private <T> T convertValue(String data, Class<T> clazz) {

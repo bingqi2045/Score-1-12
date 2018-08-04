@@ -6,15 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class BdtScPriRestri {
+public class BieEditBdtScPriRestri {
 
     private long bdtScId;;
     private long bdtScPriRestriId;
     private long codeListId;
     private long agencyIdListId;
 
-    private List<Xbt> xbtList = Collections.emptyList();
-    private List<CodeList> codeLists = Collections.emptyList();
-    private List<AgencyIdList> agencyIdLists = Collections.emptyList();
+    private List<BieEditXbt> xbtList = Collections.emptyList();
+    private List<BieEditCodeList> codeLists = Collections.emptyList();
+    private List<BieEditAgencyIdList> agencyIdLists = Collections.emptyList();
 
 }

@@ -2,6 +2,12 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAgencyIdList;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditCodeList;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
+
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -13,7 +19,13 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode {
     private String fixedValue;
     private String bizTerm;
     private String remark;
+
     private long bdtId;
+    private String bdtDen;
+
+    private Long bdtPriRestriId;
+    private Long codeListId;
+    private Long agencyIdListId;
 
     private String contextDefinition;
     private String associationDefinition;
