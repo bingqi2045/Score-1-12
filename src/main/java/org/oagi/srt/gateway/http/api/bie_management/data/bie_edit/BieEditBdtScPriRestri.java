@@ -8,11 +8,6 @@ import java.util.List;
 @Data
 public class BieEditBdtScPriRestri {
 
-    private long bdtScId;;
-    private long bdtScPriRestriId;
-    private long codeListId;
-    private long agencyIdListId;
-
     private List<BieEditXbt> xbtList = Collections.emptyList();
     private List<BieEditCodeList> codeLists = Collections.emptyList();
     private List<BieEditAgencyIdList> agencyIdLists = Collections.emptyList();

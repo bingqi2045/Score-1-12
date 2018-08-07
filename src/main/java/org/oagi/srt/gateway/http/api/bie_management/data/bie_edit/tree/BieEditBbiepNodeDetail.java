@@ -27,6 +27,10 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode {
     private Long codeListId;
     private Long agencyIdListId;
 
+    private List<BieEditXbt> xbtList = Collections.emptyList();
+    private List<BieEditCodeList> codeLists = Collections.emptyList();
+    private List<BieEditAgencyIdList> agencyIdLists = Collections.emptyList();
+
     private String contextDefinition;
     private String associationDefinition;
     private String componentDefinition;

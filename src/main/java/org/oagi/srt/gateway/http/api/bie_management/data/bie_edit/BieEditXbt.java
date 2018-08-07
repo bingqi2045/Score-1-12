@@ -7,6 +7,7 @@ public class BieEditXbt {
 
     private long priRestriId;
     private boolean isDefault;
+    private long xbtId;
     private String xbtName;
 
 }

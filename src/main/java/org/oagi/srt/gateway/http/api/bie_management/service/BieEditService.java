@@ -431,6 +431,11 @@ public class BieEditService {
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
+        BieEditBdtPriRestri bdtPriRestri = getBdtPriRestri(bbiepNode);
+        detail.setXbtList(bdtPriRestri.getXbtList());
+        detail.setCodeLists(bdtPriRestri.getCodeLists());
+        detail.setAgencyIdLists(bdtPriRestri.getAgencyIdLists());
+
         jdbcTemplate.query("SELECT definition FROM bcc WHERE bcc_id = :bcc_id", parameterSource, rs -> {
             detail.setAssociationDefinition(rs.getString("definition"));
         });
@@ -442,6 +447,75 @@ public class BieEditService {
         return detail.append(bbiepNode);
     }
 
+    public BieEditBbieScNodeDetail getBbieScDetail(BieEditBbieScNode bbieScNode) {
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("bbie_sc_id", bbieScNode.getBbieScId())
+                .addValue("dt_sc_id", bbieScNode.getDtScId());
+
+        BieEditBbieScNodeDetail detail;
+        if (bbieScNode.getBbieScId() > 0L) {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
+                            "dt_sc_pri_restri_id, code_list_id, agency_id_list_id, " +
+                            "default_value, fixed_value, biz_term, remark, definition as context_definition " +
+                            "FROM bbie_sc WHERE bbie_sc_id = :bbie_sc_id",
+                    parameterSource, BieEditBbieScNodeDetail.class);
+        } else {
+            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                            "FROM dt_sc WHERE dt_sc_id = :dt_sc_id",
+                    parameterSource, BieEditBbieScNodeDetail.class);
+        }
+
+        if (bbieScNode.getBbieScId() == 0L) {
+            long defaultDtScPriRestriId = jdbcTemplate.queryForObject(
+                    "SELECT bdt_sc_pri_restri_id FROM bdt_sc_pri_restri " +
+                            "WHERE bdt_sc_id = :bdt_sc_id AND is_default = :is_default", newSqlParameterSource()
+                            .addValue("bdt_sc_id", bbieScNode.getDtScId())
+                            .addValue("is_default", true), Long.class);
+            detail.setDtScPriRestriId(defaultDtScPriRestriId);
+        }
+
+        BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
+        detail.setXbtList(bdtScPriRestri.getXbtList());
+        detail.setCodeLists(bdtScPriRestri.getCodeLists());
+        detail.setAgencyIdLists(bdtScPriRestri.getAgencyIdLists());
+
+        jdbcTemplate.query("SELECT definition FROM dt_sc WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
+            detail.setComponentDefinition(rs.getString("definition"));
+        });
+
+        return detail.append(bbieScNode);
+    }
+
+    private List<BieEditCodeList> getAllCodeLists() {
+        return jdbcTemplate.queryForList("SELECT code_list_id, name as code_list_name FROM code_list",
+                BieEditCodeList.class);
+    }
+
+    private List<BieEditAgencyIdList> getAllAgencyIdLists() {
+        return jdbcTemplate.queryForList("SELECT agency_id_list_id, name as agency_id_list_name FROM agency_id_list",
+                BieEditAgencyIdList.class);
+    }
+
+    private List<BieEditCodeList> getBieEditCodeListByBasedCodeListIds(List<Long> basedCodeListIds) {
+        if (basedCodeListIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
+                "SELECT code_list_id, based_code_list_id, name as code_list_name " +
+                        "FROM code_list WHERE code_list_id IN (:based_code_list_ids)", newSqlParameterSource()
+                        .addValue("based_code_list_ids", basedCodeListIds), BieEditCodeList.class);
+
+        List<BieEditCodeList> basedCodeLists =
+                getBieEditCodeListByBasedCodeListIds(
+                        bieEditCodeLists.stream().filter(e -> e.getBasedCodeListId() != null)
+                                .map(e -> e.getBasedCodeListId()).collect(Collectors.toList())
+                );
+
+        bieEditCodeLists.addAll(0, basedCodeLists);
+        return bieEditCodeLists;
+    }
+
     public BieEditBdtPriRestri getBdtPriRestri(BieEditBbiepNode bbiepNode) {
         long bdtId = bbiepNode.getBdtId();
 
@@ -449,19 +523,19 @@ public class BieEditService {
                 .addValue("bdt_id", bdtId);
 
         List<BieEditXbt> bieEditXbtList = jdbcTemplate.queryForList(
-                "SELECT b.bdt_pri_restri_id AS pri_restri_id, is_default, x.name as xbt_name " +
+                "SELECT b.bdt_pri_restri_id AS pri_restri_id, is_default, x.xbt_id, x.name as xbt_name " +
                         "FROM bdt_pri_restri b JOIN cdt_awd_pri_xps_type_map c " +
                         "ON b.cdt_awd_pri_xps_type_map_id = c.cdt_awd_pri_xps_type_map_id " +
                         "JOIN xbt x ON c.xbt_id = x.xbt_id WHERE bdt_id = :bdt_id", parameterSource, BieEditXbt.class);
 
         List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT c.code_list_id, c.based_code_list_id, b.is_default, c.name " +
+                "SELECT c.code_list_id, c.based_code_list_id, b.is_default, c.name as code_list_name " +
                         "FROM bdt_pri_restri b JOIN code_list c ON b.code_list_id = c.code_list_id " +
                         "WHERE bdt_id = :bdt_id", newSqlParameterSource()
                         .addValue("bdt_id", bdtId), BieEditCodeList.class);
 
         List<BieEditAgencyIdList> bieEditAgencyIdLists = jdbcTemplate.queryForList(
-                "SELECT a.agency_id_list_id, b.is_default, a.name " +
+                "SELECT a.agency_id_list_id, b.is_default, a.name as agency_id_list_name " +
                         "FROM bdt_pri_restri b JOIN agency_id_list a ON b.agency_id_list_id = a.agency_id_list_id " +
                         "WHERE bdt_id = :bdt_id", parameterSource, BieEditAgencyIdList.class);
 
@@ -487,61 +561,47 @@ public class BieEditService {
         return bdtPriRestri;
     }
 
-    public BieEditBbieScNodeDetail getBbieScDetail(BieEditBbieScNode bbieScNode) {
+    public BieEditBdtScPriRestri getBdtScPriRestri(BieEditBbieScNode bbieScNode) {
+        long dtScId = bbieScNode.getDtScId();
+
         MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("bbie_sc_id", bbieScNode.getBbieScId())
-                .addValue("dt_sc_id", bbieScNode.getDtScId());
+                .addValue("bdt_sc_id", dtScId);
 
-        BieEditBbieScNodeDetail detail;
-        if (bbieScNode.getBbieScId() > 0L) {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
-                            "default_value, fixed_value, biz_term, remark, definition as context_definition " +
-                            "FROM bbie_sc WHERE bbie_sc_id = :bbie_sc_id",
-                    parameterSource, BieEditBbieScNodeDetail.class);
-        } else {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                            "FROM dt_sc WHERE dt_sc_id = :dt_sc_id",
-                    parameterSource, BieEditBbieScNodeDetail.class);
-        }
-
-        jdbcTemplate.query("SELECT definition FROM dt_sc WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
-            detail.setComponentDefinition(rs.getString("definition"));
-        });
-
-        return detail.append(bbieScNode);
-    }
-
-    private List<BieEditCodeList> getAllCodeLists() {
-        return jdbcTemplate.queryForList("SELECT code_list_id, name FROM code_list",
-                BieEditCodeList.class);
-    }
-
-    private List<BieEditAgencyIdList> getAllAgencyIdLists() {
-        return jdbcTemplate.queryForList("SELECT agency_id_list_id, name FROM agency_id_list",
-                BieEditAgencyIdList.class);
-    }
-
-    private List<BieEditCodeList> getBieEditCodeListByBasedCodeListIds(List<Long> basedCodeListIds) {
-        if (basedCodeListIds.isEmpty()) {
-            return Collections.emptyList();
-        }
+        List<BieEditXbt> bieEditXbtList = jdbcTemplate.queryForList(
+                "SELECT b.bdt_sc_pri_restri_id AS pri_restri_id, is_default, x.xbt_id, x.name as xbt_name " +
+                        "FROM bdt_sc_pri_restri b JOIN cdt_sc_awd_pri_xps_type_map c " +
+                        "ON b.cdt_sc_awd_pri_xps_type_map_id = c.cdt_sc_awd_pri_xps_type_map_id " +
+                        "JOIN xbt x ON c.xbt_id = x.xbt_id WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditXbt.class);
 
         List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT code_list_id, based_code_list_id, name " +
-                        "FROM code_list WHERE based_code_list_id IN (:based_code_list_ids)", newSqlParameterSource()
-                        .addValue("based_code_list_ids", basedCodeListIds), BieEditCodeList.class);
+                "SELECT c.code_list_id, c.based_code_list_id, b.is_default, c.name as code_list_name " +
+                        "FROM bdt_sc_pri_restri b JOIN code_list c ON b.code_list_id = c.code_list_id " +
+                        "WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditCodeList.class);
 
-        List<BieEditCodeList> basedCodeLists =
-                getBieEditCodeListByBasedCodeListIds(
+        List<BieEditAgencyIdList> bieEditAgencyIdLists = jdbcTemplate.queryForList(
+                "SELECT a.agency_id_list_id, b.is_default, a.name as agency_id_list_name " +
+                        "FROM bdt_sc_pri_restri b JOIN agency_id_list a ON b.agency_id_list_id = a.agency_id_list_id " +
+                        "WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditAgencyIdList.class);
+
+        if (bieEditCodeLists.isEmpty() && bieEditAgencyIdLists.isEmpty()) {
+            bieEditCodeLists = getAllCodeLists();
+            bieEditAgencyIdLists = getAllAgencyIdLists();
+        } else {
+            if (!bieEditCodeLists.isEmpty()) {
+                List<BieEditCodeList> basedCodeLists = getBieEditCodeListByBasedCodeListIds(
                         bieEditCodeLists.stream().filter(e -> e.getBasedCodeListId() != null)
                                 .map(e -> e.getBasedCodeListId()).collect(Collectors.toList())
                 );
+                bieEditCodeLists.addAll(0, basedCodeLists);
+            }
+        }
 
-        bieEditCodeLists.addAll(0, basedCodeLists);
-        return bieEditCodeLists;
-    }
+        BieEditBdtScPriRestri bdtScPriRestri = new BieEditBdtScPriRestri();
 
-    public BieEditBdtScPriRestri getBdtScPriRestri(BieEditBbieScNode bbieScNode) {
-        return null;
+        bdtScPriRestri.setXbtList(bieEditXbtList);
+        bdtScPriRestri.setCodeLists(bieEditCodeLists);
+        bdtScPriRestri.setAgencyIdLists(bieEditAgencyIdLists);
+
+        return bdtScPriRestri;
     }
 }
