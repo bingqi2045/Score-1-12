@@ -38,7 +38,8 @@ public class BieEditService {
     private BdtRepository bdtRepository;
 
     private String GET_ROOT_NODE_STATEMENT =
-            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, asccp.property_term as name, " +
+            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, top_level_abie.state as top_level_abie_state, " +
+                    "asccp.guid, asccp.property_term as name, " +
                     "asbiep.asbiep_id, asbiep.based_asccp_id as asccp_id, abie.abie_id, abie.based_acc_id as acc_id " +
                     "FROM top_level_abie JOIN abie ON top_level_abie.abie_id = abie.abie_id " +
                     "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
@@ -92,6 +93,7 @@ public class BieEditService {
             bbieScNode.setTopLevelAbieId(bbiepNode.getTopLevelAbieId());
             bbieScNode.setReleaseId(bbiepNode.getReleaseId());
             bbieScNode.setType("bbie_sc");
+            bbieScNode.setGuid(bdtSc.getGuid());
             bbieScNode.setName(bdtSc.getName());
 
             if (bbieId > 0L) {
@@ -214,6 +216,7 @@ public class BieEditService {
         asbiepNode.setTopLevelAbieId(topLevelAbie.getTopLevelAbieId());
         asbiepNode.setReleaseId(topLevelAbie.getReleaseId());
         asbiepNode.setType("asbiep");
+        asbiepNode.setGuid(ascc.getGuid());
 
         if (asbie != null) {
             asbiepNode.setAsbieId(asbie.getAsbieId());
@@ -250,6 +253,7 @@ public class BieEditService {
         bbiepNode.setTopLevelAbieId(topLevelAbie.getTopLevelAbieId());
         bbiepNode.setReleaseId(topLevelAbie.getReleaseId());
         bbiepNode.setType("bbiep");
+        bbiepNode.setGuid(bcc.getGuid());
         bbiepNode.setAttribute(bcc.isAttribute());
 
         if (bbie != null) {

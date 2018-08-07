@@ -26,6 +26,7 @@ public class BieEditAbieNodeDetail extends BieEditAbieNode {
         this.setAbieId(abieNode.getAbieId());
         this.setAsccpId(abieNode.getAsccpId());
         this.setAccId(abieNode.getAccId());
+        this.setTopLevelAbieState(abieNode.getTopLevelAbieState());
 
         return this;
     }

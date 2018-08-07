@@ -1,8 +1,10 @@
 package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBdtPriRestri;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBdtScPriRestri;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,10 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BieEditNode getRootNode(@PathVariable("id") long topLevelAbieId) {
-        return service.getRootNode(topLevelAbieId);
+        BieEditAbieNode rootNode = service.getRootNode(topLevelAbieId);
+        String state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState()).toString();
+        rootNode.setTopLevelAbieState(state);
+        return rootNode;
     }
 
     @RequestMapping(value = "/profile_bie/node/abie/children", method = RequestMethod.GET,

@@ -9,6 +9,7 @@ public class BieEditNode {
     private long releaseId;
 
     private String type;
+    private String guid;
     private String name;
     private boolean used;
     private boolean hasChild;
