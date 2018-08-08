@@ -14,11 +14,6 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 public class SessionConfiguration {
 
     @Bean
-    public LettuceConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory();
-    }
-
-    @Bean
     public HttpSessionIdResolver httpSessionIdResolver() {
         CookieHttpSessionIdResolver httpSessionIdResolver = new CookieHttpSessionIdResolver();
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
