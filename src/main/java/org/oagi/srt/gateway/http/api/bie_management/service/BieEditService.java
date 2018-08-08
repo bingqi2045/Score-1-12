@@ -233,7 +233,7 @@ public class BieEditService {
             long fromAbieId, long currentAccId,
             BieEditNode node) {
         List<BieEditNode> children = new ArrayList();
-        TopLevelAbie topLevelAbie = repository.getTopLevelAbie(node.getTopLevelAbieId());
+        TopLevelAbie topLevelAbie = repository.getTopLevelAbieById(node.getTopLevelAbieId());
 
         List<SeqKeySupportable> assocList = _getAssociationsByCurrentAccId(currentAccId, node.getReleaseId());
         int seqKey = 1;

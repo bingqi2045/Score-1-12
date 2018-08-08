@@ -214,7 +214,7 @@ public class BieRepository {
                 .filter(e -> e != null).collect(Collectors.toList());
     }
 
-    public TopLevelAbie getTopLevelAbie(long topLevelAbieId) {
+    public TopLevelAbie getTopLevelAbieById(long topLevelAbieId) {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("top_level_abie_id", topLevelAbieId);
 
@@ -222,6 +222,27 @@ public class BieRepository {
                 "SELECT top_level_abie_id, abie_id, owner_user_id, release_id, state " +
                         "FROM top_level_abie WHERE top_level_abie_id = :top_level_abie_id",
                 parameterSource, TopLevelAbie.class);
+    }
+
+    public long createTopLevelAbie(long userId, long releaseId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("top_level_abie")
+                .usingColumns("owner_user_id", "release_id", "state")
+                .usingGeneratedKeyColumns("top_level_abie_id");
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("owner_user_id", userId)
+                .addValue("release_id", releaseId)
+                .addValue("state", BieState.Editing.getValue());
+
+        return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+    }
+
+    public void updateAbieIdOnTopLevelAbie(long abieId, long topLevelAbieId) {
+        jdbcTemplate.update("UPDATE top_level_abie SET abie_id = :abie_id " +
+                "WHERE top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
+                .addValue("abie_id", abieId)
+                .addValue("top_level_abie_id", topLevelAbieId));
     }
 
     public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {

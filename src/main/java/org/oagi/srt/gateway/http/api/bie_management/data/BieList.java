@@ -12,7 +12,11 @@ public class BieList {
     private String releaseNum;
     private long bizCtxId;
     private String bizCtxName;
+
     private String owner;
+    private long ownerUserId;
+    private String access;
+
     private String version;
     private String status;
     private Date lastUpdateTimestamp;

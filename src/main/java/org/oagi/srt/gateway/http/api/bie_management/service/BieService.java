@@ -3,11 +3,11 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,39 +55,23 @@ public class BieService {
     }
 
 
-    private String UPDATE_ABIE_ID_STATEMENT =
-            "UPDATE top_level_abie SET abie_id = :abie_id WHERE top_level_abie_id = :top_level_abie_id";
-
     @Transactional
     public BieCreateResponse createBie(User user, BieCreateRequest request) {
 
-        long asccpId = request.getAsccpId();
+        long userId = sessionService.userId(user);
         long releaseId = request.getReleaseId();
+        long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId);
+
+        long asccpId = request.getAsccpId();
+        AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
+
+        long basedAccId = accForBie.getAccId();
         long bizCtxId = request.getBizCtxId();
 
-        long userId = sessionService.userId(user);
-
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("top_level_abie")
-                .usingColumns("owner_user_id", "release_id", "state")
-                .usingGeneratedKeyColumns("top_level_abie_id");
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("owner_user_id", userId)
-                .addValue("release_id", releaseId)
-                .addValue("state", BieState.Editing.getValue());
-
-        long topLevelAbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
-        long basedAccId = accForBie.getAccId();
         long abieId = repository.createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
 
-        parameterSource = newSqlParameterSource()
-                .addValue("abie_id", abieId)
-                .addValue("top_level_abie_id", topLevelAbieId);
-
-        jdbcTemplate.update(UPDATE_ABIE_ID_STATEMENT, parameterSource);
+        repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
 
         BieCreateResponse response = new BieCreateResponse();
         response.setTopLevelAbieId(topLevelAbieId);
@@ -122,7 +106,8 @@ public class BieService {
 
     private String GET_BIE_LIST_STATEMENT =
             "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
-                    "app_user.login_id as owner, abie.version, abie.`status`, abie.last_update_timestamp, top_level_abie.state " +
+                    "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
+                    "abie.last_update_timestamp, top_level_abie.state " +
                     "FROM top_level_abie JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
                     "AND abie.abie_id = top_level_abie.abie_id " +
                     "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
@@ -131,8 +116,43 @@ public class BieService {
                     "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
                     "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
-    public List<BieList> getBieList() {
-        return jdbcTemplate.queryForList(GET_BIE_LIST_STATEMENT, BieList.class);
+    public List<BieList> getBieList(User user) {
+        List<BieList> bieLists = jdbcTemplate.queryForList(GET_BIE_LIST_STATEMENT, BieList.class);
+        long userId = sessionService.userId(user);
+
+        bieLists.stream().forEach(e -> {
+            BieState state = BieState.valueOf((Integer) e.getState());
+            e.setState(state.name());
+
+            AccessPrivilege accessPrivilege = AccessPrivilege.Prohibited;
+            switch (state) {
+                case Editing:
+                    if (userId == e.getOwnerUserId()) {
+                        accessPrivilege = AccessPrivilege.CanEdit;
+                    } else {
+                        accessPrivilege = AccessPrivilege.Prohibited;
+                    }
+                    break;
+
+                case Candidate:
+                    if (userId == e.getOwnerUserId()) {
+                        accessPrivilege = AccessPrivilege.CanEdit;
+                    } else {
+                        accessPrivilege = AccessPrivilege.CanView;
+                    }
+
+                    break;
+
+                case Published:
+                    accessPrivilege = AccessPrivilege.CanView;
+                    break;
+
+            }
+
+            e.setAccess(accessPrivilege.name());
+        });
+
+        return bieLists;
     }
 
     @Transactional
@@ -156,4 +176,5 @@ public class BieService {
 
         jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1");
     }
+
 }
