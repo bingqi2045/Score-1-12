@@ -698,82 +698,157 @@ public class BieEditService {
     }
 
     private void updateAsbiepNodeDetail(User user, BieEditAsbiepNodeDetail asbiepNodeDetail) {
-        jdbcTemplate.update("UPDATE asbie SET cardinality_min = :cardinality_min, " +
-                "cardinality_max = :cardinality_max, " +
-                "is_used = :used, is_nillable = :nillable, definition = :definition, " +
-                "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
-                "WHERE asbie_id = :asbie_id", newSqlParameterSource()
-                .addValue("cardinality_min", asbiepNodeDetail.getCardinalityMin())
-                .addValue("cardinality_max", asbiepNodeDetail.getCardinalityMax())
-                .addValue("used", asbiepNodeDetail.isUsed())
-                .addValue("nillable", asbiepNodeDetail.isNillable())
+        List<String> assignmentList = new ArrayList();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource();
+        if (asbiepNodeDetail.getCardinalityMin() != null) {
+            parameterSource.addValue("cardinality_min", asbiepNodeDetail.getCardinalityMin());
+            assignmentList.add("cardinality_min = :cardinality_min");
+        }
+        if (asbiepNodeDetail.getCardinalityMax() != null) {
+            parameterSource.addValue("cardinality_max", asbiepNodeDetail.getCardinalityMax());
+            assignmentList.add("cardinality_max = :cardinality_max");
+        }
+        if (asbiepNodeDetail.getNillable() != null) {
+            parameterSource.addValue("nillable", asbiepNodeDetail.getNillable());
+            assignmentList.add("is_nillable = :nillable");
+        }
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        parameterSource.addValue("used", asbiepNodeDetail.isUsed())
                 .addValue("definition", emptyToNull(asbiepNodeDetail.getContextDefinition()))
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date())
-                .addValue("asbie_id", asbiepNodeDetail.getAsbieId()));
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp)
+                .addValue("asbie_id", asbiepNodeDetail.getAsbieId());
+
+        assignmentList.add("is_used = :used");
+        assignmentList.add("definition = :definition");
+        assignmentList.add("last_updated_by = :last_updated_by");
+        assignmentList.add("last_update_timestamp = :last_update_timestamp");
+
+        jdbcTemplate.update("UPDATE asbie SET " +
+                assignmentList.stream().collect(Collectors.joining(", ")) +
+                " WHERE asbie_id = :asbie_id", parameterSource);
 
         jdbcTemplate.update("UPDATE asbiep SET biz_term = :biz_term, remark = :remark, " +
                 "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
                 "WHERE asbiep_id = :asbiep_id", newSqlParameterSource()
                 .addValue("biz_term", emptyToNull(asbiepNodeDetail.getBizTerm()))
                 .addValue("remark", emptyToNull(asbiepNodeDetail.getRemark()))
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date())
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp)
                 .addValue("asbiep_id", asbiepNodeDetail.getAsbiepId()));
     }
 
     private void updateBbiepNodeDetail(User user, BieEditBbiepNodeDetail bbiepNodeDetail) {
-        jdbcTemplate.update("UPDATE bbie SET cardinality_min = :cardinality_min, " +
-                "cardinality_max = :cardinality_max, " +
-                "bdt_pri_restri_id = :bdt_pri_restri_id, " +
-                "code_list_id = :code_list_id, agency_id_list_id = :agency_id_list_id, " +
-                "is_used = :used, is_nillable = :nillable, fixed_value = :fixed_value, definition = :definition, " +
-                "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
-                "WHERE bbie_id = :bbie_id", newSqlParameterSource()
-                .addValue("cardinality_min", bbiepNodeDetail.getCardinalityMin())
-                .addValue("cardinality_max", bbiepNodeDetail.getCardinalityMax())
-                .addValue("bdt_pri_restri_id", bbiepNodeDetail.getBdtPriRestriId())
-                .addValue("code_list_id", bbiepNodeDetail.getCodeListId())
-                .addValue("agency_id_list_id", bbiepNodeDetail.getAgencyIdListId())
-                .addValue("used", bbiepNodeDetail.isUsed())
-                .addValue("nillable", bbiepNodeDetail.isNillable())
+        List<String> assignmentList = new ArrayList();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource();
+        if (bbiepNodeDetail.getCardinalityMin() != null) {
+            parameterSource.addValue("cardinality_min", bbiepNodeDetail.getCardinalityMin());
+            assignmentList.add("cardinality_min = :cardinality_min");
+        }
+        if (bbiepNodeDetail.getCardinalityMax() != null) {
+            parameterSource.addValue("cardinality_max", bbiepNodeDetail.getCardinalityMax());
+            assignmentList.add("cardinality_max = :cardinality_max");
+        }
+        if (bbiepNodeDetail.getNillable() != null) {
+            parameterSource.addValue("nillable", bbiepNodeDetail.getNillable());
+            assignmentList.add("is_nillable = :nillable");
+        }
+
+        Long bdtPriRestriId = bbiepNodeDetail.getBdtPriRestriId();
+        Long codeListId = bbiepNodeDetail.getCodeListId();
+        Long agencyIdListId = bbiepNodeDetail.getAgencyIdListId();
+
+        if (bdtPriRestriId != null || codeListId != null || agencyIdListId != null) {
+            parameterSource.addValue("bdt_pri_restri_id", bdtPriRestriId);
+            assignmentList.add("bdt_pri_restri_id = :bdt_pri_restri_id");
+
+            parameterSource.addValue("code_list_id", codeListId);
+            assignmentList.add("code_list_id = :code_list_id");
+
+            parameterSource.addValue("agency_id_list_id", agencyIdListId);
+            assignmentList.add("agency_id_list_id = :agency_id_list_id");
+        }
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        parameterSource.addValue("used", bbiepNodeDetail.isUsed())
                 .addValue("fixed_value", emptyToNull(bbiepNodeDetail.getFixedValue()))
                 .addValue("definition", emptyToNull(bbiepNodeDetail.getContextDefinition()))
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date())
-                .addValue("bbie_id", bbiepNodeDetail.getBbieId()));
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp)
+                .addValue("bbie_id", bbiepNodeDetail.getBbieId());
+
+        assignmentList.add("is_used = :used");
+        assignmentList.add("fixed_value = :fixed_value");
+        assignmentList.add("definition = :definition");
+        assignmentList.add("last_updated_by = :last_updated_by");
+        assignmentList.add("last_update_timestamp = :last_update_timestamp");
+
+        jdbcTemplate.update("UPDATE bbie SET " +
+                assignmentList.stream().collect(Collectors.joining(", ")) +
+                " WHERE bbie_id = :bbie_id", parameterSource);
 
         jdbcTemplate.update("UPDATE bbiep SET biz_term = :biz_term, remark = :remark, " +
                 "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
                 "WHERE bbiep_id = :bbiep_id", newSqlParameterSource()
                 .addValue("biz_term", emptyToNull(bbiepNodeDetail.getBizTerm()))
                 .addValue("remark", emptyToNull(bbiepNodeDetail.getRemark()))
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date())
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp)
                 .addValue("bbiep_id", bbiepNodeDetail.getBbiepId()));
     }
 
     private void updateBbieScNodeDetail(User user, BieEditBbieScNodeDetail bbieScNodeDetail) {
-        jdbcTemplate.update("UPDATE bbie_sc_id SET cardinality_min = :cardinality_min, " +
-                "cardinality_max = :cardinality_max, " +
-                "dt_sc_pri_restri_id = :dt_sc_pri_restri_id, " +
-                "code_list_id = :code_list_id, agency_id_list_id = :agency_id_list_id, " +
-                "is_used = :used, default_value = :default_value, fixed_value = :fixed_value, " +
-                "definition = :definition, " +
-                "biz_term = :biz_term, remark = :remark " +
-                "WHERE bbie_sc_id = :bbie_sc_id", newSqlParameterSource()
-                .addValue("cardinality_min", bbieScNodeDetail.getCardinalityMin())
-                .addValue("cardinality_max", bbieScNodeDetail.getCardinalityMax())
-                .addValue("dt_sc_pri_restri_id", bbieScNodeDetail.getDtScPriRestriId())
-                .addValue("code_list_id", bbieScNodeDetail.getCodeListId())
-                .addValue("agency_id_list_id", bbieScNodeDetail.getAgencyIdListId())
-                .addValue("used", bbieScNodeDetail.isUsed())
+        List<String> assignmentList = new ArrayList();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource();
+        if (bbieScNodeDetail.getCardinalityMin() != null) {
+            parameterSource.addValue("cardinality_min", bbieScNodeDetail.getCardinalityMin());
+            assignmentList.add("cardinality_min = :cardinality_min");
+        }
+        if (bbieScNodeDetail.getCardinalityMax() != null) {
+            parameterSource.addValue("cardinality_max", bbieScNodeDetail.getCardinalityMax());
+            assignmentList.add("cardinality_max = :cardinality_max");
+        }
+
+        Long dtScPriRestriId = bbieScNodeDetail.getDtScPriRestriId();
+        Long codeListId = bbieScNodeDetail.getCodeListId();
+        Long agencyIdListId = bbieScNodeDetail.getAgencyIdListId();
+        if (dtScPriRestriId != null || codeListId != null || agencyIdListId != null) {
+            parameterSource.addValue("dt_sc_pri_restri_id", dtScPriRestriId);
+            assignmentList.add("dt_sc_pri_restri_id = :dt_sc_pri_restri_id");
+
+            parameterSource.addValue("code_list_id", codeListId);
+            assignmentList.add("code_list_id = :code_list_id");
+
+            parameterSource.addValue("agency_id_list_id", agencyIdListId);
+            assignmentList.add("agency_id_list_id = :agency_id_list_id");
+        }
+
+        parameterSource.addValue("used", bbieScNodeDetail.isUsed())
                 .addValue("default_value", emptyToNull(bbieScNodeDetail.getDefaultValue()))
                 .addValue("fixed_value", emptyToNull(bbieScNodeDetail.getFixedValue()))
                 .addValue("definition", emptyToNull(bbieScNodeDetail.getContextDefinition()))
                 .addValue("biz_term", emptyToNull(bbieScNodeDetail.getBizTerm()))
                 .addValue("remark", emptyToNull(bbieScNodeDetail.getRemark()))
-                .addValue("bbie_sc_id", bbieScNodeDetail.getBbieScId()));
+                .addValue("bbie_sc_id", bbieScNodeDetail.getBbieScId());
+
+        assignmentList.add("is_used = :used");
+        assignmentList.add("default_value = :default_value");
+        assignmentList.add("fixed_value = :fixed_value");
+        assignmentList.add("definition = :definition");
+        assignmentList.add("biz_term = :biz_term");
+        assignmentList.add("remark = :remark");
+
+        jdbcTemplate.update("UPDATE bbie_sc SET " +
+                assignmentList.stream().collect(Collectors.joining(", ")) +
+                " WHERE bbie_sc_id = :bbie_sc_id", parameterSource);
     }
 
     private String emptyToNull(String str) {

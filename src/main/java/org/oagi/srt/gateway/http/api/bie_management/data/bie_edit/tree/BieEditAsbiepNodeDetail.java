@@ -7,9 +7,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode {
 
-    private int cardinalityMin;
-    private int cardinalityMax;
-    private boolean nillable;
+    private Integer cardinalityMin;
+    private Integer cardinalityMax;
+    private Boolean nillable;
     private String bizTerm;
     private String remark;
 

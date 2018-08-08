@@ -59,7 +59,7 @@ public class BieService {
             "UPDATE top_level_abie SET abie_id = :abie_id WHERE top_level_abie_id = :top_level_abie_id";
 
     @Transactional
-    public void createBie(User user, BieCreateRequest request) {
+    public BieCreateResponse createBie(User user, BieCreateRequest request) {
 
         long asccpId = request.getAsccpId();
         long releaseId = request.getReleaseId();
@@ -88,6 +88,10 @@ public class BieService {
                 .addValue("top_level_abie_id", topLevelAbieId);
 
         jdbcTemplate.update(UPDATE_ABIE_ID_STATEMENT, parameterSource);
+
+        BieCreateResponse response = new BieCreateResponse();
+        response.setTopLevelAbieId(topLevelAbieId);
+        return response;
     }
 
 
@@ -120,6 +124,7 @@ public class BieService {
             "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
                     "app_user.login_id as owner, abie.version, abie.`status`, abie.last_update_timestamp, top_level_abie.state " +
                     "FROM top_level_abie JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
+                    "AND abie.abie_id = top_level_abie.abie_id " +
                     "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
                     "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
                     "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +

@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import org.oagi.srt.gateway.http.api.bie_management.data.AsccpForBie;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateRequest;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.module_management.service.ModuleService;
 import org.oagi.srt.gateway.http.api.module_management.data.SimpleModule;
@@ -54,12 +55,12 @@ public class BieCreateController {
 
     @RequestMapping(value = "/profile_bie/create", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity create(
+    public BieCreateResponse create(
             @AuthenticationPrincipal User user,
             @RequestBody BieCreateRequest bieCreateRequest) {
 
-        bieService.createBie(user, bieCreateRequest);
-        return ResponseEntity.noContent().build();
+        BieCreateResponse response = bieService.createBie(user, bieCreateRequest);
+        return response;
     }
 
 }

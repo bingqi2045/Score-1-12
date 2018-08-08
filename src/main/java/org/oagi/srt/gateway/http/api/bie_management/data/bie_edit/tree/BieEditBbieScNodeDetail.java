@@ -13,8 +13,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBbieScNodeDetail extends BieEditBbieScNode {
 
-    private int cardinalityMin;
-    private int cardinalityMax;
+    private Integer cardinalityMin;
+    private Integer cardinalityMax;
     private String fixedValue;
     private String defaultValue;
     private String bizTerm;
