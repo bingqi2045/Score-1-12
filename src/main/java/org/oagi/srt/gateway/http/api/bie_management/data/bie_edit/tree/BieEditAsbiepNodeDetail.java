@@ -23,6 +23,7 @@ public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode {
         this.setTopLevelAbieId(asbiepNode.getTopLevelAbieId());
         this.setReleaseId(asbiepNode.getReleaseId());
         this.setType(asbiepNode.getType());
+        this.setGuid(asbiepNode.getGuid());
         this.setName(asbiepNode.getName());
         this.setUsed(asbiepNode.isUsed());
         this.setHasChild(asbiepNode.isHasChild());

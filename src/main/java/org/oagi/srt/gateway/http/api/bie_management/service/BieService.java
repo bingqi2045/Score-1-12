@@ -3,10 +3,8 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -14,8 +12,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,13 +24,13 @@ import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSo
 public class BieService {
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private BieRepository repository;
 
 
     private String GET_ASCCP_LIST_FOR_BIE_STATEMENT =
@@ -84,8 +80,8 @@ public class BieService {
         long topLevelAbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
         long basedAccId = accForBie.getAccId();
-        long abieId = createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
-        createAsbiep(user, asccpId, abieId, topLevelAbieId);
+        long abieId = repository.createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
+        repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
 
         parameterSource = newSqlParameterSource()
                 .addValue("abie_id", abieId)
@@ -117,62 +113,6 @@ public class BieService {
                 .collect(Collectors.toList());
 
         return (accForBieList.isEmpty()) ? null : accForBieList.get(0);
-    }
-
-
-    @Transactional
-    public long createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
-
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("asbiep")
-                .usingColumns("guid", "based_asccp_id", "role_of_abie_id",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("asbiep_id");
-
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("based_asccp_id", asccpId)
-                .addValue("role_of_abie_id", abieId)
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long asbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return asbiepId;
-    }
-
-    @Transactional
-    public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
-
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("abie")
-                .usingColumns("guid", "based_acc_id", "biz_ctx_id",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "state", "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("abie_id");
-
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("based_acc_id", basedAccId)
-                .addValue("biz_ctx_id", bizCtxId)
-                .addValue("state", BieState.Editing.getValue())
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long abieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return abieId;
     }
 
 

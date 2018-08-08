@@ -2,13 +2,15 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBdtPriRestri;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBdtScPriRestri;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -28,74 +30,77 @@ public class BieEditController {
 
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditNode getRootNode(@PathVariable("id") long topLevelAbieId) {
-        BieEditAbieNode rootNode = service.getRootNode(topLevelAbieId);
+    public BieEditNode getRootNode(@AuthenticationPrincipal User user,
+                                   @PathVariable("id") long topLevelAbieId) {
+        BieEditAbieNode rootNode = service.getRootNode(user, topLevelAbieId);
         String state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState()).toString();
         rootNode.setTopLevelAbieState(state);
         return rootNode;
     }
 
-    @RequestMapping(value = "/profile_bie/node/abie/children", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getAbieChildren(@RequestParam("data") String data) {
+    public void updateState(@AuthenticationPrincipal User user,
+                            @PathVariable("id") long topLevelAbieId,
+                            @RequestBody Map<String, Object> body) {
+        BieState state = BieState.valueOf((String) body.get("state"));
+        service.updateState(user, topLevelAbieId, state);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/children/abie", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieEditNode> getAbieChildren(@AuthenticationPrincipal User user,
+                                             @RequestParam("data") String data) {
         BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
-        return service.getAbieChildren(abieNode);
+        return service.getAbieChildren(user, abieNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/abie/detail", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/detail/abie", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditAbieNodeDetail getAbieDetail(@RequestParam("data") String data) {
+    public BieEditAbieNodeDetail getAbieDetail(@AuthenticationPrincipal User user,
+                                               @RequestParam("data") String data) {
         BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
-        return service.getAbieDetail(abieNode);
+        return service.getAbieDetail(user, abieNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/asbiep/children", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/children/asbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getAsbiepChildren(@RequestParam("data") String data) {
+    public List<BieEditNode> getAsbiepChildren(@AuthenticationPrincipal User user,
+                                               @RequestParam("data") String data) {
         BieEditAsbiepNode asbiepNode = convertValue(data, BieEditAsbiepNode.class);
-        return service.getAsbiepChildren(asbiepNode);
+        return service.getAsbiepChildren(user, asbiepNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/asbiep/detail", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/detail/asbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditAsbiepNodeDetail getAsbiepDetail(@RequestParam("data") String data) {
+    public BieEditAsbiepNodeDetail getAsbiepDetail(@AuthenticationPrincipal User user,
+                                                   @RequestParam("data") String data) {
         BieEditAsbiepNode asbiepNode = convertValue(data, BieEditAsbiepNode.class);
-        return service.getAsbiepDetail(asbiepNode);
+        return service.getAsbiepDetail(user, asbiepNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/bbiep/children", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/children/bbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieEditNode> getBbiepChildren(@RequestParam("data") String data) {
+    public List<BieEditNode> getBbiepChildren(@AuthenticationPrincipal User user,
+                                              @RequestParam("data") String data) {
         BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
-        return service.getBbiepChildren(bbiepNode);
+        return service.getBbiepChildren(user, bbiepNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/bbiep/detail", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/detail/bbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditBbiepNodeDetail getBbiepDetail(@RequestParam("data") String data) {
+    public BieEditBbiepNodeDetail getBbiepDetail(@AuthenticationPrincipal User user,
+                                                 @RequestParam("data") String data) {
         BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
-        return service.getBbiepDetail(bbiepNode);
+        return service.getBbiepDetail(user, bbiepNode);
     }
 
-    @RequestMapping(value = "/profile_bie/node/bbiep/pri_restri", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/node/detail/bbie_sc", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditBdtPriRestri getBdtPriRestri(@RequestParam("data") String data) {
-        BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
-        return service.getBdtPriRestri(bbiepNode);
-    }
-
-    @RequestMapping(value = "/profile_bie/node/bbie_sc/detail", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditBbieScNodeDetail getBbieScDetail(@RequestParam("data") String data) {
+    public BieEditBbieScNodeDetail getBbieScDetail(@AuthenticationPrincipal User user,
+                                                   @RequestParam("data") String data) {
         BieEditBbieScNode bbieScNode = convertValue(data, BieEditBbieScNode.class);
-        return service.getBbieScDetail(bbieScNode);
-    }
-
-    @RequestMapping(value = "/profile_bie/node/bbie_sc/pri_restri", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BieEditBdtScPriRestri getBdtScPriRestri(@RequestParam("data") String data) {
-        BieEditBbieScNode bbieScNode = convertValue(data, BieEditBbieScNode.class);
-        return service.getBdtScPriRestri(bbieScNode);
+        return service.getBbieScDetail(user, bbieScNode);
     }
 
     private <T> T convertValue(String data, Class<T> clazz) {
@@ -105,6 +110,14 @@ public class BieEditController {
             params.put(keyValue[0], keyValue[1]);
         });
         return objectMapper.convertValue(params, clazz);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/detail", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BieEditUpdateResponse updateDetails(@AuthenticationPrincipal User user,
+                                               @RequestBody BieEditUpdateRequest request) {
+
+        return service.updateDetails(user, request);
     }
 
 }

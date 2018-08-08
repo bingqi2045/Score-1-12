@@ -36,6 +36,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode {
         this.setTopLevelAbieId(bbieScNode.getTopLevelAbieId());
         this.setReleaseId(bbieScNode.getReleaseId());
         this.setType(bbieScNode.getType());
+        this.setGuid(bbieScNode.getGuid());
         this.setName(bbieScNode.getName());
         this.setUsed(bbieScNode.isUsed());
         this.setHasChild(bbieScNode.isHasChild());

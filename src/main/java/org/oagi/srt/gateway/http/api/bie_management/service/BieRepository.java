@@ -1,17 +1,22 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
-import org.oagi.srt.gateway.http.api.common.data.OagisComponentType;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
+import org.oagi.srt.gateway.http.api.common.data.OagisComponentType;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +28,9 @@ public class BieRepository {
 
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private SessionService sessionService;
 
     public OagisComponentType getOagisComponentTypeByAccId(long accId) {
         int oagisComponentType = jdbcTemplate.queryForObject(
@@ -215,4 +223,213 @@ public class BieRepository {
                         "FROM top_level_abie WHERE top_level_abie_id = :top_level_abie_id",
                 parameterSource, TopLevelAbie.class);
     }
+
+    public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
+        return jdbcTemplate.queryForObject("SELECT biz_ctx_id FROM abie JOIN top_level_abie " +
+                "ON abie.abie_id = top_level_abie.abie_id " +
+                "WHERE top_level_abie.top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
+                .addValue("top_level_abie_id", topLevelAbieId), Long.class);
+    }
+
+    public long createAbie(User user, long basedAccId, long topLevelAbieId) {
+        return createAbie(user, basedAccId, getBizCtxIdByTopLevelAbieId(topLevelAbieId), topLevelAbieId);
+    }
+
+    public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("abie")
+                .usingColumns("guid", "based_acc_id", "biz_ctx_id",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
+                        "state", "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("abie_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("based_acc_id", basedAccId)
+                .addValue("biz_ctx_id", bizCtxId)
+                .addValue("state", BieState.Editing.getValue())
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long abieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return abieId;
+    }
+
+    public long createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("asbiep")
+                .usingColumns("guid", "based_asccp_id", "role_of_abie_id",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
+                        "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("asbiep_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("based_asccp_id", asccpId)
+                .addValue("role_of_abie_id", abieId)
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long asbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return asbiepId;
+    }
+
+    public long createAsbie(User user, long fromAbieId, long toAsbiepId, long basedAsccId,
+                            int seqKey, long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("asbie")
+                .usingColumns("guid", "from_abie_id", "to_asbiep_id", "based_ascc_id",
+                        "cardinality_min", "cardinality_max", "is_nillable",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
+                        "seq_key", "is_used", "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("asbie_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        Cardinality cardinality =
+                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                        "FROM ascc WHERE ascc_id = :ascc_id", newSqlParameterSource()
+                        .addValue("ascc_id", basedAsccId), Cardinality.class);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("from_abie_id", fromAbieId)
+                .addValue("to_asbiep_id", toAsbiepId)
+                .addValue("based_ascc_id", basedAsccId)
+                .addValue("cardinality_min", cardinality.getCardinalityMin())
+                .addValue("cardinality_max", cardinality.getCardinalityMax())
+                .addValue("is_nillable", false)
+                .addValue("seq_key", seqKey)
+                .addValue("is_used", false)
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long asbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return asbieId;
+    }
+
+    public long createBbiep(User user, long basedBccpId, long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("bbiep")
+                .usingColumns("guid", "based_bccp_id",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
+                        "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("bbiep_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("based_bccp_id", basedBccpId)
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long bbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return bbiepId;
+    }
+
+    public long createBbie(User user, long fromAbieId,
+                           long toBbiepId, long basedBccId, long bdtId,
+                           int seqKey, long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("bbie")
+                .usingColumns("guid", "from_abie_id", "to_bbiep_id", "based_bcc_id", "bdt_pri_restri_id",
+                        "cardinality_min", "cardinality_max", "is_nillable", "is_null",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
+                        "seq_key", "is_used", "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("bbie_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        Cardinality cardinality =
+                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                        "FROM bcc WHERE bcc_id = :bcc_id", newSqlParameterSource()
+                        .addValue("bcc_id", basedBccId), Cardinality.class);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("from_abie_id", fromAbieId)
+                .addValue("to_bbiep_id", toBbiepId)
+                .addValue("based_bcc_id", basedBccId)
+                .addValue("bdt_pri_restri_id", getDefaultBdtPriRestriIdByBdtId(bdtId))
+                .addValue("cardinality_min", cardinality.getCardinalityMin())
+                .addValue("cardinality_max", cardinality.getCardinalityMax())
+                .addValue("is_nillable", false)
+                .addValue("is_null", false)
+                .addValue("seq_key", seqKey)
+                .addValue("is_used", false)
+                .addValue("owner_top_level_abie_id", topLevelAbieId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long bbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return bbieId;
+    }
+
+    public long getDefaultBdtPriRestriIdByBdtId(long bdtId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT bdt_pri_restri_id FROM bdt_pri_restri " +
+                        "WHERE bdt_id = :bdt_id AND is_default = :is_default", newSqlParameterSource()
+                        .addValue("bdt_id", bdtId)
+                        .addValue("is_default", true), Long.class);
+    }
+
+    public long createBbieSc(User user, long bbieId, long dtScId,
+                             long topLevelAbieId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("bbie_sc")
+                .usingColumns("guid", "bbie_id", "dt_sc_id", "dt_sc_pri_restri_id",
+                        "cardinality_min", "cardinality_max", "is_used", "owner_top_level_abie_id")
+                .usingGeneratedKeyColumns("bbie_sc_id");
+
+        Cardinality cardinality =
+                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
+                        "FROM dt_sc WHERE dt_sc_id = :dt_sc_id", newSqlParameterSource()
+                        .addValue("dt_sc_id", dtScId), Cardinality.class);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("bbie_id", bbieId)
+                .addValue("dt_sc_id", dtScId)
+                .addValue("dt_sc_pri_restri_id", getDefaultDtScPriRestriIdByDtScId(dtScId))
+                .addValue("cardinality_min", cardinality.getCardinalityMin())
+                .addValue("cardinality_max", cardinality.getCardinalityMax())
+                .addValue("is_used", false)
+                .addValue("owner_top_level_abie_id", topLevelAbieId);
+
+        long bbieScId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return bbieScId;
+    }
+
+    public long getDefaultDtScPriRestriIdByDtScId(long dtScId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT bdt_sc_pri_restri_id FROM bdt_sc_pri_restri " +
+                        "WHERE bdt_sc_id = :bdt_sc_id AND is_default = :is_default", newSqlParameterSource()
+                        .addValue("bdt_sc_id", dtScId)
+                        .addValue("is_default", true), Long.class);
+    }
+
 }
