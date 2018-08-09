@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -245,6 +246,14 @@ public class BieRepository {
                 .addValue("top_level_abie_id", topLevelAbieId));
     }
 
+    public void updateAbieIdAndStateOnTopLevelAbie(long abieId, long topLevelAbieId, BieState state) {
+        jdbcTemplate.update("UPDATE top_level_abie SET abie_id = :abie_id, state = :state " +
+                "WHERE top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
+                .addValue("abie_id", abieId)
+                .addValue("state", state.getValue())
+                .addValue("top_level_abie_id", topLevelAbieId));
+    }
+
     public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
         return jdbcTemplate.queryForObject("SELECT biz_ctx_id FROM abie JOIN top_level_abie " +
                 "ON abie.abie_id = top_level_abie.abie_id " +
@@ -451,6 +460,18 @@ public class BieRepository {
                         "WHERE bdt_sc_id = :bdt_sc_id AND is_default = :is_default", newSqlParameterSource()
                         .addValue("bdt_sc_id", dtScId)
                         .addValue("is_default", true), Long.class);
+    }
+
+    public void updateState(long topLevelAbieId, BieState state) {
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("state", state.getValue())
+                .addValue("top_level_abie_id", topLevelAbieId);
+
+        jdbcTemplate.update("UPDATE top_level_abie SET state = :state " +
+                "WHERE top_level_abie_id = :top_level_abie_id", parameterSource);
+
+        jdbcTemplate.update("UPDATE abie SET state = :state " +
+                "WHERE owner_top_level_abie_id = :top_level_abie_id", parameterSource);
     }
 
 }

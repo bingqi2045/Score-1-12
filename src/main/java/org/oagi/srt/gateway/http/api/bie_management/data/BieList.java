@@ -10,7 +10,7 @@ public class BieList {
     private long topLevelAbieId;
     private String propertyTerm;
     private String releaseNum;
-    private long bizCtxId;
+    private Long bizCtxId;
     private String bizCtxName;
 
     private String owner;

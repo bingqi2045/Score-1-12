@@ -6,7 +6,7 @@ import lombok.Data;
 public class TopLevelAbie {
 
     private long topLevelAbieId;
-    private long abieId;
+    private Long abieId;
     private long ownerUserId;
     private long releaseId;
     private int state;

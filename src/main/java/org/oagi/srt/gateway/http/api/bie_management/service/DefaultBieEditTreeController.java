@@ -756,15 +756,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Override
     public void updateState(BieState state) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("state", state.getValue())
-                .addValue("top_level_abie_id", topLevelAbie.getTopLevelAbieId());
-
-        jdbcTemplate.update("UPDATE top_level_abie SET state = :state " +
-                "WHERE top_level_abie_id = :top_level_abie_id", parameterSource);
-
-        jdbcTemplate.update("UPDATE abie SET state = :state " +
-                "WHERE owner_top_level_abie_id = :top_level_abie_id", parameterSource);
+        repository.updateState(topLevelAbie.getTopLevelAbieId(), state);
     }
 
     @Override

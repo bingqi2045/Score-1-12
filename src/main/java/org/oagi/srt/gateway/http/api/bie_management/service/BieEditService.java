@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;

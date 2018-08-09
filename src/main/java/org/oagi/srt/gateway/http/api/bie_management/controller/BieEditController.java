@@ -24,10 +24,6 @@ public class BieEditController {
     @Autowired
     private ObjectMapper objectMapper;
 
-//    public BieTree getBieTree(@PathVariable("id") long topLevelAbieId) {
-//        return service.getBieTree(topLevelAbieId);
-//    }
-
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BieEditNode getRootNode(@AuthenticationPrincipal User user,
