@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditBbieScNodeDetail extends BieEditBbieScNode {
+public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEditNodeDetail {
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;

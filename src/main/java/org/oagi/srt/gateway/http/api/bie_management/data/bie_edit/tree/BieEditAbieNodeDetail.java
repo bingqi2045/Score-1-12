@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditAbieNodeDetail extends BieEditAbieNode {
+public class BieEditAbieNodeDetail extends BieEditAbieNode implements BieEditNodeDetail {
     
     private String version;
     private String status;

@@ -18,7 +18,7 @@ public class BieCopyController {
     @Autowired
     private BieCopyService service;
 
-    @RequestMapping(value = "/profile_bie/create", method = RequestMethod.PUT,
+    @RequestMapping(value = "/profile_bie/copy", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BieCopyResponse create(
             @AuthenticationPrincipal User user,

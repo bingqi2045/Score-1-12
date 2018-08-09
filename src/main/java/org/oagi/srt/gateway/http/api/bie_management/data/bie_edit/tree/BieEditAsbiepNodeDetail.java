@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode {
+public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode implements BieEditNodeDetail {
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;

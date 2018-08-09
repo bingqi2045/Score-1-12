@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/oagi?useSSL=false
+    url: jdbc:mysql://docker:3306/oagi?useSSL=false
     username: oagi
     password: oagi
 
@@ -15,7 +15,7 @@ spring:
     type: redis
 
   redis:
-    host: localhost
+    host: docker
     port: 6379
 
 
