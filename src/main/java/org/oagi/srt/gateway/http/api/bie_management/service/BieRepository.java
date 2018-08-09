@@ -224,7 +224,7 @@ public class BieRepository {
                 parameterSource, TopLevelAbie.class);
     }
 
-    public long createTopLevelAbie(long userId, long releaseId) {
+    public long createTopLevelAbie(long userId, long releaseId, BieState state) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("top_level_abie")
                 .usingColumns("owner_user_id", "release_id", "state")
@@ -233,7 +233,7 @@ public class BieRepository {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("owner_user_id", userId)
                 .addValue("release_id", releaseId)
-                .addValue("state", BieState.Editing.getValue());
+                .addValue("state", state.getValue());
 
         return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
     }

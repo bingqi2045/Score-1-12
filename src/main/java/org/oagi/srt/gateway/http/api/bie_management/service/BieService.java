@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Editing;
+import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -60,7 +62,7 @@ public class BieService {
 
         long userId = sessionService.userId(user);
         long releaseId = request.getReleaseId();
-        long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId);
+        long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId, Editing);
 
         long asccpId = request.getAsccpId();
         AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
@@ -124,27 +126,31 @@ public class BieService {
             BieState state = BieState.valueOf((Integer) e.getState());
             e.setState(state.name());
 
-            AccessPrivilege accessPrivilege = AccessPrivilege.Prohibited;
+            AccessPrivilege accessPrivilege = Prohibited;
             switch (state) {
+                case Instantiating:
+                    accessPrivilege = Unprepared;
+                    break;
+
                 case Editing:
                     if (userId == e.getOwnerUserId()) {
-                        accessPrivilege = AccessPrivilege.CanEdit;
+                        accessPrivilege = CanEdit;
                     } else {
-                        accessPrivilege = AccessPrivilege.Prohibited;
+                        accessPrivilege = Prohibited;
                     }
                     break;
 
                 case Candidate:
                     if (userId == e.getOwnerUserId()) {
-                        accessPrivilege = AccessPrivilege.CanEdit;
+                        accessPrivilege = CanEdit;
                     } else {
-                        accessPrivilege = AccessPrivilege.CanView;
+                        accessPrivilege = CanView;
                     }
 
                     break;
 
                 case Published:
-                    accessPrivilege = AccessPrivilege.CanView;
+                    accessPrivilege = CanView;
                     break;
 
             }

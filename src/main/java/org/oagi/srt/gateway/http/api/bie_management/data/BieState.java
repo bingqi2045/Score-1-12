@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.data;
 
 public enum BieState {
 
+    Instantiating(1),
     Editing(2),
     Candidate(3),
     Published(4);
