@@ -2,30 +2,20 @@ package org.oagi.srt.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Date;
 
 @Data
-public class CodeList {
+public class CodeListForList {
 
     private long codeListId;
     private String codeListName;
     private Long basedCodeListId;
     private String basedCodeListName;
-
     private long agencyId;
     private String agencyIdName;
     private String versionId;
-
-    private String guid;
-    private String listId;
-    private String definition;
-    private String definitionSource;
-    private String remark;
-
+    private Date lastUpdateTimestamp;
     private boolean extensible;
     private String state;
-
-    private List<CodeListValue> codeListValues = Collections.emptyList();
 
 }

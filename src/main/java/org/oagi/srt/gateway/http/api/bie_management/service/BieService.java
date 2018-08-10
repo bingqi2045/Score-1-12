@@ -129,7 +129,7 @@ public class BieService {
 
             AccessPrivilege accessPrivilege = Prohibited;
             switch (state) {
-                case Instantiating:
+                case Init:
                     accessPrivilege = Unprepared;
                     break;
 

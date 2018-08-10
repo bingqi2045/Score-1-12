@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Instantiating;
+import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Init;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -49,7 +49,7 @@ public class BieCopyService {
 
         TopLevelAbie sourceTopLevelAbie = repository.getTopLevelAbieById(sourceTopLevelAbieId);
         long copiedTopLevelAbieId =
-                repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Instantiating);
+                repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Init);
 
         Map<String, Long> message = new HashMap();
         message.put("sourceTopLevelAbieId", sourceTopLevelAbieId);
@@ -255,7 +255,7 @@ public class BieCopyService {
                     .addValue("last_updated_by", userId)
                     .addValue("creation_timestamp", timestamp)
                     .addValue("last_update_timestamp", timestamp)
-                    .addValue("state", BieState.Instantiating.getValue())
+                    .addValue("state", BieState.Init.getValue())
                     .addValue("client_id", abie.getClientId())
                     .addValue("version", abie.getVersion())
                     .addValue("status", abie.getStatus())
