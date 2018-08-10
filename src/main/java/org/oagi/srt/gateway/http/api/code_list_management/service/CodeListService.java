@@ -1,9 +1,6 @@
 package org.oagi.srt.gateway.http.api.code_list_management.service;
 
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForList;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListState;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListValue;
+import org.oagi.srt.gateway.http.api.code_list_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -14,7 +11,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +32,37 @@ public class CodeListService {
     @Autowired
     private SessionService sessionService;
 
-    public List<CodeListForList> getCodeLists() {
-        return jdbcTemplate.queryForList("SELECT c.code_list_id, c.name as code_list_name, " +
-                "c.based_code_list_id, b.name as based_code_list_name, " +
-                "c.agency_id, a.name as agency_id_name, c.version_id, c.last_update_timestamp, " +
-                "c.extensible_indicator as extensible, c.state " +
-                "FROM code_list c " +
-                "LEFT JOIN code_list b ON c.based_code_list_id = b.code_list_id " +
-                "LEFT JOIN agency_id_list_value a ON c.agency_id = a.agency_id_list_value_id", CodeListForList.class);
+    private String GET_CODE_LISTS_STATEMENT = "SELECT c.code_list_id, c.name as code_list_name, " +
+            "c.based_code_list_id, b.name as based_code_list_name, " +
+            "c.agency_id, a.name as agency_id_name, c.version_id, c.last_update_timestamp, " +
+            "c.extensible_indicator as extensible, c.state " +
+            "FROM code_list c " +
+            "LEFT JOIN code_list b ON c.based_code_list_id = b.code_list_id " +
+            "LEFT JOIN agency_id_list_value a ON c.agency_id = a.agency_id_list_value_id";
+
+    public List<CodeListForList> getCodeLists(GetCodeListsFilter filter) {
+        StringBuilder query = new StringBuilder(GET_CODE_LISTS_STATEMENT);
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource();
+        List<String> conditions = new ArrayList();
+
+        String state = filter.getState();
+        if (!StringUtils.isEmpty(state)) {
+            conditions.add("c.state = :state");
+            parameterSource.addValue("state", state);
+        }
+        Boolean extensible = filter.getExtensible();
+        if (extensible != null) {
+            conditions.add("c.extensible_indicator = :extensible");
+            parameterSource.addValue("extensible", extensible);
+        }
+
+        if (!conditions.isEmpty()) {
+            query.append(" WHERE ");
+            query.append(conditions.stream().collect(Collectors.joining(" AND ")));
+        }
+
+        return jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListForList.class);
     }
 
     public CodeList getCodeList(long id) {

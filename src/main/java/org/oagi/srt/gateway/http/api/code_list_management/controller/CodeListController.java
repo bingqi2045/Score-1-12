@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.code_list_management.controller;
 
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForList;
+import org.oagi.srt.gateway.http.api.code_list_management.data.GetCodeListsFilter;
 import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,8 +21,15 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<CodeListForList> getCodeLists() {
-        return service.getCodeLists();
+    public List<CodeListForList> getCodeLists(
+            @RequestParam(name = "state", required = false) String state,
+            @RequestParam(name = "extensible", required = false) Boolean extensible) {
+
+        GetCodeListsFilter filter = new GetCodeListsFilter();
+        filter.setState(state);
+        filter.setExtensible(extensible);
+
+        return service.getCodeLists(filter);
     }
 
     @RequestMapping(value = "/code_list/{id}", method = RequestMethod.GET,
