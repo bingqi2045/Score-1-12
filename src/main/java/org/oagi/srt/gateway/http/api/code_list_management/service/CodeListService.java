@@ -5,7 +5,6 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
@@ -65,6 +64,11 @@ public class CodeListService {
         return jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListForList.class);
     }
 
+    private String GET_CODE_LIST_VALUES_STATEMENT =
+            "SELECT code_list_value_id, value, name, definition, definition_source, " +
+                    "used_indicator as used, locked_indicator as locked, extension_Indicator as extension " +
+                    "FROM code_list_value WHERE code_list_id = :code_list_id";
+
     public CodeList getCodeList(long id) {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("code_list_id", id);
@@ -79,10 +83,15 @@ public class CodeListService {
                 "LEFT JOIN agency_id_list_value a ON c.agency_id = a.agency_id_list_value_id " +
                 "WHERE c.code_list_id = :code_list_id", parameterSource, CodeList.class);
 
+
+        boolean isPublished = CodeListState.Published.name().equals(codeList.getState());
+        StringBuilder query = new StringBuilder(GET_CODE_LIST_VALUES_STATEMENT);
+        if (isPublished) {
+            query.append(" AND locked_indicator = 0");
+        }
+
         List<CodeListValue> codeListValues =
-                jdbcTemplate.queryForList("SELECT code_list_value_id, value, name, definition, definition_source, " +
-                        "used_indicator as used, locked_indicator as locked, extension_Indicator as extension " +
-                        "FROM code_list_value WHERE code_list_id = :code_list_id", parameterSource, CodeListValue.class);
+                jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListValue.class);
         codeList.setCodeListValues(codeListValues);
 
         return codeList;
@@ -93,27 +102,16 @@ public class CodeListService {
 
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("code_list")
-                .usingColumns("guid", "enum_type_guid", "name", "list_id", "agency_id", "version_id",
-                        "definition", "remark", "definition_source", "based_code_list_id", "extensible_indicator",
+                .usingColumns("guid", "name", "list_id", "agency_id", "version_id", "remark",
+                        "definition", "definition_source", "based_code_list_id", "extensible_indicator",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("code_list_id");
 
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
 
-        Long basedCodeListId = codeList.getBasedCodeListId();
-        String enumTypeGuid = null;
-        if (basedCodeListId != null) {
-            try {
-                enumTypeGuid = jdbcTemplate.queryForObject("SELECT enum_type_guid FROM code_list " +
-                        "WHERE code_list_id = :code_list_id", newSqlParameterSource()
-                        .addValue("code_list_id", basedCodeListId), String.class);
-            } catch (EmptyResultDataAccessException ignore) {}
-        }
-
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("guid", SrtGuid.randomGuid())
-                .addValue("enum_type_guid", enumTypeGuid)
                 .addValue("name", codeList.getCodeListName())
                 .addValue("list_id", codeList.getListId())
                 .addValue("agency_id", codeList.getAgencyId())
@@ -136,6 +134,15 @@ public class CodeListService {
     }
 
     private void insert(long codeListId, CodeListValue codeListValue) {
+
+        boolean locked = codeListValue.isLocked();
+        boolean used = codeListValue.isUsed();
+        boolean extension = codeListValue.isExtension();
+        if (locked) {
+            used = false;
+            extension = false;
+        }
+
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("code_list_value")
                 .usingColumns("code_list_id", "value", "name", "definition", "definition_source",
@@ -147,21 +154,32 @@ public class CodeListService {
                 .addValue("name", codeListValue.getName())
                 .addValue("definition", codeListValue.getDefinition())
                 .addValue("definition_source", codeListValue.getDefinitionSource())
-                .addValue("used_indicator", codeListValue.isUsed())
-                .addValue("locked_indicator", codeListValue.isLocked())
-                .addValue("extension_Indicator", codeListValue.isExtension());
+                .addValue("used_indicator", used)
+                .addValue("locked_indicator", locked)
+                .addValue("extension_Indicator", extension);
 
         jdbcInsert.execute(parameterSource);
     }
 
+    private String UPDATE_CODE_LIST_STATE_STATEMENT =
+            "UPDATE code_list SET state = :state WHERE code_list_id = :code_list_id";
+
     private String UPDATE_CODE_LIST_STATEMENT =
             "UPDATE code_list SET name = :name, list_id = :list_id, " +
                     "agency_id = :agency_id, version_id = :version_id, definition = :definition, " +
-                    "remark = :remark, definition_source = :definition_source, extensible_indicator = :extensible_indicator " +
+                    "remark = :remark, definition_source = :definition_source, " +
+                    "extensible_indicator = :extensible_indicator " +
                     "WHERE code_list_id = :code_list_id";
 
     @Transactional
     public void update(User user, CodeList codeList) {
+        String state = codeList.getState();
+        if (!StringUtils.isEmpty(state)) {
+            jdbcTemplate.update(UPDATE_CODE_LIST_STATE_STATEMENT, newSqlParameterSource()
+                    .addValue("code_list_id", codeList.getCodeListId())
+                    .addValue("state", state));
+        }
+
         jdbcTemplate.update(UPDATE_CODE_LIST_STATEMENT, newSqlParameterSource()
                 .addValue("code_list_id", codeList.getCodeListId())
                 .addValue("name", codeList.getCodeListName())
@@ -175,12 +193,19 @@ public class CodeListService {
                 .addValue("last_updated_by", sessionService.userId(user))
                 .addValue("last_update_timestamp", new Date()));
 
-        update(codeList.getCodeListId(), codeList.getCodeListValues());
+        List<CodeListValue> codeListValues = codeList.getCodeListValues();
+        if (CodeListState.Published.name().equals(state)) {
+            codeListValues.stream().forEach(e -> {
+                e.setExtension(false);
+            });
+        }
+
+        update(codeList.getCodeListId(), codeListValues);
     }
 
     private String GET_CODE_LIST_VALUE_ID_LIST_STATEMENT =
             "SELECT code_list_value_id FROM code_list_value WHERE code_list_id = :code_list_id";
-    
+
     @Transactional
     public void update(long codeListId, List<CodeListValue> codeListValues) {
         List<Long> oldCodeListValueIds = jdbcTemplate.queryForList(
@@ -210,18 +235,31 @@ public class CodeListService {
 
     private String UPDATE_CODE_LIST_VALUE_STATEMENT =
             "UPDATE code_list_value SET `value` = :value, name = :name, " +
-                    "definition = :definition, definition_source = :definition_source " +
+                    "definition = :definition, definition_source = :definition_source," +
+                    "used_indicator = :used, locked_indicator = :locked, extension_Indicator = :extension " +
                     "WHERE code_list_value_id = :code_list_value_id AND code_list_id = :code_list_id";
 
     @Transactional
     public void update(long codeListId, CodeListValue codeListValue) {
+
+        boolean locked = codeListValue.isLocked();
+        boolean used = codeListValue.isUsed();
+        boolean extension = codeListValue.isExtension();
+        if (locked) {
+            used = false;
+            extension = false;
+        }
+
         jdbcTemplate.update(UPDATE_CODE_LIST_VALUE_STATEMENT, newSqlParameterSource()
                 .addValue("code_list_value_id", codeListValue.getCodeListValueId())
                 .addValue("code_list_id", codeListId)
                 .addValue("value", codeListValue.getValue())
                 .addValue("name", codeListValue.getName())
                 .addValue("definition", codeListValue.getDefinition())
-                .addValue("definition_source", codeListValue.getDefinitionSource()));
+                .addValue("definition_source", codeListValue.getDefinitionSource())
+                .addValue("used", used)
+                .addValue("locked", locked)
+                .addValue("extension", extension));
     }
 
     private String DELETE_CODE_LIST_VALUE_STATEMENT =
