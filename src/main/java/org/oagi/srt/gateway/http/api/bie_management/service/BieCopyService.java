@@ -183,7 +183,7 @@ public class BieCopyService {
                 long previousBbieScId = bbieSc.getBbieId();
                 long nextBbieScId = insertBbieSc(bbieSc);
 
-                fireChangeEvent("bbieSc", previousBbieScId, nextBbieScId);
+                fireChangeEvent("bbie_sc", previousBbieScId, nextBbieScId);
             }
 
             repository.updateState(copiedTopLevelAbie.getTopLevelAbieId(), BieState.Editing);

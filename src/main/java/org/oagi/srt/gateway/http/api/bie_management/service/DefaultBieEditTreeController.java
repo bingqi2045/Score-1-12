@@ -472,7 +472,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 return getDetail((BieEditAsbiepNode) node);
             case "bbiep":
                 return getDetail((BieEditBbiepNode) node);
-            case "bbieSc":
+            case "bbie_sc":
                 return getDetail((BieEditBbieScNode) node);
             default:
                 throw new IllegalStateException();
