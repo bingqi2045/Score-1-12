@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.code_list_management.controller;
 
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForList;
+import org.oagi.srt.gateway.http.api.code_list_management.data.DeleteCodeListRequest;
 import org.oagi.srt.gateway.http.api.code_list_management.data.GetCodeListsFilter;
 import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,12 @@ public class CodeListController {
     public ResponseEntity delete(
             @PathVariable("id") long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/code_list/delete", method = RequestMethod.POST)
+    public ResponseEntity deletes(@RequestBody DeleteCodeListRequest request) {
+        service.delete(request.getCodeListIds());
         return ResponseEntity.noContent().build();
     }
 }

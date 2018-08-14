@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
@@ -196,7 +197,9 @@ public class CodeListService {
         List<CodeListValue> codeListValues = codeList.getCodeListValues();
         if (CodeListState.Published.name().equals(state)) {
             codeListValues.stream().forEach(e -> {
-                e.setExtension(false);
+                if (!e.isUsed()) {
+                    e.setLocked(true);
+                }
             });
         }
 
@@ -284,7 +287,16 @@ public class CodeListService {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("code_list_id", codeListId);
 
-        jdbcTemplate.update(DELETE_CODE_LIST_VALUES_STATEMENT, parameterSource);
-        jdbcTemplate.update(DELETE_CODE_LIST_STATEMENT, parameterSource);
+        try {
+            jdbcTemplate.update(DELETE_CODE_LIST_VALUES_STATEMENT, parameterSource);
+            jdbcTemplate.update(DELETE_CODE_LIST_STATEMENT, parameterSource);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Data Integrity Violation", e);
+        }
+    }
+
+    @Transactional
+    public void delete(List<Long> codeListIds) {
+        codeListIds.stream().forEach(e -> delete(e));
     }
 }
