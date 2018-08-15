@@ -16,4 +16,13 @@ public enum CcState {
         return value;
     }
 
+    public static CcState valueOf(int value) {
+        for (CcState state : CcState.values()) {
+            if (state.getValue() == value) {
+                return state;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
 }

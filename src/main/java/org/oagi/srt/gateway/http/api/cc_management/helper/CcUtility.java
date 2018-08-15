@@ -12,12 +12,12 @@ public class CcUtility {
         @Override
         public int compare(Trackable o1, Trackable o2) {
             // What the release_id equals zero(0) means is that it's the latest one.
-            long o1ReleaseId = o1.getReleaseId();
-            if (o1ReleaseId == 0L) {
+            Long o1ReleaseId = o1.getReleaseId();
+            if (o1ReleaseId == null) {
                 o1ReleaseId = Long.MAX_VALUE;
             }
-            long o2ReleaseId = o2.getReleaseId();
-            if (o2ReleaseId == 0L) {
+            Long o2ReleaseId = o2.getReleaseId();
+            if (o2ReleaseId == null) {
                 o2ReleaseId = Long.MAX_VALUE;
             }
 
@@ -91,11 +91,36 @@ public class CcUtility {
         } else {
             filteredEntities = entities.stream()
                     .filter(e -> {
-                        long entityReleaseId = e.getReleaseId();
-                        return (entityReleaseId == 0L) || (entityReleaseId <= releaseId);
+                        Long entityReleaseId = e.getReleaseId();
+                        return (entityReleaseId == null) || (entityReleaseId <= releaseId);
                     });
         }
 
         return filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
+    }
+
+    public static <T extends Trackable> String getRevision(long releaseId, List<T> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return null;
+        }
+
+        Stream<T> filteredEntities;
+        if (releaseId == 0L) {
+            filteredEntities = entities.stream()
+                    .filter(e -> e.getReleaseId() != null);
+        } else {
+            filteredEntities = entities.stream()
+                    .filter(e -> {
+                        Long entityReleaseId = e.getReleaseId();
+                        return (entityReleaseId != null) && (entityReleaseId <= releaseId);
+                    });
+        }
+
+        T entity = filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
+        if (entity == null) {
+            return null;
+        }
+
+        return entity.getRevisionNum() + "." + entity.getRevisionTrackingNum();
     }
 }
