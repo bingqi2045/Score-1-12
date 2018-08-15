@@ -1,13 +1,15 @@
 package org.oagi.srt.gateway.http.api.cc_management.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.oagi.srt.gateway.http.api.common.data.Trackable;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class CCList extends Trackable implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class CcList extends Trackable implements Serializable {
 
     private String type;
     private long id;

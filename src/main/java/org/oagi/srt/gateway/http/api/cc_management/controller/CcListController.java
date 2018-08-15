@@ -1,9 +1,9 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.google.common.collect.Lists;
-import org.oagi.srt.gateway.http.api.cc_management.data.CCList;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.service.CCListService;
+import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.common.data.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class CCListController {
+public class CcListController {
 
     @Autowired
-    private CCListService service;
+    private CcListService service;
 
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Pagination<CCList> getCCListByReleaseId(
+    public Pagination<CcList> getCcListByReleaseId(
             @RequestParam(name = "release_id", required = false) long releaseId,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "sortActive") String sortActive,
@@ -35,7 +35,7 @@ public class CCListController {
             @RequestParam(name = "pageIndex") int pageIndex,
             @RequestParam(name = "pageSize") int pageSize) {
 
-        List<CCList> ccLists = service.getCCListByReleaseId(releaseId);
+        List<CcList> ccLists = service.getCcListByReleaseId(releaseId);
 
         if (!StringUtils.isEmpty(filter)) {
             List<String> filters = Arrays.asList(filter.toLowerCase().split(" "));
@@ -52,18 +52,18 @@ public class CCListController {
                     }).collect(Collectors.toList());
         }
 
-        Comparator<CCList> comparator = null;
+        Comparator<CcList> comparator = null;
         switch (sortActive) {
             case "type":
-                comparator = Comparator.comparing(CCList::getType);
+                comparator = Comparator.comparing(CcList::getType);
                 break;
 
             case "den":
-                comparator = Comparator.comparing(CCList::getDen);
+                comparator = Comparator.comparing(CcList::getDen);
                 break;
 
             case "owner":
-                comparator = Comparator.comparing(CCList::getOwner);
+                comparator = Comparator.comparing(CcList::getOwner);
                 break;
 
             case "state":
@@ -71,19 +71,19 @@ public class CCListController {
                 break;
 
             case "revision":
-                comparator = Comparator.comparing(CCList::getRevision);
+                comparator = Comparator.comparing(CcList::getRevision);
                 break;
 
             case "deprecated":
-                comparator = Comparator.comparing(CCList::isDeprecated);
+                comparator = Comparator.comparing(CcList::isDeprecated);
                 break;
 
             case "lastUpdateUser":
-                comparator = Comparator.comparing(CCList::getLastUpdateUser);
+                comparator = Comparator.comparing(CcList::getLastUpdateUser);
                 break;
 
             case "lastUpdateTimestamp":
-                comparator = Comparator.comparing(CCList::getLastUpdateTimestamp);
+                comparator = Comparator.comparing(CcList::getLastUpdateTimestamp);
                 break;
         }
 
