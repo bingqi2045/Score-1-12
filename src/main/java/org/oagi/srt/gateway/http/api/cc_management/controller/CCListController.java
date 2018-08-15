@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,8 +38,18 @@ public class CCListController {
         List<CCList> ccLists = service.getCCListByReleaseId(releaseId);
 
         if (!StringUtils.isEmpty(filter)) {
+            List<String> filters = Arrays.asList(filter.toLowerCase().split(" "));
+
             ccLists = ccLists.stream()
-                    .filter(e -> e.getDen().contains(filter)).collect(Collectors.toList());
+                    .filter(e -> {
+                        List<String> den = Arrays.asList(e.getDen().toLowerCase().split(" "));
+                        for (String partialFilter : filters) {
+                            if (!den.contains(partialFilter)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }).collect(Collectors.toList());
         }
 
         Comparator<CCList> comparator = null;
