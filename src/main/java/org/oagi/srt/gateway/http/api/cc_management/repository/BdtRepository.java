@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.api.cc_management.service;
+package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.oagi.srt.gateway.http.api.cc_management.data.BdtPriRestri;
 import org.oagi.srt.gateway.http.api.cc_management.data.BdtScPriRestri;
