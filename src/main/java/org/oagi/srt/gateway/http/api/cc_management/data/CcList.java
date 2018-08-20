@@ -16,7 +16,8 @@ public class CcList extends Trackable implements Serializable {
     private String guid;
     private String den;
     private String owner;
-    private Object state;
+    private int rowState;
+    private CcState state;
     private String revision;
     private boolean deprecated;
     private Long currentId;

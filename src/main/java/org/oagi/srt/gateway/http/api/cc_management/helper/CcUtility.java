@@ -104,16 +104,14 @@ public class CcUtility {
             return null;
         }
 
-        Stream<T> filteredEntities;
+        Stream<T> filteredEntities = entities.stream().filter(e -> e.getRevisionNum() > 0 && e.getRevisionTrackingNum() > 0);
         if (releaseId == 0L) {
-            filteredEntities = entities.stream()
-                    .filter(e -> e.getReleaseId() != null);
+            filteredEntities = filteredEntities.filter(e -> e.getReleaseId() == null);
         } else {
-            filteredEntities = entities.stream()
-                    .filter(e -> {
-                        Long entityReleaseId = e.getReleaseId();
-                        return (entityReleaseId != null) && (entityReleaseId <= releaseId);
-                    });
+            filteredEntities = filteredEntities.filter(e -> {
+                Long entityReleaseId = e.getReleaseId();
+                return (entityReleaseId != null) && (entityReleaseId <= releaseId);
+            });
         }
 
         T entity = filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
