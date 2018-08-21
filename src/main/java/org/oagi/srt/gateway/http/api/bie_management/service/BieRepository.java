@@ -55,7 +55,7 @@ public class BieRepository {
                 .addValue("current_acc_id", currentAccId);
         List<BieEditAcc> accList =
                 jdbcTemplate.queryForList("SELECT acc_id, guid, based_acc_id, oagis_component_type, current_acc_id, " +
-                                "revision_num, revision_tracking_num, revision_action, release_id FROM acc " +
+                                "revision_num, revision_tracking_num, release_id FROM acc " +
                                 "WHERE revision_num > 0 AND state = :state AND current_acc_id = :current_acc_id",
                         parameterSource, BieEditAcc.class);
         return CcUtility.getLatestEntity(releaseId, accList);
@@ -66,7 +66,7 @@ public class BieRepository {
                 .addValue("acc_id", accId);
         List<BieEditAcc> res =
                 jdbcTemplate.queryForList("SELECT acc_id, guid, based_acc_id, oagis_component_type, current_acc_id, " +
-                                "revision_num, revision_tracking_num, revision_action, release_id FROM acc " +
+                                "revision_num, revision_tracking_num, release_id FROM acc " +
                                 "WHERE acc_id = :acc_id",
                         parameterSource, BieEditAcc.class);
         if (res.isEmpty()) {
@@ -88,7 +88,7 @@ public class BieRepository {
     public BieEditBccp getBccp(long bccpId) {
         return jdbcTemplate.queryForObject(
                 "SELECT bccp_id, guid, property_term, bdt_id, current_bccp_id, " +
-                        "revision_num, revision_tracking_num, revision_action, release_id " +
+                        "revision_num, revision_tracking_num, release_id " +
                         "FROM bccp WHERE bccp_id = :bccp_id",
                 newSqlParameterSource()
                         .addValue("bccp_id", bccpId), BieEditBccp.class);
@@ -136,7 +136,7 @@ public class BieRepository {
     public BieEditAsccp getAsccpByCurrentAsccpId(long currentAsccpId, long releaseId) {
         List<BieEditAsccp> asccpList =
                 jdbcTemplate.queryForList("SELECT asccp_id, guid, property_term, role_of_acc_id, current_asccp_id, " +
-                        "revision_num, revision_tracking_num, revision_action, release_id " +
+                        "revision_num, revision_tracking_num, release_id " +
                         "FROM asccp WHERE revision_num > 0 AND current_asccp_id = :current_asccp_id", newSqlParameterSource()
                         .addValue("current_asccp_id", currentAsccpId), BieEditAsccp.class);
         return CcUtility.getLatestEntity(releaseId, asccpList);
@@ -145,7 +145,7 @@ public class BieRepository {
     public BieEditBccp getBccpByCurrentBccpId(long currentBccpId, long releaseId) {
         List<BieEditBccp> bccpList =
                 jdbcTemplate.queryForList("SELECT bccp_id, guid, property_term, bdt_id, current_bccp_id, " +
-                        "revision_num, revision_tracking_num, revision_action, release_id " +
+                        "revision_num, revision_tracking_num, release_id " +
                         "FROM bccp WHERE revision_num > 0 AND current_bccp_id = :current_bccp_id", newSqlParameterSource()
                         .addValue("current_bccp_id", currentBccpId), BieEditBccp.class);
         return CcUtility.getLatestEntity(releaseId, bccpList);
@@ -190,7 +190,7 @@ public class BieRepository {
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
         List<BieEditAscc> asccList =
                 jdbcTemplate.queryForList("SELECT ascc_id, guid, from_acc_id, to_asccp_id, seq_key, current_ascc_id, " +
-                                "revision_num, revision_tracking_num, revision_action, release_id " +
+                                "revision_num, revision_tracking_num, release_id " +
                                 "FROM ascc WHERE revision_num > 0 AND from_acc_id = :from_acc_id AND release_id <= :release_id",
                         newSqlParameterSource()
                                 .addValue("from_acc_id", fromAccId)
@@ -204,7 +204,7 @@ public class BieRepository {
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId) {
         List<BieEditBcc> bccList =
                 jdbcTemplate.queryForList("SELECT bcc_id, guid, from_acc_id, to_bccp_id, seq_key, entity_type, current_bcc_id, " +
-                                "revision_num, revision_tracking_num, revision_action, release_id " +
+                                "revision_num, revision_tracking_num, release_id " +
                                 "FROM bcc WHERE revision_num > 0 AND from_acc_id = :from_acc_id AND release_id <= :release_id",
                         newSqlParameterSource()
                                 .addValue("from_acc_id", fromAccId)

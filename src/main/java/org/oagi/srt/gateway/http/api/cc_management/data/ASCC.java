@@ -1,16 +1,19 @@
 package org.oagi.srt.gateway.http.api.cc_management.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.oagi.srt.gateway.http.api.common.data.Trackable;
 
 import java.util.Date;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ASCC extends Trackable implements CoreComponent {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ASCC implements CoreComponent {
 
     private long asccId;
+    public long getId() {
+        return getAsccId();
+    }
+
     private String guid;
 
     private int cardinalityMin;
@@ -29,6 +32,11 @@ public class ASCC extends Trackable implements CoreComponent {
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
+
+    private int revisionNum;
+    private int revisionTrackingNum;
+    private Integer revisionAction;
+    private Long releaseId;
 
     private int state;
     private Long currentAsccId;

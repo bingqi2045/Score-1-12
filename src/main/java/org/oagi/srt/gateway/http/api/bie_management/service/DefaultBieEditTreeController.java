@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
+import org.oagi.srt.gateway.http.api.cc_management.repository.CoreComponentRepository;
 import org.oagi.srt.gateway.http.api.common.data.OagisComponentType;
 import org.oagi.srt.gateway.http.api.common.data.SeqKeySupportable;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -40,6 +41,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Autowired
     private BieRepository repository;
+
+    @Autowired
+    private CoreComponentRepository coreComponentRepository;
 
     @Autowired
     private SessionService sessionService;

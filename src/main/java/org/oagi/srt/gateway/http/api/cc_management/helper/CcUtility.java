@@ -87,12 +87,12 @@ public class CcUtility {
         Stream<T> filteredEntities;
         if (releaseId == 0L) {
             filteredEntities = entities.stream()
-                    .filter(e -> e.getReleaseId() == releaseId);
+                    .filter(e -> e.getReleaseId() == null);
         } else {
             filteredEntities = entities.stream()
                     .filter(e -> {
                         Long entityReleaseId = e.getReleaseId();
-                        return (entityReleaseId == null) || (entityReleaseId <= releaseId);
+                        return (entityReleaseId != null) && (entityReleaseId <= releaseId);
                     });
         }
 

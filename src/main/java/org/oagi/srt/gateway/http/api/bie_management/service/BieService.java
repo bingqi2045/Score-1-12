@@ -37,7 +37,7 @@ public class BieService {
 
     private String GET_ASCCP_LIST_FOR_BIE_STATEMENT =
             "SELECT asccp_id, guid, property_term, module_id, state, " +
-                    "revision_num, revision_tracking_num, revision_action, release_id, last_update_timestamp " +
+                    "revision_num, revision_tracking_num, release_id, last_update_timestamp " +
                     "FROM asccp WHERE revision_num > 0 AND state = " + CcState.Published.getValue();
 
     public List<AsccpForBie> getAsccpListForBie(long releaseId) {
