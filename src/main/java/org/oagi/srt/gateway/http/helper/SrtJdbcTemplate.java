@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.EmptySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,6 +26,10 @@ public class SrtJdbcTemplate {
 
     public void query(String query) {
         this.jdbcTemplate.query(query, e -> null);
+    }
+
+    public <T> T query(String query, ResultSetExtractor<T> rse) {
+        return this.jdbcTemplate.query(query, rse);
     }
 
     public void query(String query, SqlParameterSource parameterSource, RowCallbackHandler rch) {

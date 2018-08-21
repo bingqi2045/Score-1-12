@@ -5,19 +5,29 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieCopyRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
+import org.oagi.srt.gateway.http.event.EventListenerContainer;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Init;
@@ -25,7 +35,7 @@ import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSo
 
 @Service
 @Transactional
-public class BieCopyService {
+public class BieCopyService implements InitializingBean {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -41,6 +51,23 @@ public class BieCopyService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private RedisMessageListenerContainer messageListenerContainer;
+
+    @Autowired
+    private EventListenerContainer eventListenerContainer;
+
+    private String INTERESTED_EVENT_NAME = "bieCopyRequestEvent";
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        eventListenerContainer.addMessageListener(this, "onEventReceived",
+                new ChannelTopic(INTERESTED_EVENT_NAME));
+    }
+
     @Transactional
     public void copyBie(User user, BieCopyRequest request) {
         long sourceTopLevelAbieId = request.getTopLevelAbieId();
@@ -51,32 +78,37 @@ public class BieCopyService {
         long copiedTopLevelAbieId =
                 repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Init);
 
-        Map<String, Long> message = new HashMap();
-        message.put("sourceTopLevelAbieId", sourceTopLevelAbieId);
-        message.put("copiedTopLevelAbieId", copiedTopLevelAbieId);
-        message.put("bizCtxId", bizCtxId);
-        message.put("userId", userId);
+        BieCopyRequestEvent bieCopyRequestEvent = new BieCopyRequestEvent(
+                sourceTopLevelAbieId, copiedTopLevelAbieId, bizCtxId, userId
+        );
 
         /*
          * Message Publishing
          */
-        redisTemplate.convertAndSend("bie-copy", message);
+        redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, bieCopyRequestEvent);
     }
 
 
     /**
-     * This method is invoked by 'bie-copy' channel subscriber.
+     * This method is invoked by 'bieCopyRequestEvent' channel subscriber.
      *
-     * @param message
+     * @param bieCopyRequestEvent
      */
     @Transactional
-    public void handleCopyRequest(Map<String, Long> message) {
-        logger.debug("Received copying request: " + message);
+    public void onEventReceived(BieCopyRequestEvent bieCopyRequestEvent) {
+        RLock lock = redissonClient.getLock("BieCopyRequestEvent:" + bieCopyRequestEvent.hashCode());
+        if (!lock.tryLock()) {
+            return;
+        }
+        try {
+            logger.debug("Received BieCopyRequestEvent: " + bieCopyRequestEvent);
 
-        BieCopyContext copyContext = new BieCopyContext(message);
-        copyContext.execute();
+            BieCopyContext copyContext = new BieCopyContext(bieCopyRequestEvent);
+            copyContext.execute();
+        } finally {
+            lock.unlock();
+        }
     }
-
 
 
     private class BieCopyContext {
@@ -106,15 +138,15 @@ public class BieCopyService {
         private List<BieCopyBbieSc> bbieScList;
         private Map<Long, List<BieCopyBbieSc>> bbieToBbieScMap;
 
-        public BieCopyContext(Map<String, Long> message) {
-            long sourceTopLevelAbieId = message.get("sourceTopLevelAbieId");
+        public BieCopyContext(BieCopyRequestEvent bieCopyRequestEvent) {
+            long sourceTopLevelAbieId = bieCopyRequestEvent.getSourceTopLevelAbieId();
             sourceTopLevelAbie = repository.getTopLevelAbieById(sourceTopLevelAbieId);
 
-            long copiedTopLevelAbieId = message.get("copiedTopLevelAbieId");
+            long copiedTopLevelAbieId = bieCopyRequestEvent.getCopiedTopLevelAbieId();
             copiedTopLevelAbie = repository.getTopLevelAbieById(copiedTopLevelAbieId);
 
-            bizCtxId = message.get("bizCtxId");
-            userId = message.get("userId");
+            bizCtxId = bieCopyRequestEvent.getBizCtxId();
+            userId = bieCopyRequestEvent.getUserId();
 
             abieList = getAbieByOwnerTopLevelAbieId(sourceTopLevelAbieId);
 
@@ -234,7 +266,6 @@ public class BieCopyService {
                     break;
             }
         }
-
 
 
         private long insertAbie(BieCopyAbie abie) {
@@ -470,10 +501,6 @@ public class BieCopyService {
                 "WHERE owner_top_level_abie_id = :owner_top_level_abie_id", newSqlParameterSource()
                 .addValue("owner_top_level_abie_id", ownerTopLevelAbieId), BieCopyBbieSc.class);
     }
-
-
-
-
 
 
     @Data

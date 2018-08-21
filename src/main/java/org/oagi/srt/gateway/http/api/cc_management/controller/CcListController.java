@@ -24,6 +24,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getRevision;
+
 @RestController
 public class CcListController {
 

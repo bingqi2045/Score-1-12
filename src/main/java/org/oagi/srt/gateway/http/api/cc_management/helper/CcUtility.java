@@ -105,9 +105,7 @@ public class CcUtility {
         }
 
         Stream<T> filteredEntities = entities.stream().filter(e -> e.getRevisionNum() > 0 && e.getRevisionTrackingNum() > 0);
-        if (releaseId == 0L) {
-            filteredEntities = filteredEntities.filter(e -> e.getReleaseId() == null);
-        } else {
+        if (releaseId > 0L) {
             filteredEntities = filteredEntities.filter(e -> {
                 Long entityReleaseId = e.getReleaseId();
                 return (entityReleaseId != null) && (entityReleaseId <= releaseId);
