@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.repository;
 
+import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.user_management.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class CcListRepository {
                     ccList.setId(acc.getAccId());
                     ccList.setGuid(acc.getGuid());
                     ccList.setDen(acc.getDen());
+                    ccList.setDefinition(acc.getDefinition());
+                    ccList.setDefinitionSource(acc.getDefinitionSource());
                     ccList.setState(CcState.valueOf(acc.getState()));
                     ccList.setDeprecated(acc.isDeprecated());
                     ccList.setCurrentId(acc.getCurrentAccId());
@@ -69,6 +72,8 @@ public class CcListRepository {
                     ccList.setId(ascc.getAsccId());
                     ccList.setGuid(ascc.getGuid());
                     ccList.setDen(ascc.getDen());
+                    ccList.setDefinition(ascc.getDefinition());
+                    ccList.setDefinitionSource(ascc.getDefinitionSource());
                     ccList.setState(CcState.valueOf(ascc.getState()));
                     ccList.setDeprecated(ascc.isDeprecated());
                     ccList.setCurrentId(ascc.getCurrentAsccId());
@@ -98,6 +103,8 @@ public class CcListRepository {
                     ccList.setId(bcc.getBccId());
                     ccList.setGuid(bcc.getGuid());
                     ccList.setDen(bcc.getDen());
+                    ccList.setDefinition(bcc.getDefinition());
+                    ccList.setDefinitionSource(bcc.getDefinitionSource());
                     ccList.setState(CcState.valueOf(bcc.getState()));
                     ccList.setDeprecated(bcc.isDeprecated());
                     ccList.setCurrentId(bcc.getCurrentBccId());
@@ -127,6 +134,8 @@ public class CcListRepository {
                     ccList.setId(asccp.getAsccpId());
                     ccList.setGuid(asccp.getGuid());
                     ccList.setDen(asccp.getDen());
+                    ccList.setDefinition(asccp.getDefinition());
+                    ccList.setDefinitionSource(asccp.getDefinitionSource());
                     ccList.setState(CcState.valueOf(asccp.getState()));
                     ccList.setDeprecated(asccp.isDeprecated());
                     ccList.setCurrentId(asccp.getCurrentAsccpId());
@@ -156,6 +165,8 @@ public class CcListRepository {
                     ccList.setId(bccp.getBccpId());
                     ccList.setGuid(bccp.getGuid());
                     ccList.setDen(bccp.getDen());
+                    ccList.setDefinition(bccp.getDefinition());
+                    ccList.setDefinitionSource(bccp.getDefinitionSource());
                     ccList.setState(CcState.valueOf(bccp.getState()));
                     ccList.setDeprecated(bccp.isDeprecated());
                     ccList.setCurrentId(bccp.getCurrentBccpId());

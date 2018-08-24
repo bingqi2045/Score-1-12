@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.configuration.pubsub;
+package org.oagi.srt.redis.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

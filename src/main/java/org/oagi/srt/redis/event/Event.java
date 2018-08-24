@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.event;
+package org.oagi.srt.redis.event;
 
 import java.io.Serializable;
 

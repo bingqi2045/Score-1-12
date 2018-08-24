@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.configuration.redis;
+package org.oagi.srt.redis.configuration;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

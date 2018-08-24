@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.oagi.srt.redis.event.Event;
 
 @Data
 @NoArgsConstructor

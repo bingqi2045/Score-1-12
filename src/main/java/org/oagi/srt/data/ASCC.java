@@ -1,32 +1,32 @@
-package org.oagi.srt.gateway.http.api.cc_management.data;
+package org.oagi.srt.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CoreComponent;
 
 import java.util.Date;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ACC implements CoreComponent {
+public class ASCC implements CoreComponent {
 
-    private long accId;
+    private long asccId;
     public long getId() {
-        return getAccId();
+        return getAsccId();
     }
 
     private String guid;
 
-    private String objectClassTerm;
+    private int cardinalityMin;
+    private int cardinalityMax;
+    private int seqKey;
+
+    private long fromAccId;
+    private long toAsccpId;
+
     private String den;
     private String definition;
     private String definitionSource;
-
-    private Long basedAccId;
-    private String objectClassQualifier;
-    private Integer oagisComponentType;
-
-    private Long moduleId;
-    private Long namespaceId;
 
     private long createdBy;
     private long ownerUserId;
@@ -40,8 +40,8 @@ public class ACC implements CoreComponent {
     private Long releaseId;
 
     private int state;
-    private Long currentAccId;
+    private Long currentAsccId;
     private boolean deprecated;
-    private boolean isAbstract;
+
 
 }

@@ -1,5 +1,7 @@
-package org.oagi.srt.gateway.http.configuration.cache;
+package org.oagi.srt.cache.configuration;
 
+import org.oagi.srt.cache.SrtRedisCacheManager;
+import org.oagi.srt.cache.SrtRedisCacheWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +10,6 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
@@ -21,15 +22,19 @@ public class CacheConfiguration {
     private RedisConnectionFactory redisConnectionFactory;
 
     @Bean
-    public RedisCacheManager redisCacheManager() {
+    public RedisCacheConfiguration redisCacheConfiguration() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ZERO)
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+    }
 
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .transactionAware()
-                .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()
-                        .entryTtl(Duration.ofMinutes(5L))
-                        .serializeValuesWith(RedisSerializationContext.SerializationPair
-                                .fromSerializer(new GenericJackson2JsonRedisSerializer())))
-                .build();
+    @Bean
+    public RedisCacheManager redisCacheManager() {
+        SrtRedisCacheManager redisCacheManager = new SrtRedisCacheManager(redisConnectionFactory,
+                new SrtRedisCacheWriter(redisConnectionFactory), redisCacheConfiguration());
+
+        return redisCacheManager;
     }
 
 }

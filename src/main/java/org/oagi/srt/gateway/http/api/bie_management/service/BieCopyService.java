@@ -6,7 +6,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
-import org.oagi.srt.gateway.http.event.EventListenerContainer;
+import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.redisson.api.RLock;

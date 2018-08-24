@@ -11,6 +11,8 @@ public class CcList {
     private long id;
     private String guid;
     private String den;
+    private String definition;
+    private String definitionSource;
     private String owner;
     private CcState state;
     private String revision;
