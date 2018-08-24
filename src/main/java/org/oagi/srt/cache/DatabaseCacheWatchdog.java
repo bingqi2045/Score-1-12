@@ -1,5 +1,8 @@
 package org.oagi.srt.cache;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RReadWriteLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +35,9 @@ public abstract class DatabaseCacheWatchdog<T>
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
     private final String tableName;
     private final Class<T> mappedClass;
     private final RedisCacheConfiguration cacheConfig;
@@ -52,8 +58,7 @@ public abstract class DatabaseCacheWatchdog<T>
         this.mappedClass = mappedClass;
         this.cacheConfig = redisCacheConfiguration;
 
-        setCamelCasePriKeyName(this.tableName + "Id");
-        setUnderscorePriKeyName(this.tableName + "_id");
+        setPrimaryKeyName(this.tableName + "_id");
     }
 
     public void setDelay(long delay, TimeUnit unit) {
@@ -61,12 +66,16 @@ public abstract class DatabaseCacheWatchdog<T>
         this.unit = unit;
     }
 
-    public void setCamelCasePriKeyName(String camelCasePriKeyName) {
-        this.camelCasePriKeyName = camelCasePriKeyName;
+    public void setPrimaryKeyName(String primaryKeyName) {
+        this.underscorePriKeyName = primaryKeyName;
+        this.camelCasePriKeyName = underscoreToCamelCase(primaryKeyName);
     }
 
-    public void setUnderscorePriKeyName(String underscorePriKeyName) {
-        this.underscorePriKeyName = underscorePriKeyName;
+    public String underscoreToCamelCase(String string) {
+        String str = Arrays.asList(string.split("_")).stream()
+                .map(e -> Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase())
+                .collect(Collectors.joining(""));
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
     public String getTableName() {
@@ -78,7 +87,7 @@ public abstract class DatabaseCacheWatchdog<T>
         tableFields = loadFields(this.tableName);
 
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleWithFixedDelay(this, 0L, delay, unit);
+        scheduledExecutorService.scheduleAtFixedRate(this, 0L, delay, unit);
     }
 
     @Override
@@ -103,27 +112,53 @@ public abstract class DatabaseCacheWatchdog<T>
             logger.trace("Database/Cache Watchdog for `" + tableName + "` table: investigating...");
         }
 
+        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(this.tableName);
         RedisConnection redisConnection = redisConnectionFactory.getConnection();
         try {
-            Map<Long, String> checksumFromRedis = getChecksumFromRedis(redisConnection);
             Map<Long, String> checksumFromDatabase = getChecksumFromDatabase();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Database/Cache Watchdog for `" + tableName + "` table: retrieved " + checksumFromDatabase.size() + " checksum items.");
+            List<Long> invalidPrimaryKeys;
+
+            readWriteLock.readLock().lock();
+            try {
+                Map<Long, String> checksumFromRedis = getChecksumFromRedis(redisConnection);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Database/Cache Watchdog for `" + tableName + "` table: retrieved " + checksumFromDatabase.size() + " checksum items.");
+                }
+
+                invalidPrimaryKeys = getInvalidPrimaryKeys(checksumFromRedis, checksumFromDatabase);
+                if (invalidPrimaryKeys.isEmpty()) {
+                    logger.info("Database/Cache Watchdog for `" + tableName + "` table: all data are valid.");
+                    return;
+                }
+            } finally {
+                readWriteLock.readLock().unlock();
             }
 
-            List<Long> invalidPrimaryKeys = getInvalidPrimaryKeys(checksumFromRedis, checksumFromDatabase);
-            if (invalidPrimaryKeys.isEmpty()) {
-                logger.info("Database/Cache Watchdog for `" + tableName + "` table: all data are valid.");
-                return;
+            readWriteLock.writeLock().lock();
+            try {
+                logger.info("Database/Cache Watchdog for `" + tableName + "` table: " + invalidPrimaryKeys.size() + " invalid items found.");
+
+                updateChecksumAndData(redisConnection, invalidPrimaryKeys, checksumFromDatabase);
+                logger.info("Database/Cache Watchdog for `" + tableName + "` table: successfully updated.");
+            } finally {
+                readWriteLock.writeLock().unlock();
             }
-
-            logger.info("Database/Cache Watchdog for `" + tableName + "` table: " + invalidPrimaryKeys.size() + " invalid items found.");
-
-            updateChecksumAndData(redisConnection, invalidPrimaryKeys, checksumFromDatabase);
-            logger.info("Database/Cache Watchdog for `" + tableName + "` table: successfully updated.");
         } finally {
             redisConnection.close();
         }
+
+
+        RLock lock = redissonClient.getLock(this.tableName);
+        lock.lock();
+        try {
+            execute();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void execute() {
+
     }
 
     private Map<Long, String> getChecksumFromRedis(RedisConnection redisConnection) {

@@ -1,15 +1,17 @@
-package org.oagi.srt.gateway.http.api.cc_management.data;
+package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class BdtPriRestri {
+public class BdtPriRestri implements Serializable {
 
     private long bdtPriRestriId;
     private long bdtId;
     private Long cdtAwdPriXpsTypeMapId;
     private Long codeListId;
     private Long agencyIdListId;
-    private boolean isDefault;
+    private boolean defaulted;
 
 }

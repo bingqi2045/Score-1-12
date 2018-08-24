@@ -1,7 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.repository;
 
-import org.oagi.srt.gateway.http.api.cc_management.data.BdtPriRestri;
-import org.oagi.srt.gateway.http.api.cc_management.data.BdtScPriRestri;
+import org.oagi.srt.data.BdtPriRestri;
+import org.oagi.srt.data.BdtScPriRestri;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
