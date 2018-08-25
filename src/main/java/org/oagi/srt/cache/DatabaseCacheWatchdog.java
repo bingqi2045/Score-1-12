@@ -1,5 +1,6 @@
 package org.oagi.srt.cache;
 
+import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -9,10 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.util.ByteUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.beans.PropertyDescriptor;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public abstract class DatabaseCacheWatchdog<T>
+public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         implements InitializingBean, DisposableBean, Runnable {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -36,16 +35,12 @@ public abstract class DatabaseCacheWatchdog<T>
     private RedisConnectionFactory redisConnectionFactory;
 
     @Autowired
+    private CacheSerializer serializer;
+
+    @Autowired
     private RedissonClient redissonClient;
 
-    private final String tableName;
-    private final Class<T> mappedClass;
-    private final RedisCacheConfiguration cacheConfig;
-
-    private String camelCasePriKeyName;
-    private String underscorePriKeyName;
-
-    private List<String> tableFields;
+    private SrtRepository<T> delegate;
 
     private long delay = 30L;
     private TimeUnit unit = TimeUnit.SECONDS;
@@ -53,22 +48,14 @@ public abstract class DatabaseCacheWatchdog<T>
     private ScheduledExecutorService scheduledExecutorService;
 
     public DatabaseCacheWatchdog(String tableName, Class<T> mappedClass,
-                                 RedisCacheConfiguration redisCacheConfiguration) {
-        this.tableName = tableName;
-        this.mappedClass = mappedClass;
-        this.cacheConfig = redisCacheConfiguration;
-
-        setPrimaryKeyName(this.tableName + "_id");
+                                 SrtRepository<T> delegate) {
+        super(tableName, mappedClass);
+        this.delegate = delegate;
     }
 
     public void setDelay(long delay, TimeUnit unit) {
         this.delay = delay;
         this.unit = unit;
-    }
-
-    public void setPrimaryKeyName(String primaryKeyName) {
-        this.underscorePriKeyName = primaryKeyName;
-        this.camelCasePriKeyName = underscoreToCamelCase(primaryKeyName);
     }
 
     public String underscoreToCamelCase(String string) {
@@ -78,13 +65,9 @@ public abstract class DatabaseCacheWatchdog<T>
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    public String getTableName() {
-        return this.tableName;
-    }
-
     @Override
     public void afterPropertiesSet() {
-        tableFields = loadFields(this.tableName);
+        super.afterPropertiesSet();
 
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(this, 0L, delay, unit);
@@ -97,22 +80,14 @@ public abstract class DatabaseCacheWatchdog<T>
         }
     }
 
-    private List<String> loadFields(String tableName) {
-        List<String> fields = new ArrayList();
-        jdbcTemplate.query("DESCRIBE " + tableName, rch -> {
-            String field = rch.getString("Field");
-            fields.add(field);
-        });
-        return fields;
-    }
-
     @Override
     public void run() {
+        String tableName = getTableName();
         if (logger.isTraceEnabled()) {
             logger.trace("Database/Cache Watchdog for `" + tableName + "` table: investigating...");
         }
 
-        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(this.tableName);
+        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock("rwlock:" + tableName);
         RedisConnection redisConnection = redisConnectionFactory.getConnection();
         try {
             Map<Long, String> checksumFromDatabase = getChecksumFromDatabase();
@@ -148,7 +123,7 @@ public abstract class DatabaseCacheWatchdog<T>
         }
 
 
-        RLock lock = redissonClient.getLock(this.tableName);
+        RLock lock = redissonClient.getLock(getTableName());
         lock.lock();
         try {
             execute();
@@ -162,7 +137,7 @@ public abstract class DatabaseCacheWatchdog<T>
     }
 
     private Map<Long, String> getChecksumFromRedis(RedisConnection redisConnection) {
-        byte[] checksumKey = serializeCacheKey(this.tableName + ":checksum");
+        byte[] checksumKey = serializer.serializeCacheKey(getTableName() + ":checksum");
         Map<byte[], byte[]> hGetAll = redisConnection.hGetAll(checksumKey);
         if (hGetAll == null) {
             hGetAll = Collections.emptyMap();
@@ -177,8 +152,9 @@ public abstract class DatabaseCacheWatchdog<T>
     private Map<Long, String> getChecksumFromDatabase() {
         Map<Long, String> checksumMap = new HashMap();
         String checksumQuery = getChecksumQuery();
+        String underscorePriKeyName = getUnderscorePriKeyName();
         jdbcTemplate.query(checksumQuery, rch -> {
-            checksumMap.put(rch.getLong(this.underscorePriKeyName), rch.getString("checksum"));
+            checksumMap.put(rch.getLong(underscorePriKeyName), rch.getString("checksum"));
         });
         return checksumMap;
     }
@@ -207,43 +183,32 @@ public abstract class DatabaseCacheWatchdog<T>
                                        Map<Long, String> checksumFromDatabase) {
         Map<Long, T> objectFromDatabase = getObjectFromDatabase();
         if (logger.isTraceEnabled()) {
-            logger.trace("Database/Cache Watchdog for `" + tableName + "` table: retrieved object data.");
+            logger.trace("Database/Cache Watchdog for `" + getTableName() + "` table: retrieved object data.");
         }
 
         Map<byte[], byte[]> invalidChecksumMap = new HashMap();
         Map<byte[], byte[]> invalidObjectMap = new HashMap();
         for (Long invalidPrimaryKey : invalidPrimaryKeys) {
-            byte[] field = serializeCacheKey("" + invalidPrimaryKey);
+            byte[] field = serializer.serializeCacheKey("" + invalidPrimaryKey);
 
-            byte[] checksumValue = serializeCacheValue(checksumFromDatabase.get(invalidPrimaryKey));
-            byte[] objectValue = serializeCacheValue(objectFromDatabase.get(invalidPrimaryKey));
+            byte[] checksumValue = serializer.serializeCacheValue(checksumFromDatabase.get(invalidPrimaryKey));
+            byte[] objectValue = serializer.serializeCacheValue(objectFromDatabase.get(invalidPrimaryKey));
 
             invalidChecksumMap.put(field, checksumValue);
             invalidObjectMap.put(field, objectValue);
         }
 
-        byte[] checksumKey = serializeCacheKey(this.tableName + ":checksum");
+        byte[] checksumKey = serializer.serializeCacheKey(getTableName() + ":checksum");
         redisConnection.hMSet(checksumKey, invalidChecksumMap);
 
-        byte[] objectKey = serializeCacheKey(this.tableName);
+        byte[] objectKey = serializer.serializeCacheKey(getTableName());
         redisConnection.hMSet(objectKey, invalidObjectMap);
     }
 
-    private String getChecksumQuery() {
-        return "SELECT " + this.underscorePriKeyName + ", sha1(concat_ws(`" +
-                String.join("`,`", this.tableFields) + "`)) `checksum` FROM " + this.tableName;
-    }
-
-    protected byte[] serializeCacheKey(String cacheKey) {
-        return ByteUtils.getBytes(cacheConfig.getKeySerializationPair().write(cacheKey));
-    }
-
-    protected byte[] serializeCacheValue(Object value) {
-        return ByteUtils.getBytes(cacheConfig.getValueSerializationPair().write(value));
-    }
-
     private Map<Long, T> getObjectFromDatabase() {
-        return findAll().stream()
+        Class<T> mappedClass = getMappedClass();
+        String camelCasePriKeyName = getCamelCasePriKeyName();
+        return this.delegate.findAll().stream()
                 .collect(Collectors.toMap(obj -> {
                     PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(mappedClass, camelCasePriKeyName);
                     try {
@@ -256,6 +221,4 @@ public abstract class DatabaseCacheWatchdog<T>
                     }
                 }, Function.identity()));
     }
-
-    abstract protected List<T> findAll();
 }
