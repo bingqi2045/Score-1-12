@@ -1,7 +1,6 @@
 package org.oagi.srt.cache;
 
 import org.oagi.srt.repository.SrtRepository;
-import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -82,18 +81,33 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
 
     @Override
     public void run() {
+        try {
+            execute();
+        } catch (Throwable t) {
+            logger.error("Database/Cache Watchdog for `" + getTableName() + "` table: get caught an exception.", t);
+        }
+    }
+
+    private void execute() {
         String tableName = getTableName();
         if (logger.isTraceEnabled()) {
             logger.trace("Database/Cache Watchdog for `" + tableName + "` table: investigating...");
         }
 
-        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock("rwlock:" + tableName);
+        String lockName = "rwlock:" + tableName;
+        RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(lockName);
         RedisConnection redisConnection = redisConnectionFactory.getConnection();
         try {
             Map<Long, String> checksumFromDatabase = getChecksumFromDatabase();
             List<Long> invalidPrimaryKeys;
 
-            readWriteLock.readLock().lock();
+            try {
+                if (!readWriteLock.readLock().tryLock(5L, 5L, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("`" + lockName + "` read-lock acquisition failure by time-out.");
+                }
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("`" + lockName + "` read-lock acquisition failure by interrupt.", e);
+            }
             try {
                 Map<Long, String> checksumFromRedis = getChecksumFromRedis(redisConnection);
                 if (logger.isDebugEnabled()) {
@@ -109,7 +123,13 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
                 readWriteLock.readLock().unlock();
             }
 
-            readWriteLock.writeLock().lock();
+            try {
+                if (!readWriteLock.writeLock().tryLock(5L, 5L, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("`" + lockName + "` write-lock acquisition failure by time-out.");
+                }
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("`" + lockName + "` write-lock acquisition failure by interrupt.", e);
+            }
             try {
                 logger.info("Database/Cache Watchdog for `" + tableName + "` table: " + invalidPrimaryKeys.size() + " invalid items found.");
 
@@ -121,19 +141,6 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         } finally {
             redisConnection.close();
         }
-
-
-        RLock lock = redissonClient.getLock(getTableName());
-        lock.lock();
-        try {
-            execute();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void execute() {
-
     }
 
     private Map<Long, String> getChecksumFromRedis(RedisConnection redisConnection) {

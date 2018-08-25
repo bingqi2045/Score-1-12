@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -98,8 +99,15 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
     protected <R> R execute(Function<RedisConnection, R> callback) {
         RedisConnection redisConnection = redisConnectionFactory.getConnection();
         try {
-            RReadWriteLock readWriteLock = redissonClient.getReadWriteLock("rwlock:" + getTableName());
-            readWriteLock.readLock().lock();
+            String lockName = "rwlock:" + getTableName();
+            RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(lockName);
+            try {
+                if (!readWriteLock.readLock().tryLock(5L, 5L, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("`" + lockName + "` read-lock acquisition failure by time-out.");
+                }
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("`" + lockName + "` read-lock acquisition failure by interrupt.", e);
+            }
             try {
                 return callback.apply(redisConnection);
             } finally {
