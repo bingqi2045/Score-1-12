@@ -109,7 +109,7 @@ public class BieService {
     private String GET_BIE_LIST_STATEMENT =
             "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
                     "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
-                    "abie.last_update_timestamp, top_level_abie.state " +
+                    "abie.last_update_timestamp, top_level_abie.state as raw_state " +
                     "FROM top_level_abie " +
                     "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
                     "AND abie.abie_id = top_level_abie.abie_id " +
@@ -124,8 +124,8 @@ public class BieService {
         long userId = sessionService.userId(user);
 
         bieLists.stream().forEach(e -> {
-            BieState state = BieState.valueOf((Integer) e.getState());
-            e.setState(state.name());
+            BieState state = BieState.valueOf(e.getRawState());
+            e.setState(state);
 
             AccessPrivilege accessPrivilege = Prohibited;
             switch (state) {
