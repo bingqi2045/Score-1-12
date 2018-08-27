@@ -1,5 +1,6 @@
 package org.oagi.srt.cache;
 
+import com.google.common.collect.Iterables;
 import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -99,7 +100,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         RedisConnection redisConnection = redisConnectionFactory.getConnection();
         try {
             Map<Long, String> checksumFromDatabase = getChecksumFromDatabase();
-            List<Long> invalidPrimaryKeys;
+            Map<Long, String> invalidPrimaryKeys;
 
             try {
                 if (!readWriteLock.readLock().tryLock(5L, 5L, TimeUnit.SECONDS)) {
@@ -166,11 +167,11 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         return checksumMap;
     }
 
-    private List<Long> getInvalidPrimaryKeys(
+    private Map<Long, String> getInvalidPrimaryKeys(
             Map<Long, String> checksumFromRedis,
             Map<Long, String> checksumFromDatabase
     ) {
-        List<Long> invalidPrimaryKeys = new ArrayList();
+        Map<Long, String> invalidPrimaryKeys = new HashMap();
 
         for (Map.Entry<Long, String> entry : checksumFromDatabase.entrySet()) {
             long priKey = entry.getKey();
@@ -179,37 +180,67 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
                 continue;
             }
 
-            invalidPrimaryKeys.add(priKey);
+            invalidPrimaryKeys.put(priKey, "update");
+        }
+
+        for (Map.Entry<Long, String> entry : checksumFromRedis.entrySet()) {
+            long priKey = entry.getKey();
+            if (!checksumFromDatabase.containsKey(priKey)) {
+                invalidPrimaryKeys.put(priKey, "delete");
+            }
         }
 
         return invalidPrimaryKeys;
     }
 
     private void updateChecksumAndData(RedisConnection redisConnection,
-                                       List<Long> invalidPrimaryKeys,
+                                       Map<Long, String> invalidPrimaryKeys,
                                        Map<Long, String> checksumFromDatabase) {
         Map<Long, T> objectFromDatabase = getObjectFromDatabase();
         if (logger.isTraceEnabled()) {
             logger.trace("Database/Cache Watchdog for `" + getTableName() + "` table: retrieved object data.");
         }
 
-        Map<byte[], byte[]> invalidChecksumMap = new HashMap();
-        Map<byte[], byte[]> invalidObjectMap = new HashMap();
-        for (Long invalidPrimaryKey : invalidPrimaryKeys) {
+        Map<byte[], byte[]> updateChecksumMap = new HashMap();
+        Map<byte[], byte[]> updateObjectMap = new HashMap();
+        List<byte[]> deleteFields = new ArrayList();
+
+        for (Map.Entry<Long, String> entry : invalidPrimaryKeys.entrySet()) {
+            long invalidPrimaryKey = entry.getKey();
             byte[] field = serializer.serializeCacheKey("" + invalidPrimaryKey);
 
-            byte[] checksumValue = serializer.serializeCacheValue(checksumFromDatabase.get(invalidPrimaryKey));
-            byte[] objectValue = serializer.serializeCacheValue(objectFromDatabase.get(invalidPrimaryKey));
+            switch (entry.getValue()) {
+                case "update":
+                    byte[] checksumValue = serializer.serializeCacheValue(checksumFromDatabase.get(invalidPrimaryKey));
+                    byte[] objectValue = serializer.serializeCacheValue(objectFromDatabase.get(invalidPrimaryKey));
 
-            invalidChecksumMap.put(field, checksumValue);
-            invalidObjectMap.put(field, objectValue);
+                    updateChecksumMap.put(field, checksumValue);
+                    updateObjectMap.put(field, objectValue);
+
+                    break;
+
+                case "delete":
+                    deleteFields.add(field);
+                    break;
+            }
         }
 
-        byte[] checksumKey = serializer.serializeCacheKey(getTableName() + ":checksum");
-        redisConnection.hMSet(checksumKey, invalidChecksumMap);
+        if (!updateChecksumMap.isEmpty() && !updateObjectMap.isEmpty()) {
+            byte[] checksumKey = serializer.serializeCacheKey(getTableName() + ":checksum");
+            redisConnection.hMSet(checksumKey, updateChecksumMap);
 
-        byte[] objectKey = serializer.serializeCacheKey(getTableName());
-        redisConnection.hMSet(objectKey, invalidObjectMap);
+            byte[] objectKey = serializer.serializeCacheKey(getTableName());
+            redisConnection.hMSet(objectKey, updateObjectMap);
+        }
+
+        if (!deleteFields.isEmpty()) {
+            byte[] checksumKey = serializer.serializeCacheKey(getTableName() + ":checksum");
+            byte[] objectKey = serializer.serializeCacheKey(getTableName());
+
+            byte[][] fields = Iterables.toArray(deleteFields, byte[].class);
+            redisConnection.hDel(checksumKey, fields);
+            redisConnection.hDel(objectKey, fields);
+        }
     }
 
     private Map<Long, T> getObjectFromDatabase() {
