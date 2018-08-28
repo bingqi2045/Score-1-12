@@ -2,12 +2,13 @@ package org.oagi.srt.gateway.http.api.context_management.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class ContextScheme {
+public class ContextScheme implements Serializable {
 
     private long ctxSchemeId;
     private String guid;

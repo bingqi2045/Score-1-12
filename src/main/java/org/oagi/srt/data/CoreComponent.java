@@ -1,6 +1,4 @@
-package org.oagi.srt.gateway.http.api.cc_management.data;
-
-import org.oagi.srt.gateway.http.api.common.data.Trackable;
+package org.oagi.srt.data;
 
 public interface CoreComponent extends Trackable {
 

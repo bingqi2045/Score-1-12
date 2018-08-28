@@ -72,7 +72,7 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
 
     private List<String> loadFields(String tableName) {
         List<String> fields = new ArrayList();
-        jdbcTemplate.query("DESCRIBE " + tableName, rch -> {
+        jdbcTemplate.query("DESCRIBE `" + tableName + "`", rch -> {
             String field = rch.getString("Field");
             fields.add(field);
         });

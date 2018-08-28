@@ -1,14 +1,15 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import lombok.Data;
+import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCopyRequest;
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
-import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.redis.event.EventListenerContainer;
+import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Init;
+import static org.oagi.srt.data.BieState.Init;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -47,6 +48,9 @@ public class BieCopyService implements InitializingBean {
 
     @Autowired
     private BieRepository repository;
+
+    @Autowired
+    private TopLevelAbieRepository topLevelAbieRepository;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -74,7 +78,7 @@ public class BieCopyService implements InitializingBean {
         long bizCtxId = request.getBizCtxId();
         long userId = sessionService.userId(user);
 
-        TopLevelAbie sourceTopLevelAbie = repository.getTopLevelAbieById(sourceTopLevelAbieId);
+        TopLevelAbie sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
         long copiedTopLevelAbieId =
                 repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Init);
 
@@ -140,10 +144,10 @@ public class BieCopyService implements InitializingBean {
 
         public BieCopyContext(BieCopyRequestEvent bieCopyRequestEvent) {
             long sourceTopLevelAbieId = bieCopyRequestEvent.getSourceTopLevelAbieId();
-            sourceTopLevelAbie = repository.getTopLevelAbieById(sourceTopLevelAbieId);
+            sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
 
             long copiedTopLevelAbieId = bieCopyRequestEvent.getCopiedTopLevelAbieId();
-            copiedTopLevelAbie = repository.getTopLevelAbieById(copiedTopLevelAbieId);
+            copiedTopLevelAbie = topLevelAbieRepository.findById(copiedTopLevelAbieId);
 
             bizCtxId = bieCopyRequestEvent.getBizCtxId();
             userId = bieCopyRequestEvent.getUserId();

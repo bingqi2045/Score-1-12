@@ -1,13 +1,13 @@
-package org.oagi.srt.gateway.http.api.bie_management.service;
+package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
+import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
-import org.oagi.srt.gateway.http.api.cc_management.repository.CoreComponentRepository;
-import org.oagi.srt.gateway.http.api.common.data.OagisComponentType;
-import org.oagi.srt.gateway.http.api.common.data.SeqKeySupportable;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.redisson.api.RLock;
@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
-import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Editing;
+import static org.oagi.srt.data.BieState.Editing;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -41,9 +41,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Autowired
     private BieRepository repository;
-
-    @Autowired
-    private CoreComponentRepository coreComponentRepository;
 
     @Autowired
     private SessionService sessionService;

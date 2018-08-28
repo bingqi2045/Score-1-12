@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.srt.gateway.http.api.bie_management.data.BieState.Editing;
+import static org.oagi.srt.data.BieState.Editing;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 

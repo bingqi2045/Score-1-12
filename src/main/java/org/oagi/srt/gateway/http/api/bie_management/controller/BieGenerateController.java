@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.oagi.srt.gateway.http.api.bie_management.data.expression.BieGenerateExpressionResult;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieGenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +39,13 @@ public class BieGenerateController {
         GenerateExpressionOption option =
                 objectMapper.convertValue(params, GenerateExpressionOption.class);
 
-        BieGenerateService.GenerateBieExpression generateBieExpression = service.generate(user, topLevelAbieIds, option);
+        BieGenerateExpressionResult bieGenerateExpressionResult = service.generate(user, topLevelAbieIds, option);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + generateBieExpression.getFilename() + "\"")
-                .contentType(MediaType.parseMediaType(generateBieExpression.getContentType()))
-                .contentLength(generateBieExpression.getFile().length())
-                .body(new InputStreamResource(new FileInputStream(generateBieExpression.getFile())));
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + bieGenerateExpressionResult.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType(bieGenerateExpressionResult.getContentType()))
+                .contentLength(bieGenerateExpressionResult.getFile().length())
+                .body(new InputStreamResource(new FileInputStream(bieGenerateExpressionResult.getFile())));
     }
 
     private Map<String, Object> convertValue(String data) {

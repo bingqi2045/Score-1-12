@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.api.bie_management.data;
+package org.oagi.srt.data;
 
 import lombok.Data;
 

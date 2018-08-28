@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.common.data;
 
 import lombok.Data;
+import org.oagi.srt.data.Trackable;
 
 @Data
 public class TrackableImpl implements Trackable {

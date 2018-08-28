@@ -14,4 +14,7 @@ public class GenerateExpressionOption {
     private boolean bieOagiSrtMetaData;
     private boolean basedCcMetaData;
 
+    private String expressionOption;
+    private String packageOption;
+
 }

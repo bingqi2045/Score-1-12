@@ -1,6 +1,5 @@
 package org.oagi.srt.repository;
 
-import org.oagi.srt.data.BdtPriRestri;
 import org.oagi.srt.data.BdtScPriRestri;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

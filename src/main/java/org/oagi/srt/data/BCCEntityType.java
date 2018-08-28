@@ -1,15 +1,13 @@
-package org.oagi.srt.gateway.http.api.bie_management.data;
+package org.oagi.srt.data;
 
-public enum BieState {
+public enum BCCEntityType {
 
-    Init(1),
-    Editing(2),
-    Candidate(3),
-    Published(4);
+    Attribute(0),
+    Element(1);
 
     private final int value;
 
-    BieState(int value) {
+    BCCEntityType(int value) {
         this.value = value;
     }
 
@@ -17,8 +15,8 @@ public enum BieState {
         return value;
     }
 
-    public static BieState valueOf(int value) {
-        for (BieState state : BieState.values()) {
+    public static BCCEntityType valueOf(int value) {
+        for (BCCEntityType state : BCCEntityType.values()) {
             if (state.getValue() == value) {
                 return state;
             }

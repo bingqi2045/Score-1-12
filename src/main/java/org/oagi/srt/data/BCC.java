@@ -2,7 +2,6 @@ package org.oagi.srt.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import org.oagi.srt.gateway.http.api.cc_management.data.CoreComponent;
 
 import java.util.Date;
 

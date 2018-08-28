@@ -1,7 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;

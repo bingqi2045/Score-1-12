@@ -2,8 +2,10 @@ package org.oagi.srt.gateway.http.api.context_management.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class BusinessContextValue {
+public class BusinessContextValue implements Serializable {
 
     private long bizCtxValueId;
     private String guid;

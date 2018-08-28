@@ -1,11 +1,10 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
-import org.oagi.srt.gateway.http.api.common.data.OagisComponentType;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -15,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -213,16 +211,6 @@ public class BieRepository {
         return bccList.stream().collect(groupingBy(BieEditBcc::getGuid)).values().stream()
                 .map(e -> CcUtility.getLatestEntity(releaseId, e))
                 .filter(e -> e != null).collect(Collectors.toList());
-    }
-
-    public TopLevelAbie getTopLevelAbieById(long topLevelAbieId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("top_level_abie_id", topLevelAbieId);
-
-        return jdbcTemplate.queryForObject(
-                "SELECT top_level_abie_id, abie_id, owner_user_id, release_id, state " +
-                        "FROM top_level_abie WHERE top_level_abie_id = :top_level_abie_id",
-                parameterSource, TopLevelAbie.class);
     }
 
     public long createTopLevelAbie(long userId, long releaseId, BieState state) {

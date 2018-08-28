@@ -1,13 +1,14 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.gateway.http.api.bie_management.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAbie;
+import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
-import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
+import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
+import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,7 @@ public class BieEditService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private SessionService sessionService;
-
-    @Autowired
-    private BieRepository repository;
+    private TopLevelAbieRepository topLevelAbieRepository;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -44,7 +39,7 @@ public class BieEditService {
         DefaultBieEditTreeController bieEditTreeController =
                 applicationContext.getBean(DefaultBieEditTreeController.class);
 
-        TopLevelAbie topLevelAbie = repository.getTopLevelAbieById(topLevelAbieId);
+        TopLevelAbie topLevelAbie = topLevelAbieRepository.findById(topLevelAbieId);
         bieEditTreeController.initialize(user, topLevelAbie);
 
         return bieEditTreeController;

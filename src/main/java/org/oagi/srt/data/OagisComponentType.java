@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.api.common.data;
+package org.oagi.srt.data;
 
 public enum OagisComponentType {
 

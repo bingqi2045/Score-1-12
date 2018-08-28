@@ -1,10 +1,12 @@
 package org.oagi.srt.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DTSC implements Serializable {
 
     private long dtScId;
@@ -17,5 +19,9 @@ public class DTSC implements Serializable {
     private int cardinalityMin;
     private int cardinalityMax;
     private Long basedDtScId;
+
+    public String getDen() {
+        return getPropertyTerm() + ". " + getRepresentationTerm();
+    }
 
 }

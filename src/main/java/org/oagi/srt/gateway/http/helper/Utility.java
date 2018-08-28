@@ -1,9 +1,28 @@
 package org.oagi.srt.gateway.http.helper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Utility {
+
+    public static String first(String den, boolean upp) {
+        den = den.substring(0, den.indexOf(".")).replace("_", " ").replaceAll(" ", "").replaceAll("Identifier", "ID");
+        if (upp == false)
+            den = den.substring(0, 1).toLowerCase() + den.substring(1);
+        return den;
+    }
+
+    public static String second(String den, boolean upp) {
+        den = den.substring(den.indexOf(".") + 2, den.length());
+        den = den.indexOf(".") == -1 ? den.replaceAll("-", "").replaceAll(" ", "") : den.substring(0, den.indexOf(".")).replaceAll("-", "").replaceAll(" ", "").replaceAll("Identifier", "ID");
+        if (upp == false)
+            den = den.substring(0, 1).toLowerCase() + den.substring(1);
+        return den;
+    }
 
     public static String spaceSeparator(String str) {//Assume that we only take into account TypeName
         if (str.equals("mimeCode")) {
@@ -74,5 +93,81 @@ public class Utility {
             str = str.replace("BOD s", "BODs");
         }
         return str;
+    }
+
+    public static String toCamelCase(final String init) {
+        if (init == null)
+            return null;
+
+        final StringBuilder ret = new StringBuilder(init.length());
+
+        for (String word : init.split(" ")) {
+            if (word.startsWith("_"))
+                word = word.substring(0, 1);
+            if (word.startsWith(" "))
+                word = word.substring(0, 1);
+            if (word.toLowerCase().contains("identifier")) {
+                int posStart = -1;
+                int posEnd = -1;
+
+                posStart = word.toLowerCase().indexOf("identifier");
+                posEnd = posStart + "identifier".length();
+
+                String str1 = word.substring(0, posStart);
+                String str2 = word.substring(posEnd);
+
+                ret.append(str1 + "ID" + str2);
+
+            } else if (!word.isEmpty()) {
+                ret.append(word.substring(0, 1).toUpperCase());
+                ret.append(word.substring(1));
+            }
+        }
+        return ret.toString();
+    }
+
+    public static String toLowerCamelCase(final String init) {
+        if (init == null)
+            return null;
+
+        final StringBuilder ret = new StringBuilder(init.length());
+
+        int cnt = 0;
+
+        for (String word : init.split(" ")) {
+            if (word.startsWith("_"))
+                word = word.substring(0, 1);
+            if (word.startsWith(" "))
+                word = word.substring(0, 1);
+            if (word.toLowerCase().contains("identifier")) {
+                int posStart = -1;
+                int posEnd = -1;
+
+                posStart = word.toLowerCase().indexOf("identifier");
+                posEnd = posStart + "identifier".length();
+
+                String str1 = word.substring(0, posStart);
+                String str2 = word.substring(posEnd);
+
+                ret.append(str1 + "ID" + str2);
+
+            } else {
+                if (!word.isEmpty() && cnt != 0) {
+                    ret.append(word.substring(0, 1).toUpperCase());
+                    ret.append(word.substring(1).toLowerCase());
+                } else if (!word.isEmpty() && cnt == 0) {
+                    ret.append(word.substring(0, 1).toLowerCase());
+                    ret.append(word.substring(1).toLowerCase());
+                }
+            }
+            cnt++;
+        }
+        return ret.toString();
+    }
+
+    public static String toZuluTimeString(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormat.format(date);
     }
 }

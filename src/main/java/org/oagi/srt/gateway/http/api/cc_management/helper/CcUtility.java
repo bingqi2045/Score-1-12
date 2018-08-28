@@ -1,6 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.helper;
 
-import org.oagi.srt.gateway.http.api.common.data.Trackable;
+import org.oagi.srt.data.Trackable;
 
 import java.util.Comparator;
 import java.util.List;
