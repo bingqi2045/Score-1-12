@@ -83,21 +83,26 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     private String camelCase(String... terms) {
-        String term = Arrays.stream(terms).filter(e -> !StringUtils.isEmpty(e))
-                .collect(Collectors.joining());
+        /*
+         * Issue #542
+         */
+        String term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
         if (StringUtils.isEmpty(term)) {
             throw new IllegalArgumentException();
         }
-        String s = term.replaceAll(" ", "");
 
-        if (s.length() > 3 &&
-                Character.isUpperCase(s.charAt(0)) &&
-                Character.isUpperCase(s.charAt(1)) &&
-                Character.isUpperCase(s.charAt(2))) {
-            return s;
-        }
+        return Character.toLowerCase(term.charAt(0)) + term.substring(1);
+    }
 
-        return Character.toLowerCase(s.charAt(0)) + s.substring(1);
+    private String _camelCase(String term) {
+        return Arrays.stream(term.split(" ")).filter(e -> !StringUtils.isEmpty(e))
+                .map(e -> {
+                    if (e.length() > 1) {
+                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toUpperCase();
+                    } else {
+                        return e.toUpperCase();
+                    }
+                }).collect(Collectors.joining());
     }
 
     private void fillProperties(Map<String, Object> parent,
