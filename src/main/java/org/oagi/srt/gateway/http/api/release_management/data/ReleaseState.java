@@ -14,4 +14,13 @@ public enum ReleaseState {
     public int getValue() {
         return value;
     }
+
+    public static ReleaseState valueOf(int value) {
+        for (ReleaseState state : ReleaseState.values()) {
+            if (state.getValue() == value) {
+                return state;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value: " + value);
+    }
 }
