@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.namespace_management.controller;
 
 import org.oagi.srt.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.srt.gateway.http.api.namespace_management.data.NamespaceList;
+import org.oagi.srt.gateway.http.api.namespace_management.data.SimpleNamespace;
 import org.oagi.srt.gateway.http.api.namespace_management.service.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,6 +18,12 @@ public class NamespaceController {
 
     @Autowired
     private NamespaceService service;
+
+    @RequestMapping(value = "/simple_namespaces", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<SimpleNamespace> getSimpleNamespaces() {
+        return service.getSimpleNamespaces();
+    }
 
     @RequestMapping(value = "/namespace_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.module_management.service;
 
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleList;
-import org.oagi.srt.gateway.http.api.module_management.data.SimpleModule;
+import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,6 +45,36 @@ public class ModuleService {
         });
 
         return moduleLists;
+    }
+
+    public Module getModule(User user, long moduleId) {
+        Module module = jdbcTemplate.queryForObject("SELECT m.`module_id`, m.`module`, m.`namespace_id` " +
+                "FROM `module` m WHERE m.`module_id` = :module_id", newSqlParameterSource()
+                .addValue("module_id", moduleId), Module.class);
+        module.setModuleDependencies(getModuleDependencies(moduleId));
+        return module;
+    }
+
+    private List<ModuleDependency> getModuleDependencies(long moduleId) {
+        List<ModuleDependency> moduleDependencies = new ArrayList();
+
+        moduleDependencies.addAll(
+                jdbcTemplate.queryForList("SELECT `module_dep_id`, '" + ModuleDependencyType.Include.name() + "' as dependency_type, " +
+                        "`depended_module_id` as related_module_id FROM `module_dep` " +
+                        "WHERE `depending_module_id` = :module_id AND `dependency_type` = :dependency_type", newSqlParameterSource()
+                        .addValue("module_id", moduleId)
+                        .addValue("dependency_type", ModuleDependencyType.Include.getValue()), ModuleDependency.class)
+        );
+
+        moduleDependencies.addAll(
+                jdbcTemplate.queryForList("SELECT `module_dep_id`, '" + ModuleDependencyType.Import.name() + "' as dependency_type, " +
+                        "`depending_module_id` as related_module_id FROM `module_dep` " +
+                        "WHERE `depended_module_id` = :module_id AND `dependency_type` = :dependency_type", newSqlParameterSource()
+                        .addValue("module_id", moduleId)
+                        .addValue("dependency_type", ModuleDependencyType.Import.getValue()), ModuleDependency.class)
+        );
+
+        return moduleDependencies;
     }
 
 }

@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.namespace_management.service;
 
 import org.oagi.srt.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.srt.gateway.http.api.namespace_management.data.NamespaceList;
+import org.oagi.srt.gateway.http.api.namespace_management.data.SimpleNamespace;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class NamespaceService {
 
     @Autowired
     private SessionService sessionService;
+
+    public List<SimpleNamespace> getSimpleNamespaces() {
+        return jdbcTemplate.queryForList("SELECT `namespace_id`, `uri` FROM `namespace`", SimpleNamespace.class);
+    }
 
     public List<NamespaceList> getNamespaceList(User user) {
         long userId = sessionService.userId(user);
