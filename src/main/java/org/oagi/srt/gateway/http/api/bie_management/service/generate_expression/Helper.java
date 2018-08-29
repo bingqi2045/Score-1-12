@@ -29,14 +29,14 @@ class Helper {
     static CodeList getCodeList(GenerationContext generationContext, BBIE bbie, DT bdt) {
         CodeList codeList = null;
 
-        if (bbie.getCodeListId() != 0) {
+        if (bbie.getCodeListId() != null) {
             codeList = generationContext.findCodeList(bbie.getCodeListId());
         }
 
         if (codeList == null) {
             BdtPriRestri bdtPriRestri =
                     generationContext.findBdtPriRestri(bbie.getBdtPriRestriId());
-            if (bdtPriRestri != null && bdtPriRestri.getCodeListId() != 0) {
+            if (bdtPriRestri != null && bdtPriRestri.getCodeListId() != null) {
                 codeList = generationContext.findCodeList(bdtPriRestri.getCodeListId());
             }
         }
@@ -44,7 +44,7 @@ class Helper {
         if (codeList == null) {
             BdtPriRestri bdtPriRestri =
                     generationContext.findBdtPriRestriByBdtIdAndDefaultIsTrue(bdt.getDtId());
-            if (bdtPriRestri != null && bdtPriRestri.getCodeListId() != 0) {
+            if (bdtPriRestri != null && bdtPriRestri.getCodeListId() != null) {
                 codeList = generationContext.findCodeList(bdtPriRestri.getCodeListId());
             }
         }

@@ -2,8 +2,10 @@ package org.oagi.srt.gateway.http.api.bie_management.service.generate_expression
 
 import org.oagi.srt.data.*;
 import org.oagi.srt.repository.*;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -12,8 +14,11 @@ import java.util.stream.Collectors;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
+@Component
 @Scope(SCOPE_PROTOTYPE)
-public class GenerationContext {
+public class GenerationContext implements InitializingBean {
+
+    private TopLevelAbie topLevelAbie;
 
     @Autowired
     private AgencyIdListRepository agencyIdListRepository;
@@ -105,8 +110,20 @@ public class GenerationContext {
     @Autowired
     private ReleaseRepository releaseRepository;
 
+    public void setTopLevelAbie(TopLevelAbie topLevelAbie) {
+        this.topLevelAbie = topLevelAbie;
+    }
 
-    public GenerationContext(TopLevelAbie topLevelAbie) {
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (topLevelAbie == null) {
+            throw new IllegalStateException("'topLevelAbie' parameter must not be null.");
+        }
+
+        init(topLevelAbie);
+    }
+
+    private void init(TopLevelAbie topLevelAbie) {
         List<BdtPriRestri> bdtPriRestriList = bdtPriRestriRepository.findAll();
         findBdtPriRestriByBdtIdAndDefaultIsTrueMap = bdtPriRestriList.stream()
                 .filter(e -> e.isDefault())
@@ -326,7 +343,7 @@ public class GenerationContext {
 
     private Map<Long, AgencyIdList> findAgencyIdListMap;
 
-    public AgencyIdList findAgencyIdList(long agencyIdListId) {
+    public AgencyIdList findAgencyIdList(Long agencyIdListId) {
         return findAgencyIdListMap.get(agencyIdListId);
     }
 

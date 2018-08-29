@@ -17,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
@@ -26,6 +27,7 @@ import static org.oagi.srt.gateway.http.api.bie_management.service.generate_expr
 import static org.oagi.srt.gateway.http.helper.Utility.toZuluTimeString;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
+@Component
 @Scope(SCOPE_PROTOTYPE)
 public class BieXMLGenerateExpression implements BieGenerateExpression, InitializingBean {
 
@@ -43,6 +45,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     @Autowired
     private ApplicationContext applicationContext;
+
     private GenerationContext generationContext;
 
     @Override
