@@ -24,6 +24,5 @@ spring:
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.jdbc: DEBUG
+    org.springframework: INFO
     org.oagi.srt: TRACE

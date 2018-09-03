@@ -23,57 +23,63 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/node/{type}/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/{type}/{releaseId:[\\d]+}/{id:[\\d]+}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
-                            @PathVariable("id") long ccId,
-                            @RequestParam(value = "releaseId", required = false) long releaseId) {
+                            @PathVariable("releaseId") long releaseId,
+                            @PathVariable("id") long ccId) {
         switch (type) {
             case "acc":
-                return getAccNode(user, ccId, releaseId);
+                return getAccNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             case "asccp":
-                return getAsccpNode(user, ccId, releaseId);
+                return getAsccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             case "bccp":
-                return getBccpNode(user, ccId, releaseId);
+                return getBccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             default:
                 throw new UnsupportedOperationException();
         }
     }
 
-    private CcAccNode getAccNode(User user, long accId, long releaseId) {
+    private CcAccNode getAccNode(User user, long accId, Long releaseId) {
         return service.getAccNode(user, accId, releaseId);
     }
 
-    private CcAsccpNode getAsccpNode(User user, long asccpId, long releaseId) {
+    private CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
         return service.getAsccpNode(user, asccpId, releaseId);
     }
 
-    private CcBccpNode getBccpNode(User user, long bccpId, long releaseId) {
+    private CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
-    @RequestMapping(value = "/core_component/node/children/acc", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/children/acc/{releaseId:[\\d]+}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<CcNode> getAccNodeChildren(@AuthenticationPrincipal User user,
-                                           @RequestParam("data") String data) {
+    public List<? extends CcNode> getAccNodeChildren(@AuthenticationPrincipal User user,
+                                                     @PathVariable("releaseId") long releaseId,
+                                                     @RequestParam("data") String data) {
         CcAccNode accNode = convertValue(data, CcAccNode.class);
+        accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
         return service.getDescendants(user, accNode);
     }
 
-    @RequestMapping(value = "/core_component/node/children/asccp", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/children/asccp/{releaseId:[\\d]+}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<CcNode> getAsccpNodeChildren(@AuthenticationPrincipal User user,
-                                             @RequestParam("data") String data) {
+    public List<? extends CcNode> getAsccpNodeChildren(@AuthenticationPrincipal User user,
+                                                       @PathVariable("releaseId") long releaseId,
+                                                       @RequestParam("data") String data) {
         CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
+        asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
         return service.getDescendants(user, asccpNode);
     }
 
-    @RequestMapping(value = "/core_component/node/children/bccp", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/children/bccp/{releaseId:[\\d]+}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<CcNode> getBccpNodeChildren(@AuthenticationPrincipal User user,
-                                            @RequestParam("data") String data) {
+    public List<? extends CcNode> getBccpNodeChildren(@AuthenticationPrincipal User user,
+                                                      @PathVariable("releaseId") long releaseId,
+                                                      @RequestParam("data") String data) {
         CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
+        bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
         return service.getDescendants(user, bccpNode);
     }
 

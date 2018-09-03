@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -20,28 +19,28 @@ public class CcNodeService {
     @Autowired
     private CcNodeRepository repository;
 
-    public CcAccNode getAccNode(User user, long accId, long releaseId) {
+    public CcAccNode getAccNode(User user, long accId, Long releaseId) {
         return repository.getAccNode(accId, releaseId);
     }
 
-    public CcAsccpNode getAsccpNode(User user, long asccpId, long releaseId) {
+    public CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
         return repository.getAsccpNode(asccpId, releaseId);
     }
 
-    public CcBccpNode getBccpNode(User user, long bccpId, long releaseId) {
+    public CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
         return repository.getBccpNode(bccpId, releaseId);
     }
 
-    public List<CcNode> getDescendants(User user, CcAccNode accNode) {
-        return Collections.emptyList();
+    public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
+        return repository.getDescendants(user, accNode);
     }
 
-    public List<CcNode> getDescendants(User user, CcAsccpNode asccpNode) {
-        return Collections.emptyList();
+    public List<? extends CcNode> getDescendants(User user, CcAsccpNode asccpNode) {
+        return repository.getDescendants(user, asccpNode);
     }
 
-    public List<CcNode> getDescendants(User user, CcBccpNode bccpNode) {
-        return Collections.emptyList();
+    public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
+        return repository.getDescendants(user, bccpNode);
     }
 
 }

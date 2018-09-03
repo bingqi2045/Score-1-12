@@ -1,8 +1,8 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
-import org.oagi.srt.data.ASCCP;
 import org.oagi.srt.data.ACC;
+import org.oagi.srt.data.ASCCP;
 import org.oagi.srt.data.BCC;
 import org.oagi.srt.data.BCCP;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
@@ -40,7 +40,6 @@ public class CcListService {
 
     public PageResponse<CcList> getCcList(long releaseId, CcListTypes types, List<CcState> states,
                                           String filter, PageRequest pageRequest) {
-
 
         List<CcList> ccLists = getCoreComponents(releaseId, types, states, filter);
         Stream<CcList> ccListStream = ccLists.stream();
@@ -103,15 +102,19 @@ public class CcListService {
 
     private Predicate<CcList> getDenFilter(String filter) {
         if (!StringUtils.isEmpty(filter)) {
-            List<String> filters = Arrays.asList(filter.toLowerCase().split(" "));
+            List<String> filters = Arrays.asList(filter.toLowerCase().split(" ")).stream()
+                    .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
 
             return coreComponent -> {
-                List<String> den = Arrays.asList(coreComponent.getDen().toLowerCase().split(" "));
+                List<String> den = Arrays.asList(coreComponent.getDen().toLowerCase().split(" ")).stream()
+                        .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
+
                 for (String partialFilter : filters) {
                     if (!den.contains(partialFilter)) {
                         return false;
                     }
                 }
+
                 return true;
             };
         } else {
