@@ -29,19 +29,37 @@ public class CcNodeRepository {
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
 
-    public CcAccNode getAccNode(long accId, Long releaseId) {
+    public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
-                "acc_id, guid, den as name, based_acc_id, oagis_component_type, " +
+                "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
                 "revision_num, revision_tracking_num, release_id, current_acc_id " +
                 "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
                 .addValue("accId", accId), CcAccNode.class);
+        return arrangeAccNode(accNode, releaseId);
+    }
 
+    public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
+        CcAccNode accNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
+                "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
+                "revision_num, revision_tracking_num, release_id, current_acc_id " +
+                "FROM acc WHERE current_acc_id = :currentAccId", newSqlParameterSource()
+                .addValue("currentAccId", currentAccId), CcAccNode.class));
+        return arrangeAccNode(accNode, releaseId);
+    }
+
+    private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
         accNode.setGroup(oagisComponentType.isGroup());
         accNode.setHasChild(hasChild(accNode, releaseId));
 
         return accNode;
+    }
+
+    public long getCurrentAccIdByAccId(long accId) {
+        return jdbcTemplate.queryForObject("SELECT current_acc_id " +
+                "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
+                .addValue("accId", accId), Long.class);
     }
 
     private boolean hasChild(CcAccNode accNode, Long releaseId) {
@@ -129,7 +147,13 @@ public class CcNodeRepository {
                 "SELECT based_acc_id FROM acc WHERE acc_id = :accId", newSqlParameterSource()
                         .addValue("accId", accNode.getAccId()), Long.class);
         if (basedAccId != null) {
-            CcAccNode basedAccNode = getAccNode(basedAccId, accNode.getReleaseId());
+            Long releaseId = accNode.getReleaseId();
+            CcAccNode basedAccNode;
+            if (releaseId == null) {
+                basedAccNode = getAccNodeByAccId(basedAccId, releaseId);
+            } else {
+                basedAccNode = getAccNodeByCurrentAccId(basedAccId, releaseId);
+            }
             descendants.add(basedAccNode);
         }
 
@@ -200,7 +224,12 @@ public class CcNodeRepository {
                 "SELECT role_of_acc_id FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
                         .addValue("asccpId", asccpId), Long.class);
 
-        return Arrays.asList(getAccNode(roleOfAccId, asccpNode.getReleaseId()));
+        Long releaseId = asccpNode.getReleaseId();
+        if (releaseId == null) {
+            return Arrays.asList(getAccNodeByAccId(roleOfAccId, releaseId));
+        } else {
+            return Arrays.asList(getAccNodeByCurrentAccId(roleOfAccId, releaseId));
+        }
     }
 
     public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
@@ -288,7 +317,8 @@ public class CcNodeRepository {
 
     public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
         long bdtScId = bdtScNode.getBdtScId();
-        return jdbcTemplate.queryForObject("SELECT dt_sc_id as bdt_sc_id, guid, den, " +
+        return jdbcTemplate.queryForObject("SELECT dt_sc_id as bdt_sc_id, guid, " +
+                "CONCAT(property_term, '. ', representation_term) as den, " +
                 "cardinality_min, cardinality_max, definition " +
                 "FROM dt_sc WHERE dt_sc_id = :bdtScId", newSqlParameterSource()
                 .addValue("bdtScId", bdtScId), CcBdtScNodeDetail.class);

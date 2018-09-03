@@ -17,7 +17,12 @@ public class CcNodeService {
     private CcNodeRepository repository;
 
     public CcAccNode getAccNode(User user, long accId, Long releaseId) {
-        return repository.getAccNode(accId, releaseId);
+        if (releaseId == null) {
+            return repository.getAccNodeByAccId(accId, releaseId);
+        } else {
+            long currentAccId = repository.getCurrentAccIdByAccId(accId);
+            return repository.getAccNodeByCurrentAccId(accId, releaseId);
+        }
     }
 
     public CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
