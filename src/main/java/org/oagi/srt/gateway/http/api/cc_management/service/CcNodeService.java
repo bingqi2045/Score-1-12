@@ -1,9 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAccNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAsccpNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcNode;
+import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -41,6 +38,22 @@ public class CcNodeService {
 
     public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
         return repository.getDescendants(user, bccpNode);
+    }
+
+    public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
+        return repository.getAccNodeDetail(user, accNode);
+    }
+
+    public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
+        return repository.getAsccpNodeDetail(user, asccpNode);
+    }
+
+    public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {
+        return repository.getBccpNodeDetail(user, bccpNode);
+    }
+
+    public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
+        return repository.getBdtScNodeDetail(user, bdtScNode);
     }
 
 }

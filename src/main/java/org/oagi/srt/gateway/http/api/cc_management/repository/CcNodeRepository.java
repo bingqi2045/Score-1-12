@@ -30,7 +30,7 @@ public class CcNodeRepository {
     private SrtJdbcTemplate jdbcTemplate;
 
     public CcAccNode getAccNode(long accId, Long releaseId) {
-        CcAccNode accNode = jdbcTemplate.queryForObject("SELECT 'acc' as type, " +
+        CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
                 "acc_id, guid, den as name, based_acc_id, oagis_component_type, " +
                 "revision_num, revision_tracking_num, release_id, current_acc_id " +
                 "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
@@ -91,7 +91,7 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode getAsccpNode(long asccpId, Long releaseId) {
-        CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT 'asccp' as type, " +
+        CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "asccp_id, guid, property_term as name, " +
                 "revision_num, revision_tracking_num, release_id " +
                 "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
@@ -103,7 +103,7 @@ public class CcNodeRepository {
     }
 
     public CcBccpNode getBccpNode(long bccpId, Long releaseId) {
-        CcBccpNode bccpNode = jdbcTemplate.queryForObject("SELECT 'bccp' as type, " +
+        CcBccpNode bccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "bccp_id, guid, property_term as name, bdt_id, " +
                 "revision_num, revision_tracking_num, release_id " +
                 "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
@@ -206,10 +206,91 @@ public class CcNodeRepository {
     public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
         long bccpId = bccpNode.getBccpId();
 
-        return jdbcTemplate.queryForList("SELECT 'bdt_sc' as type, dt_sc.dt_sc_id as bdt_sc_id, dt_sc.guid, " +
+        return jdbcTemplate.queryForList("SELECT dt_sc.dt_sc_id as bdt_sc_id, dt_sc.guid, " +
                         "CONCAT(dt_sc.property_term, '. ', dt_sc.representation_term) as name " +
-                        "FROM dt_sc JOIN bccp ON dt_sc.owner_dt_id = bccp.bdt_id WHERE bccp.bccp_id = :bccpId",
+                        "FROM dt_sc JOIN bccp ON dt_sc.owner_dt_id = bccp.bdt_id " +
+                        "WHERE bccp.bccp_id = :bccpId AND (dt_sc.cardinality_min != 0 OR dt_sc.cardinality_max != 0)",
                 newSqlParameterSource()
                         .addValue("bccpId", bccpId), CcBdtScNode.class);
+    }
+
+    public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
+        long accId = accNode.getAccId();
+
+        return jdbcTemplate.queryForObject("SELECT acc_id, guid, object_class_term, den, " +
+                "oagis_component_type as component_type, " +
+                "is_abstract as abstracted, is_deprecated as deprecated, definition " +
+                "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
+                .addValue("accId", accId), CcAccNodeDetail.class);
+    }
+
+    public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
+        CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
+
+        long asccId = asccpNode.getAsccId();
+        if (asccId > 0L) {
+            CcAsccpNodeDetail.Ascc ascc =
+                    jdbcTemplate.queryForObject("SELECT ascc_id, guid, den, cardinality_min, cardinality_max, " +
+                            "is_deprecated as deprecated, definition " +
+                            "FROM ascc WHERE ascc_id = :asccId", newSqlParameterSource()
+                            .addValue("asccId", asccId), CcAsccpNodeDetail.Ascc.class);
+            asccpNodeDetail.setAscc(ascc);
+        }
+
+        long asccpId = asccpNode.getAsccpId();
+        CcAsccpNodeDetail.Asccp asccp =
+                jdbcTemplate.queryForObject("SELECT asccp_id, guid, property_term, den, " +
+                        "reusable_indicator as reusable, is_deprecated as deprecated, definition " +
+                        "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
+                        .addValue("asccpId", asccpId), CcAsccpNodeDetail.Asccp.class);
+        asccpNodeDetail.setAsccp(asccp);
+
+        return asccpNodeDetail;
+    }
+
+    public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {
+        CcBccpNodeDetail bccpNodeDetail = new CcBccpNodeDetail();
+
+        long bccId = bccpNode.getBccId();
+        if (bccId > 0L) {
+            CcBccpNodeDetail.Bcc bcc =
+                    jdbcTemplate.queryForObject("SELECT bcc_id, guid, den, entity_type, " +
+                            "cardinality_min, cardinality_max, " +
+                            "is_nillable as nillable, is_deprecated as deprecated, " +
+                            "default_value, definition " +
+                            "FROM bcc WHERE bcc_id = :bccId", newSqlParameterSource()
+                            .addValue("bccId", bccId), CcBccpNodeDetail.Bcc.class);
+            bccpNodeDetail.setBcc(bcc);
+        }
+
+        long bccpId = bccpNode.getBccpId();
+        CcBccpNodeDetail.Bccp bccp =
+                jdbcTemplate.queryForObject("SELECT bccp_id, guid, property_term, den, " +
+                        "is_nillable as nillable, is_deprecated as deprecated, " +
+                        "default_value, definition " +
+                        "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
+                        .addValue("bccpId", bccpId), CcBccpNodeDetail.Bccp.class);
+        bccpNodeDetail.setBccp(bccp);
+
+        long bdtId = jdbcTemplate.queryForObject("SELECT bdt_id " +
+                "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
+                .addValue("bccpId", bccpId), Long.class);
+
+        CcBccpNodeDetail.Bdt bdt =
+                jdbcTemplate.queryForObject("SELECT dt_id as bdt_id, guid, " +
+                        "data_type_term, qualifier, den, definition " +
+                        "FROM dt WHERE dt_id = :bdtId", newSqlParameterSource()
+                        .addValue("bdtId", bdtId), CcBccpNodeDetail.Bdt.class);
+        bccpNodeDetail.setBdt(bdt);
+
+        return bccpNodeDetail;
+    }
+
+    public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
+        long bdtScId = bdtScNode.getBdtScId();
+        return jdbcTemplate.queryForObject("SELECT dt_sc_id as bdt_sc_id, guid, den, " +
+                "cardinality_min, cardinality_max, definition " +
+                "FROM dt_sc WHERE dt_sc_id = :bdtScId", newSqlParameterSource()
+                .addValue("bdtScId", bdtScId), CcBdtScNodeDetail.class);
     }
 }

@@ -1,10 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAccNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAsccpNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcNode;
+import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,7 +20,8 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/node/{type}/{releaseId:[\\d]+}/{id:[\\d]+}", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/{type}/{releaseId:[\\d]+}/{id:[\\d]+}",
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
@@ -53,34 +51,29 @@ public class CcNodeController {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
-    @RequestMapping(value = "/core_component/node/children/acc/{releaseId:[\\d]+}", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/node/children/{type}/{releaseId:[\\d]+}",
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<? extends CcNode> getAccNodeChildren(@AuthenticationPrincipal User user,
-                                                     @PathVariable("releaseId") long releaseId,
-                                                     @RequestParam("data") String data) {
-        CcAccNode accNode = convertValue(data, CcAccNode.class);
-        accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
-        return service.getDescendants(user, accNode);
-    }
-
-    @RequestMapping(value = "/core_component/node/children/asccp/{releaseId:[\\d]+}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<? extends CcNode> getAsccpNodeChildren(@AuthenticationPrincipal User user,
-                                                       @PathVariable("releaseId") long releaseId,
-                                                       @RequestParam("data") String data) {
-        CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
-        asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
-        return service.getDescendants(user, asccpNode);
-    }
-
-    @RequestMapping(value = "/core_component/node/children/bccp/{releaseId:[\\d]+}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<? extends CcNode> getBccpNodeChildren(@AuthenticationPrincipal User user,
-                                                      @PathVariable("releaseId") long releaseId,
-                                                      @RequestParam("data") String data) {
-        CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
-        bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
-        return service.getDescendants(user, bccpNode);
+    public List<? extends CcNode> getNodeChildren(@AuthenticationPrincipal User user,
+                                                  @PathVariable("type") String type,
+                                                  @PathVariable("releaseId") long releaseId,
+                                                  @RequestParam("data") String data) {
+        switch (type) {
+            case "acc":
+                CcAccNode accNode = convertValue(data, CcAccNode.class);
+                accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getDescendants(user, accNode);
+            case "asccp":
+                CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
+                asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getDescendants(user, asccpNode);
+            case "bccp":
+                CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
+                bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getDescendants(user, bccpNode);
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     private <T> T convertValue(String data, Class<T> clazz) {
@@ -90,5 +83,34 @@ public class CcNodeController {
             params.put(keyValue[0], keyValue[1]);
         });
         return objectMapper.convertValue(params, clazz);
+    }
+
+    @RequestMapping(value = "/core_component/node/detail/{type}/{releaseId:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
+                                      @PathVariable("type") String type,
+                                      @PathVariable("releaseId") long releaseId,
+                                      @RequestParam("data") String data) {
+        switch (type) {
+            case "acc":
+                CcAccNode accNode = convertValue(data, CcAccNode.class);
+                accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getAccNodeDetail(user, accNode);
+            case "asccp":
+                CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
+                asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getAsccpNodeDetail(user, asccpNode);
+            case "bccp":
+                CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
+                bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getBccpNodeDetail(user, bccpNode);
+            case "bdt_sc":
+                CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
+                bdtScNode.setReleaseId((releaseId == 0L) ? null : releaseId);
+                return service.getBdtScNodeDetail(user, bdtScNode);
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

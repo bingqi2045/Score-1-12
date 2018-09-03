@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CcAccNode extends CcNode {
 
+    private String type = "acc";
+
     private long accId;
     private Long basedAccId;
     private Long currentAccId;

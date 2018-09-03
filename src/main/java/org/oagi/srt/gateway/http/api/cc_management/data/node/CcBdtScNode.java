@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CcBdtScNode extends CcNode {
 
+    private String type = "bdt_sc";
+
     private long bdtScId;
 
 }

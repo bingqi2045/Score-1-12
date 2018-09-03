@@ -8,7 +8,6 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 @EqualsAndHashCode(callSuper = true)
 public class CcNode extends TrackableImpl {
 
-    private String type;
     private String guid;
     private String name;
     private boolean hasChild;
