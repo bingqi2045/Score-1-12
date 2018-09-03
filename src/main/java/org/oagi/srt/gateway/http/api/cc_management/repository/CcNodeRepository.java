@@ -108,7 +108,7 @@ public class CcNodeRepository {
         private String guid;
     }
 
-    public CcAsccpNode getAsccpNode(long asccpId, Long releaseId) {
+    public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "asccp_id, guid, property_term as name, " +
                 "revision_num, revision_tracking_num, release_id " +
@@ -120,12 +120,38 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public CcBccpNode getBccpNode(long bccpId, Long releaseId) {
+    public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
+        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
+                jdbcTemplate.queryForList("SELECT " +
+                        "asccp_id, guid, property_term as name, " +
+                        "revision_num, revision_tracking_num, release_id " +
+                        "FROM asccp WHERE current_asccp_id = :currentAsccpId", newSqlParameterSource()
+                        .addValue("currentAsccpId", currentAsccpId), CcAsccpNode.class));
+
+        asccpNode.setHasChild(true); // role_of_acc_id must not be null.
+
+        return asccpNode;
+    }
+
+    public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
         CcBccpNode bccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "bccp_id, guid, property_term as name, bdt_id, " +
                 "revision_num, revision_tracking_num, release_id " +
                 "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
                 .addValue("bccpId", bccpId), CcBccpNode.class);
+
+        bccpNode.setHasChild(hasChild(bccpNode));
+
+        return bccpNode;
+    }
+
+    public CcBccpNode getBccpNodeByCurrentBccpId(long currentBccpId, Long releaseId) {
+        CcBccpNode bccpNode = CcUtility.getLatestEntity(releaseId,
+                jdbcTemplate.queryForList("SELECT " +
+                        "bccp_id, guid, property_term as name, bdt_id, " +
+                        "revision_num, revision_tracking_num, release_id " +
+                        "FROM bccp WHERE current_bccp_id = :currentBccpId", newSqlParameterSource()
+                        .addValue("currentBccpId", currentBccpId), CcBccpNode.class));
 
         bccpNode.setHasChild(hasChild(bccpNode));
 
@@ -192,7 +218,13 @@ public class CcNodeRepository {
                         .collect(Collectors.toList());
 
         return asccNodes.stream().map(asccNode -> {
-            CcAsccpNode asccpNode = getAsccpNode(asccNode.getToAsccpId(), releaseId);
+            CcAsccpNode asccpNode;
+            if (releaseId == null) {
+                asccpNode = getAsccpNodeByAsccpId(asccNode.getToAsccpId(), releaseId);
+            } else {
+                asccpNode = getAsccpNodeByCurrentAsccpId(asccNode.getToAsccpId(), releaseId);
+            }
+
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
             return asccpNode;
@@ -210,7 +242,12 @@ public class CcNodeRepository {
                         .collect(Collectors.toList());
 
         return bccNodes.stream().map(bccNode -> {
-            CcBccpNode bccpNode = getBccpNode(bccNode.getToBccpId(), releaseId);
+            CcBccpNode bccpNode;
+            if (releaseId == null) {
+                bccpNode = getBccpNodeByBccpId(bccNode.getToBccpId(), releaseId);
+            } else {
+                bccpNode = getBccpNodeByCurrentBccpId(bccNode.getToBccpId(), releaseId);
+            }
             bccpNode.setSeqKey(bccNode.getSeqKey());
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());

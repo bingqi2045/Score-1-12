@@ -17,20 +17,15 @@ public class CcNodeService {
     private CcNodeRepository repository;
 
     public CcAccNode getAccNode(User user, long accId, Long releaseId) {
-        if (releaseId == null) {
-            return repository.getAccNodeByAccId(accId, releaseId);
-        } else {
-            long currentAccId = repository.getCurrentAccIdByAccId(accId);
-            return repository.getAccNodeByCurrentAccId(accId, releaseId);
-        }
+        return repository.getAccNodeByAccId(accId, releaseId);
     }
 
     public CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
-        return repository.getAsccpNode(asccpId, releaseId);
+        return repository.getAsccpNodeByAsccpId(asccpId, releaseId);
     }
 
     public CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
-        return repository.getBccpNode(bccpId, releaseId);
+        return repository.getBccpNodeByBccpId(bccpId, releaseId);
     }
 
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
