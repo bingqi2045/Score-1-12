@@ -7,7 +7,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://docker:3306/oagi?useSSL=false
+    url: jdbc:mysql://docker:33306/oagi?useSSL=false
     username: oagi
     password: oagi
 
@@ -18,12 +18,11 @@ spring:
     type: redis
 
   redis:
-    host: docker
+    host: localhost
     port: 6379
 
 
 logging:
   level:
     org.springframework.security: DEBUG
-    org.springframework.jdbc: DEBUG
-    org.oagi.srt: TRACE
+    org.oagi.srt: DEBUG
