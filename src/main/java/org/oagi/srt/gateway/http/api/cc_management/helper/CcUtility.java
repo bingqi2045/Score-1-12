@@ -79,13 +79,13 @@ public class CcUtility {
         }
     };
 
-    public static <T extends Trackable> T getLatestEntity(long releaseId, List<T> entities) {
+    public static <T extends Trackable> T getLatestEntity(Long releaseId, List<T> entities) {
         if (entities == null || entities.isEmpty()) {
             return null;
         }
 
         Stream<T> filteredEntities;
-        if (releaseId == 0L) {
+        if (releaseId == null || releaseId == 0L) {
             filteredEntities = entities.stream()
                     .filter(e -> e.getReleaseId() == null);
         } else {
@@ -99,13 +99,13 @@ public class CcUtility {
         return filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
     }
 
-    public static <T extends Trackable> String getRevision(long releaseId, List<T> entities) {
+    public static <T extends Trackable> String getRevision(Long releaseId, List<T> entities) {
         if (entities == null || entities.isEmpty()) {
             return null;
         }
 
         Stream<T> filteredEntities = entities.stream().filter(e -> e.getRevisionNum() > 0 && e.getRevisionTrackingNum() > 0);
-        if (releaseId > 0L) {
+        if (releaseId != null && releaseId > 0L) {
             filteredEntities = filteredEntities.filter(e -> {
                 Long entityReleaseId = e.getReleaseId();
                 return (entityReleaseId != null) && (entityReleaseId <= releaseId);

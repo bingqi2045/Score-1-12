@@ -42,7 +42,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
 
     private SrtRepository<T> delegate;
 
-    private long delay = 30L;
+    private long delay = 300L;
     private TimeUnit unit = TimeUnit.SECONDS;
 
     private ScheduledExecutorService scheduledExecutorService;
