@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class CcNodeService {
 
     @Autowired
@@ -54,6 +53,10 @@ public class CcNodeService {
 
     public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
         return repository.getBdtScNodeDetail(user, bdtScNode);
+    }
+
+    public long createAcc (User user, CcAccNodeDetail ccAccNode){
+        return repository.createAcc(user, ccAccNode);
     }
 
 }

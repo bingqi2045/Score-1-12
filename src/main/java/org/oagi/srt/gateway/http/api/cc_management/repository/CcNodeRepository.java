@@ -5,18 +5,20 @@ import lombok.EqualsAndHashCode;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -28,6 +30,9 @@ public class CcNodeRepository {
 
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private SessionService sessionService;
 
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
@@ -45,6 +50,31 @@ public class CcNodeRepository {
                 "FROM acc WHERE current_acc_id = :currentAccId", newSqlParameterSource()
                 .addValue("currentAccId", currentAccId), CcAccNode.class));
         return arrangeAccNode(accNode, releaseId);
+    }
+
+    public long createAcc(User user, CcAccNodeDetail ccAccNode) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("acc")
+                .usingColumns("guid", "object_class_term", "den","owner_user_id",
+                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
+                .usingGeneratedKeyColumns("acc_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("object_class_term", ccAccNode.getObjectClassTerm())
+                .addValue("den", "forcedValue")
+                .addValue("owner_user_id", userId)
+                .addValue("created_by", userId)
+                .addValue("state", CcState.Editing.getValue())
+                .addValue("last_updated_by", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long accNode = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return accNode;
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {

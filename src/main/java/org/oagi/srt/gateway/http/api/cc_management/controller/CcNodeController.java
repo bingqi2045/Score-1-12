@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,14 @@ public class CcNodeController {
 
     private CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
         return service.getBccpNode(user, bccpId, releaseId);
+    }
+
+    @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
+    public ResponseEntity create(
+            @AuthenticationPrincipal User user,
+            @RequestBody CcAccNodeDetail ccAccNode) {
+        service.createAcc(user, ccAccNode);
+        return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/core_component/node/children/{type}/{releaseId:[\\d]+}",
