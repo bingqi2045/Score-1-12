@@ -231,6 +231,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 BieEditAscc ascc = (BieEditAscc) assoc;
                 BieEditAsbie asbie = asbieMap.get(ascc.getAsccId());
                 BieEditAsbiepNode asbiepNode = createAsbiepNode(fromAbieId, seqKey++, asbie, ascc);
+                if (asbiepNode == null) {
+                    seqKey--;
+                    continue;
+                }
 
                 OagisComponentType oagisComponentType = repository.getOagisComponentTypeByAccId(asbiepNode.getAccId());
                 if (oagisComponentType.isGroup()) {
@@ -319,6 +323,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditAcc acc;
         if (asbiepNode.getAccId() == 0L) {
             acc = repository.getAccByCurrentAccId(asccp.getRoleOfAccId(), releaseId);
+            if (acc == null) {
+                return null;
+            }
             asbiepNode.setAccId(acc.getAccId());
         } else {
             acc = repository.getAcc(asbiepNode.getAccId());
