@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
 @Data
 public class CcAccNodeDetail implements CcNodeDetail {
@@ -13,4 +14,5 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private boolean abstracted;
     private boolean deprecated;
     private String definition;
+    private CcState state;
 }
