@@ -27,6 +27,10 @@ public class CcNodeService {
         return repository.getBccpNodeByBccpId(bccpId, releaseId);
     }
 
+    public int getAccMaxId (){
+        return repository.getAccMaxId();
+    }
+
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
         return repository.getDescendants(user, accNode);
     }
@@ -55,8 +59,12 @@ public class CcNodeService {
         return repository.getBdtScNodeDetail(user, bdtScNode);
     }
 
-    public long createAcc (User user, CcAccNodeDetail ccAccNode){
+    public long createAcc (User user, CcAccNode ccAccNode){
         return repository.createAcc(user, ccAccNode);
+    }
+
+    public void updateAcc (User user, CcAccNode ccAccNode) {
+        repository.updateAcc(user, ccAccNode);
     }
 
 }

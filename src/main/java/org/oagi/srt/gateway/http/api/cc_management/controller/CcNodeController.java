@@ -52,10 +52,26 @@ public class CcNodeController {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
+    @RequestMapping(value = "/core_component/acc/create2",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public int getAccMaxId(){
+        return service.getAccMaxId();
+    }
+
+    @RequestMapping(value = "/core_component/acc/", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity update(
+            @AuthenticationPrincipal User user,
+            @RequestBody CcAccNode ccAccNode) {
+        service.updateAcc(user, ccAccNode);
+        return ResponseEntity.noContent().build();
+    }
+
     @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,
-            @RequestBody CcAccNodeDetail ccAccNode) {
+            @RequestBody CcAccNode ccAccNode) {
         service.createAcc(user, ccAccNode);
         return ResponseEntity.noContent().build();
     }

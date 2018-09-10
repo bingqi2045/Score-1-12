@@ -10,6 +10,8 @@ public class CcAccNode extends CcNode {
     private String type = "acc";
 
     private long accId;
+    private String den;
+    private String guid;
     private String objectClassTerm;
     private Long basedAccId;
     private Long currentAccId;
