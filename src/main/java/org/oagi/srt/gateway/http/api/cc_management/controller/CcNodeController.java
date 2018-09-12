@@ -55,7 +55,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/create2",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public int getAccMaxId(){
+    public int getAccMaxId() {
         return service.getAccMaxId();
     }
 

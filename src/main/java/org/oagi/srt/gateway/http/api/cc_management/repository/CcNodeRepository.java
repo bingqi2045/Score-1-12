@@ -10,7 +10,6 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -55,7 +54,7 @@ public class CcNodeRepository {
     public long createAcc(User user, CcAccNode ccAccNode) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
-                .usingColumns("guid", "object_class_term", "den","owner_user_id",
+                .usingColumns("guid", "object_class_term", "den", "owner_user_id",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
 
@@ -70,26 +69,24 @@ public class CcNodeRepository {
                 .addValue("state", CcState.Editing.getValue())
                 .addValue("last_updated_by", userId)
                 .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp)
-                .addValue("definition", "test def value");
+                .addValue("last_update_timestamp", timestamp);
 
         long accNode = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return accNode;
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
-        System.out.println(ccAccNode);
-        jdbcTemplate.update("UPDATE `acc` SET  `guid` = :guid, " +
-                "`object_class_term` = : object_class_term, `den` = :den, `oagisComponentType` = :oagisComponentType " +
+        jdbcTemplate.update("UPDATE `acc` SET " +
+                "`object_class_term` = :object_class_term, `den` = :den, " +
+                "`oagis_component_type` = :oagis_component_type " +
                 "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("den", ccAccNode.getDen())
-                .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
+                .addValue("oagis_component_type", ccAccNode.getOagisComponentType()));
     }
 
-    public int getAccMaxId (){
-        return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc ", int.class);
+    public int getAccMaxId() {
+        return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc", Integer.class);
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
