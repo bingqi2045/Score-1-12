@@ -1,12 +1,14 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextSchemeValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
-import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -37,57 +40,77 @@ public class ContextSchemeService {
     @Autowired
     private SessionService sessionService;
 
-    private String GET_CONTEXT_SCHEME_LIST_STATEMENT =
-            "SELECT ctx_scheme_id, ctx_scheme.guid, scheme_name, ctx_scheme.ctx_category_id, ctx_category.name as ctx_category_name," +
-                    "scheme_id, scheme_agency_id, scheme_version_id, ctx_scheme.description, last_update_timestamp " +
-                    "FROM ctx_scheme JOIN ctx_category ON ctx_scheme.ctx_category_id = ctx_category.ctx_category_id";
+    @Autowired
+    private DSLContext dslContext;
 
     public List<ContextScheme> getContextSchemeList() {
-        return jdbcTemplate.queryForList(GET_CONTEXT_SCHEME_LIST_STATEMENT, ContextScheme.class);
+        return dslContext.select(
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.GUID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.CTX_CATEGORY_ID,
+                CTX_CATEGORY.NAME.as("ctx_category_name"),
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.DESCRIPTION,
+                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
+        ).from(CTX_SCHEME)
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .fetchInto(ContextScheme.class);
     }
 
-    private String GET_CONTEXT_SCHEME_STATEMENT =
-            "SELECT ctx_scheme_id, ctx_scheme.guid, scheme_name, ctx_scheme.ctx_category_id, ctx_category.name as ctx_category_name," +
-                    "scheme_id, scheme_agency_id, scheme_version_id, ctx_scheme.description " +
-                    "FROM ctx_scheme JOIN ctx_category ON ctx_scheme.ctx_category_id = ctx_category.ctx_category_id " +
-                    "WHERE ctx_scheme_id = :ctx_scheme_id";
-
     public ContextScheme getContextScheme(long ctxSchemeId) {
-        ContextScheme contextScheme = jdbcTemplate.queryForObject(GET_CONTEXT_SCHEME_STATEMENT,
-                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
-                ContextScheme.class);
+        ContextScheme contextScheme = dslContext.select(
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.GUID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.CTX_CATEGORY_ID,
+                CTX_CATEGORY.NAME.as("ctx_category_name"),
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.DESCRIPTION,
+                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
+        ).from(CTX_SCHEME)
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .fetchOneInto(ContextScheme.class);
         contextScheme.setCtxSchemeValues(getContextSchemeValuesByOwnerCtxSchemeId(ctxSchemeId));
         return contextScheme;
     }
 
-    private String GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT =
-            "SELECT ctx_scheme_value_id, guid, `value`, meaning FROM ctx_scheme_value " +
-                    "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
-
     public List<ContextSchemeValue> getContextSchemeValuesByOwnerCtxSchemeId(long ctxSchemeId) {
-        return jdbcTemplate.queryForList(GET_CONTEXT_SCHEME_VALUE_LIST_STATEMENT,
-                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
-                ContextSchemeValue.class);
+        return dslContext.select(
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.GUID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING
+        ).from(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .fetchInto(ContextSchemeValue.class);
     }
-
-    private String GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT =
-            "SELECT ctx_scheme_id, scheme_name, scheme_id, scheme_agency_id, scheme_version_id " +
-                    "FROM ctx_scheme WHERE ctx_category_id = :ctx_category_id";
 
     public List<SimpleContextScheme> getSimpleContextSchemeList(long ctxCategoryId) {
-        return jdbcTemplate.queryForList(GET_SIMPLE_CONTEXT_SCHEME_LIST_STATEMENT,
-                newSqlParameterSource().addValue("ctx_category_id", ctxCategoryId),
-                SimpleContextScheme.class);
+        return dslContext.select(
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID
+        ).from(CTX_SCHEME)
+                .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
+                .fetchInto(SimpleContextScheme.class);
     }
 
-    private String GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT =
-            "SELECT ctx_scheme_value_id, `value`, meaning FROM ctx_scheme_value " +
-                    "WHERE owner_ctx_scheme_id = :ctx_scheme_id";
-
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
-        return jdbcTemplate.queryForList(GET_SIMPLE_CONTEXT_SCHEME_VALUE_LIST_STATEMENT,
-                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
-                SimpleContextSchemeValue.class);
+        return dslContext.select(
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING
+        ).from(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .fetchInto(SimpleContextSchemeValue.class);
     }
 
     @Transactional

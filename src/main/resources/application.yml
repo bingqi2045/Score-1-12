@@ -11,6 +11,9 @@ spring:
     username: oagi
     password: oagi
 
+  jooq:
+    sql-dialect: mysql_5_7
+
   session:
     store-type: redis
 
@@ -25,4 +28,5 @@ spring:
 logging:
   level:
     org.springframework: INFO
+    org.jooq: DEBUG
     org.oagi.srt: TRACE

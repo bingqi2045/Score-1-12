@@ -22,6 +22,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+
+        <jOOQ.version>3.11.5</jOOQ.version>
+        <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 
     <dependencies>
@@ -46,6 +49,23 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.46</version>
         </dependency>
+        <!-- jOOQ -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-codegen</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
@@ -110,6 +130,45 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jOOQ.version}</version>
+                <executions>
+                    <execution>
+                        <id>jooq-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <jdbc>
+                        <driver>com.mysql.jdbc.Driver</driver>
+                        <url>jdbc:mysql://docker:3306/oagi</url>
+                        <user>oagi</user>
+                        <password>oagi</password>
+                    </jdbc>
+
+                    <generator>
+                        <name>org.jooq.codegen.JavaGenerator</name>
+
+                        <database>
+                            <name>org.jooq.meta.mysql.MySQLDatabase</name>
+                            <inputSchema>oagi</inputSchema>
+                            <includes>.*</includes>
+                            <excludes></excludes>
+                        </database>
+
+                        <target>
+                            <packageName>org.oagi.srt.entity.jooq</packageName>
+                            <directory>${project.build.sourceDirectory}</directory>
+                        </target>
+                    </generator>
+                </configuration>
             </plugin>
         </plugins>
     </build>

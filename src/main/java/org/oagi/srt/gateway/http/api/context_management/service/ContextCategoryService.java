@@ -1,17 +1,19 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextCategory;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.CTX_CATEGORY;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -21,32 +23,36 @@ public class ContextCategoryService {
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
 
-    private String GET_CONTEXT_CATEGORY_LIST_STATEMENT =
-            "SELECT ctx_category_id, guid, `name`, description FROM ctx_category";
+    @Autowired
+    private DSLContext dslContext;
 
     public List<ContextCategory> getContextCategoryList() {
-        return jdbcTemplate.queryForList(GET_CONTEXT_CATEGORY_LIST_STATEMENT,
-                ContextCategory.class);
+        return dslContext.select(
+                CTX_CATEGORY.CTX_CATEGORY_ID,
+                CTX_CATEGORY.GUID,
+                CTX_CATEGORY.NAME,
+                CTX_CATEGORY.DESCRIPTION
+        ).from(CTX_CATEGORY)
+                .fetchInto(ContextCategory.class);
     }
-
-    private String GET_SIMPLE_CONTEXT_CATEGORY_LIST_STATEMENT =
-            "SELECT ctx_category_id, `name` FROM ctx_category";
 
     public List<SimpleContextCategory> getSimpleContextCategoryList() {
-        return jdbcTemplate.queryForList(GET_SIMPLE_CONTEXT_CATEGORY_LIST_STATEMENT,
-                SimpleContextCategory.class);
+        return dslContext.select(
+                CTX_CATEGORY.CTX_CATEGORY_ID,
+                CTX_CATEGORY.NAME
+        ).from(CTX_CATEGORY)
+                .fetchInto(SimpleContextCategory.class);
     }
 
-    private String GET_CONTEXT_CATEGORY_STATEMENT =
-            "SELECT ctx_category_id, guid, `name`, description FROM ctx_category " +
-                    "WHERE ctx_category_id = :ctx_category_id";
-
     public ContextCategory getContextCategory(long ctxCategoryId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("ctx_category_id", ctxCategoryId);
-
-        return jdbcTemplate.queryForObject(GET_CONTEXT_CATEGORY_STATEMENT, parameterSource,
-                ContextCategory.class);
+        return dslContext.select(
+                CTX_CATEGORY.CTX_CATEGORY_ID,
+                CTX_CATEGORY.GUID,
+                CTX_CATEGORY.NAME,
+                CTX_CATEGORY.DESCRIPTION
+        ).from(CTX_CATEGORY)
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
+                .fetchOneInto(ContextCategory.class);
     }
 
     @Transactional

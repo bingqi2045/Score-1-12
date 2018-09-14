@@ -411,3 +411,4 @@ public class CcNodeRepository {
                 .addValue("bdtScId", bdtScId), CcBdtScNodeDetail.class);
     }
 }
+
