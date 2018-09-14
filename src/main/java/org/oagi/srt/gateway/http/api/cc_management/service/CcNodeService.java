@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class CcNodeService {
 
     @Autowired
@@ -28,7 +27,7 @@ public class CcNodeService {
         return repository.getBccpNodeByBccpId(bccpId, releaseId);
     }
     @Transactional
-    public int getAccMaxId() {
+    public int getAccMaxId (){
         return repository.getAccMaxId();
     }
 
@@ -64,9 +63,8 @@ public class CcNodeService {
     public long createAcc (User user, CcAccNode ccAccNode){
         return repository.createAcc(user, ccAccNode);
     }
-
     @Transactional
-    public void updateAcc(User user, CcAccNode ccAccNode) {
+    public void updateAcc (User user, CcAccNode ccAccNode, long accId) {
         repository.updateAcc(user, ccAccNode);
     }
 

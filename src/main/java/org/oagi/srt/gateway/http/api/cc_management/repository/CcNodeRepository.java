@@ -91,18 +91,10 @@ public class CcNodeRepository {
                 .addValue("isAbstract", ccAccNode.isAbstract())
                 .addValue("definition", ccAccNode.getDefinition())
                 .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
-
-        jdbcTemplate.update("UPDATE `acc` SET " +
-                "`object_class_term` = :object_class_term, `den` = :den, " +
-                "`oagis_component_type` = :oagis_component_type " +
-                "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("object_class_term", ccAccNode.getObjectClassTerm())
-                .addValue("den", ccAccNode.getDen())
-                .addValue("oagis_component_type", ccAccNode.getOagisComponentType()));
     }
 
-    public int getAccMaxId() {
-        return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc", Integer.class);
+    public int getAccMaxId (){
+        return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc ", int.class);
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
