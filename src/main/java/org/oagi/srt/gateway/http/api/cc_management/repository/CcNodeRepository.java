@@ -55,15 +55,16 @@ public class CcNodeRepository {
     public long createAcc(User user, CcAccNode ccAccNode) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
-                .usingColumns("guid", "object_class_term", "den","owner_user_id",
+                .usingColumns("guid", "object_class_term", "den","owner_user_id", "definition", "oagis_component_type",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
-
+        System.out.println("ccAcc node   =" + ccAccNode);
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
+                .addValue("oagis_component_type", ccAccNode.getOagisComponentType())
                 .addValue("den", ccAccNode.getDen())
                 .addValue("owner_user_id", userId)
                 .addValue("created_by", userId)
@@ -71,20 +72,24 @@ public class CcNodeRepository {
                 .addValue("last_updated_by", userId)
                 .addValue("creation_timestamp", timestamp)
                 .addValue("last_update_timestamp", timestamp)
-                .addValue("definition", "test def value");
+                .addValue("definition", ccAccNode.getDefinition());
 
         long accNode = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         return accNode;
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
-        System.out.println(ccAccNode);
-        jdbcTemplate.update("UPDATE `acc` SET  `guid` = :guid, " +
-                "`object_class_term` = : object_class_term, `den` = :den, `oagisComponentType` = :oagisComponentType " +
+        jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, `guid` = :guid, " +
+                "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
+                "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
                 "WHERE acc_id = :acc_id", newSqlParameterSource()
+                .addValue("acc_id",ccAccNode.getAccId())
                 .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("den", ccAccNode.getDen())
+                .addValue("isDeprecated", ccAccNode.isDeprecated())
+                .addValue("isAbstract", ccAccNode.isAbstract())
+                .addValue("definition", ccAccNode.getDefinition())
                 .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
     }
 

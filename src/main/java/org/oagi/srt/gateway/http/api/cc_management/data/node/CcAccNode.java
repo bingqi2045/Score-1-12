@@ -16,6 +16,9 @@ public class CcAccNode extends CcNode {
     private Long basedAccId;
     private Long currentAccId;
     private int oagisComponentType;
+    private String definition;
     private boolean group;
+    private boolean isDeprecated;
+    private boolean isAbstract;
 
 }

@@ -52,23 +52,28 @@ public class CcNodeController {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
-    @RequestMapping(value = "/core_component/acc/create2",
+    @RequestMapping(value = "/core_component/acc2",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public int getAccMaxId(){
         return service.getAccMaxId();
     }
 
-    @RequestMapping(value = "/core_component/acc/", method = RequestMethod.POST,
+    @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity update(
+    public void update(
             @AuthenticationPrincipal User user,
+            @PathVariable("id") long accId,
             @RequestBody CcAccNode ccAccNode) {
-        service.updateAcc(user, ccAccNode);
-        return ResponseEntity.noContent().build();
+        accId = ccAccNode.getAccId();
+        System.out.println("===================================");
+        System.out.println("acc node = " + ccAccNode);
+        System.out.println("===================================");
+
+        service.updateAcc(user, ccAccNode, accId);
     }
 
-    @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
+    @RequestMapping(value = "/core_component/acc", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,
             @RequestBody CcAccNode ccAccNode) {
