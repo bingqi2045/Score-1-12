@@ -1,11 +1,13 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
-import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -32,58 +35,65 @@ public class BusinessContextService {
     @Autowired
     private SessionService sessionService;
 
-    private String GET_BUSINESS_CONTEXT_LIST_STATEMENT =
-            "SELECT biz_ctx_id, guid, `name`, last_update_timestamp FROM biz_ctx";
+    @Autowired
+    private DSLContext dslContext;
 
     public List<BusinessContext> getBusinessContextList() {
-        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_LIST_STATEMENT, BusinessContext.class);
+        return dslContext.select(
+                BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.GUID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                .from(BIZ_CTX)
+                .fetchInto(BusinessContext.class);
     }
 
-    private String GET_BUSINESS_CONTEXT_STATEMENT =
-            "SELECT biz_ctx_id, guid, `name`, last_update_timestamp FROM biz_ctx " +
-                    "WHERE biz_ctx_id = :biz_ctx_id";
-
     public BusinessContext getBusinessContext(long bizCtxId) {
-        BusinessContext bizCtx =
-                jdbcTemplate.queryForObject(GET_BUSINESS_CONTEXT_STATEMENT,
-                        newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
-                        BusinessContext.class);
+        BusinessContext bizCtx = dslContext.select(
+                BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.GUID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP
+        ).from(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchOneInto(BusinessContext.class);
 
         bizCtx.setBizCtxValues(getBusinessContextValuesByBizCtxId(bizCtxId));
         return bizCtx;
     }
 
-    private String GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT =
-            "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx";
-
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return jdbcTemplate.queryForList(GET_SIMPLE_BUSINESS_CONTEXT_LIST_STATEMENT,
-                SimpleBusinessContext.class);
+        return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP
+        ).from(BIZ_CTX)
+                .fetchInto(SimpleBusinessContext.class);
     }
-
-    private String GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT =
-            "SELECT biz_ctx_id, `name`, last_update_timestamp FROM biz_ctx WHERE biz_ctx_id = :biz_ctx_id";
 
     public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        return jdbcTemplate.queryForObject(GET_SIMPLE_BUSINESS_CONTEXT_STATEMENT,
-                newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
-                SimpleBusinessContext.class);
+        return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP
+        ).from(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchOneInto(SimpleBusinessContext.class);
     }
 
-    private String GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT =
-            "SELECT biz_ctx_value_id, " +
-                    "ctx_category.ctx_category_id, ctx_category.name as ctx_category_name, " +
-                    "ctx_scheme.ctx_scheme_id, ctx_scheme.scheme_name as ctx_scheme_name, " +
-                    "ctx_scheme_value.ctx_scheme_value_id, ctx_scheme_value.value as ctx_scheme_value " +
-                    "FROM biz_ctx_value JOIN ctx_scheme_value ON biz_ctx_value.ctx_scheme_value_id = ctx_scheme_value.ctx_scheme_value_id " +
-                    "JOIN ctx_scheme ON ctx_scheme_value.owner_ctx_scheme_id = ctx_scheme.ctx_scheme_id " +
-                    "JOIN ctx_category ON ctx_scheme.ctx_category_id = ctx_category.ctx_category_id " +
-                    "WHERE biz_ctx_id = :biz_ctx_id";
-
     public List<BusinessContextValue> getBusinessContextValuesByBizCtxId(long bizCtxId) {
-        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_VALUE_LIST_STATEMENT,
-                newSqlParameterSource().addValue("biz_ctx_id", bizCtxId),
-                BusinessContextValue.class);
+        return dslContext.select(
+                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                CTX_CATEGORY.CTX_CATEGORY_ID,
+                CTX_CATEGORY.NAME.as("ctx_category_name"),
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.SCHEME_NAME.as("ctx_scheme_name"),
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value")
+        ).from(BIZ_CTX_VALUE)
+                .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchInto(BusinessContextValue.class);
     }
 
     @Transactional
