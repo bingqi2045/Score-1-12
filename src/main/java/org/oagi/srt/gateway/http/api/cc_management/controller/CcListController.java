@@ -67,6 +67,6 @@ public class CcListController {
     @RequestMapping(value = "/core_component/bccs/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BCC> getBccs(@PathVariable("id") long id) {
-        return service.getBccs(id);
+        return service.getBccListByFromAccId(id);
     }
 }

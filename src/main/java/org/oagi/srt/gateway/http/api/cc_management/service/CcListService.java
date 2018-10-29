@@ -1,13 +1,11 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
-import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.data.BCC;
-import org.oagi.srt.data.BCCP;
+import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -193,7 +191,20 @@ public class CcListService {
                 "FROM acc " +
                 "WHERE acc_id = :acc_id", newSqlParameterSource()
                 .addValue("acc_id", id), ACC.class);
+    }
 
+    public ACC getAccByCurrentAccId(long currentAccId, long releaseId) {
+        List<ACC> accList = jdbcTemplate.queryForList("SELECT acc.acc_id, acc.guid, " +
+                "acc.object_class_term, acc.den, " +
+                "acc.definition, acc.definition_source, acc.based_acc_id, acc.object_class_qualifier, " +
+                "acc.oagis_component_type, acc.created_by, acc.owner_user_id, acc.last_updated_by, acc.creation_timestamp, " +
+                "acc.last_update_timestamp, acc.state, acc.module_id, acc.namespace_id, acc.release_id, " +
+                "acc.revision_num, acc.revision_tracking_num, acc.revision_action, acc.current_acc_id, " +
+                "acc.is_deprecated, acc.is_abstract " +
+                "FROM acc " +
+                "WHERE revision_num > 0 AND current_acc_id = :current_acc_id", newSqlParameterSource()
+                .addValue("current_acc_id", currentAccId), ACC.class);
+        return CcUtility.getLatestEntity(releaseId, accList);
     }
 
     public BCCP getBccp(long id) {
@@ -208,10 +219,18 @@ public class CcListService {
                 "FROM bccp " +
                 "WHERE bccp_id = :bccp_id", newSqlParameterSource()
                 .addValue("bccp_id", id), BCCP.class);
-
     }
 
-    public List<BCC> getBccs(long id) {
+    public ASCC getAscc(long id) {
+        return jdbcTemplate.queryForObject("SELECT `ascc_id`, `guid`, `cardinality_min`, `cardinality_max`, " +
+                "`seq_key`, `from_acc_id`, `to_asccp_id`, `den`, `definition`, `definition_source`, `is_deprecated`, " +
+                "`created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, " +
+                "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_ascc_id` " +
+                "FROM `ascc` WHERE `ascc_id` = :ascc_id", newSqlParameterSource()
+                .addValue("ascc_id", id), ASCC.class);
+    }
+
+    public List<BCC> getBccListByFromAccId(long fromAccId) {
         return jdbcTemplate.queryForList("SELECT bcc.bcc_id, bcc.guid, " +
                 "bcc.cardinality_min, bcc.cardinality_max, " +
                 "bcc.to_bccp_id, bcc.from_acc_id, bcc.seq_key, bcc.entity_type, " +
@@ -222,7 +241,7 @@ public class CcListService {
                 "bcc.is_nillable, bcc.default_value, bcc.is_deprecated " +
                 "FROM bcc " +
                 "WHERE from_acc_id = :from_acc_id", newSqlParameterSource()
-                .addValue("from_acc_id", id), BCC.class);
+                .addValue("from_acc_id", fromAccId), BCC.class);
 
     }
 }

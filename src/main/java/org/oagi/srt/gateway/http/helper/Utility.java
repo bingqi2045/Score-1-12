@@ -170,4 +170,17 @@ public class Utility {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(date);
     }
+
+    public static String getUserExtensionGroupObjectClassTerm(String objectClassTerm) {
+        //Assume that we only take object class term that has 'Extension' in it
+        String[] delim = objectClassTerm.split(" ");
+        String out = "";
+        for (int i = 0; i < delim.length; i++) {
+            if (delim[i].equals("Extension")) {
+                delim[i] = "User Extension Group";
+            }
+            out = out + delim[i] + " ";
+        }
+        return out.trim();
+    }
 }

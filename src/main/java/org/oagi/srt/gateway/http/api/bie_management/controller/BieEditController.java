@@ -5,6 +5,7 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateExtensionResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +115,26 @@ public class BieEditController {
                                                @RequestBody BieEditUpdateRequest request) {
 
         return service.updateDetails(user, request);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/extension/local", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CreateExtensionResponse createLocalAbieExtension(@AuthenticationPrincipal User user,
+                                                            @RequestBody BieEditAsbiepNode extensionNode) {
+        long extensionId = service.createLocalAbieExtension(user, extensionNode);
+        CreateExtensionResponse response = new CreateExtensionResponse();
+        response.setExtensionId(extensionId);
+        return response;
+    }
+
+    @RequestMapping(value = "/profile_bie/node/extension/global", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CreateExtensionResponse createGlobalAbieExtension(@AuthenticationPrincipal User user,
+                                                             @RequestBody BieEditAsbiepNode extensionNode) {
+        long extensionId = service.createGlobalAbieExtension(user, extensionNode);
+        CreateExtensionResponse response = new CreateExtensionResponse();
+        response.setExtensionId(extensionId);
+        return response;
     }
 
 }
