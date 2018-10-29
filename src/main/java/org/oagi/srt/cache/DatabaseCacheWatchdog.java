@@ -154,7 +154,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         return hGetAll.entrySet().stream()
                 .collect(Collectors.toMap(
                         e -> Long.parseLong(new String(e.getKey())),
-                        e -> new String(e.getValue())));
+                        e -> (String) serializer.deserializeCacheValue(e.getValue())));
     }
 
     private Map<Long, String> getChecksumFromDatabase() {
