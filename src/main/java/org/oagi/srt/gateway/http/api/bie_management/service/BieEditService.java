@@ -115,7 +115,7 @@ public class BieEditService {
         BieEditAcc eAcc = bieRepository.getAccByCurrentAccId(roleOfAccId, releaseId);
         ACC ueAcc = getExistsUserExtension(roleOfAccId, releaseId);
         if (ueAcc != null) {
-            return ueAcc.getAccId();
+            return ueAcc.getCurrentAccId();
         } else {
             long ueAccId = bieRepository.appendLocalUserExtension(eAcc, ueAcc, asccpId, releaseId, user);
             return ueAccId;

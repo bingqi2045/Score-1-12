@@ -555,10 +555,11 @@ public class BieRepository {
     private ASCCP createASCCPForExtension(ACC eAcc, User user, ACC ueAcc) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("asccp")
-                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition", "reusable_indicator",
+                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
+                        "reusable_indicator", "is_deprecated",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num", "namespace_id")
-                .usingGeneratedKeyColumns("acc_id");
+                .usingGeneratedKeyColumns("asccp_id");
 
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
@@ -570,10 +571,11 @@ public class BieRepository {
                 .addValue("den", ueAcc.getObjectClassTerm() + ". " + ueAcc.getObjectClassTerm())
                 .addValue("definition", "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".")
                 .addValue("reusable_indicator", false)
+                .addValue("is_deprecated", false)
                 .addValue("state", CcState.Published.getValue())
                 .addValue("revision_num", 0)
                 .addValue("revision_tracking_num", 0)
-                .addValue("namespace_id", eAcc.getAccId())
+                .addValue("namespace_id", ueAcc.getNamespaceId())
                 .addValue("created_by", userId)
                 .addValue("last_updated_by", userId)
                 .addValue("owner_user_id", userId)
@@ -587,10 +589,11 @@ public class BieRepository {
     private void createASCCPHistoryForExtension(ASCCP ueAsccp, int revisionNum, long releaseId) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("asccp")
-                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition", "reusable_indicator", "current_asccp_id",
+                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
+                        "reusable_indicator", "is_deprecated", "current_asccp_id",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num", "revision_action", "release_id", "namespace_id")
-                .usingGeneratedKeyColumns("acc_id");
+                .usingGeneratedKeyColumns("asccp_id");
 
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("guid", ueAsccp.getGuid())
@@ -599,6 +602,7 @@ public class BieRepository {
                 .addValue("den", ueAsccp.getDen())
                 .addValue("definition", ueAsccp.getDefinition())
                 .addValue("reusable_indicator", ueAsccp.isReusableIndicator())
+                .addValue("is_deprecated", ueAsccp.isDeprecated())
                 .addValue("current_asccp_id", ueAsccp.getAsccpId())
                 .addValue("definition", ueAsccp.getDefinition())
                 .addValue("state", ueAsccp.getState())
@@ -623,7 +627,7 @@ public class BieRepository {
                         "den", "is_deprecated",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num")
-                .usingGeneratedKeyColumns("acc_id");
+                .usingGeneratedKeyColumns("ascc_id");
 
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
@@ -656,12 +660,8 @@ public class BieRepository {
                 .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
                         "den", "is_deprecated", "current_ascc_id",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num")
-
-                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition", "reusable_indicator", "current_asccp_id",
-                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id", "namespace_id")
-                .usingGeneratedKeyColumns("acc_id");
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id")
+                .usingGeneratedKeyColumns("ascc_id");
 
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("guid", ueAscc.getGuid())
@@ -678,6 +678,7 @@ public class BieRepository {
                 .addValue("revision_num", revisionNum)
                 .addValue("revision_tracking_num", 1)
                 .addValue("revision_action", RevisionAction.Insert.getValue())
+                .addValue("release_id", releaseId)
                 .addValue("created_by", ueAscc.getCreatedBy())
                 .addValue("last_updated_by", ueAscc.getLastUpdatedBy())
                 .addValue("owner_user_id", ueAscc.getOwnerUserId())
