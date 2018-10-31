@@ -51,10 +51,19 @@ public class CcNodeRepository {
         return arrangeAccNode(accNode, releaseId);
     }
 
+    public CcAccNode getAccNodeByAsccpIdFromAscc(long toAsccpId, Long releaseId) {
+        CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
+                        "`from_acc_id`, `seq_key`, `revision_num`, `revision_tracking_num`, `release_id` " +
+                        "FROM `ascc` WHERE `to_asccp_id` = :toAsccpId",
+                newSqlParameterSource()
+                        .addValue("toAsccpId", toAsccpId), CcAsccNode.class));
+        return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
+    }
+
     public long createAcc(User user, CcAccNode ccAccNode) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
-                .usingColumns("guid", "object_class_term", "den","owner_user_id", "definition", "oagis_component_type",
+                .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
         System.out.println("ccAcc node   =" + ccAccNode);
@@ -83,7 +92,7 @@ public class CcNodeRepository {
                 "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
                 "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
                 "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("acc_id",ccAccNode.getAccId())
+                .addValue("acc_id", ccAccNode.getAccId())
                 .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("den", ccAccNode.getDen())
@@ -93,7 +102,7 @@ public class CcNodeRepository {
                 .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
     }
 
-    public int getAccMaxId (){
+    public int getAccMaxId() {
         return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc ", int.class);
     }
 
@@ -177,6 +186,19 @@ public class CcNodeRepository {
                         "revision_num, revision_tracking_num, release_id " +
                         "FROM asccp WHERE current_asccp_id = :currentAsccpId", newSqlParameterSource()
                         .addValue("currentAsccpId", currentAsccpId), CcAsccpNode.class));
+
+        asccpNode.setHasChild(true); // role_of_acc_id must not be null.
+
+        return asccpNode;
+    }
+
+    public CcAsccpNode getAsccpNodeByRoleOfAccId(long roleOfAccId, Long releaseId) {
+        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
+                jdbcTemplate.queryForList("SELECT " +
+                        "asccp_id, guid, property_term as name, " +
+                        "revision_num, revision_tracking_num, release_id " +
+                        "FROM asccp WHERE role_of_acc_id = :roleOfAccId", newSqlParameterSource()
+                        .addValue("roleOfAccId", roleOfAccId), CcAsccpNode.class));
 
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 

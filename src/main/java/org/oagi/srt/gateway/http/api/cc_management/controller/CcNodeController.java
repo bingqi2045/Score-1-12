@@ -35,6 +35,8 @@ public class CcNodeController {
                 return getAsccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             case "bccp":
                 return getBccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
+            case "extension":
+                return getExtensionNode(user, ccId, releaseId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -52,10 +54,14 @@ public class CcNodeController {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
+    private CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
+        return service.getExtensionNode(user, extensionId, releaseId);
+    }
+
     @RequestMapping(value = "/core_component/acc2",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public int getAccMaxId(){
+    public int getAccMaxId() {
         return service.getAccMaxId();
     }
 

@@ -26,8 +26,15 @@ public class CcNodeService {
     public CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
         return repository.getBccpNodeByBccpId(bccpId, releaseId);
     }
+
+    public CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
+        CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, null);
+        CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), null);
+        return repository.getAccNodeByAsccpIdFromAscc(asccpNode.getAsccpId(), releaseId);
+    }
+
     @Transactional
-    public int getAccMaxId (){
+    public int getAccMaxId() {
         return repository.getAccMaxId();
     }
 
@@ -60,11 +67,12 @@ public class CcNodeService {
     }
 
     @Transactional
-    public long createAcc (User user, CcAccNode ccAccNode){
+    public long createAcc(User user, CcAccNode ccAccNode) {
         return repository.createAcc(user, ccAccNode);
     }
+
     @Transactional
-    public void updateAcc (User user, CcAccNode ccAccNode, long accId) {
+    public void updateAcc(User user, CcAccNode ccAccNode, long accId) {
         repository.updateAcc(user, ccAccNode);
     }
 

@@ -556,7 +556,7 @@ public class BieRepository {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("asccp")
                 .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
-                        "reusable_indicator", "is_deprecated",
+                        "reusable_indicator", "is_deprecated", "is_nillable",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num", "namespace_id")
                 .usingGeneratedKeyColumns("asccp_id");
@@ -572,6 +572,7 @@ public class BieRepository {
                 .addValue("definition", "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".")
                 .addValue("reusable_indicator", false)
                 .addValue("is_deprecated", false)
+                .addValue("is_nillable", false)
                 .addValue("state", CcState.Published.getValue())
                 .addValue("revision_num", 0)
                 .addValue("revision_tracking_num", 0)
@@ -590,7 +591,7 @@ public class BieRepository {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("asccp")
                 .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
-                        "reusable_indicator", "is_deprecated", "current_asccp_id",
+                        "reusable_indicator", "is_deprecated", "is_nillable", "current_asccp_id",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num", "revision_action", "release_id", "namespace_id")
                 .usingGeneratedKeyColumns("asccp_id");
@@ -603,6 +604,7 @@ public class BieRepository {
                 .addValue("definition", ueAsccp.getDefinition())
                 .addValue("reusable_indicator", ueAsccp.isReusableIndicator())
                 .addValue("is_deprecated", ueAsccp.isDeprecated())
+                .addValue("is_nillable", ueAsccp.isNillable())
                 .addValue("current_asccp_id", ueAsccp.getAsccpId())
                 .addValue("definition", ueAsccp.getDefinition())
                 .addValue("state", ueAsccp.getState())
