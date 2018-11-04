@@ -1,10 +1,13 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
-import org.oagi.srt.data.*;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
+import org.oagi.srt.data.ACC;
+import org.oagi.srt.data.ASCC;
+import org.oagi.srt.data.ASCCP;
+import org.oagi.srt.data.BCCP;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -13,6 +16,7 @@ import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,6 +26,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -35,6 +42,9 @@ public class CcListService {
 
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private DSLContext dslContext;
 
     public PageResponse<CcList> getCcList(long releaseId, CcListTypes types, List<CcState> states,
                                           String filter, PageRequest pageRequest) {
@@ -166,6 +176,44 @@ public class CcListService {
         return pageResponse;
     }
 
+    public List<AsccpForAppendAscc> getAsccpForAppendAsccList(User user, long releaseId, long extensionId) {
+        return dslContext.select(ASCCP.ASCCP_ID,
+                ASCCP.PROPERTY_TERM,
+                ASCCP.GUID,
+                MODULE.MODULE_.as("module"),
+                ASCCP.DEFINITION,
+                ASCCP.IS_DEPRECATED.as("deprecated"),
+                ASCCP.STATE,
+                ASCCP.RELEASE_ID,
+                ASCCP.REVISION_NUM,
+                ASCCP.REVISION_TRACKING_NUM
+                ).from(ASCCP.join(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
+                .where(
+                        and(ASCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
+                                ASCCP.STATE.eq(CcState.Published.getValue()))
+                ).fetchInto(AsccpForAppendAscc.class).stream().collect(groupingBy(AsccpForAppendAscc::getGuid))
+                .values().stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).collect(Collectors.toList());
+    }
+
+    public List<BccpForAppendBcc> getBccpForAppendBccList(User user, long releaseId, long extensionId) {
+        return dslContext.select(BCCP.BCCP_ID,
+                BCCP.PROPERTY_TERM,
+                BCCP.GUID,
+                MODULE.MODULE_.as("module"),
+                BCCP.DEFINITION,
+                BCCP.IS_DEPRECATED.as("deprecated"),
+                BCCP.STATE,
+                BCCP.RELEASE_ID,
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM
+        ).from(BCCP.join(MODULE).on(BCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
+                .where(
+                        and(BCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
+                                BCCP.STATE.eq(CcState.Published.getValue()))
+                ).fetchInto(BccpForAppendBcc.class).stream().collect(groupingBy(BccpForAppendBcc::getGuid))
+                .values().stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).collect(Collectors.toList());
+    }
+
     public ASCCP getAsccp(long id) {
         return jdbcTemplate.queryForObject("SELECT asccp.asccp_id, asccp.guid, " +
                 "asccp.property_term, asccp.definition, " +
@@ -228,21 +276,6 @@ public class CcListService {
                 "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_ascc_id` " +
                 "FROM `ascc` WHERE `ascc_id` = :ascc_id", newSqlParameterSource()
                 .addValue("ascc_id", id), ASCC.class);
-    }
-
-    public List<BCC> getBccListByFromAccId(long fromAccId) {
-        return jdbcTemplate.queryForList("SELECT bcc.bcc_id, bcc.guid, " +
-                "bcc.cardinality_min, bcc.cardinality_max, " +
-                "bcc.to_bccp_id, bcc.from_acc_id, bcc.seq_key, bcc.entity_type, " +
-                "bcc.den, bcc.definition, bcc.definition_source, " +
-                "bcc.created_by, bcc.owner_user_id, bcc.last_updated_by, bcc.creation_timestamp, " +
-                "bcc.last_update_timestamp, bcc.state, bcc.release_id, " +
-                "bcc.revision_num, bcc.revision_tracking_num, bcc.revision_action, bcc.current_bcc_id, " +
-                "bcc.is_nillable, bcc.default_value, bcc.is_deprecated " +
-                "FROM bcc " +
-                "WHERE from_acc_id = :from_acc_id", newSqlParameterSource()
-                .addValue("from_acc_id", fromAccId), BCC.class);
-
     }
 }
 

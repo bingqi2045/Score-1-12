@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,17 @@ public class CcNodeController {
 
     private CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
         return service.getExtensionNode(user, extensionId, releaseId);
+    }
+
+    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity doAction(@AuthenticationPrincipal User user,
+                                   @PathVariable("releaseId") long releaseId,
+                                   @PathVariable("id") long extensionId,
+                                   @RequestBody CcActionRequest actionRequest) {
+
+        return ResponseEntity.accepted().build();
     }
 
     @RequestMapping(value = "/core_component/acc2",
