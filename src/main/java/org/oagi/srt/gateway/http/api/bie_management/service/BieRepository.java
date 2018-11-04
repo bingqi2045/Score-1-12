@@ -494,7 +494,7 @@ public class BieRepository {
                 .withTableName("acc")
                 .usingColumns("guid", "object_class_term", "den", "definition", "oagis_component_type",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num", "namespace_id")
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "namespace_id")
                 .usingGeneratedKeyColumns("acc_id");
 
         String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
@@ -511,6 +511,7 @@ public class BieRepository {
                 .addValue("state", CcState.Editing.getValue())
                 .addValue("revision_num", 0)
                 .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
                 .addValue("namespace_id", namespaceId)
                 .addValue("created_by", userId)
                 .addValue("last_updated_by", userId)
@@ -558,7 +559,7 @@ public class BieRepository {
                 .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
                         "reusable_indicator", "is_deprecated", "is_nillable",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num", "namespace_id")
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "namespace_id")
                 .usingGeneratedKeyColumns("asccp_id");
 
         long userId = sessionService.userId(user);
@@ -576,6 +577,7 @@ public class BieRepository {
                 .addValue("state", CcState.Published.getValue())
                 .addValue("revision_num", 0)
                 .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
                 .addValue("namespace_id", ueAcc.getNamespaceId())
                 .addValue("created_by", userId)
                 .addValue("last_updated_by", userId)
@@ -628,7 +630,7 @@ public class BieRepository {
                 .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
                         "den", "is_deprecated",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num")
+                        "state", "revision_num", "revision_tracking_num", "revision_action")
                 .usingGeneratedKeyColumns("ascc_id");
 
         long userId = sessionService.userId(user);
@@ -646,6 +648,7 @@ public class BieRepository {
                 .addValue("state", CcState.Editing.getValue())
                 .addValue("revision_num", 0)
                 .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
                 .addValue("created_by", userId)
                 .addValue("last_updated_by", userId)
                 .addValue("owner_user_id", userId)

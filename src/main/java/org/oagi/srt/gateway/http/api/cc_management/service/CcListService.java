@@ -3,10 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.ASCC;
-import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.data.BCCP;
+import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
@@ -276,6 +273,15 @@ public class CcListService {
                 "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_ascc_id` " +
                 "FROM `ascc` WHERE `ascc_id` = :ascc_id", newSqlParameterSource()
                 .addValue("ascc_id", id), ASCC.class);
+    }
+
+    public org.oagi.srt.data.BCC getBcc(long id) {
+        return jdbcTemplate.queryForObject("SELECT `bcc_id`, `guid`, `cardinality_min`, `cardinality_max`, " +
+                "`seq_key`, `entity_type`, `from_acc_id`, `to_bccp_id`, `den`, `definition`, `definition_source`, `is_deprecated`, " +
+                "`created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, " +
+                "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_bcc_id` " +
+                "FROM `bcc` WHERE `bcc_id` = :bcc_id", newSqlParameterSource()
+                .addValue("bcc_id", id), org.oagi.srt.data.BCC.class);
     }
 }
 

@@ -62,10 +62,26 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity doAction(@AuthenticationPrincipal User user,
-                                   @PathVariable("releaseId") long releaseId,
-                                   @PathVariable("id") long extensionId,
-                                   @RequestBody CcActionRequest actionRequest) {
+    public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
+                                            @PathVariable("releaseId") long releaseId,
+                                            @PathVariable("id") long extensionId,
+                                            @RequestBody CcActionRequest actionRequest) {
+
+        switch (actionRequest.getAction()) {
+            case "append":
+
+                switch (actionRequest.getType()) {
+                    case "asccp":
+                        service.appendAsccp(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+
+                    case "bccp":
+                        service.appendBccp(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+                }
+
+                break;
+        }
 
         return ResponseEntity.accepted().build();
     }
