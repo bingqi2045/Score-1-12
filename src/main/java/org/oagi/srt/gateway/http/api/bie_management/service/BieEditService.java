@@ -1,13 +1,14 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
+import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,12 @@ public class BieEditService {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private BieRepository bieRepository;
+
+    @Autowired
+    private CcListService ccListService;
 
     private BieEditTreeController getTreeController(User user, BieEditNode node) {
         return getTreeController(user, node.getTopLevelAbieId());
@@ -98,4 +105,38 @@ public class BieEditService {
 
         return response;
     }
+
+    @Transactional
+    public long createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
+        long asccpId = extension.getAsccpId();
+        long releaseId = extension.getReleaseId();
+
+        long roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
+        BieEditAcc eAcc = bieRepository.getAccByCurrentAccId(roleOfAccId, releaseId);
+        ACC ueAcc = getExistsUserExtension(roleOfAccId, releaseId);
+        if (ueAcc != null) {
+            return ueAcc.getCurrentAccId();
+        } else {
+            long ueAccId = bieRepository.appendLocalUserExtension(eAcc, ueAcc, asccpId, releaseId, user);
+            return ueAccId;
+        }
+    }
+
+    @Transactional
+    public long createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
+        return 0L;
+    }
+
+    private ACC getExistsUserExtension(long accId, long releaseId) {
+        for (BieEditAscc ascc : bieRepository.getAsccListByFromAccId(accId, releaseId)) {
+            BieEditAsccp asccp = bieRepository.getAsccpByCurrentAsccpId(ascc.getToAsccpId(), releaseId);
+
+            ACC ueAcc = ccListService.getAccByCurrentAccId(asccp.getRoleOfAccId(), releaseId);
+            if (ueAcc.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
+                return ueAcc;
+            }
+        }
+        return null;
+    }
+
 }

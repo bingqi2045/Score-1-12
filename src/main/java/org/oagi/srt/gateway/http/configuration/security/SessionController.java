@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.configuration.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -31,6 +32,9 @@ public class SessionController {
 
     @RequestMapping(value = "/username", method = RequestMethod.GET)
     public Map<String, String> username(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            throw new BadCredentialsException("Invalid Credentials");
+        }
         Map<String, String> resp = new HashMap();
         resp.put("username", user.getUsername());
         return resp;

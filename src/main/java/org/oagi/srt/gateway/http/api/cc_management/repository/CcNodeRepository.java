@@ -36,7 +36,7 @@ public class CcNodeRepository {
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
                 "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
-                "revision_num, revision_tracking_num, release_id, current_acc_id " +
+                "state, revision_num, revision_tracking_num, release_id, current_acc_id " +
                 "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
                 .addValue("accId", accId), CcAccNode.class);
         return arrangeAccNode(accNode, releaseId);
@@ -45,16 +45,25 @@ public class CcNodeRepository {
     public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
         CcAccNode accNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
                 "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
-                "revision_num, revision_tracking_num, release_id, current_acc_id " +
+                "state, revision_num, revision_tracking_num, release_id, current_acc_id " +
                 "FROM acc WHERE current_acc_id = :currentAccId", newSqlParameterSource()
                 .addValue("currentAccId", currentAccId), CcAccNode.class));
         return arrangeAccNode(accNode, releaseId);
     }
 
+    public CcAccNode getAccNodeByAsccpIdFromAscc(long toAsccpId, Long releaseId) {
+        CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
+                        "`from_acc_id`, `seq_key`, `revision_num`, `revision_tracking_num`, `release_id` " +
+                        "FROM `ascc` WHERE `to_asccp_id` = :toAsccpId",
+                newSqlParameterSource()
+                        .addValue("toAsccpId", toAsccpId), CcAsccNode.class));
+        return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
+    }
+
     public long createAcc(User user, CcAccNode ccAccNode) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
-                .usingColumns("guid", "object_class_term", "den","owner_user_id", "definition", "oagis_component_type",
+                .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
         System.out.println("ccAcc node   =" + ccAccNode);
@@ -83,7 +92,7 @@ public class CcNodeRepository {
                 "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
                 "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
                 "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("acc_id",ccAccNode.getAccId())
+                .addValue("acc_id", ccAccNode.getAccId())
                 .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("den", ccAccNode.getDen())
@@ -93,7 +102,7 @@ public class CcNodeRepository {
                 .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
     }
 
-    public int getAccMaxId (){
+    public int getAccMaxId() {
         return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc ", int.class);
     }
 
@@ -161,7 +170,7 @@ public class CcNodeRepository {
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "asccp_id, guid, property_term as name, " +
-                "revision_num, revision_tracking_num, release_id " +
+                "state, revision_num, revision_tracking_num, release_id " +
                 "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
                 .addValue("asccpId", asccpId), CcAsccpNode.class);
 
@@ -174,9 +183,22 @@ public class CcNodeRepository {
         CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
                 jdbcTemplate.queryForList("SELECT " +
                         "asccp_id, guid, property_term as name, " +
-                        "revision_num, revision_tracking_num, release_id " +
+                        "state, revision_num, revision_tracking_num, release_id " +
                         "FROM asccp WHERE current_asccp_id = :currentAsccpId", newSqlParameterSource()
                         .addValue("currentAsccpId", currentAsccpId), CcAsccpNode.class));
+
+        asccpNode.setHasChild(true); // role_of_acc_id must not be null.
+
+        return asccpNode;
+    }
+
+    public CcAsccpNode getAsccpNodeByRoleOfAccId(long roleOfAccId, Long releaseId) {
+        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
+                jdbcTemplate.queryForList("SELECT " +
+                        "asccp_id, guid, property_term as name, " +
+                        "state, revision_num, revision_tracking_num, release_id " +
+                        "FROM asccp WHERE role_of_acc_id = :roleOfAccId", newSqlParameterSource()
+                        .addValue("roleOfAccId", roleOfAccId), CcAsccpNode.class));
 
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
@@ -186,7 +208,7 @@ public class CcNodeRepository {
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
         CcBccpNode bccpNode = jdbcTemplate.queryForObject("SELECT " +
                 "bccp_id, guid, property_term as name, bdt_id, " +
-                "revision_num, revision_tracking_num, release_id " +
+                "state, revision_num, revision_tracking_num, release_id " +
                 "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
                 .addValue("bccpId", bccpId), CcBccpNode.class);
 
@@ -199,7 +221,7 @@ public class CcNodeRepository {
         CcBccpNode bccpNode = CcUtility.getLatestEntity(releaseId,
                 jdbcTemplate.queryForList("SELECT " +
                         "bccp_id, guid, property_term as name, bdt_id, " +
-                        "revision_num, revision_tracking_num, release_id " +
+                        "state, revision_num, revision_tracking_num, release_id " +
                         "FROM bccp WHERE current_bccp_id = :currentBccpId", newSqlParameterSource()
                         .addValue("currentBccpId", currentBccpId), CcBccpNode.class));
 
@@ -260,7 +282,7 @@ public class CcNodeRepository {
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes =
                 jdbcTemplate.queryForList("SELECT ascc_id, guid, to_asccp_id, seq_key, " +
-                        "revision_num, revision_tracking_num, release_id " +
+                        "state, revision_num, revision_tracking_num, release_id " +
                         "FROM ascc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
                         .addValue("fromAccId", fromAccId), CcAsccNode.class).stream()
                         .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
@@ -284,7 +306,7 @@ public class CcNodeRepository {
     private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcBccNode> bccNodes =
                 jdbcTemplate.queryForList("SELECT bcc_id, guid, to_bccp_id, seq_key, entity_type, " +
-                        "revision_num, revision_tracking_num, release_id " +
+                        "state, revision_num, revision_tracking_num, release_id " +
                         "FROM bcc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
                         .addValue("fromAccId", fromAccId), CcBccNode.class).stream()
                         .collect(groupingBy(CcBccNode::getGuid)).values().stream()

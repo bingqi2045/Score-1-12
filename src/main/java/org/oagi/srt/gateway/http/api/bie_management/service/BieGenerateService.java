@@ -1,5 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.BieGenerateExpressionResult;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
@@ -22,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.*;
+
 @Service
 @Transactional(readOnly = true)
 public class BieGenerateService {
@@ -31,6 +36,9 @@ public class BieGenerateService {
 
     @Autowired
     private TopLevelAbieRepository topLevelAbieRepository;
+
+    @Autowired
+    private DSLContext dslContext;
 
     public BieGenerateExpressionResult generate(
             User user, List<Long> topLevelAbieIds, GenerateExpressionOption option) throws BieGenerateFailureException {
@@ -75,7 +83,7 @@ public class BieGenerateService {
         if (packageOption != null) {
             packageOption = packageOption.trim();
         }
-        
+
         switch (packageOption.toUpperCase()) {
             case "ALL":
                 return generateSchemaForAll(topLevelAbies, option);
@@ -93,17 +101,24 @@ public class BieGenerateService {
         }
     }
 
-    public File generateSchemaForAll(List<TopLevelAbie> topLevelAbies,
+    public File generateSchemaForAll(List<TopLevelAbie> topLevelAbieList,
                                      GenerateExpressionOption option) throws BieGenerateFailureException {
         BieGenerateExpression generateExpression = createBieGenerateExpression(option);
 
-        for (TopLevelAbie topLevelAbie : topLevelAbies) {
+        for (TopLevelAbie topLevelAbie : topLevelAbieList) {
             generateExpression.generate(topLevelAbie, option);
         }
 
-        File schemaExpressionFile = null;
+        String filename;
+        if (topLevelAbieList.size() == 1) {
+            filename = getFilenameByTopLevelAbie(topLevelAbieList.get(0));
+        } else {
+            filename = SrtGuid.randomGuid();
+        }
+
+        File schemaExpressionFile;
         try {
-            schemaExpressionFile = generateExpression.asFile(SrtGuid.randomGuid() + "_standalone");
+            schemaExpressionFile = generateExpression.asFile(filename);
         } catch (IOException e) {
             throw new BieGenerateFailureException("I/O operation failure.", e);
         }
@@ -117,10 +132,11 @@ public class BieGenerateService {
             BieGenerateExpression generateExpression = createBieGenerateExpression(option);
 
             generateExpression.generate(topLevelAbie, option);
+            String filename = getFilenameByTopLevelAbie(topLevelAbie);
 
-            File schemaExpressionFile = null;
+            File schemaExpressionFile;
             try {
-                schemaExpressionFile = generateExpression.asFile(SrtGuid.randomGuid());
+                schemaExpressionFile = generateExpression.asFile(filename);
             } catch (IOException e) {
                 throw new BieGenerateFailureException("I/O operation failure.", e);
             }
@@ -128,6 +144,32 @@ public class BieGenerateService {
         }
 
         return targetFiles;
+    }
+
+    private String getFilenameByTopLevelAbie(TopLevelAbie topLevelAbie) {
+        /*
+         * Issue 566
+         */
+        long rootAbieId = topLevelAbie.getAbieId();
+        long asccpId = dslContext.select(ASBIEP.BASED_ASCCP_ID)
+                .from(ASBIEP)
+                .where(and(ASBIEP.ROLE_OF_ABIE_ID
+                                .eq(ULong.valueOf(rootAbieId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID
+                                .eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId()))))
+                .fetchOneInto(Long.class);
+
+        String propertyTerm = dslContext.select(ASCCP.PROPERTY_TERM)
+                .from(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(String.class);
+
+        String abieGuid = dslContext.select(ABIE.GUID)
+                .from(ABIE)
+                .where(ABIE.ABIE_ID.eq(ULong.valueOf(rootAbieId)))
+                .fetchOneInto(String.class);
+
+        return propertyTerm.replaceAll(" ", "-") + "-" + abieGuid;
     }
 
     private BieGenerateExpression createBieGenerateExpression(GenerateExpressionOption option) {

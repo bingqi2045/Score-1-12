@@ -58,6 +58,11 @@ public class NamespaceService {
         return namespace;
     }
 
+    public long getNamespaceIdByUri(String uri) {
+        return jdbcTemplate.queryForObject("SELECT `namespace_id` FROM `namespace` WHERE `uri` = :uri", newSqlParameterSource()
+                .addValue("uri", uri), Long.class);
+    }
+
     @Transactional
     public void create(User user, Namespace namespace) {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()

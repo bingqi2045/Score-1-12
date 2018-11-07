@@ -1,13 +1,15 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
-import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
+import org.oagi.srt.gateway.http.api.namespace_management.service.NamespaceService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -30,6 +32,12 @@ public class BieRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private NamespaceService namespaceService;
+
+    @Autowired
+    private CcListService ccListService;
 
     public OagisComponentType getOagisComponentTypeByAccId(long accId) {
         int oagisComponentType = jdbcTemplate.queryForObject(
@@ -460,6 +468,229 @@ public class BieRepository {
 
         jdbcTemplate.update("UPDATE abie SET state = :state " +
                 "WHERE owner_top_level_abie_id = :top_level_abie_id", parameterSource);
+    }
+
+    public long appendLocalUserExtension(BieEditAcc eAcc, ACC ueAcc,
+                                         long asccpId, long releaseId, User user) {
+
+        return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
+    }
+
+    private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
+        ACC ueAcc = createACCForExtension(eAcc, user);
+        createACCHistoryForExtension(ueAcc, 1, releaseId);
+
+        ASCCP ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
+        createASCCPHistoryForExtension(ueAsccp, 1, releaseId);
+
+        ASCC ueAscc = createASCCForExtension(eAcc, user, ueAcc, ueAsccp);
+        createASCCHistoryForExtension(ueAscc, 1, releaseId);
+
+        return ueAcc.getAccId();
+    }
+
+    private ACC createACCForExtension(ACC eAcc, User user) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("acc")
+                .usingColumns("guid", "object_class_term", "den", "definition", "oagis_component_type",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "namespace_id")
+                .usingGeneratedKeyColumns("acc_id");
+
+        String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
+        long namespaceId = namespaceService.getNamespaceIdByUri("http://www.openapplications.org/oagis/10");
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("object_class_term", objectClassTerm)
+                .addValue("den", objectClassTerm + ". Details")
+                .addValue("definition", "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".")
+                .addValue("oagis_component_type", OagisComponentType.UserExtensionGroup.getValue())
+                .addValue("state", CcState.Editing.getValue())
+                .addValue("revision_num", 0)
+                .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
+                .addValue("namespace_id", namespaceId)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("owner_user_id", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long ueAccId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return ccListService.getAcc(ueAccId);
+    }
+
+    private void createACCHistoryForExtension(ACC ueAcc, int revisionNum, long releaseId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("acc")
+                .usingColumns("guid", "object_class_term", "den", "definition", "oagis_component_type", "current_acc_id",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id", "namespace_id")
+                .usingGeneratedKeyColumns("acc_id");
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", ueAcc.getGuid())
+                .addValue("object_class_term", ueAcc.getObjectClassTerm())
+                .addValue("den", ueAcc.getDen())
+                .addValue("definition", ueAcc.getDefinition())
+                .addValue("oagis_component_type", ueAcc.getOagisComponentType())
+                .addValue("current_acc_id", ueAcc.getAccId())
+                .addValue("state", ueAcc.getState())
+                .addValue("revision_num", revisionNum)
+                .addValue("revision_tracking_num", 1)
+                .addValue("revision_action", RevisionAction.Insert.getValue())
+                .addValue("release_id", releaseId)
+                .addValue("namespace_id", ueAcc.getNamespaceId())
+                .addValue("created_by", ueAcc.getCreatedBy())
+                .addValue("last_updated_by", ueAcc.getLastUpdatedBy())
+                .addValue("owner_user_id", ueAcc.getOwnerUserId())
+                .addValue("creation_timestamp", ueAcc.getCreationTimestamp())
+                .addValue("last_update_timestamp", ueAcc.getLastUpdateTimestamp());
+
+        jdbcInsert.execute(parameterSource);
+    }
+
+    private ASCCP createASCCPForExtension(ACC eAcc, User user, ACC ueAcc) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("asccp")
+                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
+                        "reusable_indicator", "is_deprecated", "is_nillable",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "namespace_id")
+                .usingGeneratedKeyColumns("asccp_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("property_term", ueAcc.getObjectClassTerm())
+                .addValue("role_of_acc_id", ueAcc.getAccId())
+                .addValue("den", ueAcc.getObjectClassTerm() + ". " + ueAcc.getObjectClassTerm())
+                .addValue("definition", "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".")
+                .addValue("reusable_indicator", false)
+                .addValue("is_deprecated", false)
+                .addValue("is_nillable", false)
+                .addValue("state", CcState.Published.getValue())
+                .addValue("revision_num", 0)
+                .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
+                .addValue("namespace_id", ueAcc.getNamespaceId())
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("owner_user_id", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long ueAsccpId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return ccListService.getAsccp(ueAsccpId);
+    }
+
+    private void createASCCPHistoryForExtension(ASCCP ueAsccp, int revisionNum, long releaseId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("asccp")
+                .usingColumns("guid", "property_term", "role_of_acc_id", "den", "definition",
+                        "reusable_indicator", "is_deprecated", "is_nillable", "current_asccp_id",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id", "namespace_id")
+                .usingGeneratedKeyColumns("asccp_id");
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", ueAsccp.getGuid())
+                .addValue("property_term", ueAsccp.getPropertyTerm())
+                .addValue("role_of_acc_id", ueAsccp.getRoleOfAccId())
+                .addValue("den", ueAsccp.getDen())
+                .addValue("definition", ueAsccp.getDefinition())
+                .addValue("reusable_indicator", ueAsccp.isReusableIndicator())
+                .addValue("is_deprecated", ueAsccp.isDeprecated())
+                .addValue("is_nillable", ueAsccp.isNillable())
+                .addValue("current_asccp_id", ueAsccp.getAsccpId())
+                .addValue("definition", ueAsccp.getDefinition())
+                .addValue("state", ueAsccp.getState())
+                .addValue("revision_num", revisionNum)
+                .addValue("revision_tracking_num", 1)
+                .addValue("revision_action", RevisionAction.Insert.getValue())
+                .addValue("release_id", releaseId)
+                .addValue("namespace_id", ueAsccp.getNamespaceId())
+                .addValue("created_by", ueAsccp.getCreatedBy())
+                .addValue("last_updated_by", ueAsccp.getLastUpdatedBy())
+                .addValue("owner_user_id", ueAsccp.getOwnerUserId())
+                .addValue("creation_timestamp", ueAsccp.getCreationTimestamp())
+                .addValue("last_update_timestamp", ueAsccp.getLastUpdateTimestamp());
+
+        jdbcInsert.execute(parameterSource);
+    }
+
+    private ASCC createASCCForExtension(ACC eAcc, User user, ACC ueAcc, ASCCP ueAsccp) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("ascc")
+                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
+                        "den", "is_deprecated",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action")
+                .usingGeneratedKeyColumns("ascc_id");
+
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", SrtGuid.randomGuid())
+                .addValue("cardinality_min", 0)
+                .addValue("cardinality_max", 1)
+                .addValue("seq_key", 1)
+                .addValue("from_acc_id", eAcc.getCurrentAccId())
+                .addValue("to_asccp_id", ueAsccp.getAsccpId())
+                .addValue("den", eAcc.getObjectClassTerm() + ". " + ueAsccp.getDen())
+                .addValue("is_deprecated", false)
+                .addValue("state", CcState.Editing.getValue())
+                .addValue("revision_num", 0)
+                .addValue("revision_tracking_num", 0)
+                .addValue("revision_action", null)
+                .addValue("created_by", userId)
+                .addValue("last_updated_by", userId)
+                .addValue("owner_user_id", userId)
+                .addValue("creation_timestamp", timestamp)
+                .addValue("last_update_timestamp", timestamp);
+
+        long ueAsccId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return ccListService.getAscc(ueAsccId);
+    }
+
+    private void createASCCHistoryForExtension(ASCC ueAscc, int revisionNum, long releaseId) {
+        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
+                .withTableName("ascc")
+                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
+                        "den", "is_deprecated", "current_ascc_id",
+                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
+                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id")
+                .usingGeneratedKeyColumns("ascc_id");
+
+        MapSqlParameterSource parameterSource = newSqlParameterSource()
+                .addValue("guid", ueAscc.getGuid())
+                .addValue("cardinality_min", ueAscc.getCardinalityMin())
+                .addValue("cardinality_max", ueAscc.getCardinalityMax())
+                .addValue("seq_key", ueAscc.getSeqKey())
+                .addValue("from_acc_id", ueAscc.getFromAccId())
+                .addValue("to_asccp_id", ueAscc.getToAsccpId())
+                .addValue("den", ueAscc.getDen())
+                .addValue("is_deprecated", ueAscc.isDeprecated())
+                .addValue("current_ascc_id", ueAscc.getAsccId())
+                .addValue("definition", ueAscc.getDefinition())
+                .addValue("state", ueAscc.getState())
+                .addValue("revision_num", revisionNum)
+                .addValue("revision_tracking_num", 1)
+                .addValue("revision_action", RevisionAction.Insert.getValue())
+                .addValue("release_id", releaseId)
+                .addValue("created_by", ueAscc.getCreatedBy())
+                .addValue("last_updated_by", ueAscc.getLastUpdatedBy())
+                .addValue("owner_user_id", ueAscc.getOwnerUserId())
+                .addValue("creation_timestamp", ueAscc.getCreationTimestamp())
+                .addValue("last_update_timestamp", ueAscc.getLastUpdateTimestamp());
+
+        jdbcInsert.execute(parameterSource);
     }
 
 }

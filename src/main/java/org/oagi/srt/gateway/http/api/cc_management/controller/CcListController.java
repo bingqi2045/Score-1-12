@@ -1,17 +1,13 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
-import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.BCC;
-import org.oagi.srt.data.BCCP;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListStates;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,27 +42,22 @@ public class CcListController {
                 filter,
                 pageRequest);
     }
-    @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
+
+    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/asccp_list",
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ASCCP getAsccp(@PathVariable("id") long id) {
-        return service.getAsccp(id);
+    public List<AsccpForAppendAscc> getAsccpForAppendAsccList(@AuthenticationPrincipal User user,
+                                                              @PathVariable("releaseId") long releaseId,
+                                                              @PathVariable("id") long extensionId) {
+        return service.getAsccpForAppendAsccList(user, releaseId, extensionId);
     }
 
-    @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/bccp_list",
+            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ACC getAcc(@PathVariable("id") long id) {
-        return service.getAcc(id);
-    }
-
-    @RequestMapping(value = "/core_component/bccp/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public BCCP getBccp(@PathVariable("id") long id) {
-        return service.getBccp(id);
-    }
-
-    @RequestMapping(value = "/core_component/bccs/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BCC> getBccs(@PathVariable("id") long id) {
-        return service.getBccs(id);
+    public List<BccpForAppendBcc> getBccpForAppendBccList(@AuthenticationPrincipal User user,
+                                                          @PathVariable("releaseId") long releaseId,
+                                                          @PathVariable("id") long extensionId) {
+        return service.getBccpForAppendBccList(user, releaseId, extensionId);
     }
 }

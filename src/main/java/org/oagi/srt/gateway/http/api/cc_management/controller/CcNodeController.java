@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class CcNodeController {
                 return getAsccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             case "bccp":
                 return getBccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
+            case "extension":
+                return getExtensionNode(user, ccId, releaseId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -52,10 +55,41 @@ public class CcNodeController {
         return service.getBccpNode(user, bccpId, releaseId);
     }
 
+    private CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
+        return service.getExtensionNode(user, extensionId, releaseId);
+    }
+
+    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
+                                            @PathVariable("releaseId") long releaseId,
+                                            @PathVariable("id") long extensionId,
+                                            @RequestBody CcActionRequest actionRequest) {
+
+        switch (actionRequest.getAction()) {
+            case "append":
+
+                switch (actionRequest.getType()) {
+                    case "asccp":
+                        service.appendAsccp(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+
+                    case "bccp":
+                        service.appendBccp(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+                }
+
+                break;
+        }
+
+        return ResponseEntity.accepted().build();
+    }
+
     @RequestMapping(value = "/core_component/acc2",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public int getAccMaxId(){
+    public int getAccMaxId() {
         return service.getAccMaxId();
     }
 

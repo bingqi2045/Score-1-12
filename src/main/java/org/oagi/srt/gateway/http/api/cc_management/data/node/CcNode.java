@@ -10,5 +10,6 @@ public class CcNode extends TrackableImpl {
 
     private String guid;
     private String name;
+    private int state;
     private boolean hasChild;
 }

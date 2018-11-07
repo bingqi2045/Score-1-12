@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class SrtResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity handleAuthenticationException(
+            AuthenticationException ex, WebRequest webRequest) {
+        logger.debug(ex.getMessage(), ex);
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity handleEmptyResultDataAccessException(

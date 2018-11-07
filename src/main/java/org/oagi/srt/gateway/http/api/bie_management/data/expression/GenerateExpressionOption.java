@@ -17,4 +17,6 @@ public class GenerateExpressionOption {
     private String expressionOption;
     private String packageOption;
 
+    private boolean arrayForJsonExpression;
+
 }

@@ -13,8 +13,10 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@EnableTransactionManagement
 public class RedisConfiguration {
 
     @Value("${spring.redis.host}")
@@ -45,6 +47,7 @@ public class RedisConfiguration {
         RedisTemplate redisTemplate = new RedisTemplate();
 
         redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setEnableTransactionSupport(true);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 

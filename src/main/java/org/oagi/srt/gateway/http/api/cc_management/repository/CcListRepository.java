@@ -4,6 +4,7 @@ import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +26,6 @@ public class CcListRepository {
     @Autowired
     private CoreComponentRepository coreComponentRepository;
 
-    @Cacheable(cacheNames = "core_components:acc:cc_list")
     public List<CcList> getAccList(long releaseId) {
         Map<Long, String> usernameMap = userRepository.getUsernameMap();
 
@@ -56,7 +56,6 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "core_components:ascc:cc_list")
     public List<CcList> getAsccList(long releaseId) {
         Map<Long, String> usernameMap = userRepository.getUsernameMap();
 
@@ -87,7 +86,6 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "core_components:bcc:cc_list")
     public List<CcList> getBccList(long releaseId) {
         Map<Long, String> usernameMap = userRepository.getUsernameMap();
 
@@ -118,7 +116,6 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "core_components:asccp:cc_list")
     public List<CcList> getAsccpList(long releaseId) {
         Map<Long, String> usernameMap = userRepository.getUsernameMap();
 
@@ -149,7 +146,6 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(cacheNames = "core_components:bccp:cc_list")
     public List<CcList> getBccpList(long releaseId) {
         Map<Long, String> usernameMap = userRepository.getUsernameMap();
 

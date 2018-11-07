@@ -3,12 +3,14 @@ package org.oagi.srt.cache;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 public class DatabaseCacheHandler<T> implements InitializingBean {
 
     @Autowired

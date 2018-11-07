@@ -66,7 +66,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         if (root == null) {
             root = new LinkedHashMap();
             root.put("$schema", "http://json-schema.org/draft-04/schema#");
-            root.put(ID_KEYWORD, "http://www.openapplications.org/oagis/10/");
+            root.put(ID_KEYWORD, "http://www.openapplications.org/oagis/10");
 
             root.put("required", new ArrayList());
             root.put("additionalProperties", false);
@@ -82,27 +82,24 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         fillProperties(root, definitions, asbiep, typeAbie);
     }
 
+    private String _camelCase(String term) {
+        return Arrays.stream(term.split(" ")).filter(e -> !StringUtils.isEmpty(e))
+                .map(e -> {
+                    if (e.length() > 1) {
+                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toLowerCase();
+                    } else {
+                        return e.toUpperCase();
+                    }
+                }).collect(Collectors.joining());
+    }
+
     private String camelCase(String... terms) {
-        /*
-         * Issue #542
-         */
         String term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
         if (StringUtils.isEmpty(term)) {
             throw new IllegalArgumentException();
         }
 
         return Character.toLowerCase(term.charAt(0)) + term.substring(1);
-    }
-
-    private String _camelCase(String term) {
-        return Arrays.stream(term.split(" ")).filter(e -> !StringUtils.isEmpty(e))
-                .map(e -> {
-                    if (e.length() > 1) {
-                        return Character.toUpperCase(e.charAt(0)) + e.substring(1).toUpperCase();
-                    } else {
-                        return e.toUpperCase();
-                    }
-                }).collect(Collectors.joining());
     }
 
     private void fillProperties(Map<String, Object> parent,
@@ -112,9 +109,11 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         ABIE typeAbie = generationContext.queryTargetABIE2(asbiep);
 
         ASCC ascc = generationContext.queryBasedASCC(asbie);
-        boolean isArray = (ascc.getCardinalityMax() != 1);
+
         int minVal = asbie.getCardinalityMin();
         int maxVal = asbie.getCardinalityMax();
+        // Issue #562
+        boolean isArray = (maxVal < 0 || maxVal > 1);
         boolean isNillable = asbie.isNillable();
 
         ASCCP asccp = generationContext.queryBasedASCCP(asbiep);
@@ -154,8 +153,6 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 properties.put("maxItems", maxVal);
             }
 
-            properties.put("additionalItems", false);
-
             Map<String, Object> items = new LinkedHashMap();
             properties.put("items", items);
             items.put("type", "object");
@@ -174,7 +171,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         }
     }
 
-    private void fillProperties(Map<String, Object> parent, Map<String, Object> definitions,
+    private void fillProperties(Map<String, Object> parent,
+                                Map<String, Object> definitions,
                                 ASBIEP asbiep, ABIE abie) {
 
         ASCCP asccp = generationContext.queryBasedASCCP(asbiep);
@@ -196,7 +194,23 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             }
         }
 
-        properties.put("type", "object");
+        /*
+         * Issue #550
+         */
+        boolean isArray = option.isArrayForJsonExpression();
+        properties.put("type", (isArray) ? "array" : "object");
+
+        /*
+         * Issue #575
+         */
+        if (isArray) {
+            Map<String, Object> items = new LinkedHashMap();
+            properties.put("items", items);
+            items.put("type", "object");
+
+            properties = items;
+        }
+
         properties.put("required", new ArrayList());
         properties.put("additionalProperties", false);
 
@@ -332,9 +346,11 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         BCCP bccp = generationContext.queryToBCCP(bcc);
         DT bdt = generationContext.queryBDT(bccp);
 
-        boolean isArray = (bcc.getCardinalityMax() != 1);
         int minVal = bbie.getCardinalityMin();
         int maxVal = bbie.getCardinalityMax();
+        // Issue #562
+        boolean isArray = (maxVal < 0 || maxVal > 1);
+
         /*
          * When a bbie is based on a bcc, whose entity type is 'attribute',
          * XML schema generation shouldn't generate the nillable="true",
@@ -397,6 +413,31 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         properties.put("additionalProperties", false);
         properties.put("properties", new LinkedHashMap<String, Object>());
 
+        // Issue #564
+        String ref = getReference(definitions, bbie, bdt);
+        List<BBIESC> bbieScList = generationContext.queryBBIESCs(bbie)
+                .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
+        if (bbieScList.isEmpty()) {
+            properties.remove("type");
+            properties.put("$ref", ref);
+        } else {
+            properties.put("required", new ArrayList());
+            properties.put("additionalProperties", false);
+            properties.put("properties", new LinkedHashMap<String, Object>());
+
+            ((List<String>) properties.get("required")).add("content");
+            ((Map<String, Object>) properties.get("properties"))
+                    .put("content", ImmutableMap.<String, Object>builder()
+                            .put("$ref", ref)
+                            .build());
+
+            for (BBIESC bbieSc : bbieScList) {
+                fillProperties(properties, definitions, bbieSc);
+            }
+        }
+    }
+
+    private String getReference(Map<String, Object> definitions, BBIE bbie, DT bdt) {
         CodeList codeList = getCodeList(generationContext, bbie, bdt);
         String ref;
         if (codeList != null) {
@@ -421,18 +462,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             }
         }
 
-        ((List<String>) properties.get("required")).add("content");
-        ((Map<String, Object>) properties.get("properties"))
-                .put("content", ImmutableMap.<String, Object>builder()
-                        .put("$ref", ref)
-                        .build());
-
-        List<BBIESC> bbieScList = generationContext.queryBBIESCs(bbie);
-        if (!bbieScList.isEmpty()) {
-            for (BBIESC bbieSc : bbieScList) {
-                fillProperties(properties, definitions, bbieSc);
-            }
-        }
+        return ref;
     }
 
     private void fillProperties(Map<String, Object> parent,
