@@ -84,6 +84,11 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     public final TableField<CtxSchemeRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB, this, "Description of the context scheme.");
 
     /**
+     * The column <code>oagi.ctx_scheme.description</code>. Description of the context scheme.
+     */
+    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField("code_list_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(true), this, "This the foreign key to the CODE_LIST table.");
+
+    /**
      * The column <code>oagi.ctx_scheme.scheme_agency_id</code>. Identification of the agency maintaining the scheme. This column currently does not use the AGENCY_ID_LIST table. It is just a free form text at this point.
      */
     public final TableField<CtxSchemeRecord, String> SCHEME_AGENCY_ID = createField("scheme_agency_id", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "Identification of the agency maintaining the scheme. This column currently does not use the AGENCY_ID_LIST table. It is just a free form text at this point.");

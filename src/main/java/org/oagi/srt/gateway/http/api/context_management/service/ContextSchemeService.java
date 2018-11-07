@@ -53,6 +53,7 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID,
                 CTX_SCHEME.DESCRIPTION,
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP
         ).from(CTX_SCHEME)
@@ -70,6 +71,7 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID,
                 CTX_SCHEME.DESCRIPTION,
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP
         ).from(CTX_SCHEME)
@@ -122,7 +124,7 @@ public class ContextSchemeService {
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("ctx_scheme")
-                .usingColumns("guid", "scheme_name", "ctx_category_id",
+                .usingColumns("guid", "scheme_name", "ctx_category_id", "code_list_id",
                         "scheme_id", "scheme_agency_id", "scheme_version_id", "description",
                         "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp")
                 .usingGeneratedKeyColumns("ctx_scheme_id");
@@ -137,6 +139,7 @@ public class ContextSchemeService {
                 .addValue("scheme_id", contextScheme.getSchemeId())
                 .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
                 .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                .addValue("code_list_id", contextScheme.getCodeListId())
                 .addValue("description", contextScheme.getDescription())
                 .addValue("created_by", userId)
                 .addValue("last_updated_by", userId)
@@ -169,7 +172,7 @@ public class ContextSchemeService {
     private String UPDATE_CONTEXT_SCHEME_STATEMENT =
             "UPDATE ctx_scheme SET scheme_name = :scheme_name, ctx_category_id = :ctx_category_id, " +
                     "scheme_id = :scheme_id, scheme_agency_id = :scheme_agency_id, scheme_version_id = :scheme_version_id, " +
-                    "description = :description " +
+                    "description = :description , code_list_id = :code_list_id "+
                     "WHERE ctx_scheme_id = :ctx_scheme_id";
 
     @Transactional
@@ -181,6 +184,7 @@ public class ContextSchemeService {
                 .addValue("scheme_id", contextScheme.getSchemeId())
                 .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
                 .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                .addValue("code_list_id", contextScheme.getCodeListId())
                 .addValue("description", contextScheme.getDescription())
                 .addValue("last_updated_by", sessionService.userId(user))
                 .addValue("last_update_timestamp", new Date()));

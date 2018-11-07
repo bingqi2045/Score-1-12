@@ -27,8 +27,7 @@ public class ContextSchemeController {
 
     @RequestMapping(value = "/context_scheme/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ContextScheme getContextScheme(@PathVariable("id") long id) {
-        return service.getContextScheme(id);
+    public ContextScheme getContextScheme(@PathVariable("id") long id) {return service.getContextScheme(id);
     }
 
     @RequestMapping(value = "/context_category/{id}/simple_context_schemes", method = RequestMethod.GET,
