@@ -29,4 +29,4 @@ logging:
   level:
     org.springframework: INFO
     org.jooq: DEBUG
-    org.oagi.srt: TRACE
+    org.oagi.srt: DEBUG

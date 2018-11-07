@@ -42,7 +42,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
 
     private SrtRepository<T> delegate;
 
-    private long delay = 300L;
+    private long delay = 2L;
     private TimeUnit unit = TimeUnit.SECONDS;
 
     private ScheduledExecutorService scheduledExecutorService;
@@ -112,12 +112,12 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
             try {
                 Map<Long, String> checksumFromRedis = getChecksumFromRedis(redisConnection);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Database/Cache Watchdog for `" + tableName + "` table: retrieved " + checksumFromDatabase.size() + " checksum items.");
+                    logger.trace("Database/Cache Watchdog for `" + tableName + "` table: retrieved " + checksumFromDatabase.size() + " checksum items.");
                 }
 
                 invalidPrimaryKeys = getInvalidPrimaryKeys(checksumFromRedis, checksumFromDatabase);
                 if (invalidPrimaryKeys.isEmpty()) {
-                    logger.info("Database/Cache Watchdog for `" + tableName + "` table: all data are valid.");
+                    logger.trace("Database/Cache Watchdog for `" + tableName + "` table: all data are valid.");
                     return;
                 }
             } finally {
@@ -132,10 +132,10 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
                 throw new IllegalStateException("`" + lockName + "` write-lock acquisition failure by interrupt.", e);
             }
             try {
-                logger.info("Database/Cache Watchdog for `" + tableName + "` table: " + invalidPrimaryKeys.size() + " invalid items found.");
+                logger.debug("Database/Cache Watchdog for `" + tableName + "` table: " + invalidPrimaryKeys.size() + " invalid items found.");
 
                 updateChecksumAndData(redisConnection, invalidPrimaryKeys, checksumFromDatabase);
-                logger.info("Database/Cache Watchdog for `" + tableName + "` table: successfully updated.");
+                logger.debug("Database/Cache Watchdog for `" + tableName + "` table: successfully updated.");
             } finally {
                 readWriteLock.writeLock().unlock();
             }
