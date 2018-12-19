@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.jooq.meta.derby.sys.Sys;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
@@ -64,7 +65,7 @@ public class CcNodeRepository {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
                 .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
+                      "namespace_id"  ,"created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
         System.out.println("ccAcc node   =" + ccAccNode);
         long userId = sessionService.userId(user);
@@ -74,12 +75,12 @@ public class CcNodeRepository {
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("oagis_component_type", ccAccNode.getOagisComponentType())
                 .addValue("den", ccAccNode.getDen())
+                .addValue("namespace_id", 1)
                 .addValue("owner_user_id", userId)
                 .addValue("created_by", userId)
                 .addValue("state", CcState.Editing.getValue())
                 .addValue("last_updated_by", userId)
                 .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp)
                 .addValue("definition", ccAccNode.getDefinition())
                 .addValue("last_update_timestamp", timestamp);
 
@@ -88,6 +89,7 @@ public class CcNodeRepository {
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
+        System.out.println("Here is the CC :"  + ccAccNode);
         jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, `guid` = :guid, " +
                 "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
                 "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
