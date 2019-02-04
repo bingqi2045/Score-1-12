@@ -12,6 +12,7 @@ public class CodeListForList {
     private Long basedCodeListId;
     private String basedCodeListName;
     private long agencyId;
+    private String listId;
     private String agencyIdName;
     private String versionId;
     private Date lastUpdateTimestamp;

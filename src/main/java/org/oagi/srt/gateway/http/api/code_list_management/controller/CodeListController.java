@@ -33,6 +33,12 @@ public class CodeListController {
         return service.getCodeLists(filter);
     }
 
+    @RequestMapping(value = "/code_lists", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<CodeList> getCodeLists() {
+        return service.getCodeLists2();
+    }
+
     @RequestMapping(value = "/code_list/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CodeList getCodeList(@PathVariable("id") long id) {
