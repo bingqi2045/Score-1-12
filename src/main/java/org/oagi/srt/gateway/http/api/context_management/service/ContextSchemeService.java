@@ -121,7 +121,6 @@ public class ContextSchemeService {
             contextScheme.setGuid(SrtGuid.randomGuid());
         }
 
-
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("ctx_scheme")
                 .usingColumns("guid", "scheme_name", "ctx_category_id", "code_list_id",
@@ -132,24 +131,43 @@ public class ContextSchemeService {
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", contextScheme.getGuid())
-                .addValue("scheme_name", contextScheme.getSchemeName())
-                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
-                .addValue("scheme_id", contextScheme.getSchemeId())
-                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
-                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
-                .addValue("code_list_id", contextScheme.getCodeListId())
-                .addValue("description", contextScheme.getDescription())
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long ctxSchemeId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        for (ContextSchemeValue contextSchemeValue : contextScheme.getCtxSchemeValues()) {
-            insert(ctxSchemeId, contextSchemeValue);
+        if (contextScheme.getCodeListId() == 0) {
+            MapSqlParameterSource parameterSource = newSqlParameterSource()
+                    .addValue("guid", contextScheme.getGuid())
+                    .addValue("scheme_name", contextScheme.getSchemeName())
+                    .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                    .addValue("scheme_id", contextScheme.getSchemeId())
+                    .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                    .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                    .addValue("description", contextScheme.getDescription())
+                    .addValue("created_by", userId)
+                    .addValue("last_updated_by", userId)
+                    .addValue("creation_timestamp", timestamp)
+                    .addValue("last_update_timestamp", timestamp);
+            long ctxSchemeId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+            for (ContextSchemeValue contextSchemeValue : contextScheme.getCtxSchemeValues()) {
+                insert(ctxSchemeId, contextSchemeValue);
+            }
+        } else {
+            MapSqlParameterSource parameterSource = newSqlParameterSource()
+                    .addValue("guid", contextScheme.getGuid())
+                    .addValue("scheme_name", contextScheme.getSchemeName())
+                    .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                    .addValue("scheme_id", contextScheme.getSchemeId())
+                    .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                    .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                    .addValue("code_list_id", contextScheme.getCodeListId())
+                    .addValue("description", contextScheme.getDescription())
+                    .addValue("created_by", userId)
+                    .addValue("last_updated_by", userId)
+                    .addValue("creation_timestamp", timestamp)
+                    .addValue("last_update_timestamp", timestamp);
+            long ctxSchemeId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+            for (ContextSchemeValue contextSchemeValue : contextScheme.getCtxSchemeValues()) {
+                insert(ctxSchemeId, contextSchemeValue);
+            }
         }
+
     }
 
     @Transactional
@@ -177,19 +195,35 @@ public class ContextSchemeService {
 
     @Transactional
     public void update(User user, ContextScheme contextScheme) {
-        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, newSqlParameterSource()
-                .addValue("ctx_scheme_id", contextScheme.getCtxSchemeId())
-                .addValue("scheme_name", contextScheme.getSchemeName())
-                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
-                .addValue("scheme_id", contextScheme.getSchemeId())
-                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
-                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
-                .addValue("code_list_id", contextScheme.getCodeListId())
-                .addValue("description", contextScheme.getDescription())
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date()));
+        if (contextScheme.getCodeListId() == 0) {
+            jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, newSqlParameterSource()
+                    .addValue("ctx_scheme_id", contextScheme.getCtxSchemeId())
+                    .addValue("scheme_name", contextScheme.getSchemeName())
+                    .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                    .addValue("scheme_id", contextScheme.getSchemeId())
+                    .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                    .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                    .addValue("code_list_id", null)
+                    .addValue("description", contextScheme.getDescription())
+                    .addValue("last_updated_by", sessionService.userId(user))
+                    .addValue("last_update_timestamp", new Date()));
 
-        update(contextScheme.getCtxSchemeId(), contextScheme.getCtxSchemeValues());
+            update(contextScheme.getCtxSchemeId(), contextScheme.getCtxSchemeValues());
+        } else {
+            jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, newSqlParameterSource()
+                    .addValue("ctx_scheme_id", contextScheme.getCtxSchemeId())
+                    .addValue("scheme_name", contextScheme.getSchemeName())
+                    .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
+                    .addValue("scheme_id", contextScheme.getSchemeId())
+                    .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
+                    .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
+                    .addValue("code_list_id", contextScheme.getCodeListId())
+                    .addValue("description", contextScheme.getDescription())
+                    .addValue("last_updated_by", sessionService.userId(user))
+                    .addValue("last_update_timestamp", new Date()));
+
+            update(contextScheme.getCtxSchemeId(), contextScheme.getCtxSchemeValues());
+        }
     }
 
     private String GET_CONTEXT_SCHEME_VALUE_ID_LIST_STATEMENT =

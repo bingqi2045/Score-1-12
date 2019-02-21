@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
 import org.oagi.srt.gateway.http.api.context_management.data.ContextCategory;
+import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.srt.gateway.http.api.context_management.service.ContextCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,13 @@ public class ContextCategoryController {
         return service.getContextCategory(id);
     }
 
-    @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
+    @RequestMapping(value = "/context_schemes_from_ctg/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") long id) {
+        return service.getContextSchemeFromCategoryID(id);
+    }
+
+            @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
     public ResponseEntity create(
             @RequestBody ContextCategory contextCategory) {
         service.insert(contextCategory);

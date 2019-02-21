@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextCategory;
+import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.CTX_CATEGORY;
+import static org.oagi.srt.entity.jooq.Tables.CTX_SCHEME;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -53,6 +55,25 @@ public class ContextCategoryService {
         ).from(CTX_CATEGORY)
                 .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
                 .fetchOneInto(ContextCategory.class);
+    }
+
+    public List<ContextScheme> getContextSchemeFromCategoryID(long ctxCategoryId) {
+        return dslContext.select(
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.GUID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.CTX_CATEGORY_ID,
+                CTX_CATEGORY.NAME.as("ctx_category_name"),
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID,
+                CTX_SCHEME.DESCRIPTION,
+                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
+        ).from(CTX_SCHEME)
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
+                .fetchInto(ContextScheme.class);
     }
 
     @Transactional
