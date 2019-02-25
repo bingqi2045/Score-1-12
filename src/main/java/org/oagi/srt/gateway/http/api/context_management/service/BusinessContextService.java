@@ -2,9 +2,11 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.ABIE;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
+import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -94,6 +96,40 @@ public class BusinessContextService {
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchInto(BusinessContextValue.class);
+    }
+
+
+    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
+        return dslContext.select(
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING
+        ).from(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .fetchInto(SimpleContextSchemeValue.class);
+    }
+
+    public List<BusinessContextValue> getBusinessContextValuesByBusinessCtxId(long businessCtxID) {
+        return dslContext.select(
+                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID
+        ).from(BIZ_CTX_VALUE)
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(businessCtxID)))
+                .fetchInto(BusinessContextValue.class);
+    }
+
+    public List<ABIE> getBIEListFromBizCtxId (long businessCtxID) {
+        return dslContext.select(
+               ABIE.ABIE_ID,
+               ABIE.BASED_ACC_ID,
+               ABIE.BIZ_CTX_ID,
+               ABIE.GUID,
+               ABIE.OWNER_TOP_LEVEL_ABIE_ID,
+               ABIE.LAST_UPDATED_BY
+        ).from(ABIE)
+            .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(businessCtxID)))
+            .fetchInto(ABIE.class);
     }
 
     @Transactional

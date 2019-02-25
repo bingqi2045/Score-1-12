@@ -2,10 +2,7 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
-import org.oagi.srt.gateway.http.api.context_management.data.ContextSchemeValue;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -93,6 +90,16 @@ public class ContextSchemeService {
                 .fetchInto(ContextSchemeValue.class);
     }
 
+    public ContextSchemeValue getSimpleContextSchemeValueByCtxSchemeValuesId(long ctxSchemeValuesId) {
+        return dslContext.select(
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.GUID,
+                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
+                ).from(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(ctxSchemeValuesId)))
+                .fetchOneInto(ContextSchemeValue.class);
+    }
+
     public List<SimpleContextScheme> getSimpleContextSchemeList(long ctxCategoryId) {
         return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
@@ -103,16 +110,6 @@ public class ContextSchemeService {
         ).from(CTX_SCHEME)
                 .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
                 .fetchInto(SimpleContextScheme.class);
-    }
-
-    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
-        return dslContext.select(
-                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
-                CTX_SCHEME_VALUE.VALUE,
-                CTX_SCHEME_VALUE.MEANING
-        ).from(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
-                .fetchInto(SimpleContextSchemeValue.class);
     }
 
     @Transactional

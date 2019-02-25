@@ -1,6 +1,8 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
+import org.oagi.srt.gateway.http.api.context_management.data.ContextSchemeValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
 import org.oagi.srt.gateway.http.api.context_management.service.ContextSchemeService;
@@ -36,10 +38,10 @@ public class ContextSchemeController {
         return service.getSimpleContextSchemeList(ctxCategoryId);
     }
 
-    @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,
+    @RequestMapping(value = "/simple_context_scheme_value_from_ctx_values/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(@PathVariable("id") long ctxSchemeId) {
-        return service.getSimpleContextSchemeValueList(ctxSchemeId);
+    public ContextSchemeValue getSimpleContextSchemeValueByCtxSchemeValuesId(@PathVariable("id") long ctxSchemeValuesId) {
+        return service.getSimpleContextSchemeValueByCtxSchemeValuesId(ctxSchemeValuesId);
     }
 
     @RequestMapping(value = "/context_scheme", method = RequestMethod.PUT)
