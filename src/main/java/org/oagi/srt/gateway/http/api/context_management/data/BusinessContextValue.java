@@ -15,5 +15,5 @@ public class BusinessContextValue implements Serializable {
     private String ctxSchemeName;
     private long ctxSchemeValueId;
     private String ctxSchemeValue;
-
+    private long bizCtxId;
 }

@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
 import org.oagi.srt.data.ABIE;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
@@ -60,6 +61,7 @@ public class BusinessContextController {
     @RequestMapping(value = "/abie_from_biz_ctx/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<ABIE> getBIEListFromBizCtxId(@PathVariable("id") long businessCtxID) {
+        System.out.println(service.getBIEListFromBizCtxId(businessCtxID));
         return service.getBIEListFromBizCtxId(businessCtxID);
     }
 

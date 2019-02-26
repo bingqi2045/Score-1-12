@@ -112,6 +112,36 @@ public class ContextSchemeService {
                 .fetchInto(SimpleContextScheme.class);
     }
 
+    public List<BusinessContextValue> getBizCtxValueFromCtxSchemeValueId (long ctxSchemeValueId){
+        return dslContext.select(
+                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID
+        ).from(BIZ_CTX_VALUE)
+                .where(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(ctxSchemeValueId)))
+                .fetchInto(BusinessContextValue.class);
+    }
+
+    public List<BusinessContextValue> getBizCtxValues () {
+        return dslContext.select(
+                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID
+        ).from(BIZ_CTX_VALUE)
+                .fetchInto(BusinessContextValue.class);
+    }
+
+    public BusinessContext getBusinessContext(long bizCtxId) {
+        return dslContext.select(
+                BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.GUID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP
+        ).from(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchOneInto(BusinessContext.class);
+    }
+
     @Transactional
     public void insert(User user, ContextScheme contextScheme) {
         if (StringUtils.isEmpty(contextScheme.getGuid())) {

@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextSchemeValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.service.ContextSchemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,6 +43,24 @@ public class ContextSchemeController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ContextSchemeValue getSimpleContextSchemeValueByCtxSchemeValuesId(@PathVariable("id") long ctxSchemeValuesId) {
         return service.getSimpleContextSchemeValueByCtxSchemeValuesId(ctxSchemeValuesId);
+    }
+
+    @RequestMapping(value = "/biz_ctx_values_from_ctx_values/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BusinessContextValue> getBizCtxValueFromCtxSchemeValueId(@PathVariable("id") long ctxSchemeValueId) {
+        return service.getBizCtxValueFromCtxSchemeValueId(ctxSchemeValueId);
+    }
+
+    @RequestMapping(value = "/biz_ctx/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BusinessContext getBusinessContext(@PathVariable("id") long bizCtxId) {
+        return service.getBusinessContext(bizCtxId);
+    }
+
+    @RequestMapping(value = "/biz_ctx_values", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BusinessContextValue> getBizCtxValues() {
+        return service.getBizCtxValues();
     }
 
     @RequestMapping(value = "/context_scheme", method = RequestMethod.PUT)
