@@ -2,7 +2,6 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.meta.derby.sys.Sys;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
@@ -274,13 +273,33 @@ public class CcNodeRepository {
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
         seqKeySupportableList.addAll(getAsccpNodes(user, fromAccId, releaseId));
         seqKeySupportableList.addAll(getBccpNodes(user, fromAccId, releaseId));
+        seqKeySupportableList.sort(Comparator.comparingInt(SeqKeySupportable::getSeqKey));
 
-        descendants.addAll(
-                seqKeySupportableList.stream()
-                        .sorted(Comparator.comparingInt(SeqKeySupportable::getSeqKey))
-                        .map(e -> (CcNode) e)
-                        .collect(Collectors.toList())
-        );
+        int seqKey = 1;
+        for (SeqKeySupportable e : seqKeySupportableList) {
+            if (e instanceof CcAsccpNode) {
+                CcAsccpNode asccpNode = (CcAsccpNode) e;
+                OagisComponentType oagisComponentType =
+                        bieRepository.getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
+                if (oagisComponentType.isGroup()) {
+                    CcAccNode roleOfAccNode = new CcAccNode();
+                    roleOfAccNode.setAccId(asccpNode.getRoleOfAccId());
+
+                    List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
+                    for (CcNode groupNode : groupDescendants) {
+                        ((SeqKeySupportable) groupNode).setSeqKey(seqKey++);
+                    }
+                    descendants.addAll(groupDescendants);
+                } else {
+                    asccpNode.setSeqKey(seqKey++);
+                    descendants.add(asccpNode);
+                }
+            } else {
+                CcBccpNode bccpNode = (CcBccpNode) e;
+                bccpNode.setSeqKey(seqKey++);
+                descendants.add(bccpNode);
+            }
+        }
 
         return descendants;
     }
@@ -304,14 +323,9 @@ public class CcNodeRepository {
                 asccpNode = getAsccpNodeByCurrentAsccpId(asccNode.getToAsccpId(), releaseId);
             }
 
-            OagisComponentType oagisComponentType = bieRepository.getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
-            if (oagisComponentType.isGroup()) {
-                asccpNodes.addAll(getAsccpNodes(user, asccpNode.getRoleOfAccId(), releaseId));
-            } else {
-                asccpNode.setSeqKey(asccNode.getSeqKey());
-                asccpNode.setAsccId(asccNode.getAsccId());
-                asccpNodes.add(asccpNode);
-            }
+            asccpNode.setSeqKey(asccNode.getSeqKey());
+            asccpNode.setAsccId(asccNode.getAsccId());
+            asccpNodes.add(asccpNode);
         }
         return asccpNodes;
     }

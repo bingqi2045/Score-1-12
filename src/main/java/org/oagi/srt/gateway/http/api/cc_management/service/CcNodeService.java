@@ -167,7 +167,7 @@ public class CcNodeService {
                         "from_acc_id", "to_bccp_id", "den", "is_deprecated",
                         "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
                         "state", "revision_num", "revision_tracking_num")
-                .usingGeneratedKeyColumns("ascc_id");
+                .usingGeneratedKeyColumns("bcc_id");
 
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
