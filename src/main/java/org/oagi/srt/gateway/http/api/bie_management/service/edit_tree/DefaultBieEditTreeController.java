@@ -78,7 +78,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private String GET_ROOT_NODE_STATEMENT =
-            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, top_level_abie.state as top_level_abie_state, " +
+            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, " +
+                    "top_level_abie.state as top_level_abie_state, top_level_abie.owner_user_id, " +
                     "asccp.guid, asccp.property_term as name, " +
                     "asbiep.asbiep_id, asbiep.based_asccp_id as asccp_id, abie.abie_id, abie.based_acc_id as acc_id " +
                     "FROM top_level_abie JOIN abie ON top_level_abie.abie_id = abie.abie_id " +

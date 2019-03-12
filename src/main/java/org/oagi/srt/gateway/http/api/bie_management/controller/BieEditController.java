@@ -8,6 +8,8 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateR
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateExtensionResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,11 +18,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
+import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.CanView;
+
 @RestController
 public class BieEditController {
 
     @Autowired
     private BieEditService service;
+
+    @Autowired
+    private SessionService sessionService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -30,8 +38,41 @@ public class BieEditController {
     public BieEditNode getRootNode(@AuthenticationPrincipal User user,
                                    @PathVariable("id") long topLevelAbieId) {
         BieEditAbieNode rootNode = service.getRootNode(user, topLevelAbieId);
-        String state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState()).toString();
-        rootNode.setTopLevelAbieState(state);
+        BieState state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState());
+        rootNode.setTopLevelAbieState(state.toString());
+
+        long userId = sessionService.userId(user);
+        AccessPrivilege accessPrivilege = Prohibited;
+        switch (state) {
+            case Init:
+                accessPrivilege = Unprepared;
+                break;
+
+            case Editing:
+                if (userId == rootNode.getOwnerUserId()) {
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = Prohibited;
+                }
+                break;
+
+            case Candidate:
+                if (userId == rootNode.getOwnerUserId()) {
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = CanView;
+                }
+
+                break;
+
+            case Published:
+                accessPrivilege = CanView;
+                break;
+
+        }
+
+        rootNode.setAccess(accessPrivilege.name());
+
         return rootNode;
     }
 
