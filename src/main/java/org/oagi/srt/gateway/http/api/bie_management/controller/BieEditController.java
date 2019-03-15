@@ -2,10 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateExtensionResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +39,13 @@ public class BieEditController {
                             @RequestBody Map<String, Object> body) {
         BieState state = BieState.valueOf((String) body.get("state"));
         service.updateState(user, topLevelAbieId, state);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/root/bcc/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BccForBie getBcc(@AuthenticationPrincipal User user,
+                            @PathVariable("id") long bccId) {
+        return service.getBcc(user, bccId);
     }
 
     @RequestMapping(value = "/profile_bie/node/children/abie", method = RequestMethod.GET,

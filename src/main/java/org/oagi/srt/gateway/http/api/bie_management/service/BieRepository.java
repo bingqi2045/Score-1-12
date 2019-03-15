@@ -91,6 +91,16 @@ public class BieRepository {
                         .addValue("owner_top_level_abie_id", topLevelAbieId), BieEditBbiep.class);
     }
 
+    public BccForBie getBcc(long bccId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT bcc_id, guid, cardinality_min, cardinality_max, den, definition, " +
+                        "to_bccp_id, from_acc_id, definition_source, entity_type, " +
+                        "revision_num, revision_tracking_num, release_id " +
+                        "FROM bcc WHERE bcc_id = :bcc_id",
+                newSqlParameterSource()
+                        .addValue("bcc_id", bccId), BccForBie.class);
+    }
+
     public BieEditBccp getBccp(long bccpId) {
         return jdbcTemplate.queryForObject(
                 "SELECT bccp_id, guid, property_term, bdt_id, current_bccp_id, " +

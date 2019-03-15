@@ -59,6 +59,11 @@ public class BieEditService {
     }
 
     @Transactional
+    public BccForBie getBcc(User user, long bccId){
+        return bieRepository.getBcc(bccId);
+    }
+
+    @Transactional
     public List<BieEditNode> getDescendants(User user, BieEditNode node) {
         BieEditTreeController treeController = getTreeController(user, node);
         return treeController.getDescendants(node);
