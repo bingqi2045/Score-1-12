@@ -2,10 +2,10 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.meta.derby.sys.Sys;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -33,6 +33,9 @@ public class CcNodeRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private BieRepository bieRepository;
 
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
@@ -171,7 +174,7 @@ public class CcNodeRepository {
 
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT " +
-                "asccp_id, guid, property_term as name, " +
+                "asccp_id, guid, property_term as name, role_of_acc_id, " +
                 "state, revision_num, revision_tracking_num, release_id " +
                 "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
                 .addValue("asccpId", asccpId), CcAsccpNode.class);
@@ -184,7 +187,7 @@ public class CcNodeRepository {
     public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
         CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
                 jdbcTemplate.queryForList("SELECT " +
-                        "asccp_id, guid, property_term as name, " +
+                        "asccp_id, guid, property_term as name, role_of_acc_id, " +
                         "state, revision_num, revision_tracking_num, release_id " +
                         "FROM asccp WHERE current_asccp_id = :currentAsccpId", newSqlParameterSource()
                         .addValue("currentAsccpId", currentAsccpId), CcAsccpNode.class));
@@ -270,13 +273,33 @@ public class CcNodeRepository {
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
         seqKeySupportableList.addAll(getAsccpNodes(user, fromAccId, releaseId));
         seqKeySupportableList.addAll(getBccpNodes(user, fromAccId, releaseId));
+        seqKeySupportableList.sort(Comparator.comparingInt(SeqKeySupportable::getSeqKey));
 
-        descendants.addAll(
-                seqKeySupportableList.stream()
-                        .sorted(Comparator.comparingInt(SeqKeySupportable::getSeqKey))
-                        .map(e -> (CcNode) e)
-                        .collect(Collectors.toList())
-        );
+        int seqKey = 1;
+        for (SeqKeySupportable e : seqKeySupportableList) {
+            if (e instanceof CcAsccpNode) {
+                CcAsccpNode asccpNode = (CcAsccpNode) e;
+                OagisComponentType oagisComponentType =
+                        bieRepository.getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
+                if (oagisComponentType.isGroup()) {
+                    CcAccNode roleOfAccNode = new CcAccNode();
+                    roleOfAccNode.setAccId(asccpNode.getRoleOfAccId());
+
+                    List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
+                    for (CcNode groupNode : groupDescendants) {
+                        ((SeqKeySupportable) groupNode).setSeqKey(seqKey++);
+                    }
+                    descendants.addAll(groupDescendants);
+                } else {
+                    asccpNode.setSeqKey(seqKey++);
+                    descendants.add(asccpNode);
+                }
+            } else {
+                CcBccpNode bccpNode = (CcBccpNode) e;
+                bccpNode.setSeqKey(seqKey++);
+                descendants.add(bccpNode);
+            }
+        }
 
         return descendants;
     }
@@ -291,7 +314,8 @@ public class CcNodeRepository {
                         .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
                         .collect(Collectors.toList());
 
-        return asccNodes.stream().map(asccNode -> {
+        List<CcAsccpNode> asccpNodes = new ArrayList();
+        for (CcAsccNode asccNode : asccNodes) {
             CcAsccpNode asccpNode;
             if (releaseId == null) {
                 asccpNode = getAsccpNodeByAsccpId(asccNode.getToAsccpId(), releaseId);
@@ -301,8 +325,9 @@ public class CcNodeRepository {
 
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
-            return asccpNode;
-        }).collect(Collectors.toList());
+            asccpNodes.add(asccpNode);
+        }
+        return asccpNodes;
     }
 
     private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {

@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.configuration.handler;
 
+import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -43,6 +44,16 @@ public class SrtResponseEntityExceptionHandler extends ResponseEntityExceptionHa
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.set("X-Error-Message", ex.getMessage());
         return new ResponseEntity(headers, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DataAccessForbiddenException.class)
+    public ResponseEntity handleDataAccessForbiddenException(
+            DataAccessForbiddenException ex, WebRequest webRequest) {
+        logger.debug(ex.getMessage(), ex);
+
+        MultiValueMap<String, String> headers = new HttpHeaders();
+        headers.set("X-Error-Message", ex.getMessage());
+        return new ResponseEntity(headers, HttpStatus.FORBIDDEN);
     }
 
 }
