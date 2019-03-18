@@ -9,6 +9,8 @@ public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode implements BieEdi
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
+    private String cardinalityOriginMin;
+    private String cardinalityOriginMax;
     private Boolean nillable;
     private String bizTerm;
     private String remark;

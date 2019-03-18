@@ -15,6 +15,8 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
+    private String cardinalityOriginMin;
+    private String cardinalityOriginMax;
     private String fixedValue;
     private String defaultValue;
     private String bizTerm;

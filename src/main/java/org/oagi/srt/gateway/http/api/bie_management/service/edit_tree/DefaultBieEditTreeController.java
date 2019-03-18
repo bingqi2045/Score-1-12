@@ -525,6 +525,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     });
         }
 
+        if (asbiepNode.getAsccId() > 0L) {
+            jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
+                    "FROM ascc " +
+                    "WHERE ascc_id = :ascc_id", parameterSource, rs -> {
+                detail.setCardinalityOriginMin(rs.getString("ascc.cardinality_min"));
+                detail.setCardinalityOriginMax(rs.getString("ascc.cardinality_max"));
+            });
+        }
+
         jdbcTemplate.query("SELECT definition FROM ascc WHERE ascc_id = :ascc_id", parameterSource, rs -> {
             detail.setAssociationDefinition(rs.getString("definition"));
         });
@@ -587,6 +596,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                             .addValue("bdt_id", detail.getBdtId())
                             .addValue("is_default", true), Long.class);
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
+        }
+        if (bbiepNode.getBccId() > 0L) {
+            jdbcTemplate.query("SELECT bcc.cardinality_min, bcc.cardinality_max " +
+                    "FROM bcc " +
+                    "WHERE bcc_id = :bcc_id", parameterSource, rs -> {
+                detail.setCardinalityOriginMin(rs.getString("bcc.cardinality_min"));
+                detail.setCardinalityOriginMax(rs.getString("bcc.cardinality_max"));
+            });
         }
 
         BieEditBdtPriRestri bdtPriRestri = getBdtPriRestri(bbiepNode);
@@ -675,6 +692,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                             .addValue("bdt_sc_id", bbieScNode.getDtScId())
                             .addValue("is_default", true), Long.class);
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
+        }
+
+        if (bbieScNode.getDtScId() > 0L) {
+            jdbcTemplate.query("SELECT dt_sc.cardinality_min, dt_sc.cardinality_max " +
+                    "FROM dt_sc " +
+                    "WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
+                detail.setCardinalityOriginMin(rs.getString("dt_sc.cardinality_min"));
+                detail.setCardinalityOriginMax(rs.getString("dt_sc.cardinality_max"));
+            });
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);

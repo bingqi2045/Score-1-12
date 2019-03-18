@@ -15,6 +15,8 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
 
     private Integer cardinalityMin;
     private Integer cardinalityMax;
+    private String cardinalityOriginMin;
+    private String cardinalityOriginMax;
     private Boolean nillable;
     private String fixedValue;
     private String bizTerm;
