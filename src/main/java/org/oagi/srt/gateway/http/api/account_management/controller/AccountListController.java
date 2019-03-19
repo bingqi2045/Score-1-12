@@ -19,4 +19,7 @@ public class AccountListController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<AppUser> getAccounts(){return service.getAccounts();}
 
+    @RequestMapping(value = "/account/{loginId}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public AppUser getAccount(@PathVariable("loginId") String loginId){return service.getAccount(loginId);}
 }

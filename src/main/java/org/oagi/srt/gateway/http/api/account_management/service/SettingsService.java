@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.account_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.account_management.data.AppUser;
 import org.oagi.srt.gateway.http.api.account_management.data.UpdatePasswordRequest;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,19 @@ public class SettingsService {
         update(userId, newPassword);
     }
 
+    @Transactional
+    public void updatePasswordAccount(UpdatePasswordRequest request) {
+        String userId = request.getAccount().getLoginId();
+        System.out.println(userId);
+        String oldPassword = validate(request.getOldPassword());
+        if (!matchesLogin(userId, oldPassword)) {
+            throw new IllegalArgumentException("Invalid old password");
+        }
+
+        String newPassword = validate(request.getNewPassword());
+        updateFromLogin(request.getAccount(), newPassword);
+    }
+
     private String validate(String password) {
         if (StringUtils.isEmpty(password) || password.length() < 5) {
             throw new IllegalArgumentException("Password must be at least 5 characters.");
@@ -54,10 +68,26 @@ public class SettingsService {
                         .fetchOneInto(String.class));
     }
 
+    private boolean matchesLogin(String loginId, String oldPassword) {
+        return passwordEncoder.matches(oldPassword,
+                dslContext.select(APP_USER.PASSWORD).from(APP_USER)
+                        .where(APP_USER.LOGIN_ID.eq(loginId))
+                        .fetchOneInto(String.class));
+    }
+
     private void update(long userId, String newPassword) {
         dslContext.update(APP_USER)
                 .set(row(APP_USER.PASSWORD), row(passwordEncoder.encode(newPassword)))
                 .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
                 .execute();
     }
+
+    private void updateFromLogin(AppUser account, String newPassword) {
+        dslContext.update(APP_USER)
+                .set(row(APP_USER.PASSWORD, APP_USER.ORGANIZATION, APP_USER.NAME),
+                        row(passwordEncoder.encode(newPassword), account.getOrganization(), account.getName()))
+                .where(APP_USER.LOGIN_ID.eq(account.getLoginId()))
+                .execute();
+    }
+
 }

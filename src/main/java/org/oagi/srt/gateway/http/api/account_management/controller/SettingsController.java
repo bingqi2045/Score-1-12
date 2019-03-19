@@ -23,4 +23,13 @@ public class SettingsController {
         service.updatePassword(user, request);
         return ResponseEntity.accepted().build();
     }
+    @RequestMapping(value = "/account/password", method = RequestMethod.POST)
+    public ResponseEntity updatePasswordAccount(@RequestBody UpdatePasswordRequest request) {
+        System.out.println("===========================================================");
+        System.out.println(request);
+        System.out.println("===========================================================");
+        service.updatePasswordAccount(request);
+        return ResponseEntity.accepted().build();
+    }
+
 }

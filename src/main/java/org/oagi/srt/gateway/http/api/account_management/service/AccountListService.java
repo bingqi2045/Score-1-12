@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.account_management.service;
 
 import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.account_management.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,18 @@ public class AccountListService {
                 APP_USER.ORGANIZATION
         ).from(APP_USER)
                 .fetchInto(AppUser.class);
+    }
+
+    public AppUser getAccount(String loginId){
+        return dslContext.select(
+                APP_USER.APP_USER_ID,
+                APP_USER.LOGIN_ID,
+                APP_USER.PASSWORD,
+                APP_USER.NAME,
+                APP_USER.OAGIS_DEVELOPER_INDICATOR,
+                APP_USER.ORGANIZATION
+        ).from(APP_USER).where(APP_USER.LOGIN_ID.eq(loginId))
+                .fetchOneInto(AppUser.class);
+
     }
 }
