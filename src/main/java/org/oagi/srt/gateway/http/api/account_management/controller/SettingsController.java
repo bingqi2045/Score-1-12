@@ -25,9 +25,6 @@ public class SettingsController {
     }
     @RequestMapping(value = "/account/password", method = RequestMethod.POST)
     public ResponseEntity updatePasswordAccount(@RequestBody UpdatePasswordRequest request) {
-        System.out.println("===========================================================");
-        System.out.println(request);
-        System.out.println("===========================================================");
         service.updatePasswordAccount(request);
         return ResponseEntity.accepted().build();
     }
