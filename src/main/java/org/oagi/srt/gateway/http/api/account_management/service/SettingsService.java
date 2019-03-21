@@ -43,13 +43,6 @@ public class SettingsService {
 
     @Transactional
     public void updatePasswordAccount(UpdatePasswordRequest request) {
-        String userId = request.getAccount().getLoginId();
-        System.out.println(userId);
-        String oldPassword = validate(request.getOldPassword());
-        if (!matchesLogin(userId, oldPassword)) {
-            throw new IllegalArgumentException("Invalid old password");
-        }
-
         String newPassword = validate(request.getNewPassword());
         updateFromLogin(request.getAccount(), newPassword);
     }
@@ -65,13 +58,6 @@ public class SettingsService {
         return passwordEncoder.matches(oldPassword,
                 dslContext.select(APP_USER.PASSWORD).from(APP_USER)
                         .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
-                        .fetchOneInto(String.class));
-    }
-
-    private boolean matchesLogin(String loginId, String oldPassword) {
-        return passwordEncoder.matches(oldPassword,
-                dslContext.select(APP_USER.PASSWORD).from(APP_USER)
-                        .where(APP_USER.LOGIN_ID.eq(loginId))
                         .fetchOneInto(String.class));
     }
 
