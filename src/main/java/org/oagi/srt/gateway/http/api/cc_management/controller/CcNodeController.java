@@ -100,10 +100,6 @@ public class CcNodeController {
             @PathVariable("id") long accId,
             @RequestBody CcAccNode ccAccNode) {
         accId = ccAccNode.getAccId();
-        System.out.println("===================================");
-        System.out.println("acc node = " + ccAccNode);
-        System.out.println("===================================");
-
         service.updateAcc(user, ccAccNode, accId);
     }
 

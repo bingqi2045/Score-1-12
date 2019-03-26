@@ -70,7 +70,6 @@ public class CcNodeRepository {
                 .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
                       "namespace_id"  ,"created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
-        System.out.println("ccAcc node   =" + ccAccNode);
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
         MapSqlParameterSource parameterSource = newSqlParameterSource()
@@ -92,7 +91,6 @@ public class CcNodeRepository {
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
-        System.out.println("Here is the CC :"  + ccAccNode);
         jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, `guid` = :guid, " +
                 "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
                 "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +

@@ -639,7 +639,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                         "FROM bdt_pri_restri b JOIN code_list c ON b.code_list_id = c.code_list_id " +
                         "WHERE bdt_id = :bdt_id", newSqlParameterSource()
                         .addValue("bdt_id", bdtId), BieEditCodeList.class);
-
         List<BieEditAgencyIdList> bieEditAgencyIdLists = jdbcTemplate.queryForList(
                 "SELECT a.agency_id_list_id, b.is_default, a.name as agency_id_list_name " +
                         "FROM bdt_pri_restri b JOIN agency_id_list a ON b.agency_id_list_id = a.agency_id_list_id " +
@@ -654,7 +653,21 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                         bieEditCodeLists.stream().filter(e -> e.getBasedCodeListId() != null)
                                 .map(e -> e.getBasedCodeListId()).collect(Collectors.toList())
                 );
+                List<BieEditCodeList> basedCodeLists2 = getCodeListsByBasedCodeList(bieEditCodeLists.get(0).getCodeListId());
+                basedCodeLists2.clear();
+                for (int i=0; i< bieEditCodeLists.size(); i++) {
+                    basedCodeLists2.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
+                }
                 bieEditCodeLists.addAll(0, basedCodeLists);
+                bieEditCodeLists.addAll(0, basedCodeLists2);
+                basedCodeLists2.clear();
+                for (int i=0; i< bieEditCodeLists.size(); i++) {
+                    basedCodeLists2.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
+                }
+                bieEditCodeLists.addAll(basedCodeLists2);
+                Set<BieEditCodeList> set = new HashSet<BieEditCodeList>(bieEditCodeLists);
+                bieEditCodeLists.clear();
+                bieEditCodeLists.addAll(set); // remove dupplicate elements
             }
         }
 
@@ -760,7 +773,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private List<BieEditCodeList> getAllCodeLists() {
-        return jdbcTemplate.queryForList("SELECT code_list_id, name as code_list_name FROM code_list",
+        return jdbcTemplate.queryForList("SELECT code_list_id, name as code_list_name, state FROM code_list WHERE state LIKE 'Published'",
                 BieEditCodeList.class);
     }
 
@@ -786,6 +799,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 );
 
         bieEditCodeLists.addAll(0, basedCodeLists);
+        return bieEditCodeLists;
+    }
+
+    private List<BieEditCodeList> getCodeListsByBasedCodeList (Long basedCodeList) {
+        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
+                "SELECT code_list_id, based_code_list_id, name as code_list_name " +
+                        "FROM code_list WHERE based_code_list_id LIKE (:based_code_list_id)", newSqlParameterSource()
+                        .addValue("based_code_list_id", basedCodeList), BieEditCodeList.class);
         return bieEditCodeLists;
     }
 
