@@ -807,6 +807,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 "SELECT code_list_id, based_code_list_id, name as code_list_name " +
                         "FROM code_list WHERE based_code_list_id LIKE (:based_code_list_id)", newSqlParameterSource()
                         .addValue("based_code_list_id", basedCodeList), BieEditCodeList.class);
+
+        for (int i=0; i<bieEditCodeLists.size(); i++) {
+            bieEditCodeLists.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
+        }
         return bieEditCodeLists;
     }
 
