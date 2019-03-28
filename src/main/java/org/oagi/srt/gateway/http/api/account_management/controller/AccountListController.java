@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.account_management.controller;
 
 import org.oagi.srt.gateway.http.api.account_management.data.AppUser;
 import org.oagi.srt.gateway.http.api.account_management.service.AccountListService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,4 +23,12 @@ public class AccountListController {
     @RequestMapping(value = "/account/{loginId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public AppUser getAccount(@PathVariable("loginId") String loginId){return service.getAccount(loginId);}
+
+    @RequestMapping(value = "/account", method = RequestMethod.PUT)
+    public ResponseEntity create(
+            @RequestBody AppUser account ) {
+        System.out.println(account);
+        service.insert(account);
+        return ResponseEntity.noContent().build();
+    }
 }
