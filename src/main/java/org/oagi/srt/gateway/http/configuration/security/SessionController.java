@@ -31,7 +31,13 @@ public class SessionController {
     private SessionService sessionService;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public void login() {
+    public Map<String, String> login(@AuthenticationPrincipal User user) {
+        AppUser appUser = sessionService.getAppUser(user.getUsername());
+
+        Map<String, String> resp = new HashMap();
+        resp.put("username", user.getUsername());
+        resp.put("role", (appUser.isOagisDeveloper()) ? "developer" : "end-user");
+        return resp;
     }
 
     @RequestMapping(value = "/users/me", method = RequestMethod.GET)
@@ -40,12 +46,7 @@ public class SessionController {
             throw new BadCredentialsException("Invalid Credentials");
         }
 
-        AppUser appUser = sessionService.getAppUser(user.getUsername());
-
-        Map<String, String> resp = new HashMap();
-        resp.put("username", user.getUsername());
-        resp.put("role", (appUser.isOagisDeveloper()) ? "developer" : "end-user");
-        return resp;
+        return login(user);
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
