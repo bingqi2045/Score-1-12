@@ -5,34 +5,24 @@ import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.sql.DataSource;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
 public class ContextSchemeService {
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -146,90 +136,85 @@ public class ContextSchemeService {
             contextScheme.setGuid(SrtGuid.randomGuid());
         }
 
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("ctx_scheme")
-                .usingColumns("guid", "scheme_name", "ctx_category_id",
-                        "scheme_id", "scheme_agency_id", "scheme_version_id", "description",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp")
-                .usingGeneratedKeyColumns("ctx_scheme_id");
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        ULong ctxSchemeId = dslContext.insertInto(CTX_SCHEME,
+                CTX_SCHEME.GUID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.CTX_CATEGORY_ID,
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.DESCRIPTION,
+                CTX_SCHEME.CREATED_BY,
+                CTX_SCHEME.LAST_UPDATED_BY,
+                CTX_SCHEME.CREATION_TIMESTAMP,
+                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
+        ).values(
+                contextScheme.getGuid(),
+                contextScheme.getSchemeName(),
+                ULong.valueOf(contextScheme.getCtxCategoryId()),
+                contextScheme.getSchemeId(),
+                contextScheme.getSchemeAgencyId(),
+                contextScheme.getSchemeVersionId(),
+                contextScheme.getDescription(),
+                userId, userId, timestamp, timestamp
+        ).returning(CTX_SCHEME.CTX_SCHEME_ID)
+                .fetchOne().getValue(CTX_SCHEME.CTX_SCHEME_ID);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", contextScheme.getGuid())
-                .addValue("scheme_name", contextScheme.getSchemeName())
-                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
-                .addValue("scheme_id", contextScheme.getSchemeId())
-                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
-                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
-                .addValue("description", contextScheme.getDescription())
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-        long ctxSchemeId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         for (ContextSchemeValue contextSchemeValue : contextScheme.getCtxSchemeValues()) {
-            insert(ctxSchemeId, contextSchemeValue);
+            insert(ctxSchemeId.longValue(), contextSchemeValue);
         }
     }
 
     @Transactional
     public void insert(long ctxSchemeId, ContextSchemeValue contextSchemeValue) {
-        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("ctx_scheme_value")
-                .usingColumns("guid", "value", "meaning", "owner_ctx_scheme_id");
-
-        if (StringUtils.isEmpty(contextSchemeValue.getGuid())) {
-            contextSchemeValue.setGuid(SrtGuid.randomGuid());
-        }
-
-        jdbcInsert.execute(newSqlParameterSource()
-                .addValue("guid", contextSchemeValue.getGuid())
-                .addValue("value", contextSchemeValue.getValue())
-                .addValue("meaning", contextSchemeValue.getMeaning())
-                .addValue("owner_ctx_scheme_id", ctxSchemeId));
+        dslContext.insertInto(CTX_SCHEME_VALUE,
+                CTX_SCHEME_VALUE.GUID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING,
+                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
+        ).values(
+                contextSchemeValue.getGuid(),
+                contextSchemeValue.getValue(),
+                contextSchemeValue.getMeaning(),
+                ULong.valueOf(ctxSchemeId)
+        ).execute();
     }
-
-    private String UPDATE_CONTEXT_SCHEME_STATEMENT =
-            "UPDATE ctx_scheme SET scheme_name = :scheme_name, ctx_category_id = :ctx_category_id, " +
-                    "scheme_id = :scheme_id, scheme_agency_id = :scheme_agency_id, scheme_version_id = :scheme_version_id, " +
-                    "description = :description " +
-                    "WHERE ctx_scheme_id = :ctx_scheme_id";
 
     @Transactional
     public void update(User user, ContextScheme contextScheme) {
-        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_STATEMENT, newSqlParameterSource()
-                .addValue("ctx_scheme_id", contextScheme.getCtxSchemeId())
-                .addValue("scheme_name", contextScheme.getSchemeName())
-                .addValue("ctx_category_id", contextScheme.getCtxCategoryId())
-                .addValue("scheme_id", contextScheme.getSchemeId())
-                .addValue("scheme_agency_id", contextScheme.getSchemeAgencyId())
-                .addValue("scheme_version_id", contextScheme.getSchemeVersionId())
-                .addValue("description", contextScheme.getDescription())
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date()));
+        dslContext.update(CTX_SCHEME)
+                .set(CTX_SCHEME.SCHEME_NAME, contextScheme.getSchemeName())
+                .set(CTX_SCHEME.CTX_CATEGORY_ID, ULong.valueOf(contextScheme.getCtxCategoryId()))
+                .set(CTX_SCHEME.SCHEME_ID, contextScheme.getSchemeId())
+                .set(CTX_SCHEME.SCHEME_AGENCY_ID, contextScheme.getSchemeAgencyId())
+                .set(CTX_SCHEME.SCHEME_VERSION_ID, contextScheme.getSchemeVersionId())
+                .set(CTX_SCHEME.DESCRIPTION, contextScheme.getDescription())
+                .set(CTX_SCHEME.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(CTX_SCHEME.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextScheme.getCtxSchemeId())))
+                .execute();
 
         update(contextScheme.getCtxSchemeId(), contextScheme.getCtxSchemeValues());
     }
 
-    private String GET_CONTEXT_SCHEME_VALUE_ID_LIST_STATEMENT =
-            "SELECT ctx_scheme_value_id FROM ctx_scheme_value WHERE owner_ctx_scheme_id = :ctx_scheme_id";
-
     @Transactional
     public void update(final long ctxSchemeId, List<ContextSchemeValue> contextSchemeValues) {
-        List<Long> oldCtxSchemeValueIds = jdbcTemplate.queryForList(
-                GET_CONTEXT_SCHEME_VALUE_ID_LIST_STATEMENT,
-                newSqlParameterSource().addValue("ctx_scheme_id", ctxSchemeId),
-                Long.class);
+        List<ULong> oldCtxSchemeValueIds =
+                dslContext.select(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID).from(CTX_SCHEME_VALUE)
+                        .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                        .fetch(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID);
 
         Map<Long, ContextSchemeValue> newCtxSchemeValues = contextSchemeValues.stream()
                 .filter(e -> e.getCtxSchemeValueId() > 0L)
                 .collect(Collectors.toMap(ContextSchemeValue::getCtxSchemeValueId, Function.identity()));
 
-        oldCtxSchemeValueIds.removeAll(newCtxSchemeValues.keySet());
-        for (long deleteCtxSchemeValueId : oldCtxSchemeValueIds) {
-            delete(ctxSchemeId, deleteCtxSchemeValueId);
+        oldCtxSchemeValueIds.removeAll(newCtxSchemeValues.keySet().stream()
+                .map(e -> ULong.valueOf(e)).collect(Collectors.toList()));
+        for (ULong deleteCtxSchemeValueId : oldCtxSchemeValueIds) {
+            delete(ctxSchemeId, deleteCtxSchemeValueId.longValue());
         }
 
         for (ContextSchemeValue contextSchemeValue : newCtxSchemeValues.values()) {
@@ -243,42 +228,33 @@ public class ContextSchemeService {
         }
     }
 
-    private String UPDATE_CONTEXT_SCHEME_VALUE_STATEMENT =
-            "UPDATE ctx_scheme_value SET `value` = :value, meaning = :meaning " +
-                    "WHERE ctx_scheme_value_id = :ctx_scheme_value_id AND owner_ctx_scheme_id = :ctx_scheme_id";
-
     @Transactional
     public void update(long ctxSchemeId, ContextSchemeValue contextSchemeValue) {
-        jdbcTemplate.update(UPDATE_CONTEXT_SCHEME_VALUE_STATEMENT, newSqlParameterSource()
-                .addValue("ctx_scheme_value_id", contextSchemeValue.getCtxSchemeValueId())
-                .addValue("ctx_scheme_id", ctxSchemeId)
-                .addValue("value", contextSchemeValue.getValue())
-                .addValue("meaning", contextSchemeValue.getMeaning()));
+        dslContext.update(CTX_SCHEME_VALUE)
+                .set(CTX_SCHEME_VALUE.VALUE, contextSchemeValue.getValue())
+                .set(CTX_SCHEME_VALUE.MEANING, contextSchemeValue.getMeaning())
+                .where(and(
+                        CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(contextSchemeValue.getCtxSchemeValueId())),
+                        CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId))
+                )).execute();
     }
-
-    private String DELETE_CONTEXT_SCHEME_VALUE_STATEMENT =
-            "DELETE FROM ctx_scheme_value " +
-                    "WHERE ctx_scheme_value_id = :ctx_scheme_value_id AND owner_ctx_scheme_id = :ctx_scheme_id";
 
     @Transactional
     public void delete(long ctxSchemeId, long ctxSchemeValueId) {
-        jdbcTemplate.update(DELETE_CONTEXT_SCHEME_VALUE_STATEMENT, newSqlParameterSource()
-                .addValue("ctx_scheme_value_id", ctxSchemeValueId)
-                .addValue("ctx_scheme_id", ctxSchemeId));
+        dslContext.delete(CTX_SCHEME_VALUE)
+                .where(and(
+                        CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(ctxSchemeValueId)),
+                        CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId))
+                )).execute();
     }
-
-    private String DELETE_CONTEXT_SCHEME_VALUES_STATEMENT =
-            "DELETE FROM ctx_scheme_value WHERE owner_ctx_scheme_id = :ctx_scheme_id";
-
-    private String DELETE_CONTEXT_SCHEME_STATEMENT =
-            "DELETE FROM ctx_scheme WHERE ctx_scheme_id = :ctx_scheme_id";
 
     @Transactional
     public void delete(long ctxSchemeId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("ctx_scheme_id", ctxSchemeId);
-
-        jdbcTemplate.update(DELETE_CONTEXT_SCHEME_VALUES_STATEMENT, parameterSource);
-        jdbcTemplate.update(DELETE_CONTEXT_SCHEME_STATEMENT, parameterSource);
+        dslContext.delete(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .execute();
+        dslContext.delete(CTX_SCHEME)
+                .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .execute();
     }
 }
