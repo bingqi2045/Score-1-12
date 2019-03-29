@@ -341,7 +341,6 @@ public class Keys {
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.CODE_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = ForeignKeys0.CTX_SCHEME_CTX_CATEGORY_ID_FK;
-    public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = ForeignKeys0.CTX_SCHEME_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = ForeignKeys0.CTX_SCHEME_CREATED_BY_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = ForeignKeys0.CTX_SCHEME_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = ForeignKeys0.CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK;
@@ -608,7 +607,6 @@ public class Keys {
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_last_updated_by_fk", CodeList.CODE_LIST.LAST_UPDATED_BY);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_CATEGORY_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID);
-        public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_code_list_id_fk", CtxScheme.CTX_SCHEME.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_created_by_fk", CtxScheme.CTX_SCHEME.CREATED_BY);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME.LAST_UPDATED_BY);
         public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_SCHEME_PRIMARY, CtxSchemeValue.CTX_SCHEME_VALUE, "ctx_scheme_value_owner_ctx_scheme_id_fk", CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID);

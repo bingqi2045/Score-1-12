@@ -67,7 +67,6 @@ public class ContextCategoryService {
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
-                CTX_SCHEME.CODE_LIST_ID,
                 CTX_SCHEME.DESCRIPTION,
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP
         ).from(CTX_SCHEME)

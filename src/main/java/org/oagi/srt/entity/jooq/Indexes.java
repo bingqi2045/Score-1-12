@@ -224,7 +224,6 @@ public class Indexes {
     public static final Index CODE_LIST_VALUE_PRIMARY = Indexes0.CODE_LIST_VALUE_PRIMARY;
     public static final Index CTX_CATEGORY_CTX_CATEGORY_UK1 = Indexes0.CTX_CATEGORY_CTX_CATEGORY_UK1;
     public static final Index CTX_CATEGORY_PRIMARY = Indexes0.CTX_CATEGORY_PRIMARY;
-    public static final Index CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK;
@@ -442,7 +441,6 @@ public class Indexes {
         public static Index CODE_LIST_VALUE_PRIMARY = Internal.createIndex("PRIMARY", CodeListValue.CODE_LIST_VALUE, new OrderField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID }, true);
         public static Index CTX_CATEGORY_CTX_CATEGORY_UK1 = Internal.createIndex("ctx_category_uk1", CtxCategory.CTX_CATEGORY, new OrderField[] { CtxCategory.CTX_CATEGORY.GUID }, true);
         public static Index CTX_CATEGORY_PRIMARY = Internal.createIndex("PRIMARY", CtxCategory.CTX_CATEGORY, new OrderField[] { CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID }, true);
-        public static Index CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK = Internal.createIndex("ctx_scheme_code_list_id_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CODE_LIST_ID }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK = Internal.createIndex("ctx_scheme_created_by_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CREATED_BY }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createIndex("ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createIndex("ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.LAST_UPDATED_BY }, false);
