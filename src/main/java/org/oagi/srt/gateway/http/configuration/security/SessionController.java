@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.configuration.security;
 
+import org.oagi.srt.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,17 +27,24 @@ public class SessionController {
     @Autowired
     private RememberMeServices rememberMeServices;
 
+    @Autowired
+    private SessionService sessionService;
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public void login() {
     }
 
-    @RequestMapping(value = "/username", method = RequestMethod.GET)
-    public Map<String, String> username(@AuthenticationPrincipal User user) {
+    @RequestMapping(value = "/users/me", method = RequestMethod.GET)
+    public Map<String, String> userInfo(@AuthenticationPrincipal User user) {
         if (user == null) {
             throw new BadCredentialsException("Invalid Credentials");
         }
+
+        AppUser appUser = sessionService.getAppUser(user.getUsername());
+
         Map<String, String> resp = new HashMap();
         resp.put("username", user.getUsername());
+        resp.put("role", (appUser.isOagisDeveloper()) ? "developer" : "end-user");
         return resp;
     }
 

@@ -1,22 +1,38 @@
 package org.oagi.srt.gateway.http.configuration.security;
 
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
+import org.oagi.srt.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 
 @Service
 @Transactional(readOnly = true)
 public class SessionService {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     public long userId(User user) {
-        return jdbcTemplate.queryForObject("SELECT app_user_id FROM app_user WHERE login_id = :login_id",
-                newSqlParameterSource().addValue("login_id", user.getUsername()), Long.class);
+        return dslContext.select(APP_USER.APP_USER_ID)
+                .from(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(user.getUsername()))
+                .fetchOptional(APP_USER.APP_USER_ID).orElse(ULong.valueOf(0L)).longValue();
+    }
+
+    public AppUser getAppUser(String username) {
+        return dslContext.select(
+                APP_USER.APP_USER_ID,
+                APP_USER.LOGIN_ID,
+                APP_USER.NAME,
+                APP_USER.OAGIS_DEVELOPER_INDICATOR.as("oagis_developer"),
+                APP_USER.ORGANIZATION
+        ).from(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(username))
+                .fetchOneInto(AppUser.class);
     }
 }
