@@ -27,6 +27,18 @@ public class BieListController {
         return service.getBieList(user);
     }
 
+    @RequestMapping(value = "/profile_bie_list/meta_header", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieList> getMetaHeaderBieList(@AuthenticationPrincipal User user) {
+        return service.getMetaHeaderBieList(user);
+    }
+
+    @RequestMapping(value = "/profile_bie_list/pagination_response", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieList> getPaginationResponseBieList(@AuthenticationPrincipal User user) {
+        return service.getPaginationResponseBieList(user);
+    }
+
     @RequestMapping(value = "/profile_bie_list/delete", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteBieList(@RequestBody DeleteBieListRequest request) {

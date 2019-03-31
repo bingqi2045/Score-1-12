@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.data.expression;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.GenerationContext;
 
 @Data
 public class GenerateExpressionOption {
@@ -18,5 +19,11 @@ public class GenerateExpressionOption {
     private String packageOption;
 
     private boolean arrayForJsonExpression;
+
+    private boolean includeMetaHeaderForJson;
+    private Long metaHeaderTopLevelAbieId;
+
+    private boolean includePaginationResponseForJson;
+    private Long paginationResponseTopLevelAbieId;
 
 }

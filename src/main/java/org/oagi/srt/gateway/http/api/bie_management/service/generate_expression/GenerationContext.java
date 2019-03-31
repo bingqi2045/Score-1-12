@@ -110,7 +110,7 @@ public class GenerationContext implements InitializingBean {
     @Autowired
     private ReleaseRepository releaseRepository;
 
-    public void setTopLevelAbie(TopLevelAbie topLevelAbie) {
+    public GenerationContext(TopLevelAbie topLevelAbie) {
         this.topLevelAbie = topLevelAbie;
     }
 
@@ -239,7 +239,10 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toMap(e -> e.getCtxSchemeId(), Function.identity()));
         findContextCategoryMap = contextCategoryRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getCtxCategoryId(), Function.identity()));
+    }
 
+    public TopLevelAbie getTopLevelAbie() {
+        return topLevelAbie;
     }
 
     // Prepared Datas

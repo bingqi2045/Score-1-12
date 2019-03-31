@@ -1470,7 +1470,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 xbtNode.addContent(child);
             }
 
-            rootElementNode.addContent(xbtNode);
+            schemaNode.addContent(xbtNode);
         } catch (JDOMException | IOException e) {
             throw new IllegalStateException("Error occurs while the schema definition loads for " + name, e);
         }
@@ -1494,83 +1494,84 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             CodeList codeList = getCodeList(generationContext, bbie, bdt);
 
             if (codeList == null) {
-                if (bbie.getBdtPriRestriId() == 0) {
-                    if (bbieScList.isEmpty()) {
-                        eNode = setBBIEType(bdt, eNode);
-                        return eNode;
-                    } else {
-                        eNode = generateBDT(bbie, eNode);
-                        eNode = generateSCs(bbie, eNode, bbieScList);
-                        return eNode;
+                AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbie);
+                if (agencyIdList != null) {
+                    if (option.isBieGuid()) {
+                        eNode.setAttribute("id", SrtGuid.randomGuid());
+                    }
+
+                    AgencyIdListValue agencyIdListValue =
+                            generationContext.findAgencyIdListValue(agencyIdList.getAgencyIdListValueId());
+                    String agencyListTypeName = getAgencyListTypeName(agencyIdList, agencyIdListValue);
+
+                    generateAgencyList(agencyIdList, agencyListTypeName);
+                    if (!StringUtils.isEmpty(agencyListTypeName)) {
+                        eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
-                    if (bbieScList.isEmpty()) {
-                        eNode = setBBIEType(bbie, eNode);
-                        return eNode;
+                    if (bbie.getBdtPriRestriId() == 0) {
+                        if (bbieScList.isEmpty()) {
+                            eNode = setBBIEType(bdt, eNode);
+                        } else {
+                            eNode = generateBDT(bbie, eNode);
+                            eNode = generateSCs(bbie, eNode, bbieScList);
+                        }
                     } else {
-                        eNode = generateBDT(bbie, eNode);
-                        eNode = generateSCs(bbie, eNode, bbieScList);
-                        return eNode;
+                        if (bbieScList.isEmpty()) {
+                            eNode = setBBIEType(bbie, eNode);
+                        } else {
+                            eNode = generateBDT(bbie, eNode);
+                            eNode = generateSCs(bbie, eNode, bbieScList);
+                        }
                     }
                 }
             } else {
+                if (option.isBieGuid()) {
+                    eNode.setAttribute("id", SrtGuid.randomGuid());
+                }
                 generateCodeList(codeList, bdt);
 
                 if (bbieScList.isEmpty()) {
                     eNode.setAttribute("type", getCodeListTypeName(codeList));
-                    return eNode;
                 } else {
                     eNode = generateBDT(bbie, eNode, codeList);
                     eNode = generateSCs(bbie, eNode, bbieScList);
-                    return eNode;
                 }
             }
         } else {
             List<BBIESC> bbieScList = generationContext.queryBBIESCs(bbie);
             CodeList codeList = getCodeList(generationContext, bbie, bdt);
             if (codeList == null) {
-                if (bbie.getBdtPriRestriId() == 0) {
-                    if (bbieScList.isEmpty()) {
-                        eNode = newElement("attribute");
-                        eNode = handleAttributeBBIE(bbie, eNode);
+                AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbie);
+                if (agencyIdList != null) {
+                    eNode = createAttributeNodeForBBIE(bbie, parent);
 
-                        while (!parent.getName().equals("complexType")) {
-                            parent = parent.getParentElement();
-                        }
+                    if (option.isBieGuid()) {
+                        eNode.setAttribute("id", SrtGuid.randomGuid());
+                    }
 
-                        parent.addContent(eNode);
-                        eNode = setBBIE_Attr_Type(bdt, eNode);
-                        return eNode;
-                    } else {
-                        eNode = generateBDT(bbie, eNode);
-                        return eNode;
+                    AgencyIdListValue agencyIdListValue =
+                            generationContext.findAgencyIdListValue(agencyIdList.getAgencyIdListValueId());
+                    String agencyListTypeName = getAgencyListTypeName(agencyIdList, agencyIdListValue);
+
+                    generateAgencyList(agencyIdList, agencyListTypeName);
+                    if (!StringUtils.isEmpty(agencyListTypeName)) {
+                        eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
                     if (bbieScList.isEmpty()) {
-                        eNode = newElement("attribute");
-                        eNode = handleAttributeBBIE(bbie, eNode);
-
-                        while (!parent.getName().equals("complexType")) {
-                            parent = parent.getParentElement();
-                        }
-
-                        parent.addContent(eNode);
+                        eNode = createAttributeNodeForBBIE(bbie, parent);
                         eNode = setBBIE_Attr_Type(bbie, eNode);
-                        return eNode;
                     } else {
                         eNode = generateBDT(bbie, eNode);
-                        return eNode;
                     }
                 }
             } else {
-                eNode = newElement("attribute");
-                eNode = handleAttributeBBIE(bbie, eNode);
+                eNode = createAttributeNodeForBBIE(bbie, parent);
 
-                while (!parent.getName().equals("complexType")) {
-                    parent = parent.getParentElement();
+                if (option.isBieGuid()) {
+                    eNode.setAttribute("id", SrtGuid.randomGuid());
                 }
-
-                parent.addContent(eNode);
                 generateCodeList(codeList, bdt);
 
                 if (bbieScList.isEmpty()) {
@@ -1581,16 +1582,28 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 } else {
                     if (bbie.getBdtPriRestriId() == 0) {
                         eNode = setBBIE_Attr_Type(bdt, eNode);
-                        return eNode;
                     } else {
                         if (getCodeListTypeName(codeList) != null) {
                             eNode.setAttribute("type", getCodeListTypeName(codeList));
                         }
-                        return eNode;
                     }
                 }
             }
         }
+
+        return eNode;
+    }
+
+    private Element createAttributeNodeForBBIE(BBIE bbie, Element parent) {
+        Element eNode = newElement("attribute");
+        eNode = handleAttributeBBIE(bbie, eNode);
+
+        while (!parent.getName().equals("complexType")) {
+            parent = parent.getParentElement();
+        }
+
+        parent.addContent(eNode);
+        return eNode;
     }
 
     public String setCodeListRestrictionAttr(DT bdt) {
@@ -1762,12 +1775,6 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
             //Get a code list object
             CodeList codeList = generationContext.getCodeList(bbieSc);
-            if (codeList != null) {
-                if (option.isBieGuid()) {
-                    aNode.setAttribute("id", SrtGuid.randomGuid());
-                }
-            }
-
             if (codeList == null) {
                 AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbieSc);
 
@@ -1784,6 +1791,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     else
                         aNode = setBBIESCType2(bbieSc, aNode);
                 } else {
+                    if (option.isBieGuid()) {
+                        aNode.setAttribute("id", SrtGuid.randomGuid());
+                    }
+
                     AgencyIdListValue agencyIdListValue =
                             generationContext.findAgencyIdListValue(agencyIdList.getAgencyIdListValueId());
                     String agencyListTypeName = getAgencyListTypeName(agencyIdList, agencyIdListValue);
@@ -1794,6 +1805,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     }
                 }
             } else {
+                if (option.isBieGuid()) {
+                    aNode.setAttribute("id", SrtGuid.randomGuid());
+                }
+
                 DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
                 generateCodeList(codeList, dtSc);
 

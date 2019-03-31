@@ -109,19 +109,21 @@ public class BieService {
 
     private String GET_BIE_LIST_STATEMENT =
             "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
-                    "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
-                    "abie.last_update_timestamp, top_level_abie.state as raw_state " +
-                    "FROM top_level_abie " +
-                    "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
-                    "AND abie.abie_id = top_level_abie.abie_id " +
-                    "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
-                    "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
-                    "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
-                    "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
-                    "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
+            "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
+            "abie.last_update_timestamp, top_level_abie.state as raw_state " +
+            "FROM top_level_abie " +
+            "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
+            "AND abie.abie_id = top_level_abie.abie_id " +
+            "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
+            "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
+            "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
+            "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
+            "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
-    public List<BieList> getBieList(User user) {
-        List<BieList> bieLists = jdbcTemplate.queryForList(GET_BIE_LIST_STATEMENT, BieList.class);
+
+    private List<BieList> getBieList(User user, String whereClauses) {
+        List<BieList> bieLists = jdbcTemplate.queryForList(
+                GET_BIE_LIST_STATEMENT + " WHERE " + whereClauses, BieList.class);
         long userId = sessionService.userId(user);
 
         bieLists.stream().forEach(e -> {
@@ -161,6 +163,18 @@ public class BieService {
         });
 
         return bieLists;
+    }
+
+    public List<BieList> getBieList(User user) {
+        return getBieList(user, "asccp.property_term NOT IN ('Meta Header', 'Pagination Response')");
+    }
+
+    public List<BieList> getMetaHeaderBieList(User user) {
+        return getBieList(user, "asccp.property_term = 'Meta Header'");
+    }
+
+    public List<BieList> getPaginationResponseBieList(User user) {
+        return getBieList(user, "asccp.property_term = 'Pagination Response'");
     }
 
     @Transactional
