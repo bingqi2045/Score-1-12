@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
@@ -298,6 +299,54 @@ public class CcNodeService {
         }
 
         return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
+    }
+
+    @Transactional
+    public void discardAscc(User user, long extensionId, Long releaseId, long asccId) {
+        dslContext.deleteFrom(Tables.ASCC)
+                .where(ASCC.CURRENT_ASCC_ID.eq(ULong.valueOf(asccId)))
+                .execute();
+        int seqKey = dslContext.select(ASCC.SEQ_KEY)
+                .from(Tables.ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                .fetchOneInto(Integer.class);
+        dslContext.deleteFrom(Tables.ASCC)
+                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                .execute();
+
+        decreaseSeqKeyGreaterThan(extensionId, seqKey);
+    }
+
+    @Transactional
+    public void discardBcc(User user, long extensionId, Long releaseId, long bccId) {
+        dslContext.deleteFrom(Tables.BCC)
+                .where(BCC.CURRENT_BCC_ID.eq(ULong.valueOf(bccId)))
+                .execute();
+        int seqKey = dslContext.select(BCC.SEQ_KEY)
+                .from(Tables.BCC).where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                .fetchOneInto(Integer.class);
+        dslContext.deleteFrom(Tables.BCC)
+                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                .execute();
+
+        decreaseSeqKeyGreaterThan(extensionId, seqKey);
+    }
+
+    private void decreaseSeqKeyGreaterThan(long extensionId, int seqKey) {
+        dslContext.update(Tables.ASCC)
+                .set(ASCC.SEQ_KEY, ASCC.SEQ_KEY.subtract(1))
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        ASCC.SEQ_KEY.greaterThan(seqKey)
+                ))
+                .execute();
+
+        dslContext.update(Tables.BCC)
+                .set(BCC.SEQ_KEY, BCC.SEQ_KEY.subtract(1))
+                .where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        BCC.SEQ_KEY.greaterThan(seqKey)
+                ))
+                .execute();
     }
 
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {

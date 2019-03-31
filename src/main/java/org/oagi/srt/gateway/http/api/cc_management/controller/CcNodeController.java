@@ -80,6 +80,19 @@ public class CcNodeController {
                 }
 
                 break;
+
+            case "discard":
+                switch (actionRequest.getType()) {
+                    case "ascc":
+                        service.discardAscc(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+
+                    case "bcc":
+                        service.discardBcc(user, extensionId, releaseId, actionRequest.getId());
+                        break;
+                }
+
+                break;
         }
 
         return ResponseEntity.accepted().build();
