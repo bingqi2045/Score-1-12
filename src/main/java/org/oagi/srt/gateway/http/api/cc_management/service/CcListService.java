@@ -3,13 +3,15 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.*;
+import org.oagi.srt.data.ACC;
+import org.oagi.srt.data.ASCC;
+import org.oagi.srt.data.ASCCP;
+import org.oagi.srt.data.BCCP;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,9 +37,6 @@ public class CcListService {
 
     @Autowired
     private CcListRepository repository;
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
@@ -212,76 +210,44 @@ public class CcListService {
     }
 
     public ASCCP getAsccp(long id) {
-        return jdbcTemplate.queryForObject("SELECT asccp.asccp_id, asccp.guid, " +
-                "asccp.property_term, asccp.definition, " +
-                "asccp.definition_source, asccp.role_of_acc_id, " +
-                "asccp.den, asccp.created_by, asccp.owner_user_id, asccp.last_updated_by, asccp.creation_timestamp, " +
-                "asccp.last_update_timestamp, asccp.state, asccp.module_id, asccp.namespace_id, asccp.reusable_indicator, " +
-                "asccp.is_deprecated, asccp.revision_num, asccp.revision_tracking_num, asccp.revision_action, asccp.release_id, " +
-                "asccp.current_asccp_id, asccp.is_nillable " +
-                "FROM asccp " +
-                "WHERE asccp_id = :asccp_id", newSqlParameterSource()
-                .addValue("asccp_id", id), ASCCP.class);
-
+        return dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(ASCCP.class);
     }
 
     public ACC getAcc(long id) {
-        return jdbcTemplate.queryForObject("SELECT acc.acc_id, acc.guid, " +
-                "acc.object_class_term, acc.den, " +
-                "acc.definition, acc.definition_source, acc.based_acc_id, acc.object_class_qualifier, " +
-                "acc.oagis_component_type, acc.created_by, acc.owner_user_id, acc.last_updated_by, acc.creation_timestamp, " +
-                "acc.last_update_timestamp, acc.state, acc.module_id, acc.namespace_id, acc.release_id, " +
-                "acc.revision_num, acc.revision_tracking_num, acc.revision_action, acc.current_acc_id, " +
-                "acc.is_deprecated, acc.is_abstract " +
-                "FROM acc " +
-                "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("acc_id", id), ACC.class);
+        return dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(ACC.class);
     }
 
     public ACC getAccByCurrentAccId(long currentAccId, long releaseId) {
-        List<ACC> accList = jdbcTemplate.queryForList("SELECT acc.acc_id, acc.guid, " +
-                "acc.object_class_term, acc.den, " +
-                "acc.definition, acc.definition_source, acc.based_acc_id, acc.object_class_qualifier, " +
-                "acc.oagis_component_type, acc.created_by, acc.owner_user_id, acc.last_updated_by, acc.creation_timestamp, " +
-                "acc.last_update_timestamp, acc.state, acc.module_id, acc.namespace_id, acc.release_id, " +
-                "acc.revision_num, acc.revision_tracking_num, acc.revision_action, acc.current_acc_id, " +
-                "acc.is_deprecated, acc.is_abstract " +
-                "FROM acc " +
-                "WHERE revision_num > 0 AND current_acc_id = :current_acc_id", newSqlParameterSource()
-                .addValue("current_acc_id", currentAccId), ACC.class);
+        List<ACC> accList = dslContext.selectFrom(ACC)
+                .where(and(
+                        ACC.REVISION_NUM.greaterThan(0),
+                        ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)),
+                        ACC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+                ))
+                .fetchInto(ACC.class);
         return CcUtility.getLatestEntity(releaseId, accList);
     }
 
     public BCCP getBccp(long id) {
-        return jdbcTemplate.queryForObject("SELECT bccp.bccp_id, bccp.guid, " +
-                "bccp.property_term, bccp.representation_term, " +
-                "bccp.bdt_id, bccp.den, bccp.definition, bccp.definition_source, " +
-                "bccp.module_id, bccp.namespace_id, bccp.is_deprecated, " +
-                "bccp.created_by, bccp.owner_user_id, bccp.last_updated_by, bccp.creation_timestamp, " +
-                "bccp.last_update_timestamp, bccp.state, bccp.release_id, " +
-                "bccp.revision_num, bccp.revision_tracking_num, bccp.revision_action, bccp.current_bccp_id, " +
-                "bccp.is_nillable, bccp.default_value " +
-                "FROM bccp " +
-                "WHERE bccp_id = :bccp_id", newSqlParameterSource()
-                .addValue("bccp_id", id), BCCP.class);
+        return dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(BCCP.class);
     }
 
     public ASCC getAscc(long id) {
-        return jdbcTemplate.queryForObject("SELECT `ascc_id`, `guid`, `cardinality_min`, `cardinality_max`, " +
-                "`seq_key`, `from_acc_id`, `to_asccp_id`, `den`, `definition`, `definition_source`, `is_deprecated`, " +
-                "`created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, " +
-                "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_ascc_id` " +
-                "FROM `ascc` WHERE `ascc_id` = :ascc_id", newSqlParameterSource()
-                .addValue("ascc_id", id), ASCC.class);
+        return dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(ASCC.class);
     }
 
     public org.oagi.srt.data.BCC getBcc(long id) {
-        return jdbcTemplate.queryForObject("SELECT `bcc_id`, `guid`, `cardinality_min`, `cardinality_max`, " +
-                "`seq_key`, `entity_type`, `from_acc_id`, `to_bccp_id`, `den`, `definition`, `definition_source`, `is_deprecated`, " +
-                "`created_by`, `owner_user_id`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, " +
-                "`state`, `revision_num`, `revision_tracking_num`, `revision_action`, `release_id`, `current_bcc_id` " +
-                "FROM `bcc` WHERE `bcc_id` = :bcc_id", newSqlParameterSource()
-                .addValue("bcc_id", id), org.oagi.srt.data.BCC.class);
+        return dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(org.oagi.srt.data.BCC.class);
     }
 }
 

@@ -2,9 +2,12 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -32,35 +35,63 @@ public class CcNodeRepository {
     private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
+    private DSLContext dslContext;
+
+    @Autowired
     private SessionService sessionService;
 
     @Autowired
     private BieRepository bieRepository;
 
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
-        CcAccNode accNode = jdbcTemplate.queryForObject("SELECT " +
-                "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
-                "state, revision_num, revision_tracking_num, release_id, current_acc_id " +
-                "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
-                .addValue("accId", accId), CcAccNode.class);
+        CcAccNode accNode = dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.GUID,
+                Tables.ACC.DEN.as("name"),
+                Tables.ACC.BASED_ACC_ID,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.OBJECT_CLASS_TERM,
+                Tables.ACC.STATE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.RELEASE_ID,
+                Tables.ACC.CURRENT_ACC_ID
+        ).from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(accNode, releaseId);
     }
 
     public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
-        CcAccNode accNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
-                "acc_id, guid, den as name, based_acc_id, oagis_component_type, object_class_term, " +
-                "state, revision_num, revision_tracking_num, release_id, current_acc_id " +
-                "FROM acc WHERE current_acc_id = :currentAccId", newSqlParameterSource()
-                .addValue("currentAccId", currentAccId), CcAccNode.class));
+        List<CcAccNode> accNodes = dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.GUID,
+                Tables.ACC.DEN.as("name"),
+                Tables.ACC.BASED_ACC_ID,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.OBJECT_CLASS_TERM,
+                Tables.ACC.STATE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.RELEASE_ID,
+                Tables.ACC.CURRENT_ACC_ID
+        ).from(Tables.ACC).where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)))
+                .fetchInto(CcAccNode.class);
+
+        CcAccNode accNode = CcUtility.getLatestEntity(releaseId, accNodes);
         return arrangeAccNode(accNode, releaseId);
     }
 
     public CcAccNode getAccNodeByAsccpIdFromAscc(long toAsccpId, Long releaseId) {
-        CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, jdbcTemplate.queryForList("SELECT " +
-                        "`from_acc_id`, `seq_key`, `revision_num`, `revision_tracking_num`, `release_id` " +
-                        "FROM `ascc` WHERE `to_asccp_id` = :toAsccpId",
-                newSqlParameterSource()
-                        .addValue("toAsccpId", toAsccpId), CcAsccNode.class));
+        List<CcAsccNode> asccNodes = dslContext.select(
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.RELEASE_ID
+        ).from(Tables.ASCC).where(Tables.ASCC.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)))
+                .fetchInto(CcAsccNode.class);
+
+        CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, asccNodes);
         return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
     }
 
@@ -70,6 +101,7 @@ public class CcNodeRepository {
                 .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
                       "namespace_id"  ,"created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
+
         long userId = sessionService.userId(user);
         Date timestamp = new Date();
         MapSqlParameterSource parameterSource = newSqlParameterSource()
@@ -132,10 +164,14 @@ public class CcNodeRepository {
             if (fromAccId == null) {
                 return false;
             }
-            List<AsccForAccHasChild> asccList =
-                    jdbcTemplate.queryForList("SELECT ascc_id, guid, revision_num, revision_tracking_num, release_id " +
-                            "FROM ascc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
-                            .addValue("fromAccId", fromAccId), AsccForAccHasChild.class);
+            List<AsccForAccHasChild> asccList = dslContext.select(
+                    Tables.ASCC.ASCC_ID,
+                    Tables.ASCC.GUID,
+                    Tables.ASCC.REVISION_NUM,
+                    Tables.ASCC.REVISION_TRACKING_NUM,
+                    Tables.ASCC.RELEASE_ID
+            ).from(Tables.ASCC).where(Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                    .fetchInto(AsccForAccHasChild.class);
 
             long asccCount = asccList.stream().collect(groupingBy(e -> e.getGuid())).values().stream()
                     .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
@@ -144,10 +180,14 @@ public class CcNodeRepository {
                 return true;
             }
 
-            List<BccForAccHasChild> bccList =
-                    jdbcTemplate.queryForList("SELECT bcc_id, guid, revision_num, revision_tracking_num, release_id " +
-                            "FROM bcc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
-                            .addValue("fromAccId", fromAccId), BccForAccHasChild.class);
+            List<BccForAccHasChild> bccList = dslContext.select(
+                    Tables.BCC.BCC_ID,
+                    Tables.BCC.GUID,
+                    Tables.BCC.REVISION_NUM,
+                    Tables.BCC.REVISION_TRACKING_NUM,
+                    Tables.BCC.RELEASE_ID
+            ).from(Tables.BCC).where(Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                    .fetchInto(BccForAccHasChild.class);
 
             long bccCount = bccList.stream().collect(groupingBy(e -> e.getGuid())).values().stream()
                     .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
@@ -244,9 +284,9 @@ public class CcNodeRepository {
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
         List<CcNode> descendants = new ArrayList();
 
-        Long basedAccId = jdbcTemplate.queryForObject(
-                "SELECT based_acc_id FROM acc WHERE acc_id = :accId", newSqlParameterSource()
-                        .addValue("accId", accNode.getAccId()), Long.class);
+        Long basedAccId = dslContext.select(Tables.ACC.BASED_ACC_ID).from(Tables.ACC)
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
+                .fetchOneInto(Long.class);
         if (basedAccId != null) {
             Long releaseId = accNode.getReleaseId();
             CcAccNode basedAccNode;
@@ -263,9 +303,9 @@ public class CcNodeRepository {
         if (releaseId == null) {
             fromAccId = accNode.getAccId();
         } else {
-            fromAccId = jdbcTemplate.queryForObject(
-                    "SELECT current_acc_id FROM acc WHERE acc_id = :accId", newSqlParameterSource()
-                            .addValue("accId", accNode.getAccId()), Long.class);
+            fromAccId = dslContext.select(Tables.ACC.CURRENT_ACC_ID).from(Tables.ACC)
+                    .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
+                    .fetchOneInto(Long.class);
         }
 
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
@@ -280,9 +320,7 @@ public class CcNodeRepository {
                 OagisComponentType oagisComponentType =
                         bieRepository.getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
                 if (oagisComponentType.isGroup()) {
-                    CcAccNode roleOfAccNode = new CcAccNode();
-                    roleOfAccNode.setAccId(asccpNode.getRoleOfAccId());
-
+                    CcAccNode roleOfAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
                     List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
                     for (CcNode groupNode : groupDescendants) {
                         ((SeqKeySupportable) groupNode).setSeqKey(seqKey++);
@@ -303,14 +341,22 @@ public class CcNodeRepository {
     }
 
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
-        List<CcAsccNode> asccNodes =
-                jdbcTemplate.queryForList("SELECT ascc_id, guid, to_asccp_id, seq_key, " +
-                        "state, revision_num, revision_tracking_num, release_id " +
-                        "FROM ascc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
-                        .addValue("fromAccId", fromAccId), CcAsccNode.class).stream()
-                        .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
-                        .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                        .collect(Collectors.toList());
+        List<CcAsccNode> asccNodes = dslContext.select(
+                Tables.ASCC.ASCC_ID,
+                Tables.ASCC.GUID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.RELEASE_ID
+        ).from(Tables.ASCC).where(Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                .fetchInto(CcAsccNode.class);
+
+        asccNodes = asccNodes.stream()
+                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
 
         List<CcAsccpNode> asccpNodes = new ArrayList();
         for (CcAsccNode asccNode : asccNodes) {
@@ -329,14 +375,23 @@ public class CcNodeRepository {
     }
 
     private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {
-        List<CcBccNode> bccNodes =
-                jdbcTemplate.queryForList("SELECT bcc_id, guid, to_bccp_id, seq_key, entity_type, " +
-                        "state, revision_num, revision_tracking_num, release_id " +
-                        "FROM bcc WHERE from_acc_id = :fromAccId", newSqlParameterSource()
-                        .addValue("fromAccId", fromAccId), CcBccNode.class).stream()
-                        .collect(groupingBy(CcBccNode::getGuid)).values().stream()
-                        .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                        .collect(Collectors.toList());
+        List<CcBccNode> bccNodes = dslContext.select(
+                Tables.BCC.BCC_ID,
+                Tables.BCC.GUID,
+                Tables.BCC.TO_BCCP_ID,
+                Tables.BCC.SEQ_KEY,
+                Tables.BCC.ENTITY_TYPE,
+                Tables.BCC.STATE,
+                Tables.BCC.REVISION_NUM,
+                Tables.BCC.REVISION_TRACKING_NUM,
+                Tables.BCC.RELEASE_ID
+        ).from(Tables.BCC).where(Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                .fetchInto(CcBccNode.class);
+
+        bccNodes = bccNodes.stream()
+                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
 
         return bccNodes.stream().map(bccNode -> {
             CcBccpNode bccpNode;
@@ -354,9 +409,10 @@ public class CcNodeRepository {
 
     public List<? extends CcNode> getDescendants(User user, CcAsccpNode asccpNode) {
         long asccpId = asccpNode.getAsccpId();
-        long roleOfAccId = jdbcTemplate.queryForObject(
-                "SELECT role_of_acc_id FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
-                        .addValue("asccpId", asccpId), Long.class);
+
+        long roleOfAccId = dslContext.select(Tables.ASCCP.ROLE_OF_ACC_ID).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(Long.class);
 
         Long releaseId = asccpNode.getReleaseId();
         if (releaseId == null) {

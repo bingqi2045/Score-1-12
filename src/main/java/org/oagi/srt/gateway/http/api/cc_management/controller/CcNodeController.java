@@ -69,7 +69,6 @@ public class CcNodeController {
 
         switch (actionRequest.getAction()) {
             case "append":
-
                 switch (actionRequest.getType()) {
                     case "asccp":
                         service.appendAsccp(user, extensionId, releaseId, actionRequest.getId());
@@ -84,13 +83,6 @@ public class CcNodeController {
         }
 
         return ResponseEntity.accepted().build();
-    }
-
-    @RequestMapping(value = "/core_component/acc2",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public int getAccMaxId() {
-        return service.getAccMaxId();
     }
 
     @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,

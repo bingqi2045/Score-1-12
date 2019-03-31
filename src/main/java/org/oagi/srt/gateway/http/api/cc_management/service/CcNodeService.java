@@ -4,25 +4,24 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,13 +34,7 @@ public class CcNodeService {
     private DSLContext dslContext;
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    @Autowired
     private SessionService sessionService;
-
-    @Autowired
-    private CcListService ccListService;
 
     public CcAccNode getAccNode(User user, long accId, Long releaseId) {
         return repository.getAccNodeByAccId(accId, releaseId);
@@ -69,22 +62,16 @@ public class CcNodeService {
                 .from(ASCCP).where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(Long.class);
 
-        org.oagi.srt.data.ASCC ascc = createASCC(user, extensionId, asccpId, nextSeqKey);
-        createASCCHistory(ascc, releaseId);
+        AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey, releaseId);
+
+        int revisionNum = dslContext.select(ACC.REVISION_NUM)
+                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
+                .fetchOneInto(Integer.class);
+
+        createASCCHistory(ascc, revisionNum);
     }
 
-    private org.oagi.srt.data.ASCC createASCC(User user, long accId, long asccpId, int seqKey) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("ascc")
-                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
-                        "den", "is_deprecated",
-                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num")
-                .usingGeneratedKeyColumns("ascc_id");
-
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-
+    private AsccRecord createASCC(User user, long accId, long asccpId, int seqKey, long releaseId) {
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
@@ -92,60 +79,90 @@ public class CcNodeService {
                 .from(ASCCP).where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(String.class);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("cardinality_min", 0)
-                .addValue("cardinality_max", 1)
-                .addValue("seq_key", seqKey)
-                .addValue("from_acc_id", accId)
-                .addValue("to_asccp_id", asccpId)
-                .addValue("den", accObjectClassTerm + ". " + asccpDen)
-                .addValue("is_deprecated", false)
-                .addValue("state", CcState.Editing.getValue())
-                .addValue("revision_num", 0)
-                .addValue("revision_tracking_num", 0)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("owner_user_id", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        long asccId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return ccListService.getAscc(asccId);
+        return dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.GUID,
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.DEN,
+                Tables.ASCC.IS_DEPRECATED,
+                Tables.ASCC.CREATED_BY,
+                Tables.ASCC.LAST_UPDATED_BY,
+                Tables.ASCC.OWNER_USER_ID,
+                Tables.ASCC.CREATION_TIMESTAMP,
+                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCC.RELEASE_ID,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                0,
+                -1,
+                seqKey,
+                ULong.valueOf(accId),
+                ULong.valueOf(asccpId),
+                accObjectClassTerm + ". " + asccpDen,
+                Byte.valueOf((byte) 0),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                ULong.valueOf(releaseId),
+                CcState.Editing.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
     }
 
-    private void createASCCHistory(org.oagi.srt.data.ASCC ascc, long releaseId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("ascc")
-                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "from_acc_id", "to_asccp_id",
-                        "den", "is_deprecated", "current_ascc_id",
-                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id")
-                .usingGeneratedKeyColumns("ascc_id");
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", ascc.getGuid())
-                .addValue("cardinality_min", ascc.getCardinalityMin())
-                .addValue("cardinality_max", ascc.getCardinalityMax())
-                .addValue("seq_key", ascc.getSeqKey())
-                .addValue("from_acc_id", ascc.getFromAccId())
-                .addValue("to_asccp_id", ascc.getToAsccpId())
-                .addValue("den", ascc.getDen())
-                .addValue("is_deprecated", ascc.isDeprecated())
-                .addValue("current_ascc_id", ascc.getAsccId())
-                .addValue("definition", ascc.getDefinition())
-                .addValue("state", ascc.getState())
-                .addValue("revision_num", 1)
-                .addValue("revision_tracking_num", 1)
-                .addValue("revision_action", RevisionAction.Insert.getValue())
-                .addValue("release_id", releaseId)
-                .addValue("created_by", ascc.getCreatedBy())
-                .addValue("last_updated_by", ascc.getLastUpdatedBy())
-                .addValue("owner_user_id", ascc.getOwnerUserId())
-                .addValue("creation_timestamp", ascc.getCreationTimestamp())
-                .addValue("last_update_timestamp", ascc.getLastUpdateTimestamp());
-
-        jdbcInsert.execute(parameterSource);
+    private void createASCCHistory(AsccRecord ascc, int revisionNum) {
+        dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.GUID,
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.DEN,
+                Tables.ASCC.IS_DEPRECATED,
+                Tables.ASCC.CREATED_BY,
+                Tables.ASCC.LAST_UPDATED_BY,
+                Tables.ASCC.OWNER_USER_ID,
+                Tables.ASCC.CREATION_TIMESTAMP,
+                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCC.RELEASE_ID,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.REVISION_ACTION,
+                Tables.ASCC.CURRENT_ASCC_ID).values(
+                ascc.getGuid(),
+                ascc.getCardinalityMin(),
+                ascc.getCardinalityMax(),
+                ascc.getSeqKey(),
+                ascc.getFromAccId(),
+                ascc.getToAsccpId(),
+                ascc.getDen(),
+                ascc.getIsDeprecated(),
+                ascc.getCreatedBy(),
+                ascc.getLastUpdatedBy(),
+                ascc.getOwnerUserId(),
+                ascc.getCreationTimestamp(),
+                ascc.getLastUpdateTimestamp(),
+                ascc.getReleaseId(),
+                ascc.getState(),
+                revisionNum,
+                1,
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
+                ascc.getAsccId()
+        ).execute();
     }
 
     @Transactional
@@ -156,85 +173,111 @@ public class CcNodeService {
                 .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(Long.class);
 
-        org.oagi.srt.data.BCC bcc = createBCC(user, extensionId, bccpId, nextSeqKey);
-        createBCCHistory(bcc, releaseId);
+        BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey, releaseId);
+
+        int revisionNum = dslContext.select(ACC.REVISION_NUM)
+                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
+                .fetchOneInto(Integer.class);
+
+        createBCCHistory(bcc, revisionNum);
     }
 
-    private org.oagi.srt.data.BCC createBCC(User user, long accId, long bccpId, int seqKey) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("bcc")
-                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "entity_type",
-                        "from_acc_id", "to_bccp_id", "den", "is_deprecated",
-                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num")
-                .usingGeneratedKeyColumns("bcc_id");
-
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-
+    private BccRecord createBCC(User user, long accId, long bccpId, int seqKey, long releaseId) {
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
-        String asccpDen = dslContext.select(BCCP.DEN)
+        String bccpDen = dslContext.select(BCCP.DEN)
                 .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(String.class);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("cardinality_min", 0)
-                .addValue("cardinality_max", 1)
-                .addValue("seq_key", seqKey)
-                .addValue("entity_type", BCCEntityType.Element.getValue())
-                .addValue("from_acc_id", accId)
-                .addValue("to_bccp_id", bccpId)
-                .addValue("den", accObjectClassTerm + ". " + asccpDen)
-                .addValue("is_deprecated", false)
-                .addValue("state", CcState.Editing.getValue())
-                .addValue("revision_num", 0)
-                .addValue("revision_tracking_num", 0)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("owner_user_id", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        long bccId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return ccListService.getBcc(bccId);
+        return dslContext.insertInto(Tables.BCC,
+                Tables.BCC.GUID,
+                Tables.BCC.CARDINALITY_MIN,
+                Tables.BCC.CARDINALITY_MAX,
+                Tables.BCC.SEQ_KEY,
+                Tables.BCC.ENTITY_TYPE,
+                Tables.BCC.FROM_ACC_ID,
+                Tables.BCC.TO_BCCP_ID,
+                Tables.BCC.DEN,
+                Tables.BCC.IS_DEPRECATED,
+                Tables.BCC.CREATED_BY,
+                Tables.BCC.LAST_UPDATED_BY,
+                Tables.BCC.OWNER_USER_ID,
+                Tables.BCC.CREATION_TIMESTAMP,
+                Tables.BCC.LAST_UPDATE_TIMESTAMP,
+                Tables.BCC.RELEASE_ID,
+                Tables.BCC.STATE,
+                Tables.BCC.REVISION_NUM,
+                Tables.BCC.REVISION_TRACKING_NUM,
+                Tables.BCC.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                0,
+                -1,
+                seqKey,
+                BCCEntityType.Element.getValue(),
+                ULong.valueOf(accId),
+                ULong.valueOf(bccpId),
+                accObjectClassTerm + ". " + bccpDen,
+                Byte.valueOf((byte) 0),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                ULong.valueOf(releaseId),
+                CcState.Editing.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
     }
 
-    private void createBCCHistory(org.oagi.srt.data.BCC bcc, long releaseId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("bcc")
-                .usingColumns("guid", "cardinality_min", "cardinality_max", "seq_key", "entity_type",
-                        "from_acc_id", "to_bccp_id", "den", "is_deprecated", "current_bcc_id",
-                        "created_by", "last_updated_by", "owner_user_id", "creation_timestamp", "last_update_timestamp",
-                        "state", "revision_num", "revision_tracking_num", "revision_action", "release_id")
-                .usingGeneratedKeyColumns("ascc_id");
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", bcc.getGuid())
-                .addValue("cardinality_min", bcc.getCardinalityMin())
-                .addValue("cardinality_max", bcc.getCardinalityMax())
-                .addValue("seq_key", bcc.getSeqKey())
-                .addValue("entity_type", bcc.getEntityType())
-                .addValue("from_acc_id", bcc.getFromAccId())
-                .addValue("to_bccp_id", bcc.getToBccpId())
-                .addValue("den", bcc.getDen())
-                .addValue("is_deprecated", bcc.isDeprecated())
-                .addValue("current_bcc_id", bcc.getBccId())
-                .addValue("definition", bcc.getDefinition())
-                .addValue("state", bcc.getState())
-                .addValue("revision_num", 1)
-                .addValue("revision_tracking_num", 1)
-                .addValue("revision_action", RevisionAction.Insert.getValue())
-                .addValue("release_id", releaseId)
-                .addValue("created_by", bcc.getCreatedBy())
-                .addValue("last_updated_by", bcc.getLastUpdatedBy())
-                .addValue("owner_user_id", bcc.getOwnerUserId())
-                .addValue("creation_timestamp", bcc.getCreationTimestamp())
-                .addValue("last_update_timestamp", bcc.getLastUpdateTimestamp());
-
-        jdbcInsert.execute(parameterSource);
+    private void createBCCHistory(BccRecord bcc, int revisionNum) {
+        dslContext.insertInto(Tables.BCC,
+                Tables.BCC.GUID,
+                Tables.BCC.CARDINALITY_MIN,
+                Tables.BCC.CARDINALITY_MAX,
+                Tables.BCC.SEQ_KEY,
+                Tables.BCC.ENTITY_TYPE,
+                Tables.BCC.FROM_ACC_ID,
+                Tables.BCC.TO_BCCP_ID,
+                Tables.BCC.DEN,
+                Tables.BCC.IS_DEPRECATED,
+                Tables.BCC.CREATED_BY,
+                Tables.BCC.LAST_UPDATED_BY,
+                Tables.BCC.OWNER_USER_ID,
+                Tables.BCC.CREATION_TIMESTAMP,
+                Tables.BCC.LAST_UPDATE_TIMESTAMP,
+                Tables.BCC.RELEASE_ID,
+                Tables.BCC.STATE,
+                Tables.BCC.REVISION_NUM,
+                Tables.BCC.REVISION_TRACKING_NUM,
+                Tables.BCC.REVISION_ACTION,
+                Tables.BCC.CURRENT_BCC_ID).values(
+                bcc.getGuid(),
+                bcc.getCardinalityMin(),
+                bcc.getCardinalityMax(),
+                bcc.getSeqKey(),
+                bcc.getEntityType(),
+                bcc.getFromAccId(),
+                bcc.getToBccpId(),
+                bcc.getDen(),
+                bcc.getIsDeprecated(),
+                bcc.getCreatedBy(),
+                bcc.getLastUpdatedBy(),
+                bcc.getOwnerUserId(),
+                bcc.getCreationTimestamp(),
+                bcc.getLastUpdateTimestamp(),
+                bcc.getReleaseId(),
+                bcc.getState(),
+                revisionNum,
+                1,
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
+                bcc.getBccId()
+        ).execute();
     }
 
     private int getNextSeqKey(long accId) {
@@ -255,11 +298,6 @@ public class CcNodeService {
         }
 
         return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
-    }
-
-    @Transactional
-    public int getAccMaxId() {
-        return repository.getAccMaxId();
     }
 
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
