@@ -53,19 +53,13 @@ public class BieRepository {
     @Autowired
     private CcListService ccListService;
 
-    public OagisComponentType getOagisComponentTypeByAccId(long accId) {
-        int oagisComponentType = jdbcTemplate.queryForObject(
-                "SELECT oagis_component_type FROM acc WHERE acc_id = :acc_id", newSqlParameterSource()
-                        .addValue("acc_id", accId), Integer.class);
-        return OagisComponentType.valueOf(oagisComponentType);
-    }
-
     public long getCurrentAccIdByTopLevelAbieId(long topLevelAbieId) {
-        return jdbcTemplate.queryForObject("SELECT acc.current_acc_id " +
-                "FROM abie JOIN top_level_abie ON abie.abie_id = top_level_abie.abie_id " +
-                "JOIN acc ON abie.based_acc_id = acc.acc_id " +
-                "WHERE top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
-                .addValue("top_level_abie_id", topLevelAbieId), Long.class);
+        return dslContext.select(Tables.ACC.CURRENT_ACC_ID)
+                .from(Tables.ABIE)
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.ABIE.ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+                .join(Tables.ACC).on(Tables.ABIE.BASED_ACC_ID.eq(Tables.ACC.ACC_ID))
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchOneInto(Long.class);
     }
 
     public BieEditAcc getAccByCurrentAccId(long currentAccId, long releaseId) {

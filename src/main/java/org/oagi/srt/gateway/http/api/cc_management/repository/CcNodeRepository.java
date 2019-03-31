@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -99,7 +100,7 @@ public class CcNodeRepository {
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
                 .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
-                      "namespace_id"  ,"created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
+                        "namespace_id", "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
                 .usingGeneratedKeyColumns("acc_id");
 
         long userId = sessionService.userId(user);
@@ -211,11 +212,17 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
-        CcAsccpNode asccpNode = jdbcTemplate.queryForObject("SELECT " +
-                "asccp_id, guid, property_term as name, role_of_acc_id, " +
-                "state, revision_num, revision_tracking_num, release_id " +
-                "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
-                .addValue("asccpId", asccpId), CcAsccpNode.class);
+        CcAsccpNode asccpNode = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM.as("name"),
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(CcAsccpNode.class);
 
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
@@ -223,37 +230,54 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
-        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
-                jdbcTemplate.queryForList("SELECT " +
-                        "asccp_id, guid, property_term as name, role_of_acc_id, " +
-                        "state, revision_num, revision_tracking_num, release_id " +
-                        "FROM asccp WHERE current_asccp_id = :currentAsccpId", newSqlParameterSource()
-                        .addValue("currentAsccpId", currentAsccpId), CcAsccpNode.class));
+        List<CcAsccpNode> asccpNodes = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM.as("name"),
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
+                .where(Tables.ASCCP.CURRENT_ASCCP_ID.eq(ULong.valueOf(currentAsccpId)))
+                .fetchInto(CcAsccpNode.class);
 
+        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId, asccpNodes);
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
     }
 
     public CcAsccpNode getAsccpNodeByRoleOfAccId(long roleOfAccId, Long releaseId) {
-        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId,
-                jdbcTemplate.queryForList("SELECT " +
-                        "asccp_id, guid, property_term as name, " +
-                        "state, revision_num, revision_tracking_num, release_id " +
-                        "FROM asccp WHERE role_of_acc_id = :roleOfAccId", newSqlParameterSource()
-                        .addValue("roleOfAccId", roleOfAccId), CcAsccpNode.class));
+        List<CcAsccpNode> asccpNodes = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM.as("name"),
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(roleOfAccId)))
+                .fetchInto(CcAsccpNode.class);
 
+        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId, asccpNodes);
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
     }
 
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
-        CcBccpNode bccpNode = jdbcTemplate.queryForObject("SELECT " +
-                "bccp_id, guid, property_term as name, bdt_id, " +
-                "state, revision_num, revision_tracking_num, release_id " +
-                "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
-                .addValue("bccpId", bccpId), CcBccpNode.class);
+        CcBccpNode bccpNode = dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM.as("name"),
+                Tables.BCCP.BDT_ID,
+                Tables.BCCP.STATE,
+                Tables.BCCP.REVISION_NUM,
+                Tables.BCCP.REVISION_TRACKING_NUM,
+                Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOneInto(CcBccpNode.class);
 
         bccpNode.setHasChild(hasChild(bccpNode));
 
@@ -261,23 +285,32 @@ public class CcNodeRepository {
     }
 
     public CcBccpNode getBccpNodeByCurrentBccpId(long currentBccpId, Long releaseId) {
-        CcBccpNode bccpNode = CcUtility.getLatestEntity(releaseId,
-                jdbcTemplate.queryForList("SELECT " +
-                        "bccp_id, guid, property_term as name, bdt_id, " +
-                        "state, revision_num, revision_tracking_num, release_id " +
-                        "FROM bccp WHERE current_bccp_id = :currentBccpId", newSqlParameterSource()
-                        .addValue("currentBccpId", currentBccpId), CcBccpNode.class));
+        List<CcBccpNode> bccpNodes = dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM.as("name"),
+                Tables.BCCP.BDT_ID,
+                Tables.BCCP.STATE,
+                Tables.BCCP.REVISION_NUM,
+                Tables.BCCP.REVISION_TRACKING_NUM,
+                Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
+                .where(Tables.BCCP.CURRENT_BCCP_ID.eq(ULong.valueOf(currentBccpId)))
+                .fetchInto(CcBccpNode.class);
 
+        CcBccpNode bccpNode = CcUtility.getLatestEntity(releaseId, bccpNodes);
         bccpNode.setHasChild(hasChild(bccpNode));
-
         return bccpNode;
     }
 
     private boolean hasChild(CcBccpNode bccpNode) {
         long bdtId = bccpNode.getBdtId();
-        int dtScCount = jdbcTemplate.queryForObject("SELECT count(*) FROM dt_sc " +
-                "WHERE owner_dt_id = :bdtId AND (cardinality_min != 0 OR cardinality_max != 0)", newSqlParameterSource()
-                .addValue("bdtId", bdtId), Integer.class);
+        int dtScCount = dslContext.selectCount().from(Tables.DT_SC)
+                .where(and(
+                        Tables.DT_SC.OWNER_DT_ID.eq(ULong.valueOf(bdtId)),
+                        or(
+                                Tables.DT_SC.CARDINALITY_MIN.ne(0),
+                                Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                        ))).fetchOneInto(Integer.class);
         return (dtScCount > 0);
     }
 
@@ -318,7 +351,7 @@ public class CcNodeRepository {
             if (e instanceof CcAsccpNode) {
                 CcAsccpNode asccpNode = (CcAsccpNode) e;
                 OagisComponentType oagisComponentType =
-                        bieRepository.getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
+                        getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
                 if (oagisComponentType.isGroup()) {
                     CcAccNode roleOfAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
                     List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
@@ -338,6 +371,13 @@ public class CcNodeRepository {
         }
 
         return descendants;
+    }
+
+    public OagisComponentType getOagisComponentTypeByAccId(long accId) {
+        int oagisComponentType = dslContext.select(Tables.ACC.OAGIS_COMPONENT_TYPE)
+                .from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(Integer.class);
+        return OagisComponentType.valueOf(oagisComponentType);
     }
 
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
@@ -425,22 +465,33 @@ public class CcNodeRepository {
     public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
         long bccpId = bccpNode.getBccpId();
 
-        return jdbcTemplate.queryForList("SELECT dt_sc.dt_sc_id as bdt_sc_id, dt_sc.guid, " +
-                        "CONCAT(dt_sc.property_term, '. ', dt_sc.representation_term) as name " +
-                        "FROM dt_sc JOIN bccp ON dt_sc.owner_dt_id = bccp.bdt_id " +
-                        "WHERE bccp.bccp_id = :bccpId AND (dt_sc.cardinality_min != 0 OR dt_sc.cardinality_max != 0)",
-                newSqlParameterSource()
-                        .addValue("bccpId", bccpId), CcBdtScNode.class);
+        return dslContext.select(
+                Tables.DT_SC.DT_SC_ID.as("bdt_sc_id"),
+                Tables.DT_SC.GUID,
+                concat(Tables.DT_SC.PROPERTY_TERM, val(". "), Tables.DT_SC.REPRESENTATION_TERM).as("name")
+        ).from(Tables.DT_SC).join(Tables.BCCP).on(Tables.DT_SC.OWNER_DT_ID.eq(Tables.BCCP.BDT_ID))
+                .where(and(
+                        Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)),
+                        or(
+                                Tables.DT_SC.CARDINALITY_MIN.ne(0),
+                                Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                        ))).fetchInto(CcBdtScNode.class);
     }
 
     public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
         long accId = accNode.getAccId();
 
-        return jdbcTemplate.queryForObject("SELECT acc_id, guid, object_class_term, den, " +
-                "oagis_component_type as component_type, " +
-                "is_abstract as abstracted, is_deprecated as deprecated, definition " +
-                "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
-                .addValue("accId", accId), CcAccNodeDetail.class);
+        return dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.GUID,
+                Tables.ACC.OBJECT_CLASS_TERM,
+                Tables.ACC.DEN,
+                Tables.ACC.OAGIS_COMPONENT_TYPE.as("component_type"),
+                Tables.ACC.IS_ABSTRACT.as("abstracted"),
+                Tables.ACC.IS_DEPRECATED.as("deprecated"),
+                Tables.ACC.DEFINITION
+        ).from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(CcAccNodeDetail.class);
     }
 
     public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
@@ -448,20 +499,30 @@ public class CcNodeRepository {
 
         long asccId = asccpNode.getAsccId();
         if (asccId > 0L) {
-            CcAsccpNodeDetail.Ascc ascc =
-                    jdbcTemplate.queryForObject("SELECT ascc_id, guid, den, cardinality_min, cardinality_max, " +
-                            "is_deprecated as deprecated, definition " +
-                            "FROM ascc WHERE ascc_id = :asccId", newSqlParameterSource()
-                            .addValue("asccId", asccId), CcAsccpNodeDetail.Ascc.class);
+            CcAsccpNodeDetail.Ascc ascc = dslContext.select(
+                    Tables.ASCC.ASCC_ID,
+                    Tables.ASCC.GUID,
+                    Tables.ASCC.DEN,
+                    Tables.ASCC.CARDINALITY_MIN,
+                    Tables.ASCC.CARDINALITY_MAX,
+                    Tables.ASCC.IS_DEPRECATED.as("deprecated"),
+                    Tables.ASCC.DEFINITION).from(Tables.ASCC)
+                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                    .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
             asccpNodeDetail.setAscc(ascc);
         }
 
         long asccpId = asccpNode.getAsccpId();
-        CcAsccpNodeDetail.Asccp asccp =
-                jdbcTemplate.queryForObject("SELECT asccp_id, guid, property_term, den, " +
-                        "reusable_indicator as reusable, is_deprecated as deprecated, definition " +
-                        "FROM asccp WHERE asccp_id = :asccpId", newSqlParameterSource()
-                        .addValue("asccpId", asccpId), CcAsccpNodeDetail.Asccp.class);
+        CcAsccpNodeDetail.Asccp asccp = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.REUSABLE_INDICATOR.as("reusable"),
+                Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
+                Tables.ASCCP.DEFINITION).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
 
         return asccpNodeDetail;
@@ -472,34 +533,47 @@ public class CcNodeRepository {
 
         long bccId = bccpNode.getBccId();
         if (bccId > 0L) {
-            CcBccpNodeDetail.Bcc bcc =
-                    jdbcTemplate.queryForObject("SELECT bcc_id, guid, den, entity_type, " +
-                            "cardinality_min, cardinality_max, " +
-                            "is_nillable as nillable, is_deprecated as deprecated, " +
-                            "default_value, definition " +
-                            "FROM bcc WHERE bcc_id = :bccId", newSqlParameterSource()
-                            .addValue("bccId", bccId), CcBccpNodeDetail.Bcc.class);
+            CcBccpNodeDetail.Bcc bcc = dslContext.select(
+                    Tables.BCC.BCC_ID,
+                    Tables.BCC.GUID,
+                    Tables.BCC.DEN,
+                    Tables.BCC.ENTITY_TYPE,
+                    Tables.BCC.CARDINALITY_MIN,
+                    Tables.BCC.CARDINALITY_MAX,
+                    Tables.BCC.IS_DEPRECATED.as("deprecated"),
+                    Tables.BCC.DEFAULT_VALUE,
+                    Tables.BCC.DEFINITION).from(Tables.BCC)
+                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                    .fetchOneInto(CcBccpNodeDetail.Bcc.class);
             bccpNodeDetail.setBcc(bcc);
         }
 
         long bccpId = bccpNode.getBccpId();
-        CcBccpNodeDetail.Bccp bccp =
-                jdbcTemplate.queryForObject("SELECT bccp_id, guid, property_term, den, " +
-                        "is_nillable as nillable, is_deprecated as deprecated, " +
-                        "default_value, definition " +
-                        "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
-                        .addValue("bccpId", bccpId), CcBccpNodeDetail.Bccp.class);
+        CcBccpNodeDetail.Bccp bccp = dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM,
+                Tables.BCCP.DEN,
+                Tables.BCCP.IS_NILLABLE.as("nillable"),
+                Tables.BCCP.IS_DEPRECATED.as("deprecated"),
+                Tables.BCCP.DEFAULT_VALUE,
+                Tables.BCCP.DEFINITION).from(Tables.BCCP)
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOneInto( CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
 
-        long bdtId = jdbcTemplate.queryForObject("SELECT bdt_id " +
-                "FROM bccp WHERE bccp_id = :bccpId", newSqlParameterSource()
-                .addValue("bccpId", bccpId), Long.class);
+        long bdtId = dslContext.select(Tables.BCCP.BDT_ID).from(Tables.BCCP)
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId))).fetchOneInto(Long.class);
 
-        CcBccpNodeDetail.Bdt bdt =
-                jdbcTemplate.queryForObject("SELECT dt_id as bdt_id, guid, " +
-                        "data_type_term, qualifier, den, definition " +
-                        "FROM dt WHERE dt_id = :bdtId", newSqlParameterSource()
-                        .addValue("bdtId", bdtId), CcBccpNodeDetail.Bdt.class);
+        CcBccpNodeDetail.Bdt bdt = dslContext.select(
+                Tables.DT.DT_ID.as("bdt_id"),
+                Tables.DT.GUID,
+                Tables.DT.DATA_TYPE_TERM,
+                Tables.DT.QUALIFIER,
+                Tables.DT.DEN,
+                Tables.DT.DEFINITION).from(Tables.DT)
+                .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId)))
+                .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
 
         return bccpNodeDetail;
@@ -507,11 +581,15 @@ public class CcNodeRepository {
 
     public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
         long bdtScId = bdtScNode.getBdtScId();
-        return jdbcTemplate.queryForObject("SELECT dt_sc_id as bdt_sc_id, guid, " +
-                "CONCAT(property_term, '. ', representation_term) as den, " +
-                "cardinality_min, cardinality_max, definition " +
-                "FROM dt_sc WHERE dt_sc_id = :bdtScId", newSqlParameterSource()
-                .addValue("bdtScId", bdtScId), CcBdtScNodeDetail.class);
+        return dslContext.select(
+                Tables.DT_SC.DT_SC_ID.as("bdt_sc_id"),
+                Tables.DT_SC.GUID,
+                concat(Tables.DT_SC.PROPERTY_TERM, val(". "), Tables.DT_SC.PROPERTY_TERM).as("den"),
+                Tables.DT_SC.CARDINALITY_MIN,
+                Tables.DT_SC.CARDINALITY_MAX,
+                Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
+                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
+                .fetchOneInto(CcBdtScNodeDetail.class);
     }
 }
 
