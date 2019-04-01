@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,6 @@ public class CcNodeController {
                 return getAsccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
             case "bccp":
                 return getBccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
-            case "extension":
-                return getExtensionNode(user, ccId, releaseId);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -53,49 +50,6 @@ public class CcNodeController {
 
     private CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
         return service.getBccpNode(user, bccpId, releaseId);
-    }
-
-    private CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
-        return service.getExtensionNode(user, extensionId, releaseId);
-    }
-
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
-                                            @PathVariable("releaseId") long releaseId,
-                                            @PathVariable("id") long extensionId,
-                                            @RequestBody CcActionRequest actionRequest) {
-
-        switch (actionRequest.getAction()) {
-            case "append":
-                switch (actionRequest.getType()) {
-                    case "asccp":
-                        service.appendAsccp(user, extensionId, releaseId, actionRequest.getId());
-                        break;
-
-                    case "bccp":
-                        service.appendBccp(user, extensionId, releaseId, actionRequest.getId());
-                        break;
-                }
-
-                break;
-
-            case "discard":
-                switch (actionRequest.getType()) {
-                    case "ascc":
-                        service.discardAscc(user, extensionId, releaseId, actionRequest.getId());
-                        break;
-
-                    case "bcc":
-                        service.discardBcc(user, extensionId, releaseId, actionRequest.getId());
-                        break;
-                }
-
-                break;
-        }
-
-        return ResponseEntity.accepted().build();
     }
 
     @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,
@@ -145,7 +99,10 @@ public class CcNodeController {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
             String[] keyValue = e.split("=");
-            params.put(keyValue[0], keyValue[1]);
+            Object value = keyValue[1];
+            if (!"null".equals(value) && value != null) {
+                params.put(keyValue[0], value);
+            }
         });
         return objectMapper.convertValue(params, clazz);
     }

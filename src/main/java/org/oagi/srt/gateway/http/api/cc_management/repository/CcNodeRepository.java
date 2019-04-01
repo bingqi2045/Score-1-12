@@ -52,7 +52,7 @@ public class CcNodeRepository {
                 Tables.ACC.BASED_ACC_ID,
                 Tables.ACC.OAGIS_COMPONENT_TYPE,
                 Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.STATE,
+                Tables.ACC.STATE.as("raw_state"),
                 Tables.ACC.REVISION_NUM,
                 Tables.ACC.REVISION_TRACKING_NUM,
                 Tables.ACC.RELEASE_ID,
@@ -70,7 +70,7 @@ public class CcNodeRepository {
                 Tables.ACC.BASED_ACC_ID,
                 Tables.ACC.OAGIS_COMPONENT_TYPE,
                 Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.STATE,
+                Tables.ACC.STATE.as("raw_state"),
                 Tables.ACC.REVISION_NUM,
                 Tables.ACC.REVISION_TRACKING_NUM,
                 Tables.ACC.RELEASE_ID,
@@ -146,6 +146,8 @@ public class CcNodeRepository {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
         accNode.setGroup(oagisComponentType.isGroup());
+
+        accNode.setState(CcState.valueOf(accNode.getRawState()));
         accNode.setHasChild(hasChild(accNode, releaseId));
 
         return accNode;
@@ -217,7 +219,7 @@ public class CcNodeRepository {
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
                 Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.STATE,
+                Tables.ASCCP.STATE.as("raw_state"),
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
@@ -235,7 +237,7 @@ public class CcNodeRepository {
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
                 Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.STATE,
+                Tables.ASCCP.STATE.as("raw_state"),
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
@@ -253,7 +255,7 @@ public class CcNodeRepository {
                 Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
-                Tables.ASCCP.STATE,
+                Tables.ASCCP.STATE.as("raw_state"),
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
@@ -272,7 +274,7 @@ public class CcNodeRepository {
                 Tables.BCCP.GUID,
                 Tables.BCCP.PROPERTY_TERM.as("name"),
                 Tables.BCCP.BDT_ID,
-                Tables.BCCP.STATE,
+                Tables.BCCP.STATE.as("raw_state"),
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,
                 Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
@@ -290,7 +292,7 @@ public class CcNodeRepository {
                 Tables.BCCP.GUID,
                 Tables.BCCP.PROPERTY_TERM.as("name"),
                 Tables.BCCP.BDT_ID,
-                Tables.BCCP.STATE,
+                Tables.BCCP.STATE.as("raw_state"),
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,
                 Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
@@ -386,7 +388,7 @@ public class CcNodeRepository {
                 Tables.ASCC.GUID,
                 Tables.ASCC.TO_ASCCP_ID,
                 Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.STATE,
+                Tables.ASCC.STATE.as("raw_state"),
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
                 Tables.ASCC.RELEASE_ID
@@ -421,7 +423,7 @@ public class CcNodeRepository {
                 Tables.BCC.TO_BCCP_ID,
                 Tables.BCC.SEQ_KEY,
                 Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.STATE,
+                Tables.BCC.STATE.as("raw_state"),
                 Tables.BCC.REVISION_NUM,
                 Tables.BCC.REVISION_TRACKING_NUM,
                 Tables.BCC.RELEASE_ID

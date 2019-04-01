@@ -548,7 +548,7 @@ public class BieRepository {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Published.getValue(),
+                CcState.Editing.getValue(),
                 0,
                 0,
                 null
@@ -712,7 +712,7 @@ public class BieRepository {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Editing.getValue(),
+                CcState.Published.getValue(),
                 0,
                 0,
                 null
