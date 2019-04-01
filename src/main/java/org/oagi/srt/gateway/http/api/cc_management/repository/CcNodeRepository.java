@@ -343,9 +343,14 @@ public class CcNodeRepository {
                     .fetchOneInto(Long.class);
         }
 
+        boolean isUserExtensionGroup = accNode.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue();
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
-        seqKeySupportableList.addAll(getAsccpNodes(user, fromAccId, releaseId));
-        seqKeySupportableList.addAll(getBccpNodes(user, fromAccId, releaseId));
+        seqKeySupportableList.addAll(
+                getAsccpNodes(user, fromAccId, (isUserExtensionGroup) ? null : releaseId)
+        );
+        seqKeySupportableList.addAll(
+                getBccpNodes(user, fromAccId, (isUserExtensionGroup) ? null : releaseId)
+        );
         seqKeySupportableList.sort(Comparator.comparingInt(SeqKeySupportable::getSeqKey));
 
         int seqKey = 1;
