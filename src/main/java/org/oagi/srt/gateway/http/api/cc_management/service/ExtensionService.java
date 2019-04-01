@@ -10,10 +10,9 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAccNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAsccNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAsccpNode;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccNode;
+import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
+import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -385,7 +384,7 @@ public class ExtensionService {
     }
 
     private void updateAsccState(long extensionId, Long releaseId, CcState state,
-                                ULong userId, Timestamp timestamp) {
+                                 ULong userId, Timestamp timestamp) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC.GUID,
@@ -490,5 +489,110 @@ public class ExtensionService {
 
             dslContext.insertInto(BCC).set(history).execute();
         }
+    }
+
+    @Transactional
+    public ExtensionUpdateResponse updateDetails(User user, ExtensionUpdateRequest request) {
+        ExtensionUpdateResponse response = new ExtensionUpdateResponse();
+
+        ULong extensionId = ULong.valueOf(request.getExtensionId());
+        ULong releaseId = ULong.valueOf(request.getReleaseId());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        List<CcAsccpNodeDetail.Ascc> asccList = request.getAsccpDetails().stream().map(asccpDetail -> asccpDetail.getAscc())
+                .collect(Collectors.toList());
+
+        for (CcAsccpNodeDetail.Ascc ascc : asccList) {
+            response.getAsccResults().put(ascc.getAsccId(),
+                    updateAscc(extensionId, releaseId, ascc, userId, timestamp)
+            );
+        }
+
+        List<CcBccpNodeDetail.Bcc> bccList = request.getBccpDetails().stream().map(bccpDetail -> bccpDetail.getBcc())
+                .collect(Collectors.toList());
+        for (CcBccpNodeDetail.Bcc bcc : bccList) {
+            response.getBccResults().put(bcc.getBccId(),
+                    updateBcc(extensionId, releaseId, bcc, userId, timestamp)
+            );
+        }
+
+        return response;
+    }
+
+    private boolean updateAscc(ULong extensionId, ULong releaseId,
+                               CcAsccpNodeDetail.Ascc ascc,
+                               ULong userId, Timestamp timestamp) {
+
+        int result = dslContext.update(Tables.ASCC)
+                .set(ASCC.CARDINALITY_MIN, ascc.getCardinalityMin())
+                .set(ASCC.CARDINALITY_MAX, ascc.getCardinalityMax())
+                .set(ASCC.IS_DEPRECATED, (byte) ((ascc.isDeprecated()) ? 1 : 0))
+                .set(ASCC.DEFINITION, ascc.getDefinition())
+                .set(ASCC.LAST_UPDATED_BY, userId)
+                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(ASCC.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
+                .execute();
+
+        AsccRecord history = dslContext.selectFrom(Tables.ASCC)
+                .where(ASCC.CURRENT_ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
+                .orderBy(ASCC.ASCC_ID.desc()).limit(1).fetchOne();
+
+        history.setAsccId(null);
+        history.setCardinalityMin(ascc.getCardinalityMin());
+        history.setCardinalityMax(ascc.getCardinalityMax());
+        history.setIsDeprecated((byte) ((ascc.isDeprecated()) ? 1 : 0));
+        history.setDefinition(ascc.getDefinition());
+        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
+        history.setRevisionAction((byte) RevisionAction.Update.getValue());
+        history.setCreatedBy(userId);
+        history.setLastUpdatedBy(userId);
+        history.setCreationTimestamp(timestamp);
+        history.setLastUpdateTimestamp(timestamp);
+
+        dslContext.insertInto(ASCC).set(history).execute();
+
+        return (result == 1);
+    }
+
+    private boolean updateBcc(ULong extensionId, ULong releaseId,
+                              CcBccpNodeDetail.Bcc bcc,
+                              ULong userId, Timestamp timestamp) {
+
+        int result = dslContext.update(Tables.BCC)
+                .set(BCC.ENTITY_TYPE, bcc.getEntityType())
+                .set(BCC.CARDINALITY_MIN, bcc.getCardinalityMin())
+                .set(BCC.CARDINALITY_MAX, bcc.getCardinalityMax())
+                .set(BCC.IS_NILLABLE, (byte) ((bcc.isNillable()) ? 1 : 0))
+                .set(BCC.IS_DEPRECATED, (byte) ((bcc.isDeprecated()) ? 1 : 0))
+                .set(BCC.DEFAULT_VALUE, bcc.getDefaultValue())
+                .set(BCC.DEFINITION, bcc.getDefinition())
+                .set(BCC.LAST_UPDATED_BY, userId)
+                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(BCC.BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
+                .execute();
+
+        BccRecord history = dslContext.selectFrom(Tables.BCC)
+                .where(BCC.CURRENT_BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
+                .orderBy(BCC.BCC_ID.desc()).limit(1).fetchOne();
+
+        history.setBccId(null);
+        history.setEntityType(bcc.getEntityType());
+        history.setCardinalityMin(bcc.getCardinalityMin());
+        history.setCardinalityMax(bcc.getCardinalityMax());
+        history.setIsNillable((byte) ((bcc.isNillable()) ? 1 : 0));
+        history.setIsDeprecated((byte) ((bcc.isDeprecated()) ? 1 : 0));
+        history.setDefaultValue(bcc.getDefaultValue());
+        history.setDefinition(bcc.getDefinition());
+        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
+        history.setRevisionAction((byte) RevisionAction.Update.getValue());
+        history.setCreatedBy(userId);
+        history.setLastUpdatedBy(userId);
+        history.setCreationTimestamp(timestamp);
+        history.setLastUpdateTimestamp(timestamp);
+
+        dslContext.insertInto(BCC).set(history).execute();
+
+        return (result == 1);
     }
 }
