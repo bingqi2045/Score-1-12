@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.data;
 
 import lombok.Data;
+import org.oagi.srt.data.OagisComponentType;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ public class CcList {
     private String den;
     private String definition;
     private String definitionSource;
+    private OagisComponentType oagisComponentType;
     private String owner;
     private CcState state;
     private String revision;

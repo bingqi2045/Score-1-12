@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.oagi.srt.data.OagisComponentType.UserExtensionGroup;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getLatestEntity;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getRevision;
 
@@ -36,6 +37,7 @@ public class CcListRepository {
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
                 .map(acc -> {
+                    OagisComponentType oagisComponentType = OagisComponentType.valueOf(acc.getOagisComponentType());
                     CcList ccList = new CcList();
                     ccList.setType("ACC");
                     ccList.setId(acc.getAccId());
@@ -43,6 +45,7 @@ public class CcListRepository {
                     ccList.setDen(acc.getDen());
                     ccList.setDefinition(acc.getDefinition());
                     ccList.setDefinitionSource(acc.getDefinitionSource());
+                    ccList.setOagisComponentType(oagisComponentType);
                     ccList.setState(CcState.valueOf(acc.getState()));
                     ccList.setDeprecated(acc.isDeprecated());
                     ccList.setCurrentId(acc.getCurrentAccId());

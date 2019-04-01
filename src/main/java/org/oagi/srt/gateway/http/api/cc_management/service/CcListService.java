@@ -3,10 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.ASCC;
-import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.data.BCCP;
+import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
@@ -64,6 +61,14 @@ public class CcListService {
         List<CcList> coreComponents = new ArrayList();
         if (types.isAcc()) {
             coreComponents.addAll(repository.getAccList(releaseId).stream()
+                    .filter(acc -> {
+                        if (acc.getOagisComponentType() == OagisComponentType.UserExtensionGroup) {
+                            if (releaseId > 0L) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
                     .filter(statesFilter(states))
                     .filter(getDenFilter(filter))
                     .collect(Collectors.toList()));
@@ -71,6 +76,7 @@ public class CcListService {
 
         if (types.isAscc()) {
             coreComponents.addAll(repository.getAsccList(releaseId).stream()
+                    .filter(ascc -> (!ascc.getDen().endsWith("User Extension Group")))
                     .filter(statesFilter(states))
                     .filter(getDenFilter(filter))
                     .collect(Collectors.toList()));
@@ -85,6 +91,7 @@ public class CcListService {
 
         if (types.isAsccp()) {
             coreComponents.addAll(repository.getAsccpList(releaseId).stream()
+                    .filter(asccp -> (!asccp.getDen().endsWith("User Extension Group")))
                     .filter(statesFilter(states))
                     .filter(getDenFilter(filter))
                     .collect(Collectors.toList()));

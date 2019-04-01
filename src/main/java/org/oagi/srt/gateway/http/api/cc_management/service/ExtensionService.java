@@ -60,17 +60,17 @@ public class ExtensionService {
                 .from(ASCCP).where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(Long.class);
 
-        AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey, releaseId);
+        AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey);
 
         int revisionNum = dslContext.select(ACC.REVISION_NUM)
                 .from(ACC).where(ACC.CURRENT_ACC_ID.eq(ULong.valueOf(extensionId)))
                 .orderBy(ACC.ACC_ID.desc()).limit(1)
                 .fetchOneInto(Integer.class);
 
-        createASCCHistory(ascc, revisionNum);
+        createASCCHistory(ascc, revisionNum, releaseId);
     }
 
-    private AsccRecord createASCC(User user, long accId, long asccpId, int seqKey, long releaseId) {
+    private AsccRecord createASCC(User user, long accId, long asccpId, int seqKey) {
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
@@ -95,7 +95,6 @@ public class ExtensionService {
                 Tables.ASCC.OWNER_USER_ID,
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.RELEASE_ID,
                 Tables.ASCC.STATE,
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
@@ -113,7 +112,6 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                ULong.valueOf(releaseId),
                 CcState.Editing.getValue(),
                 0,
                 0,
@@ -121,7 +119,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createASCCHistory(AsccRecord ascc, int revisionNum) {
+    private void createASCCHistory(AsccRecord ascc, int revisionNum, long releaseId) {
         dslContext.insertInto(Tables.ASCC,
                 Tables.ASCC.GUID,
                 Tables.ASCC.CARDINALITY_MIN,
@@ -155,7 +153,7 @@ public class ExtensionService {
                 ascc.getOwnerUserId(),
                 ascc.getCreationTimestamp(),
                 ascc.getLastUpdateTimestamp(),
-                ascc.getReleaseId(),
+                ULong.valueOf(releaseId),
                 ascc.getState(),
                 revisionNum,
                 1,
@@ -172,17 +170,17 @@ public class ExtensionService {
                 .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(Long.class);
 
-        BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey, releaseId);
+        BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey);
 
         int revisionNum = dslContext.select(ACC.REVISION_NUM)
                 .from(ACC).where(ACC.CURRENT_ACC_ID.eq(ULong.valueOf(extensionId)))
                 .orderBy(ACC.ACC_ID.desc()).limit(1)
                 .fetchOneInto(Integer.class);
 
-        createBCCHistory(bcc, revisionNum);
+        createBCCHistory(bcc, revisionNum, releaseId);
     }
 
-    private BccRecord createBCC(User user, long accId, long bccpId, int seqKey, long releaseId) {
+    private BccRecord createBCC(User user, long accId, long bccpId, int seqKey) {
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
@@ -208,7 +206,6 @@ public class ExtensionService {
                 Tables.BCC.OWNER_USER_ID,
                 Tables.BCC.CREATION_TIMESTAMP,
                 Tables.BCC.LAST_UPDATE_TIMESTAMP,
-                Tables.BCC.RELEASE_ID,
                 Tables.BCC.STATE,
                 Tables.BCC.REVISION_NUM,
                 Tables.BCC.REVISION_TRACKING_NUM,
@@ -227,7 +224,6 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                ULong.valueOf(releaseId),
                 CcState.Editing.getValue(),
                 0,
                 0,
@@ -235,7 +231,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createBCCHistory(BccRecord bcc, int revisionNum) {
+    private void createBCCHistory(BccRecord bcc, int revisionNum, long releaseId) {
         dslContext.insertInto(Tables.BCC,
                 Tables.BCC.GUID,
                 Tables.BCC.CARDINALITY_MIN,
@@ -271,7 +267,7 @@ public class ExtensionService {
                 bcc.getOwnerUserId(),
                 bcc.getCreationTimestamp(),
                 bcc.getLastUpdateTimestamp(),
-                bcc.getReleaseId(),
+                ULong.valueOf(releaseId),
                 bcc.getState(),
                 revisionNum,
                 1,
