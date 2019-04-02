@@ -19,6 +19,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
@@ -35,6 +36,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,6 +59,36 @@ public class ExtensionService {
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), null);
         CcAccNode eAcc = repository.getAccNodeByAsccpIdFromAscc(asccpNode.getAsccpId(), releaseId);
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
+
+        long userId = sessionService.userId(user);
+        long ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(Long.class);
+
+        AccessPrivilege accessPrivilege = Prohibited;
+        switch (eAcc.getState()) {
+            case Editing:
+                if (userId == ownerUserId) {
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = Prohibited;
+                }
+                break;
+
+            case Candidate:
+                if (userId == ownerUserId) {
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = CanView;
+                }
+
+                break;
+
+            case Published:
+                accessPrivilege = CanView;
+                break;
+        }
+
+        eAcc.setAccess(accessPrivilege.name());
         return eAcc;
     }
 

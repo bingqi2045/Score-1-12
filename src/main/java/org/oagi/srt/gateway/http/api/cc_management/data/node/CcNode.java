@@ -14,4 +14,5 @@ public class CcNode extends TrackableImpl {
     private int rawState;
     private CcState state;
     private boolean hasChild;
+    private String access;
 }

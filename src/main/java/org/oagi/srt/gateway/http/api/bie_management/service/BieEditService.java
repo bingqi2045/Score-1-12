@@ -158,7 +158,7 @@ public class BieEditService {
             }
 
             if (ueAccState != Published) {
-                return ueAcc.getCurrentAccId();
+                return ueAcc.getAccId();
             }
         }
 

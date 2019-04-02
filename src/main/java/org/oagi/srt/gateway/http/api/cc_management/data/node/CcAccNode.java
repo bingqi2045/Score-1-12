@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 public class CcAccNode extends CcNode {
 
     private String type = "acc";
-
     private long accId;
     private String den;
     private String guid;
