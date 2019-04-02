@@ -6,7 +6,7 @@
     <groupId>org.oagi</groupId>
     <artifactId>srt-http-gateway</artifactId>
     <version>1.1.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>srt-http-gateway</name>
     <description>OAGi Semantic Refinement and Tooling - HTTP Gateway</description>
@@ -45,6 +45,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -179,6 +184,8 @@
                 </executions>
 
                 <configuration>
+                    <skip>${jOOQ.configuration.skip}</skip>
+
                     <jdbc>
                         <driver>com.mysql.jdbc.Driver</driver>
                         <url>jdbc:mysql://docker:3306/oagi</url>
