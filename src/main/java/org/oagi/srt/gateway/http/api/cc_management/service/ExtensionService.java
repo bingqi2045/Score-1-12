@@ -3,12 +3,16 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.BCCEntityType;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccRecord;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
@@ -17,6 +21,7 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -44,12 +49,462 @@ public class ExtensionService {
     @Autowired
     private CcNodeRepository repository;
 
+    @Autowired
+    private CcListService ccListService;
+
     public CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
         CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, null);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), null);
         CcAccNode eAcc = repository.getAccNodeByAsccpIdFromAscc(asccpNode.getAsccpId(), releaseId);
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
         return eAcc;
+    }
+
+    public ACC getExistsUserExtension(long accId, long releaseId) {
+        ACC ueAcc =
+                dslContext.select(
+                        Tables.ACC.as("ueAcc").ACC_ID,
+                        Tables.ACC.as("ueAcc").OAGIS_COMPONENT_TYPE
+                ).from(Tables.ACC.as("eAcc"))
+                        .join(Tables.ASCC).on(Tables.ACC.as("eAcc").ACC_ID.eq(ASCC.FROM_ACC_ID))
+                        .join(Tables.ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                        .join(Tables.ACC.as("ueAcc")).on(ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.as("ueAcc").ACC_ID))
+                        .where(and(ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
+                                ASCC.REVISION_NUM.eq(0))
+                        ).fetchOneInto(ACC.class);
+
+        if (ueAcc == null) {
+            return null;
+        }
+
+        if (ueAcc.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
+            return dslContext.selectFrom(Tables.ACC)
+                    .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
+                    .fetchOneInto(ACC.class);
+        }
+        return null;
+    }
+
+
+    @Transactional
+    public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
+                                    long releaseId, User user) {
+        if (ueAcc != null) {
+            return increaseRevisionNum(ueAcc, releaseId, user);
+        } else {
+            return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
+        }
+    }
+
+    private long increaseRevisionNum(ACC ueAcc, long releaseId, User user) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        int revisionNum = increaseAccRevisionNum(ueAcc, releaseId, userId, timestamp);
+        increaseAsccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
+        increaseBccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
+
+        return ueAcc.getAccId();
+    }
+
+    private int increaseAccRevisionNum(ACC ueAcc, long releaseId,
+                                        ULong userId, Timestamp timestamp) {
+        AccRecord history = dslContext.selectFrom(Tables.ACC)
+                .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
+                .orderBy(Tables.ACC.ACC_ID.desc()).limit(1)
+                .fetchOne();
+
+        int newRevisionNum = history.getRevisionNum() + 1;
+        history.setAccId(null);
+        history.setState(CcState.Editing.getValue());
+        history.setRevisionNum(newRevisionNum);
+        history.setRevisionTrackingNum(1);
+        history.setRevisionAction(Integer.valueOf(RevisionAction.Update.getValue()).byteValue());
+        history.setCreatedBy(userId);
+        history.setLastUpdatedBy(userId);
+        history.setOwnerUserId(userId);
+        history.setCreationTimestamp(timestamp);
+        history.setLastUpdateTimestamp(timestamp);
+
+        dslContext.insertInto(Tables.ACC).set(history).execute();
+
+        dslContext.update(Tables.ACC)
+                .set(Tables.ACC.STATE, history.getState())
+                .set(Tables.ACC.LAST_UPDATED_BY, userId)
+                .set(Tables.ACC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
+                .execute();
+
+        return newRevisionNum;
+    }
+
+    private void increaseAsccRevisionNum(ACC ueAcc, int revisionNum, long releaseId,
+                                         ULong userId, Timestamp timestamp) {
+        List<CcAsccNode> asccNodes = dslContext.select(
+                ASCC.ASCC_ID,
+                ASCC.GUID,
+                ASCC.REVISION_NUM,
+                ASCC.REVISION_TRACKING_NUM,
+                ASCC.RELEASE_ID
+        ).from(ASCC).where(and(
+                ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
+                ASCC.REVISION_NUM.greaterThan(0)))
+                .fetchInto(CcAsccNode.class);
+
+        if (asccNodes.isEmpty()) {
+            return;
+        }
+
+        // Update a state of the 'current record'.
+        dslContext.update(ASCC)
+                .set(ASCC.STATE, CcState.Editing.getValue())
+                .set(ASCC.LAST_UPDATED_BY, userId)
+                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
+                        ASCC.REVISION_NUM.eq(0)))
+                .execute();
+
+        asccNodes = asccNodes.stream()
+                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> asccIds = asccNodes.stream()
+                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
+                .collect(Collectors.toList());
+
+        Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.in(asccIds))
+                .fetch();
+
+        for (AsccRecord history : asccRecordResult) {
+            history.setAsccId(null);
+            history.setRevisionNum(revisionNum);
+            history.setRevisionTrackingNum(1);
+            history.setRevisionAction((byte) RevisionAction.Update.getValue());
+            history.setCreatedBy(userId);
+            history.setLastUpdatedBy(userId);
+            history.setOwnerUserId(userId);
+            history.setCreationTimestamp(timestamp);
+            history.setLastUpdateTimestamp(timestamp);
+            history.setState(CcState.Editing.getValue());
+
+            dslContext.insertInto(ASCC).set(history).execute();
+        }
+    }
+
+    private void increaseBccRevisionNum(ACC ueAcc, int revisionNum, long releaseId,
+                                        ULong userId, Timestamp timestamp) {
+        List<CcBccNode> bccNodes = dslContext.select(
+                BCC.BCC_ID,
+                BCC.GUID,
+                BCC.REVISION_NUM,
+                BCC.REVISION_TRACKING_NUM,
+                BCC.RELEASE_ID
+        ).from(BCC).where(and(
+                BCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
+                BCC.REVISION_NUM.greaterThan(0)))
+                .fetchInto(CcBccNode.class);
+
+        if (bccNodes.isEmpty()) {
+            return;
+        }
+
+        // Update a state of the 'current record'.
+        dslContext.update(BCC)
+                .set(BCC.STATE, CcState.Editing.getValue())
+                .set(BCC.LAST_UPDATED_BY, userId)
+                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
+                        BCC.REVISION_NUM.eq(0)))
+                .execute();
+
+        bccNodes = bccNodes.stream()
+                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> bccIds = bccNodes.stream()
+                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
+                .collect(Collectors.toList());
+
+        Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.in(bccIds))
+                .fetch();
+
+        for (BccRecord history : bccRecordResult) {
+            history.setBccId(null);
+            history.setRevisionNum(revisionNum);
+            history.setRevisionTrackingNum(1);
+            history.setRevisionAction((byte) RevisionAction.Update.getValue());
+            history.setCreatedBy(userId);
+            history.setLastUpdatedBy(userId);
+            history.setOwnerUserId(userId);
+            history.setCreationTimestamp(timestamp);
+            history.setLastUpdateTimestamp(timestamp);
+            history.setState(CcState.Editing.getValue());
+
+            dslContext.insertInto(BCC).set(history).execute();
+        }
+    }
+
+    private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
+        AccRecord ueAcc = createACCForExtension(eAcc, user);
+        createACCHistoryForExtension(ueAcc, 1, releaseId);
+
+        AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
+        createASCCPHistoryForExtension(ueAsccp, 1, releaseId);
+
+        AsccRecord ueAscc = createASCCForExtension(eAcc, user, ueAcc, ueAsccp);
+        createASCCHistoryForExtension(ueAscc, 1, releaseId);
+
+        return ueAcc.getAccId().longValue();
+    }
+
+    private AccRecord createACCForExtension(ACC eAcc, User user) {
+        String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        return dslContext.insertInto(Tables.ACC,
+                Tables.ACC.GUID,
+                Tables.ACC.OBJECT_CLASS_TERM,
+                Tables.ACC.DEN,
+                Tables.ACC.DEFINITION,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.CREATED_BY,
+                Tables.ACC.LAST_UPDATED_BY,
+                Tables.ACC.OWNER_USER_ID,
+                Tables.ACC.CREATION_TIMESTAMP,
+                Tables.ACC.LAST_UPDATE_TIMESTAMP,
+                Tables.ACC.STATE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                objectClassTerm,
+                objectClassTerm + ". Details",
+                "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".",
+                OagisComponentType.UserExtensionGroup.getValue(),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                CcState.Editing.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
+    }
+
+    private void createACCHistoryForExtension(AccRecord ueAcc, int revisionNum, long releaseId) {
+        dslContext.insertInto(Tables.ACC,
+                Tables.ACC.GUID,
+                Tables.ACC.OBJECT_CLASS_TERM,
+                Tables.ACC.DEN,
+                Tables.ACC.DEFINITION,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.CREATED_BY,
+                Tables.ACC.LAST_UPDATED_BY,
+                Tables.ACC.OWNER_USER_ID,
+                Tables.ACC.CREATION_TIMESTAMP,
+                Tables.ACC.LAST_UPDATE_TIMESTAMP,
+                Tables.ACC.STATE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.REVISION_ACTION,
+                Tables.ACC.RELEASE_ID,
+                Tables.ACC.CURRENT_ACC_ID).values(
+                ueAcc.getGuid(),
+                ueAcc.getObjectClassTerm(),
+                ueAcc.getDen(),
+                ueAcc.getDefinition(),
+                ueAcc.getOagisComponentType(),
+                ueAcc.getCreatedBy(),
+                ueAcc.getLastUpdatedBy(),
+                ueAcc.getOwnerUserId(),
+                ueAcc.getCreationTimestamp(),
+                ueAcc.getLastUpdateTimestamp(),
+                ueAcc.getState(),
+                revisionNum,
+                1,
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
+                ULong.valueOf(releaseId),
+                ueAcc.getAccId()
+        ).execute();
+    }
+
+    private AsccpRecord createASCCPForExtension(ACC eAcc, User user, AccRecord ueAcc) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        return dslContext.insertInto(Tables.ASCCP,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.DEFINITION,
+                Tables.ASCCP.REUSABLE_INDICATOR,
+                Tables.ASCCP.IS_DEPRECATED,
+                Tables.ASCCP.IS_NILLABLE,
+                Tables.ASCCP.CREATED_BY,
+                Tables.ASCCP.LAST_UPDATED_BY,
+                Tables.ASCCP.OWNER_USER_ID,
+                Tables.ASCCP.CREATION_TIMESTAMP,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                ueAcc.getObjectClassTerm(),
+                ueAcc.getAccId(),
+                ueAcc.getObjectClassTerm() + ". " + ueAcc.getObjectClassTerm(),
+                "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".",
+                Byte.valueOf((byte) 0),
+                Byte.valueOf((byte) 0),
+                Byte.valueOf((byte) 0),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                CcState.Published.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
+    }
+
+    private void createASCCPHistoryForExtension(AsccpRecord ueAsccp, int revisionNum, long releaseId) {
+        dslContext.insertInto(Tables.ASCCP,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.DEFINITION,
+                Tables.ASCCP.REUSABLE_INDICATOR,
+                Tables.ASCCP.IS_DEPRECATED,
+                Tables.ASCCP.IS_NILLABLE,
+                Tables.ASCCP.CREATED_BY,
+                Tables.ASCCP.LAST_UPDATED_BY,
+                Tables.ASCCP.OWNER_USER_ID,
+                Tables.ASCCP.CREATION_TIMESTAMP,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.REVISION_ACTION,
+                Tables.ASCCP.RELEASE_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID).values(
+                ueAsccp.getGuid(),
+                ueAsccp.getPropertyTerm(),
+                ueAsccp.getRoleOfAccId(),
+                ueAsccp.getDen(),
+                ueAsccp.getDefinition(),
+                ueAsccp.getReusableIndicator(),
+                ueAsccp.getIsDeprecated(),
+                ueAsccp.getIsNillable(),
+                ueAsccp.getCreatedBy(),
+                ueAsccp.getLastUpdatedBy(),
+                ueAsccp.getOwnerUserId(),
+                ueAsccp.getCreationTimestamp(),
+                ueAsccp.getLastUpdateTimestamp(),
+                ueAsccp.getState(),
+                revisionNum,
+                1,
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
+                ULong.valueOf(releaseId),
+                ueAsccp.getAsccpId()
+        ).execute();
+    }
+
+    private AsccRecord createASCCForExtension(ACC eAcc, User user, AccRecord ueAcc, AsccpRecord ueAsccp) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        return dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.GUID,
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.DEN,
+                Tables.ASCC.IS_DEPRECATED,
+                Tables.ASCC.CREATED_BY,
+                Tables.ASCC.LAST_UPDATED_BY,
+                Tables.ASCC.OWNER_USER_ID,
+                Tables.ASCC.CREATION_TIMESTAMP,
+                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                0,
+                1,
+                1,
+                ULong.valueOf(eAcc.getCurrentAccId()),
+                ueAsccp.getAsccpId(),
+                eAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
+                Byte.valueOf((byte) 0),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                CcState.Published.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
+    }
+
+    private void createASCCHistoryForExtension(AsccRecord ueAscc, int revisionNum, long releaseId) {
+        dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.GUID,
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.DEN,
+                Tables.ASCC.IS_DEPRECATED,
+                Tables.ASCC.CREATED_BY,
+                Tables.ASCC.LAST_UPDATED_BY,
+                Tables.ASCC.OWNER_USER_ID,
+                Tables.ASCC.CREATION_TIMESTAMP,
+                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.REVISION_ACTION,
+                Tables.ASCC.RELEASE_ID,
+                Tables.ASCC.CURRENT_ASCC_ID).values(
+                ueAscc.getGuid(),
+                ueAscc.getCardinalityMin(),
+                ueAscc.getCardinalityMax(),
+                ueAscc.getSeqKey(),
+                ueAscc.getFromAccId(),
+                ueAscc.getToAsccpId(),
+                ueAscc.getDen(),
+                ueAscc.getIsDeprecated(),
+                ueAscc.getCreatedBy(),
+                ueAscc.getLastUpdatedBy(),
+                ueAscc.getOwnerUserId(),
+                ueAscc.getCreationTimestamp(),
+                ueAscc.getLastUpdateTimestamp(),
+                ueAscc.getState(),
+                revisionNum,
+                1,
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
+                ULong.valueOf(releaseId),
+                ueAscc.getAsccId()
+        ).execute();
     }
 
     @Transactional

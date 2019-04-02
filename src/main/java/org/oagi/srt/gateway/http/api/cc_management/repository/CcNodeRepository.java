@@ -8,6 +8,8 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAscc;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBcc;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -598,5 +600,6 @@ public class CcNodeRepository {
                 .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }
+
 }
 
