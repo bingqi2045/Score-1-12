@@ -25,6 +25,9 @@ public class BusinessContextRepository implements SrtRepository<BusinessContext>
 
     @Override
     public BusinessContext findById(long id) {
+        if (id <= 0L) {
+            return null;
+        }
         return jdbcTemplate.queryForObject(new StringBuilder(GET_BUSINESS_CONTEXT_STATEMENT)
                 .append(" WHERE `biz_ctx_id` = :id").toString(), newSqlParameterSource()
                 .addValue("id", id), BusinessContext.class);

@@ -5,6 +5,7 @@ import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
@@ -26,12 +27,18 @@ public class ABIERepository implements SrtRepository<ABIE> {
 
     @Override
     public ABIE findById(long id) {
+        if (id <= 0L) {
+            return null;
+        }
         return jdbcTemplate.queryForObject(new StringBuilder(GET_ABIE_STATEMENT)
                 .append(" WHERE `abie_id` = :id").toString(), newSqlParameterSource()
                 .addValue("id", id), ABIE.class);
     }
 
     public List<ABIE> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        if (ownerTopLevelAbieId <= 0L) {
+            return Collections.emptyList();
+        }
         return jdbcTemplate.queryForList(new StringBuilder(GET_ABIE_STATEMENT)
                 .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id").toString(), newSqlParameterSource()
                 .addValue("owner_top_level_abie_id", ownerTopLevelAbieId), ABIE.class);

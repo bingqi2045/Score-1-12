@@ -249,49 +249,51 @@ public class GenerationContext implements InitializingBean {
     private Map<Long, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
 
     public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(long bdtId) {
-        return findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId);
+        return (bdtId > 0L) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
     }
 
     private Map<Long, BdtPriRestri> findBdtPriRestriMap;
 
-    public BdtPriRestri findBdtPriRestri(long bdtPriRestriId) {
-        return findBdtPriRestriMap.get(bdtPriRestriId);
+    public BdtPriRestri findBdtPriRestri(Long bdtPriRestriId) {
+        return (bdtPriRestriId != null && bdtPriRestriId > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
     }
 
     private Map<Long, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
 
-    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(long cdtAwdPriXpsTypeMapId) {
-        return findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId);
+    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(Long cdtAwdPriXpsTypeMapId) {
+        return (cdtAwdPriXpsTypeMapId != null && cdtAwdPriXpsTypeMapId > 0L) ?
+                findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId) : null;
     }
 
     private Map<Long, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
 
     public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(long bdtScId) {
-        return findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId);
+        return (bdtScId > 0L) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
     }
 
     private Map<Long, BdtScPriRestri> findBdtScPriRestriMap;
 
-    public BdtScPriRestri findBdtScPriRestri(long bdtScPriRestriId) {
-        return findBdtScPriRestriMap.get(bdtScPriRestriId);
+    public BdtScPriRestri findBdtScPriRestri(Long bdtScPriRestriId) {
+        return (bdtScPriRestriId != null && bdtScPriRestriId > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
     }
 
     private Map<Long, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
 
-    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(long cdtScAwdPriXpsTypeMapId) {
-        return findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId);
+    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(Long cdtScAwdPriXpsTypeMapId) {
+        return (cdtScAwdPriXpsTypeMapId != null && cdtScAwdPriXpsTypeMapId > 0L) ?
+                findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId) : null;
     }
 
     private Map<Long, Xbt> findXbtMap;
 
     public Xbt findXbt(long xbtId) {
-        return findXbtMap.get(xbtId);
+        return (xbtId > 0L) ? findXbtMap.get(xbtId) : null;
     }
 
     private Map<Long, CodeList> findCodeListMap;
 
-    public CodeList findCodeList(long codeListId) {
-        return findCodeListMap.get(codeListId);
+    public CodeList findCodeList(Long codeListId) {
+        return (codeListId != null && codeListId > 0L) ? findCodeListMap.get(codeListId) : null;
     }
 
     private Map<Long, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
@@ -305,56 +307,56 @@ public class GenerationContext implements InitializingBean {
     private Map<Long, ACC> findACCMap;
 
     public ACC findACC(long accId) {
-        return findACCMap.get(accId);
+        return (accId > 0L) ? findACCMap.get(accId) : null;
     }
 
     private Map<Long, BCC> findBCCMap;
 
     public BCC findBCC(long bccId) {
-        return findBCCMap.get(bccId);
+        return (bccId > 0L) ? findBCCMap.get(bccId) : null;
     }
 
     private Map<Long, BCCP> findBCCPMap;
 
     public BCCP findBCCP(long bccpId) {
-        return findBCCPMap.get(bccpId);
+        return (bccpId > 0L) ? findBCCPMap.get(bccpId) : null;
     }
 
     private Map<Long, ASCC> findASCCMap;
 
     public ASCC findASCC(long asccId) {
-        return findASCCMap.get(asccId);
+        return (asccId > 0L) ? findASCCMap.get(asccId) : null;
     }
 
     private Map<Long, ASCCP> findASCCPMap;
 
     public ASCCP findASCCP(long asccpId) {
-        return findASCCPMap.get(asccpId);
+        return (asccpId > 0L) ? findASCCPMap.get(asccpId) : null;
     }
 
     private Map<Long, DT> findDTMap;
 
     public DT findDT(long dtId) {
-        return findDTMap.get(dtId);
+        return (dtId > 0L) ? findDTMap.get(dtId) : null;
     }
 
     private Map<Long, DTSC> findDtScMap;
 
     public DTSC findDtSc(long dtScId) {
-        return findDtScMap.get(dtScId);
+        return (dtScId > 0L) ? findDtScMap.get(dtScId) : null;
     }
 
     private Map<Long, AgencyIdList> findAgencyIdListMap;
 
     public AgencyIdList findAgencyIdList(Long agencyIdListId) {
-        return findAgencyIdListMap.get(agencyIdListId);
+        return (agencyIdListId != null && agencyIdListId > 0L) ? findAgencyIdListMap.get(agencyIdListId) : null;
     }
 
     private Map<Long, AgencyIdListValue> findAgencyIdListValueMap;
     private Map<Long, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
 
-    public AgencyIdListValue findAgencyIdListValue(long agencyIdListValueId) {
-        return findAgencyIdListValueMap.get(agencyIdListValueId);
+    public AgencyIdListValue findAgencyIdListValue(Long agencyIdListValueId) {
+        return (agencyIdListValueId != null && agencyIdListValueId > 0L) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
     }
 
     public List<AgencyIdListValue> findAgencyIdListValueByOwnerListId(long ownerListId) {
@@ -366,7 +368,7 @@ public class GenerationContext implements InitializingBean {
     private Map<Long, ABIE> findAbieMap;
 
     public ABIE findAbie(long abieId) {
-        return findAbieMap.get(abieId);
+        return (abieId > 0L) ? findAbieMap.get(abieId) : null;
     }
 
     private Map<Long, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
@@ -397,40 +399,42 @@ public class GenerationContext implements InitializingBean {
     private Map<Long, ASBIEP> findASBIEPMap;
 
     public ASBIEP findASBIEP(long asbiepId) {
-        return findASBIEPMap.get(asbiepId);
+        return (asbiepId > 0L) ? findASBIEPMap.get(asbiepId) : null;
     }
 
     private Map<Long, ASBIEP> findAsbiepByRoleOfAbieIdMap;
 
     public ASBIEP findAsbiepByRoleOfAbieId(long roleOfAbieId) {
-        return findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId);
+        return (roleOfAbieId > 0L) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
     }
 
     private Map<Long, BBIEP> findBBIEPMap;
 
     public BBIEP findBBIEP(long bbiepId) {
-        return findBBIEPMap.get(bbiepId);
+        return (bbiepId > 0L) ? findBBIEPMap.get(bbiepId) : null;
     }
 
     private Map<Long, String> findUserNameMap;
 
     public String findUserName(long userId) {
-        return findUserNameMap.get(userId);
+        return (userId > 0L) ? findUserNameMap.get(userId) : null;
     }
 
     private Map<Long, String> findReleaseNumberMap;
 
     public String findReleaseNumber(long releaseId) {
-        return findReleaseNumberMap.get(releaseId);
+        return (releaseId > 0L) ? findReleaseNumberMap.get(releaseId) : null;
     }
 
     public ACC queryBasedACC(ABIE abie) {
-        long basedAccId = abie.getBasedAccId();
-        return findACC(basedAccId);
+        return (abie != null) ? findACC(abie.getBasedAccId()) : null;
     }
 
     // Get only Child BIEs whose is_used flag is true
     public List<BIE> queryChildBIEs(ABIE abie) {
+        if (abie == null) {
+            return Collections.emptyList();
+        }
         List<BIE> result;
         Map<BIE, Double> sequence = new HashMap();
         ValueComparator bvc = new ValueComparator(sequence);
@@ -481,75 +485,69 @@ public class GenerationContext implements InitializingBean {
 
     // Get only SCs whose is_used is true.
     public List<BBIESC> queryBBIESCs(BBIE bbie) {
-        long bbieId = bbie.getBbieId();
-        return findBbieScByBbieIdAndUsedIsTrue(bbieId);
+        return (bbie != null) ? findBbieScByBbieIdAndUsedIsTrue(bbie.getBbieId()) : Collections.emptyList();
     }
 
     public ASBIEP receiveASBIEP(ABIE abie) {
-        return findAsbiepByRoleOfAbieId(abie.getAbieId());
+        return (abie != null) ? findAsbiepByRoleOfAbieId(abie.getAbieId()) : null;
     }
 
     public DT queryBDT(BBIE bbie) {
-        BCC bcc = findBCC(bbie.getBasedBccId());
-        BCCP bccp = findBCCP(bcc.getToBccpId());
-        return queryBDT(bccp);
+        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
+        BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
+        return (bccp != null) ? queryBDT(bccp) : null;
     }
 
     public DT queryBDT(BCCP bccp) {
-        DT bdt = findDT(bccp.getBdtId());
-        return bdt;
+        return (bccp != null) ? findDT(bccp.getBdtId()) : null;
     }
 
     public ASCCP queryBasedASCCP(ASBIEP asbiep) {
-        ASCCP asccp = findASCCP(asbiep.getBasedAsccpId());
-        return asccp;
+        return (asbiep != null) ? findASCCP(asbiep.getBasedAsccpId()) : null;
     }
 
     public ASCC queryBasedASCC(ASBIE asbie) {
-        ASCC ascc = findASCC(asbie.getBasedAsccId());
-        return ascc;
+        return (asbie != null) ? findASCC(asbie.getBasedAsccId()) : null;
     }
 
     public ABIE queryTargetABIE(ASBIEP asbiep) {
-        ABIE abie = findAbie(asbiep.getRoleOfAbieId());
-        return abie;
+        return (asbiep != null) ? findAbie(asbiep.getRoleOfAbieId()) : null;
     }
 
     public ACC queryTargetACC(ASBIEP asbiep) {
-        ABIE abie = findAbie(asbiep.getRoleOfAbieId());
-
-        ACC acc = findACC(abie.getBasedAccId());
-        return acc;
+        ABIE abie = (asbiep != null) ? findAbie(asbiep.getRoleOfAbieId()) : null;
+        return (abie != null) ? findACC(abie.getBasedAccId()) : null;
     }
 
     public ABIE queryTargetABIE2(ASBIEP asbiep) {
-        ABIE abie = findAbie(asbiep.getRoleOfAbieId());
-        return abie;
+        return (asbiep != null) ? findAbie(asbiep.getRoleOfAbieId()) : null;
     }
 
     public BCC queryBasedBCC(BBIE bbie) {
-        BCC bcc = findBCC(bbie.getBasedBccId());
-        return bcc;
+        return (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
     }
 
     public BCCP queryToBCCP(BCC bcc) {
-        return findBCCP(bcc.getToBccpId());
+        return (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
     }
 
     public CodeList getCodeList(BBIESC bbieSc) {
+        if (bbieSc == null) {
+            return null;
+        }
+
         CodeList codeList = findCodeList(bbieSc.getCodeListId());
         if (codeList != null) {
             return codeList;
         }
 
-        BdtScPriRestri bdtScPriRestri =
-                findBdtScPriRestri(bbieSc.getDtScPriRestriId());
+        BdtScPriRestri bdtScPriRestri = findBdtScPriRestri(bbieSc.getDtScPriRestriId());
         if (bdtScPriRestri != null) {
             return findCodeList(bdtScPriRestri.getCodeListId());
         } else {
             DTSC gDTSC = findDtSc(bbieSc.getDtScId());
             BdtScPriRestri bBDTSCPrimitiveRestriction =
-                    findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId());
+                    (gDTSC != null) ? findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId()) : null;
             if (bBDTSCPrimitiveRestriction != null) {
                 codeList = findCodeList(bBDTSCPrimitiveRestriction.getCodeListId());
             }
@@ -559,6 +557,9 @@ public class GenerationContext implements InitializingBean {
     }
 
     public AgencyIdList getAgencyIdList(BBIE bbie) {
+        if (bbie == null) {
+            return null;
+        }
         AgencyIdList agencyIdList = findAgencyIdList(bbie.getAgencyIdListId());
         if (agencyIdList != null) {
             return agencyIdList;
@@ -581,6 +582,9 @@ public class GenerationContext implements InitializingBean {
     }
 
     public AgencyIdList getAgencyIdList(BBIESC bbieSc) {
+        if (bbieSc == null) {
+            return null;
+        }
         AgencyIdList agencyIdList = findAgencyIdList(bbieSc.getAgencyIdListId());
         if (agencyIdList != null) {
             return agencyIdList;
@@ -594,7 +598,7 @@ public class GenerationContext implements InitializingBean {
 
         if (agencyIdList == null) {
             DTSC gDTSC = findDtSc(bbieSc.getDtScId());
-            bdtScPriRestri = findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId());
+            bdtScPriRestri = (gDTSC != null) ? findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId()) : null;
             if (bdtScPriRestri != null) {
                 agencyIdList = findAgencyIdList(bdtScPriRestri.getAgencyIdListId());
             }
@@ -603,28 +607,30 @@ public class GenerationContext implements InitializingBean {
     }
 
     public List<CodeListValue> getCodeListValues(CodeList codeList) {
-        return findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(codeList.getCodeListId());
+        return (codeList != null) ?
+                findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(codeList.getCodeListId()) :
+                Collections.emptyList();
     }
 
     public ASBIEP queryAssocToASBIEP(ASBIE asbie) {
-        ASBIEP asbiepVO = findASBIEP(asbie.getToAsbiepId());
-        return asbiepVO;
+        return (asbie != null) ? findASBIEP(asbie.getToAsbiepId()) : null;
     }
 
     public DT queryAssocBDT(BBIE bbie) {
-        BCC bcc = findBCC(bbie.getBasedBccId());
-        BCCP bccp = findBCCP(bcc.getToBccpId());
+        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
+        BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
         return queryBDT(bccp);
     }
 
     public BusinessContext findBusinessContext(TopLevelAbie topLevelAbie) {
-        long bizCtxId = abieRepository.findById(topLevelAbie.getAbieId()).getBizCtxId();
+        long bizCtxId = (topLevelAbie != null) ? abieRepository.findById(topLevelAbie.getAbieId()).getBizCtxId() : 0L;
         return businessContextRepository.findById(bizCtxId);
     }
 
     public List<ContextSchemeValue> findContextSchemeValue(BusinessContext businessContext) {
-        List<BusinessContextValue> businessContextValues =
-                businessContextValueRepository.findByBizCtxId(businessContext.getBizCtxId());
+        List<BusinessContextValue> businessContextValues = (businessContext != null) ?
+                businessContextValueRepository.findByBizCtxId(businessContext.getBizCtxId()) :
+                Collections.emptyList();
 
         return businessContextValues.stream()
                 .map(e -> contextSchemeValueRepository.findById(e.getCtxSchemeValueId()))
@@ -634,13 +640,13 @@ public class GenerationContext implements InitializingBean {
     private Map<Long, ContextScheme> findContextSchemeMap;
 
     public ContextScheme findContextScheme(long ctxSchemeId) {
-        return findContextSchemeMap.get(ctxSchemeId);
+        return (ctxSchemeId > 0L) ? findContextSchemeMap.get(ctxSchemeId) : null;
     }
 
     private Map<Long, ContextCategory> findContextCategoryMap;
 
     public ContextCategory findContextCategory(long ctxCategoryId) {
-        return findContextCategoryMap.get(ctxCategoryId);
+        return (ctxCategoryId > 0L) ? findContextCategoryMap.get(ctxCategoryId) : null;
     }
 
     public AgencyIdList findAgencyIdList(ContextScheme contextScheme) {
