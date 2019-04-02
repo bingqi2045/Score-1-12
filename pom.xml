@@ -188,7 +188,7 @@
 
                     <jdbc>
                         <driver>com.mysql.jdbc.Driver</driver>
-                        <url>jdbc:mysql://docker:3306/oagi</url>
+                        <url>jdbc:mysql://localhost:3306/oagi</url>
                         <user>oagi</user>
                         <password>oagi</password>
                     </jdbc>
