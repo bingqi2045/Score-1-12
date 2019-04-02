@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAbie;
@@ -166,4 +167,28 @@ public class BieEditService {
         return ueAccId;
     }
 
+    public List<BieUserExtRevision> getBieUserExtRevisions(User user, long topLevelAbieId) {
+        long userId = sessionService.userId(user);
+        return dslContext.select(
+                Tables.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID,
+                Tables.BIE_USER_EXT_REVISION.EXT_ABIE_ID,
+                Tables.BIE_USER_EXT_REVISION.EXT_ACC_ID,
+                Tables.BIE_USER_EXT_REVISION.USER_EXT_ACC_ID)
+                .from(Tables.BIE_USER_EXT_REVISION)
+                .join(Tables.TOP_LEVEL_ABIE)
+                .on(Tables.BIE_USER_EXT_REVISION.TOP_LEVEL_ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
+                .where(and(
+                        Tables.BIE_USER_EXT_REVISION.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        Tables.BIE_USER_EXT_REVISION.REVISED_INDICATOR.eq((byte) 0),
+                        Tables.TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(userId))
+                )).fetchInto(BieUserExtRevision.class);
+    }
+
+    @Transactional
+    public void discardBieUserExtRevisions(User user, long topLevelAbieId) {
+        long userId = sessionService.userId(user);
+        dslContext.deleteFrom(Tables.BIE_USER_EXT_REVISION)
+                .where(Tables.BIE_USER_EXT_REVISION.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
+    }
 }

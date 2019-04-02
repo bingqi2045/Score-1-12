@@ -4,14 +4,9 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.BCCEntityType;
-import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.AccRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
@@ -839,6 +834,10 @@ public class ExtensionService {
         updateAccState(extensionId, releaseId, state, userId, timestamp);
         updateAsccState(extensionId, releaseId, state, userId, timestamp);
         updateBccState(extensionId, releaseId, state, userId, timestamp);
+
+        if (state == CcState.Published) {
+            storeBieUserExtRevisions(extensionId, releaseId);
+        }
     }
 
     private void updateAccState(long extensionId, Long releaseId, CcState state,
@@ -972,6 +971,78 @@ public class ExtensionService {
 
             dslContext.insertInto(BCC).set(history).execute();
         }
+    }
+
+    private void storeBieUserExtRevisions(long extensionId, Long releaseId) {
+        List<TopLevelAbie> topLevelAbies = dslContext.selectFrom(TOP_LEVEL_ABIE)
+                .where(TOP_LEVEL_ABIE.STATE.ne(BieState.Published.getValue()))
+                .fetchInto(TopLevelAbie.class);
+
+        for (TopLevelAbie topLevelAbie : topLevelAbies) {
+            long basedAccId = dslContext.select(Tables.ABIE.BASED_ACC_ID).from(Tables.ABIE)
+                    .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(topLevelAbie.getAbieId())))
+                    .fetchOneInto(Long.class);
+
+            ULong eAccId =
+                    dslContext.select(
+                            Tables.ACC.as("eAcc").ACC_ID
+                    ).from(Tables.ACC.as("eAcc"))
+                            .join(Tables.ASCC).on(Tables.ACC.as("eAcc").ACC_ID.eq(ASCC.FROM_ACC_ID))
+                            .join(Tables.ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                            .join(Tables.ACC.as("ueAcc")).on(ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.as("ueAcc").ACC_ID))
+                            .where(and(ACC.as("ueAcc").ACC_ID.eq(ULong.valueOf(extensionId)),
+                                    ASCC.REVISION_NUM.eq(0))
+                            ).fetchOneInto(ULong.class);
+
+            if (containsExtension(basedAccId, eAccId.longValue())) {
+                BieUserExtRevisionRecord record = new BieUserExtRevisionRecord();
+                record.setTopLevelAbieId(ULong.valueOf(topLevelAbie.getTopLevelAbieId()));
+                record.setUserExtAccId(ULong.valueOf(extensionId));
+                record.setExtAccId(eAccId);
+
+                Long extAbieId = dslContext.select(Tables.ABIE.ABIE_ID).from(Tables.ABIE)
+                        .where(and(
+                                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())),
+                                Tables.ABIE.BASED_ACC_ID.eq(ULong.valueOf(extensionId))))
+                        .fetchOneInto(Long.class);
+                record.setExtAbieId((extAbieId != null) ? ULong.valueOf(extAbieId) : null);
+                record.setRevisedIndicator((byte) 0);
+
+                dslContext.insertInto(BIE_USER_EXT_REVISION)
+                        .set(record).execute();
+            }
+        }
+    }
+
+    private boolean containsExtension(long accId, long targetExtensionId) {
+        Long basedAccId = dslContext.select(Tables.ACC.BASED_ACC_ID).from(Tables.ACC)
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId))).fetchOneInto(Long.class);
+        if (basedAccId != null) {
+            if (containsExtension(basedAccId, targetExtensionId)) {
+                return true;
+            }
+        }
+
+        List<Long> accList = dslContext.select(Tables.ACC.ACC_ID)
+                .from(Tables.ASCC)
+                .join(Tables.ASCCP).on(Tables.ASCC.TO_ASCCP_ID.eq(Tables.ASCCP.ASCCP_ID))
+                .join(Tables.ACC).on(Tables.ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.ACC_ID))
+                .where(and(
+                        Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
+                        Tables.ASCC.REVISION_NUM.eq(0)
+                )).fetchInto(Long.class);
+
+        if (accList.contains(targetExtensionId)) {
+            return true;
+        }
+
+        for (Long childAccId : accList) {
+            if (containsExtension(childAccId, targetExtensionId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Transactional

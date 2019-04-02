@@ -9,6 +9,7 @@ import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
-import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.CanView;
 
 @RestController
 public class BieEditController {
@@ -180,6 +180,21 @@ public class BieEditController {
         CreateExtensionResponse response = new CreateExtensionResponse();
         response.setExtensionId(extensionId);
         return response;
+    }
+
+    @RequestMapping(value = "/profile_bie/{id}/bie_user_ext_revision", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BieUserExtRevision> getBieUserExtRevisions(@AuthenticationPrincipal User user,
+                                                           @PathVariable("id") long topLevelAbieId) {
+        return service.getBieUserExtRevisions(user, topLevelAbieId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{id}/bie_user_ext_revision", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity discardBieUserExtRevisions(@AuthenticationPrincipal User user,
+                                                     @PathVariable("id") long topLevelAbieId) {
+        service.discardBieUserExtRevisions(user, topLevelAbieId);
+        return ResponseEntity.accepted().build();
     }
 
 }
