@@ -1,14 +1,15 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
+import org.jooq.DSLContext;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Editing;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Published;
 
@@ -41,7 +43,7 @@ public class BieEditService {
     private BieRepository bieRepository;
 
     @Autowired
-    private CcListService ccListService;
+    private DSLContext dslContext;
 
     @Autowired
     private ExtensionService extensionService;
@@ -133,9 +135,15 @@ public class BieEditService {
 
     @Transactional
     public long createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
-        return 0L;
+        long releaseId = extension.getReleaseId();
+        long roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
+                .from(Tables.ACC)
+                .where(and(
+                        Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
+                        Tables.ACC.REVISION_NUM.eq(0)))
+                .fetchOneInto(Long.class);
+        return createAbieExtension(user, roleOfAccId, releaseId);
     }
-
 
     private long createAbieExtension(User user, long roleOfAccId, long releaseId) {
         BieEditAcc eAcc = bieRepository.getAccByCurrentAccId(roleOfAccId, releaseId);
