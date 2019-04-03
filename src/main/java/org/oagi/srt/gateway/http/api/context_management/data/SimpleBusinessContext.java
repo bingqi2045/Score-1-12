@@ -9,6 +9,7 @@ public class SimpleBusinessContext {
 
     private long bizCtxId;
     private String name;
+    private String guid;
     private Date lastUpdateTimestamp;
 
 }

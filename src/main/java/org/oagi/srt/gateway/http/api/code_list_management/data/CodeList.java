@@ -10,6 +10,7 @@ public class CodeList {
 
     private long codeListId;
     private String codeListName;
+    private String guid;
     private Long basedCodeListId;
     private String basedCodeListName;
 
@@ -17,7 +18,6 @@ public class CodeList {
     private String agencyIdName;
     private String versionId;
 
-    private String guid;
     private String listId;
     private String definition;
     private String definitionSource;

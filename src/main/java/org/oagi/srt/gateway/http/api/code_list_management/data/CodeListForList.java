@@ -9,6 +9,7 @@ public class CodeListForList {
 
     private long codeListId;
     private String codeListName;
+    private String guid;
     private Long basedCodeListId;
     private String basedCodeListName;
     private long agencyId;

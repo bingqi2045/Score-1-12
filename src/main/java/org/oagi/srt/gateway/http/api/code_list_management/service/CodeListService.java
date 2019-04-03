@@ -1,5 +1,7 @@
 package org.oagi.srt.gateway.http.api.code_list_management.service;
 
+import org.jooq.DSLContext;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.code_list_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -30,9 +32,12 @@ public class CodeListService {
     private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
+    private DSLContext dslContext;
+
+    @Autowired
     private SessionService sessionService;
 
-    private String GET_CODE_LISTS_STATEMENT = "SELECT c.code_list_id, c.name as code_list_name, " +
+    private String GET_CODE_LISTS_STATEMENT = "SELECT c.code_list_id, c.guid, c.name as code_list_name, " +
             "c.based_code_list_id, b.name as based_code_list_name, c.list_id, " +
             "c.agency_id, a.name as agency_id_name, c.version_id, c.last_update_timestamp, " +
             "c.extensible_indicator as extensible, c.state " +
@@ -63,14 +68,6 @@ public class CodeListService {
         }
 
         return jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListForList.class);
-    }
-
-    public List<CodeList> getCodeLists2 () {
-
-        return jdbcTemplate.queryForList("SELECT c.code_list_id, c.guid, c.name as code_list_name, " +
-                "c.based_code_list_id, b.name as based_code_list_name, c.list_id, c.definition, " +
-                "c.agency_id, c.version_id, c.last_update_timestamp, " +
-                "FROM code_list c",CodeList.class );
     }
 
     private String GET_CODE_LIST_VALUES_STATEMENT =

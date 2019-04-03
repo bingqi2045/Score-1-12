@@ -108,7 +108,8 @@ public class BieService {
 
 
     private String GET_BIE_LIST_STATEMENT =
-            "SELECT top_level_abie_id, asccp.property_term, `release`.release_num, biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
+            "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
+                    "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
             "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
             "abie.last_update_timestamp, top_level_abie.state as raw_state " +
             "FROM top_level_abie " +

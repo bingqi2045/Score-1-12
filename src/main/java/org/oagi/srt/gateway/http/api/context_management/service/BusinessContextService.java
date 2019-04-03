@@ -67,6 +67,7 @@ public class BusinessContextService {
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
         return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.NAME,
+                BIZ_CTX.GUID,
                 BIZ_CTX.LAST_UPDATE_TIMESTAMP
         ).from(BIZ_CTX)
                 .fetchInto(SimpleBusinessContext.class);
@@ -75,6 +76,7 @@ public class BusinessContextService {
     public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
         return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.NAME,
+                BIZ_CTX.GUID,
                 BIZ_CTX.LAST_UPDATE_TIMESTAMP
         ).from(BIZ_CTX)
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
