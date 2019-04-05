@@ -38,6 +38,7 @@ public class BieCreateController {
 
                     copy.setAsccpId(e.getAsccpId());
                     copy.setPropertyTerm(e.getPropertyTerm());
+                    copy.setGuid(e.getGuid());
 
                     Long moduleId = e.getModuleId();
                     if (moduleId != null) {
@@ -49,7 +50,6 @@ public class BieCreateController {
                     return copy;
                 }).collect(Collectors.toList());
     }
-
 
     @RequestMapping(value = "/profile_bie/create", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

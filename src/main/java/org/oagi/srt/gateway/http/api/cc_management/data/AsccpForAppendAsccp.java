@@ -6,7 +6,7 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AsccpForAppendAscc extends TrackableImpl {
+public class AsccpForAppendAsccp extends TrackableImpl {
     private long asccpId;
     private String guid;
     private String propertyTerm;

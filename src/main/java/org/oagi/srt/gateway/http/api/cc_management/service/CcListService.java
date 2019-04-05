@@ -178,7 +178,7 @@ public class CcListService {
         return pageResponse;
     }
 
-    public List<AsccpForAppendAscc> getAsccpForAppendAsccList(User user, long releaseId, long extensionId) {
+    public List<AsccpForAppendAsccp> getAsccpForAppendAsccpList(User user, long releaseId, long extensionId) {
         return dslContext.select(ASCCP.ASCCP_ID,
                 ASCCP.PROPERTY_TERM,
                 ASCCP.GUID,
@@ -193,11 +193,11 @@ public class CcListService {
                 .where(
                         and(ASCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
                                 ASCCP.STATE.eq(CcState.Published.getValue()))
-                ).fetchInto(AsccpForAppendAscc.class).stream().collect(groupingBy(AsccpForAppendAscc::getGuid))
+                ).fetchInto(AsccpForAppendAsccp.class).stream().collect(groupingBy(AsccpForAppendAsccp::getGuid))
                 .values().stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).collect(Collectors.toList());
     }
 
-    public List<BccpForAppendBcc> getBccpForAppendBccList(User user, long releaseId, long extensionId) {
+    public List<BccpForAppendBccp> getBccpForAppendBccpList(User user, long releaseId, long extensionId) {
         return dslContext.select(BCCP.BCCP_ID,
                 BCCP.PROPERTY_TERM,
                 BCCP.GUID,
@@ -212,7 +212,7 @@ public class CcListService {
                 .where(
                         and(BCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
                                 BCCP.STATE.eq(CcState.Published.getValue()))
-                ).fetchInto(BccpForAppendBcc.class).stream().collect(groupingBy(BccpForAppendBcc::getGuid))
+                ).fetchInto(BccpForAppendBccp.class).stream().collect(groupingBy(BccpForAppendBccp::getGuid))
                 .values().stream().map(e -> CcUtility.getLatestEntity(releaseId, e)).collect(Collectors.toList());
     }
 

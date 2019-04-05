@@ -46,18 +46,18 @@ public class CcListController {
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/asccp_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<AsccpForAppendAscc> getAsccpForAppendAsccList(@AuthenticationPrincipal User user,
-                                                              @PathVariable("releaseId") long releaseId,
-                                                              @PathVariable("id") long extensionId) {
-        return service.getAsccpForAppendAsccList(user, releaseId, extensionId);
+    public List<AsccpForAppendAsccp> getAsccpForAppendAsccList(@AuthenticationPrincipal User user,
+                                                               @PathVariable("releaseId") long releaseId,
+                                                               @PathVariable("id") long extensionId) {
+        return service.getAsccpForAppendAsccpList(user, releaseId, extensionId);
     }
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/bccp_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BccpForAppendBcc> getBccpForAppendBccList(@AuthenticationPrincipal User user,
-                                                          @PathVariable("releaseId") long releaseId,
-                                                          @PathVariable("id") long extensionId) {
-        return service.getBccpForAppendBccList(user, releaseId, extensionId);
+    public List<BccpForAppendBccp> getBccpForAppendBccList(@AuthenticationPrincipal User user,
+                                                           @PathVariable("releaseId") long releaseId,
+                                                           @PathVariable("id") long extensionId) {
+        return service.getBccpForAppendBccpList(user, releaseId, extensionId);
     }
 }
