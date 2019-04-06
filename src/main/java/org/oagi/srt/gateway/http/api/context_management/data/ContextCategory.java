@@ -11,5 +11,6 @@ public class ContextCategory implements Serializable {
     private String guid;
     private String name;
     private String description;
+    private boolean used;
 
 }

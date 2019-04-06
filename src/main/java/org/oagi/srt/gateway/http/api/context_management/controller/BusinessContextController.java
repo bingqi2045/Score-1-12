@@ -1,11 +1,7 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
 import org.oagi.srt.data.ABIE;
-import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.api.context_management.service.BusinessContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -86,6 +82,12 @@ public class BusinessContextController {
     public ResponseEntity delete(
             @PathVariable("id") long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/business_context/delete", method = RequestMethod.POST)
+    public ResponseEntity deletes(@RequestBody DeleteBusinessContextRequest request) {
+        service.delete(request.getBizCtxIds());
         return ResponseEntity.noContent().build();
     }
 }

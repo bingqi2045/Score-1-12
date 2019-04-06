@@ -15,5 +15,6 @@ public class BusinessContext implements Serializable {
     private String name;
     private Date lastUpdateTimestamp;
     private List<BusinessContextValue> bizCtxValues = Collections.emptyList();
+    private boolean used;
 
 }

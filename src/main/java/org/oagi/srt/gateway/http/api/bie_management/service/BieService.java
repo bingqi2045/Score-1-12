@@ -1,6 +1,8 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
+import org.jooq.DSLContext;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.BieState.Editing;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
@@ -35,15 +38,24 @@ public class BieService {
     @Autowired
     private BieRepository repository;
 
-
-    private String GET_ASCCP_LIST_FOR_BIE_STATEMENT =
-            "SELECT asccp_id, guid, property_term, module_id, state, " +
-                    "revision_num, revision_tracking_num, release_id, last_update_timestamp " +
-                    "FROM asccp WHERE revision_num > 0 AND state = " + CcState.Published.getValue();
+    @Autowired
+    private DSLContext dslContext;
 
     public List<AsccpForBie> getAsccpListForBie(long releaseId) {
-        List<AsccpForBie> asccpForBieList =
-                jdbcTemplate.queryForList(GET_ASCCP_LIST_FOR_BIE_STATEMENT, AsccpForBie.class);
+        List<AsccpForBie> asccpForBieList = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.MODULE_ID,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP)
+                .from(Tables.ASCCP)
+                .where(and(Tables.ASCCP.REVISION_NUM.greaterThan(0),
+                        Tables.ASCCP.STATE.eq(CcState.Published.getValue())))
+                .fetchInto(AsccpForBie.class);
 
         Map<String, List<AsccpForBie>> groupingByGuidAsccpForBieList =
                 asccpForBieList.stream()

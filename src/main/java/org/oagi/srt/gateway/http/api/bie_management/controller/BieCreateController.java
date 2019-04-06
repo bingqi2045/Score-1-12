@@ -37,6 +37,7 @@ public class BieCreateController {
                     AsccpForBie copy = new AsccpForBie();
 
                     copy.setAsccpId(e.getAsccpId());
+                    copy.setReleaseId(e.getReleaseId());
                     copy.setPropertyTerm(e.getPropertyTerm());
                     copy.setGuid(e.getGuid());
 

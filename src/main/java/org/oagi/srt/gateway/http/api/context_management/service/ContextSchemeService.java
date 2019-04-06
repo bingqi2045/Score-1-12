@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
+import com.google.common.base.Functions;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
@@ -12,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Service
@@ -31,7 +33,7 @@ public class ContextSchemeService {
     private DSLContext dslContext;
 
     public List<ContextScheme> getContextSchemeList() {
-        return dslContext.select(
+        Map<Long, ContextScheme> ctxSchemeMap = dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
                 CTX_SCHEME.SCHEME_NAME,
@@ -44,7 +46,21 @@ public class ContextSchemeService {
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP
         ).from(CTX_SCHEME)
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .fetchInto(ContextScheme.class);
+                .fetchInto(ContextScheme.class).stream()
+                .collect(Collectors.toMap(ContextScheme::getCtxSchemeId, Functions.identity()));
+
+        dslContext.select(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID,
+                coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
+                .from(CTX_SCHEME_VALUE)
+                .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
+                .fetch().stream().forEach(record -> {
+            long ctxSchemeId = record.value1().longValue();
+            int cnt = record.value2();
+            ctxSchemeMap.get(ctxSchemeId).setUsed(cnt > 0);
+        });
+
+        return new ArrayList(ctxSchemeMap.values());
     }
 
     public ContextScheme getContextScheme(long ctxSchemeId) {
@@ -64,6 +80,15 @@ public class ContextSchemeService {
                 .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
                 .fetchOneInto(ContextScheme.class);
         contextScheme.setCtxSchemeValues(getContextSchemeValuesByOwnerCtxSchemeId(ctxSchemeId));
+
+        int cnt = dslContext.select(coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
+                .from(CTX_SCHEME_VALUE)
+                .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
+                .fetchOptionalInto(Integer.class).orElse(0);
+        contextScheme.setUsed(cnt > 0);
+
         return contextScheme;
     }
 
@@ -255,6 +280,26 @@ public class ContextSchemeService {
                 .execute();
         dslContext.delete(CTX_SCHEME)
                 .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                .execute();
+    }
+
+    @Transactional
+    public void delete(List<Long> ctxSchemeIds) {
+        if (ctxSchemeIds == null || ctxSchemeIds.isEmpty()) {
+            return;
+        }
+
+        dslContext.delete(CTX_SCHEME_VALUE)
+                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.in(
+                        ctxSchemeIds.stream().map(
+                                e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ))
+                .execute();
+        dslContext.delete(CTX_SCHEME)
+                .where(CTX_SCHEME.CTX_SCHEME_ID.in(
+                        ctxSchemeIds.stream().map(
+                                e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ))
                 .execute();
     }
 }

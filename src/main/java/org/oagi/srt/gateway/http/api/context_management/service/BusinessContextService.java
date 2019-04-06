@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
+import com.google.common.base.Functions;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ABIE;
@@ -18,12 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -41,13 +44,26 @@ public class BusinessContextService {
     private DSLContext dslContext;
 
     public List<BusinessContext> getBusinessContextList() {
-        return dslContext.select(
+        Map<Long, BusinessContext> bixCtxMap = dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
                 BIZ_CTX.NAME,
                 BIZ_CTX.LAST_UPDATE_TIMESTAMP)
                 .from(BIZ_CTX)
-                .fetchInto(BusinessContext.class);
+                .fetchInto(BusinessContext.class).stream()
+                .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
+
+        dslContext.select(ABIE.BIZ_CTX_ID,
+                coalesce(count(ABIE.ABIE_ID), 0))
+                .from(ABIE)
+                .groupBy(ABIE.BIZ_CTX_ID)
+                .fetch().stream().forEach(record -> {
+            long bizCtxId = record.value1().longValue();
+            int cnt = record.value2();
+            bixCtxMap.get(bizCtxId).setUsed(cnt > 0);
+        });
+
+        return new ArrayList(bixCtxMap.values());
     }
 
     public BusinessContext getBusinessContext(long bizCtxId) {
@@ -55,12 +71,19 @@ public class BusinessContextService {
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
                 BIZ_CTX.NAME,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP
-        ).from(BIZ_CTX)
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                .from(BIZ_CTX)
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchOneInto(BusinessContext.class);
-
         bizCtx.setBizCtxValues(getBusinessContextValuesByBizCtxId(bizCtxId));
+
+        int cnt = dslContext.select(coalesce(count(ABIE.ABIE_ID), 0))
+                .from(ABIE)
+                .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .groupBy(ABIE.BIZ_CTX_ID)
+                .fetchOptionalInto(Integer.class).orElse(0);
+        bizCtx.setUsed(cnt > 0);
+
         return bizCtx;
     }
 
@@ -233,31 +256,42 @@ public class BusinessContextService {
         jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_VALUE_STATEMENT, parameterSource);
     }
 
-    private String DELETE_BUSINESS_CONTEXT_VALUE_STATEMENT =
-            "DELETE FROM biz_ctx_value " +
-                    "WHERE biz_ctx_value_id = :biz_ctx_value_id AND biz_ctx_id = :biz_ctx_id";
-
     @Transactional
     public void delete(long bizCtxId, long bizCtxValueId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("biz_ctx_value_id", bizCtxValueId)
-                .addValue("biz_ctx_id", bizCtxId);
-
-        jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_VALUE_STATEMENT, parameterSource);
+        dslContext.deleteFrom(BIZ_CTX_VALUE)
+                .where(and(
+                        BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(bizCtxValueId)),
+                        BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))))
+                .execute();
     }
-
-    private String DELETE_BUSINESS_CONTEXT_VALUES_STATEMENT =
-            "DELETE FROM biz_ctx_value WHERE biz_ctx_id = :biz_ctx_id";
-
-    private String DELETE_BUSINESS_CONTEXT_STATEMENT =
-            "DELETE FROM biz_ctx WHERE biz_ctx_id = :biz_ctx_id";
 
     @Transactional
     public void delete(long bizCtxId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("biz_ctx_id", bizCtxId);
+        dslContext.deleteFrom(BIZ_CTX_VALUE)
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .execute();
+        dslContext.deleteFrom(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .execute();
+    }
 
-        jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_VALUES_STATEMENT, parameterSource);
-        jdbcTemplate.update(DELETE_BUSINESS_CONTEXT_STATEMENT, parameterSource);
+    @Transactional
+    public void delete(List<Long> bizCtxIds) {
+        if (bizCtxIds == null || bizCtxIds.isEmpty()) {
+            return;
+        }
+
+        dslContext.deleteFrom(BIZ_CTX_VALUE)
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.in(
+                        bizCtxIds.stream().map(
+                                e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ))
+                .execute();
+        dslContext.deleteFrom(BIZ_CTX)
+                .where(BIZ_CTX.BIZ_CTX_ID.in(
+                        bizCtxIds.stream().map(
+                                e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ))
+                .execute();
     }
 }

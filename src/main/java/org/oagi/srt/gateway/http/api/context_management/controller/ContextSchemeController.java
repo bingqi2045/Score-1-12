@@ -1,11 +1,6 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
-import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
-import org.oagi.srt.gateway.http.api.context_management.data.ContextSchemeValue;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
+import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.api.context_management.service.ContextSchemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -85,6 +80,12 @@ public class ContextSchemeController {
     public ResponseEntity delete(
             @PathVariable("id") long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/context_scheme/delete", method = RequestMethod.POST)
+    public ResponseEntity deletes(@RequestBody DeleteContextSchemeRequest request) {
+        service.delete(request.getCtxSchemeIds());
         return ResponseEntity.noContent().build();
     }
 }
