@@ -207,7 +207,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         Element ccts_BusinessContext = new Element("ccts_BusinessContext", OAGI_NS);
         documentation.addContent(ccts_BusinessContext);
 
-        BusinessContext businessContext = generationContext.findBusinessContext(topLevelAbie);
+        BizCtx businessContext = generationContext.findBusinessContext(topLevelAbie);
 
         Element ccts_BusinessContextGUID = new Element("ccts_GUID", OAGI_NS);
         ccts_BusinessContext.addContent(ccts_BusinessContextGUID);

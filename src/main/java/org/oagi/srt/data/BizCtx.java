@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class BusinessContext {
+public class BizCtx {
     private long bizCtxId;
     private String guid;
     private String name;

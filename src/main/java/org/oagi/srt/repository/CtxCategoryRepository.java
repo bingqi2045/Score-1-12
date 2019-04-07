@@ -10,7 +10,7 @@ import java.util.List;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Repository
-public class ContextCategoryRepository implements SrtRepository<ContextCategory> {
+public class CtxCategoryRepository implements SrtRepository<ContextCategory> {
 
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;

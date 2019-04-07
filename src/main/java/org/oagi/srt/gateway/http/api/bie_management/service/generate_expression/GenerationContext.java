@@ -90,19 +90,19 @@ public class GenerationContext implements InitializingBean {
 
 
     @Autowired
-    private BusinessContextRepository businessContextRepository;
+    private BizCtxRepository bizCtxRepository;
 
     @Autowired
-    private BusinessContextValueRepository businessContextValueRepository;
+    private BizCtxValueRepository bizCtxValueRepository;
 
     @Autowired
-    private ContextSchemeRepository contextSchemeRepository;
+    private CtxSchemeRepository ctxSchemeRepository;
 
     @Autowired
-    private ContextSchemeValueRepository contextSchemeValueRepository;
+    private CtxSchemeValueRepository ctxSchemeValueRepository;
 
     @Autowired
-    private ContextCategoryRepository contextCategoryRepository;
+    private CtxCategoryRepository ctxCategoryRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -235,9 +235,9 @@ public class GenerationContext implements InitializingBean {
         findReleaseNumberMap = releaseRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getReleaseId(), e -> e.getReleaseNum()));
 
-        findContextSchemeMap = contextSchemeRepository.findAll().stream()
+        findContextSchemeMap = ctxSchemeRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getCtxSchemeId(), Function.identity()));
-        findContextCategoryMap = contextCategoryRepository.findAll().stream()
+        findContextCategoryMap = ctxCategoryRepository.findAll().stream()
                 .collect(Collectors.toMap(e -> e.getCtxCategoryId(), Function.identity()));
     }
 
@@ -622,18 +622,18 @@ public class GenerationContext implements InitializingBean {
         return queryBDT(bccp);
     }
 
-    public BusinessContext findBusinessContext(TopLevelAbie topLevelAbie) {
+    public BizCtx findBusinessContext(TopLevelAbie topLevelAbie) {
         long bizCtxId = (topLevelAbie != null) ? abieRepository.findById(topLevelAbie.getAbieId()).getBizCtxId() : 0L;
-        return businessContextRepository.findById(bizCtxId);
+        return bizCtxRepository.findById(bizCtxId);
     }
 
-    public List<ContextSchemeValue> findContextSchemeValue(BusinessContext businessContext) {
+    public List<ContextSchemeValue> findContextSchemeValue(BizCtx businessContext) {
         List<BusinessContextValue> businessContextValues = (businessContext != null) ?
-                businessContextValueRepository.findByBizCtxId(businessContext.getBizCtxId()) :
+                bizCtxValueRepository.findByBizCtxId(businessContext.getBizCtxId()) :
                 Collections.emptyList();
 
         return businessContextValues.stream()
-                .map(e -> contextSchemeValueRepository.findById(e.getCtxSchemeValueId()))
+                .map(e -> ctxSchemeValueRepository.findById(e.getCtxSchemeValueId()))
                 .collect(Collectors.toList());
     }
 

@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class BieService {
 
     private List<BieList> getBieList(User user, String whereClauses) {
         List<BieList> bieLists = jdbcTemplate.queryForList(
-                GET_BIE_LIST_STATEMENT + " WHERE " + whereClauses, BieList.class);
+                GET_BIE_LIST_STATEMENT + (!StringUtils.isEmpty(whereClauses) ? (" WHERE " + whereClauses) : ""), BieList.class);
         long userId = sessionService.userId(user);
 
         bieLists.stream().forEach(e -> {
@@ -178,8 +179,17 @@ public class BieService {
         return bieLists;
     }
 
-    public List<BieList> getBieList(User user) {
-        return getBieList(user, "asccp.property_term NOT IN ('Meta Header', 'Pagination Response')");
+    public List<BieList> getBieList(GetBieListRequest request) {
+        Long bizCtxId = request.getBizCtxId();
+        Boolean excludeJsonRelated = request.getExcludeJsonRelated();
+        String whereClauses = null;
+        if (bizCtxId != null && bizCtxId > 0L) {
+            whereClauses = "biz_ctx.biz_ctx_id = " + bizCtxId;
+        } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
+            whereClauses = "asccp.property_term NOT IN ('Meta Header', 'Pagination Response')";
+        }
+
+        return getBieList(request.getUser(), whereClauses);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {

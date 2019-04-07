@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
-import org.oagi.srt.data.ABIE;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.api.context_management.service.BusinessContextService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +19,20 @@ public class BusinessContextController {
 
     @RequestMapping(value = "/business_contexts", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BusinessContext> getBusinessContextList() {
-        return service.getBusinessContextList();
+    public List<BusinessContext> getBusinessContexts() {
+        return service.getBusinessContexts();
     }
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BusinessContext getBusinessContext(@PathVariable("id") long id) {
         return service.getBusinessContext(id);
+    }
+
+    @RequestMapping(value = "/business_context_values", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BusinessContextValue> getBusinessContextValues() {
+        return service.getBusinessContextValues();
     }
 
     @RequestMapping(value = "/simple_business_contexts", method = RequestMethod.GET,
@@ -52,12 +57,6 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(@PathVariable("id") long businessCtxID) {
         return service.getBusinessContextValuesByBusinessCtxId(businessCtxID);
-    }
-
-    @RequestMapping(value = "/abie_from_biz_ctx/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ABIE> getBIEListFromBizCtxId(@PathVariable("id") long businessCtxID) {
-        return service.getBIEListFromBizCtxId(businessCtxID);
     }
 
     @RequestMapping(value = "/business_context", method = RequestMethod.PUT)

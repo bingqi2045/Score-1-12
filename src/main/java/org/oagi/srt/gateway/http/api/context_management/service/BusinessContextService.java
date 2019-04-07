@@ -1,13 +1,12 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
-import com.google.common.base.Functions;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ABIE;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -19,14 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -43,48 +41,19 @@ public class BusinessContextService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<BusinessContext> getBusinessContextList() {
-        Map<Long, BusinessContext> bixCtxMap = dslContext.select(
-                BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.GUID,
-                BIZ_CTX.NAME,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
-                .from(BIZ_CTX)
-                .fetchInto(BusinessContext.class).stream()
-                .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
+    @Autowired
+    private BusinessContextRepository repository;
 
-        dslContext.select(ABIE.BIZ_CTX_ID,
-                coalesce(count(ABIE.ABIE_ID), 0))
-                .from(ABIE)
-                .groupBy(ABIE.BIZ_CTX_ID)
-                .fetch().stream().forEach(record -> {
-            long bizCtxId = record.value1().longValue();
-            int cnt = record.value2();
-            bixCtxMap.get(bizCtxId).setUsed(cnt > 0);
-        });
-
-        return new ArrayList(bixCtxMap.values());
+    public List<BusinessContext> getBusinessContexts() {
+        return repository.findBusinessContexts();
     }
 
     public BusinessContext getBusinessContext(long bizCtxId) {
-        BusinessContext bizCtx = dslContext.select(
-                BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.GUID,
-                BIZ_CTX.NAME,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
-                .from(BIZ_CTX)
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .fetchOneInto(BusinessContext.class);
-        bizCtx.setBizCtxValues(getBusinessContextValuesByBizCtxId(bizCtxId));
+        return repository.findBusinessContextByBizCtxId(bizCtxId);
+    }
 
-        int cnt = dslContext.select(coalesce(count(ABIE.ABIE_ID), 0))
-                .from(ABIE)
-                .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .groupBy(ABIE.BIZ_CTX_ID)
-                .fetchOptionalInto(Integer.class).orElse(0);
-        bizCtx.setUsed(cnt > 0);
-
-        return bizCtx;
+    public List<BusinessContextValue> getBusinessContextValues() {
+        return repository.findBusinessContextValues();
     }
 
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
@@ -106,24 +75,6 @@ public class BusinessContextService {
                 .fetchOneInto(SimpleBusinessContext.class);
     }
 
-    public List<BusinessContextValue> getBusinessContextValuesByBizCtxId(long bizCtxId) {
-        return dslContext.select(
-                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
-                CTX_CATEGORY.CTX_CATEGORY_ID,
-                CTX_CATEGORY.NAME.as("ctx_category_name"),
-                CTX_SCHEME.CTX_SCHEME_ID,
-                CTX_SCHEME.SCHEME_NAME.as("ctx_scheme_name"),
-                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
-                CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value")
-        ).from(BIZ_CTX_VALUE)
-                .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
-                .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
-                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .fetchInto(BusinessContextValue.class);
-    }
-
-
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
         return dslContext.select(
                 CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
@@ -142,19 +93,6 @@ public class BusinessContextService {
         ).from(BIZ_CTX_VALUE)
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(businessCtxID)))
                 .fetchInto(BusinessContextValue.class);
-    }
-
-    public List<ABIE> getBIEListFromBizCtxId (long businessCtxID) {
-        return dslContext.select(
-               ABIE.ABIE_ID,
-               ABIE.BASED_ACC_ID,
-               ABIE.BIZ_CTX_ID,
-               ABIE.GUID,
-               ABIE.OWNER_TOP_LEVEL_ABIE_ID,
-               ABIE.LAST_UPDATED_BY
-        ).from(ABIE)
-            .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(businessCtxID)))
-            .fetchInto(ABIE.class);
     }
 
     @Transactional
