@@ -43,7 +43,13 @@ public class AccountListService {
                 APP_USER.ORGANIZATION
         ).from(APP_USER).where(APP_USER.LOGIN_ID.eq(loginId))
                 .fetchOneInto(AppUser.class);
+    }
 
+    public List<String> getAccountLoginIds() {
+        return dslContext.select(
+                APP_USER.LOGIN_ID)
+                .from(APP_USER)
+                .fetchInto(String.class);
     }
 
     @Transactional

@@ -34,6 +34,12 @@ public class AccountListController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "/accounts/names", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<String> getAccountLoginIds() {
+        return service.getAccountLoginIds();
+    }
+
     @RequestMapping(value = "/account/_check/loginId/hasTaken", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Boolean hasTaken(@RequestBody Map<String, String> body) {

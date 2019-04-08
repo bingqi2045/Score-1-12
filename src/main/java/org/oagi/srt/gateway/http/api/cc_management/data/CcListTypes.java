@@ -20,7 +20,7 @@ public class CcListTypes {
         CcListTypes types = new CcListTypes();
         if (!StringUtils.isEmpty(str)) {
             for (String type : str.split(",")) {
-                switch (type) {
+                switch (type.toLowerCase()) {
                     case "acc":
                         types.setAcc(true);
                         break;

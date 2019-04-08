@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -22,9 +25,11 @@ public class CcListController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PageResponse<CcList> getCcList(
             @RequestParam(name = "release_id", required = false) long releaseId,
-            @RequestParam(name = "filter", required = false) String filter,
+            @RequestParam(name = "den", required = false) String den,
+            @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "types", required = false) String types,
             @RequestParam(name = "states", required = false) String states,
+            @RequestParam(name = "loginIds", required = false) String loginIds,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -39,7 +44,8 @@ public class CcListController {
         return service.getCcList(releaseId,
                 CcListTypes.fromString(types),
                 CcListStates.fromString(states),
-                filter,
+                StringUtils.isEmpty(loginIds) ? Collections.emptyList() : Arrays.asList(loginIds.split(",")),
+                den, definition,
                 pageRequest);
     }
 
