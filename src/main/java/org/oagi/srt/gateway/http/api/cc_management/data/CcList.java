@@ -13,6 +13,7 @@ public class CcList {
     private String guid;
     private String den;
     private String definition;
+    private String module;
     private String definitionSource;
     private OagisComponentType oagisComponentType;
     private String owner;

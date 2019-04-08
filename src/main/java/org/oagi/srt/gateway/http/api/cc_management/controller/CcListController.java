@@ -27,6 +27,7 @@ public class CcListController {
             @RequestParam(name = "release_id", required = false) long releaseId,
             @RequestParam(name = "den", required = false) String den,
             @RequestParam(name = "definition", required = false) String definition,
+            @RequestParam(name = "module", required = false) String module,
             @RequestParam(name = "types", required = false) String types,
             @RequestParam(name = "states", required = false) String states,
             @RequestParam(name = "loginIds", required = false) String loginIds,
@@ -45,7 +46,7 @@ public class CcListController {
                 CcListTypes.fromString(types),
                 CcListStates.fromString(states),
                 StringUtils.isEmpty(loginIds) ? Collections.emptyList() : Arrays.asList(loginIds.split(",")),
-                den, definition,
+                den, definition, module,
                 pageRequest);
     }
 

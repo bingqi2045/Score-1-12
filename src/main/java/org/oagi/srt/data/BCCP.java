@@ -25,6 +25,7 @@ public class BCCP implements CoreComponent {
 
     private long bdtId;
     private Long moduleId;
+    private String module;
     private Long namespaceId;
 
     private long createdBy;

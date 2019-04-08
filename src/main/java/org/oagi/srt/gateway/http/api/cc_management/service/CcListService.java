@@ -44,10 +44,10 @@ public class CcListService {
 
     public PageResponse<CcList> getCcList(long releaseId, CcListTypes types,
                                           List<CcState> states, List<String> loginIds,
-                                          String den, String definition,
+                                          String den, String definition, String module,
                                           PageRequest pageRequest) {
 
-        List<CcList> ccLists = getCoreComponents(releaseId, types, states, loginIds, den, definition);
+        List<CcList> ccLists = getCoreComponents(releaseId, types, states, loginIds, den, definition, module);
         Stream<CcList> ccListStream = ccLists.stream();
 
         Comparator<CcList> comparator = getComparator(pageRequest);
@@ -64,7 +64,8 @@ public class CcListService {
                                            List<CcState> states,
                                            List<String> loginIds,
                                            String den,
-                                           String definition) {
+                                           String definition,
+                                           String module) {
 
         List<CcList> coreComponents = new ArrayList();
         if (types.isAcc()) {
@@ -77,26 +78,27 @@ public class CcListService {
                         }
                         return true;
                     })
-                    .filter(statesFilter(states))
+                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
                     .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
                     .filter(getDenFilter(den))
                     .filter(getDefinitionFilter(definition))
+                    .filter(getModuleFilter(module))
                     .collect(Collectors.toList()));
         }
 
-        if (types.isAscc()) {
+        if (types.isAscc() && StringUtils.isEmpty(module)) {
             coreComponents.addAll(repository.getAsccList(releaseId).stream()
                     .filter(ascc -> (!ascc.getDen().endsWith("User Extension Group")))
-                    .filter(statesFilter(states))
+                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
                     .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
                     .filter(getDenFilter(den))
                     .filter(getDefinitionFilter(definition))
                     .collect(Collectors.toList()));
         }
 
-        if (types.isBcc()) {
+        if (types.isBcc() && StringUtils.isEmpty(module)) {
             coreComponents.addAll(repository.getBccList(releaseId).stream()
-                    .filter(statesFilter(states))
+                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
                     .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
                     .filter(getDenFilter(den))
                     .filter(getDefinitionFilter(definition))
@@ -106,26 +108,24 @@ public class CcListService {
         if (types.isAsccp()) {
             coreComponents.addAll(repository.getAsccpList(releaseId).stream()
                     .filter(asccp -> (!asccp.getDen().endsWith("User Extension Group")))
-                    .filter(statesFilter(states))
+                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
                     .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
                     .filter(getDenFilter(den))
                     .filter(getDefinitionFilter(definition))
+                    .filter(getModuleFilter(module))
                     .collect(Collectors.toList()));
         }
 
         if (types.isBccp()) {
             coreComponents.addAll(repository.getBccpList(releaseId).stream()
-                    .filter(statesFilter(states))
+                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
                     .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
                     .filter(getDenFilter(den))
                     .filter(getDefinitionFilter(definition))
+                    .filter(getModuleFilter(module))
                     .collect(Collectors.toList()));
         }
         return coreComponents;
-    }
-
-    private Predicate<CcList> statesFilter(List<CcState> states) {
-        return coreComponent -> states.contains(coreComponent.getState());
     }
 
     private Predicate<CcList> getDenFilter(String filter) {
@@ -158,6 +158,20 @@ public class CcListService {
                     return false;
                 }
                 return definition.toLowerCase().contains(filter.toLowerCase());
+            };
+        } else {
+            return coreComponent -> true;
+        }
+    }
+
+    private Predicate<CcList> getModuleFilter(String filter) {
+        if (!StringUtils.isEmpty(filter)) {
+            return coreComponent -> {
+                String module = coreComponent.getModule();
+                if (StringUtils.isEmpty(module)) {
+                    return false;
+                }
+                return module.toLowerCase().contains(filter.toLowerCase());
             };
         } else {
             return coreComponent -> true;

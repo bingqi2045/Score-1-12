@@ -1,35 +1,64 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.SelectOnConditionStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class ASCCPRepository implements SrtRepository<ASCCP> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    private String GET_ASCCP_STATEMENT = "SELECT `asccp_id`,`guid`,`property_term`,`definition`,`definition_source`,`role_of_acc_id`,`den`," +
-            "`created_by`,`owner_user_id`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
-            "`state`,`module_id`,`namespace_id`,`reusable_indicator`,`is_deprecated` as deprecated," +
-            "`revision_num`,`revision_tracking_num`,`revision_action`,`release_id`," +
-            "`current_asccp_id`,`is_nillable` as nillable FROM `asccp`";
+    private SelectOnConditionStep<Record> getSelectCondition() {
+        return dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.DEFINITION,
+                Tables.ASCCP.DEFINITION_SOURCE,
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.MODULE_ID,
+                Tables.ASCCP.NAMESPACE_ID,
+                Tables.ASCCP.CREATED_BY,
+                Tables.ASCCP.OWNER_USER_ID,
+                Tables.ASCCP.LAST_UPDATED_BY,
+                Tables.ASCCP.CREATION_TIMESTAMP,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.REVISION_ACTION,
+                Tables.ASCCP.RELEASE_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
+                Tables.ASCCP.REUSABLE_INDICATOR,
+                Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
+                Tables.ASCCP.IS_NILLABLE.as("nillable"),
+                Tables.MODULE.MODULE_.as("module")
+        ).from(Tables.ASCCP)
+                .leftJoin(Tables.MODULE).on(Tables.ASCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+    }
 
     @Override
     public List<ASCCP> findAll() {
-        return jdbcTemplate.queryForList(GET_ASCCP_STATEMENT, ASCCP.class);
+        return getSelectCondition().fetchInto(ASCCP.class);
     }
 
     @Override
     public ASCCP findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_ASCCP_STATEMENT)
-                .append(" WHERE `asccp_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), ASCCP.class);
+        if (id <= 0L) {
+            return null;
+        }
+        return getSelectCondition()
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(id)))
+                .fetchOptionalInto(ASCCP.class).orElse(null);
     }
 }

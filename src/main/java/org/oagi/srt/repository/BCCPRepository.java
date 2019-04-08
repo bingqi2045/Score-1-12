@@ -1,35 +1,65 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.SelectOnConditionStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCP;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class BCCPRepository implements SrtRepository<BCCP> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    private String GET_BCCP_STATEMENT = "SELECT `bccp_id`,`guid`,`property_term`,`representation_term`,`bdt_id`,`den`," +
-            "`definition`,`definition_source`,`module_id`,`namespace_id`,`is_deprecated` as deprecated," +
-            "`created_by`,`owner_user_id`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
-            "`state`,`revision_num`,`revision_tracking_num`,`revision_action`,`release_id`," +
-            "`current_bccp_id`,`is_nillable` as nillable,`default_value` FROM `bccp`";
+    private SelectOnConditionStep<Record> getSelectCondition() {
+        return dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM,
+                Tables.BCCP.REPRESENTATION_TERM,
+                Tables.BCCP.DEFAULT_VALUE,
+                Tables.BCCP.BDT_ID,
+                Tables.BCCP.DEN,
+                Tables.BCCP.DEFINITION,
+                Tables.BCCP.DEFINITION_SOURCE,
+                Tables.BCCP.MODULE_ID,
+                Tables.BCCP.NAMESPACE_ID,
+                Tables.BCCP.CREATED_BY,
+                Tables.BCCP.OWNER_USER_ID,
+                Tables.BCCP.LAST_UPDATED_BY,
+                Tables.BCCP.CREATION_TIMESTAMP,
+                Tables.BCCP.LAST_UPDATE_TIMESTAMP,
+                Tables.BCCP.STATE,
+                Tables.BCCP.REVISION_NUM,
+                Tables.BCCP.REVISION_TRACKING_NUM,
+                Tables.BCCP.REVISION_ACTION,
+                Tables.BCCP.RELEASE_ID,
+                Tables.BCCP.CURRENT_BCCP_ID,
+                Tables.BCCP.IS_DEPRECATED.as("deprecated"),
+                Tables.BCCP.IS_NILLABLE.as("nillable"),
+                Tables.MODULE.MODULE_.as("module")
+        ).from(Tables.BCCP)
+                .leftJoin(Tables.MODULE).on(Tables.BCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+    }
 
     @Override
     public List<BCCP> findAll() {
-        return jdbcTemplate.queryForList(GET_BCCP_STATEMENT, BCCP.class);
+        return getSelectCondition().fetchInto(BCCP.class);
     }
 
     @Override
     public BCCP findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_BCCP_STATEMENT)
-                .append(" WHERE `bccp_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), BCCP.class);
+        if (id <= 0L) {
+            return null;
+        }
+        return getSelectCondition()
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(id)))
+                .fetchOptionalInto(BCCP.class).orElse(null);
     }
 }

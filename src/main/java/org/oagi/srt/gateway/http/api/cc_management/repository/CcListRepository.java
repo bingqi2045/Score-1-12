@@ -1,11 +1,10 @@
 package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.oagi.srt.data.*;
-import org.oagi.srt.gateway.http.api.cc_management.data.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.srt.data.OagisComponentType.UserExtensionGroup;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getLatestEntity;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getRevision;
 
@@ -45,6 +43,7 @@ public class CcListRepository {
                     ccList.setDen(acc.getDen());
                     ccList.setDefinition(acc.getDefinition());
                     ccList.setDefinitionSource(acc.getDefinitionSource());
+                    ccList.setModule(acc.getModule());
                     ccList.setOagisComponentType(oagisComponentType);
                     ccList.setState(CcState.valueOf(acc.getState()));
                     ccList.setDeprecated(acc.isDeprecated());
@@ -136,6 +135,7 @@ public class CcListRepository {
                     ccList.setDen(asccp.getDen());
                     ccList.setDefinition(asccp.getDefinition());
                     ccList.setDefinitionSource(asccp.getDefinitionSource());
+                    ccList.setModule(asccp.getModule());
                     ccList.setState(CcState.valueOf(asccp.getState()));
                     ccList.setDeprecated(asccp.isDeprecated());
                     ccList.setCurrentId(asccp.getCurrentAsccpId());
@@ -166,6 +166,7 @@ public class CcListRepository {
                     ccList.setDen(bccp.getDen());
                     ccList.setDefinition(bccp.getDefinition());
                     ccList.setDefinitionSource(bccp.getDefinitionSource());
+                    ccList.setModule(bccp.getModule());
                     ccList.setState(CcState.valueOf(bccp.getState()));
                     ccList.setDeprecated(bccp.isDeprecated());
                     ccList.setCurrentId(bccp.getCurrentBccpId());

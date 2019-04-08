@@ -23,6 +23,7 @@ public class ASCCP implements CoreComponent {
 
     private Long roleOfAccId;
     private Long moduleId;
+    private String module;
     private Long namespaceId;
 
     private long createdBy;

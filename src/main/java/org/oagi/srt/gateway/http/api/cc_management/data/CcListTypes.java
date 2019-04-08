@@ -18,7 +18,13 @@ public class CcListTypes {
         }
 
         CcListTypes types = new CcListTypes();
-        if (!StringUtils.isEmpty(str)) {
+        if (StringUtils.isEmpty(str)) {
+            types.setAcc(true);
+            types.setAsccp(true);
+            types.setBccp(true);
+            types.setAscc(true);
+            types.setBcc(true);
+        } else {
             for (String type : str.split(",")) {
                 switch (type.toLowerCase()) {
                     case "acc":

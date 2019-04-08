@@ -26,6 +26,7 @@ public class ACC implements CoreComponent {
     private Integer oagisComponentType;
 
     private Long moduleId;
+    private String module;
     private Long namespaceId;
 
     private long createdBy;
