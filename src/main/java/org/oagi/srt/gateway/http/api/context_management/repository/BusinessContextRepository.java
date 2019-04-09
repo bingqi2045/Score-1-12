@@ -166,6 +166,7 @@ public class BusinessContextRepository {
     public List<BusinessContextValue> findBusinessContextValues() {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
                 CTX_CATEGORY.CTX_CATEGORY_ID,
                 CTX_CATEGORY.NAME.as("ctx_category_name"),
                 CTX_SCHEME.CTX_SCHEME_ID,
