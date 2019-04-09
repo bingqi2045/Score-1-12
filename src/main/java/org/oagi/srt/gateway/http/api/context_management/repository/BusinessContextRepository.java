@@ -30,8 +30,9 @@ public class BusinessContextRepository {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record5<
-            ULong, String, String, Timestamp, String>> getSelectOnConditionStep() {
+    private SelectOnConditionStep
+            <Record5<ULong, String, String, Timestamp, String>>
+            getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
@@ -43,8 +44,8 @@ public class BusinessContextRepository {
     };
 
     public PageResponse<BusinessContext> findBusinessContexts(BusinessContextListRequest request) {
-        SelectOnConditionStep<Record5<
-                ULong, String, String, Timestamp, String>> step = getSelectOnConditionStep();
+        SelectOnConditionStep
+                <Record5<ULong, String, String, Timestamp, String>> step = getSelectOnConditionStepForBusinessContext();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
@@ -60,8 +61,8 @@ public class BusinessContextRepository {
             conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        SelectConnectByStep<Record5<
-                ULong, String, String, Timestamp, String>> conditionStep = step.where(conditions);
+        SelectConnectByStep
+                <Record5<ULong, String, String, Timestamp, String>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -86,8 +87,8 @@ public class BusinessContextRepository {
                 break;
         }
 
-        SelectWithTiesAfterOffsetStep<Record5<
-                ULong, String, String, Timestamp, String>> offsetStep = null;
+        SelectWithTiesAfterOffsetStep
+                <Record5<ULong, String, String, Timestamp, String>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -101,7 +102,7 @@ public class BusinessContextRepository {
         List<BusinessContext> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BusinessContext.class) : conditionStep.fetchInto(BusinessContext.class);
         if (!result.isEmpty()) {
-            Map<Long, BusinessContext> bixCtxMap = getSelectOnConditionStep()
+            Map<Long, BusinessContext> bixCtxMap = getSelectOnConditionStepForBusinessContext()
                     .fetchInto(BusinessContext.class).stream()
                     .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
 
@@ -135,7 +136,7 @@ public class BusinessContextRepository {
         if (bizCtxId <= 0L) {
             return null;
         }
-        BusinessContext bizCtx = getSelectOnConditionStep()
+        BusinessContext bizCtx = getSelectOnConditionStepForBusinessContext()
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchOptionalInto(BusinessContext.class).orElse(null);
         if (bizCtx == null) {
@@ -154,16 +155,18 @@ public class BusinessContextRepository {
     }
 
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return getSelectOnConditionStep().fetchInto(SimpleBusinessContext.class);
+        return getSelectOnConditionStepForBusinessContext().fetchInto(SimpleBusinessContext.class);
     }
 
     public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        return getSelectOnConditionStep()
+        return getSelectOnConditionStepForBusinessContext()
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchOptionalInto(SimpleBusinessContext.class).orElse(null);
     }
 
-    public List<BusinessContextValue> findBusinessContextValues() {
+    private SelectOnConditionStep
+            <Record8<ULong, ULong, ULong, String, ULong, String, ULong, String>>
+            getSelectOnConditionStepForBusinessContextValue() {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
                 BIZ_CTX_VALUE.BIZ_CTX_ID,
@@ -176,7 +179,11 @@ public class BusinessContextRepository {
         ).from(BIZ_CTX_VALUE)
                 .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
                 .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
-                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID));
+    }
+
+    public List<BusinessContextValue> findBusinessContextValues() {
+        return getSelectOnConditionStepForBusinessContextValue()
                 .fetchInto(BusinessContextValue.class);
     }
 
@@ -184,18 +191,7 @@ public class BusinessContextRepository {
         if (bizCtxId <= 0L) {
             return Collections.emptyList();
         }
-        return dslContext.select(
-                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
-                CTX_CATEGORY.CTX_CATEGORY_ID,
-                CTX_CATEGORY.NAME.as("ctx_category_name"),
-                CTX_SCHEME.CTX_SCHEME_ID,
-                CTX_SCHEME.SCHEME_NAME.as("ctx_scheme_name"),
-                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
-                CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value")
-        ).from(BIZ_CTX_VALUE)
-                .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
-                .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
-                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+        return getSelectOnConditionStepForBusinessContextValue()
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchInto(BusinessContextValue.class);
     }
