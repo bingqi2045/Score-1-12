@@ -1,12 +1,15 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.jooq.DSLContext;
+import org.jooq.*;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +28,8 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.BieState.Editing;
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
+import static org.oagi.srt.entity.jooq.Tables.CODE_LIST;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -119,25 +126,146 @@ public class BieService {
         return (accForBieList.isEmpty()) ? null : accForBieList.get(0);
     }
 
+    private SelectOnConditionStep<Record13<
+            ULong, String, String, String, ULong,
+            String, ULong, String, String, String,
+            Timestamp, String, Integer>> getSelectOnConditionStep() {
+        return dslContext.select(
+                Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.RELEASE.RELEASE_NUM,
+                Tables.BIZ_CTX.BIZ_CTX_ID,
+                Tables.BIZ_CTX.NAME.as("biz_ctx_name"),
+                Tables.TOP_LEVEL_ABIE.OWNER_USER_ID,
+                Tables.APP_USER.LOGIN_ID.as("owner"),
+                Tables.ABIE.VERSION,
+                Tables.ABIE.STATUS,
+                Tables.ABIE.LAST_UPDATE_TIMESTAMP,
+                APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
+                Tables.ABIE.STATE.as("raw_state"))
+                .from(Tables.TOP_LEVEL_ABIE)
+                .join(Tables.ABIE).on(Tables.TOP_LEVEL_ABIE.ABIE_ID.eq(Tables.ABIE.ABIE_ID))
+                .and(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID))
+                .join(Tables.ASBIEP).on(Tables.ASBIEP.ROLE_OF_ABIE_ID.eq(Tables.ABIE.ABIE_ID))
+                .join(Tables.ASCCP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
+                .join(Tables.BIZ_CTX).on(Tables.BIZ_CTX.BIZ_CTX_ID.eq(Tables.ABIE.BIZ_CTX_ID))
+                .join(Tables.APP_USER).on(Tables.APP_USER.APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID))
+                .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
+                .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID));
+    }
 
-    private String GET_BIE_LIST_STATEMENT =
-            "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
-                    "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
-            "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
-            "abie.last_update_timestamp, top_level_abie.state as raw_state " +
-            "FROM top_level_abie " +
-            "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
-            "AND abie.abie_id = top_level_abie.abie_id " +
-            "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
-            "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
-            "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
-            "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
-            "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
+    public PageResponse<BieList> getBieList(User user, BieListRequest request) {
+        SelectOnConditionStep<Record13<
+                ULong, String, String, String, ULong,
+                String, ULong, String, String, String,
+                Timestamp, String, Integer>> step = getSelectOnConditionStep();
 
+        List<Condition> conditions = new ArrayList();
+        if (!StringUtils.isEmpty(request.getName())) {
+            conditions.add(Tables.ASCCP.PROPERTY_TERM.contains(request.getName()));
+        }
+        if (!request.getStates().isEmpty()) {
+            conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
+        }
+        if (!request.getOwnerLoginIds().isEmpty()) {
+            conditions.add(APP_USER.LOGIN_ID.in(request.getOwnerLoginIds()));
+        }
+        if (!request.getUpdaterLoginIds().isEmpty()) {
+            conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (request.getUpdateStartDate() != null) {
+            conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+        }
+        if (request.getUpdateEndDate() != null) {
+            conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+        }
 
-    private List<BieList> getBieList(User user, String whereClauses) {
-        List<BieList> bieLists = jdbcTemplate.queryForList(
-                GET_BIE_LIST_STATEMENT + (!StringUtils.isEmpty(whereClauses) ? (" WHERE " + whereClauses) : ""), BieList.class);
+        SelectConnectByStep<Record13<
+                ULong, String, String, String, ULong,
+                String, ULong, String, String, String,
+                Timestamp, String, Integer>> conditionStep = step.where(conditions);
+
+        PageRequest pageRequest = request.getPageRequest();
+        String sortDirection = pageRequest.getSortDirection();
+        SortField sortField = null;
+        switch (pageRequest.getSortActive()) {
+            case "propertyTerm":
+                if ("asc".equals(sortDirection)) {
+                    sortField = Tables.ASCCP.PROPERTY_TERM.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = Tables.ASCCP.PROPERTY_TERM.desc();
+                }
+
+                break;
+
+            case "releaseNum":
+                if ("asc".equals(sortDirection)) {
+                    sortField = Tables.RELEASE.RELEASE_NUM.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = Tables.RELEASE.RELEASE_NUM.desc();
+                }
+
+                break;
+
+            case "bizCtxName":
+                if ("asc".equals(sortDirection)) {
+                    sortField = Tables.BIZ_CTX.NAME.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = Tables.BIZ_CTX.NAME.desc();
+                }
+
+                break;
+
+            case "lastUpdateTimestamp":
+                if ("asc".equals(sortDirection)) {
+                    sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.desc();
+                }
+
+                break;
+        }
+
+        SelectWithTiesAfterOffsetStep<Record13<
+                ULong, String, String, String, ULong,
+                String, ULong, String, String, String,
+                Timestamp, String, Integer>> offsetStep = null;
+        if (sortField != null) {
+            offsetStep = conditionStep.orderBy(sortField)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = conditionStep
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<BieList> result = (offsetStep != null) ?
+                offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
+        result = appendAccessPrivilege(result, user);
+
+        PageResponse<BieList> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(dslContext.selectCount()
+                .from(Tables.TOP_LEVEL_ABIE)
+                .join(Tables.ABIE).on(Tables.TOP_LEVEL_ABIE.ABIE_ID.eq(Tables.ABIE.ABIE_ID))
+                .and(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID))
+                .join(Tables.ASBIEP).on(Tables.ASBIEP.ROLE_OF_ABIE_ID.eq(Tables.ABIE.ABIE_ID))
+                .join(Tables.ASCCP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
+                .join(Tables.BIZ_CTX).on(Tables.BIZ_CTX.BIZ_CTX_ID.eq(Tables.ABIE.BIZ_CTX_ID))
+                .join(Tables.APP_USER).on(Tables.APP_USER.APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID))
+                .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
+                .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID))
+                .where(conditions)
+                .fetchOptionalInto(Integer.class).orElse(0));
+
+        return response;
+    }
+
+    private List<BieList> appendAccessPrivilege(List<BieList> bieLists, User user) {
         long userId = sessionService.userId(user);
 
         bieLists.stream().forEach(e -> {
@@ -177,6 +305,28 @@ public class BieService {
         });
 
         return bieLists;
+    }
+
+
+    private String GET_BIE_LIST_STATEMENT =
+            "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
+                    "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
+            "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
+            "abie.last_update_timestamp, top_level_abie.state as raw_state " +
+            "FROM top_level_abie " +
+            "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
+            "AND abie.abie_id = top_level_abie.abie_id " +
+            "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
+            "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
+            "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
+            "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
+            "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
+
+
+    private List<BieList> getBieList(User user, String whereClauses) {
+        List<BieList> bieLists = jdbcTemplate.queryForList(
+                GET_BIE_LIST_STATEMENT + (!StringUtils.isEmpty(whereClauses) ? (" WHERE " + whereClauses) : ""), BieList.class);
+        return appendAccessPrivilege(bieLists, user);
     }
 
     public List<BieList> getBieList(GetBieListRequest request) {

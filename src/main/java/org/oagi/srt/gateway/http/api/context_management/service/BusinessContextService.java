@@ -2,14 +2,13 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -44,8 +43,8 @@ public class BusinessContextService {
     @Autowired
     private BusinessContextRepository repository;
 
-    public List<BusinessContext> getBusinessContexts() {
-        return repository.findBusinessContexts();
+    public PageResponse<BusinessContext> getBusinessContextList(BusinessContextListRequest request) {
+        return repository.findBusinessContexts(request);
     }
 
     public BusinessContext getBusinessContext(long bizCtxId) {
@@ -57,22 +56,11 @@ public class BusinessContextService {
     }
 
     public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.NAME,
-                BIZ_CTX.GUID,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP
-        ).from(BIZ_CTX)
-                .fetchInto(SimpleBusinessContext.class);
+        return repository.getSimpleBusinessContextList();
     }
 
     public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        return dslContext.select(BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.NAME,
-                BIZ_CTX.GUID,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP
-        ).from(BIZ_CTX)
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .fetchOneInto(SimpleBusinessContext.class);
+        return repository.getSimpleBusinessContext(bizCtxId);
     }
 
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {

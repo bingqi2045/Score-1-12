@@ -11,5 +11,6 @@ public class SimpleBusinessContext {
     private String name;
     private String guid;
     private Date lastUpdateTimestamp;
+    private String lastUpdateUser;
 
 }

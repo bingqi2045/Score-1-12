@@ -21,6 +21,7 @@ public class ContextScheme implements Serializable {
     private String codeListName;
     private String description;
     private Date lastUpdateTimestamp;
+    private String lastUpdateUser;
     private List<ContextSchemeValue> ctxSchemeValues = Collections.emptyList();
     private boolean used;
 

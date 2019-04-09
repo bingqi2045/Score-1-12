@@ -2,17 +2,23 @@ package org.oagi.srt.gateway.http.api.code_list_management.controller;
 
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
 import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForList;
+import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForListRequest;
 import org.oagi.srt.gateway.http.api.code_list_management.data.DeleteCodeListRequest;
-import org.oagi.srt.gateway.http.api.code_list_management.data.GetCodeListsFilter;
 import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 @RestController
 public class CodeListController {
@@ -22,15 +28,45 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<CodeListForList> getCodeLists(
-            @RequestParam(name = "state", required = false) String state,
-            @RequestParam(name = "extensible", required = false) Boolean extensible) {
+    public PageResponse<CodeListForList> getCodeLists(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "states", required = false) String states,
+            @RequestParam(name = "extensible", required = false) Boolean extensible,
+            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
+            @RequestParam(name = "updateStart", required = false) String updateStart,
+            @RequestParam(name = "updateEnd", required = false) String updateEnd,
+            @RequestParam(name = "sortActive") String sortActive,
+            @RequestParam(name = "sortDirection") String sortDirection,
+            @RequestParam(name = "pageIndex") int pageIndex,
+            @RequestParam(name = "pageSize") int pageSize) {
 
-        GetCodeListsFilter filter = new GetCodeListsFilter();
-        filter.setState(state);
-        filter.setExtensible(extensible);
+        CodeListForListRequest request = new CodeListForListRequest();
 
-        return service.getCodeLists(filter);
+        request.setName(name);
+        request.setStates(!StringUtils.isEmpty(states) ? Arrays.asList(states.split(",")) : Collections.emptyList());
+        request.setExtensible(extensible);
+
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
+                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+
+        if (!StringUtils.isEmpty(updateStart)) {
+            request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
+        }
+        if (!StringUtils.isEmpty(updateEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(updateEnd));
+            calendar.add(Calendar.DATE, 1);
+            request.setUpdateEndDate(calendar.getTime());
+        }
+
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setSortActive(sortActive);
+        pageRequest.setSortDirection(sortDirection);
+        pageRequest.setPageIndex(pageIndex);
+        pageRequest.setPageSize(pageSize);
+        request.setPageRequest(pageRequest);
+
+        return service.getCodeLists(request);
     }
 
     @RequestMapping(value = "/code_list/{id}", method = RequestMethod.GET,

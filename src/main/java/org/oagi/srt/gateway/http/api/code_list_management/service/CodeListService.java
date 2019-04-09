@@ -1,8 +1,11 @@
 package org.oagi.srt.gateway.http.api.code_list_management.service;
 
-import org.jooq.DSLContext;
+import org.jooq.*;
+import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.code_list_management.data.*;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +26,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
+import static org.oagi.srt.entity.jooq.Tables.CODE_LIST;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -37,37 +43,116 @@ public class CodeListService {
     @Autowired
     private SessionService sessionService;
 
-    private String GET_CODE_LISTS_STATEMENT = "SELECT c.code_list_id, c.guid, c.name as code_list_name, " +
-            "c.based_code_list_id, b.name as based_code_list_name, c.list_id, " +
-            "c.agency_id, a.name as agency_id_name, c.version_id, c.last_update_timestamp, " +
-            "c.extensible_indicator as extensible, c.state " +
-            "FROM code_list c " +
-            "LEFT JOIN code_list b ON c.based_code_list_id = b.code_list_id " +
-            "LEFT JOIN agency_id_list_value a ON c.agency_id = a.agency_id_list_value_id";
+    private SelectOnConditionStep<Record13<
+            ULong, String, String, ULong, String,
+            String, ULong, String, String, Timestamp,
+            String, Byte, String>> getSelectOnConditionStep() {
+        return dslContext.select(
+                Tables.CODE_LIST.CODE_LIST_ID,
+                Tables.CODE_LIST.GUID,
+                Tables.CODE_LIST.NAME.as("code_list_name"),
+                Tables.CODE_LIST.BASED_CODE_LIST_ID,
+                Tables.CODE_LIST.as("based").NAME.as("based_code_list_name"),
+                Tables.CODE_LIST.LIST_ID,
+                Tables.CODE_LIST.AGENCY_ID,
+                Tables.AGENCY_ID_LIST_VALUE.NAME.as("agency_id_name"),
+                Tables.CODE_LIST.VERSION_ID,
+                Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP,
+                APP_USER.LOGIN_ID.as("last_update_user"),
+                Tables.CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
+                Tables.CODE_LIST.STATE)
+                .from(Tables.CODE_LIST)
+                .join(APP_USER).on(CODE_LIST.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
+                .leftJoin(Tables.CODE_LIST.as("based")).on(Tables.CODE_LIST.BASED_CODE_LIST_ID.eq(Tables.CODE_LIST.as("based").CODE_LIST_ID))
+                .leftJoin(Tables.AGENCY_ID_LIST_VALUE).on(Tables.CODE_LIST.AGENCY_ID.eq(Tables.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID));
+    }
 
-    public List<CodeListForList> getCodeLists(GetCodeListsFilter filter) {
-        StringBuilder query = new StringBuilder(GET_CODE_LISTS_STATEMENT);
+    public PageResponse<CodeListForList> getCodeLists(CodeListForListRequest request) {
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource();
-        List<String> conditions = new ArrayList();
+        SelectOnConditionStep<Record13<
+                ULong, String, String, ULong, String,
+                String, ULong, String, String, Timestamp,
+                String, Byte, String>> step = getSelectOnConditionStep();
 
-        String state = filter.getState();
-        if (!StringUtils.isEmpty(state)) {
-            conditions.add("c.state = :state");
-            parameterSource.addValue("state", state);
+        List<Condition> conditions = new ArrayList();
+        if (!StringUtils.isEmpty(request.getName())) {
+            conditions.add(Tables.CODE_LIST.NAME.contains(request.getName()));
         }
-        Boolean extensible = filter.getExtensible();
-        if (extensible != null) {
-            conditions.add("c.extensible_indicator = :extensible");
-            parameterSource.addValue("extensible", extensible);
+        if (!request.getStates().isEmpty()) {
+            conditions.add(Tables.CODE_LIST.STATE.in(request.getStates()));
+        }
+        if (request.getExtensible() != null) {
+            conditions.add(CODE_LIST.EXTENSIBLE_INDICATOR.eq((byte) (request.getExtensible() ? 1 : 0)));
+        }
+        if (!request.getUpdaterLoginIds().isEmpty()) {
+            conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (request.getUpdateStartDate() != null) {
+            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+        }
+        if (request.getUpdateEndDate() != null) {
+            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
+        SelectConnectByStep<Record13<
+                ULong, String, String, ULong, String,
+                String, ULong, String, String, Timestamp,
+                String, Byte, String>> conditionStep = step;
         if (!conditions.isEmpty()) {
-            query.append(" WHERE ");
-            query.append(conditions.stream().collect(Collectors.joining(" AND ")));
+            conditionStep = step.where(conditions);
         }
 
-        return jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListForList.class);
+        PageRequest pageRequest = request.getPageRequest();
+        String sortDirection = pageRequest.getSortDirection();
+        SortField sortField = null;
+        switch (pageRequest.getSortActive()) {
+            case "codeListName":
+                if ("asc".equals(sortDirection)) {
+                    sortField = CODE_LIST.NAME.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = CODE_LIST.NAME.desc();
+                }
+
+                break;
+
+            case "lastUpdateTimestamp":
+                if ("asc".equals(sortDirection)) {
+                    sortField = CODE_LIST.LAST_UPDATE_TIMESTAMP.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = CODE_LIST.LAST_UPDATE_TIMESTAMP.desc();
+                }
+
+                break;
+        }
+
+        SelectWithTiesAfterOffsetStep<Record13<
+                ULong, String, String, ULong, String,
+                String, ULong, String, String, Timestamp,
+                String, Byte, String>> offsetStep = null;
+        if (sortField != null) {
+            offsetStep = conditionStep.orderBy(sortField)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = conditionStep
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<CodeListForList> result = (offsetStep != null) ?
+                offsetStep.fetchInto(CodeListForList.class) : conditionStep.fetchInto(CodeListForList.class);
+
+        PageResponse<CodeListForList> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(dslContext.selectCount()
+                .from(Tables.CODE_LIST)
+                .join(APP_USER).on(CODE_LIST.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
+                .where(conditions)
+                .fetchOptionalInto(Integer.class).orElse(0));
+
+        return response;
     }
 
     private String GET_CODE_LIST_VALUES_STATEMENT =

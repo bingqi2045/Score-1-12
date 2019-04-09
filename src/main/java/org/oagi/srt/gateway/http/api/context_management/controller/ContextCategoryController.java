@@ -1,15 +1,17 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
-import org.oagi.srt.gateway.http.api.context_management.data.ContextCategory;
-import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
-import org.oagi.srt.gateway.http.api.context_management.data.DeleteContextCategoryRequest;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.api.context_management.service.ContextCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,27 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_categories", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<ContextCategory> getContextCategoryList() {
-        return service.getContextCategoryList();
+    public PageResponse<ContextCategory> getContextCategoryList(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "description", required = false) String description,
+            @RequestParam(name = "sortActive") String sortActive,
+            @RequestParam(name = "sortDirection") String sortDirection,
+            @RequestParam(name = "pageIndex") int pageIndex,
+            @RequestParam(name = "pageSize") int pageSize) {
+
+        ContextCategoryListRequest request = new ContextCategoryListRequest();
+
+        request.setName(name);
+        request.setDescription(description);
+
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setSortActive(sortActive);
+        pageRequest.setSortDirection(sortDirection);
+        pageRequest.setPageIndex(pageIndex);
+        pageRequest.setPageSize(pageSize);
+        request.setPageRequest(pageRequest);
+
+        return service.getContextCategoryList(request);
     }
 
     @RequestMapping(value = "/simple_context_categories", method = RequestMethod.GET,

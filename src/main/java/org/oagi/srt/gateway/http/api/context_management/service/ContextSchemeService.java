@@ -1,8 +1,10 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
 import com.google.common.base.Functions;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -32,8 +34,11 @@ public class ContextSchemeService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<ContextScheme> getContextSchemeList() {
-        Map<Long, ContextScheme> ctxSchemeMap = dslContext.select(
+    private SelectOnConditionStep<Record11<
+            ULong, String, String, ULong, String,
+            String, String, String, String, Timestamp,
+            String>> getSelectOnConditionStep() {
+        return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
                 CTX_SCHEME.SCHEME_NAME,
@@ -43,51 +48,133 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
                 CTX_SCHEME.DESCRIPTION,
-                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
-        ).from(CTX_SCHEME)
+                CTX_SCHEME.LAST_UPDATE_TIMESTAMP,
+                APP_USER.LOGIN_ID.as("last_update_user"))
+                .from(CTX_SCHEME)
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .fetchInto(ContextScheme.class).stream()
-                .collect(Collectors.toMap(ContextScheme::getCtxSchemeId, Functions.identity()));
+                .join(APP_USER).on(CTX_SCHEME.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID));
+    }
 
-        dslContext.select(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID,
-                coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
-                .from(CTX_SCHEME_VALUE)
-                .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
-                .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
-                .fetch().stream().forEach(record -> {
-            long ctxSchemeId = record.value1().longValue();
-            int cnt = record.value2();
-            ctxSchemeMap.get(ctxSchemeId).setUsed(cnt > 0);
-        });
+    public PageResponse<ContextScheme> getContextSchemeList(ContextSchemeListRequest request) {
+        SelectOnConditionStep<Record11<
+                ULong, String, String, ULong, String,
+                String, String, String, String, Timestamp,
+                String>> step = getSelectOnConditionStep();
 
-        return new ArrayList(ctxSchemeMap.values());
+        List<Condition> conditions = new ArrayList();
+        if (!StringUtils.isEmpty(request.getName())) {
+            conditions.add(CTX_SCHEME.SCHEME_NAME.contains(request.getName()));
+        }
+        if (!request.getUpdaterLoginIds().isEmpty()) {
+            conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (request.getUpdateStartDate() != null) {
+            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+        }
+        if (request.getUpdateEndDate() != null) {
+            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+        }
+
+        SelectConnectByStep<Record11<
+                ULong, String, String, ULong, String,
+                String, String, String, String, Timestamp,
+                String>> conditionStep = conditionStep = step.where(conditions);
+
+        PageRequest pageRequest = request.getPageRequest();
+        String sortDirection = pageRequest.getSortDirection();
+        SortField sortField = null;
+        switch (pageRequest.getSortActive()) {
+            case "name":
+                if ("asc".equals(sortDirection)) {
+                    sortField = CTX_SCHEME.SCHEME_NAME.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = CTX_SCHEME.SCHEME_NAME.desc();
+                }
+
+                break;
+
+            case "ctxCategoryName":
+                if ("asc".equals(sortDirection)) {
+                    sortField = CTX_CATEGORY.NAME.as("ctx_category_name").asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = CTX_CATEGORY.NAME.as("ctx_category_name").desc();
+                }
+
+                break;
+
+            case "lastUpdateTimestamp":
+                if ("asc".equals(sortDirection)) {
+                    sortField = CTX_SCHEME.LAST_UPDATE_TIMESTAMP.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = CTX_SCHEME.LAST_UPDATE_TIMESTAMP.desc();
+                }
+
+                break;
+        }
+
+        SelectWithTiesAfterOffsetStep<Record11<
+                ULong, String, String, ULong, String,
+                String, String, String, String, Timestamp,
+                String>> offsetStep = null;
+        if (sortField != null) {
+            offsetStep = conditionStep.orderBy(sortField)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = conditionStep
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<ContextScheme> result = (offsetStep != null) ?
+                offsetStep.fetchInto(ContextScheme.class) : conditionStep.fetchInto(ContextScheme.class);
+        if (!result.isEmpty()) {
+            Map<Long, ContextScheme> ctxSchemeMap = getSelectOnConditionStep()
+                    .fetchInto(ContextScheme.class).stream()
+                    .collect(Collectors.toMap(ContextScheme::getCtxSchemeId, Functions.identity()));
+
+            dslContext.select(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID,
+                    coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
+                    .from(CTX_SCHEME_VALUE)
+                    .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.in(
+                            ctxSchemeMap.keySet().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
+                    .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
+                    .fetch().stream().forEach(record -> {
+                long ctxSchemeId = record.value1().longValue();
+                int cnt = record.value2();
+                ctxSchemeMap.get(ctxSchemeId).setUsed(cnt > 0);
+            });
+        }
+
+        PageResponse<ContextScheme> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(dslContext.selectCount()
+                .from(CTX_SCHEME)
+                .join(APP_USER).on(CTX_SCHEME.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
+                .where(conditions)
+                .fetchOptionalInto(Integer.class).orElse(0));
+
+        return response;
     }
 
     public ContextScheme getContextScheme(long ctxSchemeId) {
-        ContextScheme contextScheme = dslContext.select(
-                CTX_SCHEME.CTX_SCHEME_ID,
-                CTX_SCHEME.GUID,
-                CTX_SCHEME.SCHEME_NAME,
-                CTX_SCHEME.CTX_CATEGORY_ID,
-                CTX_CATEGORY.NAME.as("ctx_category_name"),
-                CTX_SCHEME.SCHEME_ID,
-                CTX_SCHEME.SCHEME_AGENCY_ID,
-                CTX_SCHEME.SCHEME_VERSION_ID,
-                CTX_SCHEME.DESCRIPTION,
-                CTX_SCHEME.LAST_UPDATE_TIMESTAMP
-        ).from(CTX_SCHEME)
-                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
+        ContextScheme contextScheme = getSelectOnConditionStep()
                 .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
-                .fetchOneInto(ContextScheme.class);
-        contextScheme.setCtxSchemeValues(getContextSchemeValuesByOwnerCtxSchemeId(ctxSchemeId));
+                .fetchOptionalInto(ContextScheme.class).orElse(null);
+        if (contextScheme != null) {
+            contextScheme.setCtxSchemeValues(getContextSchemeValuesByOwnerCtxSchemeId(ctxSchemeId));
 
-        int cnt = dslContext.select(coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
-                .from(CTX_SCHEME_VALUE)
-                .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
-                .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
-                .fetchOptionalInto(Integer.class).orElse(0);
-        contextScheme.setUsed(cnt > 0);
+            int cnt = dslContext.select(coalesce(count(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID), 0))
+                    .from(CTX_SCHEME_VALUE)
+                    .join(BIZ_CTX_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.eq(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
+                    .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+                    .groupBy(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID)
+                    .fetchOptionalInto(Integer.class).orElse(0);
+            contextScheme.setUsed(cnt > 0);
+        }
 
         return contextScheme;
     }
@@ -111,6 +198,17 @@ public class ContextSchemeService {
         ).from(CTX_SCHEME_VALUE)
                 .where(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(ctxSchemeValuesId)))
                 .fetchOneInto(ContextSchemeValue.class);
+    }
+
+    public List<SimpleContextScheme> getSimpleContextSchemeList() {
+        return dslContext.select(
+                CTX_SCHEME.CTX_SCHEME_ID,
+                CTX_SCHEME.SCHEME_NAME,
+                CTX_SCHEME.SCHEME_ID,
+                CTX_SCHEME.SCHEME_AGENCY_ID,
+                CTX_SCHEME.SCHEME_VERSION_ID
+        ).from(CTX_SCHEME)
+                .fetchInto(SimpleContextScheme.class);
     }
 
     public List<SimpleContextScheme> getSimpleContextSchemeList(long ctxCategoryId) {

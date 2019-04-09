@@ -17,6 +17,7 @@ public class CodeListForList {
     private String agencyIdName;
     private String versionId;
     private Date lastUpdateTimestamp;
+    private String lastUpdateUser;
     private boolean extensible;
     private String state;
 
