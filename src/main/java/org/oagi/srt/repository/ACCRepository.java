@@ -17,7 +17,7 @@ public class ACCRepository implements SrtRepository<ACC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectCondition() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
@@ -50,7 +50,7 @@ public class ACCRepository implements SrtRepository<ACC> {
 
     @Override
     public List<ACC> findAll() {
-        return getSelectCondition().fetchInto(ACC.class);
+        return getSelectOnConditionStep().fetchInto(ACC.class);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ACCRepository implements SrtRepository<ACC> {
         if (id <= 0L) {
             return null;
         }
-        return getSelectCondition()
+        return getSelectOnConditionStep()
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(id)))
                 .fetchOptionalInto(ACC.class).orElse(null);
     }

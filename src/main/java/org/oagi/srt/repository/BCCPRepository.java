@@ -17,7 +17,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectCondition() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.GUID,
@@ -50,7 +50,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
 
     @Override
     public List<BCCP> findAll() {
-        return getSelectCondition().fetchInto(BCCP.class);
+        return getSelectOnConditionStep().fetchInto(BCCP.class);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
         if (id <= 0L) {
             return null;
         }
-        return getSelectCondition()
+        return getSelectOnConditionStep()
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(id)))
                 .fetchOptionalInto(BCCP.class).orElse(null);
     }

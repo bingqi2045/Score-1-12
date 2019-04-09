@@ -11,9 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class CcListController {
@@ -30,24 +28,46 @@ public class CcListController {
             @RequestParam(name = "module", required = false) String module,
             @RequestParam(name = "types", required = false) String types,
             @RequestParam(name = "states", required = false) String states,
-            @RequestParam(name = "loginIds", required = false) String loginIds,
+            @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
+            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
+            @RequestParam(name = "updateStart", required = false) String updateStart,
+            @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
             @RequestParam(name = "pageSize") int pageSize) {
+
+        CcListRequest request = new CcListRequest();
+
+        request.setReleaseId(releaseId);
+        request.setTypes(CcListTypes.fromString(types));
+        request.setStates(CcListStates.fromString(states));
+        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ?
+                Collections.emptyList() : Arrays.asList(ownerLoginIds.split(",")));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
+                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setDen(den);
+        request.setDefinition(definition);
+        request.setModule(module);
+
+        if (!StringUtils.isEmpty(updateStart)) {
+            request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
+        }
+        if (!StringUtils.isEmpty(updateEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(updateEnd));
+            calendar.add(Calendar.DATE, 1);
+            request.setUpdateEndDate(calendar.getTime());
+        }
 
         PageRequest pageRequest = new PageRequest();
         pageRequest.setSortActive(sortActive);
         pageRequest.setSortDirection(sortDirection);
         pageRequest.setPageIndex(pageIndex);
         pageRequest.setPageSize(pageSize);
+        request.setPageRequest(pageRequest);
 
-        return service.getCcList(releaseId,
-                CcListTypes.fromString(types),
-                CcListStates.fromString(states),
-                StringUtils.isEmpty(loginIds) ? Collections.emptyList() : Arrays.asList(loginIds.split(",")),
-                den, definition, module,
-                pageRequest);
+        return service.getCcList(request);
     }
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/asccp_list",

@@ -31,6 +31,7 @@ public class DT implements CoreComponent {
     private int state;
 
     private Long moduleId;
+    private String module;
 
     private long createdBy;
     private long ownerUserId;

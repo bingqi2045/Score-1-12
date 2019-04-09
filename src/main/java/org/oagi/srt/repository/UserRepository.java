@@ -1,46 +1,52 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record6;
+import org.jooq.SelectJoinStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserRepository implements SrtRepository<AppUser> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     public Map<Long, String> getUsernameMap() {
-        return jdbcTemplate.query("SELECT app_user_id, login_id FROM app_user", rse -> {
-            Map<Long, String> usernameMap = new HashMap();
-            while (rse.next()) {
-                usernameMap.put(
-                        rse.getLong("app_user_id"),
-                        rse.getString("login_id"));
-            }
-            return usernameMap;
-        });
+        return dslContext.select(Tables.APP_USER.APP_USER_ID, Tables.APP_USER.LOGIN_ID)
+                .from(Tables.APP_USER)
+                .fetchStream().collect(Collectors.toMap(e -> e.value1().longValue(), e -> e.value2()));
     }
 
-    private String GET_APP_USER_STATEMENT = "SELECT `app_user_id`,`login_id`,`password`,`name`,`organization`," +
-            "`oagis_developer_indicator` as oagis_developer FROM `app_user`";
-
+    private SelectJoinStep<Record6<ULong, String, String, String, String, Byte>> getSelectJoinStep() {
+        return dslContext.select(
+                Tables.APP_USER.APP_USER_ID,
+                Tables.APP_USER.LOGIN_ID,
+                Tables.APP_USER.PASSWORD,
+                Tables.APP_USER.NAME,
+                Tables.APP_USER.ORGANIZATION,
+                Tables.APP_USER.OAGIS_DEVELOPER_INDICATOR.as("oagis_developer"))
+                .from(Tables.APP_USER);
+    }
     @Override
     public List<AppUser> findAll() {
-        return jdbcTemplate.queryForList(GET_APP_USER_STATEMENT, AppUser.class);
+        return getSelectJoinStep().fetchInto(AppUser.class);
     }
 
     @Override
     public AppUser findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_APP_USER_STATEMENT)
-                .append(" WHERE `app_user_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), AppUser.class);
+        if (id <= 0L) {
+            return null;
+        }
+        return getSelectJoinStep()
+                .where(Tables.APP_USER.APP_USER_ID.eq(ULong.valueOf(id)))
+                .fetchOptionalInto(AppUser.class).orElse(null);
     }
 }

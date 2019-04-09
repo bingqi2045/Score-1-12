@@ -2,14 +2,14 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -20,20 +20,52 @@ import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getRe
 public class CcListRepository {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private CoreComponentRepository coreComponentRepository;
 
-    public List<CcList> getAccList(long releaseId) {
-        Map<Long, String> usernameMap = userRepository.getUsernameMap();
-
+    public List<CcList> getAccList(CcListRequest request) {
+        if (!request.getTypes().isAcc()) {
+            return Collections.emptyList();
+        }
+        
         Map<String, List<ACC>> accList = coreComponentRepository.getAccList()
                 .stream().collect(groupingBy(CoreComponent::getGuid));
 
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
         return accList.entrySet().stream()
-                .map(entry -> getLatestEntity(releaseId, entry.getValue()))
+                .map(entry -> getLatestEntity(request.getReleaseId(), entry.getValue()))
                 .filter(item -> item != null)
+                .filter(acc -> {
+                    if (acc.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
+                        if (releaseId > 0L) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(e.getState()))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : e.getDefinition().contains(request.getDefinition()))
+                .filter(e -> StringUtils.isEmpty(request.getModule()) ? true : e.getModule().contains(request.getModule()))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .map(acc -> {
                     OagisComponentType oagisComponentType = OagisComponentType.valueOf(acc.getOagisComponentType());
                     CcList ccList = new CcList();
@@ -49,7 +81,7 @@ public class CcListRepository {
                     ccList.setDeprecated(acc.isDeprecated());
                     ccList.setCurrentId(acc.getCurrentAccId());
                     ccList.setLastUpdateTimestamp(acc.getLastUpdateTimestamp());
-                    ccList.setRevision(getRevision(releaseId, accList.getOrDefault(acc.getGuid(), Collections.emptyList())));
+                    ccList.setRevision(getRevision(request.getReleaseId(), accList.getOrDefault(acc.getGuid(), Collections.emptyList())));
                     ccList.setOwner(usernameMap.get(acc.getOwnerUserId()));
                     ccList.setLastUpdateUser(usernameMap.get(acc.getLastUpdatedBy()));
 
@@ -58,15 +90,42 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<CcList> getAsccList(long releaseId) {
-        Map<Long, String> usernameMap = userRepository.getUsernameMap();
+    public List<CcList> getAsccList(CcListRequest request) {
+        if (!request.getTypes().isAscc() || !StringUtils.isEmpty(request.getModule())) {
+            return Collections.emptyList();
+        }
 
         Map<String, List<ASCC>> asccList = coreComponentRepository.getAsccList()
                 .stream().collect(groupingBy(CoreComponent::getGuid));
 
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
         return asccList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
+                .filter(item -> !item.getDen().endsWith("User Extension Group"))
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(e.getState()))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : e.getDefinition().contains(request.getDefinition()))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .map(ascc -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCC");
@@ -88,15 +147,41 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<CcList> getBccList(long releaseId) {
-        Map<Long, String> usernameMap = userRepository.getUsernameMap();
+    public List<CcList> getBccList(CcListRequest request) {
+        if (!request.getTypes().isBcc() || !StringUtils.isEmpty(request.getModule())) {
+            return Collections.emptyList();
+        }
 
         Map<String, List<BCC>> bccList = coreComponentRepository.getBccList()
                 .stream().collect(groupingBy(CoreComponent::getGuid));
 
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
         return bccList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(e.getState()))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : e.getDefinition().contains(request.getDefinition()))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .map(bcc -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCC");
@@ -118,15 +203,43 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<CcList> getAsccpList(long releaseId) {
-        Map<Long, String> usernameMap = userRepository.getUsernameMap();
+    public List<CcList> getAsccpList(CcListRequest request) {
+        if (!request.getTypes().isAsccp()) {
+            return Collections.emptyList();
+        }
 
         Map<String, List<ASCCP>> asccpList = coreComponentRepository.getAsccpList()
                 .stream().collect(groupingBy(CoreComponent::getGuid));
 
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
         return asccpList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
+                .filter(asccp -> (!asccp.getDen().endsWith("User Extension Group")))
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(e.getState()))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : e.getDefinition().contains(request.getDefinition()))
+                .filter(e -> StringUtils.isEmpty(request.getModule()) ? true : e.getModule().contains(request.getModule()))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .map(asccp -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCCP");
@@ -149,15 +262,42 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<CcList> getBccpList(long releaseId) {
-        Map<Long, String> usernameMap = userRepository.getUsernameMap();
+    public List<CcList> getBccpList(CcListRequest request) {
+        if (!request.getTypes().isBccp()) {
+            return Collections.emptyList();
+        }
 
         Map<String, List<BCCP>> bccpList = coreComponentRepository.getBccpList()
                 .stream().collect(groupingBy(CoreComponent::getGuid));
 
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
         return bccpList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(e.getState()))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : e.getDefinition().contains(request.getDefinition()))
+                .filter(e -> StringUtils.isEmpty(request.getModule()) ? true : e.getModule().contains(request.getModule()))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
                 .map(bccp -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCCP");
@@ -178,5 +318,27 @@ public class CcListRepository {
                     return ccList;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<CoreComponent> getDenFilter(String filter) {
+        if (!StringUtils.isEmpty(filter)) {
+            List<String> filters = Arrays.asList(filter.toLowerCase().split(" ")).stream()
+                    .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
+
+            return coreComponent -> {
+                List<String> den = Arrays.asList(coreComponent.getDen().toLowerCase().split(" ")).stream()
+                        .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
+
+                for (String partialFilter : filters) {
+                    if (!den.contains(partialFilter)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+        } else {
+            return coreComponent -> true;
+        }
     }
 }

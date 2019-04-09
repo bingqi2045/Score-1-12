@@ -17,7 +17,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectCondition() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
@@ -49,7 +49,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
 
     @Override
     public List<ASCCP> findAll() {
-        return getSelectCondition().fetchInto(ASCCP.class);
+        return getSelectOnConditionStep().fetchInto(ASCCP.class);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
         if (id <= 0L) {
             return null;
         }
-        return getSelectCondition()
+        return getSelectOnConditionStep()
                 .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(id)))
                 .fetchOptionalInto(ASCCP.class).orElse(null);
     }

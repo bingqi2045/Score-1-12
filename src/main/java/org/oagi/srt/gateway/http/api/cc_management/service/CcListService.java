@@ -7,22 +7,23 @@ import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.ASCC;
 import org.oagi.srt.data.ASCCP;
 import org.oagi.srt.data.BCCP;
-import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,142 +41,37 @@ public class CcListService {
     private CcListRepository repository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private DSLContext dslContext;
 
-    public PageResponse<CcList> getCcList(long releaseId, CcListTypes types,
-                                          List<CcState> states, List<String> loginIds,
-                                          String den, String definition, String module,
-                                          PageRequest pageRequest) {
+    public PageResponse<CcList> getCcList(CcListRequest request) {
 
-        List<CcList> ccLists = getCoreComponents(releaseId, types, states, loginIds, den, definition, module);
+        List<CcList> ccLists = getCoreComponents(request);
         Stream<CcList> ccListStream = ccLists.stream();
 
-        Comparator<CcList> comparator = getComparator(pageRequest);
+        Comparator<CcList> comparator = getComparator(request.getPageRequest());
         if (comparator != null) {
             ccListStream = ccListStream.sorted(comparator);
         }
 
-        PageResponse<CcList> pageResponse = getPageResponse(ccListStream.collect(Collectors.toList()), pageRequest);
+        PageResponse<CcList> pageResponse = getPageResponse(
+                ccListStream.collect(Collectors.toList()), request.getPageRequest());
         return pageResponse;
     }
 
-    private List<CcList> getCoreComponents(long releaseId,
-                                           CcListTypes types,
-                                           List<CcState> states,
-                                           List<String> loginIds,
-                                           String den,
-                                           String definition,
-                                           String module) {
+    private List<CcList> getCoreComponents(CcListRequest request) {
+        request.setUsernameMap(userRepository.getUsernameMap());
 
         List<CcList> coreComponents = new ArrayList();
-        if (types.isAcc()) {
-            coreComponents.addAll(repository.getAccList(releaseId).stream()
-                    .filter(acc -> {
-                        if (acc.getOagisComponentType() == OagisComponentType.UserExtensionGroup) {
-                            if (releaseId > 0L) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    })
-                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
-                    .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
-                    .filter(getDenFilter(den))
-                    .filter(getDefinitionFilter(definition))
-                    .filter(getModuleFilter(module))
-                    .collect(Collectors.toList()));
-        }
+        coreComponents.addAll(repository.getAccList(request));
+        coreComponents.addAll(repository.getAsccList(request));
+        coreComponents.addAll(repository.getBccList(request));
+        coreComponents.addAll(repository.getAsccpList(request));
+        coreComponents.addAll(repository.getBccpList(request));
 
-        if (types.isAscc() && StringUtils.isEmpty(module)) {
-            coreComponents.addAll(repository.getAsccList(releaseId).stream()
-                    .filter(ascc -> (!ascc.getDen().endsWith("User Extension Group")))
-                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
-                    .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
-                    .filter(getDenFilter(den))
-                    .filter(getDefinitionFilter(definition))
-                    .collect(Collectors.toList()));
-        }
-
-        if (types.isBcc() && StringUtils.isEmpty(module)) {
-            coreComponents.addAll(repository.getBccList(releaseId).stream()
-                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
-                    .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
-                    .filter(getDenFilter(den))
-                    .filter(getDefinitionFilter(definition))
-                    .collect(Collectors.toList()));
-        }
-
-        if (types.isAsccp()) {
-            coreComponents.addAll(repository.getAsccpList(releaseId).stream()
-                    .filter(asccp -> (!asccp.getDen().endsWith("User Extension Group")))
-                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
-                    .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
-                    .filter(getDenFilter(den))
-                    .filter(getDefinitionFilter(definition))
-                    .filter(getModuleFilter(module))
-                    .collect(Collectors.toList()));
-        }
-
-        if (types.isBccp()) {
-            coreComponents.addAll(repository.getBccpList(releaseId).stream()
-                    .filter(e -> states.isEmpty() ? true : states.contains(e.getState()))
-                    .filter(e -> loginIds.isEmpty() ? true : loginIds.contains(e.getOwner()))
-                    .filter(getDenFilter(den))
-                    .filter(getDefinitionFilter(definition))
-                    .filter(getModuleFilter(module))
-                    .collect(Collectors.toList()));
-        }
         return coreComponents;
-    }
-
-    private Predicate<CcList> getDenFilter(String filter) {
-        if (!StringUtils.isEmpty(filter)) {
-            List<String> filters = Arrays.asList(filter.toLowerCase().split(" ")).stream()
-                    .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
-
-            return coreComponent -> {
-                List<String> den = Arrays.asList(coreComponent.getDen().toLowerCase().split(" ")).stream()
-                        .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
-
-                for (String partialFilter : filters) {
-                    if (!den.contains(partialFilter)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            };
-        } else {
-            return coreComponent -> true;
-        }
-    }
-
-    private Predicate<CcList> getDefinitionFilter(String filter) {
-        if (!StringUtils.isEmpty(filter)) {
-            return coreComponent -> {
-                String definition = coreComponent.getDefinition();
-                if (StringUtils.isEmpty(definition)) {
-                    return false;
-                }
-                return definition.toLowerCase().contains(filter.toLowerCase());
-            };
-        } else {
-            return coreComponent -> true;
-        }
-    }
-
-    private Predicate<CcList> getModuleFilter(String filter) {
-        if (!StringUtils.isEmpty(filter)) {
-            return coreComponent -> {
-                String module = coreComponent.getModule();
-                if (StringUtils.isEmpty(module)) {
-                    return false;
-                }
-                return module.toLowerCase().contains(filter.toLowerCase());
-            };
-        } else {
-            return coreComponent -> true;
-        }
     }
 
     private Comparator<CcList> getComparator(PageRequest pageRequest) {

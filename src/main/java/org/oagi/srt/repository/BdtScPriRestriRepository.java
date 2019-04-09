@@ -1,33 +1,45 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record6;
+import org.jooq.SelectJoinStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BdtScPriRestri;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class BdtScPriRestriRepository implements SrtRepository<BdtScPriRestri> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    private String GET_BDT_SC_PRI_RESTRI_STATEMENT = "SELECT `bdt_sc_pri_restri_id`,`bdt_sc_id`," +
-            "`cdt_sc_awd_pri_xps_type_map_id`,`code_list_id`,`agency_id_list_id`,`is_default` as defaulted " +
-            "FROM `bdt_sc_pri_restri`";
+    private SelectJoinStep<Record6<ULong, ULong, ULong, ULong, ULong, Byte>> getSelectJoinStep() {
+        return dslContext.select(
+                Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID,
+                Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID,
+                Tables.BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID,
+                Tables.BDT_SC_PRI_RESTRI.CODE_LIST_ID,
+                Tables.BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID,
+                Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT.as("defaulted")
+        ).from(Tables.BDT_SC_PRI_RESTRI);
+    }
 
     @Override
     public List<BdtScPriRestri> findAll() {
-        return jdbcTemplate.queryForList(GET_BDT_SC_PRI_RESTRI_STATEMENT, BdtScPriRestri.class);
+        return getSelectJoinStep().fetchInto(BdtScPriRestri.class);
     }
 
     @Override
     public BdtScPriRestri findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_BDT_SC_PRI_RESTRI_STATEMENT)
-                .append(" WHERE `bdt_sc_pri_restri` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), BdtScPriRestri.class);
+        if (id <= 0L) {
+            return null;
+        }
+        return getSelectJoinStep()
+                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.eq(ULong.valueOf(id)))
+                .fetchOptionalInto(BdtScPriRestri.class).orElse(null);
     }
 }
