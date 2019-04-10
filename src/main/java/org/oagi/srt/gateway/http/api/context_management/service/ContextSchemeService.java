@@ -125,7 +125,8 @@ public class ContextSchemeService {
                         .limit(pageRequest.getOffset(), pageRequest.getPageSize());
             }
         }
-
+        PageResponse<ContextScheme> response = new PageResponse();
+        List <ContextScheme> resultUsed = new ArrayList();
         List<ContextScheme> result = (offsetStep != null) ?
                 offsetStep.fetchInto(ContextScheme.class) : conditionStep.fetchInto(ContextScheme.class);
         if (!result.isEmpty()) {
@@ -145,10 +146,17 @@ public class ContextSchemeService {
                 int cnt = record.value2();
                 ctxSchemeMap.get(ctxSchemeId).setUsed(cnt > 0);
             });
+
+            resultUsed = new ArrayList(ctxSchemeMap.values());
+            response.setList(resultUsed);
+
         }
 
-        PageResponse<ContextScheme> response = new PageResponse();
-        response.setList(result);
+        if (!result.isEmpty()){
+            response.setList(resultUsed);
+        } else {
+            response.setList(result);
+        }
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(dslContext.selectCount()
