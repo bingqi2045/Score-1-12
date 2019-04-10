@@ -98,7 +98,8 @@ public class BusinessContextRepository {
                         .limit(pageRequest.getOffset(), pageRequest.getPageSize());
             }
         }
-
+        PageResponse<BusinessContext> response = new PageResponse();
+        List<BusinessContext> resultUsed = new ArrayList();
         List<BusinessContext> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BusinessContext.class) : conditionStep.fetchInto(BusinessContext.class);
         if (!result.isEmpty()) {
@@ -117,10 +118,15 @@ public class BusinessContextRepository {
                 int cnt = record.value2();
                 bixCtxMap.get(bizCtxId).setUsed(cnt > 0);
             });
+            resultUsed = new ArrayList(bixCtxMap.values());
+            response.setList(resultUsed);
         }
 
-        PageResponse<BusinessContext> response = new PageResponse();
-        response.setList(result);
+        if (!result.isEmpty()){
+            response.setList(resultUsed);
+        } else {
+            response.setList(result);
+        }
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(dslContext.selectCount()
