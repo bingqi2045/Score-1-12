@@ -29,8 +29,11 @@ public class BieListController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PageResponse<BieList> getBieList(@AuthenticationPrincipal User user,
-                                            @RequestParam(name = "name", required = false) String name,
+                                            @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
+                                            @RequestParam(name = "businessContext", required = false) String businessContext,
+                                            @RequestParam(name = "access", required = false) String access,
                                             @RequestParam(name = "states", required = false) String states,
+                                            @RequestParam(name = "excludes", required = false) String excludes,
                                             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
                                             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -42,15 +45,18 @@ public class BieListController {
 
         BieListRequest request = new BieListRequest();
 
-        request.setName(name);
+        request.setPropertyTerm(propertyTerm);
+        request.setBusinessContext(businessContext);
+        request.setAccess(access);
         request.setStates(!StringUtils.isEmpty(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
-
-        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ?
-                Collections.emptyList() : Arrays.asList(ownerLoginIds.split(",")));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
-                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
+                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));

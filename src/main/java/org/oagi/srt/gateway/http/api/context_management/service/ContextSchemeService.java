@@ -63,7 +63,7 @@ public class ContextSchemeService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(CTX_SCHEME.SCHEME_NAME.contains(request.getName()));
+            conditions.add(CTX_SCHEME.SCHEME_NAME.contains(request.getName().trim()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));

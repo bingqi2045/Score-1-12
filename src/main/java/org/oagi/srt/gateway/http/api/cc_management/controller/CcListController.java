@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class CcListController {
@@ -41,11 +42,12 @@ public class CcListController {
 
         request.setReleaseId(releaseId);
         request.setTypes(CcListTypes.fromString(types));
-        request.setStates(CcListStates.fromString(states));
-        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ?
-                Collections.emptyList() : Arrays.asList(ownerLoginIds.split(",")));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
-                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
+                Arrays.asList(states.split(",")).stream().map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
+        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setDen(den);
         request.setDefinition(definition);
         request.setModule(module);

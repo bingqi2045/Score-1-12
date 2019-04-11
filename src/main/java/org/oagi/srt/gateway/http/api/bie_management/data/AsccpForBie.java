@@ -16,5 +16,6 @@ public class AsccpForBie extends TrackableImpl {
     private Long moduleId;
     private String module;
     private Date lastUpdateTimestamp;
+    private String lastUpdateUser;
 
 }

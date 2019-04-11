@@ -96,7 +96,8 @@ public class CcUtility {
                     });
         }
 
-        return filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
+        T result = filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
+        return result;
     }
 
     public static <T extends Trackable> String getRevision(Long releaseId, List<T> entities) {

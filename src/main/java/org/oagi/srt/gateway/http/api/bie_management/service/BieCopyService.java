@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.srt.data.BieState.Init;
+import static org.oagi.srt.data.BieState.Initiating;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
@@ -80,7 +80,7 @@ public class BieCopyService implements InitializingBean {
 
         TopLevelAbie sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
         long copiedTopLevelAbieId =
-                repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Init);
+                repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Initiating);
 
         BieCopyRequestEvent bieCopyRequestEvent = new BieCopyRequestEvent(
                 sourceTopLevelAbieId, copiedTopLevelAbieId, bizCtxId, userId
@@ -290,7 +290,7 @@ public class BieCopyService implements InitializingBean {
                     .addValue("last_updated_by", userId)
                     .addValue("creation_timestamp", timestamp)
                     .addValue("last_update_timestamp", timestamp)
-                    .addValue("state", BieState.Init.getValue())
+                    .addValue("state", BieState.Initiating.getValue())
                     .addValue("client_id", abie.getClientId())
                     .addValue("version", abie.getVersion())
                     .addValue("status", abie.getStatus())

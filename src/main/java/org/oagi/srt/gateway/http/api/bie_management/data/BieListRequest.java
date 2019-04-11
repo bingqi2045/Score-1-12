@@ -11,11 +11,13 @@ import java.util.List;
 @Data
 public class BieListRequest {
 
-    private String name;
+    private String propertyTerm;
+    private String businessContext;
+    private String access;
+    private List<String> excludes = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
-
-    private List<String> ownerLoginIds;
-    private List<String> updaterLoginIds;
+    private List<String> ownerLoginIds = Collections.emptyList();
+    private List<String> updaterLoginIds = Collections.emptyList();
     private Date updateStartDate;
     private Date updateEndDate;
     private PageRequest pageRequest;

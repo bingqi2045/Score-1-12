@@ -41,7 +41,7 @@ public class BieEditController {
         long userId = sessionService.userId(user);
         AccessPrivilege accessPrivilege = Prohibited;
         switch (state) {
-            case Init:
+            case Initiating:
                 accessPrivilege = Unprepared;
                 break;
 

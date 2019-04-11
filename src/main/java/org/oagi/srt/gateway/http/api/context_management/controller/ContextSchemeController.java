@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ContextSchemeController {
@@ -35,9 +36,8 @@ public class ContextSchemeController {
         ContextSchemeListRequest request = new ContextSchemeListRequest();
 
         request.setName(name);
-
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
-                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));

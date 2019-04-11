@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.data.BieState.Editing;
+import static org.jooq.impl.DSL.or;
+import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
-import static org.oagi.srt.entity.jooq.Tables.CODE_LIST;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -55,12 +55,14 @@ public class BieService {
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.ASCCP.MODULE_ID,
+                Tables.MODULE.MODULE_.as("module"),
                 Tables.ASCCP.STATE,
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.RELEASE_ID,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP)
                 .from(Tables.ASCCP)
+                .leftJoin(Tables.MODULE).on(Tables.ASCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID))
                 .where(and(Tables.ASCCP.REVISION_NUM.greaterThan(0),
                         Tables.ASCCP.STATE.eq(CcState.Published.getValue())))
                 .fetchInto(AsccpForBie.class);
@@ -162,8 +164,14 @@ public class BieService {
                 Timestamp, String, Integer>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(Tables.ASCCP.PROPERTY_TERM.contains(request.getName()));
+        if (!StringUtils.isEmpty(request.getPropertyTerm())) {
+            conditions.add(Tables.ASCCP.PROPERTY_TERM.contains(request.getPropertyTerm().trim()));
+        }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
+        }
+        if (!StringUtils.isEmpty(request.getBusinessContext())) {
+            conditions.add(Tables.BIZ_CTX.NAME.contains(request.getBusinessContext().trim()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
@@ -179,6 +187,30 @@ public class BieService {
         }
         if (request.getUpdateEndDate() != null) {
             conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+        }
+        if (!StringUtils.isEmpty(request.getAccess())) {
+            switch (request.getAccess()) {
+                case "CanEdit":
+                    conditions.add(
+                            and(
+                                    Tables.ABIE.STATE.notEqual(Initiating.getValue()),
+                                    Tables.TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(sessionService.userId(user)))
+                            )
+                    );
+                    break;
+
+                case "CanView":
+                    conditions.add(
+                            or(
+                                    Tables.ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
+                                    and(
+                                            Tables.ABIE.STATE.notEqual(Initiating.getValue()),
+                                            Tables.TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(sessionService.userId(user)))
+                                    )
+                            )
+                    );
+                    break;
+            }
         }
 
         SelectConnectByStep<Record13<
@@ -274,7 +306,7 @@ public class BieService {
 
             AccessPrivilege accessPrivilege = Prohibited;
             switch (state) {
-                case Init:
+                case Initiating:
                     accessPrivilege = Unprepared;
                     break;
 

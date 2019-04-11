@@ -3,12 +3,14 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.context_management.data.*;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextListRequest;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
+import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
-import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -53,14 +55,6 @@ public class BusinessContextService {
 
     public List<BusinessContextValue> getBusinessContextValues() {
         return repository.findBusinessContextValues();
-    }
-
-    public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return repository.getSimpleBusinessContextList();
-    }
-
-    public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        return repository.getSimpleBusinessContext(bizCtxId);
     }
 
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {

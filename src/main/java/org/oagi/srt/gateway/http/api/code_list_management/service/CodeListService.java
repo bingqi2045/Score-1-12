@@ -76,7 +76,7 @@ public class CodeListService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(Tables.CODE_LIST.NAME.contains(request.getName()));
+            conditions.add(Tables.CODE_LIST.NAME.contains(request.getName().trim()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.CODE_LIST.STATE.in(request.getStates()));

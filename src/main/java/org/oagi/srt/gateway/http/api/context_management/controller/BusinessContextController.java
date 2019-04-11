@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class BusinessContextController {
@@ -35,9 +36,8 @@ public class BusinessContextController {
         BusinessContextListRequest request = new BusinessContextListRequest();
 
         request.setName(name);
-
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
-                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
@@ -69,18 +69,6 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BusinessContextValue> getBusinessContextValues() {
         return service.getBusinessContextValues();
-    }
-
-    @RequestMapping(value = "/simple_business_contexts", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return service.getSimpleBusinessContextList();
-    }
-
-    @RequestMapping(value = "/simple_business_context/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public SimpleBusinessContext getSimpleBusinessContext(@PathVariable("id") long id) {
-        return service.getSimpleBusinessContext(id);
     }
 
     @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,

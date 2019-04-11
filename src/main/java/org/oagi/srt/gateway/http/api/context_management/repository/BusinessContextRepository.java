@@ -8,7 +8,6 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextListRequest;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
-import org.oagi.srt.gateway.http.api.context_management.data.SimpleBusinessContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -51,7 +50,7 @@ public class BusinessContextRepository {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(BIZ_CTX.NAME.contains(request.getName()));
+            conditions.add(BIZ_CTX.NAME.contains(request.getName().trim()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
@@ -153,16 +152,6 @@ public class BusinessContextRepository {
         bizCtx.setUsed(cnt > 0);
 
         return bizCtx;
-    }
-
-    public List<SimpleBusinessContext> getSimpleBusinessContextList() {
-        return getSelectOnConditionStepForBusinessContext().fetchInto(SimpleBusinessContext.class);
-    }
-
-    public SimpleBusinessContext getSimpleBusinessContext(long bizCtxId) {
-        return getSelectOnConditionStepForBusinessContext()
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .fetchOptionalInto(SimpleBusinessContext.class).orElse(null);
     }
 
     private SelectOnConditionStep

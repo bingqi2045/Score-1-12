@@ -2,7 +2,7 @@ package org.oagi.srt.data;
 
 public enum BieState {
 
-    Init(1),
+    Initiating(1),
     Editing(2),
     Candidate(3),
     Published(4);

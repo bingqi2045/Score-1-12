@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @RestController
 public class CodeListController {
@@ -43,11 +44,12 @@ public class CodeListController {
         CodeListForListRequest request = new CodeListForListRequest();
 
         request.setName(name);
-        request.setStates(!StringUtils.isEmpty(states) ? Arrays.asList(states.split(",")) : Collections.emptyList());
+        request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
+                Arrays.asList(states.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setExtensible(extensible);
 
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ?
-                Collections.emptyList() : Arrays.asList(updaterLoginIds.split(",")));
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
