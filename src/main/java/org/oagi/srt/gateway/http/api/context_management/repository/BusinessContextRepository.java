@@ -32,7 +32,7 @@ public class BusinessContextRepository {
 
     private SelectOnConditionStep
             <Record5<ULong, String, String, Timestamp, String>>
-            getSelectOnConditionStepForBusinessContext() {
+    getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
@@ -41,7 +41,9 @@ public class BusinessContextRepository {
                 APP_USER.LOGIN_ID.as("last_update_user"))
                 .from(BIZ_CTX)
                 .join(APP_USER).on(BIZ_CTX.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID));
-    };
+    }
+
+    ;
 
     public PageResponse<BusinessContext> findBusinessContexts(BusinessContextListRequest request) {
         SelectOnConditionStep
@@ -98,13 +100,12 @@ public class BusinessContextRepository {
                         .limit(pageRequest.getOffset(), pageRequest.getPageSize());
             }
         }
+
         PageResponse<BusinessContext> response = new PageResponse();
-        List<BusinessContext> resultUsed = new ArrayList();
         List<BusinessContext> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BusinessContext.class) : conditionStep.fetchInto(BusinessContext.class);
         if (!result.isEmpty()) {
-            Map<Long, BusinessContext> bixCtxMap = getSelectOnConditionStepForBusinessContext()
-                    .fetchInto(BusinessContext.class).stream()
+            Map<Long, BusinessContext> bixCtxMap = result.stream()
                     .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
 
             dslContext.select(ABIE.BIZ_CTX_ID,
@@ -118,15 +119,9 @@ public class BusinessContextRepository {
                 int cnt = record.value2();
                 bixCtxMap.get(bizCtxId).setUsed(cnt > 0);
             });
-            resultUsed = new ArrayList(bixCtxMap.values());
-            response.setList(resultUsed);
         }
 
-        if (!result.isEmpty()){
-            response.setList(resultUsed);
-        } else {
-            response.setList(result);
-        }
+        response.setList(result);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(dslContext.selectCount()
@@ -172,7 +167,7 @@ public class BusinessContextRepository {
 
     private SelectOnConditionStep
             <Record8<ULong, ULong, ULong, String, ULong, String, ULong, String>>
-            getSelectOnConditionStepForBusinessContextValue() {
+    getSelectOnConditionStepForBusinessContextValue() {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
                 BIZ_CTX_VALUE.BIZ_CTX_ID,

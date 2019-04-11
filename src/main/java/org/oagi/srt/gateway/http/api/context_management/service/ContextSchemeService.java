@@ -78,7 +78,7 @@ public class ContextSchemeService {
         SelectConnectByStep<Record11<
                 ULong, String, String, ULong, String,
                 String, String, String, String, Timestamp,
-                String>> conditionStep = conditionStep = step.where(conditions);
+                String>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -126,12 +126,10 @@ public class ContextSchemeService {
             }
         }
         PageResponse<ContextScheme> response = new PageResponse();
-        List <ContextScheme> resultUsed = new ArrayList();
         List<ContextScheme> result = (offsetStep != null) ?
                 offsetStep.fetchInto(ContextScheme.class) : conditionStep.fetchInto(ContextScheme.class);
         if (!result.isEmpty()) {
-            Map<Long, ContextScheme> ctxSchemeMap = getSelectOnConditionStep()
-                    .fetchInto(ContextScheme.class).stream()
+            Map<Long, ContextScheme> ctxSchemeMap = result.stream()
                     .collect(Collectors.toMap(ContextScheme::getCtxSchemeId, Functions.identity()));
 
             dslContext.select(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID,
@@ -146,17 +144,9 @@ public class ContextSchemeService {
                 int cnt = record.value2();
                 ctxSchemeMap.get(ctxSchemeId).setUsed(cnt > 0);
             });
-
-            resultUsed = new ArrayList(ctxSchemeMap.values());
-            response.setList(resultUsed);
-
         }
 
-        if (!result.isEmpty()){
-            response.setList(resultUsed);
-        } else {
-            response.setList(result);
-        }
+        response.setList(result);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(dslContext.selectCount()
