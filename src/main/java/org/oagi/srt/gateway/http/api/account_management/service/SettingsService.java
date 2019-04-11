@@ -43,8 +43,12 @@ public class SettingsService {
 
     @Transactional
     public void updatePasswordAccount(UpdatePasswordRequest request) {
-        String newPassword = validate(request.getNewPassword());
-        updateFromLogin(request.getAccount(), newPassword);
+        if (!request.getNewPassword().equals("")){
+            String newPassword = validate(request.getNewPassword());
+            updateFromLogin(request.getAccount(), newPassword);
+        } else {
+            updateInformationFromLogin(request.getAccount());
+        }
     }
 
     private String validate(String password) {
@@ -76,4 +80,11 @@ public class SettingsService {
                 .execute();
     }
 
+    private void updateInformationFromLogin(AppUser account) {
+        dslContext.update(APP_USER)
+                .set(row(APP_USER.ORGANIZATION, APP_USER.NAME),
+                        row(account.getOrganization(), account.getName()))
+                .where(APP_USER.LOGIN_ID.eq(account.getLoginId()))
+                .execute();
+    }
 }
