@@ -14,8 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,13 +28,6 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
 
     @Autowired
     private DataSource dataSource;
-
-    @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-        StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowUrlEncodedSlash(true);
-        return firewall;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -79,7 +70,6 @@ public class SecurityCoOverridenfiguration extends WebSecurityConfigurerAdapter 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/event/**");
-        web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
     }
 
     @Override
