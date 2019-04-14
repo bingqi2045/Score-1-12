@@ -3,13 +3,13 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jooq.DSLContext;
+import org.jooq.Record11;
+import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAscc;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditBcc;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -46,8 +46,11 @@ public class CcNodeRepository {
     @Autowired
     private BieRepository bieRepository;
 
-    public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
-        CcAccNode accNode = dslContext.select(
+    private SelectJoinStep<Record11<
+            ULong, String, String, ULong, Integer,
+            String, Integer, Integer, Integer, ULong,
+            ULong>> getSelectJoinStepForAccNode() {
+        return dslContext.select(
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
                 Tables.ACC.DEN.as("name"),
@@ -59,28 +62,24 @@ public class CcNodeRepository {
                 Tables.ACC.REVISION_TRACKING_NUM,
                 Tables.ACC.RELEASE_ID,
                 Tables.ACC.CURRENT_ACC_ID
-        ).from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+        ).from(Tables.ACC);
+    }
+    public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
+        CcAccNode accNode = getSelectJoinStepForAccNode()
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(accNode, releaseId);
     }
 
     public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
-        List<CcAccNode> accNodes = dslContext.select(
-                Tables.ACC.ACC_ID,
-                Tables.ACC.GUID,
-                Tables.ACC.DEN.as("name"),
-                Tables.ACC.BASED_ACC_ID,
-                Tables.ACC.OAGIS_COMPONENT_TYPE,
-                Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.STATE.as("raw_state"),
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.RELEASE_ID,
-                Tables.ACC.CURRENT_ACC_ID
-        ).from(Tables.ACC).where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)))
+        List<CcAccNode> accNodes = getSelectJoinStepForAccNode()
+                .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)))
                 .fetchInto(CcAccNode.class);
 
         CcAccNode accNode = CcUtility.getLatestEntity(releaseId, accNodes);
+        if (accNode == null) {
+            throw new IllegalStateException();
+        }
         return arrangeAccNode(accNode, releaseId);
     }
 
@@ -362,7 +361,12 @@ public class CcNodeRepository {
                 OagisComponentType oagisComponentType =
                         getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
                 if (oagisComponentType.isGroup()) {
-                    CcAccNode roleOfAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
+                    CcAccNode roleOfAccNode;
+                    if (releaseId == null) {
+                        roleOfAccNode = getAccNodeByAccId(asccpNode.getRoleOfAccId(), releaseId);
+                    } else {
+                        roleOfAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
+                    }
                     List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
                     for (CcNode groupNode : groupDescendants) {
                         ((SeqKeySupportable) groupNode).setSeqKey(seqKey++);
