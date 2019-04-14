@@ -107,7 +107,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             Map<String, String> resp = new HashMap();
                             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                             resp.put("username", userDetails.getUsername());
-                            resp.put("role", authentication.getAuthorities().stream().findFirst().toString());
+                            resp.put("role", userDetails.getAuthorities().stream().findFirst().get().toString());
 
                             ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
                             objectMapper.writeValue(response.getOutputStream(), resp);
