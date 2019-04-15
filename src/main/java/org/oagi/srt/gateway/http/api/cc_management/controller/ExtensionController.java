@@ -1,5 +1,8 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
@@ -20,6 +23,9 @@ public class ExtensionController {
 
     @Autowired
     private ExtensionService service;
+
+    @Autowired
+    private DSLContext dslContext;
 
     @RequestMapping(value = "/core_component/node/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
             method = RequestMethod.GET,
