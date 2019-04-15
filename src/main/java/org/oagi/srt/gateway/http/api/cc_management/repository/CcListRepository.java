@@ -35,14 +35,6 @@ public class CcListRepository {
         return accList.entrySet().stream()
                 .map(entry -> getLatestEntity(request.getReleaseId(), entry.getValue()))
                 .filter(item -> item != null)
-                .filter(acc -> {
-                    if (acc.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
-                        if (releaseId > 0L) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
                 .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(CcState.valueOf(e.getState())))
                 .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
                 .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))

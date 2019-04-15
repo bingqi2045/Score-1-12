@@ -49,10 +49,23 @@ public class ExtensionService {
     @Autowired
     private CcListService ccListService;
 
-    public CcAccNode getExtensionNode(User user, long extensionId, Long releaseId) {
+    public CcAccNode getExtensionNode(User user, long extensionId, long releaseId) {
+        /*
+         * Dealing with the UEG node as a special node.
+         * i.e. the UEG node always have a positive `releaseId` and `extensionId` for the current record.
+         */
+        if (releaseId == 0L) {
+            releaseId = 1L;
+        } else {
+            extensionId = dslContext.select(Tables.ACC.CURRENT_ACC_ID)
+                    .from(Tables.ACC)
+                    .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
+                    .fetchOneInto(Long.class);
+        }
+
         CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, null);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), null);
-        CcAccNode eAcc = repository.getAccNodeByAsccpIdFromAscc(asccpNode.getAsccpId(), releaseId);
+        CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(asccpNode.getAsccpId(), releaseId);
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
 
         long userId = sessionService.userId(user);

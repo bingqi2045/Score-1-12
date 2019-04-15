@@ -83,7 +83,7 @@ public class CcNodeRepository {
         return arrangeAccNode(accNode, releaseId);
     }
 
-    public CcAccNode getAccNodeByAsccpIdFromAscc(long toAsccpId, Long releaseId) {
+    public CcAccNode getAccNodeFromAsccByAsccpId(long toAsccpId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 Tables.ASCC.FROM_ACC_ID,
                 Tables.ASCC.SEQ_KEY,
@@ -139,10 +139,6 @@ public class CcNodeRepository {
                 .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
     }
 
-    public int getAccMaxId() {
-        return jdbcTemplate.queryForObject("SELECT max(acc_id) FROM acc ", int.class);
-    }
-
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
@@ -154,17 +150,12 @@ public class CcNodeRepository {
         return accNode;
     }
 
-    public long getCurrentAccIdByAccId(long accId) {
-        return jdbcTemplate.queryForObject("SELECT current_acc_id " +
-                "FROM acc WHERE acc_id = :accId", newSqlParameterSource()
-                .addValue("accId", accId), Long.class);
-    }
-
     private boolean hasChild(CcAccNode accNode, Long releaseId) {
         if (accNode.getBasedAccId() != null) {
             return true;
         } else {
-            Long fromAccId = (releaseId == null) ? accNode.getAccId() : accNode.getCurrentAccId();
+            Long fromAccId = (releaseId == null || releaseId == 0L) ?
+                    accNode.getAccId() : accNode.getCurrentAccId();
             if (fromAccId == null) {
                 return false;
             }
