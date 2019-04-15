@@ -258,9 +258,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 }
                 BieEditBbiepNode bbiepNode;
                 if (bcc.isAttribute()) {
-                    bbiepNode = createBbiepNode(fromAbieId, 0, bbie, bcc);
+                    bbiepNode = createBbiepNode(fromAbieId, 0, bbie, bcc, hideUnused);
                 } else {
-                    bbiepNode = createBbiepNode(fromAbieId, seqKey++, bbie, bcc);
+                    bbiepNode = createBbiepNode(fromAbieId, seqKey++, bbie, bcc, hideUnused);
                 }
                 children.add(bbiepNode);
             }
@@ -373,7 +373,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private BieEditBbiepNode createBbiepNode(long fromAbieId, int seqKey,
-                                             BieEditBbie bbie, BieEditBcc bcc) {
+                                             BieEditBbie bbie, BieEditBcc bcc,
+                                             boolean hideUnused) {
         BieEditBbiepNode bbiepNode = new BieEditBbiepNode();
 
         long topLevelAbieId = topLevelAbie.getTopLevelAbieId();
@@ -414,7 +415,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             bbiepNode.setUsed(bbie.isUsed());
         }
 
-        bbiepNode.setHasChild(hasChild(bbiepNode));
+        bbiepNode.setHasChild(hasChild(bbiepNode, hideUnused));
 
         return bbiepNode;
     }
@@ -427,9 +428,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         return hasChild(abieNode);
     }
 
-    public boolean hasChild(BieEditBbiepNode bbiepNode) {
-        BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId());
-        return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
+    public boolean hasChild(BieEditBbiepNode bbiepNode, boolean hideUnused) {
+        if (hideUnused) {
+            return repository.getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAbieId(
+                    bbiepNode.getBbieId(), true, bbiepNode.getTopLevelAbieId()) > 0;
+
+        } else {
+            BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId());
+            return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
+        }
     }
 
     private List<BieEditNode> getDescendants(BieEditBbiepNode bbiepNode, boolean hideUnused) {

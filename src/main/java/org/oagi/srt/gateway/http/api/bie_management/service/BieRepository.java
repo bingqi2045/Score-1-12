@@ -108,6 +108,20 @@ public class BieRepository {
                 .addValue("owner_dt_id", ownerDtId), Integer.class);
     }
 
+    public int getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAbieId(Long bbieId,
+                                                                     boolean used, long ownerTopLevelAbieId) {
+        if (bbieId == null || bbieId == 0L) {
+            return 0;
+        }
+
+        return dslContext.selectCount()
+                .from(Tables.BBIE_SC)
+                .where(and(Tables.BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieId)),
+                        Tables.BBIE_SC.IS_USED.eq((byte) ((used) ? 1 : 0)),
+                        Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId))))
+                .fetchOptionalInto(Integer.class).orElse(0);
+    }
+
     public List<BieEditBdtSc> getBdtScListByOwnerDtId(long ownerDtId) {
         return jdbcTemplate.queryForList(
                 "SELECT dt_sc_id, guid, property_term, representation_term, owner_dt_id " +
