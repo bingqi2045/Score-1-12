@@ -135,7 +135,7 @@ public class ExtensionService {
     }
 
     private int increaseAccRevisionNum(ACC ueAcc, long releaseId,
-                                        ULong userId, Timestamp timestamp) {
+                                       ULong userId, Timestamp timestamp) {
         AccRecord history = dslContext.selectFrom(Tables.ACC)
                 .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
                 .orderBy(Tables.ACC.ACC_ID.desc()).limit(1)
@@ -1148,5 +1148,157 @@ public class ExtensionService {
         dslContext.insertInto(BCC).set(history).execute();
 
         return (result == 1);
+    }
+
+    @Transactional
+    public void transferOwnership(User user, long releaseId, long extensionId, String targetLoginId) {
+        long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+                .from(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(targetLoginId))
+                .fetchOptionalInto(Long.class).orElse(0L);
+        if (targetAppUserId == 0L) {
+            throw new IllegalArgumentException("Not found a target user.");
+        }
+
+        ULong target = ULong.valueOf(targetAppUserId);
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        updateAccOwnerUserId(extensionId, releaseId, target, userId, timestamp);
+        updateAsccOwnerUserId(extensionId, releaseId, target, userId, timestamp);
+        updateBccOwnerUserId(extensionId, releaseId, target, userId, timestamp);
+    }
+
+    private void updateAccOwnerUserId(long extensionId, Long releaseId, ULong targetAppUserId,
+                                      ULong userId, Timestamp timestamp) {
+        dslContext.update(Tables.ACC)
+                .set(ACC.OWNER_USER_ID, targetAppUserId)
+                .set(ACC.LAST_UPDATED_BY, userId)
+                .set(ACC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
+                .execute();
+
+        AccRecord history = dslContext.selectFrom(Tables.ACC)
+                .where(ACC.CURRENT_ACC_ID.eq(ULong.valueOf(extensionId)))
+                .orderBy(ACC.ACC_ID.desc()).limit(1)
+                .fetchOne();
+
+        history.setAccId(null);
+        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
+        history.setRevisionAction((byte) RevisionAction.Update.getValue());
+        history.setCreatedBy(userId);
+        history.setLastUpdatedBy(userId);
+        history.setCreationTimestamp(timestamp);
+        history.setLastUpdateTimestamp(timestamp);
+        history.setOwnerUserId(targetAppUserId);
+        dslContext.insertInto(Tables.ACC).set(history).execute();
+    }
+
+    private void updateAsccOwnerUserId(long extensionId, Long releaseId, ULong targetAppUserId,
+                                       ULong userId, Timestamp timestamp) {
+        List<CcAsccNode> asccNodes = dslContext.select(
+                ASCC.ASCC_ID,
+                ASCC.GUID,
+                ASCC.REVISION_NUM,
+                ASCC.REVISION_TRACKING_NUM,
+                ASCC.RELEASE_ID
+        ).from(ASCC).where(and(
+                ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                ASCC.REVISION_NUM.greaterThan(0)))
+                .fetchInto(CcAsccNode.class);
+
+        if (asccNodes.isEmpty()) {
+            return;
+        }
+
+        // Update a state of the 'current record'.
+        dslContext.update(ASCC)
+                .set(ASCC.OWNER_USER_ID, targetAppUserId)
+                .set(ASCC.LAST_UPDATED_BY, userId)
+                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        ASCC.REVISION_NUM.eq(0)))
+                .execute();
+
+        asccNodes = asccNodes.stream()
+                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> asccIds = asccNodes.stream()
+                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
+                .collect(Collectors.toList());
+
+        Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.in(asccIds))
+                .fetch();
+
+        for (AsccRecord history : asccRecordResult) {
+            history.setAsccId(null);
+            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
+            history.setRevisionAction((byte) RevisionAction.Update.getValue());
+            history.setCreatedBy(userId);
+            history.setLastUpdatedBy(userId);
+            history.setCreationTimestamp(timestamp);
+            history.setLastUpdateTimestamp(timestamp);
+            history.setOwnerUserId(targetAppUserId);
+
+            dslContext.insertInto(ASCC).set(history).execute();
+        }
+    }
+
+    private void updateBccOwnerUserId(long extensionId, Long releaseId, ULong targetAppUserId,
+                                      ULong userId, Timestamp timestamp) {
+        List<CcBccNode> bccNodes = dslContext.select(
+                BCC.BCC_ID,
+                BCC.GUID,
+                BCC.REVISION_NUM,
+                BCC.REVISION_TRACKING_NUM,
+                BCC.RELEASE_ID
+        ).from(BCC).where(and(
+                BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                BCC.REVISION_NUM.greaterThan(0)))
+                .fetchInto(CcBccNode.class);
+
+        if (bccNodes.isEmpty()) {
+            return;
+        }
+
+        // Update a state of the 'current record'.
+        dslContext.update(BCC)
+                .set(BCC.OWNER_USER_ID, targetAppUserId)
+                .set(BCC.LAST_UPDATED_BY, userId)
+                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        BCC.REVISION_NUM.eq(0)))
+                .execute();
+
+        bccNodes = bccNodes.stream()
+                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> bccIds = bccNodes.stream()
+                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
+                .collect(Collectors.toList());
+
+        Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.in(bccIds))
+                .fetch();
+
+        for (BccRecord history : bccRecordResult) {
+            history.setBccId(null);
+            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
+            history.setRevisionAction((byte) RevisionAction.Update.getValue());
+            history.setCreatedBy(userId);
+            history.setLastUpdatedBy(userId);
+            history.setCreationTimestamp(timestamp);
+            history.setLastUpdateTimestamp(timestamp);
+            history.setOwnerUserId(targetAppUserId);
+
+            dslContext.insertInto(BCC).set(history).execute();
+        }
     }
 }

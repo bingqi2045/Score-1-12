@@ -28,7 +28,8 @@ public class AccountListService {
     @Autowired
     private DSLContext dslContext;
 
-    public PageResponse<AppUser> getAccounts(AccountListRequest request) {
+    public PageResponse<AppUser> getAccounts(org.springframework.security.core.userdetails.User requester,
+                                             AccountListRequest request) {
         SelectJoinStep<Record5<ULong, String, String, Byte, String>> step = dslContext.select(
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
@@ -46,6 +47,10 @@ public class AccountListService {
         }
         if (!StringUtils.isEmpty(request.getOrganization())) {
             conditions.add(APP_USER.ORGANIZATION.contains(request.getOrganization().trim()));
+        }
+        Boolean excludeRequester = request.getExcludeRequester();
+        if (excludeRequester != null && excludeRequester == true) {
+            conditions.add(APP_USER.LOGIN_ID.ne(requester.getUsername().trim()));
         }
 
         SelectConnectByStep<Record5<ULong, String, String, Byte, String>> conditionStep = step.where(conditions);

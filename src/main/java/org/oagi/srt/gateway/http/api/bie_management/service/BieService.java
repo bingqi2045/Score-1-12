@@ -404,4 +404,31 @@ public class BieService {
         jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1");
     }
 
+    @Transactional
+    public void transferOwnership(User user, long topLevelAbieId, String targetLoginId) {
+        long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+                .from(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(user.getUsername()))
+                .fetchOptionalInto(Long.class).orElse(0L);
+        if (ownerAppUserId == 0L) {
+            throw new IllegalArgumentException("Not found an owner user.");
+        }
+
+        long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+                .from(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(targetLoginId))
+                .fetchOptionalInto(Long.class).orElse(0L);
+        if (targetAppUserId == 0L) {
+            throw new IllegalArgumentException("Not found a target user.");
+        }
+
+        dslContext.update(Tables.TOP_LEVEL_ABIE)
+                .set(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID, ULong.valueOf(targetAppUserId))
+                .where(and(
+                        Tables.TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(ownerAppUserId)),
+                        Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                ))
+                .execute();
+    }
+
 }

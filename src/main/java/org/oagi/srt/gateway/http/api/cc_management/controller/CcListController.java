@@ -2,10 +2,12 @@ package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
+import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
@@ -19,6 +21,9 @@ public class CcListController {
 
     @Autowired
     private CcListService service;
+
+    @Autowired
+    private ExtensionService extensionService;
 
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -88,5 +93,17 @@ public class CcListController {
                                                            @PathVariable("releaseId") long releaseId,
                                                            @PathVariable("id") long extensionId) {
         return service.getBccpForAppendBccpList(user, releaseId, extensionId);
+    }
+
+    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/transfer_ownership",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
+                                            @PathVariable("releaseId") long releaseId,
+                                            @PathVariable("id") long extensionId,
+                                            @RequestBody Map<String, String> request) {
+        String targetLoginId = request.get("targetLoginId");
+        extensionService.transferOwnership(user, releaseId, extensionId, targetLoginId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -108,4 +108,14 @@ public class BieListController {
         }
         return ResponseEntity.noContent().build();
     }
+
+    @RequestMapping(value = "/profile_bie/{id}/transfer_ownership", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
+                                            @PathVariable("id") long topLevelAbieId,
+                                            @RequestBody Map<String, String> request) {
+        String targetLoginId = request.get("targetLoginId");
+        service.transferOwnership(user, topLevelAbieId, targetLoginId);
+        return ResponseEntity.noContent().build();
+    }
 }

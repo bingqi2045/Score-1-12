@@ -8,6 +8,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +24,11 @@ public class AccountListController {
     @RequestMapping(value = "/accounts_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PageResponse<AppUser> getAccounts(
+            @AuthenticationPrincipal User requester,
             @RequestParam(name = "loginId", required = false) String loginId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "organization", required = false) String organization,
+            @RequestParam(name = "excludeRequester", required = false) Boolean excludeRequester,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -35,6 +39,7 @@ public class AccountListController {
         request.setLoginId(loginId);
         request.setName(name);
         request.setOrganization(organization);
+        request.setExcludeRequester(excludeRequester);
 
         PageRequest pageRequest = new PageRequest();
         pageRequest.setSortActive(sortActive);
@@ -43,7 +48,7 @@ public class AccountListController {
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
 
-        return service.getAccounts(request);
+        return service.getAccounts(requester, request);
     }
 
     @RequestMapping(value = "/account/{loginId}", method = RequestMethod.GET,
