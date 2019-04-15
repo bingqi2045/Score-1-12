@@ -78,9 +78,9 @@ public class BieEditService {
     }
 
     @Transactional
-    public List<BieEditNode> getDescendants(User user, BieEditNode node) {
+    public List<BieEditNode> getDescendants(User user, BieEditNode node, boolean hideUnused) {
         BieEditTreeController treeController = getTreeController(user, node);
-        return treeController.getDescendants(node);
+        return treeController.getDescendants(node, hideUnused);
     }
 
     @Transactional

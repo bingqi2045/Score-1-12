@@ -136,7 +136,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     @Override
-    public List<BieEditNode> getDescendants(BieEditNode node) {
+    public List<BieEditNode> getDescendants(BieEditNode node, boolean hideUnused) {
         /*
          * If this profile BIE is in Editing state, descendants of given node will create during this process,
          * and this must be thread-safe.
@@ -162,11 +162,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             switch (node.getType()) {
                 case "abie":
-                    return getDescendants((BieEditAbieNode) node);
+                    return getDescendants((BieEditAbieNode) node, hideUnused);
                 case "asbiep":
-                    return getDescendants((BieEditAsbiepNode) node);
+                    return getDescendants((BieEditAsbiepNode) node, hideUnused);
                 case "bbiep":
-                    return getDescendants((BieEditBbiepNode) node);
+                    return getDescendants((BieEditBbiepNode) node, hideUnused);
             }
         } finally {
             if (lock != null) {
@@ -178,7 +178,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
 
-    private List<BieEditNode> getDescendants(BieEditAbieNode abieNode) {
+    private List<BieEditNode> getDescendants(BieEditAbieNode abieNode, boolean hideUnused) {
         Map<Long, BieEditAsbie> asbieMap;
         Map<Long, BieEditBbie> bbieMap;
 
@@ -192,11 +192,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         currentAccId = repository.getRoleOfAccIdByAsbiepId(asbiepId);
 
-        List<BieEditNode> children = getChildren(asbieMap, bbieMap, abieId, currentAccId, abieNode);
+        List<BieEditNode> children = getChildren(asbieMap, bbieMap, abieId, currentAccId, abieNode, hideUnused);
         return children;
     }
 
-    private List<BieEditNode> getDescendants(BieEditAsbiepNode asbiepNode) {
+    private List<BieEditNode> getDescendants(BieEditAsbiepNode asbiepNode, boolean hideUnused) {
         Map<Long, BieEditAsbie> asbieMap;
         Map<Long, BieEditBbie> bbieMap;
 
@@ -218,7 +218,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             bbieMap = Collections.emptyMap();
         }
 
-        List<BieEditNode> children = getChildren(asbieMap, bbieMap, abieId, currentAccId, asbiepNode);
+        List<BieEditNode> children = getChildren(asbieMap, bbieMap, abieId, currentAccId, asbiepNode, hideUnused);
         return children;
     }
 
@@ -226,7 +226,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             Map<Long, BieEditAsbie> asbieMap,
             Map<Long, BieEditBbie> bbieMap,
             long fromAbieId, long currentAccId,
-            BieEditNode node) {
+            BieEditNode node, boolean hideUnused) {
         List<BieEditNode> children = new ArrayList();
 
         List<SeqKeySupportable> assocList = getAssociationsByCurrentAccId(currentAccId, node.getReleaseId());
@@ -235,6 +235,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             if (assoc instanceof BieEditAscc) {
                 BieEditAscc ascc = (BieEditAscc) assoc;
                 BieEditAsbie asbie = asbieMap.get(ascc.getAsccId());
+                if (hideUnused && (asbie == null || asbie.getAsbieId() == 0L || !asbie.isUsed())) {
+                    continue;
+                }
                 BieEditAsbiepNode asbiepNode = createAsbiepNode(fromAbieId, seqKey++, asbie, ascc);
                 if (asbiepNode == null) {
                     seqKey--;
@@ -243,13 +246,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
                 OagisComponentType oagisComponentType = ccNodeRepository.getOagisComponentTypeByAccId(asbiepNode.getAccId());
                 if (oagisComponentType.isGroup()) {
-                    children.addAll(getDescendants(asbiepNode));
+                    children.addAll(getDescendants(asbiepNode, hideUnused));
                 } else {
                     children.add(asbiepNode);
                 }
             } else {
                 BieEditBcc bcc = (BieEditBcc) assoc;
                 BieEditBbie bbie = bbieMap.get(bcc.getBccId());
+                if (hideUnused && (bbie == null || bbie.getBbieId() == 0L || !bbie.isUsed())) {
+                    continue;
+                }
                 BieEditBbiepNode bbiepNode;
                 if (bcc.isAttribute()) {
                     bbiepNode = createBbiepNode(fromAbieId, 0, bbie, bcc);
@@ -426,7 +432,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
     }
 
-    private List<BieEditNode> getDescendants(BieEditBbiepNode bbiepNode) {
+    private List<BieEditNode> getDescendants(BieEditBbiepNode bbiepNode, boolean hideUnused) {
         long bbiepId = bbiepNode.getBbiepId();
         long topLevelAbieId = bbiepNode.getTopLevelAbieId();
         BieEditBccp bccp;
@@ -434,6 +440,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             BieEditBbiep bbiep = repository.getBbiep(bbiepId, topLevelAbieId);
             bccp = repository.getBccp(bbiep.getBasedBccpId());
         } else {
+            if (hideUnused) {
+                return Collections.emptyList();
+            }
+
             bccp = repository.getBccp(bbiepNode.getBccpId());
         }
 
@@ -455,6 +465,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 try {
                     bbieSc = repository.getBbieScIdByBbieIdAndDtScId(bbieId, dtScId, topLevelAbieId);
                 } catch (EmptyResultDataAccessException e) {
+                    if (hideUnused) {
+                        continue;
+                    }
+
                     if (isForceBieUpdate()) {
                         long bbieScId = repository.createBbieSc(user, bbieId, dtScId, topLevelAbieId);
                         bbieSc = new BieEditBbieSc();
@@ -463,6 +477,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 }
 
                 if (bbieSc != null) {
+                    if (hideUnused && (bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
+                        continue;
+                    }
                     bbieScNode.setBbieScId(bbieSc.getBbieScId());
                     bbieScNode.setUsed(bbieSc.isUsed());
                 }

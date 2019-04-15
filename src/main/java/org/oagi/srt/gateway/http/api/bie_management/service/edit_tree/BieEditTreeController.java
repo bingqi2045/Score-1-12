@@ -11,7 +11,7 @@ public interface BieEditTreeController {
 
     BieEditAbieNode getRootNode(long topLevelAbieId);
 
-    List<BieEditNode> getDescendants(BieEditNode node);
+    List<BieEditNode> getDescendants(BieEditNode node, boolean hideUnused);
 
     BieEditNodeDetail getDetail(BieEditNode node);
 

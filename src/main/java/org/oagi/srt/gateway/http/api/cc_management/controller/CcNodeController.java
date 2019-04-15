@@ -77,6 +77,7 @@ public class CcNodeController {
                                                   @PathVariable("type") String type,
                                                   @PathVariable("releaseId") long releaseId,
                                                   @RequestParam("data") String data) {
+
         switch (type) {
             case "acc":
                 CcAccNode accNode = convertValue(data, CcAccNode.class);

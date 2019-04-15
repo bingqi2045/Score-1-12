@@ -92,9 +92,10 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/children/abie", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BieEditNode> getAbieChildren(@AuthenticationPrincipal User user,
-                                             @RequestParam("data") String data) {
+                                             @RequestParam("data") String data,
+                                             @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
-        return service.getDescendants(user, abieNode);
+        return service.getDescendants(user, abieNode, (hideUnused != null && hideUnused) ? true : false);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/abie", method = RequestMethod.GET,
@@ -108,9 +109,10 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/children/asbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BieEditNode> getAsbiepChildren(@AuthenticationPrincipal User user,
-                                               @RequestParam("data") String data) {
+                                               @RequestParam("data") String data,
+                                               @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditAsbiepNode asbiepNode = convertValue(data, BieEditAsbiepNode.class);
-        return service.getDescendants(user, asbiepNode);
+        return service.getDescendants(user, asbiepNode, (hideUnused != null && hideUnused) ? true : false);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/asbiep", method = RequestMethod.GET,
@@ -124,9 +126,10 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/children/bbiep", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BieEditNode> getBbiepChildren(@AuthenticationPrincipal User user,
-                                              @RequestParam("data") String data) {
+                                              @RequestParam("data") String data,
+                                              @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
-        return service.getDescendants(user, bbiepNode);
+        return service.getDescendants(user, bbiepNode, (hideUnused != null && hideUnused) ? true : false);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/bbiep", method = RequestMethod.GET,
