@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -129,9 +130,12 @@ public class BieRepository {
     }
 
     public int getCountDtScByOwnerDtId(long ownerDtId) {
-        return jdbcTemplate.queryForObject("SELECT count(*) FROM dt_sc " +
-                "WHERE owner_dt_id = :owner_dt_id AND cardinality_max != 0", newSqlParameterSource()
-                .addValue("owner_dt_id", ownerDtId), Integer.class);
+        return dslContext.selectCount()
+                .from(Tables.DT_SC)
+                .where(and(
+                        Tables.DT_SC.OWNER_DT_ID.eq(ULong.valueOf(ownerDtId)),
+                        Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                )).fetchOptionalInto(Integer.class).orElse(0);
     }
 
     public int getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAbieId(Long bbieId,
@@ -149,36 +153,50 @@ public class BieRepository {
     }
 
     public List<BieEditBdtSc> getBdtScListByOwnerDtId(long ownerDtId) {
-        return jdbcTemplate.queryForList(
-                "SELECT dt_sc_id, guid, property_term, representation_term, owner_dt_id " +
-                        "FROM dt_sc WHERE cardinality_max != 0 AND owner_dt_id = :owner_dt_id",
-                newSqlParameterSource().addValue("owner_dt_id", ownerDtId), BieEditBdtSc.class);
+        return dslContext.select(
+                Tables.DT_SC.DT_SC_ID,
+                Tables.DT_SC.GUID,
+                Tables.DT_SC.PROPERTY_TERM,
+                Tables.DT_SC.REPRESENTATION_TERM,
+                Tables.DT_SC.OWNER_DT_ID)
+                .from(Tables.DT_SC)
+                .where(and(
+                        Tables.DT_SC.OWNER_DT_ID.eq(ULong.valueOf(ownerDtId)),
+                        Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                )).fetchInto(BieEditBdtSc.class);
     }
 
     public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(long bbieId, long dtScId, long topLevelAbieId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bbie_sc_id, bbie_id, dt_sc_id, is_used as used " +
-                        "FROM bbie_sc WHERE bbie_id = :bbie_id AND dt_sc_id = :dt_sc_id " +
-                        "AND owner_top_level_abie_id = :owner_top_level_abie_id",
-                newSqlParameterSource()
-                        .addValue("bbie_id", bbieId)
-                        .addValue("dt_sc_id", dtScId)
-                        .addValue("owner_top_level_abie_id", topLevelAbieId), BieEditBbieSc.class);
+        return dslContext.select(
+                Tables.BBIE_SC.BBIE_SC_ID,
+                Tables.BBIE_SC.BBIE_ID,
+                Tables.BBIE_SC.DT_SC_ID,
+                Tables.BBIE_SC.IS_USED.as("used"))
+                .from(Tables.BBIE_SC)
+                .where(and(
+                        Tables.BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieId)),
+                        Tables.BBIE_SC.DT_SC_ID.eq(ULong.valueOf(dtScId)),
+                        Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                )).fetchOptionalInto(BieEditBbieSc.class).orElse(null);
     }
 
 
     public String getAsccpPropertyTermByAsbiepId(long asbiepId) {
-        return jdbcTemplate.queryForObject("SELECT asccp.property_term " +
-                "FROM asccp JOIN asbiep ON asccp.asccp_id = asbiep.based_asccp_id " +
-                "WHERE asbiep_id = :asbiep_id", newSqlParameterSource()
-                .addValue("asbiep_id", asbiepId), String.class);
+        return dslContext.select(
+                Tables.ASCCP.PROPERTY_TERM)
+                .from(Tables.ASCCP)
+                .join(Tables.ASBIEP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
+                .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public String getBccpPropertyTermByBbiepId(long bbiepId) {
-        return jdbcTemplate.queryForObject("SELECT bccp.property_term " +
-                "FROM bccp JOIN bbiep ON bccp.bccp_id = bbiep.based_bccp_id " +
-                "WHERE bbiep_id = :bbiep_id", newSqlParameterSource()
-                .addValue("bbiep_id", bbiepId), String.class);
+        return dslContext.select(
+                Tables.BCCP.PROPERTY_TERM)
+                .from(Tables.BCCP)
+                .join(Tables.BBIEP).on(Tables.BCCP.BCCP_ID.eq(Tables.BBIEP.BASED_BCCP_ID))
+                .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId)))
+                .fetchOptionalInto(String.class).orElse(null);
     }
 
     public BieEditAsccp getAsccpByCurrentAsccpId(long currentAsccpId, long releaseId) {
@@ -218,39 +236,58 @@ public class BieRepository {
     }
 
     public BieEditAbie getAbieByAsbiepId(long asbiepId) {
-        return jdbcTemplate.queryForObject("SELECT abie.abie_id, abie.based_acc_id " +
-                "FROM asbiep JOIN abie ON asbiep.role_of_abie_id = abie.abie_id " +
-                "WHERE asbiep.asbiep_id = :asbiep_id", newSqlParameterSource()
-                .addValue("asbiep_id", asbiepId), BieEditAbie.class);
+        return dslContext.select(
+                Tables.ABIE.ABIE_ID,
+                Tables.ABIE.BASED_ACC_ID)
+                .from(Tables.ABIE)
+                .join(Tables.ASBIEP).on(Tables.ABIE.ABIE_ID.eq(Tables.ASBIEP.ROLE_OF_ABIE_ID))
+                .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
+                .fetchOptionalInto(BieEditAbie.class).orElse(null);
     }
 
     public List<BieEditAsbie> getAsbieListByFromAbieId(long fromAbieId, BieEditNode node) {
-        return jdbcTemplate.queryForList("SELECT asbie_id, from_abie_id, to_asbiep_id, based_ascc_id, is_used as used " +
-                        "FROM asbie WHERE owner_top_level_abie_id = :owner_top_level_abie_id AND from_abie_id = :from_abie_id",
-                newSqlParameterSource()
-                        .addValue("owner_top_level_abie_id", node.getTopLevelAbieId())
-                        .addValue("from_abie_id", fromAbieId), BieEditAsbie.class);
+        return dslContext.select(
+                Tables.ASBIE.ASBIE_ID,
+                Tables.ASBIE.FROM_ABIE_ID,
+                Tables.ASBIE.TO_ASBIEP_ID,
+                Tables.ASBIE.BASED_ASCC_ID,
+                Tables.ASBIE.IS_USED.as("used"))
+                .from(Tables.ASBIE)
+                .where(and(
+                        Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
+                        Tables.ASBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
+                ))
+                .fetchInto(BieEditAsbie.class);
     }
 
     public List<BieEditBbie> getBbieListByFromAbieId(long fromAbieId, BieEditNode node) {
-        return jdbcTemplate.queryForList("SELECT bbie_id, from_abie_id, to_bbiep_id, based_bcc_id, is_used as used " +
-                        "FROM bbie WHERE owner_top_level_abie_id = :owner_top_level_abie_id AND from_abie_id = :from_abie_id",
-                newSqlParameterSource()
-                        .addValue("owner_top_level_abie_id", node.getTopLevelAbieId())
-                        .addValue("from_abie_id", fromAbieId), BieEditBbie.class);
+        return dslContext.select(
+                Tables.BBIE.BBIE_ID,
+                Tables.BBIE.FROM_ABIE_ID,
+                Tables.BBIE.TO_BBIEP_ID,
+                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.IS_USED.as("used"))
+                .from(Tables.BBIE)
+                .where(and(
+                        Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
+                        Tables.BBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
+                ))
+                .fetchInto(BieEditBbie.class);
     }
 
     public long getRoleOfAccIdByAsbiepId(long asbiepId) {
-        return jdbcTemplate.queryForObject("SELECT asccp.role_of_acc_id " +
-                "FROM asbiep JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
-                "WHERE asbiep_id = :asbiep_id", newSqlParameterSource()
-                .addValue("asbiep_id", asbiepId), Long.class);
+        return dslContext.select(Tables.ASCCP.ROLE_OF_ACC_ID)
+                .from(Tables.ASCCP)
+                .join(Tables.ASBIEP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
+                .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
+                .fetchOptionalInto(Long.class).orElse(0L);
     }
 
     public long getRoleOfAccIdByAsccpId(long asccpId) {
-        return jdbcTemplate.queryForObject("SELECT asccp.role_of_acc_id " +
-                "FROM asccp WHERE asccp_id = :asccp_id", newSqlParameterSource()
-                .addValue("asccp_id", asccpId), Long.class);
+        return dslContext.select(Tables.ASCCP.ROLE_OF_ACC_ID)
+                .from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOptionalInto(Long.class).orElse(0L);
     }
 
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
@@ -302,39 +339,30 @@ public class BieRepository {
     }
 
     public long createTopLevelAbie(long userId, long releaseId, BieState state) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("top_level_abie")
-                .usingColumns("owner_user_id", "release_id", "state")
-                .usingGeneratedKeyColumns("top_level_abie_id");
+        TopLevelAbieRecord record = new TopLevelAbieRecord();
+        record.setOwnerUserId(ULong.valueOf(userId));
+        record.setReleaseId(ULong.valueOf(releaseId));
+        record.setState(state.getValue());
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("owner_user_id", userId)
-                .addValue("release_id", releaseId)
-                .addValue("state", state.getValue());
-
-        return jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        return dslContext.insertInto(Tables.TOP_LEVEL_ABIE)
+                .set(record)
+                .returning().fetchOne().getTopLevelAbieId().longValue();
     }
 
     public void updateAbieIdOnTopLevelAbie(long abieId, long topLevelAbieId) {
-        jdbcTemplate.update("UPDATE top_level_abie SET abie_id = :abie_id " +
-                "WHERE top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
-                .addValue("abie_id", abieId)
-                .addValue("top_level_abie_id", topLevelAbieId));
-    }
-
-    public void updateAbieIdAndStateOnTopLevelAbie(long abieId, long topLevelAbieId, BieState state) {
-        jdbcTemplate.update("UPDATE top_level_abie SET abie_id = :abie_id, state = :state " +
-                "WHERE top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
-                .addValue("abie_id", abieId)
-                .addValue("state", state.getValue())
-                .addValue("top_level_abie_id", topLevelAbieId));
+        dslContext.update(Tables.TOP_LEVEL_ABIE)
+                .set(Tables.TOP_LEVEL_ABIE.ABIE_ID, ULong.valueOf(abieId))
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
     }
 
     public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
-        return jdbcTemplate.queryForObject("SELECT biz_ctx_id FROM abie JOIN top_level_abie " +
-                "ON abie.abie_id = top_level_abie.abie_id " +
-                "WHERE top_level_abie.top_level_abie_id = :top_level_abie_id", newSqlParameterSource()
-                .addValue("top_level_abie_id", topLevelAbieId), Long.class);
+        return dslContext.select(
+                Tables.ABIE.BIZ_CTX_ID)
+                .from(Tables.ABIE)
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.ABIE.ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchOptionalInto(Long.class).orElse(0L);
     }
 
     public long createAbie(User user, long basedAccId, long topLevelAbieId) {
@@ -531,23 +559,26 @@ public class BieRepository {
     }
 
     public long getDefaultDtScPriRestriIdByDtScId(long dtScId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bdt_sc_pri_restri_id FROM bdt_sc_pri_restri " +
-                        "WHERE bdt_sc_id = :bdt_sc_id AND is_default = :is_default", newSqlParameterSource()
-                        .addValue("bdt_sc_id", dtScId)
-                        .addValue("is_default", true), Long.class);
+        return dslContext.select(
+                Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
+                .from(Tables.BDT_SC_PRI_RESTRI)
+                .where(and(
+                        Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)),
+                        Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)
+                ))
+                .fetchOptionalInto(Long.class).orElse(0L);
     }
 
     public void updateState(long topLevelAbieId, BieState state) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("state", state.getValue())
-                .addValue("top_level_abie_id", topLevelAbieId);
+        dslContext.update(Tables.TOP_LEVEL_ABIE)
+                .set(Tables.TOP_LEVEL_ABIE.STATE, state.getValue())
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
 
-        jdbcTemplate.update("UPDATE top_level_abie SET state = :state " +
-                "WHERE top_level_abie_id = :top_level_abie_id", parameterSource);
-
-        jdbcTemplate.update("UPDATE abie SET state = :state " +
-                "WHERE owner_top_level_abie_id = :top_level_abie_id", parameterSource);
+        dslContext.update(Tables.ABIE)
+                .set(Tables.ABIE.STATE, state.getValue())
+                .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
     }
 
 }
