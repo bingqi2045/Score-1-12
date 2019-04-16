@@ -120,6 +120,7 @@ public class BieRepository {
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.CURRENT_BCCP_ID,
                 Tables.BCCP.GUID,
+                Tables.BCCP.BDT_ID,
                 Tables.BCCP.PROPERTY_TERM,
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,

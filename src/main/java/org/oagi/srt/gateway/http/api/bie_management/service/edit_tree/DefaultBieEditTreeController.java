@@ -468,14 +468,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             long dtScId = bdtSc.getDtScId();
             if (bbieId > 0L) {
-                BieEditBbieSc bbieSc = null;
-                try {
-                    bbieSc = repository.getBbieScIdByBbieIdAndDtScId(bbieId, dtScId, topLevelAbieId);
-                } catch (EmptyResultDataAccessException e) {
-                    if (hideUnused) {
-                        continue;
-                    }
-
+                BieEditBbieSc bbieSc = repository.getBbieScIdByBbieIdAndDtScId(bbieId, dtScId, topLevelAbieId);
+                if (bbieSc == null) {
                     if (isForceBieUpdate()) {
                         long bbieScId = repository.createBbieSc(user, bbieId, dtScId, topLevelAbieId);
                         bbieSc = new BieEditBbieSc();
@@ -483,13 +477,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     }
                 }
 
-                if (bbieSc != null) {
-                    if (hideUnused && (bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
-                        continue;
-                    }
-                    bbieScNode.setBbieScId(bbieSc.getBbieScId());
-                    bbieScNode.setUsed(bbieSc.isUsed());
+                if (hideUnused && (bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
+                    continue;
                 }
+                bbieScNode.setBbieScId(bbieSc.getBbieScId());
+                bbieScNode.setUsed(bbieSc.isUsed());
             }
 
             bbieScNode.setDtScId(dtScId);
