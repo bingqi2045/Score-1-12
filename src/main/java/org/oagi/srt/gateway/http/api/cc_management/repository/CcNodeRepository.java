@@ -43,9 +43,6 @@ public class CcNodeRepository {
     @Autowired
     private SessionService sessionService;
 
-    @Autowired
-    private BieRepository bieRepository;
-
     private SelectJoinStep<Record11<
             ULong, String, String, ULong, Integer,
             String, Integer, Integer, Integer, ULong,
@@ -85,6 +82,8 @@ public class CcNodeRepository {
 
     public CcAccNode getAccNodeFromAsccByAsccpId(long toAsccpId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
+                Tables.ASCC.ASCC_ID,
+                Tables.ASCC.CURRENT_ASCC_ID,
                 Tables.ASCC.FROM_ACC_ID,
                 Tables.ASCC.SEQ_KEY,
                 Tables.ASCC.REVISION_NUM,
