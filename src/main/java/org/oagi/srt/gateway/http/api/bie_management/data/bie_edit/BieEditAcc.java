@@ -14,4 +14,13 @@ public class BieEditAcc extends TrackableImpl {
     private Long basedAccId;
     private long currentAccId;
 
+    @Override
+    public long getId() {
+        return accId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentAccId;
+    }
 }

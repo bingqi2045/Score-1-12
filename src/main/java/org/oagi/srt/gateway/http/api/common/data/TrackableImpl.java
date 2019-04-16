@@ -4,7 +4,7 @@ import lombok.Data;
 import org.oagi.srt.data.Trackable;
 
 @Data
-public class TrackableImpl implements Trackable {
+public abstract class TrackableImpl implements Trackable {
 
     private Long releaseId;
     private int revisionNum;

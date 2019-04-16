@@ -21,4 +21,14 @@ public class BieEditBcc extends TrackableImpl implements SeqKeySupportable {
         return (entityType == 0);
     }
 
+    @Override
+    public long getId() {
+        return bccId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentBccId;
+    }
+
 }

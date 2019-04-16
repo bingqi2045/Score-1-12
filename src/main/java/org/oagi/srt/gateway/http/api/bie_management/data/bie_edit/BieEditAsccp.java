@@ -14,4 +14,14 @@ public class BieEditAsccp extends TrackableImpl {
     private long roleOfAccId;
     private long currentAsccpId;
 
+    @Override
+    public long getId() {
+        return asccpId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentAsccpId;
+    }
+
 }

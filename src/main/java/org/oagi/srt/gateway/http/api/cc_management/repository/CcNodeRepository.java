@@ -161,6 +161,7 @@ public class CcNodeRepository {
             }
             List<AsccForAccHasChild> asccList = dslContext.select(
                     Tables.ASCC.ASCC_ID,
+                    Tables.ASCC.CURRENT_ASCC_ID,
                     Tables.ASCC.GUID,
                     Tables.ASCC.REVISION_NUM,
                     Tables.ASCC.REVISION_TRACKING_NUM,
@@ -177,6 +178,7 @@ public class CcNodeRepository {
 
             List<BccForAccHasChild> bccList = dslContext.select(
                     Tables.BCC.BCC_ID,
+                    Tables.BCC.CURRENT_BCC_ID,
                     Tables.BCC.GUID,
                     Tables.BCC.REVISION_NUM,
                     Tables.BCC.REVISION_TRACKING_NUM,
@@ -195,19 +197,42 @@ public class CcNodeRepository {
     @EqualsAndHashCode(callSuper = true)
     public static class AsccForAccHasChild extends TrackableImpl {
         private long asccId;
+        private Long currentAsccId;
         private String guid;
+
+        @Override
+        public long getId() {
+            return asccId;
+        }
+
+        @Override
+        public Long getCurrentId() {
+            return currentAsccId;
+        }
     }
 
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class BccForAccHasChild extends TrackableImpl {
         private long bccId;
+        private Long currentBccId;
         private String guid;
+
+        @Override
+        public long getId() {
+            return bccId;
+        }
+
+        @Override
+        public Long getCurrentId() {
+            return currentBccId;
+        }
     }
 
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
                 Tables.ASCCP.ROLE_OF_ACC_ID,
@@ -226,6 +251,7 @@ public class CcNodeRepository {
     public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
         List<CcAsccpNode> asccpNodes = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
                 Tables.ASCCP.ROLE_OF_ACC_ID,
@@ -245,6 +271,7 @@ public class CcNodeRepository {
     public CcAsccpNode getAsccpNodeByRoleOfAccId(long roleOfAccId, Long releaseId) {
         List<CcAsccpNode> asccpNodes = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM.as("name"),
                 Tables.ASCCP.STATE.as("raw_state"),
@@ -263,6 +290,7 @@ public class CcNodeRepository {
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
         CcBccpNode bccpNode = dslContext.select(
                 Tables.BCCP.BCCP_ID,
+                Tables.BCCP.CURRENT_BCCP_ID,
                 Tables.BCCP.GUID,
                 Tables.BCCP.PROPERTY_TERM.as("name"),
                 Tables.BCCP.BDT_ID,
@@ -281,6 +309,7 @@ public class CcNodeRepository {
     public CcBccpNode getBccpNodeByCurrentBccpId(long currentBccpId, Long releaseId) {
         List<CcBccpNode> bccpNodes = dslContext.select(
                 Tables.BCCP.BCCP_ID,
+                Tables.BCCP.CURRENT_BCCP_ID,
                 Tables.BCCP.GUID,
                 Tables.BCCP.PROPERTY_TERM.as("name"),
                 Tables.BCCP.BDT_ID,
@@ -421,6 +450,7 @@ public class CcNodeRepository {
     private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcBccNode> bccNodes = dslContext.select(
                 Tables.BCC.BCC_ID,
+                Tables.BCC.CURRENT_BCC_ID,
                 Tables.BCC.GUID,
                 Tables.BCC.TO_BCCP_ID,
                 Tables.BCC.SEQ_KEY,

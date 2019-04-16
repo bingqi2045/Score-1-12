@@ -42,6 +42,11 @@ public class ACC implements CoreComponent {
 
     private int state;
     private Long currentAccId;
+    @Override
+    public Long getCurrentId() {
+        return getCurrentAccId();
+    }
+
     private boolean deprecated;
     private boolean abstracted;
 

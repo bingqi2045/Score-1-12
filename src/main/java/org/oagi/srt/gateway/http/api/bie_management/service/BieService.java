@@ -52,6 +52,7 @@ public class BieService {
     public List<AsccpForBie> getAsccpListForBie(long releaseId) {
         List<AsccpForBie> asccpForBieList = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.ASCCP.MODULE_ID,
@@ -103,18 +104,19 @@ public class BieService {
         return response;
     }
 
-
-    private String FIND_ROLE_OF_ACC_BY_ASCCP_ID_STATEMENT =
-            "SELECT acc.acc_id, acc.guid, acc.revision_num, acc.revision_tracking_num, acc.revision_action, acc.release_id " +
-                    "FROM acc JOIN asccp ON acc.current_acc_id = asccp.role_of_acc_id WHERE asccp.asccp_id = :asccp_id";
-
     private AccForBie findRoleOfAccByAsccpId(long asccpId, long releaseId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("asccp_id", asccpId);
-
-        List<AccForBie> accForBieList =
-                jdbcTemplate.queryForList(FIND_ROLE_OF_ACC_BY_ASCCP_ID_STATEMENT, parameterSource,
-                        AccForBie.class);
+        List<AccForBie> accForBieList = dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.CURRENT_ACC_ID,
+                Tables.ACC.GUID,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.REVISION_ACTION,
+                Tables.ACC.RELEASE_ID)
+                .from(Tables.ACC)
+                .join(Tables.ASCCP).on(Tables.ACC.CURRENT_ACC_ID.eq(Tables.ASCCP.ROLE_OF_ACC_ID))
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchInto(AccForBie.class);
 
         Map<String, List<AccForBie>> groupingByGuidAccForBieList =
                 accForBieList.stream()

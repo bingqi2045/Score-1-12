@@ -16,4 +16,14 @@ public class BieEditAscc extends TrackableImpl implements SeqKeySupportable {
     private int seqKey;
     private long currentAsccId;
 
+    @Override
+    public long getId() {
+        return asccId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentAsccId;
+    }
+
 }

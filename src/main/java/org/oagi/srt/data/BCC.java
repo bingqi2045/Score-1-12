@@ -41,6 +41,11 @@ public class BCC implements CoreComponent {
 
     private int state;
     private Long currentBccId;
+    @Override
+    public Long getCurrentId() {
+        return getCurrentBccId();
+    }
+
     private boolean deprecated;
     private boolean nillable;
 

@@ -73,7 +73,7 @@ public class BieEditService {
     }
 
     @Transactional
-    public BccForBie getBcc(User user, long bccId){
+    public BccForBie getBcc(User user, long bccId) {
         return bieRepository.getBcc(bccId);
     }
 

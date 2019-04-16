@@ -121,7 +121,9 @@ public class CcListService {
     }
 
     public List<AsccpForAppendAsccp> getAsccpForAppendAsccpList(User user, long releaseId, long extensionId) {
-        return dslContext.select(ASCCP.ASCCP_ID,
+        return dslContext.select(
+                ASCCP.ASCCP_ID,
+                ASCCP.CURRENT_ASCCP_ID,
                 ASCCP.PROPERTY_TERM,
                 ASCCP.GUID,
                 MODULE.MODULE_.as("module"),
@@ -140,7 +142,9 @@ public class CcListService {
     }
 
     public List<BccpForAppendBccp> getBccpForAppendBccpList(User user, long releaseId, long extensionId) {
-        return dslContext.select(BCCP.BCCP_ID,
+        return dslContext.select(
+                BCCP.BCCP_ID,
+                BCCP.CURRENT_BCCP_ID,
                 BCCP.PROPERTY_TERM,
                 BCCP.GUID,
                 MODULE.MODULE_.as("module"),

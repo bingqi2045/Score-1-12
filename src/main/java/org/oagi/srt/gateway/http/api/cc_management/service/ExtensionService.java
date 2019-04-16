@@ -48,7 +48,7 @@ public class ExtensionService {
 
     @Autowired
     private CcListService ccListService;
-    
+
 
     public CcAccNode getExtensionNode(User user, long extensionId, long releaseId) {
         CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, null);

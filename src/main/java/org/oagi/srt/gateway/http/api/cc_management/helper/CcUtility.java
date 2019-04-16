@@ -14,46 +14,19 @@ public class CcUtility {
             return null;
         }
 
-        Stream<T> filteredEntities;
         if (releaseId == null || releaseId == 0L) {
-            filteredEntities = entities.stream()
-                    .filter(e -> e.getReleaseId() == null);
-        } else {
-            filteredEntities = entities.stream()
-                    .filter(e -> {
-                        Long entityReleaseId = e.getReleaseId();
-                        return (entityReleaseId != null) && (entityReleaseId <= releaseId);
-                    });
-
-            entities = filteredEntities.sorted(Comparator.comparingLong(T::getReleaseId).reversed())
+            entities = entities.stream()
+                    .filter(e -> e.getCurrentId() == null)
+                    .sorted(Comparator.comparingLong(T::getId).reversed())
                     .collect(Collectors.toList());
-            long maxReleaseId = entities.get(0).getReleaseId();
-            filteredEntities = entities.stream().filter(e -> e.getReleaseId() == maxReleaseId);
+        } else {
+            entities = entities.stream()
+                    .filter(e -> e.getCurrentId() != null)
+                    .filter(e -> e.getReleaseId() <= releaseId)
+                    .sorted(Comparator.comparingLong(T::getId).reversed())
+                    .collect(Collectors.toList());
         }
 
-        entities = filteredEntities.collect(Collectors.toList());
-        if (entities.isEmpty()) {
-            return null;
-        }
-        if (entities.size() == 1) {
-            return entities.get(0);
-        }
-
-        long maxReleaseId = entities.get(0).getReleaseId();
-        filteredEntities = entities.stream().filter(e -> e.getReleaseId() == maxReleaseId);
-        entities = filteredEntities.sorted(Comparator.comparingLong(T::getRevisionNum).reversed())
-                .collect(Collectors.toList());
-        if (entities.isEmpty()) {
-            return null;
-        }
-        if (entities.size() == 1) {
-            return entities.get(0);
-        }
-
-        long maxRevisionNum = entities.get(0).getRevisionNum();
-        filteredEntities = entities.stream().filter(e -> e.getRevisionNum() == maxRevisionNum);
-        entities = filteredEntities.sorted(Comparator.comparingLong(T::getRevisionTrackingNum).reversed())
-                .collect(Collectors.toList());
         return (entities.isEmpty()) ? null : entities.get(0);
     }
 
@@ -62,17 +35,24 @@ public class CcUtility {
             return null;
         }
 
-        if (releaseId == null || releaseId == 0) {
+        if (releaseId == null || releaseId == 0L) {
             entities = entities.stream()
-                    .filter(e -> (e.getReleaseId() != null) && (e.getReleaseId() > 0L))
+                    .filter(e -> e.getCurrentId() != null)
+                    .sorted(Comparator.comparingLong(T::getId).reversed())
                     .collect(Collectors.toList());
-            releaseId = entities.get(0).getReleaseId();
+        } else {
+            entities = entities.stream()
+                    .filter(e -> e.getCurrentId() != null)
+                    .filter(e -> e.getReleaseId() <= releaseId)
+                    .sorted(Comparator.comparingLong(T::getId).reversed())
+                    .collect(Collectors.toList());
         }
-        T entity = getLatestEntity(releaseId, entities);
-        if (entity == null) {
+
+        if (entities.isEmpty()) {
             return null;
         }
 
+        T entity = entities.get(0);
         return entity.getRevisionNum() + "." + entity.getRevisionTrackingNum();
     }
 }

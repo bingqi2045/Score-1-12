@@ -41,6 +41,11 @@ public class BCCP implements CoreComponent {
 
     private int state;
     private Long currentBccpId;
+    @Override
+    public Long getCurrentId() {
+        return getCurrentBccpId();
+    }
+    
     private boolean deprecated;
     private boolean nillable;
 

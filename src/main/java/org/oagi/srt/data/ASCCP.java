@@ -39,6 +39,11 @@ public class ASCCP implements CoreComponent {
 
     private int state;
     private Long currentAsccpId;
+    @Override
+    public Long getCurrentId() {
+        return getCurrentAsccpId();
+    }
+
     private boolean reusableIndicator;
     private boolean deprecated;
     private boolean nillable;

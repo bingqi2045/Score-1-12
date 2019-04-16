@@ -7,7 +7,7 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CcNode extends TrackableImpl {
+public abstract class CcNode extends TrackableImpl {
 
     private String guid;
     private String name;

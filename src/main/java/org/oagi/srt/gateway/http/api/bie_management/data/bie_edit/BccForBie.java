@@ -9,13 +9,24 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 public class BccForBie extends TrackableImpl {
 
     private long bccId;
+    private Long currentBccId;
     private String guid;
     private String cardinalityMin;
     private String cardinalityMax;
     private String den;
     private String definition;
     private String definitionSource;
-    private String to_bccp_id;
-    private String from_acc_id;
+    private String toBccpId;
+    private String fromAccId;
+
+    @Override
+    public long getId() {
+        return bccId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentBccId;
+    }
 
 }

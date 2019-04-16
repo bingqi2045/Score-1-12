@@ -40,6 +40,11 @@ public class ASCC implements CoreComponent {
 
     private int state;
     private Long currentAsccId;
+    @Override
+    public Long getCurrentId() {
+        return getCurrentAsccId();
+    }
+
     private boolean deprecated;
 
 

@@ -45,6 +45,11 @@ public class DT implements CoreComponent {
     private Long releaseId;
 
     private Long currentBdtId;
+    @Override
+    public Long getCurrentId() {
+        return currentBdtId;
+    }
+
     private boolean deprecated;
 
 }

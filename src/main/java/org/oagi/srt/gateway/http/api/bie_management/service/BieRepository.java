@@ -48,58 +48,84 @@ public class BieRepository {
 
     public BieEditAcc getAccByCurrentAccId(long currentAccId, long releaseId) {
         // BIE only can see the ACCs whose state is in Published.
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("state", CcState.Published.getValue())
-                .addValue("current_acc_id", currentAccId);
-        List<BieEditAcc> accList =
-                jdbcTemplate.queryForList("SELECT acc_id, guid, based_acc_id, oagis_component_type, current_acc_id, " +
-                                "revision_num, revision_tracking_num, release_id FROM acc " +
-                                "WHERE revision_num > 0 AND state = :state AND current_acc_id = :current_acc_id",
-                        parameterSource, BieEditAcc.class);
+        List<BieEditAcc> accList = dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.CURRENT_ACC_ID,
+                Tables.ACC.BASED_ACC_ID,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.RELEASE_ID)
+                .from(Tables.ACC)
+                .where(and(
+                        Tables.ACC.REVISION_NUM.greaterThan(0),
+                        Tables.ACC.STATE.eq(CcState.Published.getValue()),
+                        Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId))))
+                .fetchInto(BieEditAcc.class);
         return CcUtility.getLatestEntity(releaseId, accList);
     }
 
     public BieEditAcc getAcc(long accId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("acc_id", accId);
-        List<BieEditAcc> res =
-                jdbcTemplate.queryForList("SELECT acc_id, guid, based_acc_id, oagis_component_type, current_acc_id, " +
-                                "revision_num, revision_tracking_num, release_id FROM acc " +
-                                "WHERE acc_id = :acc_id",
-                        parameterSource, BieEditAcc.class);
+        List<BieEditAcc> res = dslContext.select(
+                Tables.ACC.ACC_ID,
+                Tables.ACC.CURRENT_ACC_ID,
+                Tables.ACC.BASED_ACC_ID,
+                Tables.ACC.OAGIS_COMPONENT_TYPE,
+                Tables.ACC.REVISION_NUM,
+                Tables.ACC.REVISION_TRACKING_NUM,
+                Tables.ACC.RELEASE_ID)
+                .from(Tables.ACC)
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchInto(BieEditAcc.class);
         if (res.isEmpty()) {
             throw new EmptyResultDataAccessException(1);
         }
-
         return res.get(0);
     }
 
     public BieEditBbiep getBbiep(long bbiepId, long topLevelAbieId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bbiep_id, based_bccp_id FROM bbiep " +
-                        "WHERE owner_top_level_abie_id = :owner_top_level_abie_id AND bbiep_id = :bbiep_id",
-                newSqlParameterSource()
-                        .addValue("bbiep_id", bbiepId)
-                        .addValue("owner_top_level_abie_id", topLevelAbieId), BieEditBbiep.class);
+        return dslContext.select(
+                Tables.BBIEP.BBIEP_ID,
+                Tables.BBIEP.BASED_BCCP_ID)
+                .from(Tables.BBIEP)
+                .where(and(
+                        Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId))))
+                .fetchOptionalInto(BieEditBbiep.class).orElse(null);
     }
 
     public BccForBie getBcc(long bccId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bcc_id, guid, cardinality_min, cardinality_max, den, definition, " +
-                        "to_bccp_id, from_acc_id, definition_source, entity_type, " +
-                        "revision_num, revision_tracking_num, release_id " +
-                        "FROM bcc WHERE bcc_id = :bcc_id",
-                newSqlParameterSource()
-                        .addValue("bcc_id", bccId), BccForBie.class);
+        return dslContext.select(
+                Tables.BCC.BCC_ID,
+                Tables.BCC.CURRENT_BCC_ID,
+                Tables.BCC.GUID,
+                Tables.BCC.CARDINALITY_MIN,
+                Tables.BCC.CARDINALITY_MAX,
+                Tables.BCC.DEN,
+                Tables.BCC.DEFINITION,
+                Tables.BCC.FROM_ACC_ID,
+                Tables.BCC.TO_BCCP_ID,
+                Tables.BCC.ENTITY_TYPE,
+                Tables.BCC.REVISION_NUM,
+                Tables.BCC.REVISION_TRACKING_NUM,
+                Tables.BCC.RELEASE_ID)
+                .from(Tables.BCC)
+                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                .fetchOptionalInto(BccForBie.class).orElse(null);
     }
 
     public BieEditBccp getBccp(long bccpId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bccp_id, guid, property_term, bdt_id, current_bccp_id, " +
-                        "revision_num, revision_tracking_num, release_id " +
-                        "FROM bccp WHERE bccp_id = :bccp_id",
-                newSqlParameterSource()
-                        .addValue("bccp_id", bccpId), BieEditBccp.class);
+        return dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.CURRENT_BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM,
+                Tables.BCCP.REVISION_NUM,
+                Tables.BCCP.REVISION_TRACKING_NUM,
+                Tables.BCCP.RELEASE_ID)
+                .from(Tables.BCCP)
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 
     public int getCountDtScByOwnerDtId(long ownerDtId) {
@@ -156,20 +182,38 @@ public class BieRepository {
     }
 
     public BieEditAsccp getAsccpByCurrentAsccpId(long currentAsccpId, long releaseId) {
-        List<BieEditAsccp> asccpList =
-                jdbcTemplate.queryForList("SELECT asccp_id, guid, property_term, role_of_acc_id, current_asccp_id, " +
-                        "revision_num, revision_tracking_num, release_id " +
-                        "FROM asccp WHERE revision_num > 0 AND current_asccp_id = :current_asccp_id", newSqlParameterSource()
-                        .addValue("current_asccp_id", currentAsccpId), BieEditAsccp.class);
+        List<BieEditAsccp> asccpList = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID)
+                .from(Tables.ASCCP)
+                .where(and(
+                        Tables.ASCCP.REVISION_NUM.greaterThan(0),
+                        Tables.ASCCP.CURRENT_ASCCP_ID.eq(ULong.valueOf(currentAsccpId))))
+                .fetchInto(BieEditAsccp.class);
         return CcUtility.getLatestEntity(releaseId, asccpList);
     }
 
     public BieEditBccp getBccpByCurrentBccpId(long currentBccpId, long releaseId) {
-        List<BieEditBccp> bccpList =
-                jdbcTemplate.queryForList("SELECT bccp_id, guid, property_term, bdt_id, current_bccp_id, " +
-                        "revision_num, revision_tracking_num, release_id " +
-                        "FROM bccp WHERE revision_num > 0 AND current_bccp_id = :current_bccp_id", newSqlParameterSource()
-                        .addValue("current_bccp_id", currentBccpId), BieEditBccp.class);
+        List<BieEditBccp> bccpList = dslContext.select(
+                Tables.BCCP.BCCP_ID,
+                Tables.BCCP.CURRENT_BCCP_ID,
+                Tables.BCCP.GUID,
+                Tables.BCCP.PROPERTY_TERM,
+                Tables.BCCP.BDT_ID,
+                Tables.BCCP.REVISION_NUM,
+                Tables.BCCP.REVISION_TRACKING_NUM,
+                Tables.BCCP.RELEASE_ID)
+                .from(Tables.BCCP)
+                .where(and(
+                        Tables.BCCP.REVISION_NUM.greaterThan(0),
+                        Tables.BCCP.CURRENT_BCCP_ID.eq(ULong.valueOf(currentBccpId))))
+                .fetchInto(BieEditBccp.class);
         return CcUtility.getLatestEntity(releaseId, bccpList);
     }
 
@@ -212,22 +256,20 @@ public class BieRepository {
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,
+                Tables.ASCC.CURRENT_ASCC_ID,
                 Tables.ASCC.GUID,
                 Tables.ASCC.FROM_ACC_ID,
                 Tables.ASCC.TO_ASCCP_ID,
                 Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.CURRENT_ASCC_ID,
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
                 Tables.ASCC.RELEASE_ID)
                 .from(Tables.ASCC)
-                .where(
-                        and(
-                                Tables.ASCC.REVISION_NUM.greaterThan(0),
-                                Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
-                                Tables.ASCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
-                        )
-                ).fetchInto(BieEditAscc.class)
+                .where(and(
+                        Tables.ASCC.REVISION_NUM.greaterThan(0),
+                        Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                        Tables.ASCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+                )).fetchInto(BieEditAscc.class)
                 .stream()
                 .collect(groupingBy(BieEditAscc::getGuid)).values().stream()
                 .map(e -> CcUtility.getLatestEntity(releaseId, e))
@@ -235,13 +277,24 @@ public class BieRepository {
     }
 
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId) {
-        List<BieEditBcc> bccList =
-                jdbcTemplate.queryForList("SELECT bcc_id, guid, from_acc_id, to_bccp_id, seq_key, entity_type, current_bcc_id, " +
-                                "revision_num, revision_tracking_num, release_id " +
-                                "FROM bcc WHERE revision_num > 0 AND from_acc_id = :from_acc_id AND release_id <= :release_id",
-                        newSqlParameterSource()
-                                .addValue("from_acc_id", fromAccId)
-                                .addValue("release_id", releaseId), BieEditBcc.class);
+        List<BieEditBcc> bccList = dslContext.select(
+                Tables.BCC.BCC_ID,
+                Tables.BCC.CURRENT_BCC_ID,
+                Tables.BCC.GUID,
+                Tables.BCC.FROM_ACC_ID,
+                Tables.BCC.TO_BCCP_ID,
+                Tables.BCC.SEQ_KEY,
+                Tables.BCC.ENTITY_TYPE,
+                Tables.BCC.REVISION_NUM,
+                Tables.BCC.REVISION_TRACKING_NUM,
+                Tables.BCC.RELEASE_ID)
+                .from(Tables.BCC)
+                .where(and(
+                        Tables.BCC.REVISION_NUM.greaterThan(0),
+                        Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                        Tables.BCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+                ))
+                .fetchInto(BieEditBcc.class);
 
         return bccList.stream().collect(groupingBy(BieEditBcc::getGuid)).values().stream()
                 .map(e -> CcUtility.getLatestEntity(releaseId, e))

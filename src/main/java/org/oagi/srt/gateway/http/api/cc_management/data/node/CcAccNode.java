@@ -20,4 +20,13 @@ public class CcAccNode extends CcNode {
     private boolean isDeprecated;
     private boolean isAbstract;
 
+    @Override
+    public long getId() {
+        return accId;
+    }
+
+    @Override
+    public Long getCurrentId() {
+        return currentAccId;
+    }
 }
