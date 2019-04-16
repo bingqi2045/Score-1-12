@@ -22,6 +22,7 @@ public class CcUtility {
         } else {
             entities = entities.stream()
                     .filter(e -> e.getCurrentId() != null)
+                    .filter(e -> e.getReleaseId() != null)
                     .filter(e -> e.getReleaseId() <= releaseId)
                     .sorted(Comparator.comparingLong(T::getId).reversed())
                     .collect(Collectors.toList());
@@ -43,6 +44,7 @@ public class CcUtility {
         } else {
             entities = entities.stream()
                     .filter(e -> e.getCurrentId() != null)
+                    .filter(e -> e.getReleaseId() != null)
                     .filter(e -> e.getReleaseId() <= releaseId)
                     .sorted(Comparator.comparingLong(T::getId).reversed())
                     .collect(Collectors.toList());
