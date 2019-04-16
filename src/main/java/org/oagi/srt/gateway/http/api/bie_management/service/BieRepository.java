@@ -67,7 +67,7 @@ public class BieRepository {
     }
 
     public BieEditAcc getAcc(long accId) {
-        List<BieEditAcc> res = dslContext.select(
+        return dslContext.select(
                 Tables.ACC.ACC_ID,
                 Tables.ACC.CURRENT_ACC_ID,
                 Tables.ACC.BASED_ACC_ID,
@@ -77,11 +77,7 @@ public class BieRepository {
                 Tables.ACC.RELEASE_ID)
                 .from(Tables.ACC)
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
-                .fetchInto(BieEditAcc.class);
-        if (res.isEmpty()) {
-            throw new EmptyResultDataAccessException(1);
-        }
-        return res.get(0);
+                .fetchOptionalInto(BieEditAcc.class).orElse(null);
     }
 
     public BieEditBbiep getBbiep(long bbiepId, long topLevelAbieId) {

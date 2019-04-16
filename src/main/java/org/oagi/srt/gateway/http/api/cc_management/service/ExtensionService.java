@@ -170,13 +170,16 @@ public class ExtensionService {
                                          ULong userId, Timestamp timestamp) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
+                ASCC.CURRENT_ASCC_ID,
                 ASCC.GUID,
                 ASCC.REVISION_NUM,
                 ASCC.REVISION_TRACKING_NUM,
-                ASCC.RELEASE_ID
-        ).from(ASCC).where(and(
-                ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
-                ASCC.REVISION_NUM.greaterThan(0)))
+                ASCC.RELEASE_ID)
+                .from(ASCC)
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
+                        ASCC.REVISION_NUM.greaterThan(0)
+                ))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
@@ -193,18 +196,7 @@ public class ExtensionService {
                         ASCC.REVISION_NUM.eq(0)))
                 .execute();
 
-        asccNodes = asccNodes.stream()
-                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
-
-        List<ULong> asccIds = asccNodes.stream()
-                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
-                .collect(Collectors.toList());
-
-        Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccIds))
-                .fetch();
+        Result<AsccRecord> asccRecordResult = asccRecordResult(asccNodes, releaseId);
 
         for (AsccRecord history : asccRecordResult) {
             history.setAsccId(null);
@@ -222,10 +214,26 @@ public class ExtensionService {
         }
     }
 
+    private Result<AsccRecord> asccRecordResult(List<CcAsccNode> asccNodes, long releaseId) {
+        asccNodes = asccNodes.stream()
+                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> asccIds = asccNodes.stream()
+                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
+                .collect(Collectors.toList());
+
+        return dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.in(asccIds))
+                .fetch();
+    }
+
     private void increaseBccRevisionNum(ACC ueAcc, int revisionNum, long releaseId,
                                         ULong userId, Timestamp timestamp) {
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
+                BCC.CURRENT_BCC_ID,
                 BCC.GUID,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,
@@ -249,18 +257,7 @@ public class ExtensionService {
                         BCC.REVISION_NUM.eq(0)))
                 .execute();
 
-        bccNodes = bccNodes.stream()
-                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
-
-        List<ULong> bccIds = bccNodes.stream()
-                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
-                .collect(Collectors.toList());
-
-        Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.in(bccIds))
-                .fetch();
+        Result<BccRecord> bccRecordResult = bccRecordResult(bccNodes, releaseId);
 
         for (BccRecord history : bccRecordResult) {
             history.setBccId(null);
@@ -276,6 +273,21 @@ public class ExtensionService {
 
             dslContext.insertInto(BCC).set(history).execute();
         }
+    }
+
+    private Result<BccRecord> bccRecordResult(List<CcBccNode> bccNodes, long releaseId) {
+        bccNodes = bccNodes.stream()
+                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
+                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
+                .collect(Collectors.toList());
+
+        List<ULong> bccIds = bccNodes.stream()
+                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
+                .collect(Collectors.toList());
+
+        return dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.in(bccIds))
+                .fetch();
     }
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
@@ -870,13 +882,16 @@ public class ExtensionService {
                                  ULong userId, Timestamp timestamp) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
+                ASCC.CURRENT_ASCC_ID,
                 ASCC.GUID,
                 ASCC.REVISION_NUM,
                 ASCC.REVISION_TRACKING_NUM,
-                ASCC.RELEASE_ID
-        ).from(ASCC).where(and(
-                ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                ASCC.REVISION_NUM.greaterThan(0)))
+                ASCC.RELEASE_ID)
+                .from(ASCC)
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        ASCC.REVISION_NUM.greaterThan(0)
+                ))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
@@ -893,18 +908,7 @@ public class ExtensionService {
                         ASCC.REVISION_NUM.eq(0)))
                 .execute();
 
-        asccNodes = asccNodes.stream()
-                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
-
-        List<ULong> asccIds = asccNodes.stream()
-                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
-                .collect(Collectors.toList());
-
-        Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccIds))
-                .fetch();
+        Result<AsccRecord> asccRecordResult = asccRecordResult(asccNodes, releaseId);
 
         for (AsccRecord history : asccRecordResult) {
             history.setAsccId(null);
@@ -924,6 +928,7 @@ public class ExtensionService {
                                 ULong userId, Timestamp timestamp) {
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
+                BCC.CURRENT_BCC_ID,
                 BCC.GUID,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,
@@ -947,18 +952,7 @@ public class ExtensionService {
                         BCC.REVISION_NUM.eq(0)))
                 .execute();
 
-        bccNodes = bccNodes.stream()
-                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
-
-        List<ULong> bccIds = bccNodes.stream()
-                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
-                .collect(Collectors.toList());
-
-        Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.in(bccIds))
-                .fetch();
+        Result<BccRecord> bccRecordResult = bccRecordResult(bccNodes, releaseId);
 
         for (BccRecord history : bccRecordResult) {
             history.setBccId(null);
@@ -1199,6 +1193,7 @@ public class ExtensionService {
                                        ULong userId, Timestamp timestamp) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
+                ASCC.CURRENT_ASCC_ID,
                 ASCC.GUID,
                 ASCC.REVISION_NUM,
                 ASCC.REVISION_TRACKING_NUM,
@@ -1253,6 +1248,7 @@ public class ExtensionService {
                                       ULong userId, Timestamp timestamp) {
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
+                BCC.CURRENT_BCC_ID,
                 BCC.GUID,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,

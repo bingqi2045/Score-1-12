@@ -10,7 +10,6 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -601,7 +600,7 @@ public class CcNodeRepository {
                 Tables.BCCP.DEFAULT_VALUE,
                 Tables.BCCP.DEFINITION).from(Tables.BCCP)
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
-                .fetchOneInto( CcBccpNodeDetail.Bccp.class);
+                .fetchOneInto(CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
 
         long bdtId = dslContext.select(Tables.BCCP.BDT_ID).from(Tables.BCCP)
