@@ -8,11 +8,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,22 +17,18 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.srt.entity.jooq.Tables.APP_USER;
-import static org.oagi.srt.entity.jooq.Tables.CODE_LIST;
+import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
 public class CodeListService {
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
@@ -164,25 +157,46 @@ public class CodeListService {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("code_list_id", id);
 
-        CodeList codeList = jdbcTemplate.queryForObject("SELECT c.code_list_id, c.name as code_list_name, " +
-                "c.based_code_list_id, b.name as based_code_list_name, " +
-                "c.agency_id, a.name as agency_id_name, c.version_id," +
-                "c.guid, c.list_id, c.definition, c.definition_source, c.remark, " +
-                "c.extensible_indicator as extensible, c.state " +
-                "FROM code_list c " +
-                "LEFT JOIN code_list b ON c.based_code_list_id = b.code_list_id " +
-                "LEFT JOIN agency_id_list_value a ON c.agency_id = a.agency_id_list_value_id " +
-                "WHERE c.code_list_id = :code_list_id", parameterSource, CodeList.class);
-
+        CodeList codeList = dslContext.select(
+                CODE_LIST.CODE_LIST_ID,
+                CODE_LIST.NAME.as("code_list_name"),
+                CODE_LIST.BASED_CODE_LIST_ID,
+                CODE_LIST.as("base").NAME.as("based_code_list_name"),
+                CODE_LIST.AGENCY_ID,
+                AGENCY_ID_LIST_VALUE.NAME.as("agency_id_name"),
+                CODE_LIST.VERSION_ID,
+                CODE_LIST.GUID,
+                CODE_LIST.LIST_ID,
+                CODE_LIST.DEFINITION,
+                CODE_LIST.DEFINITION_SOURCE,
+                CODE_LIST.REMARK,
+                CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
+                CODE_LIST.STATE)
+                .from(CODE_LIST)
+                .leftJoin(CODE_LIST.as("base")).on(CODE_LIST.BASED_CODE_LIST_ID.eq(CODE_LIST.as("base").CODE_LIST_ID))
+                .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(id)))
+                .fetchOptionalInto(CodeList.class).orElse(null);
 
         boolean isPublished = CodeListState.Published.name().equals(codeList.getState());
-        StringBuilder query = new StringBuilder(GET_CODE_LIST_VALUES_STATEMENT);
+        List<Condition> conditions = new ArrayList();
+        conditions.add(CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(id)));
         if (isPublished) {
-            query.append(" AND locked_indicator = 0");
+            conditions.add(CODE_LIST_VALUE.LOCKED_INDICATOR.eq((byte) 0));
         }
 
-        List<CodeListValue> codeListValues =
-                jdbcTemplate.queryForList(query.toString(), parameterSource, CodeListValue.class);
+        List<CodeListValue> codeListValues = dslContext.select(
+                CODE_LIST_VALUE.CODE_LIST_VALUE_ID,
+                CODE_LIST_VALUE.VALUE,
+                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.DEFINITION,
+                CODE_LIST_VALUE.DEFINITION_SOURCE,
+                CODE_LIST_VALUE.USED_INDICATOR.as("used"),
+                CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
+                CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
+                .from(CODE_LIST_VALUE)
+                .where(conditions)
+                .fetchInto(CodeListValue.class);
         codeList.setCodeListValues(codeListValues);
 
         return codeList;
@@ -190,35 +204,38 @@ public class CodeListService {
 
     @Transactional
     public void insert(User user, CodeList codeList) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("code_list")
-                .usingColumns("guid", "name", "list_id", "agency_id", "version_id", "remark",
-                        "definition", "definition_source", "based_code_list_id", "extensible_indicator",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
-                .usingGeneratedKeyColumns("code_list_id");
-
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("name", codeList.getCodeListName())
-                .addValue("list_id", codeList.getListId())
-                .addValue("agency_id", codeList.getAgencyId())
-                .addValue("version_id", codeList.getVersionId())
-                .addValue("definition", codeList.getDefinition())
-                .addValue("remark", codeList.getRemark())
-                .addValue("definition_source", codeList.getDefinitionSource())
-                .addValue("based_code_list_id", codeList.getBasedCodeListId())
-                .addValue("extensible_indicator", codeList.isExtensible())
-                .addValue("state", CodeListState.Editing.name())
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long codeListId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
+        long codeListId = dslContext.insertInto(CODE_LIST,
+                CODE_LIST.GUID,
+                CODE_LIST.NAME,
+                CODE_LIST.LIST_ID,
+                CODE_LIST.AGENCY_ID,
+                CODE_LIST.VERSION_ID,
+                CODE_LIST.REMARK,
+                CODE_LIST.DEFINITION,
+                CODE_LIST.DEFINITION_SOURCE,
+                CODE_LIST.BASED_CODE_LIST_ID,
+                CODE_LIST.EXTENSIBLE_INDICATOR,
+                CODE_LIST.STATE,
+                CODE_LIST.CREATED_BY,
+                CODE_LIST.LAST_UPDATED_BY,
+                CODE_LIST.CREATION_TIMESTAMP,
+                CODE_LIST.LAST_UPDATE_TIMESTAMP).values(
+                SrtGuid.randomGuid(),
+                codeList.getCodeListName(),
+                codeList.getListId(),
+                ULong.valueOf(codeList.getAgencyId()),
+                codeList.getVersionId(),
+                codeList.getRemark(),
+                codeList.getDefinition(),
+                codeList.getDefinitionSource(),
+                (codeList.getBasedCodeListId() != null) ? ULong.valueOf(codeList.getBasedCodeListId()) : null,
+                (byte) ((codeList.isExtensible()) ? 1 : 0),
+                CodeListState.Editing.name(),
+                userId, userId, timestamp, timestamp)
+                .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getAgencyId().longValue();
         for (CodeListValue codeListValue : codeList.getCodeListValues()) {
             insert(codeListId, codeListValue);
         }
@@ -234,55 +251,49 @@ public class CodeListService {
             extension = false;
         }
 
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("code_list_value")
-                .usingColumns("code_list_id", "value", "name", "definition", "definition_source",
-                        "used_indicator", "locked_indicator", "extension_Indicator");
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("code_list_id", codeListId)
-                .addValue("value", codeListValue.getValue())
-                .addValue("name", codeListValue.getName())
-                .addValue("definition", codeListValue.getDefinition())
-                .addValue("definition_source", codeListValue.getDefinitionSource())
-                .addValue("used_indicator", used)
-                .addValue("locked_indicator", locked)
-                .addValue("extension_Indicator", extension);
-
-        jdbcInsert.execute(parameterSource);
+        dslContext.insertInto(CODE_LIST_VALUE,
+                CODE_LIST_VALUE.CODE_LIST_ID,
+                CODE_LIST_VALUE.VALUE,
+                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.DEFINITION,
+                CODE_LIST_VALUE.DEFINITION_SOURCE,
+                CODE_LIST_VALUE.USED_INDICATOR,
+                CODE_LIST_VALUE.LOCKED_INDICATOR,
+                CODE_LIST_VALUE.EXTENSION_INDICATOR).values(
+                ULong.valueOf(codeListId),
+                codeListValue.getValue(),
+                codeListValue.getName(),
+                codeListValue.getDefinition(),
+                codeListValue.getDefinitionSource(),
+                (byte) ((used) ? 1 : 0),
+                (byte) ((locked) ? 1 : 0),
+                (byte) ((extension) ? 1 : 0))
+                .execute();
     }
-
-    private String UPDATE_CODE_LIST_STATE_STATEMENT =
-            "UPDATE code_list SET state = :state WHERE code_list_id = :code_list_id";
-
-    private String UPDATE_CODE_LIST_STATEMENT =
-            "UPDATE code_list SET name = :name, list_id = :list_id, " +
-                    "agency_id = :agency_id, version_id = :version_id, definition = :definition, " +
-                    "remark = :remark, definition_source = :definition_source, " +
-                    "extensible_indicator = :extensible_indicator " +
-                    "WHERE code_list_id = :code_list_id";
 
     @Transactional
     public void update(User user, CodeList codeList) {
         String state = codeList.getState();
         if (!StringUtils.isEmpty(state)) {
-            jdbcTemplate.update(UPDATE_CODE_LIST_STATE_STATEMENT, newSqlParameterSource()
-                    .addValue("code_list_id", codeList.getCodeListId())
-                    .addValue("state", state));
+            dslContext.update(CODE_LIST)
+                    .set(CODE_LIST.STATE, state)
+                    .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(codeList.getCodeListId())))
+                    .execute();
         }
 
-        jdbcTemplate.update(UPDATE_CODE_LIST_STATEMENT, newSqlParameterSource()
-                .addValue("code_list_id", codeList.getCodeListId())
-                .addValue("name", codeList.getCodeListName())
-                .addValue("list_id", codeList.getListId())
-                .addValue("agency_id", codeList.getAgencyId())
-                .addValue("version_id", codeList.getVersionId())
-                .addValue("definition", codeList.getDefinition())
-                .addValue("remark", codeList.getRemark())
-                .addValue("definition_source", codeList.getDefinitionSource())
-                .addValue("extensible_indicator", codeList.isExtensible())
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date()));
+        dslContext.update(CODE_LIST)
+                .set(CODE_LIST.NAME, codeList.getCodeListName())
+                .set(CODE_LIST.LIST_ID, codeList.getListId())
+                .set(CODE_LIST.AGENCY_ID, ULong.valueOf(codeList.getAgencyId()))
+                .set(CODE_LIST.VERSION_ID, codeList.getVersionId())
+                .set(CODE_LIST.DEFINITION, codeList.getDefinition())
+                .set(CODE_LIST.REMARK, codeList.getRemark())
+                .set(CODE_LIST.DEFINITION_SOURCE, codeList.getDefinitionSource())
+                .set(CODE_LIST.EXTENSIBLE_INDICATOR, (byte) ((codeList.isExtensible()) ? 1 : 0))
+                .set(CODE_LIST.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(CODE_LIST.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(codeList.getCodeListId())))
+                .execute();
 
         List<CodeListValue> codeListValues = codeList.getCodeListValues();
         if (CodeListState.Published.name().equals(state)) {
@@ -296,15 +307,12 @@ public class CodeListService {
         update(codeList.getCodeListId(), codeListValues);
     }
 
-    private String GET_CODE_LIST_VALUE_ID_LIST_STATEMENT =
-            "SELECT code_list_value_id FROM code_list_value WHERE code_list_id = :code_list_id";
-
     @Transactional
     public void update(long codeListId, List<CodeListValue> codeListValues) {
-        List<Long> oldCodeListValueIds = jdbcTemplate.queryForList(
-                GET_CODE_LIST_VALUE_ID_LIST_STATEMENT,
-                newSqlParameterSource().addValue("code_list_id", codeListId),
-                Long.class);
+        List<Long> oldCodeListValueIds = dslContext.select(CODE_LIST_VALUE.CODE_LIST_VALUE_ID)
+                .from(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(codeListId)))
+                .fetchInto(Long.class);
 
         Map<Long, CodeListValue> newCodeListValues = codeListValues.stream()
                 .filter(e -> e.getCodeListValueId() > 0L)
@@ -326,12 +334,6 @@ public class CodeListService {
         }
     }
 
-    private String UPDATE_CODE_LIST_VALUE_STATEMENT =
-            "UPDATE code_list_value SET `value` = :value, name = :name, " +
-                    "definition = :definition, definition_source = :definition_source," +
-                    "used_indicator = :used, locked_indicator = :locked, extension_Indicator = :extension " +
-                    "WHERE code_list_value_id = :code_list_value_id AND code_list_id = :code_list_id";
-
     @Transactional
     public void update(long codeListId, CodeListValue codeListValue) {
 
@@ -343,46 +345,40 @@ public class CodeListService {
             extension = false;
         }
 
-        jdbcTemplate.update(UPDATE_CODE_LIST_VALUE_STATEMENT, newSqlParameterSource()
-                .addValue("code_list_value_id", codeListValue.getCodeListValueId())
-                .addValue("code_list_id", codeListId)
-                .addValue("value", codeListValue.getValue())
-                .addValue("name", codeListValue.getName())
-                .addValue("definition", codeListValue.getDefinition())
-                .addValue("definition_source", codeListValue.getDefinitionSource())
-                .addValue("used", used)
-                .addValue("locked", locked)
-                .addValue("extension", extension));
+        dslContext.update(CODE_LIST_VALUE)
+                .set(CODE_LIST_VALUE.VALUE, codeListValue.getValue())
+                .set(CODE_LIST_VALUE.NAME, codeListValue.getName())
+                .set(CODE_LIST_VALUE.DEFINITION, codeListValue.getDefinition())
+                .set(CODE_LIST_VALUE.DEFINITION_SOURCE, codeListValue.getDefinitionSource())
+                .set(CODE_LIST_VALUE.USED_INDICATOR, (byte) ((used) ? 1 : 0))
+                .set(CODE_LIST_VALUE.LOCKED_INDICATOR, (byte) ((locked) ? 1 : 0))
+                .set(CODE_LIST_VALUE.EXTENSION_INDICATOR, (byte) ((extension) ? 1 : 0))
+                .where(and(
+                        CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(ULong.valueOf(codeListValue.getCodeListValueId())),
+                        CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(codeListId))
+                ))
+                .execute();
     }
-
-    private String DELETE_CODE_LIST_VALUE_STATEMENT =
-            "DELETE FROM code_list_value " +
-                    "WHERE code_list_value_id = :code_list_value_id AND code_list_id = :code_list_id";
 
     @Transactional
     public void delete(long codeListId, long codeListValueId) {
-        jdbcTemplate.update(DELETE_CODE_LIST_VALUE_STATEMENT, newSqlParameterSource()
-                .addValue("code_list_value_id", codeListValueId)
-                .addValue("code_list_id", codeListId));
+        dslContext.deleteFrom(CODE_LIST_VALUE)
+                .where(and(
+                        CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(ULong.valueOf(codeListValueId)),
+                        CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(codeListId))
+                ))
+                .execute();
     }
-
-    private String DELETE_CODE_LIST_VALUES_STATEMENT =
-            "DELETE FROM code_list_value WHERE code_list_id = :code_list_id";
-
-    private String DELETE_CODE_LIST_STATEMENT =
-            "DELETE FROM code_list WHERE code_list_id = :code_list_id";
 
     @Transactional
     public void delete(long codeListId) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("code_list_id", codeListId);
+        dslContext.deleteFrom(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(codeListId)))
+                .execute();
 
-        try {
-            jdbcTemplate.update(DELETE_CODE_LIST_VALUES_STATEMENT, parameterSource);
-            jdbcTemplate.update(DELETE_CODE_LIST_STATEMENT, parameterSource);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("Data Integrity Violation", e);
-        }
+        dslContext.deleteFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(codeListId)))
+                .execute();
     }
 
     @Transactional

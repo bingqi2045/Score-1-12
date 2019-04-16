@@ -10,16 +10,13 @@ import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextScheme
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,14 +24,10 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
 public class BusinessContextService {
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -83,23 +76,21 @@ public class BusinessContextService {
             bizCtx.setGuid(SrtGuid.randomGuid());
         }
 
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("biz_ctx")
-                .usingColumns("guid", "name",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp")
-                .usingGeneratedKeyColumns("biz_ctx_id");
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        long bizCtxId = dslContext.insertInto(BIZ_CTX,
+                BIZ_CTX.GUID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.CREATED_BY,
+                BIZ_CTX.LAST_UPDATED_BY,
+                BIZ_CTX.CREATION_TIMESTAMP,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                .values(
+                        bizCtx.getGuid(),
+                        bizCtx.getName(),
+                        userId, userId, timestamp, timestamp)
+                .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId().longValue();
 
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", bizCtx.getGuid())
-                .addValue("name", bizCtx.getName())
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long bizCtxId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
         for (BusinessContextValue bizCtxValue : bizCtx.getBizCtxValues()) {
             insert(bizCtxId, bizCtxValue);
         }
@@ -107,40 +98,33 @@ public class BusinessContextService {
 
     @Transactional
     public void insert(long bizCtxId, BusinessContextValue bizCtxValue) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("biz_ctx_value")
-                .usingColumns("biz_ctx_id", "ctx_scheme_value_id");
-
-        jdbcInsert.execute(newSqlParameterSource()
-                .addValue("biz_ctx_id", bizCtxId)
-                .addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId()));
+        dslContext.insertInto(BIZ_CTX_VALUE,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID)
+                .values(
+                        ULong.valueOf(bizCtxId),
+                        ULong.valueOf(bizCtxValue.getCtxSchemeValueId()))
+                .execute();
     }
-
-    private String UPDATE_BUSINESS_CONTEXT_STATEMENT =
-            "UPDATE biz_ctx SET `name` = :name WHERE biz_ctx_id = :biz_ctx_id";
 
     @Transactional
     public void update(User user, BusinessContext bizCtx) {
-        jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_STATEMENT, newSqlParameterSource()
-                .addValue("biz_ctx_id", bizCtx.getBizCtxId())
-                .addValue("name", bizCtx.getName())
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date()));
+        dslContext.update(BIZ_CTX)
+                .set(BIZ_CTX.NAME, bizCtx.getName())
+                .set(BIZ_CTX.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtx.getBizCtxId())))
+                .execute();
 
         update(bizCtx.getBizCtxId(), bizCtx.getBizCtxValues());
     }
 
-    private String GET_BUSINESS_CONTEXT_VALUE_ID_LIST_STATEMENT =
-            "SELECT biz_ctx_value_id FROM biz_ctx_value WHERE biz_ctx_id = :biz_ctx_id";
-
     @Transactional
     public void update(final long bizCtxId, List<BusinessContextValue> bizCtxValues) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("biz_ctx_id", bizCtxId);
-
-        List<Long> oldBizCtxValueIds =
-                jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_VALUE_ID_LIST_STATEMENT,
-                        parameterSource, Long.class);
+        List<Long> oldBizCtxValueIds = dslContext.select(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID)
+                .from(BIZ_CTX_VALUE)
+                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchInto(Long.class);
 
         Map<Long, BusinessContextValue> newBizCtxValues = bizCtxValues.stream()
                 .filter(e -> e.getBizCtxValueId() > 0L)
@@ -162,18 +146,15 @@ public class BusinessContextService {
         }
     }
 
-    private String UPDATE_BUSINESS_CONTEXT_VALUE_STATEMENT =
-            "UPDATE biz_ctx_value SET ctx_scheme_value_id = :ctx_scheme_value_id " +
-                    "WHERE biz_ctx_value_id = :biz_ctx_value_id AND biz_ctx_id = :biz_ctx_id";
-
     @Transactional
     public void update(long bizCtxId, BusinessContextValue bizCtxValue) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("biz_ctx_value_id", bizCtxValue.getBizCtxValueId())
-                .addValue("biz_ctx_id", bizCtxId)
-                .addValue("ctx_scheme_value_id", bizCtxValue.getCtxSchemeValueId());
-
-        jdbcTemplate.update(UPDATE_BUSINESS_CONTEXT_VALUE_STATEMENT, parameterSource);
+        dslContext.update(BIZ_CTX_VALUE)
+                .set(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID, ULong.valueOf(bizCtxValue.getCtxSchemeValueId()))
+                .where(and(
+                        BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(bizCtxValue.getBizCtxValueId())),
+                        BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))
+                ))
+                .execute();
     }
 
     @Transactional

@@ -10,8 +10,6 @@ import org.oagi.srt.gateway.http.api.context_management.data.ContextCategoryList
 import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
-import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +24,10 @@ import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.count;
 import static org.oagi.srt.entity.jooq.Tables.CTX_CATEGORY;
 import static org.oagi.srt.entity.jooq.Tables.CTX_SCHEME;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
 public class ContextCategoryService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
@@ -176,25 +167,24 @@ public class ContextCategoryService {
             contextCategory.setGuid(SrtGuid.randomGuid());
         }
 
-        jdbcTemplate.insert()
-                .withTableName("ctx_category")
-                .usingColumns("guid", "name", "description")
-                .execute(newSqlParameterSource()
-                        .addValue("guid", contextCategory.getGuid())
-                        .addValue("name", contextCategory.getName())
-                        .addValue("description", contextCategory.getDescription()));
+        dslContext.insertInto(CTX_CATEGORY,
+                CTX_CATEGORY.GUID,
+                CTX_CATEGORY.NAME,
+                CTX_CATEGORY.DESCRIPTION)
+                .values(
+                        contextCategory.getGuid(),
+                        contextCategory.getName(),
+                        contextCategory.getDescription()
+                ).execute();
     }
-
-    private String UPDATE_CONTEXT_CATEGORY_STATEMENT =
-            "UPDATE ctx_category SET `name` = :name, description = :description " +
-                    "WHERE ctx_category_id = :ctx_category_id";
 
     @Transactional
     public void update(ContextCategory contextCategory) {
-        jdbcTemplate.update(UPDATE_CONTEXT_CATEGORY_STATEMENT, newSqlParameterSource()
-                .addValue("ctx_category_id", contextCategory.getCtxCategoryId())
-                .addValue("name", contextCategory.getName())
-                .addValue("description", contextCategory.getDescription()));
+        dslContext.update(CTX_CATEGORY)
+                .set(CTX_CATEGORY.NAME, contextCategory.getName())
+                .set(CTX_CATEGORY.DESCRIPTION, contextCategory.getDescription())
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getCtxCategoryId())))
+                .execute();
     }
 
     @Transactional

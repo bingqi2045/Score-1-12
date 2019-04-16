@@ -30,8 +30,7 @@ public class BusinessContextRepository {
     private DSLContext dslContext;
 
     private SelectOnConditionStep
-            <Record5<ULong, String, String, Timestamp, String>>
-    getSelectOnConditionStepForBusinessContext() {
+            <Record5<ULong, String, String, Timestamp, String>> getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
@@ -41,8 +40,6 @@ public class BusinessContextRepository {
                 .from(BIZ_CTX)
                 .join(APP_USER).on(BIZ_CTX.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID));
     }
-
-    ;
 
     public PageResponse<BusinessContext> findBusinessContexts(BusinessContextListRequest request) {
         SelectOnConditionStep
