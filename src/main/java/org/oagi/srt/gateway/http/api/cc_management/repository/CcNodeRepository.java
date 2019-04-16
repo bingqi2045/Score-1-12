@@ -416,6 +416,7 @@ public class CcNodeRepository {
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 Tables.ASCC.ASCC_ID,
+                Tables.ASCC.CURRENT_ASCC_ID,
                 Tables.ASCC.GUID,
                 Tables.ASCC.TO_ASCCP_ID,
                 Tables.ASCC.SEQ_KEY,
@@ -425,6 +426,10 @@ public class CcNodeRepository {
                 Tables.ASCC.RELEASE_ID
         ).from(Tables.ASCC).where(Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                 .fetchInto(CcAsccNode.class);
+
+        if (asccNodes.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         asccNodes = asccNodes.stream()
                 .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
@@ -461,6 +466,10 @@ public class CcNodeRepository {
                 Tables.BCC.RELEASE_ID
         ).from(Tables.BCC).where(Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                 .fetchInto(CcBccNode.class);
+
+        if (bccNodes.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         bccNodes = bccNodes.stream()
                 .collect(groupingBy(CcBccNode::getGuid)).values().stream()
