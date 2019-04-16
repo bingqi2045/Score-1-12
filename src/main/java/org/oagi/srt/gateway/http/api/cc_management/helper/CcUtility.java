@@ -4,80 +4,10 @@ import org.oagi.srt.data.Trackable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CcUtility {
-
-    public static class ReleaseComparator implements Comparator<Trackable> {
-        @Override
-        public int compare(Trackable o1, Trackable o2) {
-            // What the release_id equals zero(0) means is that it's the latest one.
-            Long o1ReleaseId = o1.getReleaseId();
-            if (o1ReleaseId == null) {
-                o1ReleaseId = Long.MAX_VALUE;
-            }
-            Long o2ReleaseId = o2.getReleaseId();
-            if (o2ReleaseId == null) {
-                o2ReleaseId = Long.MAX_VALUE;
-            }
-
-            return Long.compare(o1ReleaseId, o2ReleaseId);
-        }
-    }
-
-    public static class RevisionNumComparator implements Comparator<Trackable> {
-        @Override
-        public int compare(Trackable o1, Trackable o2) {
-            // What the revision_num equals zero(0) means is that it's the latest one.
-            int o1RevisionNum = o1.getRevisionNum();
-            if (o1RevisionNum == 0) {
-                o1RevisionNum = Integer.MAX_VALUE;
-            }
-            int o2RevisionNum = o2.getRevisionNum();
-            if (o2RevisionNum == 0) {
-                o2RevisionNum = Integer.MAX_VALUE;
-            }
-
-            return Integer.compare(o1RevisionNum, o2RevisionNum);
-        }
-    }
-
-    public static class RevisionTrackingNumComparator implements Comparator<Trackable> {
-        @Override
-        public int compare(Trackable o1, Trackable o2) {
-            // What the revision_tracking_num equals zero(0) means is that it's the latest one.
-            int o1RevisionTrackingNum = o1.getRevisionTrackingNum();
-            if (o1RevisionTrackingNum == 0) {
-                o1RevisionTrackingNum = Integer.MAX_VALUE;
-            }
-            int o2RevisionTrackingNum = o1.getRevisionTrackingNum();
-            if (o2RevisionTrackingNum == 0) {
-                o2RevisionTrackingNum = Integer.MAX_VALUE;
-            }
-
-            return Integer.compare(o1RevisionTrackingNum, o2RevisionTrackingNum);
-        }
-    }
-
-    public static Comparator<Trackable> TRACKABLE_COMPARATOR = new Comparator<Trackable>() {
-
-        private Comparator<Trackable> releaseComparator = new ReleaseComparator();
-        private Comparator<Trackable> revisionNumComparator = new RevisionNumComparator();
-        private Comparator<Trackable> revisionTrackingNumComparator = new RevisionTrackingNumComparator();
-
-        @Override
-        public int compare(Trackable o1, Trackable o2) {
-            int c = releaseComparator.compare(o1, o2);
-            if (c != 0) { // is not equals?
-                return c;
-            }
-            c = revisionNumComparator.compare(o1, o2);
-            if (c != 0) { // is not equals?
-                return c;
-            }
-            return revisionTrackingNumComparator.compare(o1, o2);
-        }
-    };
 
     public static <T extends Trackable> T getLatestEntity(Long releaseId, List<T> entities) {
         if (entities == null || entities.isEmpty()) {
@@ -94,10 +24,37 @@ public class CcUtility {
                         Long entityReleaseId = e.getReleaseId();
                         return (entityReleaseId != null) && (entityReleaseId <= releaseId);
                     });
+
+            entities = filteredEntities.sorted(Comparator.comparingLong(T::getReleaseId).reversed())
+                    .collect(Collectors.toList());
+            long maxReleaseId = entities.get(0).getReleaseId();
+            filteredEntities = entities.stream().filter(e -> e.getReleaseId() == maxReleaseId);
         }
 
-        T result = filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
-        return result;
+        entities = filteredEntities.collect(Collectors.toList());
+        if (entities.isEmpty()) {
+            return null;
+        }
+        if (entities.size() == 1) {
+            return entities.get(0);
+        }
+
+        long maxReleaseId = entities.get(0).getReleaseId();
+        filteredEntities = entities.stream().filter(e -> e.getReleaseId() == maxReleaseId);
+        entities = filteredEntities.sorted(Comparator.comparingLong(T::getRevisionNum).reversed())
+                .collect(Collectors.toList());
+        if (entities.isEmpty()) {
+            return null;
+        }
+        if (entities.size() == 1) {
+            return entities.get(0);
+        }
+
+        long maxRevisionNum = entities.get(0).getRevisionNum();
+        filteredEntities = entities.stream().filter(e -> e.getRevisionNum() == maxRevisionNum);
+        entities = filteredEntities.sorted(Comparator.comparingLong(T::getRevisionTrackingNum).reversed())
+                .collect(Collectors.toList());
+        return (entities.isEmpty()) ? null : entities.get(0);
     }
 
     public static <T extends Trackable> String getRevision(Long releaseId, List<T> entities) {
@@ -105,15 +62,13 @@ public class CcUtility {
             return null;
         }
 
-        Stream<T> filteredEntities = entities.stream().filter(e -> e.getRevisionNum() > 0 && e.getRevisionTrackingNum() > 0);
-        if (releaseId != null && releaseId > 0L) {
-            filteredEntities = filteredEntities.filter(e -> {
-                Long entityReleaseId = e.getReleaseId();
-                return (entityReleaseId != null) && (entityReleaseId <= releaseId);
-            });
+        if (releaseId == null || releaseId == 0) {
+            entities = entities.stream()
+                    .filter(e -> (e.getReleaseId() != null) && (e.getReleaseId() > 0L))
+                    .collect(Collectors.toList());
+            releaseId = entities.get(0).getReleaseId();
         }
-
-        T entity = filteredEntities.max(TRACKABLE_COMPARATOR).orElse(null);
+        T entity = getLatestEntity(releaseId, entities);
         if (entity == null) {
             return null;
         }

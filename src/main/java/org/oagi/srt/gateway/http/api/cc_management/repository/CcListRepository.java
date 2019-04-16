@@ -33,7 +33,7 @@ public class CcListRepository {
         long releaseId = request.getReleaseId();
         Map<Long, String> usernameMap = request.getUsernameMap();
         return accList.entrySet().stream()
-                .map(entry -> getLatestEntity(request.getReleaseId(), entry.getValue()))
+                .map(entry -> getLatestEntity(releaseId, entry.getValue()))
                 .filter(item -> item != null)
                 .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(CcState.valueOf(e.getState())))
                 .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
@@ -73,7 +73,7 @@ public class CcListRepository {
                     ccList.setDeprecated(acc.isDeprecated());
                     ccList.setCurrentId(acc.getCurrentAccId());
                     ccList.setLastUpdateTimestamp(acc.getLastUpdateTimestamp());
-                    ccList.setRevision(getRevision(request.getReleaseId(), accList.getOrDefault(acc.getGuid(), Collections.emptyList())));
+                    ccList.setRevision(getRevision(releaseId, accList.getOrDefault(acc.getGuid(), Collections.emptyList())));
                     ccList.setOwner(usernameMap.get(acc.getOwnerUserId()));
                     ccList.setLastUpdateUser(usernameMap.get(acc.getLastUpdatedBy()));
 
