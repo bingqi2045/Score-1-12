@@ -809,7 +809,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
                 "SELECT code_list_id, based_code_list_id, name as code_list_name " +
-                        "FROM code_list WHERE code_list_id IN (:based_code_list_ids)", newSqlParameterSource()
+                        "FROM code_list WHERE code_list_id IN (:based_code_list_ids) " +
+                        "AND state LIKE 'Published'", newSqlParameterSource()
                         .addValue("based_code_list_ids", basedCodeListIds), BieEditCodeList.class);
 
         List<BieEditCodeList> basedCodeLists =
@@ -825,7 +826,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private List<BieEditCodeList> getCodeListsByBasedCodeList (Long basedCodeList) {
         List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
                 "SELECT code_list_id, based_code_list_id, name as code_list_name " +
-                        "FROM code_list WHERE based_code_list_id LIKE (:based_code_list_id)", newSqlParameterSource()
+                        "FROM code_list WHERE based_code_list_id LIKE (:based_code_list_id) " +
+                        "AND state LIKE 'Published'", newSqlParameterSource()
                         .addValue("based_code_list_id", basedCodeList), BieEditCodeList.class);
 
         for (int i=0; i<bieEditCodeLists.size(); i++) {
