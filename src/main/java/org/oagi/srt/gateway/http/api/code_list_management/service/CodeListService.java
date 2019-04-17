@@ -207,7 +207,7 @@ public class CodeListService {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        long codeListId = dslContext.insertInto(CODE_LIST,
+        ULong codeListId = dslContext.insertInto(CODE_LIST,
                 CODE_LIST.GUID,
                 CODE_LIST.NAME,
                 CODE_LIST.LIST_ID,
@@ -235,9 +235,9 @@ public class CodeListService {
                 (byte) ((codeList.isExtensible()) ? 1 : 0),
                 CodeListState.Editing.name(),
                 userId, userId, timestamp, timestamp)
-                .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getAgencyId().longValue();
+                .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getValue(CODE_LIST.CODE_LIST_ID);
         for (CodeListValue codeListValue : codeList.getCodeListValues()) {
-            insert(codeListId, codeListValue);
+            insert(codeListId.longValue(), codeListValue);
         }
     }
 
