@@ -538,7 +538,9 @@ public class CcNodeRepository {
     public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
         CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
 
+
         long asccId = asccpNode.getAsccId();
+        long asccIdOrigin = asccId +1;
         if (asccId > 0L) {
             CcAsccpNodeDetail.Ascc ascc = dslContext.select(
                     Tables.ASCC.ASCC_ID,
@@ -550,6 +552,14 @@ public class CcNodeRepository {
                     Tables.ASCC.DEFINITION).from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
+            MapSqlParameterSource parameterSource = newSqlParameterSource()
+                    .addValue("ascc_id", asccId);
+                jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
+                        "FROM ascc " +
+                        "WHERE ascc_id = " + asccIdOrigin, parameterSource, rs -> {
+                    ascc.setCardinalityOriginMin(Integer.parseInt(rs.getString("ascc.cardinality_min")));
+                    ascc.setCardinalityOriginMax(Integer.parseInt(rs.getString("cgit ardinality_max")));
+                });
             asccpNodeDetail.setAscc(ascc);
         }
 
@@ -573,6 +583,7 @@ public class CcNodeRepository {
         CcBccpNodeDetail bccpNodeDetail = new CcBccpNodeDetail();
 
         long bccId = bccpNode.getBccId();
+        long bccIdOrigin = bccId +1;
         if (bccId > 0L) {
             CcBccpNodeDetail.Bcc bcc = dslContext.select(
                     Tables.BCC.BCC_ID,
@@ -586,6 +597,15 @@ public class CcNodeRepository {
                     Tables.BCC.DEFINITION).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
+
+            MapSqlParameterSource parameterSource = newSqlParameterSource()
+                    .addValue("bcc_id", bccId);
+            jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
+                    "FROM bcc " +
+                    "WHERE bcc_id = " + bccIdOrigin, parameterSource, rs -> {
+                bcc.setCardinalityOriginMin(Integer.parseInt(rs.getString("cardinality_min")));
+                bcc.setCardinalityOriginMax(Integer.parseInt(rs.getString("cardinality_max")));
+            });
             bccpNodeDetail.setBcc(bcc);
         }
 

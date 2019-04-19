@@ -14,6 +14,8 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private String den;
         private int cardinalityMin;
         private int cardinalityMax;
+        private int cardinalityOriginMin;
+        private int cardinalityOriginMax;
         private boolean deprecated;
         private String definition;
     }
