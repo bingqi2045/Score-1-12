@@ -28,6 +28,7 @@ public class AccountListController {
             @RequestParam(name = "loginId", required = false) String loginId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "organization", required = false) String organization,
+            @RequestParam(name = "role", required = false) String role,
             @RequestParam(name = "excludeRequester", required = false) Boolean excludeRequester,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
@@ -39,6 +40,7 @@ public class AccountListController {
         request.setLoginId(loginId);
         request.setName(name);
         request.setOrganization(organization);
+        request.setRole(role);
         request.setExcludeRequester(excludeRequester);
 
         PageRequest pageRequest = new PageRequest();

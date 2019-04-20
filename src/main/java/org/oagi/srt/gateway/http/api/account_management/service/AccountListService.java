@@ -48,6 +48,16 @@ public class AccountListService {
         if (!StringUtils.isEmpty(request.getOrganization())) {
             conditions.add(APP_USER.ORGANIZATION.contains(request.getOrganization().trim()));
         }
+        if (!StringUtils.isEmpty(request.getRole())) {
+            switch (request.getRole()) {
+                case "developer":
+                    conditions.add(APP_USER.OAGIS_DEVELOPER_INDICATOR.eq((byte) 1));
+                    break;
+                case "end-user":
+                    conditions.add(APP_USER.OAGIS_DEVELOPER_INDICATOR.eq((byte) 0));
+                    break;
+            }
+        }
         Boolean excludeRequester = request.getExcludeRequester();
         if (excludeRequester != null && excludeRequester == true) {
             conditions.add(APP_USER.LOGIN_ID.ne(requester.getUsername().trim()));

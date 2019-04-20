@@ -9,6 +9,7 @@ public class AccountListRequest {
     private String loginId;
     private String name;
     private String organization;
+    private String role;
     private Boolean excludeRequester;
 
     private PageRequest pageRequest;
