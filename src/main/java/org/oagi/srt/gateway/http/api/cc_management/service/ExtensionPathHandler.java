@@ -138,7 +138,9 @@ public class ExtensionPathHandler implements InitializingBean {
             }
         }
 
-        path.pop();
+        if (fill) {
+            path.pop();
+        }
         return false;
     }
 }
