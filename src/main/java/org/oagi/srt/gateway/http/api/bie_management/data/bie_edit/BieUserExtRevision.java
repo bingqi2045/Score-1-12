@@ -9,4 +9,5 @@ public class BieUserExtRevision {
     private Long extAbieId;
     private long extAccId;
     private long userExtAccId;
+    private long topLevelAbieId;
 }

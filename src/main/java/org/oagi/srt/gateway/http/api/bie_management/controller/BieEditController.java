@@ -200,4 +200,10 @@ public class BieEditController {
         return ResponseEntity.accepted().build();
     }
 
+    @RequestMapping(value = "/profile_bie/node/extension/path", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Collection<String> getExtensionPath(@RequestParam("bieUserExtRevisionId") long bieUserExtRevisionId) {
+        return service.getExtensionPath(bieUserExtRevisionId);
+    }
+
 }

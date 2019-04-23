@@ -28,7 +28,7 @@ public class CcUtility {
         }
 
         if (entities.isEmpty()) {
-            throw new IllegalStateException();
+            return null;
         }
 
         return entities.get(0);
@@ -54,7 +54,7 @@ public class CcUtility {
         }
 
         if (entities.isEmpty()) {
-            throw new IllegalStateException();
+            return null;
         }
 
         T entity = entities.get(0);

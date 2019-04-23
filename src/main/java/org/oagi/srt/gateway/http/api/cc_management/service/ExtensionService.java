@@ -19,6 +19,7 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,9 @@ public class ExtensionService {
 
     @Autowired
     private CcListService ccListService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
 
     public CcAccNode getExtensionNode(User user, long extensionId, long releaseId) {
@@ -932,11 +936,12 @@ public class ExtensionService {
                 BCC.GUID,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,
-                BCC.RELEASE_ID
-        ).from(BCC).where(and(
-                BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                BCC.REVISION_NUM.greaterThan(0)))
-                .fetchInto(CcBccNode.class);
+                BCC.RELEASE_ID)
+                .from(BCC)
+                .where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        BCC.REVISION_NUM.greaterThan(0)
+                )).fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
             return;
@@ -973,23 +978,29 @@ public class ExtensionService {
                 .where(TOP_LEVEL_ABIE.STATE.ne(BieState.Published.getValue()))
                 .fetchInto(TopLevelAbie.class);
 
+        ExtensionPathHandler extensionPathHandler =
+                applicationContext.getBean(ExtensionPathHandler.class, releaseId);
+
         for (TopLevelAbie topLevelAbie : topLevelAbies) {
-            long basedAccId = dslContext.select(Tables.ABIE.BASED_ACC_ID).from(Tables.ABIE)
+            long basedAccId = dslContext.select(Tables.ACC.CURRENT_ACC_ID)
+                    .from(Tables.ABIE)
+                    .join(Tables.ACC)
+                    .on(Tables.ABIE.BASED_ACC_ID.eq(Tables.ACC.ACC_ID))
                     .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(topLevelAbie.getAbieId())))
                     .fetchOneInto(Long.class);
 
             ULong eAccId =
-                    dslContext.select(
-                            Tables.ACC.as("eAcc").ACC_ID
-                    ).from(Tables.ACC.as("eAcc"))
+                    dslContext.select(Tables.ACC.as("eAcc").ACC_ID)
+                            .from(Tables.ACC.as("eAcc"))
                             .join(Tables.ASCC).on(Tables.ACC.as("eAcc").ACC_ID.eq(ASCC.FROM_ACC_ID))
                             .join(Tables.ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
                             .join(Tables.ACC.as("ueAcc")).on(ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.as("ueAcc").ACC_ID))
-                            .where(and(ACC.as("ueAcc").ACC_ID.eq(ULong.valueOf(extensionId)),
-                                    ASCC.REVISION_NUM.eq(0))
-                            ).fetchOneInto(ULong.class);
+                            .where(and(
+                                    ACC.as("ueAcc").ACC_ID.eq(ULong.valueOf(extensionId)),
+                                    ASCC.REVISION_NUM.eq(0)
+                            )).fetchOneInto(ULong.class);
 
-            if (containsExtension(basedAccId, eAccId.longValue())) {
+            if (extensionPathHandler.containsExtension(basedAccId, eAccId.longValue())) {
                 BieUserExtRevisionRecord record = new BieUserExtRevisionRecord();
                 record.setTopLevelAbieId(ULong.valueOf(topLevelAbie.getTopLevelAbieId()));
                 record.setUserExtAccId(ULong.valueOf(extensionId));
@@ -1007,37 +1018,6 @@ public class ExtensionService {
                         .set(record).execute();
             }
         }
-    }
-
-    private boolean containsExtension(long accId, long targetExtensionId) {
-        Long basedAccId = dslContext.select(Tables.ACC.BASED_ACC_ID).from(Tables.ACC)
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId))).fetchOneInto(Long.class);
-        if (basedAccId != null) {
-            if (containsExtension(basedAccId, targetExtensionId)) {
-                return true;
-            }
-        }
-
-        List<Long> accList = dslContext.select(Tables.ACC.ACC_ID)
-                .from(Tables.ASCC)
-                .join(Tables.ASCCP).on(Tables.ASCC.TO_ASCCP_ID.eq(Tables.ASCCP.ASCCP_ID))
-                .join(Tables.ACC).on(Tables.ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.ACC_ID))
-                .where(and(
-                        Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
-                        Tables.ASCC.REVISION_NUM.eq(0)
-                )).fetchInto(Long.class);
-
-        if (accList.contains(targetExtensionId)) {
-            return true;
-        }
-
-        for (Long childAccId : accList) {
-            if (containsExtension(childAccId, targetExtensionId)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Transactional

@@ -11,6 +11,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionPathHandler;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -22,6 +23,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
@@ -190,5 +193,37 @@ public class BieEditService {
         dslContext.deleteFrom(Tables.BIE_USER_EXT_REVISION)
                 .where(Tables.BIE_USER_EXT_REVISION.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
+    }
+
+    public Collection<String> getExtensionPath(long bieUserExtRevisionId) {
+        BieUserExtRevision bieUserExtRevision = dslContext.select(
+                Tables.BIE_USER_EXT_REVISION.EXT_ABIE_ID,
+                Tables.BIE_USER_EXT_REVISION.EXT_ACC_ID,
+                Tables.BIE_USER_EXT_REVISION.USER_EXT_ACC_ID,
+                Tables.BIE_USER_EXT_REVISION.TOP_LEVEL_ABIE_ID)
+                .from(Tables.BIE_USER_EXT_REVISION)
+                .where(Tables.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID.eq(ULong.valueOf(bieUserExtRevisionId)))
+                .fetchOptionalInto(BieUserExtRevision.class).orElse(null);
+
+        if (bieUserExtRevision == null) {
+            return Collections.emptyList();
+        }
+
+        long releaseId = dslContext.select(Tables.TOP_LEVEL_ABIE.RELEASE_ID)
+                .from(Tables.TOP_LEVEL_ABIE)
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieUserExtRevision.getTopLevelAbieId())))
+                .fetchOneInto(Long.class);
+
+        ExtensionPathHandler extensionPathHandler =
+                applicationContext.getBean(ExtensionPathHandler.class, releaseId);
+
+        long accId = dslContext.select(Tables.ACC.CURRENT_ACC_ID)
+                .from(Tables.ACC)
+                .join(Tables.ABIE).on(Tables.ACC.ACC_ID.eq(Tables.ABIE.BASED_ACC_ID))
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.ABIE.ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieUserExtRevision.getTopLevelAbieId())))
+                .fetchOneInto(Long.class);
+
+        return extensionPathHandler.getPath(accId, bieUserExtRevision.getExtAccId());
     }
 }
