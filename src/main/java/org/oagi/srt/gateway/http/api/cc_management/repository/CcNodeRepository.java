@@ -558,10 +558,11 @@ public class CcNodeRepository {
                         "FROM ascc " +
                         "WHERE ascc_id = " + asccIdOrigin, parameterSource, rs -> {
                     ascc.setCardinalityOriginMin(Integer.parseInt(rs.getString("ascc.cardinality_min")));
-                    ascc.setCardinalityOriginMax(Integer.parseInt(rs.getString("cgit ardinality_max")));
+                    ascc.setCardinalityOriginMax(Integer.parseInt(rs.getString("ascc.cardinality_max")));
                 });
             asccpNodeDetail.setAscc(ascc);
         }
+
 
         long asccpId = asccpNode.getAsccpId();
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
