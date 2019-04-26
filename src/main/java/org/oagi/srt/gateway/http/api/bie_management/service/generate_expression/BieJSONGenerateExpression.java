@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.Helper.*;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -70,7 +71,6 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         if (root == null) {
             root = new LinkedHashMap();
             root.put("$schema", "http://json-schema.org/draft-04/schema#");
-            root.put(ID_KEYWORD, "http://www.openapplications.org/oagis/10");
 
             root.put("required", new ArrayList());
             root.put("additionalProperties", false);
@@ -116,7 +116,13 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     private String camelCase(String... terms) {
-        String term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
+        String term = Arrays.stream(terms).collect(Collectors.joining());
+        if (terms.length == 1) {
+            term = _camelCase(terms[0]);
+        } else if (term.contains(" ")) {
+            term = Arrays.stream(terms).map(e -> _camelCase(e)).collect(Collectors.joining());
+        }
+
         if (StringUtils.isEmpty(term)) {
             throw new IllegalArgumentException();
         }
@@ -322,7 +328,14 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     private String fillDefinitions(Map<String, Object> properties,
                                    Map<String, Object> definitions,
                                    CodeList codeList) {
-        String codeListName = camelCase(getCodeListTypeName(codeList));
+
+        String codeListName = getCodeListTypeName(codeList);
+        /*
+         * Issue #589
+         */
+        codeListName = Stream.of(codeListName.split("_"))
+                .map(e -> camelCase(e)).collect(Collectors.joining("_"));
+
         if (!definitions.containsKey(codeListName)) {
             List<CodeListValue> codeListValues = generationContext.getCodeListValues(codeList);
             List<String> enumerations = codeListValues.stream().map(e -> e.getValue()).collect(Collectors.toList());
@@ -338,7 +351,12 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                                    AgencyIdList agencyIdList) {
         AgencyIdListValue agencyIdListValue =
                 generationContext.findAgencyIdListValue(agencyIdList.getAgencyIdListValueId());
-        String agencyListTypeName = camelCase(getAgencyListTypeName(agencyIdList, agencyIdListValue));
+        String agencyListTypeName = getAgencyListTypeName(agencyIdList, agencyIdListValue);
+        /*
+         * Issue #589
+         */
+        agencyListTypeName = Stream.of(agencyListTypeName.split("_"))
+                .map(e -> camelCase(e)).collect(Collectors.joining("_"));
         if (!definitions.containsKey(agencyListTypeName)) {
             Map<String, Object> properties = new LinkedHashMap();
             properties.put("type", "string");
@@ -564,19 +582,6 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         properties.put("$ref", ref);
     }
 
-    @Override
-    public File asFile(String filename) throws IOException {
-        ensureRoot();
-
-        File tempFile = File.createTempFile(SrtGuid.randomGuid(), null);
-        tempFile = new File(tempFile.getParentFile(), filename + ".json");
-
-        mapper.writeValue(tempFile, root);
-        logger.info("JSON Schema is generated: " + tempFile);
-
-        return tempFile;
-    }
-
     private void ensureRoot() {
         if (root == null) {
             throw new IllegalStateException();
@@ -591,9 +596,21 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         Map<String, Object> properties = (Map<String, Object>) root.get("properties");
         for (String key : properties.keySet()) {
             Map<String, Object> copied = new LinkedHashMap();
-            copied.put(ID_KEYWORD, "#" + key);
             copied.putAll(((Map<String, Object>) properties.get(key)));
             properties.put(key, copied);
         }
+    }
+
+    @Override
+    public File asFile(String filename) throws IOException {
+        ensureRoot();
+
+        File tempFile = File.createTempFile(SrtGuid.randomGuid(), null);
+        tempFile = new File(tempFile.getParentFile(), filename + ".json");
+
+        mapper.writeValue(tempFile, root);
+        logger.info("JSON Schema is generated: " + tempFile);
+
+        return tempFile;
     }
 }
