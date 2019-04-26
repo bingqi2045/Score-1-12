@@ -1559,11 +1559,20 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                         eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
-                    if (bbieScList.isEmpty()) {
-                        eNode = createAttributeNodeForBBIE(bbie, parent);
-                        eNode = setBBIE_Attr_Type(bbie, eNode);
+                    if (bbie.getBdtPriRestriId() == 0) {
+                        if (bbieScList.isEmpty()) {
+                            eNode = createAttributeNodeForBBIE(bbie, parent);
+                            eNode = setBBIE_Attr_Type(bdt, eNode);
+                        } else {
+                            eNode = generateBDT(bbie, eNode);
+                        }
                     } else {
-                        eNode = generateBDT(bbie, eNode);
+                        if (bbieScList.isEmpty()) {
+                            eNode = createAttributeNodeForBBIE(bbie, parent);
+                            eNode = setBBIE_Attr_Type(bbie, eNode);
+                        } else {
+                            eNode = generateBDT(bbie, eNode);
+                        }
                     }
                 }
             } else {
@@ -1603,6 +1612,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         parent.addContent(eNode);
+
         return eNode;
     }
 
@@ -1778,12 +1788,6 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             if (codeList == null) {
                 AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbieSc);
 
-                if (agencyIdList != null) {
-                    if (option.isBieGuid()) {
-                        aNode.setAttribute("id", agencyIdList.getGuid());
-                    }
-                }
-
                 if (agencyIdList == null) {
                     long primRestriction = bbieSc.getDtScPriRestriId();
                     if (primRestriction == 0L)
@@ -1868,6 +1872,5 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         setProcessedElement(agencyIdList, stNode);
         return stNode;
     }
-
 
 }

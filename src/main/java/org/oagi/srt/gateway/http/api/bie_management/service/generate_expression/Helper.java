@@ -78,7 +78,10 @@ class Helper {
         StringBuilder sb = new StringBuilder();
 
         sb.append(AGENCY_ID_LIST_NAME_PREFIX);
-        sb.append(agencyIdListValue.getValue());
+        /*
+         * Issue #589
+         */
+        sb.append(agencyIdListValue.getValue()).append('_');
         sb.append(agencyIdList.getVersionId()).append('_');
         String name = agencyIdList.getName();
         if (!StringUtils.isEmpty(name)) {
