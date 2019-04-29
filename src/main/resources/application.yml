@@ -7,9 +7,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/oagi?useSSL=false
-    username: oagi
-    password: oagi
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_DATABASE:oagi}?useSSL=false
+    username: ${DB_USERNAME:oagi}
+    password: ${DB_PASSWORD:oagi}
 
   jooq:
     sql-dialect: mysql_5_7
@@ -21,8 +21,8 @@ spring:
     type: redis
 
   redis:
-    host: localhost
-    port: 6379
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
 
 
 logging:
