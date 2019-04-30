@@ -38,7 +38,9 @@ public class RedisConfiguration {
         Config config = new Config();
         config.setTransportMode(TransportMode.NIO);
         config.useSingleServer()
-                .setAddress("redis://" + redisHost + ":" + redisPort);
+                .setAddress("redis://" + redisHost + ":" + redisPort)
+                .setConnectionMinimumIdleSize(0)
+                .setSubscriptionConnectionMinimumIdleSize(0);
         return Redisson.create(config);
     }
 

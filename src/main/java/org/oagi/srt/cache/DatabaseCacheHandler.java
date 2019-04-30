@@ -22,8 +22,6 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
     private String camelCasePriKeyName;
     private String underscorePriKeyName;
 
-    private List<String> tableFields;
-
     public DatabaseCacheHandler(String tableName, Class<T> mappedClass) {
         this.tableName = tableName;
         this.mappedClass = mappedClass;
@@ -69,7 +67,6 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        tableFields = loadFields(this.tableName);
     }
 
     private List<String> loadFields(String tableName) {
@@ -84,14 +81,14 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
     public String getChecksumQuery() {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ").append(this.underscorePriKeyName)
-                .append(", sha1(concat_ws(`").append(String.join("`,`", this.tableFields))
+                .append(", sha1(concat_ws(`").append(String.join("`,`", loadFields(this.tableName)))
                 .append("`)) `checksum` FROM ").append(this.tableName);
         return query.toString();
     }
 
     public String getChecksumByIdQuery() {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT sha1(concat_ws(`").append(String.join("`,`", this.tableFields))
+        query.append("SELECT sha1(concat_ws(`").append(String.join("`,`", loadFields(this.tableName)))
                 .append("`)) `checksum` FROM ").append(this.tableName).append(" WHERE ")
                 .append(this.underscorePriKeyName).append(" = :id");
         return query.toString();
