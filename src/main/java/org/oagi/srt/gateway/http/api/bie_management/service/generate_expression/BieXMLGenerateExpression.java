@@ -1619,7 +1619,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     public String setCodeListRestrictionAttr(DT bdt) {
         BdtPriRestri bdtPriRestri =
                 generationContext.findBdtPriRestriByBdtIdAndDefaultIsTrue(bdt.getDtId());
-        if (bdtPriRestri.getCodeListId() != 0) {
+        if (bdtPriRestri.getCodeListId() != null) {
             return "xsd:token";
         } else {
             CdtAwdPriXpsTypeMap cdtAwdPriXpsTypeMap =
@@ -1633,7 +1633,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     public String setCodeListRestrictionAttr(DTSC dtSc) {
         BdtScPriRestri bdtScPriRestri =
                 generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
-        if (bdtScPriRestri.getCodeListId() != 0) {
+        if (bdtScPriRestri.getCodeListId() != null) {
             return "xsd:token";
         } else {
             CdtScAwdPriXpsTypeMap cdtScAwdPriXpsTypeMap =
