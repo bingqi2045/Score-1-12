@@ -292,7 +292,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 generationContext.findBdtPriRestriByBdtIdAndDefaultIsTrue(bdt.getDtId());
 
         Map<String, Object> properties;
-        if (bdtPriRestri.getCodeListId() != 0) {
+        if (bdtPriRestri.getCodeListId() != null) {
             properties = new LinkedHashMap();
             properties.put("type", "string");
         } else {
@@ -312,7 +312,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
 
         Map<String, Object> properties;
-        if (bdtScPriRestri.getCodeListId() != 0) {
+        if (bdtScPriRestri.getCodeListId() != null) {
             properties = new LinkedHashMap();
             properties.put("type", "string");
         } else {
@@ -503,7 +503,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 ref = fillDefinitions(definitions, agencyIdList);
             } else {
                 Xbt xbt;
-                if (bbie.getBdtPriRestriId() == 0) {
+                if (bbie.getBdtPriRestriId() == null) {
                     BdtPriRestri bdtPriRestri =
                             generationContext.findBdtPriRestriByBdtIdAndDefaultIsTrue(bdt.getDtId());
                     xbt = getXbt(generationContext, bdtPriRestri);
@@ -561,7 +561,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 ref = fillDefinitions(definitions, agencyIdList);
             } else {
                 Xbt xbt;
-                if (bbieSc.getDtScPriRestriId() == 0L) {
+                if (bbieSc.getDtScPriRestriId() == null) {
                     BdtScPriRestri bdtScPriRestri =
                             generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
                     CdtScAwdPriXpsTypeMap cdtScAwdPriXpsTypeMap =

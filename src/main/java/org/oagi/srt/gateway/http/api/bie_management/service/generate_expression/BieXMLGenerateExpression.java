@@ -1288,7 +1288,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         complexType.addContent(simpleContent);
         simpleContent.addContent(extNode);
 
-        if (bbie.getBdtPriRestriId() == 0)
+        if (bbie.getBdtPriRestriId() == null)
             extNode.setAttribute("base", setBDTBase(bdt));
         else {
             extNode.setAttribute("base", setBDTBase(bbie));
@@ -1509,7 +1509,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                         eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
-                    if (bbie.getBdtPriRestriId() == 0) {
+                    if (bbie.getBdtPriRestriId() == null) {
                         if (bbieScList.isEmpty()) {
                             eNode = setBBIEType(bdt, eNode);
                         } else {
@@ -1559,7 +1559,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                         eNode.setAttribute("type", agencyListTypeName);
                     }
                 } else {
-                    if (bbie.getBdtPriRestriId() == 0) {
+                    if (bbie.getBdtPriRestriId() == null) {
                         if (bbieScList.isEmpty()) {
                             eNode = createAttributeNodeForBBIE(bbie, parent);
                             eNode = setBBIE_Attr_Type(bdt, eNode);
@@ -1589,7 +1589,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     }
                     return eNode;
                 } else {
-                    if (bbie.getBdtPriRestriId() == 0) {
+                    if (bbie.getBdtPriRestriId() == null) {
                         eNode = setBBIE_Attr_Type(bdt, eNode);
                     } else {
                         if (getCodeListTypeName(codeList) != null) {
@@ -1789,8 +1789,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbieSc);
 
                 if (agencyIdList == null) {
-                    long primRestriction = bbieSc.getDtScPriRestriId();
-                    if (primRestriction == 0L)
+                    if (bbieSc.getDtScPriRestriId() == null)
                         aNode = setBBIESCType(bbieSc, aNode);
                     else
                         aNode = setBBIESCType2(bbieSc, aNode);
