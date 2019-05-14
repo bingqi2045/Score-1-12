@@ -43,10 +43,10 @@ public class AccountListService {
             conditions.add(APP_USER.LOGIN_ID.contains(request.getLoginId().trim()));
         }
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(APP_USER.NAME.contains(request.getName().trim()));
+            conditions.add(APP_USER.NAME.containsIgnoreCase(request.getName().trim()));
         }
         if (!StringUtils.isEmpty(request.getOrganization())) {
-            conditions.add(APP_USER.ORGANIZATION.contains(request.getOrganization().trim()));
+            conditions.add(APP_USER.ORGANIZATION.containsIgnoreCase(request.getOrganization().trim()));
         }
         if (!StringUtils.isEmpty(request.getRole())) {
             switch (request.getRole()) {

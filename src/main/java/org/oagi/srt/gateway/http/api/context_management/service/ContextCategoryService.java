@@ -46,10 +46,10 @@ public class ContextCategoryService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(CTX_CATEGORY.NAME.contains(request.getName().trim()));
+            conditions.add(CTX_CATEGORY.NAME.containsIgnoreCase(request.getName().trim()));
         }
         if (!StringUtils.isEmpty(request.getDescription())) {
-            conditions.add(CTX_CATEGORY.DESCRIPTION.contains(request.getDescription().trim()));
+            conditions.add(CTX_CATEGORY.DESCRIPTION.containsIgnoreCase(request.getDescription().trim()));
         }
 
         SelectConnectByStep<Record4<ULong, String, String, String>> conditionStep = step.where(conditions);

@@ -167,13 +167,13 @@ public class BieService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getPropertyTerm())) {
-            conditions.add(Tables.ASCCP.PROPERTY_TERM.contains(request.getPropertyTerm().trim()));
+            conditions.add(Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(request.getPropertyTerm().trim()));
         }
         if (!request.getExcludes().isEmpty()) {
             conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
         }
         if (!StringUtils.isEmpty(request.getBusinessContext())) {
-            conditions.add(Tables.BIZ_CTX.NAME.contains(request.getBusinessContext().trim()));
+            conditions.add(Tables.BIZ_CTX.NAME.containsIgnoreCase(request.getBusinessContext().trim()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));

@@ -47,7 +47,7 @@ public class BusinessContextRepository {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(BIZ_CTX.NAME.contains(request.getName().trim()));
+            conditions.add(BIZ_CTX.NAME.containsIgnoreCase(request.getName().trim()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
