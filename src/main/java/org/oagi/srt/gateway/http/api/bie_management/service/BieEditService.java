@@ -10,7 +10,6 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionPathHandler;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -28,8 +27,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Editing;
-import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Published;
 
 @Service
 @Transactional(readOnly = true)
@@ -153,16 +150,14 @@ public class BieEditService {
         BieEditAcc eAcc = bieRepository.getAccByCurrentAccId(roleOfAccId, releaseId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
         if (ueAcc != null) {
-            CcState ueAccState = CcState.valueOf(ueAcc.getState());
-            if (ueAccState == Editing) {
-                boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
-                if (!isSameBetweenRequesterAndOwner) {
-                    throw new IllegalArgumentException("The component is currently edited by another user.");
-                }
-            }
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
+            if (!isSameBetweenRequesterAndOwner) {
+                String ownerUser = dslContext.select(Tables.APP_USER.LOGIN_ID)
+                        .from(Tables.APP_USER)
+                        .where(Tables.APP_USER.APP_USER_ID.eq(ULong.valueOf(ueAcc.getOwnerUserId())))
+                        .fetchOptionalInto(String.class).orElse(null);
 
-            if (ueAccState != Published) {
-                return ueAcc.getAccId();
+                throw new IllegalArgumentException("The component is currently owned by '" + ownerUser + "' user.");
             }
         }
 
