@@ -122,7 +122,11 @@ public class ExtensionService {
     public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
                                     long releaseId, User user) {
         if (ueAcc != null) {
-            return increaseRevisionNum(ueAcc, releaseId, user);
+            if (CcState.Published.getValue() == ueAcc.getState()) {
+                return increaseRevisionNum(ueAcc, releaseId, user);
+            } else {
+                return ueAcc.getAccId();
+            }
         } else {
             return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
         }
