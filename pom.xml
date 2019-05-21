@@ -9,12 +9,12 @@
     <packaging>war</packaging>
 
     <name>srt-http-gateway</name>
-    <description>OAGi Semantic Refinement and Tooling - HTTP Gateway</description>
+    <description>NIST/OAGi Score - HTTP Gateway</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.4.RELEASE</version>
+        <version>2.1.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
