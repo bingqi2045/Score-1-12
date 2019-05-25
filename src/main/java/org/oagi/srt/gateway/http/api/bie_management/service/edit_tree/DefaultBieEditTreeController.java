@@ -477,7 +477,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     }
                 }
 
-                if (hideUnused && (bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
+                if (hideUnused && (bbieSc == null || bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
                     continue;
                 }
                 bbieScNode.setBbieScId(bbieSc.getBbieScId());
