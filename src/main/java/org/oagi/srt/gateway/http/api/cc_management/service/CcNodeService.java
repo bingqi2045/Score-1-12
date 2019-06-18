@@ -1,5 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
+import org.jooq.Record1;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,12 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void updateAcc(User user, CcAccNode ccAccNode, long accId) {
+    public Record1<ULong> getLastAcc() {
+        return repository.getLastAccId();
+    }
+
+    @Transactional
+    public void updateAcc(User user, CcAccNode ccAccNode) {
         repository.updateAcc(user, ccAccNode);
     }
 

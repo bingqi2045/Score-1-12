@@ -1,6 +1,8 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jooq.Record1;
+import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +58,19 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void update(
             @AuthenticationPrincipal User user,
-            @PathVariable("id") long accId,
+            @PathVariable("id") long id,
             @RequestBody CcAccNode ccAccNode) {
-        accId = ccAccNode.getAccId();
-        service.updateAcc(user, ccAccNode, accId);
+        ccAccNode.setAccId(id);
+        service.updateAcc(user, ccAccNode);
     }
 
-    @RequestMapping(value = "/core_component/acc", method = RequestMethod.PUT)
+    @RequestMapping(value = "/core_component/acc_id", method = RequestMethod.GET,
+    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public long getLastAcc() {
+       return service.getLastAcc().value1().longValue();
+    }
+
+    @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
     public ResponseEntity create(
             @AuthenticationPrincipal User user,
             @RequestBody CcAccNode ccAccNode) {

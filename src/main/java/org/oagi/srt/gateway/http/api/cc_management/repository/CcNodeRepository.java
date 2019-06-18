@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.Record11;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
@@ -15,12 +16,14 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +70,13 @@ public class CcNodeRepository {
         return arrangeAccNode(accNode, releaseId);
     }
 
+    public Record1<ULong> getLastAccId() {
+        Record1<ULong> maxId = dslContext.select(
+                max(Tables.ACC.ACC_ID)
+        ).from(Tables.ACC).fetchAny();
+        return maxId;
+    }
+
     public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
         List<CcAccNode> accNodes = getSelectJoinStepForAccNode()
                 .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)))
@@ -96,6 +106,18 @@ public class CcNodeRepository {
     }
 
     public long createAcc(User user, CcAccNode ccAccNode) {
+        if (StringUtils.isEmpty(ccAccNode.getGuid())) {
+            ccAccNode.setGuid(SrtGuid.randomGuid());
+        }
+
+        if (StringUtils.isEmpty(ccAccNode.getObjectClassTerm())) {
+            ccAccNode.setObjectClassTerm("A new ACC Object");
+        }
+
+        if (StringUtils.isEmpty(ccAccNode.getDen())) {
+            ccAccNode.setDen("A new ACC Object.Details");
+        }
+
         SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
                 .withTableName("acc")
                 .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
@@ -107,7 +129,7 @@ public class CcNodeRepository {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("guid", ccAccNode.getGuid())
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
-                .addValue("oagis_component_type", ccAccNode.getOagisComponentType())
+                .addValue("oagisComponentType", ccAccNode.getOagisComponentType())
                 .addValue("den", ccAccNode.getDen())
                 .addValue("namespace_id", 1)
                 .addValue("owner_user_id", userId)
@@ -123,18 +145,21 @@ public class CcNodeRepository {
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
-        jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, `guid` = :guid, " +
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, " +
                 "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
                 "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
-                "WHERE acc_id = :acc_id", newSqlParameterSource()
-                .addValue("acc_id", ccAccNode.getAccId())
-                .addValue("guid", ccAccNode.getGuid())
+                "WHERE acc_id = "+ ccAccNode.getAccId(), newSqlParameterSource()
                 .addValue("object_class_term", ccAccNode.getObjectClassTerm())
                 .addValue("den", ccAccNode.getDen())
                 .addValue("isDeprecated", ccAccNode.isDeprecated())
                 .addValue("isAbstract", ccAccNode.isAbstract())
                 .addValue("definition", ccAccNode.getDefinition())
-                .addValue("oagisComponentType", ccAccNode.getOagisComponentType()));
+                .addValue("oagisComponentType", ccAccNode.getOagisComponentType())
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp));
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
