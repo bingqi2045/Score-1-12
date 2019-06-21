@@ -10,7 +10,7 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private String guid;
     private String objectClassTerm;
     private String den;
-    private int componentType;
+    private long oagisComponentType;
     private boolean abstracted;
     private boolean deprecated;
     private String definition;

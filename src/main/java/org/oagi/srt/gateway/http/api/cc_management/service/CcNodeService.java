@@ -73,5 +73,14 @@ public class CcNodeService {
         repository.updateAcc(user, ccAccNode);
     }
 
+    @Transactional
+    public void appendAscc(User user, long accId, long releaseId, long asccId) {
+        repository.createAscc(user, accId, releaseId, asccId);
+    }
+
+    @Transactional
+    public void discardAscc(User user, long extensionId, Long releaseId, long accId) {
+        // repository method discard specific id
+    }
 }
 

@@ -25,12 +25,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Repository
@@ -103,6 +105,60 @@ public class CcNodeRepository {
 
         CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, asccNodes);
         return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
+    }
+
+    public void createAscc(User user, long accId, long releaseId, long asccId) {
+        String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(String.class);
+
+        String asccDen = dslContext.select(ASCC.DEN)
+                .from(ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                .fetchOneInto(String.class);
+
+        long to_asccpID =  dslContext.select(ASCC.TO_ASCCP_ID)
+                .from(ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                .fetchOneInto(long.class);
+       // ULong releaseID = ULong.valueOf(releaseId);
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        dslContext.insertInto(Tables.ASCC,
+                Tables.ASCC.GUID,
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX,
+                Tables.ASCC.SEQ_KEY,
+                Tables.ASCC.FROM_ACC_ID,
+                Tables.ASCC.TO_ASCCP_ID,
+                Tables.ASCC.DEN,
+                Tables.ASCC.IS_DEPRECATED,
+                Tables.ASCC.CREATED_BY,
+                Tables.ASCC.LAST_UPDATED_BY,
+                Tables.ASCC.OWNER_USER_ID,
+                Tables.ASCC.CREATION_TIMESTAMP,
+                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCC.STATE,
+                Tables.ASCC.REVISION_NUM,
+                Tables.ASCC.REVISION_TRACKING_NUM,
+                Tables.ASCC.REVISION_ACTION).values(
+                SrtGuid.randomGuid(),
+                0,
+                -1,
+                1,
+                ULong.valueOf(accId),
+                ULong.valueOf(to_asccpID),
+                accObjectClassTerm + ". " + asccDen,
+                Byte.valueOf((byte) 0),
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                CcState.Editing.getValue(),
+                0,
+                0,
+                null
+        ).returning().fetchOne();
     }
 
     public long createAcc(User user, CcAccNode ccAccNode) {
@@ -552,7 +608,7 @@ public class CcNodeRepository {
                 Tables.ACC.GUID,
                 Tables.ACC.OBJECT_CLASS_TERM,
                 Tables.ACC.DEN,
-                Tables.ACC.OAGIS_COMPONENT_TYPE.as("component_type"),
+                Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagisComponentType"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
                 Tables.ACC.DEFINITION

@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.Record1;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +66,9 @@ public class CcNodeController {
     }
 
     @RequestMapping(value = "/core_component/acc_id", method = RequestMethod.GET,
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public long getLastAcc() {
-       return service.getLastAcc().value1().longValue();
+        return service.getLastAcc().value1().longValue();
     }
 
     @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
@@ -108,9 +109,13 @@ public class CcNodeController {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
             String[] keyValue = e.split("=");
-            Object value = keyValue[1];
-            if (!"null".equals(value) && value != null) {
-                params.put(keyValue[0], value);
+            try {
+                Object value = keyValue[1];
+                if (!"null".equals(value) && value != null) {
+                    params.put(keyValue[0], value);
+                }
+            } catch (Exception ex) {
+                System.out.println( ex);
             }
         });
         return objectMapper.convertValue(params, clazz);
@@ -144,4 +149,25 @@ public class CcNodeController {
                 throw new UnsupportedOperationException();
         }
     }
+
+    @RequestMapping(value = "/core_component/ascc/{releaseId:[\\d]+}/{id:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity doAsccAction(@AuthenticationPrincipal User user,
+                                       @PathVariable("releaseId") long releaseId,
+                                       @PathVariable("id") long accId,
+                                       @RequestBody CcActionRequest actionRequest) {
+
+        switch (actionRequest.getAction()) {
+            case "append":
+                        service.appendAscc(user, accId, releaseId, actionRequest.getId());
+                        break;
+
+            case "discard":
+                        service.discardAscc(user, accId, releaseId, actionRequest.getId());
+                        break;
+        }
+
+        return ResponseEntity.accepted().build();
+        }
 }
