@@ -143,7 +143,7 @@ public class CcNodeRepository {
                 Tables.ASCC.REVISION_ACTION).values(
                 SrtGuid.randomGuid(),
                 0,
-                -1,
+                1,
                 1,
                 ULong.valueOf(accId),
                 ULong.valueOf(to_asccpID),
