@@ -84,6 +84,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/event/**").permitAll()
+                .antMatchers("/info/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
                 .exceptionHandling()
