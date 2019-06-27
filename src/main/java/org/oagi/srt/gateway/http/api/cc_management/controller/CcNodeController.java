@@ -65,10 +65,32 @@ public class CcNodeController {
         service.updateAcc(user, ccAccNode);
     }
 
+    @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void updateAsccp(
+            @AuthenticationPrincipal User user,
+            @PathVariable("id") long id,
+            @RequestBody CcAsccpNodeDetail.Asccp ccAsccpNodeDetail) {
+        System.out.println(ccAsccpNodeDetail);
+        service.updateAsccp(user, ccAsccpNodeDetail, id);
+    }
+
     @RequestMapping(value = "/core_component/acc_id", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public long getLastAcc() {
         return service.getLastAcc().value1().longValue();
+    }
+
+    @RequestMapping(value = "/core_component/asccp_id", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public long getLastAsccp() {
+        return service.getLastAsccp().value1().longValue();
+    }
+
+    @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
+        return service.getAsccp(id);
     }
 
     @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
@@ -170,4 +192,13 @@ public class CcNodeController {
 
         return ResponseEntity.accepted().build();
         }
+
+    @RequestMapping(value = "/core_component/asccp/create", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity createAsccp(
+            @AuthenticationPrincipal User user,
+            @RequestBody CcAsccpNode ccAsccpNode) {
+        service.createAsccp(user, ccAsccpNode);
+        return ResponseEntity.noContent().build();
+    }
 }

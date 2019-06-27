@@ -218,6 +218,22 @@ public class CcNodeRepository {
                 .addValue("last_update_timestamp", timestamp));
     }
 
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long id) {
+        long userId = sessionService.userId(user);
+        Date timestamp = new Date();
+
+        jdbcTemplate.update("UPDATE `asccp` SET `definition` = :definition, `den` = :den, " +
+                "`is_deprecated` = :deprecated, `reusable_indicator` = :reusable, `property_term` = :property_term " +
+                "WHERE asccp_id = " + id, newSqlParameterSource()
+                .addValue("definition", asccpNodeDetail.getDefinition())
+                .addValue("property_term", asccpNodeDetail.getPropertyTerm())
+                .addValue("den", asccpNodeDetail.getDen())
+                .addValue("deprecated", asccpNodeDetail.isDeprecated())
+                .addValue("reusable", asccpNodeDetail.isReusable())
+                .addValue("last_updated_by", userId)
+                .addValue("last_update_timestamp", timestamp));
+    }
+
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
@@ -308,6 +324,13 @@ public class CcNodeRepository {
         }
     }
 
+    public Record1<ULong> getLastAsccpId() {
+        Record1<ULong> maxId = dslContext.select(
+                max(Tables.ASCCP.ASCCP_ID)
+        ).from(Tables.ASCCP).fetchAny();
+        return maxId;
+    }
+
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
@@ -364,6 +387,51 @@ public class CcNodeRepository {
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
+    }
+
+    public void createAsccp (User user, CcAsccpNode ccAsccpNode) {
+        long roleOfAccId = ccAsccpNode.getRoleOfAccId();
+
+        String asccpDen = dslContext.select(ACC.DEN)
+                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(roleOfAccId)))
+                .fetchOneInto(String.class);
+        asccpDen = asccpDen.split("\\.")[0];
+        asccpDen = "A new ASCCP property. " + asccpDen;
+
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        dslContext.insertInto(Tables.ASCCP,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.ROLE_OF_ACC_ID,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.CREATED_BY,
+                Tables.ASCCP.OWNER_USER_ID,
+                Tables.ASCCP.LAST_UPDATED_BY,
+                Tables.ASCCP.CREATION_TIMESTAMP,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.IS_DEPRECATED,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.REVISION_ACTION,
+                Tables.ASCCP.RELEASE_ID).values(
+                SrtGuid.randomGuid(),
+                "A new ASCCP property",
+                ULong.valueOf(roleOfAccId),
+                asccpDen,
+                userId,
+                userId,
+                userId,
+                timestamp,
+                timestamp,
+                CcState.Editing.getValue(),
+                Byte.valueOf((byte) 0),
+                0,
+                0,
+                null,
+                ULong.valueOf(1)).returning().fetchOne();
     }
 
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
@@ -659,6 +727,22 @@ public class CcNodeRepository {
         asccpNodeDetail.setAsccp(asccp);
 
         return asccpNodeDetail;
+    }
+
+    public CcAsccpNodeDetail.Asccp getAsccp (long asccpId) {
+
+        CcAsccpNodeDetail.Asccp asccp = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.DEN,
+                Tables.ASCCP.PROPERTY_TERM.as("name"),
+                Tables.ASCCP.RELEASE_ID.as("releaseId"),
+                Tables.ASCCP.DEFINITION,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.ROLE_OF_ACC_ID).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
+
+        return asccp;
     }
 
     public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {

@@ -58,6 +58,10 @@ public class CcNodeService {
         return repository.getBdtScNodeDetail(user, bdtScNode);
     }
 
+    public CcAsccpNodeDetail.Asccp getAsccp(long asccpId) {
+        return repository.getAsccp(asccpId);
+    }
+
     @Transactional
     public long createAcc(User user, CcAccNode ccAccNode) {
         return repository.createAcc(user, ccAccNode);
@@ -74,6 +78,11 @@ public class CcNodeService {
     }
 
     @Transactional
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long id) {
+        repository.updateAsccp(user, asccpNodeDetail, id);
+    }
+
+    @Transactional
     public void appendAscc(User user, long accId, long releaseId, long asccId) {
         repository.createAscc(user, accId, releaseId, asccId);
     }
@@ -81,6 +90,16 @@ public class CcNodeService {
     @Transactional
     public void discardAscc(User user, long extensionId, Long releaseId, long accId) {
         // repository method discard specific id
+    }
+
+    @Transactional
+    public Record1<ULong> getLastAsccp() {
+        return repository.getLastAsccpId();
+    }
+
+    @Transactional
+    public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
+        repository.createAsccp(user, ccAsccpNode);
     }
 }
 
