@@ -11,6 +11,8 @@ public class CcListTypes {
     private boolean bccp;
     private boolean ascc;
     private boolean bcc;
+    private boolean bdt;
+
 
     public static CcListTypes fromString(String str) {
         if (str != null) {
@@ -24,6 +26,7 @@ public class CcListTypes {
             types.setBccp(true);
             types.setAscc(true);
             types.setBcc(true);
+            types.setBdt(true);
         } else {
             for (String type : str.split(",")) {
                 switch (type.toLowerCase()) {
@@ -45,6 +48,9 @@ public class CcListTypes {
 
                     case "bcc":
                         types.setBcc(true);
+                        break;
+                    case "bdt":
+                        types.setBdt(true);
                         break;
                 }
             }

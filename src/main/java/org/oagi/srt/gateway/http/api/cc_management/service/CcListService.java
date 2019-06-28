@@ -50,7 +50,7 @@ public class CcListService {
 
         List<CcList> ccLists = getCoreComponents(request);
         Stream<CcList> ccListStream = ccLists.stream();
-
+        System.out.println(ccLists);
         Comparator<CcList> comparator = getComparator(request.getPageRequest());
         if (comparator != null) {
             ccListStream = ccListStream.sorted(comparator);
@@ -70,6 +70,7 @@ public class CcListService {
         coreComponents.addAll(repository.getBccList(request));
         coreComponents.addAll(repository.getAsccpList(request));
         coreComponents.addAll(repository.getBccpList(request));
+        coreComponents.addAll(repository.getBdtList(request));
 
         return coreComponents;
     }

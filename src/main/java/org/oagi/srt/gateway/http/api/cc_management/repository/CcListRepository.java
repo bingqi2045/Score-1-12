@@ -312,6 +312,61 @@ public class CcListRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<CcList> getBdtList(CcListRequest request) {
+        if (!request.getTypes().isBdt()) {
+            return Collections.emptyList();
+        }
+        Map<String, List<DT>> bdtList = coreComponentRepository.getBdtList()
+                .stream().collect(groupingBy(CoreComponent::getGuid));
+
+        long releaseId = request.getReleaseId();
+        Map<Long, String> usernameMap = request.getUsernameMap();
+
+        return bdtList.entrySet().stream()
+                .map(entry -> getLatestEntity(releaseId, entry.getValue()))
+                .filter(item -> item != null)
+                .filter(e -> request.getStates().isEmpty() ? true : request.getStates().contains(CcState.valueOf(e.getState())))
+                .filter(e -> request.getOwnerLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
+                .filter(e -> request.getUpdaterLoginIds().isEmpty() ? true : request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
+                .filter(getDenFilter(request.getDen()))
+                .filter(e -> StringUtils.isEmpty(request.getDefinition()) ? true : (StringUtils.isEmpty(e.getDefinition()) ? false : e.getDefinition().toLowerCase().contains(request.getDefinition().trim().toLowerCase())))
+                .filter(e -> {
+                    Date start = request.getUpdateStartDate();
+                    if (start != null) {
+                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    Date end = request.getUpdateEndDate();
+                    if (end != null) {
+                        if (e.getLastUpdateTimestamp().getTime() > end.getTime()) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
+                .map(bdt -> {
+                    CcList ccList = new CcList();
+                    ccList.setType("BDT");
+                    ccList.setId(bdt.getDtId());
+                    ccList.setGuid(bdt.getGuid());
+                    ccList.setDen(bdt.getDen());
+                    ccList.setDefinition(bdt.getDefinition());
+                    ccList.setDefinitionSource(bdt.getDefinitionSource());
+                    ccList.setState(CcState.valueOf(bdt.getState()));
+                    ccList.setDeprecated(bdt.isDeprecated());
+                    ccList.setLastUpdateTimestamp(bdt.getLastUpdateTimestamp());
+                    ccList.setRevision(getRevision(releaseId, bdtList.getOrDefault(bdt.getGuid(), Collections.emptyList())));
+                    ccList.setOwner(usernameMap.get(bdt.getOwnerUserId()));
+                    ccList.setLastUpdateUser(usernameMap.get(bdt.getLastUpdatedBy()));
+                    System.out.println("list : " + ccList);
+                    return ccList;
+                })
+                .collect(Collectors.toList());
+    }
+
     private Predicate<CoreComponent> getDenFilter(String filter) {
         if (!StringUtils.isEmpty(filter)) {
             filter = filter.trim();
