@@ -98,6 +98,11 @@ public class CcNodeService {
     }
 
     @Transactional
+    public Record1<ULong> getLastBccp() {
+        return repository.getLastBccpId();
+    }
+
+    @Transactional
     public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
         repository.createAsccp(user, ccAsccpNode);
     }

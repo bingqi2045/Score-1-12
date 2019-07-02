@@ -1,8 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jooq.Record1;
-import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
@@ -85,6 +83,12 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public long getLastAsccp() {
         return service.getLastAsccp().value1().longValue();
+    }
+
+    @RequestMapping(value = "/core_component/bccp_id", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public long getLastBccp() {
+        return service.getLastBccp().value1().longValue();
     }
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,

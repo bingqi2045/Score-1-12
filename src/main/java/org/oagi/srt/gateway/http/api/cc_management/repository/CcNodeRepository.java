@@ -331,6 +331,13 @@ public class CcNodeRepository {
         return maxId;
     }
 
+    public Record1<ULong> getLastBccpId() {
+        Record1<ULong> maxId = dslContext.select(
+                max(Tables.BCCP.BCCP_ID)
+        ).from(Tables.BCCP).fetchAny();
+        return maxId;
+    }
+
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,

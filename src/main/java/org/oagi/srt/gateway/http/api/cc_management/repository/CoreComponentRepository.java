@@ -24,6 +24,8 @@ public class CoreComponentRepository {
     private ASCCPCachingRepository asccpRepository;
     @Autowired
     private BCCPCachingRepository bccpRepository;
+    @Autowired
+    private BDTCachingRepository bdtRepository;
 
     public List<ACC> getAccList() {
         return accRepository.findAll();
@@ -44,4 +46,6 @@ public class CoreComponentRepository {
     public List<BCCP> getBccpList() {
         return bccpRepository.findAll();
     }
+
+    public List<DT> getBdtList() { return bdtRepository.findAll(); }
 }
