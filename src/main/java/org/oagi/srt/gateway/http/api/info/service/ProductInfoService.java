@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Properties;
 
 @Service
@@ -40,32 +39,57 @@ public class ProductInfoService {
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
+    private InputStream getResourceAsStream(String resourcePath) {
+        InputStream inputStream = getClass().getResourceAsStream(resourcePath);
+        if (inputStream == null) {
+            inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+        }
+        return inputStream;
+    }
+
     public ProductInfo gatewayMetadata() {
         ProductInfo metadata = new ProductInfo();
         metadata.setProductName(artifactId);
 
-        String resourcePath = "/META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
+        String resourcePath = "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml";
+        InputStream inputStream;
         try {
-            try (InputStream stream = Optional.ofNullable(getClass().getResourceAsStream(resourcePath))
-                    .orElse(new FileInputStream(new File("pom.xml")))) {
+            logger.info("Current resource path: " + getClass().getResource(".").getFile());
+            logger.info("Current system resource path: " + getClass().getClassLoader().getResource(".").getFile());
 
-                SAXBuilder sax = new SAXBuilder();
-                Document doc = sax.build(stream);
-                Element root = doc.getRootElement();
-                Element versionElement = root.getChild("version", root.getNamespace());
-                if (versionElement != null) {
-                    metadata.setProductVersion(versionElement.getTextTrim());
-                } else {
-                    logger.warn("Could not read " + artifactId + " version.");
-                    metadata.setProductVersion(unknownVersion);
-                }
+            inputStream = getResourceAsStream(resourcePath);
+            if (inputStream == null) {
+                inputStream = getResourceAsStream("/" + resourcePath);
             }
+            if (inputStream == null) {
+                inputStream = getResourceAsStream("../" + resourcePath);
+            }
+            if (inputStream == null) {
+                inputStream = getResourceAsStream("../../" + resourcePath);
+            }
+            if (inputStream == null) {
+                inputStream = new FileInputStream(new File("pom.xml"));
+            }
+            metadata.setProductVersion(readProductVersion(inputStream));
         } catch (IOException | JDOMException e) {
             logger.error("Could not retrieve " + artifactId + " version.", e);
             metadata.setProductVersion(unknownVersion);
         }
 
         return metadata;
+    }
+
+    private String readProductVersion(InputStream stream) throws JDOMException, IOException {
+        SAXBuilder sax = new SAXBuilder();
+        Document doc = sax.build(stream);
+        Element root = doc.getRootElement();
+        Element versionElement = root.getChild("version", root.getNamespace());
+        if (versionElement != null) {
+            return versionElement.getTextTrim();
+        } else {
+            logger.warn("Could not read " + artifactId + " version.");
+            return unknownVersion;
+        }
     }
 
     public ProductInfo databaseMetadata() {
