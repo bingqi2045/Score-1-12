@@ -9,8 +9,10 @@ import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -161,43 +163,52 @@ public class CcNodeRepository {
         ).returning().fetchOne();
     }
 
-    public long createAcc(User user, CcAccNode ccAccNode) {
-        if (StringUtils.isEmpty(ccAccNode.getGuid())) {
-            ccAccNode.setGuid(SrtGuid.randomGuid());
-        }
+    public AccRecord createAcc(long requesterId) {
+        ULong userId = ULong.valueOf(requesterId);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        if (StringUtils.isEmpty(ccAccNode.getObjectClassTerm())) {
-            ccAccNode.setObjectClassTerm("A new ACC Object");
-        }
+        AccRecord accRecord = new AccRecord();
+        accRecord.setGuid(SrtGuid.randomGuid());
+        accRecord.setObjectClassTerm("A new ACC Object");
+        accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
+        accRecord.setOagisComponentType(OagisComponentType.Semantics.getValue());
+        accRecord.setState(CcState.Editing.getValue());
+        accRecord.setRevisionNum(0);
+        accRecord.setRevisionTrackingNum(0);
+        accRecord.setRevisionAction((byte) 0);
+        accRecord.setCreatedBy(userId);
+        accRecord.setLastUpdatedBy(userId);
+        accRecord.setOwnerUserId(userId);
+        accRecord.setCreationTimestamp(timestamp);
+        accRecord.setLastUpdateTimestamp(timestamp);
 
-        if (StringUtils.isEmpty(ccAccNode.getDen())) {
-            ccAccNode.setDen("A new ACC Object.Details");
-        }
+        accRecord.setAccId(
+                dslContext.insertInto(Tables.ACC)
+                        .set(accRecord)
+                        .returning(ACC.ACC_ID).fetchOne().getAccId()
+        );
 
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("acc")
-                .usingColumns("guid", "object_class_term", "den", "owner_user_id", "definition", "oagis_component_type",
-                        "namespace_id", "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp", "state")
-                .usingGeneratedKeyColumns("acc_id");
+        AccRecord accHistoryRecord = new AccRecord();
+        accHistoryRecord.setGuid(accRecord.getGuid());
+        accHistoryRecord.setObjectClassTerm(accRecord.getObjectClassTerm());
+        accHistoryRecord.setDen(accRecord.getDen());
+        accHistoryRecord.setOagisComponentType(accRecord.getOagisComponentType());
+        accHistoryRecord.setState(accRecord.getState());
+        accHistoryRecord.setRevisionNum(1);
+        accHistoryRecord.setRevisionTrackingNum(1);
+        accHistoryRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
+        accHistoryRecord.setCreatedBy(accRecord.getCreatedBy());
+        accHistoryRecord.setLastUpdatedBy(accRecord.getLastUpdatedBy());
+        accHistoryRecord.setOwnerUserId(accRecord.getOwnerUserId());
+        accHistoryRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
+        accHistoryRecord.setLastUpdateTimestamp(accRecord.getLastUpdateTimestamp());
+        accHistoryRecord.setCurrentAccId(accRecord.getAccId());
 
-        long userId = sessionService.userId(user);
-        Date timestamp = new Date();
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", ccAccNode.getGuid())
-                .addValue("object_class_term", ccAccNode.getObjectClassTerm())
-                .addValue("oagisComponentType", ccAccNode.getOagisComponentType())
-                .addValue("den", ccAccNode.getDen())
-                .addValue("namespace_id", 1)
-                .addValue("owner_user_id", userId)
-                .addValue("created_by", userId)
-                .addValue("state", CcState.Editing.getValue())
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("definition", ccAccNode.getDefinition())
-                .addValue("last_update_timestamp", timestamp);
+        dslContext.insertInto(Tables.ACC)
+                .set(accHistoryRecord)
+                .execute();
 
-        long accNode = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return accNode;
+        return accRecord;
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {

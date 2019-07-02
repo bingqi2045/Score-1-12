@@ -73,12 +73,6 @@ public class CcNodeController {
         service.updateAsccp(user, ccAsccpNodeDetail, id);
     }
 
-    @RequestMapping(value = "/core_component/acc_id", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public long getLastAcc() {
-        return service.getLastAcc().value1().longValue();
-    }
-
     @RequestMapping(value = "/core_component/asccp_id", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public long getLastAsccp() {
@@ -97,12 +91,9 @@ public class CcNodeController {
         return service.getAsccp(id);
     }
 
-    @RequestMapping(value = "/core_component/acc/create", method = RequestMethod.PUT)
-    public ResponseEntity create(
-            @AuthenticationPrincipal User user,
-            @RequestBody CcAccNode ccAccNode) {
-        service.createAcc(user, ccAccNode);
-        return ResponseEntity.noContent().build();
+    @RequestMapping(value = "/core_component/acc", method = RequestMethod.PUT)
+    public CcAccNode createAcc(@AuthenticationPrincipal User user) {
+        return service.createAcc(user);
     }
 
     @RequestMapping(value = "/core_component/node/children/{type}/{releaseId:[\\d]+}",

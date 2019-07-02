@@ -2,8 +2,13 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.Record1;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -11,12 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Editing;
+
 @Service
 @Transactional(readOnly = true)
 public class CcNodeService {
 
     @Autowired
     private CcNodeRepository repository;
+
+    @Autowired
+    private SessionService sessionService;
 
     public CcAccNode getAccNode(User user, long accId, Long releaseId) {
         return repository.getAccNodeByAccId(accId, releaseId);
@@ -63,13 +73,10 @@ public class CcNodeService {
     }
 
     @Transactional
-    public long createAcc(User user, CcAccNode ccAccNode) {
-        return repository.createAcc(user, ccAccNode);
-    }
-
-    @Transactional
-    public Record1<ULong> getLastAcc() {
-        return repository.getLastAccId();
+    public CcAccNode createAcc(User user) {
+        long userId = sessionService.userId(user);
+        AccRecord accRecord = repository.createAcc(userId);
+        return getAccNode(user, accRecord.getAccId().longValue(), 0L);
     }
 
     @Transactional
