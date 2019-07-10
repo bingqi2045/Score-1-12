@@ -2,6 +2,8 @@ package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,6 +167,13 @@ public class CcNodeController {
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    @RequestMapping(value = "/core_component/node/detail", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CcEditUpdateResponse updateDetails(@AuthenticationPrincipal User user,
+                                              @RequestBody CcEditUpdateRequest request) {
+        return service.updateDetails(user, request);
     }
 
     @RequestMapping(value = "/core_component/ascc/{releaseId:[\\d]+}/{id:[\\d]+}",

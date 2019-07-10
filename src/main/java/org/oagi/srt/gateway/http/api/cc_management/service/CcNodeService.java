@@ -2,21 +2,18 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.Record1;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Editing;
 
 @Service
 @Transactional(readOnly = true)
@@ -113,5 +110,16 @@ public class CcNodeService {
     public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
         repository.createAsccp(user, ccAsccpNode);
     }
+
+    @Transactional
+    public CcEditUpdateResponse updateDetails(User user, CcEditUpdateRequest request ) {
+        System.out.println(request);
+        long accId = request.getAccId();
+
+        CcEditUpdateResponse response = new CcEditUpdateResponse();
+
+        return response;
+    }
+
 }
 
