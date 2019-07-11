@@ -235,9 +235,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             if (assoc instanceof BieEditAscc) {
                 BieEditAscc ascc = (BieEditAscc) assoc;
                 BieEditAsbie asbie = asbieMap.get(ascc.getAsccId());
-                if (hideUnused && (asbie == null || asbie.getAsbieId() == 0L || !asbie.isUsed())) {
-                    continue;
-                }
                 BieEditAsbiepNode asbiepNode = createAsbiepNode(fromAbieId, seqKey++, asbie, ascc);
                 if (asbiepNode == null) {
                     seqKey--;
@@ -248,6 +245,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 if (oagisComponentType.isGroup()) {
                     children.addAll(getDescendants(asbiepNode, hideUnused));
                 } else {
+                    if (hideUnused && (asbie == null || asbie.getAsbieId() == 0L || !asbie.isUsed())) {
+                        seqKey--;
+                        continue;
+                    }
+
                     children.add(asbiepNode);
                 }
             } else {
