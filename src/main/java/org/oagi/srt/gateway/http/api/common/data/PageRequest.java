@@ -15,6 +15,6 @@ public class PageRequest {
         if (offset <= 0) {
             return 0;
         }
-        return offset + 1;
+        return offset;
     }
 }
