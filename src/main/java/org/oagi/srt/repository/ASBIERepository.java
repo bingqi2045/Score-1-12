@@ -32,12 +32,11 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
                 .addValue("id", id), ASBIE.class);
     }
 
-    public List<ASBIE> findByOwnerTopLevelAbieIdAndUsed(long ownerTopLevelAbieId, boolean used) {
+    public List<ASBIE> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
         return jdbcTemplate.queryForList(new StringBuilder(GET_ASBIE_STATEMENT)
-                        .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id AND `is_used` = :used").toString(),
+                        .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id").toString(),
                 newSqlParameterSource()
-                        .addValue("owner_top_level_abie_id", ownerTopLevelAbieId)
-                        .addValue("used", used), ASBIE.class);
+                        .addValue("owner_top_level_abie_id", ownerTopLevelAbieId), ASBIE.class);
     }
 
 }

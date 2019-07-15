@@ -214,9 +214,8 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.groupingBy(e -> e.getBbieId()));
 
         List<ASBIE> asbieList =
-                asbieRepository.findByOwnerTopLevelAbieIdAndUsed(topLevelAbie.getTopLevelAbieId(), true);
-        findAsbieByFromAbieIdAndUsedIsTrueMap = asbieList.stream()
-                .filter(e -> e.isUsed())
+                asbieRepository.findByOwnerTopLevelAbieId(topLevelAbie.getTopLevelAbieId());
+        findAsbieByFromAbieIdMap = asbieList.stream()
                 .collect(Collectors.groupingBy(e -> e.getFromAbieId()));
 
         List<ASBIEP> asbiepList =
@@ -388,11 +387,11 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    private Map<Long, List<ASBIE>> findAsbieByFromAbieIdAndUsedIsTrueMap;
+    private Map<Long, List<ASBIE>> findAsbieByFromAbieIdMap;
 
-    public List<ASBIE> findAsbieByFromAbieIdAndUsedIsTrue(long fromAbieId) {
-        return findAsbieByFromAbieIdAndUsedIsTrueMap.containsKey(fromAbieId) ?
-                findAsbieByFromAbieIdAndUsedIsTrueMap.get(fromAbieId) :
+    public List<ASBIE> findAsbieByFromAbieId(long fromAbieId) {
+        return findAsbieByFromAbieIdMap.containsKey(fromAbieId) ?
+                findAsbieByFromAbieIdMap.get(fromAbieId) :
                 Collections.emptyList();
     }
 
@@ -430,36 +429,53 @@ public class GenerationContext implements InitializingBean {
         return (abie != null) ? findACC(abie.getBasedAccId()) : null;
     }
 
+
+    private double getSeqkey(BIE bie) {
+        if (bie instanceof BBIE) {
+            return ((BBIE) bie).getSeqKey();
+        } else {
+            return ((ASBIE) bie).getSeqKey();
+        }
+    }
+
+    private List<BIE> sorted(List<ASBIE> asbieList, List<BBIE> bbieList) {
+        List<BIE> bieList = new ArrayList();
+        bieList.addAll(asbieList);
+        bieList.addAll(bbieList);
+
+        Collections.sort(bieList, Comparator.comparingDouble(this::getSeqkey));
+        return bieList;
+    }
+
     // Get only Child BIEs whose is_used flag is true
     public List<BIE> queryChildBIEs(ABIE abie) {
         if (abie == null) {
             return Collections.emptyList();
         }
-        List<BIE> result;
-        Map<BIE, Double> sequence = new HashMap();
-        ValueComparator bvc = new ValueComparator(sequence);
-        Map<BIE, Double> ordered_sequence = new TreeMap(bvc);
 
-        List<ASBIE> asbievo = findAsbieByFromAbieIdAndUsedIsTrue(abie.getAbieId());
-        List<BBIE> bbievo = findBbieByFromAbieIdAndUsedIsTrue(abie.getAbieId());
+        List<ASBIE> asbieList = findAsbieByFromAbieId(abie.getAbieId());
+        List<BBIE> bbieList = findBbieByFromAbieIdAndUsedIsTrue(abie.getAbieId());
 
-        for (BBIE aBBIE : bbievo) {
-            if (aBBIE.getCardinalityMax() != 0) //modify
-                sequence.put(aBBIE, aBBIE.getSeqKey());
-        }
+        List<BIE> result = new ArrayList();
+        for (BIE bie : sorted(asbieList, bbieList)) {
+            if (bie instanceof BBIE) {
+                BBIE bbie = (BBIE) bie;
+                if (bbie.getCardinalityMax() != 0) {
+                    result.add(bbie);
+                }
+            } else {
+                ASBIE asbie = (ASBIE) bie;
+                ASBIEP toAsbiep = findASBIEP(asbie.getToAsbiepId());
+                ABIE roleOfAbie = findAbie(toAsbiep.getRoleOfAbieId());
+                ACC roleOfAcc = findACC(roleOfAbie.getBasedAccId());
 
-        for (ASBIE aASBIE : asbievo) {
-            if (aASBIE.getCardinalityMax() != 0)
-                sequence.put(aASBIE, aASBIE.getSeqKey());
-        }
-
-        ordered_sequence.putAll(sequence);
-        Set set = ordered_sequence.entrySet();
-        Iterator i = set.iterator();
-        result = new ArrayList();
-        while (i.hasNext()) {
-            Map.Entry me = (Map.Entry) i.next();
-            result.add((BIE) me.getKey());
+                OagisComponentType oagisComponentType = OagisComponentType.valueOf(roleOfAcc.getOagisComponentType());
+                if (oagisComponentType.isGroup()) {
+                    result.addAll(queryChildBIEs(roleOfAbie));
+                } else if (asbie.isUsed() && asbie.getCardinalityMax() != 0) {
+                    result.add(asbie);
+                }
+            }
         }
 
         return result;
