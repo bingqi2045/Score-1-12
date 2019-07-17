@@ -13,6 +13,7 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
-import static org.oagi.srt.entity.jooq.Tables.APP_USER;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
@@ -38,7 +39,7 @@ import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSo
 public class BieService {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -390,20 +391,17 @@ public class BieService {
             return;
         }
 
-        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 0");
+        dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("owner_top_level_abie_ids", topLevelAbieIds);
+        dslContext.deleteFrom(Tables.ABIE).where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
 
-        jdbcTemplate.update("DELETE FROM abie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM asbie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM asbiep WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM bbie WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM bbiep WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM bbie_sc WHERE owner_top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-        jdbcTemplate.update("DELETE FROM top_level_abie WHERE top_level_abie_id IN (:owner_top_level_abie_ids)", parameterSource);
-
-        jdbcTemplate.query("SET FOREIGN_KEY_CHECKS = 1");
+        dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
 
     @Transactional

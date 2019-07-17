@@ -18,6 +18,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -367,192 +369,146 @@ public class BieRepository {
     }
 
     public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("abie")
-                .usingColumns("guid", "based_acc_id", "biz_ctx_id",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "state", "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("abie_id");
-
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("based_acc_id", basedAccId)
-                .addValue("biz_ctx_id", bizCtxId)
-                .addValue("state", BieState.Editing.getValue())
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long abieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return abieId;
+        return dslContext.insertInto(Tables.ABIE)
+                .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
+                .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(basedAccId))
+                .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                .set(Tables.ABIE.CREATED_BY, ULong.valueOf(userId))
+                .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.ABIE.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.ABIE.STATE, BieState.Editing.getValue())
+                .set(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getAbieId().longValue();
     }
 
     public long createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("asbiep")
-                .usingColumns("guid", "based_asccp_id", "role_of_abie_id",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("asbiep_id");
-
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("based_asccp_id", asccpId)
-                .addValue("role_of_abie_id", abieId)
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long asbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return asbiepId;
+        return dslContext.insertInto(Tables.ASBIEP)
+                .set(Tables.ASBIEP.GUID, SrtGuid.randomGuid())
+                .set(Tables.ASBIEP.BASED_ASCCP_ID, ULong.valueOf(asccpId))
+                .set(Tables.ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(abieId))
+                .set(Tables.ASBIEP.CREATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIEP.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getAsbiepId().longValue();
     }
 
     public long createAsbie(User user, long fromAbieId, long toAsbiepId, long basedAsccId,
                             int seqKey, long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("asbie")
-                .usingColumns("guid", "from_abie_id", "to_asbiep_id", "based_ascc_id",
-                        "cardinality_min", "cardinality_max", "is_nillable",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "seq_key", "is_used", "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("asbie_id");
 
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Cardinality cardinality =
-                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                        "FROM ascc WHERE ascc_id = :ascc_id", newSqlParameterSource()
-                        .addValue("ascc_id", basedAsccId), Cardinality.class);
+        Cardinality cardinality = dslContext.select(
+                Tables.ASCC.CARDINALITY_MIN,
+                Tables.ASCC.CARDINALITY_MAX).from(Tables.ASCC)
+                .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId)))
+                .fetchOneInto(Cardinality.class);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("from_abie_id", fromAbieId)
-                .addValue("to_asbiep_id", toAsbiepId)
-                .addValue("based_ascc_id", basedAsccId)
-                .addValue("cardinality_min", cardinality.getCardinalityMin())
-                .addValue("cardinality_max", cardinality.getCardinalityMax())
-                .addValue("is_nillable", false)
-                .addValue("seq_key", seqKey)
-                .addValue("is_used", false)
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
+        return dslContext.insertInto(Tables.ASBIE)
+                .set(Tables.ASBIE.GUID, SrtGuid.randomGuid())
+                .set(Tables.ASBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
+                .set(Tables.ASBIE.TO_ASBIEP_ID, ULong.valueOf(toAsbiepId))
+                .set(Tables.ASBIE.BASED_ASCC_ID, ULong.valueOf(basedAsccId))
+                .set(Tables.ASBIE.CARDINALITY_MIN, cardinality.getCardinalityMin())
+                .set(Tables.ASBIE.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(Tables.ASBIE.IS_NILLABLE, (byte) ((0)))
+                .set(Tables.ASBIE.CREATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIE.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
+                .set(Tables.ASBIE.IS_USED, (byte) ((0)))
+                .set(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getAsbieId().longValue();
 
-        long asbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return asbieId;
     }
 
     public long createBbiep(User user, long basedBccpId, long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("bbiep")
-                .usingColumns("guid", "based_bccp_id",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("bbiep_id");
-
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("based_bccp_id", basedBccpId)
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long bbiepId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return bbiepId;
+        return dslContext.insertInto(Tables.BBIEP)
+                .set(Tables.BBIEP.GUID, SrtGuid.randomGuid())
+                .set(Tables.BBIEP.BASED_BCCP_ID, ULong.valueOf(basedBccpId))
+                .set(Tables.BBIEP.CREATED_BY, ULong.valueOf(userId))
+                .set(Tables.BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.BBIEP.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getBbiepId().longValue();
     }
 
     public long createBbie(User user, long fromAbieId,
                            long toBbiepId, long basedBccId, long bdtId,
                            int seqKey, long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("bbie")
-                .usingColumns("guid", "from_abie_id", "to_bbiep_id", "based_bcc_id", "bdt_pri_restri_id",
-                        "cardinality_min", "cardinality_max", "is_nillable", "is_null",
-                        "created_by", "last_updated_by", "creation_timestamp", "last_update_timestamp",
-                        "seq_key", "is_used", "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("bbie_id");
 
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Cardinality cardinality =
-                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                        "FROM bcc WHERE bcc_id = :bcc_id", newSqlParameterSource()
-                        .addValue("bcc_id", basedBccId), Cardinality.class);
+        Cardinality cardinality = dslContext.select(
+                Tables.BCC.CARDINALITY_MIN,
+                Tables.BCC.CARDINALITY_MAX).from(Tables.BCC)
+                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
+                .fetchOneInto(Cardinality.class);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("from_abie_id", fromAbieId)
-                .addValue("to_bbiep_id", toBbiepId)
-                .addValue("based_bcc_id", basedBccId)
-                .addValue("bdt_pri_restri_id", getDefaultBdtPriRestriIdByBdtId(bdtId))
-                .addValue("cardinality_min", cardinality.getCardinalityMin())
-                .addValue("cardinality_max", cardinality.getCardinalityMax())
-                .addValue("is_nillable", false)
-                .addValue("is_null", false)
-                .addValue("seq_key", seqKey)
-                .addValue("is_used", false)
-                .addValue("owner_top_level_abie_id", topLevelAbieId)
-                .addValue("created_by", userId)
-                .addValue("last_updated_by", userId)
-                .addValue("creation_timestamp", timestamp)
-                .addValue("last_update_timestamp", timestamp);
-
-        long bbieId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return bbieId;
+        return dslContext.insertInto(Tables.BBIE)
+                .set(Tables.BBIE.GUID, SrtGuid.randomGuid())
+                .set(Tables.BBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
+                .set(Tables.BBIE.TO_BBIEP_ID, ULong.valueOf(toBbiepId))
+                .set(Tables.BBIE.BASED_BCC_ID, ULong.valueOf(basedBccId))
+                .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtId)))
+                .set(Tables.BBIE.CARDINALITY_MIN, cardinality.getCardinalityMin())
+                .set(Tables.BBIE.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(Tables.BBIE.IS_NILLABLE, (byte) ((0)))
+                .set(Tables.BBIE.IS_NULL, (byte) ((0)))
+                .set(Tables.BBIE.CREATED_BY, ULong.valueOf(userId))
+                .set(Tables.BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.BBIE.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
+                .set(Tables.BBIE.IS_USED, (byte) ((0)))
+                .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getBbieId().longValue();
     }
 
     public long getDefaultBdtPriRestriIdByBdtId(long bdtId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT bdt_pri_restri_id FROM bdt_pri_restri " +
-                        "WHERE bdt_id = :bdt_id AND is_default = :is_default", newSqlParameterSource()
-                        .addValue("bdt_id", bdtId)
-                        .addValue("is_default", true), Long.class);
+        return dslContext.select(
+                Tables.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
+                .from(Tables.BDT_PRI_RESTRI)
+                .where(and(
+                        Tables.BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId))),
+                        Tables.BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) ((1))))
+                .fetchOptionalInto(Long.class).orElse(0L);
     }
 
     public long createBbieSc(User user, long bbieId, long dtScId,
                              long topLevelAbieId) {
-        SimpleJdbcInsert jdbcInsert = jdbcTemplate.insert()
-                .withTableName("bbie_sc")
-                .usingColumns("guid", "bbie_id", "dt_sc_id", "dt_sc_pri_restri_id",
-                        "cardinality_min", "cardinality_max", "is_used", "owner_top_level_abie_id")
-                .usingGeneratedKeyColumns("bbie_sc_id");
 
-        Cardinality cardinality =
-                jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                        "FROM dt_sc WHERE dt_sc_id = :dt_sc_id", newSqlParameterSource()
-                        .addValue("dt_sc_id", dtScId), Cardinality.class);
+        Cardinality cardinality = dslContext.select(
+                Tables.DT_SC.CARDINALITY_MIN,
+                Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(dtScId)))
+                .fetchOneInto(Cardinality.class);
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("guid", SrtGuid.randomGuid())
-                .addValue("bbie_id", bbieId)
-                .addValue("dt_sc_id", dtScId)
-                .addValue("dt_sc_pri_restri_id", getDefaultDtScPriRestriIdByDtScId(dtScId))
-                .addValue("cardinality_min", cardinality.getCardinalityMin())
-                .addValue("cardinality_max", cardinality.getCardinalityMax())
-                .addValue("is_used", false)
-                .addValue("owner_top_level_abie_id", topLevelAbieId);
-
-        long bbieScId = jdbcInsert.executeAndReturnKey(parameterSource).longValue();
-        return bbieScId;
+        return dslContext.insertInto(Tables.BBIE_SC)
+                .set(Tables.BBIE_SC.GUID, SrtGuid.randomGuid())
+                .set(Tables.BBIE_SC.BBIE_ID, ULong.valueOf(bbieId))
+                .set(Tables.BBIE_SC.DT_SC_ID, ULong.valueOf(dtScId))
+                .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScId)))
+                .set(Tables.BBIE_SC.CARDINALITY_MIN, cardinality.getCardinalityMin())
+                .set(Tables.BBIE_SC.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(Tables.BBIE_SC.IS_USED, (byte) (0))
+                .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .returning().fetchOne().getBbieScId().longValue();
     }
 
     public long getDefaultDtScPriRestriIdByDtScId(long dtScId) {
