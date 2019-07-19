@@ -1,9 +1,13 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
+import org.jooq.DSLContext;
+import org.jooq.Table;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
@@ -16,18 +20,21 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.BieState.Editing;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -39,6 +46,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private DSLContext dslContext;
 
     @Autowired
     private BieRepository repository;
@@ -103,6 +113,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         long fromAccId;
 
         long topLevelAbieId = abieNode.getTopLevelAbieId();
+        System.out.println(topLevelAbieId);
         long releaseId = abieNode.getReleaseId();
         BieEditAcc acc = null;
         if (topLevelAbieId > 0L) {
@@ -511,62 +522,81 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private BieEditNodeDetail getDetail(BieEditAbieNode abieNode) {
-        BieEditAbieNodeDetail detail =
-                jdbcTemplate.queryForObject("SELECT version, status, remark, biz_term, definition " +
-                                "FROM abie WHERE abie_id = :abie_id", newSqlParameterSource()
-                                .addValue("abie_id", abieNode.getAbieId()),
-                        BieEditAbieNodeDetail.class);
+        BieEditAbieNodeDetail detail = dslContext.select(
+                Tables.ABIE.VERSION,
+                Tables.ABIE.STATUS,
+                Tables.ABIE.REMARK,
+                Tables.ABIE.BIZ_TERM,
+                Tables.ABIE.DEFINITION)
+                .from(Tables.ABIE)
+                .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(abieNode.getAbieId())))
+                .fetchOneInto(BieEditAbieNodeDetail.class);
+
         return detail.append(abieNode);
     }
 
     private BieEditAsbiepNodeDetail getDetail(BieEditAsbiepNode asbiepNode) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("asbie_id", asbiepNode.getAsbieId())
-                .addValue("asbiep_id", asbiepNode.getAsbiepId())
-                .addValue("ascc_id", asbiepNode.getAsccId())
-                .addValue("asccp_id", asbiepNode.getAsccpId())
-                .addValue("acc_id", asbiepNode.getAccId());
 
         BieEditAsbiepNodeDetail detail;
         if (asbiepNode.getAsbieId() > 0L) {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
-                            "is_nillable as nillable, definition as context_definition " +
-                            "FROM asbie WHERE asbie_id = :asbie_id",
-                    parameterSource, BieEditAsbiepNodeDetail.class);
-        } else {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                            "FROM ascc WHERE ascc_id = :ascc_id",
-                    parameterSource, BieEditAsbiepNodeDetail.class);
-        }
+            detail = dslContext.select(
+                    Tables.ASBIE.CARDINALITY_MIN,
+                    Tables.ASBIE.CARDINALITY_MAX,
+                    Tables.ASBIE.IS_USED.as("used"),
+                    Tables.ASBIE.IS_NILLABLE.as("nillable"),
+                    Tables.ASBIE.DEFINITION.as("context_definition")
+                    ).from(Tables.ASBIE)
+                    .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNode.getAsbieId())))
+                    .fetchOneInto(BieEditAsbiepNodeDetail.class);
 
+        } else {
+            detail = dslContext.select(
+                    Tables.ASCC.CARDINALITY_MIN,
+                    Tables.ASCC.CARDINALITY_MAX
+                    ).from(Tables.ASCC)
+                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                    .fetchOneInto(BieEditAsbiepNodeDetail.class);
+
+        }
         if (asbiepNode.getAsbiepId() > 0L) {
-            jdbcTemplate.query("SELECT biz_term, remark FROM asbiep WHERE asbiep_id = :asbiep_id",
-                    parameterSource, rs -> {
-                        detail.setBizTerm(rs.getString("biz_term"));
-                        detail.setRemark(rs.getString("remark"));
-                    });
+
+            detail.setBizTerm(dslContext.select(
+                    Tables.ASBIEP.BIZ_TERM).from(Tables.ASBIEP)
+                    .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
+                    .fetchOneInto(String.class));
+
+            detail.setRemark(dslContext.select(
+                    Tables.ASBIEP.REMARK).from(Tables.ASBIEP)
+                    .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
+                    .fetchOneInto(String.class));
         }
 
         if (asbiepNode.getAsccId() > 0L) {
-            jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
-                    "FROM ascc " +
-                    "WHERE ascc_id = :ascc_id", parameterSource, rs -> {
-                detail.setCardinalityOriginMin(rs.getString("ascc.cardinality_min"));
-                detail.setCardinalityOriginMax(rs.getString("ascc.cardinality_max"));
-            });
+
+            detail.setCardinalityOriginMin(dslContext.select(
+                    Tables.ASCC.CARDINALITY_MIN).from(Tables.ASCC)
+                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                    .fetchOneInto(String.class));
+
+            detail.setCardinalityOriginMax(dslContext.select(
+                    Tables.ASCC.CARDINALITY_MAX).from(Tables.ASCC)
+                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                    .fetchOneInto(String.class));
         }
+        detail.setAssociationDefinition(dslContext.select(
+                Tables.ASCC.DEFINITION).from(Tables.ASCC)
+                .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                .fetchOneInto(String.class));
 
-        jdbcTemplate.query("SELECT definition FROM ascc WHERE ascc_id = :ascc_id", parameterSource, rs -> {
-            detail.setAssociationDefinition(rs.getString("definition"));
-        });
+        detail.setComponentDefinition(dslContext.select(
+                Tables.ASCCP.DEFINITION).from(Tables.ASCCP)
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpId())))
+                .fetchOneInto(String.class));
 
-        jdbcTemplate.query("SELECT definition FROM asccp WHERE asccp_id = :asccp_id", parameterSource, rs -> {
-            detail.setComponentDefinition(rs.getString("definition"));
-        });
-
-        jdbcTemplate.query("SELECT definition FROM acc WHERE acc_id = :acc_id", parameterSource, rs -> {
-            detail.setTypeDefinition(rs.getString("definition"));
-        });
+        detail.setTypeDefinition(dslContext.select(
+                Tables.ACC.DEFINITION).from(Tables.ACC)
+                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(asbiepNode.getAccId())))
+                .fetchOneInto(String.class));
 
         return detail.append(asbiepNode);
     }
@@ -580,15 +610,27 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         BieEditBbiepNodeDetail detail;
         if (bbiepNode.getBbieId() > 0L) {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
-                            "bdt_pri_restri_id, code_list_id, agency_id_list_id, " +
-                            "is_nillable as nillable, fixed_value, definition as context_definition " +
-                            "FROM bbie WHERE bbie_id = :bbie_id",
-                    parameterSource, BieEditBbiepNodeDetail.class);
+            detail = dslContext.select(
+                    Tables.BBIE.CARDINALITY_MIN,
+                    Tables.BBIE.CARDINALITY_MAX,
+                    Tables.BBIE.IS_USED.as("used"),
+                    Tables.BBIE.BDT_PRI_RESTRI_ID,
+                    Tables.BBIE.CODE_LIST_ID,
+                    Tables.BBIE.AGENCY_ID_LIST_ID,
+                    Tables.BBIE.IS_NILLABLE.as("nillable"),
+                    Tables.BBIE.FIXED_VALUE,
+                    Tables.BBIE.DEFINITION.as("context_definition")
+                    ).from(Tables.BBIE)
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNode.getBbieId())))
+                    .fetchOneInto(BieEditBbiepNodeDetail.class);
+
         } else {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                            "FROM bcc WHERE bcc_id = :bcc_id",
-                    parameterSource, BieEditBbiepNodeDetail.class);
+            detail = dslContext.select(
+                    Tables.BCC.CARDINALITY_MIN,
+                    Tables.BCC.CARDINALITY_MAX
+            ).from(Tables.BCC)
+                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                    .fetchOneInto(BieEditBbiepNodeDetail.class);
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
@@ -603,43 +645,60 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                         detail.setBdtDen(rs.getString("bdt_den"));
                     });
         } else {
-            jdbcTemplate.query("SELECT bccp.bdt_id, dt.den as bdt_den " +
-                    "FROM bccp JOIN dt ON bccp.bdt_id = dt.dt_id " +
-                    "WHERE bccp_id = :bccp_id", parameterSource, rs -> {
-                detail.setBdtId(rs.getLong("bdt_id"));
-                detail.setBdtDen(rs.getString("bdt_den"));
-            });
-        }
+            detail.setBdtDen(dslContext.select(
+                    Tables.DT.DEN.as("bdt_den")).from(Tables.BCCP)
+                    .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
+                    .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
+                    .fetchOneInto(String.class)
+            );
 
+            detail.setBdtId(dslContext.select(
+                    Tables.BCCP.BDT_ID).from(Tables.BCCP)
+                    .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
+                    .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
+                    .fetchOneInto(Long.class)
+            );
+        }
         if (bbiepNode.getBbieId() == 0L) {
-            long defaultBdtPriRestriId = jdbcTemplate.queryForObject(
-                    "SELECT bdt_pri_restri_id FROM bdt_pri_restri " +
-                            "WHERE bdt_id = :bdt_id AND is_default = :is_default", newSqlParameterSource()
-                            .addValue("bdt_id", detail.getBdtId())
-                            .addValue("is_default", true), Long.class);
+            long defaultBdtPriRestriId = dslContext.select(
+                    Tables.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
+                    .from(Tables.BDT_PRI_RESTRI)
+                    .where(and(Tables.DT.DT_ID.eq(ULong.valueOf(detail.getBdtId())),
+                            Tables.BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
+                            .fetchOneInto(Long.class);
+
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
+
         if (bbiepNode.getBccId() > 0L) {
-            jdbcTemplate.query("SELECT bcc.cardinality_min, bcc.cardinality_max " +
-                    "FROM bcc " +
-                    "WHERE bcc_id = :bcc_id", parameterSource, rs -> {
-                detail.setCardinalityOriginMin(rs.getString("bcc.cardinality_min"));
-                detail.setCardinalityOriginMax(rs.getString("bcc.cardinality_max"));
-            });
+            detail.setCardinalityOriginMin(dslContext.select(
+                    Tables.BCC.CARDINALITY_MIN).from(Tables.BCC)
+                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                    .fetchOneInto(String.class)
+            );
+
+            detail.setCardinalityOriginMax(dslContext.select(
+                    Tables.BCC.CARDINALITY_MAX).from(Tables.BCC)
+                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                    .fetchOneInto(String.class)
+            );
         }
 
         BieEditBdtPriRestri bdtPriRestri = getBdtPriRestri(bbiepNode);
         detail.setXbtList(bdtPriRestri.getXbtList());
         detail.setCodeLists(bdtPriRestri.getCodeLists());
         detail.setAgencyIdLists(bdtPriRestri.getAgencyIdLists());
+        detail.setAssociationDefinition(dslContext.select(
+                Tables.BCC.DEFINITION).from(Tables.BCC)
+                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                .fetchOneInto(String.class)
+        );
 
-        jdbcTemplate.query("SELECT definition FROM bcc WHERE bcc_id = :bcc_id", parameterSource, rs -> {
-            detail.setAssociationDefinition(rs.getString("definition"));
-        });
-
-        jdbcTemplate.query("SELECT definition FROM bccp WHERE bccp_id = :bccp_id", parameterSource, rs -> {
-            detail.setComponentDefinition(rs.getString("definition"));
-        });
+        detail.setComponentDefinition(dslContext.select(
+                Tables.BCCP.DEFINITION).from(Tables.BCCP)
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBccpId())))
+                .fetchOneInto(String.class)
+        );
 
         return detail.append(bbiepNode);
     }
@@ -703,50 +762,65 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private BieEditBbieScNodeDetail getDetail(BieEditBbieScNode bbieScNode) {
-        MapSqlParameterSource parameterSource = newSqlParameterSource()
-                .addValue("bbie_sc_id", bbieScNode.getBbieScId())
-                .addValue("dt_sc_id", bbieScNode.getDtScId());
 
         BieEditBbieScNodeDetail detail;
         if (bbieScNode.getBbieScId() > 0L) {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max, is_used as used, " +
-                            "dt_sc_pri_restri_id, code_list_id, agency_id_list_id, " +
-                            "default_value, fixed_value, biz_term, remark, definition as context_definition " +
-                            "FROM bbie_sc WHERE bbie_sc_id = :bbie_sc_id",
-                    parameterSource, BieEditBbieScNodeDetail.class);
+            detail = dslContext.select(
+                    Tables.BBIE_SC.CARDINALITY_MIN,
+                    Tables.BBIE_SC.CARDINALITY_MAX,
+                    Tables.BBIE_SC.IS_USED.as("used"),
+                    Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
+                    Tables.BBIE_SC.CODE_LIST_ID,
+                    Tables.BBIE_SC.AGENCY_ID_LIST_ID,
+                    Tables.BBIE_SC.DEFAULT_VALUE,
+                    Tables.BBIE_SC.FIXED_VALUE,
+                    Tables.BBIE_SC.BIZ_TERM,
+                    Tables.BBIE_SC.REMARK,
+                    Tables.BBIE_SC.DEFINITION.as("context_definition"))
+                    .from(Tables.BBIE_SC)
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf( bbieScNode.getBbieScId())))
+                    .fetchOneInto(BieEditBbieScNodeDetail.class);
+
         } else {
-            detail = jdbcTemplate.queryForObject("SELECT cardinality_min, cardinality_max " +
-                            "FROM dt_sc WHERE dt_sc_id = :dt_sc_id",
-                    parameterSource, BieEditBbieScNodeDetail.class);
+            detail = dslContext.select(
+                    Tables.DT_SC.CARDINALITY_MIN,
+                    Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+                    .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
+                    .fetchOneInto(BieEditBbieScNodeDetail.class);
         }
 
         if (bbieScNode.getBbieScId() == 0L) {
-            long defaultDtScPriRestriId = jdbcTemplate.queryForObject(
-                    "SELECT bdt_sc_pri_restri_id FROM bdt_sc_pri_restri " +
-                            "WHERE bdt_sc_id = :bdt_sc_id AND is_default = :is_default", newSqlParameterSource()
-                            .addValue("bdt_sc_id", bbieScNode.getDtScId())
-                            .addValue("is_default", true), Long.class);
+            long defaultDtScPriRestriId = dslContext.select(
+                    Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).from(Tables.BDT_SC_PRI_RESTRI)
+                    .where(and(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())),
+                            Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
+                    .fetchOneInto(Long.class);
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
 
         if (bbieScNode.getDtScId() > 0L) {
-            jdbcTemplate.query("SELECT dt_sc.cardinality_min, dt_sc.cardinality_max " +
-                    "FROM dt_sc " +
-                    "WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
-                detail.setCardinalityOriginMin(rs.getString("dt_sc.cardinality_min"));
-                detail.setCardinalityOriginMax(rs.getString("dt_sc.cardinality_max"));
-            });
+            detail.setCardinalityOriginMin(dslContext.select(
+                    Tables.DT_SC.CARDINALITY_MIN).from(Tables.DT_SC)
+                    .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
+                    .fetchOneInto(String.class)
+            );
+
+            detail.setCardinalityOriginMax(dslContext.select(
+                    Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+                    .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
+                    .fetchOneInto(String.class)
+            );
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
         detail.setXbtList(bdtScPriRestri.getXbtList());
         detail.setCodeLists(bdtScPriRestri.getCodeLists());
         detail.setAgencyIdLists(bdtScPriRestri.getAgencyIdLists());
-
-        jdbcTemplate.query("SELECT definition FROM dt_sc WHERE dt_sc_id = :dt_sc_id", parameterSource, rs -> {
-            detail.setComponentDefinition(rs.getString("definition"));
-        });
-
+        detail.setComponentDefinition(dslContext.select(
+                Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
+                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
+                .fetchOneInto(String.class)
+        );
         return detail.append(bbieScNode);
     }
 
@@ -756,21 +830,37 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("bdt_sc_id", dtScId);
 
-        List<BieEditXbt> bieEditXbtList = jdbcTemplate.queryForList(
-                "SELECT b.bdt_sc_pri_restri_id AS pri_restri_id, is_default, x.xbt_id, x.name as xbt_name " +
-                        "FROM bdt_sc_pri_restri b JOIN cdt_sc_awd_pri_xps_type_map c " +
-                        "ON b.cdt_sc_awd_pri_xps_type_map_id = c.cdt_sc_awd_pri_xps_type_map_id " +
-                        "JOIN xbt x ON c.xbt_id = x.xbt_id WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditXbt.class);
+        List<BieEditXbt> bieEditXbtList = dslContext.select(
+                Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID.as("pri_restri_id"),
+                Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT,
+                Tables.XBT.XBT_ID,
+                Tables.XBT.NAME.as("xbt_name"))
+                .from(Tables.BDT_SC_PRI_RESTRI)
+                .join(Tables.CDT_AWD_PRI_XPS_TYPE_MAP).on(
+                        Tables.BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(
+                                Tables.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(Tables.XBT).on(Tables.CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(Tables.XBT.XBT_ID))
+                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)))
+                .fetchInto(BieEditXbt.class);
 
-        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT c.code_list_id, c.based_code_list_id, b.is_default, c.name as code_list_name " +
-                        "FROM bdt_sc_pri_restri b JOIN code_list c ON b.code_list_id = c.code_list_id " +
-                        "WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditCodeList.class);
+        List<BieEditCodeList> bieEditCodeLists = dslContext.select(
+                Tables.CODE_LIST.CODE_LIST_ID,
+                Tables.CODE_LIST.BASED_CODE_LIST_ID,
+                Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT,
+                Tables.CODE_LIST.NAME.as("code_list_name")).from(Tables.BDT_SC_PRI_RESTRI)
+                .join(Tables.CODE_LIST).on(Tables.BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(Tables.CODE_LIST.CODE_LIST_ID))
+                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)))
+                .fetchInto(BieEditCodeList.class);
 
-        List<BieEditAgencyIdList> bieEditAgencyIdLists = jdbcTemplate.queryForList(
-                "SELECT a.agency_id_list_id, b.is_default, a.name as agency_id_list_name " +
-                        "FROM bdt_sc_pri_restri b JOIN agency_id_list a ON b.agency_id_list_id = a.agency_id_list_id " +
-                        "WHERE bdt_sc_id = :bdt_sc_id", parameterSource, BieEditAgencyIdList.class);
+        List<BieEditAgencyIdList> bieEditAgencyIdLists = dslContext.select(
+                Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
+                Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT,
+                Tables.AGENCY_ID_LIST.NAME.as("agency_id_list_name"))
+                .from(Tables.BDT_SC_PRI_RESTRI)
+                .join(Tables.AGENCY_ID_LIST).on(
+                        Tables.BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)))
+                .fetchInto(BieEditAgencyIdList.class);
 
         if (bieEditCodeLists.isEmpty() && bieEditAgencyIdLists.isEmpty()) {
             bieEditCodeLists = getAllCodeLists();
@@ -795,13 +885,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private List<BieEditCodeList> getAllCodeLists() {
-        return jdbcTemplate.queryForList("SELECT code_list_id, name as code_list_name, state FROM code_list WHERE state LIKE 'Published'",
-                BieEditCodeList.class);
+        return dslContext.select(
+                Tables.CODE_LIST.CODE_LIST_ID,
+                Tables.CODE_LIST.NAME.as("code_list_name"),
+                Tables.CODE_LIST.STATE).from(Tables.CODE_LIST)
+                .where(Tables.CODE_LIST.STATE.eq("Published"))
+                .fetchInto(BieEditCodeList.class);
     }
 
     private List<BieEditAgencyIdList> getAllAgencyIdLists() {
-        return jdbcTemplate.queryForList("SELECT agency_id_list_id, name as agency_id_list_name FROM agency_id_list",
-                BieEditAgencyIdList.class);
+        return dslContext.select(
+                Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
+                Tables.AGENCY_ID_LIST.NAME.as("agency_id_list_name")).from(Tables.AGENCY_ID_LIST)
+                .fetchInto(BieEditAgencyIdList.class);
     }
 
     private List<BieEditCodeList> getBieEditCodeListByBasedCodeListIds(List<Long> basedCodeListIds) {
@@ -863,172 +959,161 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditAbieNodeDetail abieNodeDetail) {
-        jdbcTemplate.update("UPDATE abie SET version = :version, status = :status, remark = :remark, " +
-                "biz_term = :biz_term, definition = :definition, " +
-                "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
-                "WHERE abie_id = :abie_id", newSqlParameterSource()
-                .addValue("version", emptyToNull(abieNodeDetail.getVersion()))
-                .addValue("status", emptyToNull(abieNodeDetail.getStatus()))
-                .addValue("remark", emptyToNull(abieNodeDetail.getRemark()))
-                .addValue("biz_term", emptyToNull(abieNodeDetail.getBizTerm()))
-                .addValue("definition", emptyToNull(abieNodeDetail.getDefinition()))
-                .addValue("last_updated_by", sessionService.userId(user))
-                .addValue("last_update_timestamp", new Date())
-                .addValue("abie_id", abieNodeDetail.getAbieId()));
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        dslContext.update(Tables.ABIE)
+                .set(Tables.ABIE.VERSION, emptyToNull(abieNodeDetail.getVersion()))
+                .set(Tables.ABIE.STATUS, emptyToNull(abieNodeDetail.getStatus()))
+                .set(Tables.ABIE.REMARK, emptyToNull(abieNodeDetail.getRemark()))
+                .set(Tables.ABIE.BIZ_TERM, emptyToNull(abieNodeDetail.getBizTerm()))
+                .set(Tables.ABIE.DEFINITION, emptyToNull(abieNodeDetail.getDefinition()))
+                .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(Tables.ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(abieNodeDetail.getAbieId())))
+                .execute();
     }
 
     private void updateDetail(BieEditAsbiepNodeDetail asbiepNodeDetail) {
-        List<String> assignmentList = new ArrayList();
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource();
         if (asbiepNodeDetail.getCardinalityMin() != null) {
-            parameterSource.addValue("cardinality_min", asbiepNodeDetail.getCardinalityMin());
-            assignmentList.add("cardinality_min = :cardinality_min");
+            dslContext.update(Tables.ASBIE)
+                    .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getCardinalityMin())
+                    .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
+                    .execute();
         }
         if (asbiepNodeDetail.getCardinalityMax() != null) {
-            parameterSource.addValue("cardinality_max", asbiepNodeDetail.getCardinalityMax());
-            assignmentList.add("cardinality_max = :cardinality_max");
+            dslContext.update(Tables.ASBIE)
+                    .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getCardinalityMax())
+                    .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
+            .execute();
         }
         if (asbiepNodeDetail.getNillable() != null) {
-            parameterSource.addValue("nillable", asbiepNodeDetail.getNillable());
-            assignmentList.add("is_nillable = :nillable");
+            dslContext.update(Tables.ASBIE)
+                    .set(Tables.ASBIE.IS_NILLABLE, (byte) (asbiepNodeDetail.getNillable() ? 1 : 0))
+                    .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
+            .execute();
         }
 
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        parameterSource.addValue("used", asbiepNodeDetail.isUsed())
-                .addValue("definition", emptyToNull(asbiepNodeDetail.getContextDefinition()))
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp)
-                .addValue("asbie_id", asbiepNodeDetail.getAsbieId());
+        dslContext.update(Tables.ASBIE)
+                .set(Tables.ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed()  ? 1 : 0))
+                .set(Tables.ASBIE.DEFINITION, emptyToNull(asbiepNodeDetail.getContextDefinition()))
+                .set(Tables.ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
+                .execute();
 
-        assignmentList.add("is_used = :used");
-        assignmentList.add("definition = :definition");
-        assignmentList.add("last_updated_by = :last_updated_by");
-        assignmentList.add("last_update_timestamp = :last_update_timestamp");
-
-        jdbcTemplate.update("UPDATE asbie SET " +
-                assignmentList.stream().collect(Collectors.joining(", ")) +
-                " WHERE asbie_id = :asbie_id", parameterSource);
-
-        jdbcTemplate.update("UPDATE asbiep SET biz_term = :biz_term, remark = :remark, " +
-                "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
-                "WHERE asbiep_id = :asbiep_id", newSqlParameterSource()
-                .addValue("biz_term", emptyToNull(asbiepNodeDetail.getBizTerm()))
-                .addValue("remark", emptyToNull(asbiepNodeDetail.getRemark()))
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp)
-                .addValue("asbiep_id", asbiepNodeDetail.getAsbiepId()));
+        dslContext.update(Tables.ASBIEP)
+                .set(Tables.ASBIEP.BIZ_TERM, emptyToNull(asbiepNodeDetail.getBizTerm()))
+                .set(Tables.ASBIEP.REMARK, emptyToNull(asbiepNodeDetail.getRemark()))
+                .set(Tables.ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbiepId())))
+                .execute();
     }
 
     private void updateDetail(BieEditBbiepNodeDetail bbiepNodeDetail) {
-        List<String> assignmentList = new ArrayList();
 
-        MapSqlParameterSource parameterSource = newSqlParameterSource();
         if (bbiepNodeDetail.getCardinalityMin() != null) {
-            parameterSource.addValue("cardinality_min", bbiepNodeDetail.getCardinalityMin());
-            assignmentList.add("cardinality_min = :cardinality_min");
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getCardinalityMin())
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
         if (bbiepNodeDetail.getCardinalityMax() != null) {
-            parameterSource.addValue("cardinality_max", bbiepNodeDetail.getCardinalityMax());
-            assignmentList.add("cardinality_max = :cardinality_max");
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.CARDINALITY_MAX, bbiepNodeDetail.getCardinalityMax())
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
         if (bbiepNodeDetail.getNillable() != null) {
-            parameterSource.addValue("nillable", bbiepNodeDetail.getNillable());
-            assignmentList.add("is_nillable = :nillable");
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.IS_NILLABLE, (byte) (bbiepNodeDetail.getNillable() ? 1 : 0))
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
 
         Long bdtPriRestriId = bbiepNodeDetail.getBdtPriRestriId();
         Long codeListId = bbiepNodeDetail.getCodeListId();
         Long agencyIdListId = bbiepNodeDetail.getAgencyIdListId();
 
-        if (bdtPriRestriId != null || codeListId != null || agencyIdListId != null) {
-            parameterSource.addValue("bdt_pri_restri_id", bdtPriRestriId);
-            assignmentList.add("bdt_pri_restri_id = :bdt_pri_restri_id");
-
-            parameterSource.addValue("code_list_id", codeListId);
-            assignmentList.add("code_list_id = :code_list_id");
-
-            parameterSource.addValue("agency_id_list_id", agencyIdListId);
-            assignmentList.add("agency_id_list_id = :agency_id_list_id");
+        if (bdtPriRestriId != null ) {
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(bdtPriRestriId))
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
 
+        if (codeListId != null ) {
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.CODE_LIST_ID, ULong.valueOf(codeListId))
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
+        }
+
+        if (agencyIdListId != null ) {
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.AGENCY_ID_LIST_ID, ULong.valueOf(agencyIdListId))
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
+        }
+        dslContext.update(Tables.BBIE)
+                .set(Tables.BBIE.FIXED_VALUE, bbiepNodeDetail.getFixedValue())
+                .set(Tables.BBIE.IS_USED, (byte) (bbiepNodeDetail.isUsed() ? 1 : 0))
+                .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
+
+
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        parameterSource.addValue("used", bbiepNodeDetail.isUsed())
-                .addValue("fixed_value", emptyToNull(bbiepNodeDetail.getFixedValue()))
-                .addValue("definition", emptyToNull(bbiepNodeDetail.getContextDefinition()))
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp)
-                .addValue("bbie_id", bbiepNodeDetail.getBbieId());
-
-        assignmentList.add("is_used = :used");
-        assignmentList.add("fixed_value = :fixed_value");
-        assignmentList.add("definition = :definition");
-        assignmentList.add("last_updated_by = :last_updated_by");
-        assignmentList.add("last_update_timestamp = :last_update_timestamp");
-
-        jdbcTemplate.update("UPDATE bbie SET " +
-                assignmentList.stream().collect(Collectors.joining(", ")) +
-                " WHERE bbie_id = :bbie_id", parameterSource);
-
-        jdbcTemplate.update("UPDATE bbiep SET biz_term = :biz_term, remark = :remark, " +
-                "last_updated_by = :last_updated_by, last_update_timestamp = :last_update_timestamp " +
-                "WHERE bbiep_id = :bbiep_id", newSqlParameterSource()
-                .addValue("biz_term", emptyToNull(bbiepNodeDetail.getBizTerm()))
-                .addValue("remark", emptyToNull(bbiepNodeDetail.getRemark()))
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp)
-                .addValue("bbiep_id", bbiepNodeDetail.getBbiepId()));
+        dslContext.update(Tables.BBIEP)
+                .set(Tables.BBIEP.BIZ_TERM, emptyToNull(bbiepNodeDetail.getBizTerm()))
+                .set(Tables.BBIEP.REMARK, emptyToNull(bbiepNodeDetail.getRemark()))
+                .set(Tables.BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbiepId())))
+                .execute();
     }
 
     private void updateDetail(BieEditBbieScNodeDetail bbieScNodeDetail) {
-        List<String> assignmentList = new ArrayList();
-
-        MapSqlParameterSource parameterSource = newSqlParameterSource();
         if (bbieScNodeDetail.getCardinalityMin() != null) {
-            parameterSource.addValue("cardinality_min", bbieScNodeDetail.getCardinalityMin());
-            assignmentList.add("cardinality_min = :cardinality_min");
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getCardinalityMin())
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+
         }
         if (bbieScNodeDetail.getCardinalityMax() != null) {
-            parameterSource.addValue("cardinality_max", bbieScNodeDetail.getCardinalityMax());
-            assignmentList.add("cardinality_max = :cardinality_max");
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getCardinalityMax())
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
         Long dtScPriRestriId = bbieScNodeDetail.getDtScPriRestriId();
         Long codeListId = bbieScNodeDetail.getCodeListId();
         Long agencyIdListId = bbieScNodeDetail.getAgencyIdListId();
-        if (dtScPriRestriId != null || codeListId != null || agencyIdListId != null) {
-            parameterSource.addValue("dt_sc_pri_restri_id", dtScPriRestriId);
-            assignmentList.add("dt_sc_pri_restri_id = :dt_sc_pri_restri_id");
 
-            parameterSource.addValue("code_list_id", codeListId);
-            assignmentList.add("code_list_id = :code_list_id");
-
-            parameterSource.addValue("agency_id_list_id", agencyIdListId);
-            assignmentList.add("agency_id_list_id = :agency_id_list_id");
+        if (dtScPriRestriId != null ) {
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(dtScPriRestriId))
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
-        parameterSource.addValue("used", bbieScNodeDetail.isUsed())
-                .addValue("default_value", emptyToNull(bbieScNodeDetail.getDefaultValue()))
-                .addValue("fixed_value", emptyToNull(bbieScNodeDetail.getFixedValue()))
-                .addValue("definition", emptyToNull(bbieScNodeDetail.getContextDefinition()))
-                .addValue("biz_term", emptyToNull(bbieScNodeDetail.getBizTerm()))
-                .addValue("remark", emptyToNull(bbieScNodeDetail.getRemark()))
-                .addValue("bbie_sc_id", bbieScNodeDetail.getBbieScId());
+        if (codeListId != null ) {
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.CODE_LIST_ID, ULong.valueOf(codeListId))
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+        }
 
-        assignmentList.add("is_used = :used");
-        assignmentList.add("default_value = :default_value");
-        assignmentList.add("fixed_value = :fixed_value");
-        assignmentList.add("definition = :definition");
-        assignmentList.add("biz_term = :biz_term");
-        assignmentList.add("remark = :remark");
+        if (agencyIdListId != null ) {
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.AGENCY_ID_LIST_ID, ULong.valueOf(agencyIdListId))
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+        }
 
-        jdbcTemplate.update("UPDATE bbie_sc SET " +
-                assignmentList.stream().collect(Collectors.joining(", ")) +
-                " WHERE bbie_sc_id = :bbie_sc_id", parameterSource);
+        dslContext.update(Tables.BBIE_SC)
+                .set(Tables.BBIE_SC.IS_USED, (byte) (bbieScNodeDetail.isUsed() ? 1 : 0))
+                .set(Tables.BBIE_SC.DEFAULT_VALUE, emptyToNull(bbieScNodeDetail.getDefaultValue()))
+                .set(Tables.BBIE_SC.FIXED_VALUE, emptyToNull(bbieScNodeDetail.getFixedValue()))
+                .set(Tables.BBIE_SC.DEFINITION, emptyToNull(bbieScNodeDetail.getContextDefinition()))
+                .set(Tables.BBIE_SC.BIZ_TERM, emptyToNull(bbieScNodeDetail.getBizTerm()))
+                .set(Tables.BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
+                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                .execute();
     }
 
     private String emptyToNull(String str) {

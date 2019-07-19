@@ -10,29 +10,20 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Repository
 public class BieRepository {
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
