@@ -1,7 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
 import org.jooq.DSLContext;
-import org.jooq.Table;
+import org.jooq.Record2;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
@@ -19,8 +19,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
@@ -762,7 +760,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private BieEditBbieScNodeDetail getDetail(BieEditBbieScNode bbieScNode) {
-
         BieEditBbieScNodeDetail detail;
         if (bbieScNode.getBbieScId() > 0L) {
             detail = dslContext.select(
@@ -778,9 +775,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE_SC.REMARK,
                     Tables.BBIE_SC.DEFINITION.as("context_definition"))
                     .from(Tables.BBIE_SC)
-                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf( bbieScNode.getBbieScId())))
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
-
         } else {
             detail = dslContext.select(
                     Tables.DT_SC.CARDINALITY_MIN,
@@ -791,35 +787,36 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         if (bbieScNode.getBbieScId() == 0L) {
             long defaultDtScPriRestriId = dslContext.select(
-                    Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID).from(Tables.BDT_SC_PRI_RESTRI)
-                    .where(and(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())),
+                    Tables.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
+                    .from(Tables.BDT_SC_PRI_RESTRI)
+                    .where(and(
+                            Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())),
                             Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
                     .fetchOneInto(Long.class);
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
 
         if (bbieScNode.getDtScId() > 0L) {
-            detail.setCardinalityOriginMin(dslContext.select(
-                    Tables.DT_SC.CARDINALITY_MIN).from(Tables.DT_SC)
+            Record2<Integer, Integer> res = dslContext.select(
+                    Tables.DT_SC.CARDINALITY_MIN,
+                    Tables.DT_SC.CARDINALITY_MAX)
+                    .from(Tables.DT_SC)
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
-                    .fetchOneInto(String.class)
-            );
+                    .fetchOne();
 
-            detail.setCardinalityOriginMax(dslContext.select(
-                    Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
-                    .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
-                    .fetchOneInto(String.class)
-            );
+            detail.setCardinalityOriginMin(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MIN)));
+            detail.setCardinalityOriginMax(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MAX)));
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
         detail.setXbtList(bdtScPriRestri.getXbtList());
         detail.setCodeLists(bdtScPriRestri.getCodeLists());
         detail.setAgencyIdLists(bdtScPriRestri.getAgencyIdLists());
-        detail.setComponentDefinition(dslContext.select(
-                Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
-                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
-                .fetchOneInto(String.class)
+        detail.setComponentDefinition(
+                dslContext.select(Tables.DT_SC.DEFINITION)
+                        .from(Tables.DT_SC)
+                        .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
+                        .fetchOneInto(String.class)
         );
         return detail.append(bbieScNode);
     }
