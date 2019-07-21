@@ -986,6 +986,10 @@ public class ExtensionService {
                 applicationContext.getBean(ExtensionPathHandler.class, releaseId);
 
         for (TopLevelAbie topLevelAbie : topLevelAbies) {
+            Long abieId = topLevelAbie.getAbieId();
+            if (abieId == null) {
+                continue;
+            }
             long basedAccId = dslContext.select(Tables.ACC.CURRENT_ACC_ID)
                     .from(Tables.ABIE)
                     .join(Tables.ACC)
