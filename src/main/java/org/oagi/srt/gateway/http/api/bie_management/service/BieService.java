@@ -11,10 +11,8 @@ import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +30,6 @@ import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Service
 @Transactional(readOnly = true)
@@ -358,31 +355,61 @@ public class BieService {
             "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
 
-    private List<BieList> getBieList(User user, String whereClauses) {
-        List<BieList> bieLists = jdbcTemplate.queryForList(
-                GET_BIE_LIST_STATEMENT + (!StringUtils.isEmpty(whereClauses) ? (" WHERE " + whereClauses) : ""), BieList.class);
+    private List<BieList> getBieList(User user, Condition condition) {
+        SelectOnConditionStep<Record12<
+                ULong, String, String, String, ULong,
+                String, ULong, String, String, String,
+                Timestamp, Integer>> selectOnConditionStep = dslContext.select(
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM,
+                RELEASE.RELEASE_NUM,
+                BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.NAME.as("biz_ctx_name"),
+                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                APP_USER.LOGIN_ID.as("owner"),
+                ABIE.VERSION,
+                ABIE.STATUS,
+                ABIE.LAST_UPDATE_TIMESTAMP,
+                TOP_LEVEL_ABIE.STATE.as("raw_state"))
+                .from(TOP_LEVEL_ABIE)
+                .join(ABIE).on(and(
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID),
+                TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
+                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
+                .join(BIZ_CTX).on(BIZ_CTX.BIZ_CTX_ID.eq(ABIE.BIZ_CTX_ID))
+                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
+
+        List<BieList> bieLists;
+        if (condition != null) {
+            bieLists = selectOnConditionStep.where(condition).fetchInto(BieList.class);
+        } else {
+            bieLists = selectOnConditionStep.fetchInto(BieList.class);
+        }
         return appendAccessPrivilege(bieLists, user);
     }
 
     public List<BieList> getBieList(GetBieListRequest request) {
         Long bizCtxId = request.getBizCtxId();
         Boolean excludeJsonRelated = request.getExcludeJsonRelated();
-        String whereClauses = null;
+        Condition condition = null;
         if (bizCtxId != null && bizCtxId > 0L) {
-            whereClauses = "biz_ctx.biz_ctx_id = " + bizCtxId;
+            condition = BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId));
         } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
-            whereClauses = "asccp.property_term NOT IN ('Meta Header', 'Pagination Response')";
+            condition = ASCCP.PROPERTY_TERM.notIn("Meta Header", "Pagination Response");
         }
 
-        return getBieList(request.getUser(), whereClauses);
+        return getBieList(request.getUser(), condition);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {
-        return getBieList(user, "asccp.property_term = 'Meta Header'");
+        return getBieList(user, ASCCP.PROPERTY_TERM.eq("Meta Header"));
     }
 
     public List<BieList> getPaginationResponseBieList(User user) {
-        return getBieList(user, "asccp.property_term = 'Pagination Response'");
+        return getBieList(user, ASCCP.PROPERTY_TERM.eq("Pagination Response"));
     }
 
     @Transactional
