@@ -14,7 +14,7 @@ cp target/*.war docker
 
 echo "Building docker image..."
 cd docker
-docker build -f Dockerfile -t oagi1docker/srt-http-gateway:1.1.2.1 .
+docker build -f Dockerfile -t oagi1docker/srt-http-gateway:1.1.2.2 .
 cd ..
 
 echo "Done."
