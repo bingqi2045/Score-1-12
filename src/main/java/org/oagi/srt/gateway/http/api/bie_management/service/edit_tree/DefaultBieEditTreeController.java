@@ -833,10 +833,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 Tables.XBT.XBT_ID,
                 Tables.XBT.NAME.as("xbt_name"))
                 .from(Tables.BDT_SC_PRI_RESTRI)
-                .join(Tables.CDT_AWD_PRI_XPS_TYPE_MAP).on(
-                        Tables.BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(
-                                Tables.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
-                .join(Tables.XBT).on(Tables.CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(Tables.XBT.XBT_ID))
+                .join(Tables.CDT_SC_AWD_PRI_XPS_TYPE_MAP)
+                .on(Tables.BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID
+                        .eq(Tables.CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(Tables.XBT).on(Tables.CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(Tables.XBT.XBT_ID))
                 .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)))
                 .fetchInto(BieEditXbt.class);
 
