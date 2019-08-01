@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -281,6 +284,22 @@ public class BieRepository {
     }
 
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId) {
+        return getAsccListByFromAccId(fromAccId, releaseId, false);
+    }
+
+    public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
+        List<Condition> conditions = new ArrayList(Arrays.asList(
+                Tables.ASCC.REVISION_NUM.greaterThan(0),
+                Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                Tables.ASCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+        ));
+
+        if (isPublished) {
+            conditions.add(
+              Tables.ASCC.STATE.eq(CcState.Published.getValue())
+            );
+        }
+
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,
                 Tables.ASCC.CURRENT_ASCC_ID,
@@ -292,11 +311,8 @@ public class BieRepository {
                 Tables.ASCC.REVISION_TRACKING_NUM,
                 Tables.ASCC.RELEASE_ID)
                 .from(Tables.ASCC)
-                .where(and(
-                        Tables.ASCC.REVISION_NUM.greaterThan(0),
-                        Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
-                        Tables.ASCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
-                )).fetchInto(BieEditAscc.class)
+                .where(and(conditions))
+                .fetchInto(BieEditAscc.class)
                 .stream()
                 .collect(groupingBy(BieEditAscc::getGuid)).values().stream()
                 .map(e -> CcUtility.getLatestEntity(releaseId, e))
@@ -304,6 +320,22 @@ public class BieRepository {
     }
 
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId) {
+        return getBccListByFromAccId(fromAccId, releaseId, false);
+    }
+
+    public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
+        List<Condition> conditions = new ArrayList(Arrays.asList(
+                Tables.BCC.REVISION_NUM.greaterThan(0),
+                Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                Tables.BCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+        ));
+
+        if (isPublished) {
+            conditions.add(
+                    Tables.BCC.STATE.eq(CcState.Published.getValue())
+            );
+        }
+
         List<BieEditBcc> bccList = dslContext.select(
                 Tables.BCC.BCC_ID,
                 Tables.BCC.CURRENT_BCC_ID,
@@ -316,11 +348,7 @@ public class BieRepository {
                 Tables.BCC.REVISION_TRACKING_NUM,
                 Tables.BCC.RELEASE_ID)
                 .from(Tables.BCC)
-                .where(and(
-                        Tables.BCC.REVISION_NUM.greaterThan(0),
-                        Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
-                        Tables.BCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
-                ))
+                .where(and(conditions))
                 .fetchInto(BieEditBcc.class);
 
         return bccList.stream().collect(groupingBy(BieEditBcc::getGuid)).values().stream()

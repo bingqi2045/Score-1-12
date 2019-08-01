@@ -290,8 +290,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             BieEditAcc acc = accStack.pop();
 
             long fromAccId = acc.getCurrentAccId();
-            List<BieEditAscc> asccList = repository.getAsccListByFromAccId(fromAccId, releaseId);
-            List<BieEditBcc> bccList = repository.getBccListByFromAccId(fromAccId, releaseId);
+            List<BieEditAscc> asccList = repository.getAsccListByFromAccId(fromAccId, releaseId, true);
+            List<BieEditBcc> bccList = repository.getBccListByFromAccId(fromAccId, releaseId, true);
 
             attributeBccList.addAll(
                     bccList.stream().filter(e -> e.isAttribute()).collect(Collectors.toList()));
