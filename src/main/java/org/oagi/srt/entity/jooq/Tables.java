@@ -25,6 +25,7 @@ import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
 import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 import org.oagi.srt.entity.jooq.tables.BizCtx;
+import org.oagi.srt.entity.jooq.tables.BizCtxRule;
 import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 import org.oagi.srt.entity.jooq.tables.BlobContent;
 import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
@@ -166,6 +167,11 @@ It should be noted that the table does not store the fact about primitive restri
      * This table represents a business context. A business context is a combination of one or more business context values.
      */
     public static final BizCtx BIZ_CTX = org.oagi.srt.entity.jooq.tables.BizCtx.BIZ_CTX;
+
+    /**
+     * The table <code>oagi.biz_ctx_rule</code>.
+     */
+    public static final BizCtxRule BIZ_CTX_RULE = org.oagi.srt.entity.jooq.tables.BizCtxRule.BIZ_CTX_RULE;
 
     /**
      * This table represents business context values for business contexts. It provides the associations between a business context and a context scheme value.
