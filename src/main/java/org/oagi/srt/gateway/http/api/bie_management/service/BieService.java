@@ -12,7 +12,6 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,9 +34,6 @@ import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 @Service
 @Transactional(readOnly = true)
 public class BieService {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;
@@ -457,5 +454,11 @@ public class BieService {
                 ))
                 .execute();
     }
+
+     @Transactional
+     public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
+        System.out.println(biz_ctx_list.size());
+     }
+
 
 }
