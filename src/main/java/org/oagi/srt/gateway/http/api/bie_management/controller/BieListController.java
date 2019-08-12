@@ -8,6 +8,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.GetBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -109,15 +110,18 @@ public class BieListController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BusinessContextRule> getAssignBizCtx(@PathVariable("id") long topLevelAbieId) {
+        return service.getAssignBizCtx(topLevelAbieId);
+    }
+
     @RequestMapping(value = "/profile_bie/{id}/assign_biz_ctx", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity assignBizCtx(@AuthenticationPrincipal User user,
                                        @PathVariable("id") long topLevelAbieId,
                                        @RequestBody Map<String, List<Long>> request) {
-        Object biz_ctx_list = request;
-        System.out.println("biz_ctx_list : " + biz_ctx_list);
-        System.out.println("topLevelAbieId : " + topLevelAbieId);
-        service.assignBizCtx(user, topLevelAbieId, request.getOrDefault("biz_ctx_list", Collections.emptyList()));
+        service.assignBizCtx(user, topLevelAbieId, request.getOrDefault("bizCtxList", Collections.emptyList()));
         return ResponseEntity.noContent().build();
     }
 

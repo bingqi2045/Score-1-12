@@ -34,7 +34,7 @@
         <jdom2.version>2.0.6</jdom2.version>
         <commons-io.version>2.6</commons-io.version>
         <jOOQ.version>3.11.10</jOOQ.version>
-        <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
+        <jOOQ.configuration.skip>false</jOOQ.configuration.skip>
     </properties>
 
     <dependencies>

@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.BizCtxRule;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -10,6 +11,7 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
@@ -455,9 +457,35 @@ public class BieService {
                 .execute();
     }
 
+    @Transactional
+    public List<BusinessContextRule> getAssignBizCtx(long topLevelAbieId) {
+        return dslContext.select(
+                BIZ_CTX_RULE.BIZ_CTX_RULE_ID,
+                BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
+                BIZ_CTX_RULE.TOP_LEVEL_BIE_ID)
+                .from(BIZ_CTX_RULE)
+                .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchInto(BusinessContextRule.class);
+    }
+
      @Transactional
      public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
-        System.out.println(biz_ctx_list.size());
+         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
+         System.out.println(newList);
+         //remove all records of previous assignment if not in the current assignment
+         dslContext.delete(BIZ_CTX_RULE)
+                 .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                 .execute();
+
+        for (int i=0; i < newList.size() ; i++) {
+            dslContext.insertInto(Tables.BIZ_CTX_RULE)
+                    .set(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
+                    .onDuplicateKeyIgnore()
+                    .execute();
+            //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
+         }
+
      }
 
 
