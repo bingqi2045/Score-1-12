@@ -2,7 +2,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `biz_ctx_rule`;
 CREATE TABLE `biz_ctx_rule` (
-  `biz_ctx_rule_id` bigint(20) unsigned NOT NULL,
+  `biz_ctx_rule_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `from_biz_ctx_id` bigint(20) unsigned NOT NULL,
   `top_level_bie_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`biz_ctx_rule_id`),
