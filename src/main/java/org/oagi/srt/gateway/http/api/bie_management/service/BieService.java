@@ -11,6 +11,7 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +172,7 @@ public class BieService {
         }
         if (!StringUtils.isEmpty(request.getBusinessContext())) {
             conditions.add(Tables.BIZ_CTX.NAME.containsIgnoreCase(request.getBusinessContext().trim()));
+
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
@@ -274,6 +276,26 @@ public class BieService {
 
         List<BieList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
+        result.forEach(bieList -> {
+            List<ULong> bizCtxsRule = dslContext.selectDistinct(
+                    BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
+                    .from(BIZ_CTX_RULE)
+                    .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                    .fetchInto(ULong.class);
+
+            bieList.setBusinessCtxs(
+                    dslContext.select(
+                            BIZ_CTX.BIZ_CTX_ID,
+                            BIZ_CTX.NAME,
+                            BIZ_CTX.GUID,
+                            BIZ_CTX.CREATION_TIMESTAMP,
+                            BIZ_CTX.LAST_UPDATED_BY,
+                            BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                            .from(BIZ_CTX)
+                            .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxsRule))
+                            .fetchInto(BusinessContext.class)
+            );
+        });
         result = appendAccessPrivilege(result, user);
 
         PageResponse<BieList> response = new PageResponse();
@@ -384,8 +406,48 @@ public class BieService {
         List<BieList> bieLists;
         if (condition != null) {
             bieLists = selectOnConditionStep.where(condition).fetchInto(BieList.class);
+            bieLists.forEach(bieList -> {
+                List<ULong> bizCtxsRule = dslContext.selectDistinct(
+                        BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
+                        .from(BIZ_CTX_RULE)
+                        .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                        .fetchInto(ULong.class);
+
+                bieList.setBusinessCtxs(
+                        dslContext.select(
+                                BIZ_CTX.BIZ_CTX_ID,
+                                BIZ_CTX.NAME,
+                                BIZ_CTX.GUID,
+                                BIZ_CTX.CREATION_TIMESTAMP,
+                                BIZ_CTX.LAST_UPDATED_BY,
+                                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                                .from(BIZ_CTX)
+                                .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxsRule))
+                                .fetchInto(BusinessContext.class)
+                );
+            });
         } else {
             bieLists = selectOnConditionStep.fetchInto(BieList.class);
+            bieLists.forEach(bieList -> {
+                List<ULong> bizCtxsRule = dslContext.selectDistinct(
+                        BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
+                        .from(BIZ_CTX_RULE)
+                        .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                        .fetchInto(ULong.class);
+
+                bieList.setBusinessCtxs(
+                        dslContext.select(
+                                BIZ_CTX.BIZ_CTX_ID,
+                                BIZ_CTX.NAME,
+                                BIZ_CTX.GUID,
+                                BIZ_CTX.CREATION_TIMESTAMP,
+                                BIZ_CTX.LAST_UPDATED_BY,
+                                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                                .from(BIZ_CTX)
+                                .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxsRule))
+                                .fetchInto(BusinessContext.class)
+                );
+            });
         }
         return appendAccessPrivilege(bieLists, user);
     }

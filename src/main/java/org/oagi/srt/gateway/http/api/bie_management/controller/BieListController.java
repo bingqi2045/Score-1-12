@@ -47,6 +47,7 @@ public class BieListController {
         BieListRequest request = new BieListRequest();
 
         request.setPropertyTerm(propertyTerm);
+        //todo make it a list for all the business context
         request.setBusinessContext(businessContext);
         request.setAccess(access);
         request.setStates(!StringUtils.isEmpty(states) ?
@@ -75,7 +76,7 @@ public class BieListController {
         pageRequest.setPageIndex(pageIndex);
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
-
+        System.out.println(request);
         return service.getBieList(user, request);
     }
 
