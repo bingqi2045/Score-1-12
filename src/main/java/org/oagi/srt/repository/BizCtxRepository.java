@@ -1,26 +1,45 @@
+
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record7;
+import org.jooq.SelectJoinStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BizCtx;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Repository
 public class BizCtxRepository implements SrtRepository<BizCtx> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
-    private String GET_BUSINESS_CONTEXT_STATEMENT = "SELECT `biz_ctx_id`,`guid`,`name`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp` FROM `biz_ctx`";
+    private SelectJoinStep<Record7<
+            ULong, String, String, ULong,
+            ULong, Timestamp, Timestamp>> getSelectBizCtx() {
+        return dslContext.select(
+                Tables.BIZ_CTX.BIZ_CTX_ID,
+                Tables.BIZ_CTX.GUID,
+                Tables.BIZ_CTX.NAME,
+                Tables.BIZ_CTX.CREATED_BY,
+                Tables.BIZ_CTX.LAST_UPDATED_BY,
+                Tables.BIZ_CTX.CREATION_TIMESTAMP,
+                Tables.BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                .from(Tables.BIZ_CTX);
+    }
 
     @Override
     public List<BizCtx> findAll() {
-        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_STATEMENT, BizCtx.class);
+        return getSelectBizCtx()
+                .fetchInto(BizCtx.class);
     }
 
     @Override
@@ -28,9 +47,27 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
         if (id <= 0L) {
             return null;
         }
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_BUSINESS_CONTEXT_STATEMENT)
-                .append(" WHERE `biz_ctx_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), BizCtx.class);
+        return getSelectBizCtx()
+                .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(BizCtx.class);
+    }
+
+    public List<BizCtx> findAllFromTopLvlBie(TopLevelAbie topLevelAbie) {
+        List <BusinessContextRule> bizCtxRules = dslContext.select(
+                Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID,
+                Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
+                Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID)
+                .from(Tables.BIZ_CTX_RULE)
+                .where(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
+                .fetchInto(BusinessContextRule.class);
+
+        List<BizCtx> bizCtx = new ArrayList<>();
+
+        for(BusinessContextRule bizCtxRule: bizCtxRules) {
+            bizCtx.add(findById(bizCtxRule.getFromBizCtxId()));
+        }
+
+        return bizCtx;
     }
 
 }

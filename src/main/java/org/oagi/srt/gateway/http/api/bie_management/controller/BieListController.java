@@ -76,7 +76,6 @@ public class BieListController {
         pageRequest.setPageIndex(pageIndex);
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
-        System.out.println(request);
         return service.getBieList(user, request);
     }
 

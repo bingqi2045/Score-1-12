@@ -643,6 +643,10 @@ public class GenerationContext implements InitializingBean {
         return bizCtxRepository.findById(bizCtxId);
     }
 
+    public List<BizCtx> findBusinessContexts(TopLevelAbie topLevelAbie) {
+        return bizCtxRepository.findAllFromTopLvlBie(topLevelAbie);
+    }
+
     public List<ContextSchemeValue> findContextSchemeValue(BizCtx businessContext) {
         List<BusinessContextValue> businessContextValues = (businessContext != null) ?
                 bizCtxValueRepository.findByBizCtxId(businessContext.getBizCtxId()) :

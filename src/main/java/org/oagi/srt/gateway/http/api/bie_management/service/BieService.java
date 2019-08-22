@@ -172,7 +172,6 @@ public class BieService {
         }
         if (!StringUtils.isEmpty(request.getBusinessContext())) {
             conditions.add(Tables.BIZ_CTX.NAME.containsIgnoreCase(request.getBusinessContext().trim()));
-
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
@@ -191,7 +190,7 @@ public class BieService {
         }
         if (!StringUtils.isEmpty(request.getAccess())) {
             switch (request.getAccess()) {
-                case "CanEdit":
+                case "canEdit":
                     conditions.add(
                             and(
                                     Tables.ABIE.STATE.notEqual(Initiating.getValue()),
@@ -200,7 +199,7 @@ public class BieService {
                     );
                     break;
 
-                case "CanView":
+                case "canView":
                     conditions.add(
                             or(
                                     Tables.ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
@@ -241,15 +240,6 @@ public class BieService {
 
                 break;
 
-            case "bizCtxName":
-                if ("asc".equals(sortDirection)) {
-                    sortField = Tables.BIZ_CTX.NAME.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = Tables.BIZ_CTX.NAME.desc();
-                }
-
-                break;
-
             case "lastUpdateTimestamp":
                 if ("asc".equals(sortDirection)) {
                     sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.asc();
@@ -259,7 +249,6 @@ public class BieService {
 
                 break;
         }
-
         SelectWithTiesAfterOffsetStep<Record13<
                 ULong, String, String, String, ULong,
                 String, ULong, String, String, String,
@@ -533,7 +522,6 @@ public class BieService {
      @Transactional
      public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
          ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
-         System.out.println(newList);
          //remove all records of previous assignment if not in the current assignment
          dslContext.delete(BIZ_CTX_RULE)
                  .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbieId)))
