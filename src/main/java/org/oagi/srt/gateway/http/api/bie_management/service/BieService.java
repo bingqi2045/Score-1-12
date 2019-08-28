@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.BizCtxRule;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
@@ -14,6 +15,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repository.ABIERepository;
+import org.oagi.srt.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,12 @@ public class BieService {
 
     @Autowired
     private BieRepository repository;
+
+    @Autowired
+    private ABIERepository abieRepository;
+
+    @Autowired
+    private BizCtxRepository bizCtxRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -452,6 +461,12 @@ public class BieService {
         }
 
         return getBieList(request.getUser(), condition);
+    }
+
+    @Transactional
+    public BizCtx findBizCtxFromAbieId(long abieId) {
+        long bizCtxId = abieRepository.findById(abieId).getBizCtxId();
+        return bizCtxRepository.findById(bizCtxId);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {

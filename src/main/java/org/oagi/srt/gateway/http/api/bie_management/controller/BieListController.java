@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.DeleteBieListRequest;
@@ -8,6 +9,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.GetBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -108,6 +110,12 @@ public class BieListController {
             service.deleteBieList(topLevelAbieIds);
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value="/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BizCtx findBizCtxFromAbieId(@PathVariable("id") long abieId) {
+        return service.findBizCtxFromAbieId(abieId);
     }
 
     @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
