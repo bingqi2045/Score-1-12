@@ -987,7 +987,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditAsbiepNodeDetail asbiepNodeDetail) {
-
         if (asbiepNodeDetail.getCardinalityMin() != null) {
             dslContext.update(Tables.ASBIE)
                     .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getCardinalityMin())
@@ -1028,7 +1027,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditBbiepNodeDetail bbiepNodeDetail) {
-
         if (bbiepNodeDetail.getCardinalityMin() != null) {
             dslContext.update(Tables.BBIE)
                     .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getCardinalityMin())
@@ -1049,26 +1047,28 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         Long codeListId = bbiepNodeDetail.getCodeListId();
         Long agencyIdListId = bbiepNodeDetail.getAgencyIdListId();
 
-        if (bdtPriRestriId != null ) {
+        if (bdtPriRestriId != null) {
             dslContext.update(Tables.BBIE)
                     .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(bdtPriRestriId))
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
 
-        if (codeListId != null ) {
+        if (codeListId != null) {
             dslContext.update(Tables.BBIE)
                     .set(Tables.BBIE.CODE_LIST_ID, ULong.valueOf(codeListId))
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
 
-        if (agencyIdListId != null ) {
+        if (agencyIdListId != null) {
             dslContext.update(Tables.BBIE)
                     .set(Tables.BBIE.AGENCY_ID_LIST_ID, ULong.valueOf(agencyIdListId))
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
+
         dslContext.update(Tables.BBIE)
-                .set(Tables.BBIE.FIXED_VALUE, bbiepNodeDetail.getFixedValue())
                 .set(Tables.BBIE.IS_USED, (byte) (bbiepNodeDetail.isUsed() ? 1 : 0))
+                .set(Tables.BBIE.DEFINITION, emptyToNull(bbiepNodeDetail.getContextDefinition()))
+                .set(Tables.BBIE.FIXED_VALUE, emptyToNull(bbiepNodeDetail.getFixedValue()))
                 .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
 
