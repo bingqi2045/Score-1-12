@@ -4,6 +4,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
@@ -551,6 +552,15 @@ public class BieRepository {
                 .set(Tables.ABIE.STATE, state.getValue())
                 .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
+    }
+
+    public OagisComponentType getOagisComponentTypeOfAccByAsccpId(long asccpId) {
+        int oagisComponentType = dslContext.select(Tables.ACC.OAGIS_COMPONENT_TYPE)
+                .from(Tables.ACC)
+                .join(Tables.ASCCP).on(Tables.ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.ACC_ID))
+                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(Integer.class);
+        return OagisComponentType.valueOf(oagisComponentType);
     }
 
 }

@@ -298,11 +298,28 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             List<SeqKeySupportable> tmpAssocList = new ArrayList();
             tmpAssocList.addAll(asccList);
-            tmpAssocList.addAll(
-                    bccList.stream().filter(e -> !e.isAttribute()).collect(Collectors.toList()));
-            assocList.addAll(tmpAssocList.stream()
+            tmpAssocList.addAll(bccList.stream().filter(e -> !e.isAttribute()).collect(Collectors.toList()));
+            tmpAssocList = tmpAssocList.stream()
                     .sorted(Comparator.comparingInt(SeqKeySupportable::getSeqKey))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+
+            for (SeqKeySupportable assoc : tmpAssocList) {
+                if (assoc instanceof BieEditAscc) {
+                    OagisComponentType roleOfAccType =
+                            repository.getOagisComponentTypeOfAccByAsccpId(((BieEditAscc) assoc).getToAsccpId());
+                    if (roleOfAccType.isGroup()) {
+                        long roleOfAccId = repository.getRoleOfAccIdByAsccpId(((BieEditAscc) assoc).getToAsccpId());
+
+                        assocList.addAll(
+                                getAssociationsByCurrentAccId(roleOfAccId, releaseId)
+                        );
+                    } else {
+                        assocList.add(assoc);
+                    }
+                } else {
+                    assocList.add(assoc);
+                }
+            }
         }
 
         assocList.addAll(0, attributeBccList);
