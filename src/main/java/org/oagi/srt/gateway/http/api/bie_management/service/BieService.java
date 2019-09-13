@@ -102,6 +102,7 @@ public class BieService {
         long bizCtxId = request.getBizCtxId();
 
         long abieId = repository.createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
+        long bizCtxRuleId = repository.createBizCtxRule(topLevelAbieId, bizCtxId);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
 
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
@@ -137,17 +138,15 @@ public class BieService {
         return (accForBieList.isEmpty()) ? null : accForBieList.get(0);
     }
 
-    private SelectOnConditionStep<Record13<
-            ULong, String, String, String, ULong,
-            String, ULong, String, String, String,
+    private SelectOnConditionStep<Record11<
+            ULong, String, String, String,
+            ULong, String, String, String,
             Timestamp, String, Integer>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.BIZ_CTX.BIZ_CTX_ID,
-                Tables.BIZ_CTX.NAME.as("biz_ctx_name"),
                 Tables.TOP_LEVEL_ABIE.OWNER_USER_ID,
                 Tables.APP_USER.LOGIN_ID.as("owner"),
                 Tables.ABIE.VERSION,
@@ -167,9 +166,9 @@ public class BieService {
     }
 
     public PageResponse<BieList> getBieList(User user, BieListRequest request) {
-        SelectOnConditionStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectOnConditionStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
@@ -178,9 +177,6 @@ public class BieService {
         }
         if (!request.getExcludes().isEmpty()) {
             conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
-        }
-        if (!StringUtils.isEmpty(request.getBusinessContext())) {
-            conditions.add(Tables.BIZ_CTX.NAME.containsIgnoreCase(request.getBusinessContext().trim()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
@@ -222,11 +218,10 @@ public class BieService {
             }
         }
 
-        SelectConnectByStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectConnectByStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> conditionStep = step.where(conditions);
-
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
@@ -258,9 +253,9 @@ public class BieService {
 
                 break;
         }
-        SelectWithTiesAfterOffsetStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectWithTiesAfterOffsetStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
@@ -294,13 +289,22 @@ public class BieService {
                             .fetchInto(BusinessContext.class)
             );
         });
+        if (!StringUtils.isEmpty(request.getBusinessContext())) {
+            String nameFiltered = request.getBusinessContext();
+            result = result.stream().
+                    filter(bieList ->
+                            bieList.getBusinessCtxs().stream().anyMatch(businessContext ->
+                                    businessContext.getName().toLowerCase().contains(nameFiltered.toLowerCase())))
+                    .collect(Collectors.toList());
+        }
         result = appendAccessPrivilege(result, user);
 
         PageResponse<BieList> response = new PageResponse();
         response.setList(result);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(dslContext.selectCount()
+        response.setLength(result.size());
+/*        response.setLength(dslContext.selectCount()
                 .from(Tables.TOP_LEVEL_ABIE)
                 .join(Tables.ABIE).on(Tables.TOP_LEVEL_ABIE.ABIE_ID.eq(Tables.ABIE.ABIE_ID))
                 .and(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID))
@@ -311,8 +315,7 @@ public class BieService {
                 .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
                 .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID))
                 .where(conditions)
-                .fetchOptionalInto(Integer.class).orElse(0));
-
+                .fetchOptionalInto(Integer.class).orElse(0));*/
         return response;
     }
 
@@ -375,16 +378,14 @@ public class BieService {
 
 
     private List<BieList> getBieList(User user, Condition condition) {
-        SelectOnConditionStep<Record12<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectOnConditionStep<Record10<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, Integer>> selectOnConditionStep = dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
                 RELEASE.RELEASE_NUM,
-                BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.NAME.as("biz_ctx_name"),
                 TOP_LEVEL_ABIE.OWNER_USER_ID,
                 APP_USER.LOGIN_ID.as("owner"),
                 ABIE.VERSION,

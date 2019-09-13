@@ -14,8 +14,6 @@ public class BieList {
     private String propertyTerm;
     private String guid;
     private String releaseNum;
-    private Long bizCtxId;
-    private String bizCtxName;
     private List<BusinessContext> businessCtxs;
     private String owner;
     private long ownerUserId;

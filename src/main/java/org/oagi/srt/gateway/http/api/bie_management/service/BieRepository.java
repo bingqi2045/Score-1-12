@@ -355,6 +355,13 @@ public class BieRepository {
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
+    public long createBizCtxRule (long topLevelAbieId, long bizCtxId) {
+        return dslContext.insertInto(Tables.BIZ_CTX_RULE)
+                .set(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                .execute();
+    }
+
     public long createAbie(User user, long basedAccId, long topLevelAbieId) {
         return createAbie(user, basedAccId, getBizCtxIdByTopLevelAbieId(topLevelAbieId), topLevelAbieId);
     }
