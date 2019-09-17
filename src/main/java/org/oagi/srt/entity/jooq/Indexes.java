@@ -73,7 +73,6 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     public static final Index ABIE_ABIE_BASED_ACC_ID_FK = Indexes0.ABIE_ABIE_BASED_ACC_ID_FK;
-    public static final Index ABIE_ABIE_BIZ_CTX_ID_FK = Indexes0.ABIE_ABIE_BIZ_CTX_ID_FK;
     public static final Index ABIE_ABIE_CLIENT_ID_FK = Indexes0.ABIE_ABIE_CLIENT_ID_FK;
     public static final Index ABIE_ABIE_CREATED_BY_FK = Indexes0.ABIE_ABIE_CREATED_BY_FK;
     public static final Index ABIE_ABIE_LAST_UPDATED_BY_FK = Indexes0.ABIE_ABIE_LAST_UPDATED_BY_FK;
@@ -192,9 +191,8 @@ public class Indexes {
     public static final Index BIZ_CTX_BIZ_CTX_LAST_UPDATED_BY_FK = Indexes0.BIZ_CTX_BIZ_CTX_LAST_UPDATED_BY_FK;
     public static final Index BIZ_CTX_BIZ_CTX_UK1 = Indexes0.BIZ_CTX_BIZ_CTX_UK1;
     public static final Index BIZ_CTX_PRIMARY = Indexes0.BIZ_CTX_PRIMARY;
-    public static final Index BIZ_CTX_RULE_FROM_BIZ_CTX_ID = Indexes0.BIZ_CTX_RULE_FROM_BIZ_CTX_ID;
+    public static final Index BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY = Indexes0.BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY;
     public static final Index BIZ_CTX_RULE_PRIMARY = Indexes0.BIZ_CTX_RULE_PRIMARY;
-    public static final Index BIZ_CTX_RULE_TOP_LEVEL_BIE_ID = Indexes0.BIZ_CTX_RULE_TOP_LEVEL_BIE_ID;
     public static final Index BIZ_CTX_VALUE_BIZ_CTX_VALUE_BIZ_CTX_ID_FK = Indexes0.BIZ_CTX_VALUE_BIZ_CTX_VALUE_BIZ_CTX_ID_FK;
     public static final Index BIZ_CTX_VALUE_BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = Indexes0.BIZ_CTX_VALUE_BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK;
     public static final Index BIZ_CTX_VALUE_PRIMARY = Indexes0.BIZ_CTX_VALUE_PRIMARY;
@@ -293,7 +291,6 @@ public class Indexes {
 
     private static class Indexes0 {
         public static Index ABIE_ABIE_BASED_ACC_ID_FK = Internal.createIndex("abie_based_acc_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.BASED_ACC_ID }, false);
-        public static Index ABIE_ABIE_BIZ_CTX_ID_FK = Internal.createIndex("abie_biz_ctx_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.BIZ_CTX_ID }, false);
         public static Index ABIE_ABIE_CLIENT_ID_FK = Internal.createIndex("abie_client_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.CLIENT_ID }, false);
         public static Index ABIE_ABIE_CREATED_BY_FK = Internal.createIndex("abie_created_by_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.CREATED_BY }, false);
         public static Index ABIE_ABIE_LAST_UPDATED_BY_FK = Internal.createIndex("abie_last_updated_by_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.LAST_UPDATED_BY }, false);
@@ -412,9 +409,8 @@ public class Indexes {
         public static Index BIZ_CTX_BIZ_CTX_LAST_UPDATED_BY_FK = Internal.createIndex("biz_ctx_last_updated_by_fk", BizCtx.BIZ_CTX, new OrderField[] { BizCtx.BIZ_CTX.LAST_UPDATED_BY }, false);
         public static Index BIZ_CTX_BIZ_CTX_UK1 = Internal.createIndex("biz_ctx_uk1", BizCtx.BIZ_CTX, new OrderField[] { BizCtx.BIZ_CTX.GUID }, true);
         public static Index BIZ_CTX_PRIMARY = Internal.createIndex("PRIMARY", BizCtx.BIZ_CTX, new OrderField[] { BizCtx.BIZ_CTX.BIZ_CTX_ID }, true);
-        public static Index BIZ_CTX_RULE_FROM_BIZ_CTX_ID = Internal.createIndex("from_biz_ctx_id", BizCtxRule.BIZ_CTX_RULE, new OrderField[] { BizCtxRule.BIZ_CTX_RULE.FROM_BIZ_CTX_ID }, false);
+        public static Index BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY = Internal.createIndex("biz_ctx_rule_unicity", BizCtxRule.BIZ_CTX_RULE, new OrderField[] { BizCtxRule.BIZ_CTX_RULE.FROM_BIZ_CTX_ID, BizCtxRule.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID }, true);
         public static Index BIZ_CTX_RULE_PRIMARY = Internal.createIndex("PRIMARY", BizCtxRule.BIZ_CTX_RULE, new OrderField[] { BizCtxRule.BIZ_CTX_RULE.BIZ_CTX_RULE_ID }, true);
-        public static Index BIZ_CTX_RULE_TOP_LEVEL_BIE_ID = Internal.createIndex("top_level_bie_id", BizCtxRule.BIZ_CTX_RULE, new OrderField[] { BizCtxRule.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID }, false);
         public static Index BIZ_CTX_VALUE_BIZ_CTX_VALUE_BIZ_CTX_ID_FK = Internal.createIndex("biz_ctx_value_biz_ctx_id_fk", BizCtxValue.BIZ_CTX_VALUE, new OrderField[] { BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_ID }, false);
         public static Index BIZ_CTX_VALUE_BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = Internal.createIndex("biz_ctx_value_ctx_scheme_value_id_fk", BizCtxValue.BIZ_CTX_VALUE, new OrderField[] { BizCtxValue.BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID }, false);
         public static Index BIZ_CTX_VALUE_PRIMARY = Internal.createIndex("PRIMARY", BizCtxValue.BIZ_CTX_VALUE, new OrderField[] { BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID }, true);

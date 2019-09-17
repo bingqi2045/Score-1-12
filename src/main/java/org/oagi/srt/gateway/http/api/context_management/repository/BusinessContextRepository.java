@@ -104,12 +104,12 @@ public class BusinessContextRepository {
             Map<Long, BusinessContext> bixCtxMap = result.stream()
                     .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
 
-            dslContext.select(ABIE.BIZ_CTX_ID,
-                    coalesce(count(ABIE.ABIE_ID), 0))
-                    .from(ABIE)
-                    .where(ABIE.BIZ_CTX_ID.in(
+            dslContext.select(BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
+                    coalesce(count(BIZ_CTX_RULE.BIZ_CTX_RULE_ID), 0))
+                    .from(BIZ_CTX_RULE)
+                    .where(BIZ_CTX_RULE.FROM_BIZ_CTX_ID.in(
                             bixCtxMap.keySet().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                    .groupBy(ABIE.BIZ_CTX_ID)
+                    .groupBy(BIZ_CTX_RULE.BIZ_CTX_RULE_ID)
                     .fetch().stream().forEach(record -> {
                 long bizCtxId = record.value1().longValue();
                 int cnt = record.value2();
@@ -141,10 +141,10 @@ public class BusinessContextRepository {
         }
         bizCtx.setBizCtxValues(findBusinessContextValuesByBizCtxId(bizCtxId));
 
-        int cnt = dslContext.select(coalesce(count(ABIE.ABIE_ID), 0))
-                .from(ABIE)
-                .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .groupBy(ABIE.BIZ_CTX_ID)
+        int cnt = dslContext.select(coalesce(count(BIZ_CTX_RULE.BIZ_CTX_RULE_ID), 0))
+                .from(BIZ_CTX_RULE)
+                .where(BIZ_CTX_RULE.FROM_BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .groupBy(BIZ_CTX_RULE.BIZ_CTX_RULE_ID)
                 .fetchOptionalInto(Integer.class).orElse(0);
         bizCtx.setUsed(cnt > 0);
 

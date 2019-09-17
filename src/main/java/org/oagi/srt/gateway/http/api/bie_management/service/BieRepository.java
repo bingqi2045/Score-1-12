@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.min;
 
 @Repository
 public class BieRepository {
@@ -348,9 +349,9 @@ public class BieRepository {
 
     public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
         return dslContext.select(
-                Tables.ABIE.BIZ_CTX_ID)
-                .from(Tables.ABIE)
-                .join(Tables.TOP_LEVEL_ABIE).on(Tables.ABIE.ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+                min(Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID))
+                .from(Tables.BIZ_CTX_RULE)
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
@@ -373,7 +374,6 @@ public class BieRepository {
         return dslContext.insertInto(Tables.ABIE)
                 .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
                 .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(basedAccId))
-                .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
                 .set(Tables.ABIE.CREATED_BY, ULong.valueOf(userId))
                 .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.ABIE.CREATION_TIMESTAMP, timestamp)

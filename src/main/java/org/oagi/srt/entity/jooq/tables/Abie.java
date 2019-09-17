@@ -50,7 +50,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 1944598653;
+    private static final long serialVersionUID = -349031181;
 
     /**
      * The reference instance of <code>oagi.abie</code>
@@ -79,11 +79,6 @@ public class Abie extends TableImpl<AbieRecord> {
      * The column <code>oagi.abie.based_acc_id</code>. A foreign key to the ACC table refering to the ACC, on which the business context has been applied to derive this ABIE.
      */
     public final TableField<AbieRecord, ULong> BASED_ACC_ID = createField("based_acc_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ACC table refering to the ACC, on which the business context has been applied to derive this ABIE.");
-
-    /**
-     * The column <code>oagi.abie.biz_ctx_id</code>. A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
-     */
-    public final TableField<AbieRecord, ULong> BIZ_CTX_ID = createField("biz_ctx_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.");
 
     /**
      * The column <code>oagi.abie.definition</code>. Definition to override the ACC's definition. If NULL, it means that the definition should be inherited from the based CC.
@@ -191,7 +186,7 @@ public class Abie extends TableImpl<AbieRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ABIE_ABIE_BASED_ACC_ID_FK, Indexes.ABIE_ABIE_BIZ_CTX_ID_FK, Indexes.ABIE_ABIE_CLIENT_ID_FK, Indexes.ABIE_ABIE_CREATED_BY_FK, Indexes.ABIE_ABIE_LAST_UPDATED_BY_FK, Indexes.ABIE_ABIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ABIE_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ABIE_ABIE_BASED_ACC_ID_FK, Indexes.ABIE_ABIE_CLIENT_ID_FK, Indexes.ABIE_ABIE_CREATED_BY_FK, Indexes.ABIE_ABIE_LAST_UPDATED_BY_FK, Indexes.ABIE_ABIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ABIE_PRIMARY);
     }
 
     /**
@@ -223,15 +218,11 @@ public class Abie extends TableImpl<AbieRecord> {
      */
     @Override
     public List<ForeignKey<AbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AbieRecord, ?>>asList(Keys.ABIE_BASED_ACC_ID_FK, Keys.ABIE_BIZ_CTX_ID_FK, Keys.ABIE_CREATED_BY_FK, Keys.ABIE_LAST_UPDATED_BY_FK, Keys.ABIE_CLIENT_ID_FK, Keys.ABIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<AbieRecord, ?>>asList(Keys.ABIE_BASED_ACC_ID_FK, Keys.ABIE_CREATED_BY_FK, Keys.ABIE_LAST_UPDATED_BY_FK, Keys.ABIE_CLIENT_ID_FK, Keys.ABIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
     public Acc acc() {
         return new Acc(this, Keys.ABIE_BASED_ACC_ID_FK);
-    }
-
-    public BizCtx bizCtx() {
-        return new BizCtx(this, Keys.ABIE_BIZ_CTX_ID_FK);
     }
 
     public AppUser abieCreatedByFk() {

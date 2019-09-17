@@ -11,6 +11,7 @@ import javax.annotation.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -40,7 +41,7 @@ import org.oagi.srt.entity.jooq.tables.records.BizCtxRuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRule extends TableImpl<BizCtxRuleRecord> {
 
-    private static final long serialVersionUID = 192818985;
+    private static final long serialVersionUID = 1199223690;
 
     /**
      * The reference instance of <code>oagi.biz_ctx_rule</code>
@@ -58,7 +59,7 @@ public class BizCtxRule extends TableImpl<BizCtxRuleRecord> {
     /**
      * The column <code>oagi.biz_ctx_rule.biz_ctx_rule_id</code>.
      */
-    public final TableField<BizCtxRuleRecord, ULong> BIZ_CTX_RULE_ID = createField("biz_ctx_rule_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BizCtxRuleRecord, ULong> BIZ_CTX_RULE_ID = createField("biz_ctx_rule_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.biz_ctx_rule.from_biz_ctx_id</code>.
@@ -116,7 +117,15 @@ public class BizCtxRule extends TableImpl<BizCtxRuleRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BIZ_CTX_RULE_FROM_BIZ_CTX_ID, Indexes.BIZ_CTX_RULE_PRIMARY, Indexes.BIZ_CTX_RULE_TOP_LEVEL_BIE_ID);
+        return Arrays.<Index>asList(Indexes.BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY, Indexes.BIZ_CTX_RULE_PRIMARY);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Identity<BizCtxRuleRecord, ULong> getIdentity() {
+        return Keys.IDENTITY_BIZ_CTX_RULE;
     }
 
     /**
@@ -132,7 +141,7 @@ public class BizCtxRule extends TableImpl<BizCtxRuleRecord> {
      */
     @Override
     public List<UniqueKey<BizCtxRuleRecord>> getKeys() {
-        return Arrays.<UniqueKey<BizCtxRuleRecord>>asList(Keys.KEY_BIZ_CTX_RULE_PRIMARY);
+        return Arrays.<UniqueKey<BizCtxRuleRecord>>asList(Keys.KEY_BIZ_CTX_RULE_PRIMARY, Keys.KEY_BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY);
     }
 
     /**
@@ -143,12 +152,12 @@ public class BizCtxRule extends TableImpl<BizCtxRuleRecord> {
         return Arrays.<ForeignKey<BizCtxRuleRecord, ?>>asList(Keys.BIZ_CTX_RULE_IBFK_1, Keys.BIZ_CTX_RULE_IBFK_2);
     }
 
-    public BizCtx bizCtx() {
+    public BizCtx bizCtxRuleIbfk_1() {
         return new BizCtx(this, Keys.BIZ_CTX_RULE_IBFK_1);
     }
 
-    public TopLevelAbie topLevelAbie() {
-        return new TopLevelAbie(this, Keys.BIZ_CTX_RULE_IBFK_2);
+    public BizCtx bizCtxRuleIbfk_2() {
+        return new BizCtx(this, Keys.BIZ_CTX_RULE_IBFK_2);
     }
 
     /**

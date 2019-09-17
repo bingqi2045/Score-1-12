@@ -280,7 +280,6 @@ public class BieCopyService implements InitializingBean {
            return dslContext.insertInto(Tables.ABIE)
                     .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
                     .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(abie.getBasedAccId()))
-                    .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
                     .set(Tables.ABIE.DEFINITION, abie.getDefinition())
                     .set(Tables.ABIE.CREATED_BY, ULong.valueOf(userId))
                     .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
