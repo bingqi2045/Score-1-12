@@ -16,7 +16,7 @@ public class ABIERepository implements SrtRepository<ABIE> {
     @Autowired
     private SrtJdbcTemplate jdbcTemplate;
 
-    private String GET_ABIE_STATEMENT = "SELECT `abie_id`,`guid`,`based_acc_id`,`biz_ctx_id`,`definition`," +
+    private String GET_ABIE_STATEMENT = "SELECT `abie_id`,`guid`,`based_acc_id`,`definition`," +
             "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
             "`state`,`client_id`,`version`,`status`,`remark`,`biz_term`,`owner_top_level_abie_id` FROM `abie`";
 

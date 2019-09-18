@@ -145,7 +145,7 @@ public class BusinessContextRepository {
                 .from(BIZ_CTX_RULE)
                 .where(BIZ_CTX_RULE.FROM_BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .groupBy(BIZ_CTX_RULE.BIZ_CTX_RULE_ID)
-                .fetchOptionalInto(Integer.class).orElse(0);
+                .fetchAny().value1();
         bizCtx.setUsed(cnt > 0);
 
         return bizCtx;

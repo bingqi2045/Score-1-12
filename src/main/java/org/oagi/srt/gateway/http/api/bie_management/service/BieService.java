@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.BizCtxRule;
+import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -464,8 +465,11 @@ public class BieService {
 
     @Transactional
     public BizCtx findBizCtxFromAbieId(long abieId) {
-        long bizCtxId = abieRepository.findById(abieId).getBizCtxId();
-        return bizCtxRepository.findById(bizCtxId);
+        long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
+        //return the first biz ctx of the specific topLevelAbieId
+        TopLevelAbie top = new TopLevelAbie();
+        top.setTopLevelAbieId(topLevelAbieId);
+        return bizCtxRepository.findAllFromTopLvlBie(top).get(0);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {

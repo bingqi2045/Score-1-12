@@ -9,7 +9,6 @@ public class ABIE implements BIE {
     private long abieId;
     private String guid;
     private long basedAccId;
-    private long bizCtxId;
     private String definition;
     private long createdBy;
     private long lastUpdatedBy;
