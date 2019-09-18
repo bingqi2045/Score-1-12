@@ -543,24 +543,8 @@ public class CcNodeRepository {
         for (SeqKeySupportable e : seqKeySupportableList) {
             if (e instanceof CcAsccpNode) {
                 CcAsccpNode asccpNode = (CcAsccpNode) e;
-                OagisComponentType oagisComponentType =
-                        getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
-                if (oagisComponentType.isGroup()) {
-                    CcAccNode roleOfAccNode;
-                    if (releaseId == null) {
-                        roleOfAccNode = getAccNodeByAccId(asccpNode.getRoleOfAccId(), releaseId);
-                    } else {
-                        roleOfAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
-                    }
-                    List<? extends CcNode> groupDescendants = getDescendants(user, roleOfAccNode);
-                    for (CcNode groupNode : groupDescendants) {
-                        ((SeqKeySupportable) groupNode).setSeqKey(seqKey++);
-                    }
-                    descendants.addAll(groupDescendants);
-                } else {
-                    asccpNode.setSeqKey(seqKey++);
-                    descendants.add(asccpNode);
-                }
+                asccpNode.setSeqKey(seqKey++);
+                descendants.add(asccpNode);
             } else {
                 CcBccpNode bccpNode = (CcBccpNode) e;
                 bccpNode.setSeqKey(seqKey++);
