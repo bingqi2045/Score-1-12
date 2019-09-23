@@ -508,8 +508,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 if (hideUnused && (bbieSc == null || bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
                     continue;
                 }
-                bbieScNode.setBbieScId(bbieSc.getBbieScId());
-                bbieScNode.setUsed(bbieSc.isUsed());
+                if (bbieSc != null) {
+                    bbieScNode.setBbieScId(bbieSc.getBbieScId());
+                    bbieScNode.setUsed(bbieSc.isUsed());
+                }
             }
 
             bbieScNode.setDtScId(dtScId);
