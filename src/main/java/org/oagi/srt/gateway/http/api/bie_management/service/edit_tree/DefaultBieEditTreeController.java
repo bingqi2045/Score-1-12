@@ -671,16 +671,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BCCP.BDT_ID).from(Tables.BCCP)
                     .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
                     .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOneInto(Long.class)
+                    .fetchOptionalInto(Long.class).orElse(0L)
             );
         }
         if (bbiepNode.getBbieId() == 0L) {
             long defaultBdtPriRestriId = dslContext.select(
                     Tables.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
-                    .from(Tables.BDT_PRI_RESTRI)
+                    .from(Tables.BDT_PRI_RESTRI, Tables.DT)
                     .where(and(Tables.DT.DT_ID.eq(ULong.valueOf(detail.getBdtId())),
                             Tables.BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
-                            .fetchOneInto(Long.class);
+                    .fetchOptionalInto(Long.class).orElse(0L);
 
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
