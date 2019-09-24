@@ -287,7 +287,7 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.ABIE.CREATION_TIMESTAMP, timestamp)
                     .set(Tables.ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(Tables.ABIE.STATE, BieState.Initiating.getValue())
-                    .set(Tables.ABIE.CLIENT_ID, ULong.valueOf(abie.getClientId()))
+                    .set(Tables.ABIE.CLIENT_ID, (abie.getClientId() != null) ? ULong.valueOf(abie.getClientId()) : null)
                     .set(Tables.ABIE.VERSION, abie.getVersion())
                     .set(Tables.ABIE.STATUS, abie.getStatus())
                     .set(Tables.ABIE.REMARK, abie.getRemark())
