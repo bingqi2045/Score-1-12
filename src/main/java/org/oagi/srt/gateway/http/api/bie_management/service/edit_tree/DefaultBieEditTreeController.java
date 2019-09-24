@@ -634,6 +634,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.BDT_PRI_RESTRI_ID,
                     Tables.BBIE.CODE_LIST_ID,
                     Tables.BBIE.AGENCY_ID_LIST_ID,
+                    Tables.BBIE.DEFAULT_VALUE,
                     Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.FIXED_VALUE,
                     Tables.BBIE.DEFINITION.as("context_definition")
@@ -1071,6 +1072,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIE.IS_USED, (byte) (bbiepNodeDetail.isUsed() ? 1 : 0))
                 .set(Tables.BBIE.DEFINITION, emptyToNull(bbiepNodeDetail.getContextDefinition()))
                 .set(Tables.BBIE.FIXED_VALUE, emptyToNull(bbiepNodeDetail.getFixedValue()))
+                .set(Tables.BBIE.DEFAULT_VALUE, emptyToNull(bbiepNodeDetail.getDefaultValue()))
                 .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
 
