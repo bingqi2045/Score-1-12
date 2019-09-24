@@ -71,14 +71,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         this.topLevelAbie = topLevelAbie;
 
         this.state = BieState.valueOf(topLevelAbie.getState());
+        this.forceBieUpdate = true;
         switch (this.state) {
             case Editing:
                 if (sessionService.userId(user) != topLevelAbie.getOwnerUserId()) {
                     throw new DataAccessForbiddenException("'" + user.getUsername() +
                             "' doesn't have an access privilege.");
                 }
-
-                this.forceBieUpdate = true;
                 break;
         }
 
@@ -151,11 +150,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
          * and this must be thread-safe.
          */
         RLock lock = null;
-        if (this.state == Editing) {
-            String lockName = getClass().getSimpleName() + ".getDescendants(" +
-                    node.getType() + ", " + topLevelAbie.getTopLevelAbieId() + ")";
-            lock = redissonClient.getLock(lockName);
-        }
+        String lockName = getClass().getSimpleName() + ".getDescendants(" +
+                node.getType() + ", " + topLevelAbie.getTopLevelAbieId() + ")";
+        lock = redissonClient.getLock(lockName);
 
         try {
             if (lock != null) {
@@ -508,10 +505,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 if (hideUnused && (bbieSc == null || bbieSc.getBbieScId() == 0L || !bbieSc.isUsed())) {
                     continue;
                 }
-                if (bbieSc != null) {
-                    bbieScNode.setBbieScId(bbieSc.getBbieScId());
-                    bbieScNode.setUsed(bbieSc.isUsed());
-                }
+                bbieScNode.setBbieScId(bbieSc.getBbieScId());
+                bbieScNode.setUsed(bbieSc.isUsed());
             }
 
             bbieScNode.setDtScId(dtScId);
@@ -674,16 +669,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BCCP.BDT_ID).from(Tables.BCCP)
                     .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
                     .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOptionalInto(Long.class).orElse(0L)
+                    .fetchOneInto(Long.class)
             );
         }
         if (bbiepNode.getBbieId() == 0L) {
             long defaultBdtPriRestriId = dslContext.select(
                     Tables.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
-                    .from(Tables.BDT_PRI_RESTRI, Tables.DT)
+                    .from(Tables.BDT_PRI_RESTRI)
                     .where(and(Tables.DT.DT_ID.eq(ULong.valueOf(detail.getBdtId())),
                             Tables.BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
-                    .fetchOptionalInto(Long.class).orElse(0L);
+                            .fetchOneInto(Long.class);
 
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
