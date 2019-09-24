@@ -3,11 +3,10 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ABIE;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCopyRequest;
-import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -358,9 +357,9 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
                     .set(Tables.BBIE.TO_BBIEP_ID, ULong.valueOf(bbie.getToBbiepId()))
                     .set(Tables.BBIE.BASED_BCC_ID, ULong.valueOf(bbie.getBasedBccId()))
-                    .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(bbie.getBdtPriRestriId()))
-                    .set(Tables.BBIE.CODE_LIST_ID, ULong.valueOf(bbie.getCodeListId()))
-                    .set(Tables.BBIE.AGENCY_ID_LIST_ID, ULong.valueOf(bbie.getAgencyIdListId()))
+                    .set(Tables.BBIE.BDT_PRI_RESTRI_ID, (bbie.getBdtPriRestriId() != null) ? ULong.valueOf(bbie.getBdtPriRestriId()) : null)
+                    .set(Tables.BBIE.CODE_LIST_ID, (bbie.getCodeListId() != null) ? ULong.valueOf(bbie.getCodeListId()) : null)
+                    .set(Tables.BBIE.AGENCY_ID_LIST_ID, (bbie.getAgencyIdListId() != null) ? ULong.valueOf(bbie.getAgencyIdListId()) : null)
                     .set(Tables.BBIE.DEFAULT_VALUE, bbie.getDefaultValue())
                     .set(Tables.BBIE.FIXED_VALUE, bbie.getFixedValue())
                     .set(Tables.BBIE.DEFINITION, bbie.getDefinition())
@@ -375,7 +374,7 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                     .set(Tables.BBIE.CREATION_TIMESTAMP, timestamp)
                     .set(Tables.BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID,ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
+                    .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getBbieId().longValue();
         }
 
@@ -385,9 +384,9 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIE_SC.GUID, SrtGuid.randomGuid())
                     .set(Tables.BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))
                     .set(Tables.BBIE_SC.DT_SC_ID, ULong.valueOf(bbieSc.getDtScId()))
-                    .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(bbieSc.getDtScPriRestriId()))
-                    .set(Tables.BBIE_SC.CODE_LIST_ID, ULong.valueOf(bbieSc.getCodeListId()))
-                    .set(Tables.BBIE_SC.AGENCY_ID_LIST_ID, ULong.valueOf(bbieSc.getAgencyIdListId()))
+                    .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, (bbieSc.getDtScPriRestriId() != null) ? ULong.valueOf(bbieSc.getDtScPriRestriId()) : null)
+                    .set(Tables.BBIE_SC.CODE_LIST_ID, (bbieSc.getCodeListId() != null) ? ULong.valueOf(bbieSc.getCodeListId()) : null)
+                    .set(Tables.BBIE_SC.AGENCY_ID_LIST_ID, (bbieSc.getAgencyIdListId() != null) ? ULong.valueOf(bbieSc.getAgencyIdListId()) : null)
                     .set(Tables.BBIE_SC.DEFAULT_VALUE, bbieSc.getDefaultValue())
                     .set(Tables.BBIE_SC.FIXED_VALUE, bbieSc.getFixedValue())
                     .set(Tables.BBIE_SC.DEFINITION, bbieSc.getDefinition())
@@ -396,14 +395,14 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieSc.getCardinalityMin())
                     .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(Tables.BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
-                    .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID,ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
+                    .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getBbieScId().longValue();
         }
     }
 
 
     private List<BieCopyAbie> getAbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-       return dslContext.select(
+        return dslContext.select(
                 Tables.ABIE.ABIE_ID,
                 Tables.ABIE.GUID,
                 Tables.ABIE.BASED_ACC_ID,
@@ -413,7 +412,7 @@ public class BieCopyService implements InitializingBean {
                 Tables.ABIE.STATUS,
                 Tables.ABIE.REMARK,
                 Tables.ABIE.BIZ_TERM
-               ).from(Tables.ABIE)
+        ).from(Tables.ABIE)
                 .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
                 .fetchInto(BieCopyAbie.class);
     }
@@ -504,7 +503,7 @@ public class BieCopyService implements InitializingBean {
                 Tables.BBIE_SC.IS_USED.as("used")).from(Tables.BBIE_SC)
                 .where(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
                 .fetchInto(BieCopyBbieSc.class);
-     }
+    }
 
 
     @Data
