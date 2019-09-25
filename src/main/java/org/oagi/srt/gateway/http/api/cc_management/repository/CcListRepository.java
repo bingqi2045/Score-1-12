@@ -361,7 +361,6 @@ public class CcListRepository {
                     ccList.setRevision(getRevision(releaseId, bdtList.getOrDefault(bdt.getGuid(), Collections.emptyList())));
                     ccList.setOwner(usernameMap.get(bdt.getOwnerUserId()));
                     ccList.setLastUpdateUser(usernameMap.get(bdt.getLastUpdatedBy()));
-                    System.out.println("list : " + ccList);
                     return ccList;
                 })
                 .collect(Collectors.toList());

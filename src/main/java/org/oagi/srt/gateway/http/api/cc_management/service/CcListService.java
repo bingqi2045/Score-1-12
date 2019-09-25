@@ -47,10 +47,8 @@ public class CcListService {
     private DSLContext dslContext;
 
     public PageResponse<CcList> getCcList(CcListRequest request) {
-
         List<CcList> ccLists = getCoreComponents(request);
         Stream<CcList> ccListStream = ccLists.stream();
-        System.out.println(ccLists);
         Comparator<CcList> comparator = getComparator(request.getPageRequest());
         if (comparator != null) {
             ccListStream = ccListStream.sorted(comparator);
