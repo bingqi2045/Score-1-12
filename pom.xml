@@ -5,7 +5,7 @@
 
     <groupId>org.oagi</groupId>
     <artifactId>srt-http-gateway</artifactId>
-    <version>1.1.2.2</version>
+    <version>1.1.2.3</version>
     <packaging>war</packaging>
 
     <name>srt-http-gateway</name>
