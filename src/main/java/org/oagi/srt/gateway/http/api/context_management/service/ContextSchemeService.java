@@ -320,17 +320,31 @@ public class ContextSchemeService {
 
     @Transactional
     public void insert(long ctxSchemeId, ContextSchemeValue contextSchemeValue) {
-        dslContext.insertInto(CTX_SCHEME_VALUE,
-                CTX_SCHEME_VALUE.GUID,
-                CTX_SCHEME_VALUE.VALUE,
-                CTX_SCHEME_VALUE.MEANING,
-                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
-        ).values(
-                SrtGuid.randomGuid(),
-                contextSchemeValue.getValue(),
-                contextSchemeValue.getMeaning(),
-                ULong.valueOf(ctxSchemeId)
-        ).execute();
+        if (contextSchemeValue.getGuid() == null ) {
+            dslContext.insertInto(CTX_SCHEME_VALUE,
+                    CTX_SCHEME_VALUE.GUID,
+                    CTX_SCHEME_VALUE.VALUE,
+                    CTX_SCHEME_VALUE.MEANING,
+                    CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
+            ).values(
+                    SrtGuid.randomGuid(),
+                    contextSchemeValue.getValue(),
+                    contextSchemeValue.getMeaning(),
+                    ULong.valueOf(ctxSchemeId)
+            ).execute();
+        } else {
+            dslContext.insertInto(CTX_SCHEME_VALUE,
+                    CTX_SCHEME_VALUE.GUID,
+                    CTX_SCHEME_VALUE.VALUE,
+                    CTX_SCHEME_VALUE.MEANING,
+                    CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
+            ).values(
+                    contextSchemeValue.getGuid(),
+                    contextSchemeValue.getValue(),
+                    contextSchemeValue.getMeaning(),
+                    ULong.valueOf(ctxSchemeId)
+            ).execute();
+        }
     }
 
     @Transactional
