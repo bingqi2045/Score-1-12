@@ -543,8 +543,11 @@ public class CcNodeRepository {
         for (SeqKeySupportable e : seqKeySupportableList) {
             if (e instanceof CcAsccpNode) {
                 CcAsccpNode asccpNode = (CcAsccpNode) e;
-                asccpNode.setSeqKey(seqKey++);
-                descendants.add(asccpNode);
+                OagisComponentType oagisComponentType = getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
+                if (!oagisComponentType.equals(OagisComponentType.UserExtensionGroup)) {
+                    asccpNode.setSeqKey(seqKey++);
+                    descendants.add(asccpNode);
+                }
             } else {
                 CcBccpNode bccpNode = (CcBccpNode) e;
                 bccpNode.setSeqKey(seqKey++);
