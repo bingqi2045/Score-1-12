@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.module_management.service;
 
 import org.oagi.srt.gateway.http.api.module_management.data.*;
+import org.oagi.srt.gateway.http.api.module_management.data.Module;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

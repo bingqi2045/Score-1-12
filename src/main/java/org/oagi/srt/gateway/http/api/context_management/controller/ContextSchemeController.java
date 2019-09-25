@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.context_management.controller;
 
+import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
@@ -80,6 +81,12 @@ public class ContextSchemeController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ContextSchemeValue getSimpleContextSchemeValueByCtxSchemeValuesId(@PathVariable("id") long ctxSchemeValuesId) {
         return service.getSimpleContextSchemeValueByCtxSchemeValuesId(ctxSchemeValuesId);
+    }
+
+    @RequestMapping(value = "/code_lists", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<CodeList> getCodeLists() {
+        return service.getCodeLists();
     }
 
     @RequestMapping(value = "/biz_ctx_values_from_ctx_values/{id}", method = RequestMethod.GET,

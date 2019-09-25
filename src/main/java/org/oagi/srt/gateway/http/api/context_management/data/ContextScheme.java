@@ -18,6 +18,7 @@ public class ContextScheme implements Serializable {
     private String schemeId;
     private String schemeAgencyId;
     private String schemeVersionId;
+    private long codeListId;
     private String codeListName;
     private String description;
     private Date lastUpdateTimestamp;
