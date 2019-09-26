@@ -245,7 +245,8 @@ public class ContextSchemeService {
                 CODE_LIST.CREATION_TIMESTAMP,
                 CODE_LIST.LAST_UPDATE_TIMESTAMP,
                 CODE_LIST.STATE
-        ).from(CODE_LIST).fetchInto(CodeList.class);
+        ).from(CODE_LIST).where(CODE_LIST.STATE.eq("Published"))
+                .fetchInto(CodeList.class);
     }
 
     public List<BusinessContextValue> getBizCtxValueFromCtxSchemeValueId(long ctxSchemeValueId) {
