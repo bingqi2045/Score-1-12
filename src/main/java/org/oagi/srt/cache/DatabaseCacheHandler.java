@@ -1,20 +1,20 @@
 package org.oagi.srt.cache;
 
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Table;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.jooq.impl.DSL.name;
+import static org.jooq.impl.DSL.table;
 
 @Transactional(readOnly = true)
 public class DatabaseCacheHandler<T> implements InitializingBean {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private final String tableName;
     private final Class<T> mappedClass;
@@ -70,11 +70,11 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
     }
 
     private List<String> loadFields(String tableName) {
-        List<String> fields = new ArrayList();
-        jdbcTemplate.query("DESCRIBE `" + tableName + "`", rch -> {
-            String field = rch.getString("Field");
-            fields.add(field);
-        });
+        List<String> fields = new ArrayList<>();
+        Table<?> table = table(name(tableName));
+        for(Field field : table.fields()){
+            fields.add(field.getName());
+        };
         return fields;
     }
 
@@ -90,7 +90,7 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
         StringBuilder query = new StringBuilder();
         query.append("SELECT sha1(concat_ws(`").append(String.join("`,`", loadFields(this.tableName)))
                 .append("`)) `checksum` FROM ").append(this.tableName).append(" WHERE ")
-                .append(this.underscorePriKeyName).append(" = :id");
+                .append(this.underscorePriKeyName).append(" = ");
         return query.toString();
     }
 

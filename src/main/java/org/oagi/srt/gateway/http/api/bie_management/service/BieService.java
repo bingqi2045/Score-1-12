@@ -12,7 +12,6 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +34,6 @@ import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 @Transactional(readOnly = true)
 public class BieService {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private SessionService sessionService;

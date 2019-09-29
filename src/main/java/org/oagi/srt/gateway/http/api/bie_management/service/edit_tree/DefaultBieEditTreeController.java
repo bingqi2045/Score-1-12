@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
-import org.jooq.DSLContext;
-import org.jooq.Record2;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
@@ -14,7 +13,6 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +25,16 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.field;
 import static org.oagi.srt.data.BieState.Editing;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -41,9 +42,6 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 @Transactional
 public class DefaultBieEditTreeController implements BieEditTreeController {
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
@@ -88,19 +86,26 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         return forceBieUpdate;
     }
 
-    private String GET_ROOT_NODE_STATEMENT =
-            "SELECT top_level_abie_id, top_level_abie.release_id, 'abie' as type, " +
-                    "top_level_abie.state as top_level_abie_state, top_level_abie.owner_user_id, " +
-                    "asccp.guid, asccp.property_term as name, " +
-                    "asbiep.asbiep_id, asbiep.based_asccp_id as asccp_id, abie.abie_id, abie.based_acc_id as acc_id " +
-                    "FROM top_level_abie JOIN abie ON top_level_abie.abie_id = abie.abie_id " +
-                    "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
-                    "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
-                    "WHERE top_level_abie_id = :top_level_abie_id";
-
     public BieEditAbieNode getRootNode(long topLevelAbieId) {
-        BieEditAbieNode rootNode = jdbcTemplate.queryForObject(GET_ROOT_NODE_STATEMENT, newSqlParameterSource()
-                .addValue("top_level_abie_id", topLevelAbieId), BieEditAbieNode.class);
+        Field<Object> type = field("abie");
+        BieEditAbieNode rootNode = dslContext.select(
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                TOP_LEVEL_ABIE.RELEASE_ID,
+                TOP_LEVEL_ABIE.STATE.as("top_level_abie_state"),
+                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM.as("name"),
+                ASBIEP.ASBIEP_ID,
+                ASBIEP.BASED_ASCCP_ID.as("asccp_id"),
+                ABIE.ABIE_ID,
+                ABIE.BASED_ACC_ID.as("acc_id"),
+                type)
+                .from(TOP_LEVEL_ABIE)
+                .join(ABIE).on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
+                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIE.BASED_ASCC_ID))
+                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchOneInto(BieEditAbieNode.class);
         rootNode.setHasChild(hasChild(rootNode));
 
         return rootNode;
@@ -647,15 +652,17 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
-            jdbcTemplate.query("SELECT bbiep.biz_term, bbiep.remark, bccp.bdt_id, dt.den as bdt_den " +
-                            "FROM bbiep JOIN bccp ON bbiep.based_bccp_id = bccp.bccp_id " +
-                            "JOIN dt ON bccp.bdt_id = dt.dt_id " +
-                            "WHERE bbiep_id = :bbiep_id",
-                    parameterSource, rs -> {
-                        detail.setBizTerm(rs.getString("biz_term"));
-                        detail.setRemark(rs.getString("remark"));
-                        detail.setBdtId(rs.getLong("bdt_id"));
-                        detail.setBdtDen(rs.getString("bdt_den"));
+            dslContext.select(BBIEP.BIZ_TERM, BBIEP.REMARK, BCCP.BDT_ID, DT.DEN)
+                    .from(BBIEP)
+                    .join(BCCP).on(BBIEP.BASED_BCCP_ID.eq(BCCP.BCCP_ID))
+                    .join(DT).on(BCCP.BDT_ID.eq(DT.DT_ID))
+                    .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
+                    .fetchOne((RecordMapper<Record4<String, String, ULong, String>, Object>) rs -> {
+                        detail.setBizTerm(rs.getValue(BBIEP.BIZ_TERM));
+                        detail.setRemark(rs.getValue(BBIEP.REMARK));
+                        detail.setBdtId(rs.getValue(BCCP.BDT_ID).longValue());
+                        detail.setBdtDen(rs.getValue(DT.DEN));
+                        return detail;
                     });
         } else {
             detail.setBdtDen(dslContext.select(

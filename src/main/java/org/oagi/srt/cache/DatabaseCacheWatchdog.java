@@ -1,6 +1,9 @@
 package org.oagi.srt.cache;
 
 import com.google.common.collect.Iterables;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -12,7 +15,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -29,7 +31,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
@@ -161,9 +163,10 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         Map<Long, String> checksumMap = new HashMap();
         String checksumQuery = getChecksumQuery();
         String underscorePriKeyName = getUnderscorePriKeyName();
-        jdbcTemplate.query(checksumQuery, rch -> {
-            checksumMap.put(rch.getLong(underscorePriKeyName), rch.getString("checksum"));
-        });
+        Result<Record> result = dslContext.fetch(checksumQuery);
+        for (Record r : result) {
+            checksumMap.put((Long) r.getValue(underscorePriKeyName), (String) r.getValue("checksum"));
+        }
         return checksumMap;
     }
 
