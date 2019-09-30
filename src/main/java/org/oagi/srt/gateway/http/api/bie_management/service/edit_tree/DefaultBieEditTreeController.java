@@ -24,8 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.*;
 import java.util.Comparator;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.field;
-import static org.oagi.srt.data.BieState.Editing;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -729,21 +728,29 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         MapSqlParameterSource parameterSource = newSqlParameterSource()
                 .addValue("bdt_id", bdtId);
 
-        List<BieEditXbt> bieEditXbtList = jdbcTemplate.queryForList(
-                "SELECT b.bdt_pri_restri_id AS pri_restri_id, is_default, x.xbt_id, x.name as xbt_name " +
-                        "FROM bdt_pri_restri b JOIN cdt_awd_pri_xps_type_map c " +
-                        "ON b.cdt_awd_pri_xps_type_map_id = c.cdt_awd_pri_xps_type_map_id " +
-                        "JOIN xbt x ON c.xbt_id = x.xbt_id WHERE bdt_id = :bdt_id", parameterSource, BieEditXbt.class);
+        List<BieEditXbt> bieEditXbtList = dslContext.select(
+                BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.as("pri_restri_id"),
+                BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME.as("xbt_name"))
+                .from(BDT_PRI_RESTRI)
+                .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId)))
+                .fetchInto(BieEditXbt.class);
 
-        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT c.code_list_id, c.based_code_list_id, b.is_default, c.name as code_list_name " +
-                        "FROM bdt_pri_restri b JOIN code_list c ON b.code_list_id = c.code_list_id " +
-                        "WHERE bdt_id = :bdt_id", newSqlParameterSource()
-                        .addValue("bdt_id", bdtId), BieEditCodeList.class);
-        List<BieEditAgencyIdList> bieEditAgencyIdLists = jdbcTemplate.queryForList(
-                "SELECT a.agency_id_list_id, b.is_default, a.name as agency_id_list_name " +
-                        "FROM bdt_pri_restri b JOIN agency_id_list a ON b.agency_id_list_id = a.agency_id_list_id " +
-                        "WHERE bdt_id = :bdt_id", parameterSource, BieEditAgencyIdList.class);
+        List<BieEditCodeList> bieEditCodeLists = dslContext.select(
+                CODE_LIST.CODE_LIST_ID, CODE_LIST.BASED_CODE_LIST_ID,
+                BDT_PRI_RESTRI.IS_DEFAULT, CODE_LIST.NAME.as("code_list_name"))
+                .from(BDT_PRI_RESTRI)
+                .join(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId)))
+                .fetchInto(BieEditCodeList.class);
+
+        List<BieEditAgencyIdList> bieEditAgencyIdLists = dslContext.select(
+                AGENCY_ID_LIST.AGENCY_ID_LIST_ID, BDT_PRI_RESTRI.IS_DEFAULT, AGENCY_ID_LIST.NAME.as("agency_id_list_name"))
+                .from(BDT_PRI_RESTRI)
+                .join(AGENCY_ID_LIST).on(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId)))
+                .fetchInto(BieEditAgencyIdList.class);
 
         if (bieEditCodeLists.isEmpty() && bieEditAgencyIdLists.isEmpty()) {
             bieEditCodeLists = getAllCodeLists();
@@ -915,7 +922,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private List<BieEditAgencyIdList> getAllAgencyIdLists() {
         return dslContext.select(
                 Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
-                Tables.AGENCY_ID_LIST.NAME.as("agency_id_list_name")).from(Tables.AGENCY_ID_LIST)
+                Tables.AGENCY_ID_LIST.NAME.as("agency_id_list_name"))
+                .from(Tables.AGENCY_ID_LIST)
                 .fetchInto(BieEditAgencyIdList.class);
     }
 
@@ -924,11 +932,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             return Collections.emptyList();
         }
 
-        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT code_list_id, based_code_list_id, name as code_list_name " +
-                        "FROM code_list WHERE code_list_id IN (:based_code_list_ids) " +
-                        "AND state LIKE 'Published'", newSqlParameterSource()
-                        .addValue("based_code_list_ids", basedCodeListIds), BieEditCodeList.class);
+        List<BieEditCodeList> bieEditCodeLists = dslContext.select(
+                CODE_LIST.CODE_LIST_ID, CODE_LIST.BASED_CODE_LIST_ID, CODE_LIST.NAME.as("code_list_name"))
+                .from(CODE_LIST)
+                .where(and(
+                        CODE_LIST.CODE_LIST_ID.in(
+                                basedCodeListIds.stream()
+                                        .map(e -> ULong.valueOf(e))
+                                        .collect(Collectors.toList())),
+                        CODE_LIST.STATE.eq("Published")))
+                .fetchInto(BieEditCodeList.class);
 
         List<BieEditCodeList> basedCodeLists =
                 getBieEditCodeListByBasedCodeListIds(
@@ -940,16 +953,26 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         return bieEditCodeLists;
     }
 
-    private List<BieEditCodeList> getCodeListsByBasedCodeList (Long basedCodeList) {
-        List<BieEditCodeList> bieEditCodeLists = jdbcTemplate.queryForList(
-                "SELECT code_list_id, based_code_list_id, name as code_list_name " +
-                        "FROM code_list WHERE based_code_list_id LIKE (:based_code_list_id) " +
-                        "AND state LIKE 'Published'", newSqlParameterSource()
-                        .addValue("based_code_list_id", basedCodeList), BieEditCodeList.class);
-
-        for (int i=0; i<bieEditCodeLists.size(); i++) {
-            bieEditCodeLists.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
+    private List<BieEditCodeList> getCodeListsByBasedCodeList(Long basedCodeList) {
+        if (basedCodeList == null) {
+            return Collections.emptyList();
         }
+
+        List<BieEditCodeList> bieEditCodeLists = new ArrayList();
+        List<BieEditCodeList> bieEditCodeListsByBasedCodeListId = dslContext.select(
+                CODE_LIST.CODE_LIST_ID, CODE_LIST.BASED_CODE_LIST_ID, CODE_LIST.NAME.as("code_list_name"))
+                .from(CODE_LIST)
+                .where(and(
+                        CODE_LIST.BASED_CODE_LIST_ID.eq(ULong.valueOf(basedCodeList)),
+                        CODE_LIST.STATE.eq("Published")))
+                .fetchInto(BieEditCodeList.class);
+
+        bieEditCodeLists.addAll(bieEditCodeListsByBasedCodeListId);
+
+        for (BieEditCodeList bieEditCodeList : bieEditCodeListsByBasedCodeListId) {
+            bieEditCodeLists.addAll(getCodeListsByBasedCodeList(bieEditCodeList.getCodeListId()));
+        }
+
         return bieEditCodeLists;
     }
 
