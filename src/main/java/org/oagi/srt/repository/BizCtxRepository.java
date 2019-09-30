@@ -1,26 +1,23 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BizCtx;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class BizCtxRepository implements SrtRepository<BizCtx> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    private String GET_BUSINESS_CONTEXT_STATEMENT = "SELECT `biz_ctx_id`,`guid`,`name`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp` FROM `biz_ctx`";
+    private DSLContext dslContext;
 
     @Override
     public List<BizCtx> findAll() {
-        return jdbcTemplate.queryForList(GET_BUSINESS_CONTEXT_STATEMENT, BizCtx.class);
+        return dslContext.select(Tables.BIZ_CTX.fields()).from(Tables.BIZ_CTX).fetchInto(BizCtx.class);
     }
 
     @Override
@@ -28,9 +25,9 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
         if (id <= 0L) {
             return null;
         }
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_BUSINESS_CONTEXT_STATEMENT)
-                .append(" WHERE `biz_ctx_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), BizCtx.class);
+        return dslContext.select(Tables.BIZ_CTX.fields()).from(Tables.BIZ_CTX)
+                .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(id))).fetchOneInto(BizCtx.class);
+
     }
 
 }
