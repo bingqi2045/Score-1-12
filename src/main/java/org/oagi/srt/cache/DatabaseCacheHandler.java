@@ -1,8 +1,8 @@
 package org.oagi.srt.cache;
 
-import org.jooq.DSLContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class DatabaseCacheHandler<T> implements InitializingBean {
 
     @Autowired
-    private DSLContext dslContext;
+    private JdbcTemplate jdbcTemplate;
 
     private final String tableName;
     private final Class<T> mappedClass;
@@ -71,8 +71,8 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
 
     private List<String> loadFields(String tableName) {
         List<String> fields = new ArrayList();
-        dslContext.fetchStream("DESCRIBE `" + tableName + "`").forEach(rch -> {
-            String field = rch.getValue("Field", String.class);
+        jdbcTemplate.query("DESCRIBE `" + tableName + "`", rch -> {
+            String field = rch.getString("Field");
             fields.add(field);
         });
         return fields;
@@ -90,7 +90,7 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
         StringBuilder query = new StringBuilder();
         query.append("SELECT sha1(concat_ws(`").append(String.join("`,`", loadFields(this.tableName)))
                 .append("`)) `checksum` FROM ").append(this.tableName).append(" WHERE ")
-                .append(this.underscorePriKeyName).append(" = ");
+                .append(this.underscorePriKeyName).append(" = :id");
         return query.toString();
     }
 
