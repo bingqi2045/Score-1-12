@@ -1,20 +1,20 @@
 package org.oagi.srt.cache;
 
 import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Table;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.jooq.impl.DSL.name;
-import static org.jooq.impl.DSL.table;
 
 @Transactional(readOnly = true)
 public class DatabaseCacheHandler<T> implements InitializingBean {
+
+    @Autowired
+    private DSLContext dslContext;
 
     private final String tableName;
     private final Class<T> mappedClass;
@@ -70,11 +70,11 @@ public class DatabaseCacheHandler<T> implements InitializingBean {
     }
 
     private List<String> loadFields(String tableName) {
-        List<String> fields = new ArrayList<>();
-        Table<?> table = table(name(tableName));
-        for(Field field : table.fields()){
-            fields.add(field.getName());
-        };
+        List<String> fields = new ArrayList();
+        dslContext.fetchStream("DESCRIBE `" + tableName + "`").forEach(rch -> {
+            String field = rch.getValue("Field", String.class);
+            fields.add(field);
+        });
         return fields;
     }
 

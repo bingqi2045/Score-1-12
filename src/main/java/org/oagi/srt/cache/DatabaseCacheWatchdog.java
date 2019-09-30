@@ -2,8 +2,7 @@ package org.oagi.srt.cache;
 
 import com.google.common.collect.Iterables;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
+import org.jooq.types.ULong;
 import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -163,10 +162,11 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         Map<Long, String> checksumMap = new HashMap();
         String checksumQuery = getChecksumQuery();
         String underscorePriKeyName = getUnderscorePriKeyName();
-        Result<Record> result = dslContext.fetch(checksumQuery);
-        for (Record r : result) {
-            checksumMap.put((Long) r.getValue(underscorePriKeyName), (String) r.getValue("checksum"));
-        }
+        dslContext.fetchStream(checksumQuery).forEach(r -> {
+            checksumMap.put(
+                    r.getValue(underscorePriKeyName, ULong.class).longValue(),
+                    r.getValue("checksum", String.class));
+        });
         return checksumMap;
     }
 
