@@ -1,33 +1,34 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class ReleaseRepository implements SrtRepository<Release> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    private String GET_RELEASE_STATEMENT = "SELECT `release_id`,`release_num`,`release_note`,`namespace_id`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`,`state` FROM `release`";
+    private DSLContext dslContext;
 
     @Override
     public List<Release> findAll() {
-        return jdbcTemplate.queryForList(GET_RELEASE_STATEMENT, Release.class);
+        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.LAST_UPDATED_BY,
+                    Tables.RELEASE.NAMESPACE_ID, Tables.RELEASE.CREATED_BY, Tables.RELEASE.STATE,
+                    Tables.RELEASE.LAST_UPDATE_TIMESTAMP, Tables.RELEASE.CREATION_TIMESTAMP, Tables.RELEASE.RELEASE_NOTE)
+                .from(Tables.RELEASE).fetchInto(Release.class);
     }
 
     @Override
     public Release findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_RELEASE_STATEMENT)
-                .append(" WHERE `release_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), Release.class);
+        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.LAST_UPDATED_BY,
+                Tables.RELEASE.NAMESPACE_ID, Tables.RELEASE.CREATED_BY, Tables.RELEASE.STATE,
+                Tables.RELEASE.LAST_UPDATE_TIMESTAMP, Tables.RELEASE.CREATION_TIMESTAMP, Tables.RELEASE.RELEASE_NOTE)
+                .from(Tables.RELEASE).where(Tables.RELEASE.RELEASE_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(Release.class);
     }
-
 }
