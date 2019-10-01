@@ -3,7 +3,6 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 import com.google.common.base.Functions;
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.*;
@@ -225,30 +224,6 @@ public class ContextSchemeService {
                 .fetchInto(SimpleContextScheme.class);
     }
 
-    public List<org.oagi.srt.gateway.http.api.code_list_management.data.CodeList> getCodeLists() {
-        return dslContext.select(
-                CODE_LIST.CODE_LIST_ID,
-                CODE_LIST.GUID,
-                CODE_LIST.ENUM_TYPE_GUID,
-                CODE_LIST.NAME.as("code_list_name"),
-                CODE_LIST.LIST_ID,
-                CODE_LIST.AGENCY_ID,
-                CODE_LIST.VERSION_ID,
-                CODE_LIST.DEFINITION,
-                CODE_LIST.REMARK,
-                CODE_LIST.DEFINITION_SOURCE,
-                CODE_LIST.BASED_CODE_LIST_ID,
-                CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
-                CODE_LIST.MODULE_ID,
-                CODE_LIST.CREATED_BY,
-                CODE_LIST.LAST_UPDATED_BY,
-                CODE_LIST.CREATION_TIMESTAMP,
-                CODE_LIST.LAST_UPDATE_TIMESTAMP,
-                CODE_LIST.STATE
-        ).from(CODE_LIST).where(CODE_LIST.STATE.eq("Published"))
-                .fetchInto(CodeList.class);
-    }
-
     public List<BusinessContextValue> getBizCtxValueFromCtxSchemeValueId(long ctxSchemeValueId) {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
@@ -321,31 +296,17 @@ public class ContextSchemeService {
 
     @Transactional
     public void insert(long ctxSchemeId, ContextSchemeValue contextSchemeValue) {
-        if (contextSchemeValue.getGuid() == null ) {
-            dslContext.insertInto(CTX_SCHEME_VALUE,
-                    CTX_SCHEME_VALUE.GUID,
-                    CTX_SCHEME_VALUE.VALUE,
-                    CTX_SCHEME_VALUE.MEANING,
-                    CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
-            ).values(
-                    SrtGuid.randomGuid(),
-                    contextSchemeValue.getValue(),
-                    contextSchemeValue.getMeaning(),
-                    ULong.valueOf(ctxSchemeId)
-            ).execute();
-        } else {
-            dslContext.insertInto(CTX_SCHEME_VALUE,
-                    CTX_SCHEME_VALUE.GUID,
-                    CTX_SCHEME_VALUE.VALUE,
-                    CTX_SCHEME_VALUE.MEANING,
-                    CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
-            ).values(
-                    contextSchemeValue.getGuid(),
-                    contextSchemeValue.getValue(),
-                    contextSchemeValue.getMeaning(),
-                    ULong.valueOf(ctxSchemeId)
-            ).execute();
-        }
+        dslContext.insertInto(CTX_SCHEME_VALUE,
+                CTX_SCHEME_VALUE.GUID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING,
+                CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
+        ).values(
+                contextSchemeValue.getGuid(),
+                contextSchemeValue.getValue(),
+                contextSchemeValue.getMeaning(),
+                ULong.valueOf(ctxSchemeId)
+        ).execute();
     }
 
     @Transactional
