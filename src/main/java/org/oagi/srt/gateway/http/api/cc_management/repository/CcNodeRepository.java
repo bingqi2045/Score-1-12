@@ -19,13 +19,9 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -35,13 +31,9 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 
 @Repository
 public class CcNodeRepository {
-
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DSLContext dslContext;
@@ -213,36 +205,33 @@ public class CcNodeRepository {
 
     public void updateAcc(User user, CcAccNode ccAccNode) {
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        jdbcTemplate.update("UPDATE `acc` SET `definition` = :definition, " +
-                "`object_class_term` = :object_class_term, `den` = :den, `oagis_component_type` = :oagisComponentType, " +
-                "`is_deprecated` = :isDeprecated, `is_abstract` = :isAbstract " +
-                "WHERE acc_id = "+ ccAccNode.getAccId(), newSqlParameterSource()
-                .addValue("object_class_term", ccAccNode.getObjectClassTerm())
-                .addValue("den", ccAccNode.getDen())
-                .addValue("isDeprecated", ccAccNode.isDeprecated())
-                .addValue("isAbstract", ccAccNode.isAbstract())
-                .addValue("definition", ccAccNode.getDefinition())
-                .addValue("oagisComponentType", ccAccNode.getOagisComponentType())
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp));
+        dslContext.update(ACC)
+                .set(ACC.DEFINITION, ccAccNode.getDefinition())
+                .set(ACC.DEN, ccAccNode.getDen())
+                .set(ACC.OBJECT_CLASS_TERM, ccAccNode.getObjectClassTerm())
+                .set(ACC.OAGIS_COMPONENT_TYPE, ccAccNode.getOagisComponentType())
+                .set(ASCC.IS_DEPRECATED, (byte) ((ccAccNode.isDeprecated()) ? 1 : 0))
+                .set(ACC.IS_ABSTRACT, (byte) ((ccAccNode.isAbstract()) ? 1 : 0))
+                .set(ACC.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ACC.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(ccAccNode.getAccId())));
     }
 
     public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long id) {
         long userId = sessionService.userId(user);
-        Date timestamp = new Date();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        jdbcTemplate.update("UPDATE `asccp` SET `definition` = :definition, `den` = :den, " +
-                "`is_deprecated` = :deprecated, `reusable_indicator` = :reusable, `property_term` = :property_term " +
-                "WHERE asccp_id = " + id, newSqlParameterSource()
-                .addValue("definition", asccpNodeDetail.getDefinition())
-                .addValue("property_term", asccpNodeDetail.getPropertyTerm())
-                .addValue("den", asccpNodeDetail.getDen())
-                .addValue("deprecated", asccpNodeDetail.isDeprecated())
-                .addValue("reusable", asccpNodeDetail.isReusable())
-                .addValue("last_updated_by", userId)
-                .addValue("last_update_timestamp", timestamp));
+        dslContext.update(ASCCP)
+                .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
+                .set(ASCCP.DEN, asccpNodeDetail.getDen())
+                .set(ASCCP.IS_DEPRECATED, (byte) ((asccpNodeDetail.isDeprecated()) ? 1 : 0))
+                .set(ASCCP.REUSABLE_INDICATOR, (byte) ((asccpNodeDetail.isReusable()) ? 1 : 0))
+                .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
+                .set(ASCCP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(id)));
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, Long releaseId) {
@@ -699,7 +688,6 @@ public class CcNodeRepository {
     public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
         CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
 
-
         long asccId = asccpNode.getAsccId();
         long asccIdOrigin = asccId +1;
         if (asccId > 0L) {
@@ -713,14 +701,15 @@ public class CcNodeRepository {
                     Tables.ASCC.DEFINITION).from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
-            MapSqlParameterSource parameterSource = newSqlParameterSource()
-                    .addValue("ascc_id", asccId);
-                jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
-                        "FROM ascc " +
-                        "WHERE ascc_id = " + asccIdOrigin, parameterSource, rs -> {
-                    ascc.setCardinalityOriginMin(Integer.parseInt(rs.getString("ascc.cardinality_min")));
-                    ascc.setCardinalityOriginMax(Integer.parseInt(rs.getString("ascc.cardinality_max")));
-                });
+
+            CcAsccpNodeDetail.Ascc asccOrigin = dslContext.select(
+                    Tables.ASCC.CARDINALITY_MIN, Tables.ASCC.CARDINALITY_MAX)
+                    .from(Tables.ASCC)
+                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccIdOrigin)))
+                    .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
+
+            ascc.setCardinalityOriginMax(asccOrigin.getCardinalityOriginMax());
+            ascc.setCardinalityOriginMin(asccOrigin.getCardinalityOriginMin());
             asccpNodeDetail.setAscc(ascc);
         }
 
@@ -761,7 +750,7 @@ public class CcNodeRepository {
         CcBccpNodeDetail bccpNodeDetail = new CcBccpNodeDetail();
 
         long bccId = bccpNode.getBccId();
-        long bccIdOrigin = bccId +1;
+        long bccIdOrigin = bccId + 1;
         if (bccId > 0L) {
             CcBccpNodeDetail.Bcc bcc = dslContext.select(
                     Tables.BCC.BCC_ID,
@@ -776,14 +765,15 @@ public class CcNodeRepository {
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
 
-            MapSqlParameterSource parameterSource = newSqlParameterSource()
-                    .addValue("bcc_id", bccId);
-            jdbcTemplate.query("SELECT cardinality_min, cardinality_max " +
-                    "FROM bcc " +
-                    "WHERE bcc_id = " + bccIdOrigin, parameterSource, rs -> {
-                bcc.setCardinalityOriginMin(Integer.parseInt(rs.getString("cardinality_min")));
-                bcc.setCardinalityOriginMax(Integer.parseInt(rs.getString("cardinality_max")));
-            });
+            CcBccpNodeDetail.Bcc bccOrigin = dslContext.select(
+                    Tables.BCC.CARDINALITY_MIN, Tables.BCC.CARDINALITY_MAX)
+                    .from(Tables.BCC)
+                    .where(BCC.BCC_ID.eq(ULong.valueOf(bccIdOrigin)))
+                    .fetchOneInto(CcBccpNodeDetail.Bcc.class);
+
+            bcc.setCardinalityOriginMax(bccOrigin.getCardinalityOriginMax());
+            bcc.setCardinalityOriginMin(bccOrigin.getCardinalityOriginMin());
+
             bccpNodeDetail.setBcc(bcc);
         }
 
