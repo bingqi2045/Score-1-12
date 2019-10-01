@@ -20,7 +20,6 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 

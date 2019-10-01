@@ -31,8 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -86,7 +85,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     public BieEditAbieNode getRootNode(long topLevelAbieId) {
-        Field<Object> type = field("abie");
         BieEditAbieNode rootNode = dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 TOP_LEVEL_ABIE.RELEASE_ID,
@@ -98,11 +96,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 ASBIEP.BASED_ASCCP_ID.as("asccp_id"),
                 ABIE.ABIE_ID,
                 ABIE.BASED_ACC_ID.as("acc_id"),
-                type)
+                inline("abie").as("type"))
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIE.BASED_ASCC_ID))
+                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchOneInto(BieEditAbieNode.class);
         rootNode.setHasChild(hasChild(rootNode));
@@ -114,7 +112,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         long fromAccId;
 
         long topLevelAbieId = abieNode.getTopLevelAbieId();
-        System.out.println(topLevelAbieId);
         long releaseId = abieNode.getReleaseId();
         BieEditAcc acc = null;
         if (topLevelAbieId > 0L) {
