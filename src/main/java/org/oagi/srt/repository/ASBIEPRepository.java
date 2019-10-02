@@ -1,41 +1,44 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.ASBIEP;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class ASBIEPRepository implements SrtRepository<ASBIEP> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    private String GET_ASBIEP_STATEMENT = "SELECT `asbiep_id`,`guid`,`based_asccp_id`,`role_of_abie_id`," +
-            "`definition`,`remark`,`biz_term`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
-            "`owner_top_level_abie_id` FROM `asbiep`";
+    private DSLContext dslContext;
 
     @Override
     public List<ASBIEP> findAll() {
-        return jdbcTemplate.queryForList(GET_ASBIEP_STATEMENT, ASBIEP.class);
+        return dslContext.select(Tables.ASBIEP.BASED_ASCCP_ID, Tables.ASBIEP.ASBIEP_ID, Tables.ASBIEP.ROLE_OF_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, Tables.ASBIEP.LAST_UPDATED_BY, Tables.ASBIEP.BIZ_TERM,
+                Tables.ASBIEP.CREATED_BY, Tables.ASBIEP.REMARK, Tables.ASBIEP.GUID, Tables.ASBIEP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASBIEP.CREATION_TIMESTAMP, Tables.ASBIEP.DEFINITION).from(Tables.ASBIEP).fetchInto(ASBIEP.class);
     }
 
     @Override
     public ASBIEP findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_ASBIEP_STATEMENT)
-                .append(" WHERE `asbiep_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), ASBIEP.class);
+        return dslContext.select(Tables.ASBIEP.BASED_ASCCP_ID, Tables.ASBIEP.ASBIEP_ID, Tables.ASBIEP.ROLE_OF_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, Tables.ASBIEP.LAST_UPDATED_BY, Tables.ASBIEP.BIZ_TERM,
+                Tables.ASBIEP.CREATED_BY, Tables.ASBIEP.REMARK, Tables.ASBIEP.GUID, Tables.ASBIEP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASBIEP.CREATION_TIMESTAMP, Tables.ASBIEP.DEFINITION).from(Tables.ASBIEP)
+                .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(id))).fetchOneInto(ASBIEP.class);
     }
 
     public List<ASBIEP> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return jdbcTemplate.queryForList(new StringBuilder(GET_ASBIEP_STATEMENT)
-                .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id").toString(), newSqlParameterSource()
-                .addValue("owner_top_level_abie_id", ownerTopLevelAbieId), ASBIEP.class);
+        return dslContext.select(Tables.ASBIEP.BASED_ASCCP_ID, Tables.ASBIEP.ASBIEP_ID, Tables.ASBIEP.ROLE_OF_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, Tables.ASBIEP.LAST_UPDATED_BY, Tables.ASBIEP.BIZ_TERM,
+                Tables.ASBIEP.CREATED_BY, Tables.ASBIEP.REMARK, Tables.ASBIEP.GUID, Tables.ASBIEP.LAST_UPDATE_TIMESTAMP,
+                Tables.ASBIEP.CREATION_TIMESTAMP, Tables.ASBIEP.DEFINITION).from(Tables.ASBIEP)
+                .where(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(ASBIEP.class);
     }
 
 }

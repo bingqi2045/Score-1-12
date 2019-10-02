@@ -112,8 +112,7 @@ public class CcNodeService {
     }
 
     @Transactional
-    public CcEditUpdateResponse updateDetails(User user, CcEditUpdateRequest request ) {
-        System.out.println(request);
+    public CcEditUpdateResponse updateDetails(User user, CcEditUpdateRequest request) {
         long accId = request.getAccId();
 
         CcEditUpdateResponse response = new CcEditUpdateResponse();

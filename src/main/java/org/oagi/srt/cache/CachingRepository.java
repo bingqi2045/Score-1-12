@@ -1,5 +1,8 @@
 package org.oagi.srt.cache;
 
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -9,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,7 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
@@ -74,8 +76,8 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
 
     private String getChecksumFromDatabase(long id) {
         StringBuilder query = new StringBuilder(getChecksumByIdQuery());
-        return jdbcTemplate.queryForObject(query.toString(),
-                new MapSqlParameterSource().addValue("id", id), String.class);
+        Record record = dslContext.fetchOne(query.toString(), id);
+        return record.getValue("checksum").toString();
     }
 
     private String checksumFromRedis(RedisConnection connection, long id) {

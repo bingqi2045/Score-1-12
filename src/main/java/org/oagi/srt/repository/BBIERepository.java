@@ -1,44 +1,104 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BBIE;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class BBIERepository implements SrtRepository<BBIE> {
 
     @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
-
-    private String GET_BBIE_STATEMENT = "SELECT `bbie_id`,`guid`,`based_bcc_id`,`from_abie_id`,`to_bbiep_id`," +
-            "`bdt_pri_restri_id`,`code_list_id`,`agency_id_list_id`,`cardinality_min`,`cardinality_max`,`default_value`," +
-            "`is_nillable` as nillable,`fixed_value`,`is_null` as nill,`definition`,`remark`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
-            "`seq_key`,`is_used` as used,`owner_top_level_abie_id` FROM `bbie`";
+    private DSLContext dslContext;
 
     @Override
     public List<BBIE> findAll() {
-        return jdbcTemplate.queryForList(GET_BBIE_STATEMENT, BBIE.class);
+        return dslContext.select(Tables.BBIE.BBIE_ID,
+                Tables.BBIE.GUID,
+                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.FROM_ABIE_ID,
+                Tables.BBIE.TO_BBIEP_ID,
+                Tables.BBIE.BDT_PRI_RESTRI_ID,
+                Tables.BBIE.CODE_LIST_ID,
+                Tables.BBIE.AGENCY_ID_LIST_ID,
+                Tables.BBIE.CARDINALITY_MAX,
+                Tables.BBIE.CARDINALITY_MIN,
+                Tables.BBIE.DEFAULT_VALUE,
+                Tables.BBIE.IS_NILLABLE.as("nillable"),
+                Tables.BBIE.FIXED_VALUE,
+                Tables.BBIE.IS_NULL.as("nill"),
+                Tables.BBIE.DEFINITION,
+                Tables.BBIE.REMARK,
+                Tables.BBIE.CREATED_BY,
+                Tables.BBIE.CREATION_TIMESTAMP,
+                Tables.BBIE.LAST_UPDATED_BY,
+                Tables.BBIE.LAST_UPDATE_TIMESTAMP,
+                Tables.BBIE.SEQ_KEY,
+                Tables.BBIE.IS_USED.as("used"),
+                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID)
+                .from(Tables.BBIE).fetchInto(BBIE.class);
     }
 
     @Override
     public BBIE findById(long id) {
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_BBIE_STATEMENT)
-                .append(" WHERE `bbie_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), BBIE.class);
+        return dslContext.select(Tables.BBIE.BBIE_ID,
+                Tables.BBIE.GUID,
+                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.FROM_ABIE_ID,
+                Tables.BBIE.TO_BBIEP_ID,
+                Tables.BBIE.BDT_PRI_RESTRI_ID,
+                Tables.BBIE.CODE_LIST_ID,
+                Tables.BBIE.AGENCY_ID_LIST_ID,
+                Tables.BBIE.CARDINALITY_MAX,
+                Tables.BBIE.CARDINALITY_MIN,
+                Tables.BBIE.DEFAULT_VALUE,
+                Tables.BBIE.IS_NILLABLE.as("nillable"),
+                Tables.BBIE.FIXED_VALUE,
+                Tables.BBIE.IS_NULL.as("nill"),
+                Tables.BBIE.DEFINITION,
+                Tables.BBIE.REMARK,
+                Tables.BBIE.CREATED_BY,
+                Tables.BBIE.CREATION_TIMESTAMP,
+                Tables.BBIE.LAST_UPDATED_BY,
+                Tables.BBIE.LAST_UPDATE_TIMESTAMP,
+                Tables.BBIE.SEQ_KEY,
+                Tables.BBIE.IS_USED.as("used"),
+                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID)
+                .from(Tables.BBIE).where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(id))).fetchOneInto(BBIE.class);
     }
 
     public List<BBIE> findByOwnerTopLevelAbieIdAndUsed(long ownerTopLevelAbieId, boolean used) {
-        return jdbcTemplate.queryForList(new StringBuilder(GET_BBIE_STATEMENT)
-                        .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id AND `is_used` = :used").toString(),
-                newSqlParameterSource()
-                        .addValue("owner_top_level_abie_id", ownerTopLevelAbieId)
-                        .addValue("used", used), BBIE.class);
+        return dslContext.select(Tables.BBIE.BBIE_ID,
+                Tables.BBIE.GUID,
+                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.FROM_ABIE_ID,
+                Tables.BBIE.TO_BBIEP_ID,
+                Tables.BBIE.BDT_PRI_RESTRI_ID,
+                Tables.BBIE.CODE_LIST_ID,
+                Tables.BBIE.AGENCY_ID_LIST_ID,
+                Tables.BBIE.CARDINALITY_MAX,
+                Tables.BBIE.CARDINALITY_MIN,
+                Tables.BBIE.DEFAULT_VALUE,
+                Tables.BBIE.IS_NILLABLE.as("nillable"),
+                Tables.BBIE.FIXED_VALUE,
+                Tables.BBIE.IS_NULL.as("nill"),
+                Tables.BBIE.DEFINITION,
+                Tables.BBIE.REMARK,
+                Tables.BBIE.CREATED_BY,
+                Tables.BBIE.CREATION_TIMESTAMP,
+                Tables.BBIE.LAST_UPDATED_BY,
+                Tables.BBIE.LAST_UPDATE_TIMESTAMP,
+                Tables.BBIE.SEQ_KEY,
+                Tables.BBIE.IS_USED.as("used"),
+                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID)
+                .from(Tables.BBIE)
+                .where(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)),
+                        Tables.BBIE.IS_USED.eq((byte) (used ? 1 : 0)))
+                .fetchInto(BBIE.class);
     }
 
 }
