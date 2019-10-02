@@ -27,5 +27,5 @@ public class CtxCategoryRepository implements SrtRepository<ContextCategory> {
                 .from(Tables.CTX_CATEGORY).where(Tables.CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(ContextCategory.class);
     }
-    
+
 }

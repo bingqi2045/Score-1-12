@@ -43,7 +43,7 @@ public class SettingsService {
 
     @Transactional
     public void updatePasswordAccount(UpdatePasswordRequest request) {
-        if (!request.getNewPassword().equals("")){
+        if (!request.getNewPassword().equals("")) {
             String newPassword = validate(request.getNewPassword());
             updateFromLogin(request.getAccount(), newPassword);
         } else {

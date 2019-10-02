@@ -18,12 +18,12 @@ public class XbtRepository implements SrtRepository<Xbt> {
     @Override
     public List<Xbt> findAll() {
         return dslContext.select(Tables.XBT.XBT_ID, Tables.XBT.CREATED_BY, Tables.XBT.CURRENT_XBT_ID,
-                    Tables.XBT.LAST_UPDATED_BY, Tables.XBT.MODULE_ID, Tables.XBT.NAME, Tables.XBT.OWNER_USER_ID,
-                    Tables.XBT.RELEASE_ID, Tables.XBT.SUBTYPE_OF_XBT_ID, Tables.XBT.BUILTIN_TYPE,
-                    Tables.XBT.CREATION_TIMESTAMP, Tables.XBT.IS_DEPRECATED, Tables.XBT.JBT_DRAFT05_MAP,
-                    Tables.XBT.LAST_UPDATE_TIMESTAMP, Tables.XBT.REVISION_ACTION, Tables.XBT.REVISION_DOC,
-                    Tables.XBT.REVISION_NUM, Tables.XBT.REVISION_TRACKING_NUM, Tables.XBT.SCHEMA_DEFINITION,
-                    Tables.XBT.STATE)
+                Tables.XBT.LAST_UPDATED_BY, Tables.XBT.MODULE_ID, Tables.XBT.NAME, Tables.XBT.OWNER_USER_ID,
+                Tables.XBT.RELEASE_ID, Tables.XBT.SUBTYPE_OF_XBT_ID, Tables.XBT.BUILTIN_TYPE,
+                Tables.XBT.CREATION_TIMESTAMP, Tables.XBT.IS_DEPRECATED, Tables.XBT.JBT_DRAFT05_MAP,
+                Tables.XBT.LAST_UPDATE_TIMESTAMP, Tables.XBT.REVISION_ACTION, Tables.XBT.REVISION_DOC,
+                Tables.XBT.REVISION_NUM, Tables.XBT.REVISION_TRACKING_NUM, Tables.XBT.SCHEMA_DEFINITION,
+                Tables.XBT.STATE)
                 .from(Tables.XBT)
                 .fetchInto(Xbt.class);
     }

@@ -6,6 +6,9 @@ import lombok.Data;
 public class CcBccpNodeDetail implements CcNodeDetail {
 
     private String type = "bccp";
+    private Bcc bcc;
+    private Bccp bccp;
+    private Bdt bdt;
 
     @Data
     public static class Bcc {
@@ -44,8 +47,4 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String den;
         private String definition;
     }
-
-    private Bcc bcc;
-    private Bccp bccp;
-    private Bdt bdt;
 }

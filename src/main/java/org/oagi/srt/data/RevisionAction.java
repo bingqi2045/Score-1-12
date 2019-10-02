@@ -12,10 +12,6 @@ public enum RevisionAction {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static RevisionAction valueOf(int value) {
         for (RevisionAction state : RevisionAction.values()) {
             if (state.getValue() == value) {
@@ -23,5 +19,9 @@ public enum RevisionAction {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public int getValue() {
+        return value;
     }
 }

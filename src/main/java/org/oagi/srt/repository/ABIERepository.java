@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public class ABIERepository implements SrtRepository<ABIE> {
-    
+
     @Autowired
     private DSLContext dslContext;
 

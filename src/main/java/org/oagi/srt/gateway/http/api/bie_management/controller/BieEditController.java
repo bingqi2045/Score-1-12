@@ -95,7 +95,7 @@ public class BieEditController {
                                              @RequestParam("data") String data,
                                              @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditAbieNode abieNode = convertValue(data, BieEditAbieNode.class);
-        return service.getDescendants(user, abieNode, (hideUnused != null && hideUnused) ? true : false);
+        return service.getDescendants(user, abieNode, hideUnused != null && hideUnused);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/abie", method = RequestMethod.GET,
@@ -112,7 +112,7 @@ public class BieEditController {
                                                @RequestParam("data") String data,
                                                @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditAsbiepNode asbiepNode = convertValue(data, BieEditAsbiepNode.class);
-        return service.getDescendants(user, asbiepNode, (hideUnused != null && hideUnused) ? true : false);
+        return service.getDescendants(user, asbiepNode, hideUnused != null && hideUnused);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/asbiep", method = RequestMethod.GET,
@@ -129,7 +129,7 @@ public class BieEditController {
                                               @RequestParam("data") String data,
                                               @RequestParam(value = "hideUnused", required = false) Boolean hideUnused) {
         BieEditBbiepNode bbiepNode = convertValue(data, BieEditBbiepNode.class);
-        return service.getDescendants(user, bbiepNode, (hideUnused != null && hideUnused) ? true : false);
+        return service.getDescendants(user, bbiepNode, hideUnused != null && hideUnused);
     }
 
     @RequestMapping(value = "/profile_bie/node/detail/bbiep", method = RequestMethod.GET,

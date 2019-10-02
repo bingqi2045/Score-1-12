@@ -59,6 +59,7 @@ public class CcNodeRepository {
                 Tables.ACC.CURRENT_ACC_ID
         ).from(Tables.ACC);
     }
+
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = getSelectJoinStepForAccNode()
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
@@ -110,10 +111,10 @@ public class CcNodeRepository {
                 .from(ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                 .fetchOneInto(String.class);
 
-        long to_asccpID =  dslContext.select(ASCC.TO_ASCCP_ID)
+        long to_asccpID = dslContext.select(ASCC.TO_ASCCP_ID)
                 .from(ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                 .fetchOneInto(long.class);
-       // ULong releaseID = ULong.valueOf(releaseId);
+        // ULong releaseID = ULong.valueOf(releaseId);
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -288,42 +289,6 @@ public class CcNodeRepository {
         }
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class AsccForAccHasChild extends TrackableImpl {
-        private long asccId;
-        private Long currentAsccId;
-        private String guid;
-
-        @Override
-        public long getId() {
-            return asccId;
-        }
-
-        @Override
-        public Long getCurrentId() {
-            return currentAsccId;
-        }
-    }
-
-    @Data
-    @EqualsAndHashCode(callSuper = true)
-    public static class BccForAccHasChild extends TrackableImpl {
-        private long bccId;
-        private Long currentBccId;
-        private String guid;
-
-        @Override
-        public long getId() {
-            return bccId;
-        }
-
-        @Override
-        public Long getCurrentId() {
-            return currentBccId;
-        }
-    }
-
     public Record1<ULong> getLastAsccpId() {
         Record1<ULong> maxId = dslContext.select(
                 max(Tables.ASCCP.ASCCP_ID)
@@ -396,7 +361,7 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public void createAsccp (User user, CcAsccpNode ccAsccpNode) {
+    public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
         long roleOfAccId = ccAsccpNode.getRoleOfAccId();
 
         String asccpDen = dslContext.select(ACC.DEN)
@@ -689,7 +654,7 @@ public class CcNodeRepository {
         CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
 
         long asccId = asccpNode.getAsccId();
-        long asccIdOrigin = asccId +1;
+        long asccIdOrigin = asccId + 1;
         if (asccId > 0L) {
             CcAsccpNodeDetail.Ascc ascc = dslContext.select(
                     Tables.ASCC.ASCC_ID,
@@ -730,7 +695,7 @@ public class CcNodeRepository {
         return asccpNodeDetail;
     }
 
-    public CcAsccpNodeDetail.Asccp getAsccp (long asccpId) {
+    public CcAsccpNodeDetail.Asccp getAsccp(long asccpId) {
 
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
@@ -819,6 +784,42 @@ public class CcNodeRepository {
                 Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
                 .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class AsccForAccHasChild extends TrackableImpl {
+        private long asccId;
+        private Long currentAsccId;
+        private String guid;
+
+        @Override
+        public long getId() {
+            return asccId;
+        }
+
+        @Override
+        public Long getCurrentId() {
+            return currentAsccId;
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class BccForAccHasChild extends TrackableImpl {
+        private long bccId;
+        private Long currentBccId;
+        private String guid;
+
+        @Override
+        public long getId() {
+            return bccId;
+        }
+
+        @Override
+        public Long getCurrentId() {
+            return currentBccId;
+        }
     }
 
 }

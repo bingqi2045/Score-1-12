@@ -18,9 +18,9 @@ public class CodeListValueRepository implements SrtRepository<CodeListValue> {
     @Override
     public List<CodeListValue> findAll() {
         return dslContext.select(Tables.CODE_LIST_VALUE.CODE_LIST_ID, Tables.CODE_LIST_VALUE.CODE_LIST_VALUE_ID,
-                    Tables.CODE_LIST_VALUE.LOCKED_INDICATOR, Tables.CODE_LIST_VALUE.DEFINITION,
-                    Tables.CODE_LIST_VALUE.DEFINITION_SOURCE, Tables.CODE_LIST_VALUE.EXTENSION_INDICATOR,
-                    Tables.CODE_LIST_VALUE.NAME, Tables.CODE_LIST_VALUE.USED_INDICATOR, Tables.CODE_LIST_VALUE.VALUE)
+                Tables.CODE_LIST_VALUE.LOCKED_INDICATOR, Tables.CODE_LIST_VALUE.DEFINITION,
+                Tables.CODE_LIST_VALUE.DEFINITION_SOURCE, Tables.CODE_LIST_VALUE.EXTENSION_INDICATOR,
+                Tables.CODE_LIST_VALUE.NAME, Tables.CODE_LIST_VALUE.USED_INDICATOR, Tables.CODE_LIST_VALUE.VALUE)
                 .from(Tables.CODE_LIST_VALUE).fetchInto(CodeListValue.class);
     }
 

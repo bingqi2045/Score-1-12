@@ -115,7 +115,7 @@ public class ContextSchemeService {
 
         SelectWithTiesAfterOffsetStep<Record12<
                 ULong, String, String, ULong, String,
-                String,ULong, String, String, String, Timestamp,
+                String, ULong, String, String, String, Timestamp,
                 String>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)

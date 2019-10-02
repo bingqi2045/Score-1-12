@@ -35,11 +35,11 @@ public class NamespaceService {
         long userId = sessionService.userId(user);
 
         List<NamespaceList> namespaceLists = dslContext.select(Tables.NAMESPACE.fields())
-            .select(Tables.APP_USER.LOGIN_ID.as("owner"))
-            .from(Tables.NAMESPACE)
-            .join(Tables.APP_USER)
-            .on(Tables.NAMESPACE.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID))
-            .fetchInto(NamespaceList.class);
+                .select(Tables.APP_USER.LOGIN_ID.as("owner"))
+                .from(Tables.NAMESPACE)
+                .join(Tables.APP_USER)
+                .on(Tables.NAMESPACE.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID))
+                .fetchInto(NamespaceList.class);
         namespaceLists.stream().forEach(namespaceList -> {
             namespaceList.setCanEdit(namespaceList.getOwnerUserId() == userId);
         });
@@ -81,7 +81,7 @@ public class NamespaceService {
                 Tables.NAMESPACE.IS_STD_NMSP,
                 Tables.NAMESPACE.LAST_UPDATE_TIMESTAMP,
                 Tables.NAMESPACE.PREFIX).values(namespace.getUri(), ULong.valueOf(userId), ULong.valueOf(userId),
-                ULong.valueOf(userId), timestamp, namespace.getDescription(),(byte) 0, timestamp,
+                ULong.valueOf(userId), timestamp, namespace.getDescription(), (byte) 0, timestamp,
                 namespace.getPrefix()).execute();
     }
 

@@ -10,11 +10,6 @@ import java.util.Date;
 public class DT implements CoreComponent {
 
     private long dtId;
-    @Override
-    public long getId() {
-        return getDtId();
-    }
-
     private String guid;
     private int type;
     private String versionNum;
@@ -29,27 +24,28 @@ public class DT implements CoreComponent {
     private String contentComponentDefinition;
     private String revisionDoc;
     private int state;
-
     private Long moduleId;
     private String module;
-
     private long createdBy;
     private long ownerUserId;
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-
     private int revisionNum;
     private int revisionTrackingNum;
     private Integer revisionAction;
     private Long releaseId;
-
     private Long currentBdtId;
+    private boolean deprecated;
+
+    @Override
+    public long getId() {
+        return getDtId();
+    }
+
     @Override
     public Long getCurrentId() {
         return currentBdtId;
     }
-
-    private boolean deprecated;
 
 }

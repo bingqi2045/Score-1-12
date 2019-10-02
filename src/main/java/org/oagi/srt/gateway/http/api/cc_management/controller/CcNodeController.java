@@ -181,16 +181,16 @@ public class CcNodeController {
 
         switch (actionRequest.getAction()) {
             case "append":
-                        service.appendAscc(user, accId, releaseId, actionRequest.getId());
-                        break;
+                service.appendAscc(user, accId, releaseId, actionRequest.getId());
+                break;
 
             case "discard":
-                        service.discardAscc(user, accId, releaseId, actionRequest.getId());
-                        break;
+                service.discardAscc(user, accId, releaseId, actionRequest.getId());
+                break;
         }
 
         return ResponseEntity.accepted().build();
-        }
+    }
 
     @RequestMapping(value = "/core_component/asccp/create", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

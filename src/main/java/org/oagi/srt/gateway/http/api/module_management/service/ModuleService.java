@@ -5,7 +5,6 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.gateway.http.api.module_management.data.*;
-import org.oagi.srt.gateway.http.api.module_management.data.Module;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -37,14 +36,14 @@ public class ModuleService {
         AppUser U1 = Tables.APP_USER;
         AppUser U2 = Tables.APP_USER;
         List<ModuleList> moduleLists = dslContext.select(
-                    Tables.MODULE.MODULE_ID,
-                    Tables.MODULE.MODULE_,
-                    Tables.MODULE.OWNER_USER_ID,
-                    Tables.MODULE.LAST_UPDATE_TIMESTAMP,
-                    Tables.NAMESPACE.URI.as("namespace"),
-                    Tables.RELEASE.RELEASE_NUM.as("since_release"),
-                    U1.LOGIN_ID.as("owner"),
-                    U2.LOGIN_ID.as("last_updated_by"))
+                Tables.MODULE.MODULE_ID,
+                Tables.MODULE.MODULE_,
+                Tables.MODULE.OWNER_USER_ID,
+                Tables.MODULE.LAST_UPDATE_TIMESTAMP,
+                Tables.NAMESPACE.URI.as("namespace"),
+                Tables.RELEASE.RELEASE_NUM.as("since_release"),
+                U1.LOGIN_ID.as("owner"),
+                U2.LOGIN_ID.as("last_updated_by"))
                 .from(Tables.MODULE)
                 .join(Tables.NAMESPACE)
                 .on(Tables.MODULE.NAMESPACE_ID.eq(Tables.NAMESPACE.NAMESPACE_ID))
@@ -67,10 +66,10 @@ public class ModuleService {
 
     public Module getModule(User user, long moduleId) {
         Module module = dslContext.select(
-                    Tables.MODULE.MODULE_ID,
-                    Tables.MODULE.MODULE_,
-                    Tables.MODULE.NAMESPACE_ID,
-                    Tables.MODULE.LAST_UPDATE_TIMESTAMP)
+                Tables.MODULE.MODULE_ID,
+                Tables.MODULE.MODULE_,
+                Tables.MODULE.NAMESPACE_ID,
+                Tables.MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(Tables.MODULE)
                 .where(Tables.MODULE.MODULE_ID.eq(ULong.valueOf(moduleId)))
                 .fetchOneInto(Module.class);
@@ -83,22 +82,22 @@ public class ModuleService {
 
         moduleDependencies.addAll(
                 dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
-                            inline(ModuleDependencyType.Include.name()).as("dependency_type"),
-                            Tables.MODULE_DEP.DEPENDED_MODULE_ID.as("related_module_id"))
-                    .from(Tables.MODULE_DEP)
-                    .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
-                            Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Include.getValue()))
-                    .fetchInto(ModuleDependency.class)
+                        inline(ModuleDependencyType.Include.name()).as("dependency_type"),
+                        Tables.MODULE_DEP.DEPENDED_MODULE_ID.as("related_module_id"))
+                        .from(Tables.MODULE_DEP)
+                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
+                                Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Include.getValue()))
+                        .fetchInto(ModuleDependency.class)
         );
 
         moduleDependencies.addAll(
                 dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
                         inline(ModuleDependencyType.Import.name()).as("dependency_type"),
                         Tables.MODULE_DEP.DEPENDING_MODULE_ID.as("related_module_id"))
-                    .from(Tables.MODULE_DEP)
-                    .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
-                            Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Import.getValue()))
-                    .fetchInto(ModuleDependency.class)
+                        .from(Tables.MODULE_DEP)
+                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
+                                Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Import.getValue()))
+                        .fetchInto(ModuleDependency.class)
         );
 
         return moduleDependencies;

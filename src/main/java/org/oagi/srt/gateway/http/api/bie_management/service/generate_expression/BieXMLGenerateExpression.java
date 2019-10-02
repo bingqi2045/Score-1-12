@@ -31,11 +31,9 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public class BieXMLGenerateExpression implements BieGenerateExpression, InitializingBean {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final String OAGI_NS = "http://www.openapplications.org/oagis/10";
     private static org.jdom2.Namespace XSD_NAMESPACE = org.jdom2.Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private Document document;
     private Element schemaNode;
     private Element rootElementNode;
@@ -281,603 +279,6 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             Element ccts_ClassificationSchemeDefinition = new Element("ccts_Definition", OAGI_NS);
             ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeDefinition);
             ccts_ClassificationSchemeDefinition.setText(contextScheme.getDescription());
-        }
-    }
-
-    private class Definition {
-        private String definition;
-        private String definitionSource;
-
-        public Definition(String definition) {
-            this.definition = definition;
-        }
-
-        public Definition(String definition, String definitionSource) {
-            this.definition = definition;
-            this.definitionSource = definitionSource;
-        }
-
-        public String getDefinition() {
-            return definition;
-        }
-
-        public String getDefinitionSource() {
-            return definitionSource;
-        }
-    }
-
-    private interface BIEMetaData {
-        String getEntityTypeCode();
-        String getDictionaryEntryName();
-        Collection<Definition> getDefinitions();
-        String getObjectClassTermName();
-        String getPropertyTermName();
-        String getRepresentationTermName();
-        String getDataTypeTermName();
-        String getBusinessTerm();
-    }
-
-    private interface SRTMetaData {
-        String getReleaseNumber();
-        String getVersion();
-        String getStateCode();
-        String getStatus();
-        String getRemark();
-        String getCreatedUserName();
-        String getLastUpdatedUserName();
-        String getOwnerUserName();
-        Date getCreationTimestamp();
-        Date getLastUpdatedTimestamp();
-    }
-
-    private interface CCMetaData {
-        String ccType();
-        String getGuid();
-        int getRevisionNumber();
-        Collection<Definition> getCoreComponentDefinitions();
-    }
-
-    private abstract class AbstractBIEDocumentation implements BIEMetaData, SRTMetaData, CCMetaData {
-        @Override
-        public String getDictionaryEntryName() {
-            return null;
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Collections.emptyList();
-        }
-        @Override
-        public String getObjectClassTermName() {
-            return null;
-        }
-        @Override
-        public String getPropertyTermName() {
-            return null;
-        }
-        @Override
-        public String getRepresentationTermName() {
-            return null;
-        }
-        @Override
-        public String getDataTypeTermName() {
-            return null;
-        }
-        @Override
-        public String getBusinessTerm() {
-            return null;
-        }
-
-        @Override
-        public String getReleaseNumber() {
-            return null;
-        }
-        @Override
-        public String getVersion() {
-            return null;
-        }
-        @Override
-        public String getStateCode() {
-            return null;
-        }
-        @Override
-        public String getStatus() {
-            return null;
-        }
-        @Override
-        public String getRemark() {
-            return null;
-        }
-        @Override
-        public String getCreatedUserName() {
-            return null;
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return null;
-        }
-        @Override
-        public String getOwnerUserName() {
-            return null;
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return null;
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return null;
-        }
-
-        @Override
-        public String getGuid() {
-            return null;
-        }
-        @Override
-        public int getRevisionNumber() {
-            return 0;
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Collections.emptyList();
-        }
-    }
-
-    private class ABIEDocumentation extends AbstractBIEDocumentation {
-        private final ABIE abie;
-        private final ACC acc;
-
-        public ABIEDocumentation(
-                ABIE abie,
-                ACC acc) {
-            this.abie = abie;
-            this.acc = acc;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "ABIE";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return acc.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(abie.getDefinition()));
-        }
-        @Override
-        public String getObjectClassTermName() {
-            return acc.getObjectClassTerm();
-        }
-        @Override
-        public String getVersion() {
-            return abie.getVersion();
-        }
-        @Override
-        public String getStatus() {
-            return abie.getStatus();
-        }
-        @Override
-        public String getBusinessTerm() {
-            return abie.getBizTerm();
-        }
-        @Override
-        public String getRemark() {
-            return abie.getRemark();
-        }
-        @Override
-        public String getCreatedUserName() {
-            return generationContext.findUserName(abie.getCreatedBy());
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return generationContext.findUserName(abie.getLastUpdatedBy());
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return abie.getCreationTimestamp();
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return abie.getLastUpdateTimestamp();
-        }
-
-        @Override
-        public String ccType() {
-            return "ACC";
-        }
-        @Override
-        public String getGuid() {
-            return acc.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return acc.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(acc.getDefinition(), acc.getDefinitionSource()));
-        }
-    }
-
-    private class ASBIEDocumentation extends AbstractBIEDocumentation {
-        private final ASBIE asbie;
-        private final ASCC ascc;
-        public ASBIEDocumentation(
-                ASBIE asbie,
-                ASCC ascc) {
-            this.asbie = asbie;
-            this.ascc = ascc;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "ASBIE";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return ascc.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(asbie.getDefinition()));
-        }
-
-        @Override
-        public String getRemark() {
-            return asbie.getRemark();
-        }
-        @Override
-        public String getCreatedUserName() {
-            return generationContext.findUserName(asbie.getCreatedBy());
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return generationContext.findUserName(asbie.getLastUpdatedBy());
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return asbie.getCreationTimestamp();
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return asbie.getLastUpdateTimestamp();
-        }
-
-        @Override
-        public String ccType() {
-            return "ASCC";
-        }
-        @Override
-        public String getGuid() {
-            return ascc.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return ascc.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(ascc.getDefinition(), ascc.getDefinitionSource()));
-        }
-    }
-
-    private class ASBIEPDocumentation extends AbstractBIEDocumentation {
-        private final ASBIEP asbiep;
-        private final ASCCP asccp;
-        private TopLevelAbie topLevelAbie;
-
-        public ASBIEPDocumentation(
-                ASBIEP asbiep,
-                ASCCP asccp) {
-            this(asbiep, asccp, null);
-        }
-
-        public ASBIEPDocumentation(
-                ASBIEP asbiep,
-                ASCCP asccp,
-                TopLevelAbie topLevelAbie) {
-            this.asbiep = asbiep;
-            this.asccp = asccp;
-            this.topLevelAbie = topLevelAbie;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "ASBIEP";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return asccp.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(asbiep.getDefinition()));
-        }
-        @Override
-        public String getPropertyTermName() {
-            return asccp.getPropertyTerm();
-        }
-
-        @Override
-        public String getReleaseNumber() {
-            if (topLevelAbie != null) {
-                return generationContext.findReleaseNumber(topLevelAbie.getReleaseId());
-            }
-            return null;
-        }
-        @Override
-        public String getStateCode() {
-            if (topLevelAbie != null) {
-                return BieState.valueOf(topLevelAbie.getState()).toString();
-            }
-            return null;
-        }
-        @Override
-        public String getOwnerUserName() {
-            if (topLevelAbie != null) {
-                return generationContext.findUserName(topLevelAbie.getOwnerUserId());
-            }
-            return null;
-        }
-
-        @Override
-        public String getRemark() {
-            return asbiep.getRemark();
-        }
-        @Override
-        public String getCreatedUserName() {
-            return generationContext.findUserName(asbiep.getCreatedBy());
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return generationContext.findUserName(asbiep.getLastUpdatedBy());
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return asbiep.getCreationTimestamp();
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return asbiep.getLastUpdateTimestamp();
-        }
-
-        @Override
-        public String ccType() {
-            return "ASCCP";
-        }
-        @Override
-        public String getGuid() {
-            return asccp.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return asccp.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(asccp.getDefinition(), asccp.getDefinitionSource()));
-        }
-    }
-
-    private class BBIEDocumentation extends AbstractBIEDocumentation {
-        private final BBIE bbie;
-        private final BCC bcc;
-        public BBIEDocumentation(
-                BBIE bbie,
-                BCC bcc) {
-            this.bbie = bbie;
-            this.bcc = bcc;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "BBIE";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return bcc.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(bbie.getDefinition()));
-        }
-
-        @Override
-        public String getRemark() {
-            return bbie.getRemark();
-        }
-        @Override
-        public String getCreatedUserName() {
-            return generationContext.findUserName(bbie.getCreatedBy());
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return generationContext.findUserName(bbie.getLastUpdatedBy());
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return bbie.getCreationTimestamp();
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return bbie.getLastUpdateTimestamp();
-        }
-
-        @Override
-        public String ccType() {
-            return "BCC";
-        }
-        @Override
-        public String getGuid() {
-            return bcc.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return bcc.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(bcc.getDefinition(), bcc.getDefinitionSource()));
-        }
-    }
-
-    private class BBIEPDocumentation extends AbstractBIEDocumentation {
-        private final BBIEP bbiep;
-        private final BCCP bccp;
-        public BBIEPDocumentation(
-                BBIEP bbiep,
-                BCCP bccp) {
-            this.bbiep = bbiep;
-            this.bccp = bccp;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "BBIEP";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return bccp.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(bbiep.getDefinition()));
-        }
-        @Override
-        public String getPropertyTermName() {
-            return bccp.getPropertyTerm();
-        }
-        @Override
-        public String getRepresentationTermName() {
-            return bccp.getRepresentationTerm();
-        }
-
-        @Override
-        public String getRemark() {
-            return bbiep.getRemark();
-        }
-        @Override
-        public String getCreatedUserName() {
-            return generationContext.findUserName(bbiep.getCreatedBy());
-        }
-        @Override
-        public String getLastUpdatedUserName() {
-            return generationContext.findUserName(bbiep.getLastUpdatedBy());
-        }
-        @Override
-        public Date getCreationTimestamp() {
-            return bbiep.getCreationTimestamp();
-        }
-        @Override
-        public Date getLastUpdatedTimestamp() {
-            return bbiep.getLastUpdateTimestamp();
-        }
-
-        @Override
-        public String ccType() {
-            return "BCCP";
-        }
-        @Override
-        public String getGuid() {
-            return bccp.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return bccp.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(bccp.getDefinition(), bccp.getDefinitionSource()));
-        }
-    }
-
-    private class BBIESCDocumentation extends AbstractBIEDocumentation {
-        private final BBIESC bbieSc;
-        private final DTSC dtSc;
-        public BBIESCDocumentation(
-                BBIESC bbieSc,
-                DTSC dtSc) {
-            this.bbieSc = bbieSc;
-            this.dtSc = dtSc;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "SC";
-        }
-        @Override
-        public String getDictionaryEntryName() {
-            return dtSc.getDen();
-        }
-        @Override
-        public Collection<Definition> getDefinitions() {
-            return Arrays.asList(new Definition(bbieSc.getDefinition()));
-        }
-        @Override
-        public String getPropertyTermName() {
-            return dtSc.getPropertyTerm();
-        }
-        @Override
-        public String getRepresentationTermName() {
-            return dtSc.getRepresentationTerm();
-        }
-
-        @Override
-        public String getRemark() {
-            return bbieSc.getRemark();
-        }
-
-        @Override
-        public String ccType() {
-            return "BDT_SC";
-        }
-        @Override
-        public String getGuid() {
-            return dtSc.getGuid();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(dtSc.getDefinition(), dtSc.getDefinitionSource()));
-        }
-    }
-
-    private class BusinessDataTypeDocumentation extends AbstractBIEDocumentation {
-        private final DT bdt;
-        public BusinessDataTypeDocumentation(DT bdt) {
-            this.bdt = bdt;
-        }
-
-        @Override
-        public String getEntityTypeCode() {
-            return "BDT";
-        }
-
-        @Override
-        public String getDictionaryEntryName() {
-            return bdt.getDen();
-        }
-
-        @Override
-        public String getDataTypeTermName() {
-            return bdt.getDataTypeTerm();
-        }
-
-        @Override
-        public String ccType() {
-            return "BDT";
-        }
-        @Override
-        public String getGuid() {
-            return bdt.getGuid();
-        }
-        @Override
-        public int getRevisionNumber() {
-            return bdt.getRevisionNum();
-        }
-        @Override
-        public Collection<Definition> getCoreComponentDefinitions() {
-            return Arrays.asList(new Definition(bdt.getDefinition(), bdt.getDefinitionSource()));
         }
     }
 
@@ -1870,6 +1271,708 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         schemaNode.addContent(stNode);
         setProcessedElement(agencyIdList, stNode);
         return stNode;
+    }
+
+    private interface BIEMetaData {
+        String getEntityTypeCode();
+
+        String getDictionaryEntryName();
+
+        Collection<Definition> getDefinitions();
+
+        String getObjectClassTermName();
+
+        String getPropertyTermName();
+
+        String getRepresentationTermName();
+
+        String getDataTypeTermName();
+
+        String getBusinessTerm();
+    }
+
+    private interface SRTMetaData {
+        String getReleaseNumber();
+
+        String getVersion();
+
+        String getStateCode();
+
+        String getStatus();
+
+        String getRemark();
+
+        String getCreatedUserName();
+
+        String getLastUpdatedUserName();
+
+        String getOwnerUserName();
+
+        Date getCreationTimestamp();
+
+        Date getLastUpdatedTimestamp();
+    }
+
+    private interface CCMetaData {
+        String ccType();
+
+        String getGuid();
+
+        int getRevisionNumber();
+
+        Collection<Definition> getCoreComponentDefinitions();
+    }
+
+    private class Definition {
+        private String definition;
+        private String definitionSource;
+
+        public Definition(String definition) {
+            this.definition = definition;
+        }
+
+        public Definition(String definition, String definitionSource) {
+            this.definition = definition;
+            this.definitionSource = definitionSource;
+        }
+
+        public String getDefinition() {
+            return definition;
+        }
+
+        public String getDefinitionSource() {
+            return definitionSource;
+        }
+    }
+
+    private abstract class AbstractBIEDocumentation implements BIEMetaData, SRTMetaData, CCMetaData {
+        @Override
+        public String getDictionaryEntryName() {
+            return null;
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getObjectClassTermName() {
+            return null;
+        }
+
+        @Override
+        public String getPropertyTermName() {
+            return null;
+        }
+
+        @Override
+        public String getRepresentationTermName() {
+            return null;
+        }
+
+        @Override
+        public String getDataTypeTermName() {
+            return null;
+        }
+
+        @Override
+        public String getBusinessTerm() {
+            return null;
+        }
+
+        @Override
+        public String getReleaseNumber() {
+            return null;
+        }
+
+        @Override
+        public String getVersion() {
+            return null;
+        }
+
+        @Override
+        public String getStateCode() {
+            return null;
+        }
+
+        @Override
+        public String getStatus() {
+            return null;
+        }
+
+        @Override
+        public String getRemark() {
+            return null;
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return null;
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return null;
+        }
+
+        @Override
+        public String getOwnerUserName() {
+            return null;
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return null;
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return null;
+        }
+
+        @Override
+        public String getGuid() {
+            return null;
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return 0;
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Collections.emptyList();
+        }
+    }
+
+    private class ABIEDocumentation extends AbstractBIEDocumentation {
+        private final ABIE abie;
+        private final ACC acc;
+
+        public ABIEDocumentation(
+                ABIE abie,
+                ACC acc) {
+            this.abie = abie;
+            this.acc = acc;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "ABIE";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return acc.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(abie.getDefinition()));
+        }
+
+        @Override
+        public String getObjectClassTermName() {
+            return acc.getObjectClassTerm();
+        }
+
+        @Override
+        public String getVersion() {
+            return abie.getVersion();
+        }
+
+        @Override
+        public String getStatus() {
+            return abie.getStatus();
+        }
+
+        @Override
+        public String getBusinessTerm() {
+            return abie.getBizTerm();
+        }
+
+        @Override
+        public String getRemark() {
+            return abie.getRemark();
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return generationContext.findUserName(abie.getCreatedBy());
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return generationContext.findUserName(abie.getLastUpdatedBy());
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return abie.getCreationTimestamp();
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return abie.getLastUpdateTimestamp();
+        }
+
+        @Override
+        public String ccType() {
+            return "ACC";
+        }
+
+        @Override
+        public String getGuid() {
+            return acc.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return acc.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(acc.getDefinition(), acc.getDefinitionSource()));
+        }
+    }
+
+    private class ASBIEDocumentation extends AbstractBIEDocumentation {
+        private final ASBIE asbie;
+        private final ASCC ascc;
+
+        public ASBIEDocumentation(
+                ASBIE asbie,
+                ASCC ascc) {
+            this.asbie = asbie;
+            this.ascc = ascc;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "ASBIE";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return ascc.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(asbie.getDefinition()));
+        }
+
+        @Override
+        public String getRemark() {
+            return asbie.getRemark();
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return generationContext.findUserName(asbie.getCreatedBy());
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return generationContext.findUserName(asbie.getLastUpdatedBy());
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return asbie.getCreationTimestamp();
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return asbie.getLastUpdateTimestamp();
+        }
+
+        @Override
+        public String ccType() {
+            return "ASCC";
+        }
+
+        @Override
+        public String getGuid() {
+            return ascc.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return ascc.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(ascc.getDefinition(), ascc.getDefinitionSource()));
+        }
+    }
+
+    private class ASBIEPDocumentation extends AbstractBIEDocumentation {
+        private final ASBIEP asbiep;
+        private final ASCCP asccp;
+        private TopLevelAbie topLevelAbie;
+
+        public ASBIEPDocumentation(
+                ASBIEP asbiep,
+                ASCCP asccp) {
+            this(asbiep, asccp, null);
+        }
+
+        public ASBIEPDocumentation(
+                ASBIEP asbiep,
+                ASCCP asccp,
+                TopLevelAbie topLevelAbie) {
+            this.asbiep = asbiep;
+            this.asccp = asccp;
+            this.topLevelAbie = topLevelAbie;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "ASBIEP";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return asccp.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(asbiep.getDefinition()));
+        }
+
+        @Override
+        public String getPropertyTermName() {
+            return asccp.getPropertyTerm();
+        }
+
+        @Override
+        public String getReleaseNumber() {
+            if (topLevelAbie != null) {
+                return generationContext.findReleaseNumber(topLevelAbie.getReleaseId());
+            }
+            return null;
+        }
+
+        @Override
+        public String getStateCode() {
+            if (topLevelAbie != null) {
+                return BieState.valueOf(topLevelAbie.getState()).toString();
+            }
+            return null;
+        }
+
+        @Override
+        public String getOwnerUserName() {
+            if (topLevelAbie != null) {
+                return generationContext.findUserName(topLevelAbie.getOwnerUserId());
+            }
+            return null;
+        }
+
+        @Override
+        public String getRemark() {
+            return asbiep.getRemark();
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return generationContext.findUserName(asbiep.getCreatedBy());
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return generationContext.findUserName(asbiep.getLastUpdatedBy());
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return asbiep.getCreationTimestamp();
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return asbiep.getLastUpdateTimestamp();
+        }
+
+        @Override
+        public String ccType() {
+            return "ASCCP";
+        }
+
+        @Override
+        public String getGuid() {
+            return asccp.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return asccp.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(asccp.getDefinition(), asccp.getDefinitionSource()));
+        }
+    }
+
+    private class BBIEDocumentation extends AbstractBIEDocumentation {
+        private final BBIE bbie;
+        private final BCC bcc;
+
+        public BBIEDocumentation(
+                BBIE bbie,
+                BCC bcc) {
+            this.bbie = bbie;
+            this.bcc = bcc;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "BBIE";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return bcc.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(bbie.getDefinition()));
+        }
+
+        @Override
+        public String getRemark() {
+            return bbie.getRemark();
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return generationContext.findUserName(bbie.getCreatedBy());
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return generationContext.findUserName(bbie.getLastUpdatedBy());
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return bbie.getCreationTimestamp();
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return bbie.getLastUpdateTimestamp();
+        }
+
+        @Override
+        public String ccType() {
+            return "BCC";
+        }
+
+        @Override
+        public String getGuid() {
+            return bcc.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return bcc.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(bcc.getDefinition(), bcc.getDefinitionSource()));
+        }
+    }
+
+    private class BBIEPDocumentation extends AbstractBIEDocumentation {
+        private final BBIEP bbiep;
+        private final BCCP bccp;
+
+        public BBIEPDocumentation(
+                BBIEP bbiep,
+                BCCP bccp) {
+            this.bbiep = bbiep;
+            this.bccp = bccp;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "BBIEP";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return bccp.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(bbiep.getDefinition()));
+        }
+
+        @Override
+        public String getPropertyTermName() {
+            return bccp.getPropertyTerm();
+        }
+
+        @Override
+        public String getRepresentationTermName() {
+            return bccp.getRepresentationTerm();
+        }
+
+        @Override
+        public String getRemark() {
+            return bbiep.getRemark();
+        }
+
+        @Override
+        public String getCreatedUserName() {
+            return generationContext.findUserName(bbiep.getCreatedBy());
+        }
+
+        @Override
+        public String getLastUpdatedUserName() {
+            return generationContext.findUserName(bbiep.getLastUpdatedBy());
+        }
+
+        @Override
+        public Date getCreationTimestamp() {
+            return bbiep.getCreationTimestamp();
+        }
+
+        @Override
+        public Date getLastUpdatedTimestamp() {
+            return bbiep.getLastUpdateTimestamp();
+        }
+
+        @Override
+        public String ccType() {
+            return "BCCP";
+        }
+
+        @Override
+        public String getGuid() {
+            return bccp.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return bccp.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(bccp.getDefinition(), bccp.getDefinitionSource()));
+        }
+    }
+
+    private class BBIESCDocumentation extends AbstractBIEDocumentation {
+        private final BBIESC bbieSc;
+        private final DTSC dtSc;
+
+        public BBIESCDocumentation(
+                BBIESC bbieSc,
+                DTSC dtSc) {
+            this.bbieSc = bbieSc;
+            this.dtSc = dtSc;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "SC";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return dtSc.getDen();
+        }
+
+        @Override
+        public Collection<Definition> getDefinitions() {
+            return Arrays.asList(new Definition(bbieSc.getDefinition()));
+        }
+
+        @Override
+        public String getPropertyTermName() {
+            return dtSc.getPropertyTerm();
+        }
+
+        @Override
+        public String getRepresentationTermName() {
+            return dtSc.getRepresentationTerm();
+        }
+
+        @Override
+        public String getRemark() {
+            return bbieSc.getRemark();
+        }
+
+        @Override
+        public String ccType() {
+            return "BDT_SC";
+        }
+
+        @Override
+        public String getGuid() {
+            return dtSc.getGuid();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(dtSc.getDefinition(), dtSc.getDefinitionSource()));
+        }
+    }
+
+    private class BusinessDataTypeDocumentation extends AbstractBIEDocumentation {
+        private final DT bdt;
+
+        public BusinessDataTypeDocumentation(DT bdt) {
+            this.bdt = bdt;
+        }
+
+        @Override
+        public String getEntityTypeCode() {
+            return "BDT";
+        }
+
+        @Override
+        public String getDictionaryEntryName() {
+            return bdt.getDen();
+        }
+
+        @Override
+        public String getDataTypeTermName() {
+            return bdt.getDataTypeTerm();
+        }
+
+        @Override
+        public String ccType() {
+            return "BDT";
+        }
+
+        @Override
+        public String getGuid() {
+            return bdt.getGuid();
+        }
+
+        @Override
+        public int getRevisionNumber() {
+            return bdt.getRevisionNum();
+        }
+
+        @Override
+        public Collection<Definition> getCoreComponentDefinitions() {
+            return Arrays.asList(new Definition(bdt.getDefinition(), bdt.getDefinitionSource()));
+        }
     }
 
 }

@@ -132,7 +132,7 @@ public class CcListService {
                 ASCCP.RELEASE_ID,
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM
-                ).from(ASCCP.join(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
+        ).from(ASCCP.join(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
                 .where(
                         and(ASCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
                                 ASCCP.STATE.eq(CcState.Published.getValue()))

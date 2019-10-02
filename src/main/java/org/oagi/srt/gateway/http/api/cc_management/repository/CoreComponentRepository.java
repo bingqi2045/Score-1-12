@@ -47,5 +47,7 @@ public class CoreComponentRepository {
         return bccpRepository.findAll();
     }
 
-    public List<DT> getBdtList() { return bdtRepository.findAll(); }
+    public List<DT> getBdtList() {
+        return bdtRepository.findAll();
+    }
 }
