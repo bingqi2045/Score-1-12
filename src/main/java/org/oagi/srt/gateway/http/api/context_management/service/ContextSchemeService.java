@@ -302,7 +302,7 @@ public class ContextSchemeService {
                 CTX_SCHEME_VALUE.MEANING,
                 CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
         ).values(
-                contextSchemeValue.getGuid(),
+                SrtGuid.randomGuid(),
                 contextSchemeValue.getValue(),
                 contextSchemeValue.getMeaning(),
                 ULong.valueOf(ctxSchemeId)
