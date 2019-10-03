@@ -327,6 +327,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private Stack<BieEditAcc> getAccStack(long currentAccId, long releaseId) {
         Stack<BieEditAcc> accStack = new Stack();
         BieEditAcc acc = repository.getAccByCurrentAccId(currentAccId, releaseId);
+        /*
+         * Issue #708
+         * If the UEG's state is not 'Published', its children couldn't get it by the logic above.
+         */
+        if (acc == null) {
+            return accStack;
+        }
         accStack.push(acc);
 
         while (acc.getBasedAccId() != null) {
