@@ -1,6 +1,9 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Record4;
+import org.jooq.RecordMapper;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
@@ -24,14 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.Comparator;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -565,7 +568,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.ASBIE.IS_USED.as("used"),
                     Tables.ASBIE.IS_NILLABLE.as("nillable"),
                     Tables.ASBIE.DEFINITION.as("context_definition")
-                    ).from(Tables.ASBIE)
+            ).from(Tables.ASBIE)
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNode.getAsbieId())))
                     .fetchOneInto(BieEditAsbiepNodeDetail.class);
 
@@ -573,7 +576,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             detail = dslContext.select(
                     Tables.ASCC.CARDINALITY_MIN,
                     Tables.ASCC.CARDINALITY_MAX
-                    ).from(Tables.ASCC)
+            ).from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
                     .fetchOneInto(BieEditAsbiepNodeDetail.class);
 
@@ -641,7 +644,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.FIXED_VALUE,
                     Tables.BBIE.DEFINITION.as("context_definition")
-                    ).from(Tables.BBIE)
+            ).from(Tables.BBIE)
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNode.getBbieId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
 
@@ -688,7 +691,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .from(Tables.BDT_PRI_RESTRI)
                     .where(and(Tables.DT.DT_ID.eq(ULong.valueOf(detail.getBdtId())),
                             Tables.BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
-                            .fetchOneInto(Long.class);
+                    .fetchOneInto(Long.class);
 
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
@@ -767,13 +770,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 );
                 List<BieEditCodeList> basedCodeLists2 = getCodeListsByBasedCodeList(bieEditCodeLists.get(0).getCodeListId());
                 basedCodeLists2.clear();
-                for (int i=0; i< bieEditCodeLists.size(); i++) {
+                for (int i = 0; i < bieEditCodeLists.size(); i++) {
                     basedCodeLists2.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
                 }
                 bieEditCodeLists.addAll(0, basedCodeLists);
                 bieEditCodeLists.addAll(0, basedCodeLists2);
                 basedCodeLists2.clear();
-                for (int i=0; i< bieEditCodeLists.size(); i++) {
+                for (int i = 0; i < bieEditCodeLists.size(); i++) {
                     basedCodeLists2.addAll(getCodeListsByBasedCodeList(bieEditCodeLists.get(i).getCodeListId()));
                 }
                 bieEditCodeLists.addAll(basedCodeLists2);
@@ -1029,20 +1032,20 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             dslContext.update(Tables.ASBIE)
                     .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getCardinalityMax())
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
-            .execute();
+                    .execute();
         }
         if (asbiepNodeDetail.getNillable() != null) {
             dslContext.update(Tables.ASBIE)
                     .set(Tables.ASBIE.IS_NILLABLE, (byte) (asbiepNodeDetail.getNillable() ? 1 : 0))
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
-            .execute();
+                    .execute();
         }
 
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         dslContext.update(Tables.ASBIE)
-                .set(Tables.ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed()  ? 1 : 0))
+                .set(Tables.ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed() ? 1 : 0))
                 .set(Tables.ASBIE.DEFINITION, emptyToNull(asbiepNodeDetail.getContextDefinition()))
                 .set(Tables.ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
@@ -1134,19 +1137,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         Long codeListId = bbieScNodeDetail.getCodeListId();
         Long agencyIdListId = bbieScNodeDetail.getAgencyIdListId();
 
-        if (dtScPriRestriId != null ) {
+        if (dtScPriRestriId != null) {
             dslContext.update(Tables.BBIE_SC)
                     .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(dtScPriRestriId))
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
-        if (codeListId != null ) {
+        if (codeListId != null) {
             dslContext.update(Tables.BBIE_SC)
                     .set(Tables.BBIE_SC.CODE_LIST_ID, ULong.valueOf(codeListId))
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
-        if (agencyIdListId != null ) {
+        if (agencyIdListId != null) {
             dslContext.update(Tables.BBIE_SC)
                     .set(Tables.BBIE_SC.AGENCY_ID_LIST_ID, ULong.valueOf(agencyIdListId))
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();

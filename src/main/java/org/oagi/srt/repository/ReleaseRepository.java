@@ -18,8 +18,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
     @Override
     public List<Release> findAll() {
         return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.LAST_UPDATED_BY,
-                    Tables.RELEASE.NAMESPACE_ID, Tables.RELEASE.CREATED_BY, Tables.RELEASE.STATE,
-                    Tables.RELEASE.LAST_UPDATE_TIMESTAMP, Tables.RELEASE.CREATION_TIMESTAMP, Tables.RELEASE.RELEASE_NOTE)
+                Tables.RELEASE.NAMESPACE_ID, Tables.RELEASE.CREATED_BY, Tables.RELEASE.STATE,
+                Tables.RELEASE.LAST_UPDATE_TIMESTAMP, Tables.RELEASE.CREATION_TIMESTAMP, Tables.RELEASE.RELEASE_NOTE)
                 .from(Tables.RELEASE).fetchInto(Release.class);
     }
 

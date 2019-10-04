@@ -17,10 +17,6 @@ public enum OagisComponentType {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static OagisComponentType valueOf(int value) {
         for (OagisComponentType state : OagisComponentType.values()) {
             if (state.getValue() == value) {
@@ -28,6 +24,10 @@ public enum OagisComponentType {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public boolean isGroup() {

@@ -13,10 +13,6 @@ public enum BieState {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static BieState valueOf(int value) {
         for (BieState state : BieState.values()) {
             if (state.getValue() == value) {
@@ -25,5 +21,9 @@ public enum BieState {
         }
         throw new IllegalArgumentException("Unknown value: " + value);
     }
-    
+
+    public int getValue() {
+        return value;
+    }
+
 }

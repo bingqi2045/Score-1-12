@@ -13,12 +13,10 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class DatabaseCacheHandler<T> implements InitializingBean {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private final String tableName;
     private final Class<T> mappedClass;
-
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     private String camelCasePriKeyName;
     private String underscorePriKeyName;
 

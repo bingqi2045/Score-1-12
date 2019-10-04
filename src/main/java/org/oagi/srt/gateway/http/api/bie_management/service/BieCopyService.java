@@ -115,6 +115,212 @@ public class BieCopyService implements InitializingBean {
         }
     }
 
+    private List<BieCopyAbie> getAbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.ABIE.ABIE_ID,
+                Tables.ABIE.GUID,
+                Tables.ABIE.BASED_ACC_ID,
+                Tables.ABIE.DEFINITION,
+                Tables.ABIE.CLIENT_ID,
+                Tables.ABIE.VERSION,
+                Tables.ABIE.STATUS,
+                Tables.ABIE.REMARK,
+                Tables.ABIE.BIZ_TERM
+        ).from(Tables.ABIE)
+                .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyAbie.class);
+    }
+
+    private List<BieCopyAsbie> getAsbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.ASBIE.ASBIE_ID,
+                Tables.ASBIE.GUID,
+                Tables.ASBIE.FROM_ABIE_ID,
+                Tables.ASBIE.TO_ASBIEP_ID,
+                Tables.ASBIE.BASED_ASCC_ID,
+                Tables.ASBIE.DEFINITION,
+                Tables.ASBIE.CARDINALITY_MIN,
+                Tables.ASBIE.CARDINALITY_MAX,
+                Tables.ASBIE.IS_NILLABLE.as("nillable"),
+                Tables.ASBIE.REMARK,
+                Tables.ASBIE.SEQ_KEY,
+                Tables.ASBIE.IS_USED.as("used")).from(Tables.ASBIE)
+                .where(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyAsbie.class);
+    }
+
+    private List<BieCopyBbie> getBbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.BBIE.BBIE_ID,
+                Tables.BBIE.GUID,
+                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.FROM_ABIE_ID,
+                Tables.BBIE.TO_BBIEP_ID,
+                Tables.BBIE.BDT_PRI_RESTRI_ID,
+                Tables.BBIE.CODE_LIST_ID,
+                Tables.BBIE.AGENCY_ID_LIST_ID,
+                Tables.BBIE.CARDINALITY_MIN,
+                Tables.BBIE.CARDINALITY_MAX,
+                Tables.BBIE.DEFAULT_VALUE,
+                Tables.BBIE.IS_NILLABLE.as("nillable"),
+                Tables.BBIE.FIXED_VALUE,
+                Tables.BBIE.IS_NULL.as("nill"),
+                Tables.BBIE.DEFINITION,
+                Tables.BBIE.REMARK,
+                Tables.BBIE.SEQ_KEY,
+                Tables.BBIE.IS_USED.as("used")).from(Tables.BBIE)
+                .where(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyBbie.class);
+    }
+
+    private List<BieCopyAsbiep> getAsbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.ASBIEP.ASBIEP_ID,
+                Tables.ASBIEP.GUID,
+                Tables.ASBIEP.BASED_ASCCP_ID,
+                Tables.ASBIEP.ROLE_OF_ABIE_ID,
+                Tables.ASBIEP.DEFINITION,
+                Tables.ASBIEP.REMARK,
+                Tables.ASBIEP.BIZ_TERM).from(Tables.ASBIEP)
+                .where(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyAsbiep.class);
+    }
+
+    private List<BieCopyBbiep> getBbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.BBIEP.BBIEP_ID,
+                Tables.BBIEP.GUID,
+                Tables.BBIEP.BASED_BCCP_ID,
+                Tables.BBIEP.DEFINITION,
+                Tables.BBIEP.REMARK,
+                Tables.BBIEP.BIZ_TERM).from(Tables.BBIEP)
+                .where(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyBbiep.class);
+    }
+
+    private List<BieCopyBbieSc> getBbieScByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        return dslContext.select(
+                Tables.BBIE_SC.BBIE_SC_ID,
+                Tables.BBIE_SC.GUID,
+                Tables.BBIE_SC.BBIE_ID,
+                Tables.BBIE_SC.DT_SC_ID,
+                Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
+                Tables.BBIE_SC.CODE_LIST_ID,
+                Tables.BBIE_SC.AGENCY_ID_LIST_ID,
+                Tables.BBIE_SC.CARDINALITY_MIN,
+                Tables.BBIE_SC.CARDINALITY_MAX,
+                Tables.BBIE_SC.DEFAULT_VALUE,
+                Tables.BBIE_SC.FIXED_VALUE,
+                Tables.BBIE_SC.DEFINITION,
+                Tables.BBIE_SC.REMARK,
+                Tables.BBIE_SC.BIZ_TERM,
+                Tables.BBIE_SC.IS_USED.as("used")).from(Tables.BBIE_SC)
+                .where(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(BieCopyBbieSc.class);
+    }
+
+    @Data
+    public static class BieCopyAbie {
+
+        private long abieId;
+        private String guid;
+        private long basedAccId;
+        private String definition;
+        private Long clientId;
+        private String version;
+        private String status;
+        private String remark;
+        private String bizTerm;
+
+    }
+
+    @Data
+    public static class BieCopyAsbie {
+
+        private long asbieId;
+        private String guid;
+        private long fromAbieId;
+        private long toAsbiepId;
+        private long basedAsccId;
+        private String definition;
+        private int cardinalityMin;
+        private int cardinalityMax;
+        private boolean nillable;
+        private String remark;
+        private double seqKey;
+        private boolean used;
+
+    }
+
+    @Data
+    public static class BieCopyBbie {
+
+        private long bbieId;
+        private String guid;
+        private long basedBccId;
+        private long fromAbieId;
+        private long toBbiepId;
+        private Long bdtPriRestriId;
+        private Long codeListId;
+        private Long agencyIdListId;
+        private int cardinalityMin;
+        private int cardinalityMax;
+        private String defaultValue;
+        private boolean nillable;
+        private String fixedValue;
+        private boolean nill;
+        private String definition;
+        private String remark;
+        private double seqKey;
+        private boolean used;
+
+    }
+
+    @Data
+    public static class BieCopyAsbiep {
+
+        private long asbiepId;
+        private String guid;
+        private long basedAsccpId;
+        private long roleOfAbieId;
+        private String definition;
+        private String remark;
+        private String bizTerm;
+
+    }
+
+    @Data
+    public static class BieCopyBbiep {
+
+        private long bbiepId;
+        private String guid;
+        private long basedBccpId;
+        private String definition;
+        private String remark;
+        private String bizTerm;
+
+    }
+
+    @Data
+    public static class BieCopyBbieSc {
+
+        private long bbieScId;
+        private String guid;
+        private long bbieId;
+        private long dtScId;
+        private Long dtScPriRestriId;
+        private Long codeListId;
+        private Long agencyIdListId;
+        private int cardinalityMin;
+        private int cardinalityMax;
+        private String defaultValue;
+        private String fixedValue;
+        private String definition;
+        private String remark;
+        private String bizTerm;
+        private boolean used;
+
+    }
 
     private class BieCopyContext {
 
@@ -276,7 +482,7 @@ public class BieCopyService implements InitializingBean {
 
         private long insertAbie(BieCopyAbie abie) {
 
-           return dslContext.insertInto(Tables.ABIE)
+            return dslContext.insertInto(Tables.ABIE)
                     .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
                     .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(abie.getBasedAccId()))
                     .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
@@ -297,7 +503,7 @@ public class BieCopyService implements InitializingBean {
 
         private long insertAsbiep(BieCopyAsbiep asbiep) {
 
-           return dslContext.insertInto(Tables.ASBIEP)
+            return dslContext.insertInto(Tables.ASBIEP)
                     .set(Tables.ASBIEP.GUID, SrtGuid.randomGuid())
                     .set(Tables.ASBIEP.BASED_ASCCP_ID, ULong.valueOf(asbiep.getBasedAsccpId()))
                     .set(Tables.ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(asbiep.getRoleOfAbieId()))
@@ -306,7 +512,7 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.ASBIEP.BIZ_TERM, asbiep.getBizTerm())
                     .set(Tables.ASBIEP.CREATED_BY, ULong.valueOf(userId))
                     .set(Tables.ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(Tables.ASBIEP.CREATION_TIMESTAMP,timestamp)
+                    .set(Tables.ASBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(Tables.ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                     .set(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getAsbiepId().longValue();
@@ -324,7 +530,7 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                     .set(Tables.BBIEP.CREATION_TIMESTAMP, timestamp)
                     .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID,ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
+                    .set(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getBbiepId().longValue();
         }
 
@@ -346,7 +552,7 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                     .set(Tables.ASBIE.CREATION_TIMESTAMP, timestamp)
                     .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                    .set(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID,ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
+                    .set(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getAsbieId().longValue();
         }
 
@@ -398,215 +604,6 @@ public class BieCopyService implements InitializingBean {
                     .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning().fetchOne().getBbieScId().longValue();
         }
-    }
-
-
-    private List<BieCopyAbie> getAbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.ABIE.ABIE_ID,
-                Tables.ABIE.GUID,
-                Tables.ABIE.BASED_ACC_ID,
-                Tables.ABIE.DEFINITION,
-                Tables.ABIE.CLIENT_ID,
-                Tables.ABIE.VERSION,
-                Tables.ABIE.STATUS,
-                Tables.ABIE.REMARK,
-                Tables.ABIE.BIZ_TERM
-        ).from(Tables.ABIE)
-                .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyAbie.class);
-    }
-
-    private List<BieCopyAsbie> getAsbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.ASBIE.ASBIE_ID,
-                Tables.ASBIE.GUID,
-                Tables.ASBIE.FROM_ABIE_ID,
-                Tables.ASBIE.TO_ASBIEP_ID,
-                Tables.ASBIE.BASED_ASCC_ID,
-                Tables.ASBIE.DEFINITION,
-                Tables.ASBIE.CARDINALITY_MIN,
-                Tables.ASBIE.CARDINALITY_MAX,
-                Tables.ASBIE.IS_NILLABLE.as("nillable"),
-                Tables.ASBIE.REMARK,
-                Tables.ASBIE.SEQ_KEY,
-                Tables.ASBIE.IS_USED.as("used")).from(Tables.ASBIE)
-                .where(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyAsbie.class);
-    }
-
-    private List<BieCopyBbie> getBbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.BBIE.BBIE_ID,
-                Tables.BBIE.GUID,
-                Tables.BBIE.BASED_BCC_ID,
-                Tables.BBIE.FROM_ABIE_ID,
-                Tables.BBIE.TO_BBIEP_ID,
-                Tables.BBIE.BDT_PRI_RESTRI_ID,
-                Tables.BBIE.CODE_LIST_ID,
-                Tables.BBIE.AGENCY_ID_LIST_ID,
-                Tables.BBIE.CARDINALITY_MIN,
-                Tables.BBIE.CARDINALITY_MAX,
-                Tables.BBIE.DEFAULT_VALUE,
-                Tables.BBIE.IS_NILLABLE.as("nillable"),
-                Tables.BBIE.FIXED_VALUE,
-                Tables.BBIE.IS_NULL.as("nill"),
-                Tables.BBIE.DEFINITION,
-                Tables.BBIE.REMARK,
-                Tables.BBIE.SEQ_KEY,
-                Tables.BBIE.IS_USED.as("used")).from(Tables.BBIE)
-                .where(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyBbie.class);
-    }
-
-    private List<BieCopyAsbiep> getAsbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.ASBIEP.ASBIEP_ID,
-                Tables.ASBIEP.GUID,
-                Tables.ASBIEP.BASED_ASCCP_ID,
-                Tables.ASBIEP.ROLE_OF_ABIE_ID,
-                Tables.ASBIEP.DEFINITION,
-                Tables.ASBIEP.REMARK,
-                Tables.ASBIEP.BIZ_TERM).from(Tables.ASBIEP)
-                .where(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyAsbiep.class);
-    }
-
-    private List<BieCopyBbiep> getBbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.BBIEP.BBIEP_ID,
-                Tables.BBIEP.GUID,
-                Tables.BBIEP.BASED_BCCP_ID,
-                Tables.BBIEP.DEFINITION,
-                Tables.BBIEP.REMARK,
-                Tables.BBIEP.BIZ_TERM).from(Tables.BBIEP)
-                .where(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyBbiep.class);
-    }
-
-    private List<BieCopyBbieSc> getBbieScByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        return dslContext.select(
-                Tables.BBIE_SC.BBIE_SC_ID,
-                Tables.BBIE_SC.GUID,
-                Tables.BBIE_SC.BBIE_ID,
-                Tables.BBIE_SC.DT_SC_ID,
-                Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
-                Tables.BBIE_SC.CODE_LIST_ID,
-                Tables.BBIE_SC.AGENCY_ID_LIST_ID,
-                Tables.BBIE_SC.CARDINALITY_MIN,
-                Tables.BBIE_SC.CARDINALITY_MAX,
-                Tables.BBIE_SC.DEFAULT_VALUE,
-                Tables.BBIE_SC.FIXED_VALUE,
-                Tables.BBIE_SC.DEFINITION,
-                Tables.BBIE_SC.REMARK,
-                Tables.BBIE_SC.BIZ_TERM,
-                Tables.BBIE_SC.IS_USED.as("used")).from(Tables.BBIE_SC)
-                .where(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
-                .fetchInto(BieCopyBbieSc.class);
-    }
-
-
-    @Data
-    public static class BieCopyAbie {
-
-        private long abieId;
-        private String guid;
-        private long basedAccId;
-        private String definition;
-        private Long clientId;
-        private String version;
-        private String status;
-        private String remark;
-        private String bizTerm;
-
-    }
-
-    @Data
-    public static class BieCopyAsbie {
-
-        private long asbieId;
-        private String guid;
-        private long fromAbieId;
-        private long toAsbiepId;
-        private long basedAsccId;
-        private String definition;
-        private int cardinalityMin;
-        private int cardinalityMax;
-        private boolean nillable;
-        private String remark;
-        private double seqKey;
-        private boolean used;
-
-    }
-
-    @Data
-    public static class BieCopyBbie {
-
-        private long bbieId;
-        private String guid;
-        private long basedBccId;
-        private long fromAbieId;
-        private long toBbiepId;
-        private Long bdtPriRestriId;
-        private Long codeListId;
-        private Long agencyIdListId;
-        private int cardinalityMin;
-        private int cardinalityMax;
-        private String defaultValue;
-        private boolean nillable;
-        private String fixedValue;
-        private boolean nill;
-        private String definition;
-        private String remark;
-        private double seqKey;
-        private boolean used;
-
-    }
-
-    @Data
-    public static class BieCopyAsbiep {
-
-        private long asbiepId;
-        private String guid;
-        private long basedAsccpId;
-        private long roleOfAbieId;
-        private String definition;
-        private String remark;
-        private String bizTerm;
-
-    }
-
-    @Data
-    public static class BieCopyBbiep {
-
-        private long bbiepId;
-        private String guid;
-        private long basedBccpId;
-        private String definition;
-        private String remark;
-        private String bizTerm;
-
-    }
-
-    @Data
-    public static class BieCopyBbieSc {
-
-        private long bbieScId;
-        private String guid;
-        private long bbieId;
-        private long dtScId;
-        private Long dtScPriRestriId;
-        private Long codeListId;
-        private Long agencyIdListId;
-        private int cardinalityMin;
-        private int cardinalityMax;
-        private String defaultValue;
-        private String fixedValue;
-        private String definition;
-        private String remark;
-        private String bizTerm;
-        private boolean used;
-
     }
 
 }

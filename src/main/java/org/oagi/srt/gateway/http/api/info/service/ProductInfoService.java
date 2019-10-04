@@ -25,14 +25,10 @@ import java.util.Properties;
 @Service
 public class ProductInfoService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final String groupId = "org.oagi";
-
     private static final String artifactId = "srt-http-gateway";
-
     private static final String unknownVersion = "0.0.0.0";
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private DataSource dataSource;
 

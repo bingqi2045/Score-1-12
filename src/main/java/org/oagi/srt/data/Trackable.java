@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 public interface Trackable extends Serializable {
 
-    public long getId();
+    long getId();
 
-    public Long getCurrentId();
+    Long getCurrentId();
 
-    public Long getReleaseId();
+    Long getReleaseId();
 
-    public int getRevisionNum();
+    int getRevisionNum();
 
-    public int getRevisionTrackingNum();
+    int getRevisionTrackingNum();
 
 }

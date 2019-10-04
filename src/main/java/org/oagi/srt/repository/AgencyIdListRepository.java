@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public class AgencyIdListRepository implements SrtRepository<AgencyIdList> {
-    
+
     @Autowired
     private DSLContext dslContext;
 
@@ -33,5 +33,5 @@ public class AgencyIdListRepository implements SrtRepository<AgencyIdList> {
                 .where(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(AgencyIdList.class);
     }
-    
+
 }

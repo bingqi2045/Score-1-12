@@ -228,6 +228,7 @@ public class Indexes {
     public static final Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_UK1 = Indexes0.CTX_SCHEME_CTX_SCHEME_UK1;
+    public static final Index CTX_SCHEME_FK_CODE_LIST_ID = Indexes0.CTX_SCHEME_FK_CODE_LIST_ID;
     public static final Index CTX_SCHEME_PRIMARY = Indexes0.CTX_SCHEME_PRIMARY;
     public static final Index CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Indexes0.CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK;
     public static final Index CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1 = Indexes0.CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1;
@@ -445,6 +446,7 @@ public class Indexes {
         public static Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createIndex("ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createIndex("ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.LAST_UPDATED_BY }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_UK1 = Internal.createIndex("ctx_scheme_uk1", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.GUID }, true);
+        public static Index CTX_SCHEME_FK_CODE_LIST_ID = Internal.createIndex("fk_code_list_id", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CODE_LIST_ID }, false);
         public static Index CTX_SCHEME_PRIMARY = Internal.createIndex("PRIMARY", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CTX_SCHEME_ID }, true);
         public static Index CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Internal.createIndex("ctx_scheme_value_owner_ctx_scheme_id_fk", CtxSchemeValue.CTX_SCHEME_VALUE, new OrderField[] { CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID }, false);
         public static Index CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1 = Internal.createIndex("ctx_scheme_value_uk1", CtxSchemeValue.CTX_SCHEME_VALUE, new OrderField[] { CtxSchemeValue.CTX_SCHEME_VALUE.GUID }, true);

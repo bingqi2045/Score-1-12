@@ -27,7 +27,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public class BieJSONGenerateExpression implements BieGenerateExpression, InitializingBean {
+public class BieOpenAPIGenerateExpression implements BieGenerateExpression, InitializingBean {
 
     // In schema version draft-04, it used "id" for dereferencing.
     // However, in draft-06, it changes to "$id".

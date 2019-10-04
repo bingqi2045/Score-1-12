@@ -297,7 +297,7 @@ public class BieRepository {
 
         if (isPublished) {
             conditions.add(
-              Tables.ASCC.STATE.eq(CcState.Published.getValue())
+                    Tables.ASCC.STATE.eq(CcState.Published.getValue())
             );
         }
 

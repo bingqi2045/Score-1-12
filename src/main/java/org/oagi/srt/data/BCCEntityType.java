@@ -11,10 +11,6 @@ public enum BCCEntityType {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static BCCEntityType valueOf(int value) {
         for (BCCEntityType state : BCCEntityType.values()) {
             if (state.getValue() == value) {
@@ -23,5 +19,9 @@ public enum BCCEntityType {
         }
         throw new IllegalArgumentException("Unknown value: " + value);
     }
-    
+
+    public int getValue() {
+        return value;
+    }
+
 }

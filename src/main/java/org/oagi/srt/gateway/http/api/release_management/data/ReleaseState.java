@@ -11,10 +11,6 @@ public enum ReleaseState {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static ReleaseState valueOf(int value) {
         for (ReleaseState state : ReleaseState.values()) {
             if (state.getValue() == value) {
@@ -22,5 +18,9 @@ public enum ReleaseState {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public int getValue() {
+        return value;
     }
 }

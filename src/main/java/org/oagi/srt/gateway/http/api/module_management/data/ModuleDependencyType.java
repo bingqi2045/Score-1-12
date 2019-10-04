@@ -11,10 +11,6 @@ public enum ModuleDependencyType {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static ModuleDependencyType valueOf(int value) {
         for (ModuleDependencyType state : ModuleDependencyType.values()) {
             if (state.getValue() == value) {
@@ -23,5 +19,9 @@ public enum ModuleDependencyType {
         }
         throw new IllegalArgumentException("Unknown value: " + value);
     }
-    
+
+    public int getValue() {
+        return value;
+    }
+
 }

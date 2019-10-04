@@ -1,8 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BdtPriRestri;
 import org.oagi.srt.data.BdtScPriRestri;

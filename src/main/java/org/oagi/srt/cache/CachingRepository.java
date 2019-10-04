@@ -2,7 +2,6 @@ package org.oagi.srt.cache;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.oagi.srt.repository.SrtRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.util.Collections;
 import java.util.List;

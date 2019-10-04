@@ -10,5 +10,6 @@ public class SimpleContextScheme {
     private String schemeId;
     private String schemeAgencyId;
     private String schemeVersionId;
+    private long codeListId;
 
 }

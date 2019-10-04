@@ -43,6 +43,19 @@ public class BieService {
 
     @Autowired
     private DSLContext dslContext;
+    private String GET_BIE_LIST_STATEMENT =
+            "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
+                    "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
+                    "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
+                    "abie.last_update_timestamp, top_level_abie.state as raw_state " +
+                    "FROM top_level_abie " +
+                    "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
+                    "AND abie.abie_id = top_level_abie.abie_id " +
+                    "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
+                    "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
+                    "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
+                    "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
+                    "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
 
     public List<AsccpForBie> getAsccpListForBie(long releaseId) {
         List<AsccpForBie> asccpForBieList = dslContext.select(
@@ -74,7 +87,6 @@ public class BieService {
 
         return asccpForBieList;
     }
-
 
     @Transactional
     public BieCreateResponse createBie(User user, BieCreateRequest request) {
@@ -336,22 +348,6 @@ public class BieService {
         return bieLists;
     }
 
-
-    private String GET_BIE_LIST_STATEMENT =
-            "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
-                    "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
-            "top_level_abie.owner_user_id, app_user.login_id as owner, abie.version, abie.`status`, " +
-            "abie.last_update_timestamp, top_level_abie.state as raw_state " +
-            "FROM top_level_abie " +
-            "JOIN abie ON top_level_abie.top_level_abie_id = abie.owner_top_level_abie_id " +
-            "AND abie.abie_id = top_level_abie.abie_id " +
-            "JOIN asbiep ON asbiep.role_of_abie_id = abie.abie_id " +
-            "JOIN asccp ON asbiep.based_asccp_id = asccp.asccp_id " +
-            "JOIN biz_ctx ON biz_ctx.biz_ctx_id = abie.biz_ctx_id " +
-            "JOIN app_user ON app_user.app_user_id = top_level_abie.owner_user_id " +
-            "JOIN `release` ON top_level_abie.release_id = `release`.release_id";
-
-
     private List<BieList> getBieList(User user, Condition condition) {
         SelectOnConditionStep<Record12<
                 ULong, String, String, String, ULong,
@@ -371,8 +367,8 @@ public class BieService {
                 TOP_LEVEL_ABIE.STATE.as("raw_state"))
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(and(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID),
-                TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
+                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID),
+                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
                 .join(BIZ_CTX).on(BIZ_CTX.BIZ_CTX_ID.eq(ABIE.BIZ_CTX_ID))
@@ -417,13 +413,13 @@ public class BieService {
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
 
-        dslContext.deleteFrom(Tables.ABIE).where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in (topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.ABIE).where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }

@@ -35,6 +35,10 @@ public class CodeListService {
 
     @Autowired
     private SessionService sessionService;
+    private String GET_CODE_LIST_VALUES_STATEMENT =
+            "SELECT code_list_value_id, value, name, definition, definition_source, " +
+                    "used_indicator as used, locked_indicator as locked, extension_Indicator as extension " +
+                    "FROM code_list_value WHERE code_list_id = :code_list_id";
 
     private SelectOnConditionStep<Record13<
             ULong, String, String, ULong, String,
@@ -147,11 +151,6 @@ public class CodeListService {
 
         return response;
     }
-
-    private String GET_CODE_LIST_VALUES_STATEMENT =
-            "SELECT code_list_value_id, value, name, definition, definition_source, " +
-                    "used_indicator as used, locked_indicator as locked, extension_Indicator as extension " +
-                    "FROM code_list_value WHERE code_list_id = :code_list_id";
 
     public CodeList getCodeList(long id) {
         MapSqlParameterSource parameterSource = newSqlParameterSource()

@@ -9,6 +9,8 @@ import java.util.TimeZone;
 
 public class Utility {
 
+    private static final List<String> ABBR_LIST = Arrays.asList("BOM", "UOM", "WIP", "RFQ", "BOD", "IST", "MSDS");
+
     public static String first(String den, boolean upp) {
         den = den.substring(0, den.indexOf(".")).replace("_", " ").replaceAll(" ", "").replaceAll("Identifier", "ID");
         if (upp == false)
@@ -17,7 +19,7 @@ public class Utility {
     }
 
     public static String second(String den, boolean upp) {
-        den = den.substring(den.indexOf(".") + 2, den.length());
+        den = den.substring(den.indexOf(".") + 2);
         den = den.indexOf(".") == -1 ? den.replaceAll("-", "").replaceAll(" ", "") : den.substring(0, den.indexOf(".")).replaceAll("-", "").replaceAll(" ", "").replaceAll("Identifier", "ID");
         if (upp == false)
             den = den.substring(0, 1).toLowerCase() + den.substring(1);
@@ -35,8 +37,6 @@ public class Utility {
         String result = sparcing(str);
         return result;
     }
-
-    private static final List<String> ABBR_LIST = Arrays.asList("BOM", "UOM", "WIP", "RFQ", "BOD", "IST", "MSDS");
 
     private static String sparcing(String str) {
         for (String abbr : ABBR_LIST) {
