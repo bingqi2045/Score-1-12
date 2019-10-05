@@ -673,8 +673,8 @@ public class CcNodeRepository {
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccIdOrigin)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
 
-            ascc.setCardinalityOriginMax(asccOrigin.getCardinalityOriginMax());
-            ascc.setCardinalityOriginMin(asccOrigin.getCardinalityOriginMin());
+            ascc.setCardinalityOriginMax(asccOrigin.getCardinalityMax());
+            ascc.setCardinalityOriginMin(asccOrigin.getCardinalityMin());
             asccpNodeDetail.setAscc(ascc);
         }
 
@@ -736,8 +736,8 @@ public class CcNodeRepository {
                     .where(BCC.BCC_ID.eq(ULong.valueOf(bccIdOrigin)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
 
-            bcc.setCardinalityOriginMax(bccOrigin.getCardinalityOriginMax());
-            bcc.setCardinalityOriginMin(bccOrigin.getCardinalityOriginMin());
+            bcc.setCardinalityOriginMax(bccOrigin.getCardinalityMax());
+            bcc.setCardinalityOriginMin(bccOrigin.getCardinalityMin());
 
             bccpNodeDetail.setBcc(bcc);
         }
