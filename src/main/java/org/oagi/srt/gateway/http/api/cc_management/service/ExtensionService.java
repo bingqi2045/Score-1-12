@@ -563,6 +563,20 @@ public class ExtensionService {
                 .from(ASCCP).where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(Long.class);
 
+        /*
+         * Issue #710
+         * Duplicated associations cannot be existed.
+         */
+        boolean exists = dslContext.selectCount()
+                .from(ASCC).where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId))
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+        if (exists) {
+            throw new IllegalArgumentException("You cannot associate the same component.");
+        }
+
         AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey);
 
         int revisionNum = dslContext.select(ACC.REVISION_NUM)
@@ -672,6 +686,20 @@ public class ExtensionService {
         bccpId = dslContext.select(BCCP.CURRENT_BCCP_ID)
                 .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(Long.class);
+
+        /*
+         * Issue #710
+         * Duplicated associations cannot be existed.
+         */
+        boolean exists = dslContext.selectCount()
+                .from(BCC).where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId))
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+        if (exists) {
+            throw new IllegalArgumentException("You cannot associate the same component.");
+        }
 
         BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey);
 
