@@ -88,42 +88,42 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").authenticated()
                 .and()
                 .exceptionHandling()
-                    .authenticationEntryPoint(new AuthenticationEntryPoint() {
-                        @Override
-                        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                        }
-                    })
+                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                    @Override
+                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    }
+                })
                 .and()
                 .formLogin()
-                    .loginProcessingUrl("/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .successHandler(new SimpleUrlAuthenticationSuccessHandler() {
-                        @Override
-                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                            Authentication authentication) throws IOException, ServletException {
-                            clearAuthenticationAttributes(request);
+                .loginProcessingUrl("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(new SimpleUrlAuthenticationSuccessHandler() {
+                    @Override
+                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                                        Authentication authentication) throws IOException, ServletException {
+                        clearAuthenticationAttributes(request);
 
-                            Map<String, String> resp = new HashMap();
-                            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                            resp.put("username", userDetails.getUsername());
-                            resp.put("role", userDetails.getAuthorities().stream().findFirst().get().toString());
+                        Map<String, String> resp = new HashMap();
+                        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                        resp.put("username", userDetails.getUsername());
+                        resp.put("role", userDetails.getAuthorities().stream().findFirst().get().toString());
 
-                            ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
-                            objectMapper.writeValue(response.getOutputStream(), resp);
-                        }
-                    })
-                    .failureHandler(new SimpleUrlAuthenticationFailureHandler() {
-                        @Override
-                        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                            super.onAuthenticationFailure(request, response, exception);
-                        }
-                    })
+                        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+                        objectMapper.writeValue(response.getOutputStream(), resp);
+                    }
+                })
+                .failureHandler(new SimpleUrlAuthenticationFailureHandler() {
+                    @Override
+                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+                        super.onAuthenticationFailure(request, response, exception);
+                    }
+                })
                 .and()
                 .logout()
-                    .logoutUrl("/logout")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 .and()
                 .httpBasic().disable()
                 .cors()

@@ -12,10 +12,6 @@ public enum CcState {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public static CcState valueOf(int value) {
         for (CcState state : CcState.values()) {
             if (state.getValue() == value) {
@@ -23,6 +19,10 @@ public enum CcState {
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
+    }
+
+    public int getValue() {
+        return value;
     }
 
 }

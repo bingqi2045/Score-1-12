@@ -8,7 +8,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
+import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -47,23 +47,24 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
         if (id <= 0L) {
             return null;
         }
+
         return getSelectBizCtx()
                 .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(BizCtx.class);
     }
 
     public List<BizCtx> findAllFromTopLvlBie(TopLevelAbie topLevelAbie) {
-        List <BusinessContextRule> bizCtxRules = dslContext.select(
+        List <BizCtxAssignment> bizCtxAssignments = dslContext.select(
                 Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID,
                 Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
                 Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID)
                 .from(Tables.BIZ_CTX_RULE)
                 .where(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
-                .fetchInto(BusinessContextRule.class);
+                .fetchInto(BizCtxAssignment.class);
 
         List<BizCtx> bizCtx = new ArrayList<>();
 
-        for(BusinessContextRule bizCtxRule: bizCtxRules) {
+        for(BizCtxAssignment bizCtxRule: bizCtxAssignments) {
             bizCtx.add(findById(bizCtxRule.getFromBizCtxId()));
         }
 

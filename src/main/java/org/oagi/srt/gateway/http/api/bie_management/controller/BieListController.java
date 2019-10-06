@@ -9,8 +9,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.GetBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextRule;
+import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -120,7 +119,7 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BusinessContextRule> getAssignBizCtx(@PathVariable("id") long topLevelAbieId) {
+    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") long topLevelAbieId) {
         return service.getAssignBizCtx(topLevelAbieId);
     }
 

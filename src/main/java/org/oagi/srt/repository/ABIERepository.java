@@ -1,28 +1,51 @@
 package org.oagi.srt.repository;
 
+import org.jooq.DSLContext;
+import org.jooq.Record16;
+import org.jooq.SelectJoinStep;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.ABIE;
-import org.oagi.srt.gateway.http.helper.SrtJdbcTemplate;
+import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
-
 @Repository
 public class ABIERepository implements SrtRepository<ABIE> {
-    
-    @Autowired
-    private SrtJdbcTemplate jdbcTemplate;
 
-    private String GET_ABIE_STATEMENT = "SELECT `abie_id`,`guid`,`based_acc_id`,`definition`," +
-            "`created_by`,`last_updated_by`,`creation_timestamp`,`last_update_timestamp`," +
-            "`state`,`client_id`,`version`,`status`,`remark`,`biz_term`,`owner_top_level_abie_id` FROM `abie`";
+    @Autowired
+    private DSLContext dslContext;
+
+    private SelectJoinStep<Record16<
+            ULong, ULong, ULong, ULong, Timestamp,
+            Integer, ULong, String, String, String,
+            ULong, ULong, String, String, String,
+            Timestamp>> getSelectJoinStep() {
+        return dslContext.select(Tables.ABIE.ABIE_ID,
+                Tables.ABIE.BASED_ACC_ID,
+                Tables.ABIE.BIZ_CTX_ID,
+                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID,
+                Tables.ABIE.LAST_UPDATE_TIMESTAMP,
+                Tables.ABIE.STATE,
+                Tables.ABIE.LAST_UPDATED_BY,
+                Tables.ABIE.STATUS,
+                Tables.ABIE.VERSION,
+                Tables.ABIE.BIZ_TERM,
+                Tables.ABIE.CLIENT_ID,
+                Tables.ABIE.CREATED_BY,
+                Tables.ABIE.DEFINITION,
+                Tables.ABIE.GUID,
+                Tables.ABIE.REMARK,
+                Tables.ABIE.CREATION_TIMESTAMP)
+                .from(Tables.ABIE);
+    }
 
     @Override
     public List<ABIE> findAll() {
-        return jdbcTemplate.queryForList(GET_ABIE_STATEMENT, ABIE.class);
+        return getSelectJoinStep().fetchInto(ABIE.class);
     }
 
     @Override
@@ -30,18 +53,18 @@ public class ABIERepository implements SrtRepository<ABIE> {
         if (id <= 0L) {
             return null;
         }
-        return jdbcTemplate.queryForObject(new StringBuilder(GET_ABIE_STATEMENT)
-                .append(" WHERE `abie_id` = :id").toString(), newSqlParameterSource()
-                .addValue("id", id), ABIE.class);
+        return getSelectJoinStep()
+                .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(ABIE.class);
     }
 
     public List<ABIE> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
         if (ownerTopLevelAbieId <= 0L) {
             return Collections.emptyList();
         }
-        return jdbcTemplate.queryForList(new StringBuilder(GET_ABIE_STATEMENT)
-                .append(" WHERE `owner_top_level_abie_id` = :owner_top_level_abie_id").toString(), newSqlParameterSource()
-                .addValue("owner_top_level_abie_id", ownerTopLevelAbieId), ABIE.class);
+        return getSelectJoinStep()
+                .where(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .fetchInto(ABIE.class);
     }
 
 }

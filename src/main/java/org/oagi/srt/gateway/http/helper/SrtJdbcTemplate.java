@@ -19,6 +19,7 @@ public class SrtJdbcTemplate {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+    private List<Class<?>> primitiveClasses = Arrays.asList(Integer.class, Long.class, Float.class, Double.class, String.class);
 
     public static MapSqlParameterSource newSqlParameterSource() {
         return new MapSqlParameterSource();
@@ -67,8 +68,6 @@ public class SrtJdbcTemplate {
             return this.jdbcTemplate.query(query, parameterSource, new BeanPropertyRowMapper<>(clazz));
         }
     }
-
-    private List<Class<?>> primitiveClasses = Arrays.asList(Integer.class, Long.class, Float.class, Double.class, String.class);
 
     private boolean isPrimitive(Class<?> clazz) {
         if (clazz.isPrimitive()) {

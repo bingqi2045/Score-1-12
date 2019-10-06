@@ -7,11 +7,8 @@ import org.oagi.srt.gateway.http.api.context_management.service.ContextCategoryS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -64,7 +61,7 @@ public class ContextCategoryController {
         return service.getContextSchemeByCategoryId(id);
     }
 
-            @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
+    @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
     public ResponseEntity create(
             @RequestBody ContextCategory contextCategory) {
         service.insert(contextCategory);

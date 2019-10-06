@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
 import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 import org.oagi.srt.entity.jooq.tables.BizCtx;
-import org.oagi.srt.entity.jooq.tables.BizCtxRule;
+import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
 import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 import org.oagi.srt.entity.jooq.tables.BlobContent;
 import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
@@ -72,7 +72,7 @@ import org.oagi.srt.entity.jooq.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1630141802;
+    private static final long serialVersionUID = 982587862;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -183,9 +183,9 @@ It should be noted that the table does not store the fact about primitive restri
     public final BizCtx BIZ_CTX = org.oagi.srt.entity.jooq.tables.BizCtx.BIZ_CTX;
 
     /**
-     * The table <code>oagi.biz_ctx_rule</code>.
+     * The table <code>oagi.biz_ctx_assignment</code>.
      */
-    public final BizCtxRule BIZ_CTX_RULE = org.oagi.srt.entity.jooq.tables.BizCtxRule.BIZ_CTX_RULE;
+    public final BizCtxAssignment BIZ_CTX_ASSIGNMENT = org.oagi.srt.entity.jooq.tables.BizCtxAssignment.BIZ_CTX_ASSIGNMENT;
 
     /**
      * This table represents business context values for business contexts. It provides the associations between a business context and a context scheme value.
@@ -355,7 +355,7 @@ If we use a separate table for each expression, then we need binding all the way
             BieUsageRule.BIE_USAGE_RULE,
             BieUserExtRevision.BIE_USER_EXT_REVISION,
             BizCtx.BIZ_CTX,
-            BizCtxRule.BIZ_CTX_RULE,
+            BizCtxAssignment.BIZ_CTX_ASSIGNMENT,
             BizCtxValue.BIZ_CTX_VALUE,
             BlobContent.BLOB_CONTENT,
             CdtAwdPri.CDT_AWD_PRI,

@@ -19,7 +19,7 @@ public class Zip {
         FileOutputStream dest = new FileOutputStream(file);
         try (ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest))) {
             // out.setMethod(ZipOutputStream.DEFLATED);
-            byte data[] = new byte[BUFFER];
+            byte[] data = new byte[BUFFER];
 
             logger.info("Compressing files in Zip format...");
             for (File targetFile : targetFiles) {

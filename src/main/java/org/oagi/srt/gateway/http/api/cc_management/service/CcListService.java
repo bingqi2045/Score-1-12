@@ -47,10 +47,8 @@ public class CcListService {
     private DSLContext dslContext;
 
     public PageResponse<CcList> getCcList(CcListRequest request) {
-
         List<CcList> ccLists = getCoreComponents(request);
         Stream<CcList> ccListStream = ccLists.stream();
-        System.out.println(ccLists);
         Comparator<CcList> comparator = getComparator(request.getPageRequest());
         if (comparator != null) {
             ccListStream = ccListStream.sorted(comparator);
@@ -134,7 +132,7 @@ public class CcListService {
                 ASCCP.RELEASE_ID,
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM
-                ).from(ASCCP.join(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
+        ).from(ASCCP.join(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID)))
                 .where(
                         and(ASCCP.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
                                 ASCCP.STATE.eq(CcState.Published.getValue()))

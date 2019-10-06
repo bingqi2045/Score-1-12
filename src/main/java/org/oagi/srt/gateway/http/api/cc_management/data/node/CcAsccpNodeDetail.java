@@ -6,6 +6,8 @@ import lombok.Data;
 public class CcAsccpNodeDetail implements CcNodeDetail {
 
     private String type = "asccp";
+    private Ascc ascc;
+    private Asccp asccp;
 
     @Data
     public static class Ascc {
@@ -30,7 +32,4 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private boolean deprecated;
         private String definition;
     }
-
-    private Ascc ascc;
-    private Asccp asccp;
 }

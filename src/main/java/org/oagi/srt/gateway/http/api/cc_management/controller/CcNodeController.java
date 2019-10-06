@@ -71,7 +71,6 @@ public class CcNodeController {
             @AuthenticationPrincipal User user,
             @PathVariable("id") long id,
             @RequestBody CcAsccpNodeDetail.Asccp ccAsccpNodeDetail) {
-        System.out.println(ccAsccpNodeDetail);
         service.updateAsccp(user, ccAsccpNodeDetail, id);
     }
 
@@ -128,13 +127,9 @@ public class CcNodeController {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
             String[] keyValue = e.split("=");
-            try {
-                Object value = keyValue[1];
-                if (!"null".equals(value) && value != null) {
-                    params.put(keyValue[0], value);
-                }
-            } catch (Exception ex) {
-                System.out.println( ex);
+            Object value = keyValue[1];
+            if (!"null".equals(value) && value != null) {
+                params.put(keyValue[0], value);
             }
         });
         return objectMapper.convertValue(params, clazz);
@@ -186,16 +181,16 @@ public class CcNodeController {
 
         switch (actionRequest.getAction()) {
             case "append":
-                        service.appendAscc(user, accId, releaseId, actionRequest.getId());
-                        break;
+                service.appendAscc(user, accId, releaseId, actionRequest.getId());
+                break;
 
             case "discard":
-                        service.discardAscc(user, accId, releaseId, actionRequest.getId());
-                        break;
+                service.discardAscc(user, accId, releaseId, actionRequest.getId());
+                break;
         }
 
         return ResponseEntity.accepted().build();
-        }
+    }
 
     @RequestMapping(value = "/core_component/asccp/create", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

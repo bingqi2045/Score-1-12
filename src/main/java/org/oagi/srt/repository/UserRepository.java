@@ -35,6 +35,7 @@ public class UserRepository implements SrtRepository<AppUser> {
                 Tables.APP_USER.OAGIS_DEVELOPER_INDICATOR.as("oagis_developer"))
                 .from(Tables.APP_USER);
     }
+
     @Override
     public List<AppUser> findAll() {
         return getSelectJoinStep().fetchInto(AppUser.class);

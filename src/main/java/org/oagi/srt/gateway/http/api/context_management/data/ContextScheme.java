@@ -15,10 +15,11 @@ public class ContextScheme implements Serializable {
     private String schemeName;
     private long ctxCategoryId;
     private String ctxCategoryName;
+    private Long codeListId;
+    private String codeListName;
     private String schemeId;
     private String schemeAgencyId;
     private String schemeVersionId;
-    private String codeListName;
     private String description;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;

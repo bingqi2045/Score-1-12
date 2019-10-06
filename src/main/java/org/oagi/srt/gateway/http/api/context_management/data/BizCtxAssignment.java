@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class BusinessContextRule implements Serializable {
+public class BizCtxAssignment implements Serializable {
 
     private long bizCtxRuleId;
     private long fromBizCtxId;

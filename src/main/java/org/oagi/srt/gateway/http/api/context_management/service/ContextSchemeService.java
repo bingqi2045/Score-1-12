@@ -34,16 +34,18 @@ public class ContextSchemeService {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record11<
+    private SelectOnConditionStep<Record13<
             ULong, String, String, ULong, String,
-            String, String, String, String, Timestamp,
-            String>> getSelectOnConditionStep() {
+            ULong, String, String, String, String,
+            String, Timestamp, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
                 CTX_SCHEME.SCHEME_NAME,
                 CTX_SCHEME.CTX_CATEGORY_ID,
                 CTX_CATEGORY.NAME.as("ctx_category_name"),
+                CTX_SCHEME.CODE_LIST_ID,
+                CODE_LIST.NAME.as("code_list_name"),
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
@@ -51,15 +53,16 @@ public class ContextSchemeService {
                 CTX_SCHEME.LAST_UPDATE_TIMESTAMP,
                 APP_USER.LOGIN_ID.as("last_update_user"))
                 .from(CTX_SCHEME)
-                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID))
-                .join(APP_USER).on(CTX_SCHEME.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID));
+                .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.eq(CTX_CATEGORY.CTX_CATEGORY_ID))
+                .join(APP_USER).on(CTX_SCHEME.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
+                .leftJoin(CODE_LIST).on(CTX_SCHEME.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID));
     }
 
     public PageResponse<ContextScheme> getContextSchemeList(ContextSchemeListRequest request) {
-        SelectOnConditionStep<Record11<
+        SelectOnConditionStep<Record13<
                 ULong, String, String, ULong, String,
-                String, String, String, String, Timestamp,
-                String>> step = getSelectOnConditionStep();
+                ULong, String, String, String, String,
+                String, Timestamp, String>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
@@ -75,10 +78,10 @@ public class ContextSchemeService {
             conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        SelectConnectByStep<Record11<
+        SelectConnectByStep<Record13<
                 ULong, String, String, ULong, String,
-                String, String, String, String, Timestamp,
-                String>> conditionStep = step.where(conditions);
+                ULong, String, String, String, String,
+                String, Timestamp, String>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -112,10 +115,10 @@ public class ContextSchemeService {
                 break;
         }
 
-        SelectWithTiesAfterOffsetStep<Record11<
+        SelectWithTiesAfterOffsetStep<Record13<
                 ULong, String, String, ULong, String,
-                String, String, String, String, Timestamp,
-                String>> offsetStep = null;
+                ULong, String, String, String, String,
+                String, Timestamp, String>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -204,7 +207,8 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_NAME,
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
-                CTX_SCHEME.SCHEME_VERSION_ID
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID
         ).from(CTX_SCHEME)
                 .fetchInto(SimpleContextScheme.class);
     }
@@ -215,7 +219,8 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_NAME,
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
-                CTX_SCHEME.SCHEME_VERSION_ID
+                CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID
         ).from(CTX_SCHEME)
                 .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
                 .fetchInto(SimpleContextScheme.class);
@@ -267,6 +272,7 @@ public class ContextSchemeService {
                 CTX_SCHEME.SCHEME_ID,
                 CTX_SCHEME.SCHEME_AGENCY_ID,
                 CTX_SCHEME.SCHEME_VERSION_ID,
+                CTX_SCHEME.CODE_LIST_ID,
                 CTX_SCHEME.DESCRIPTION,
                 CTX_SCHEME.CREATED_BY,
                 CTX_SCHEME.LAST_UPDATED_BY,
@@ -279,6 +285,7 @@ public class ContextSchemeService {
                 contextScheme.getSchemeId(),
                 contextScheme.getSchemeAgencyId(),
                 contextScheme.getSchemeVersionId(),
+                contextScheme.getCodeListId() == 0 ? null : ULong.valueOf(contextScheme.getCodeListId()),
                 contextScheme.getDescription(),
                 userId, userId, timestamp, timestamp
         ).returning(CTX_SCHEME.CTX_SCHEME_ID)
@@ -297,7 +304,7 @@ public class ContextSchemeService {
                 CTX_SCHEME_VALUE.MEANING,
                 CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID
         ).values(
-                contextSchemeValue.getGuid(),
+                SrtGuid.randomGuid(),
                 contextSchemeValue.getValue(),
                 contextSchemeValue.getMeaning(),
                 ULong.valueOf(ctxSchemeId)
@@ -310,6 +317,7 @@ public class ContextSchemeService {
                 .set(CTX_SCHEME.SCHEME_NAME, contextScheme.getSchemeName())
                 .set(CTX_SCHEME.CTX_CATEGORY_ID, ULong.valueOf(contextScheme.getCtxCategoryId()))
                 .set(CTX_SCHEME.SCHEME_ID, contextScheme.getSchemeId())
+                .set(CTX_SCHEME.CODE_LIST_ID, contextScheme.getCodeListId() == 0 ? null : ULong.valueOf(contextScheme.getCodeListId()))
                 .set(CTX_SCHEME.SCHEME_AGENCY_ID, contextScheme.getSchemeAgencyId())
                 .set(CTX_SCHEME.SCHEME_VERSION_ID, contextScheme.getSchemeVersionId())
                 .set(CTX_SCHEME.DESCRIPTION, contextScheme.getDescription())

@@ -72,6 +72,17 @@ public class ExtensionPathHandler implements InitializingBean {
     }
 
     public boolean containsExtension(long accId, long targetExtensionId) {
+        ACC targetAcc = accMap.get(targetExtensionId);
+        /*
+         * Issue #711
+         *
+         * If the target extension is the global extension (i.e., All Extension),
+         * this code loops forever.
+         */
+        if ("All Extension".equals(targetAcc.getObjectClassTerm())) {
+            return true;
+        }
+        
         ACC acc = accMap.get(accId);
         if (acc.getBasedAccId() != null) {
             if (containsExtension(acc.getBasedAccId(), targetExtensionId)) {

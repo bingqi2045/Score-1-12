@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.data.expression;
 
 import lombok.Data;
-import org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.GenerationContext;
 
 @Data
 public class GenerateExpressionOption {

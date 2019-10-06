@@ -43,6 +43,14 @@ public class SrtRedisCacheWriter implements RedisCacheWriter {
         this.sleepTime = sleepTime;
     }
 
+    static boolean shouldExpireWithin(@Nullable Duration ttl) {
+        return ttl != null && !ttl.isZero() && !ttl.isNegative();
+    }
+
+    private static byte[] createCacheLockKey(String name) {
+        return (name + "~lock").getBytes(StandardCharsets.UTF_8);
+    }
+
     /*
      * (non-Javadoc)
      * @see org.springframework.data.redis.cache.RedisCacheWriter#put(java.lang.String, byte[], byte[], java.time.Duration)
@@ -245,13 +253,5 @@ public class SrtRedisCacheWriter implements RedisCacheWriter {
             throw new PessimisticLockingFailureException(String.format("Interrupted while waiting to unlock cache %s", name),
                     ex);
         }
-    }
-
-    static boolean shouldExpireWithin(@Nullable Duration ttl) {
-        return ttl != null && !ttl.isZero() && !ttl.isNegative();
-    }
-
-    private static byte[] createCacheLockKey(String name) {
-        return (name + "~lock").getBytes(StandardCharsets.UTF_8);
     }
 }

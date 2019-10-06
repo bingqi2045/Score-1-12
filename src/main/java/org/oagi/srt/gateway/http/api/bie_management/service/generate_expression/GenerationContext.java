@@ -109,6 +109,38 @@ public class GenerationContext implements InitializingBean {
 
     @Autowired
     private ReleaseRepository releaseRepository;
+    // Prepared Datas
+    private Map<Long, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<Long, BdtPriRestri> findBdtPriRestriMap;
+    private Map<Long, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
+    private Map<Long, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<Long, BdtScPriRestri> findBdtScPriRestriMap;
+    private Map<Long, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
+    private Map<Long, Xbt> findXbtMap;
+    private Map<Long, CodeList> findCodeListMap;
+    private Map<Long, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
+    private Map<Long, ACC> findACCMap;
+    private Map<Long, BCC> findBCCMap;
+    private Map<Long, BCCP> findBCCPMap;
+    private Map<Long, ASCC> findASCCMap;
+    private Map<Long, ASCCP> findASCCPMap;
+    private Map<Long, DT> findDTMap;
+    private Map<Long, DTSC> findDtScMap;
+    private Map<Long, AgencyIdList> findAgencyIdListMap;
+    private Map<Long, AgencyIdListValue> findAgencyIdListValueMap;
+    private Map<Long, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
+    private Map<Long, ABIE> findAbieMap;
+    private Map<Long, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
+    private Map<Long, List<BBIESC>>
+            findBbieScByBbieIdAndUsedIsTrueMap;
+    private Map<Long, List<ASBIE>> findAsbieByFromAbieIdMap;
+    private Map<Long, ASBIEP> findASBIEPMap;
+    private Map<Long, ASBIEP> findAsbiepByRoleOfAbieIdMap;
+    private Map<Long, BBIEP> findBBIEPMap;
+    private Map<Long, String> findUserNameMap;
+    private Map<Long, String> findReleaseNumberMap;
+    private Map<Long, ContextScheme> findContextSchemeMap;
+    private Map<Long, ContextCategory> findContextCategoryMap;
 
     public GenerationContext(TopLevelAbie topLevelAbie) {
         this.topLevelAbie = topLevelAbie;
@@ -244,58 +276,39 @@ public class GenerationContext implements InitializingBean {
         return topLevelAbie;
     }
 
-    // Prepared Datas
-    private Map<Long, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
-
     public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(long bdtId) {
         return (bdtId > 0L) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
     }
 
-    private Map<Long, BdtPriRestri> findBdtPriRestriMap;
-
     public BdtPriRestri findBdtPriRestri(Long bdtPriRestriId) {
         return (bdtPriRestriId != null && bdtPriRestriId > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
     }
-
-    private Map<Long, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
 
     public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(Long cdtAwdPriXpsTypeMapId) {
         return (cdtAwdPriXpsTypeMapId != null && cdtAwdPriXpsTypeMapId > 0L) ?
                 findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId) : null;
     }
 
-    private Map<Long, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
-
     public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(long bdtScId) {
         return (bdtScId > 0L) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
     }
 
-    private Map<Long, BdtScPriRestri> findBdtScPriRestriMap;
-
     public BdtScPriRestri findBdtScPriRestri(Long bdtScPriRestriId) {
         return (bdtScPriRestriId != null && bdtScPriRestriId > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
     }
-
-    private Map<Long, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
 
     public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(Long cdtScAwdPriXpsTypeMapId) {
         return (cdtScAwdPriXpsTypeMapId != null && cdtScAwdPriXpsTypeMapId > 0L) ?
                 findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId) : null;
     }
 
-    private Map<Long, Xbt> findXbtMap;
-
     public Xbt findXbt(long xbtId) {
         return (xbtId > 0L) ? findXbtMap.get(xbtId) : null;
     }
 
-    private Map<Long, CodeList> findCodeListMap;
-
     public CodeList findCodeList(Long codeListId) {
         return (codeListId != null && codeListId > 0L) ? findCodeListMap.get(codeListId) : null;
     }
-
-    private Map<Long, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
 
     public List<CodeListValue> findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(long codeListId) {
         return findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap.containsKey(codeListId) ?
@@ -303,56 +316,37 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    private Map<Long, ACC> findACCMap;
-
     public ACC findACC(long accId) {
         return (accId > 0L) ? findACCMap.get(accId) : null;
     }
-
-    private Map<Long, BCC> findBCCMap;
 
     public BCC findBCC(long bccId) {
         return (bccId > 0L) ? findBCCMap.get(bccId) : null;
     }
 
-    private Map<Long, BCCP> findBCCPMap;
-
     public BCCP findBCCP(long bccpId) {
         return (bccpId > 0L) ? findBCCPMap.get(bccpId) : null;
     }
-
-    private Map<Long, ASCC> findASCCMap;
 
     public ASCC findASCC(long asccId) {
         return (asccId > 0L) ? findASCCMap.get(asccId) : null;
     }
 
-    private Map<Long, ASCCP> findASCCPMap;
-
     public ASCCP findASCCP(long asccpId) {
         return (asccpId > 0L) ? findASCCPMap.get(asccpId) : null;
     }
-
-    private Map<Long, DT> findDTMap;
 
     public DT findDT(long dtId) {
         return (dtId > 0L) ? findDTMap.get(dtId) : null;
     }
 
-    private Map<Long, DTSC> findDtScMap;
-
     public DTSC findDtSc(long dtScId) {
         return (dtScId > 0L) ? findDtScMap.get(dtScId) : null;
     }
 
-    private Map<Long, AgencyIdList> findAgencyIdListMap;
-
     public AgencyIdList findAgencyIdList(Long agencyIdListId) {
         return (agencyIdListId != null && agencyIdListId > 0L) ? findAgencyIdListMap.get(agencyIdListId) : null;
     }
-
-    private Map<Long, AgencyIdListValue> findAgencyIdListValueMap;
-    private Map<Long, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
 
     public AgencyIdListValue findAgencyIdListValue(Long agencyIdListValueId) {
         return (agencyIdListValueId != null && agencyIdListValueId > 0L) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
@@ -364,13 +358,9 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    private Map<Long, ABIE> findAbieMap;
-
     public ABIE findAbie(long abieId) {
         return (abieId > 0L) ? findAbieMap.get(abieId) : null;
     }
-
-    private Map<Long, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
 
     public List<BBIE> findBbieByFromAbieIdAndUsedIsTrue(long fromAbieId) {
         return findBbieByFromAbieIdAndUsedIsTrueMap.containsKey(fromAbieId) ?
@@ -378,16 +368,11 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    private Map<Long, List<BBIESC>>
-            findBbieScByBbieIdAndUsedIsTrueMap;
-
     public List<BBIESC> findBbieScByBbieIdAndUsedIsTrue(long bbieId) {
         return findBbieScByBbieIdAndUsedIsTrueMap.containsKey(bbieId) ?
                 findBbieScByBbieIdAndUsedIsTrueMap.get(bbieId) :
                 Collections.emptyList();
     }
-
-    private Map<Long, List<ASBIE>> findAsbieByFromAbieIdMap;
 
     public List<ASBIE> findAsbieByFromAbieId(long fromAbieId) {
         return findAsbieByFromAbieIdMap.containsKey(fromAbieId) ?
@@ -395,31 +380,21 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    private Map<Long, ASBIEP> findASBIEPMap;
-
     public ASBIEP findASBIEP(long asbiepId) {
         return (asbiepId > 0L) ? findASBIEPMap.get(asbiepId) : null;
     }
-
-    private Map<Long, ASBIEP> findAsbiepByRoleOfAbieIdMap;
 
     public ASBIEP findAsbiepByRoleOfAbieId(long roleOfAbieId) {
         return (roleOfAbieId > 0L) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
     }
 
-    private Map<Long, BBIEP> findBBIEPMap;
-
     public BBIEP findBBIEP(long bbiepId) {
         return (bbiepId > 0L) ? findBBIEPMap.get(bbiepId) : null;
     }
 
-    private Map<Long, String> findUserNameMap;
-
     public String findUserName(long userId) {
         return (userId > 0L) ? findUserNameMap.get(userId) : null;
     }
-
-    private Map<Long, String> findReleaseNumberMap;
 
     public String findReleaseNumber(long releaseId) {
         return (releaseId > 0L) ? findReleaseNumberMap.get(releaseId) : null;
@@ -428,7 +403,6 @@ public class GenerationContext implements InitializingBean {
     public ACC queryBasedACC(ABIE abie) {
         return (abie != null) ? findACC(abie.getBasedAccId()) : null;
     }
-
 
     private double getSeqkey(BIE bie) {
         if (bie instanceof BBIE) {
@@ -479,24 +453,6 @@ public class GenerationContext implements InitializingBean {
         }
 
         return result;
-    }
-
-    class ValueComparator implements Comparator<BIE> {
-
-        Map<BIE, Double> base;
-
-        public ValueComparator(Map<BIE, Double> base) {
-            this.base = base;
-        }
-
-        // Note: this comparator imposes orderings that are inconsistent with equals.
-        public int compare(BIE a, BIE b) {
-            if (base.get(a) <= base.get(b)) {
-                return -1;
-            } else {
-                return 1;
-            } // returning 0 would merge keys
-        }
     }
 
     // Get only SCs whose is_used is true.
@@ -658,13 +614,9 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toList());
     }
 
-    private Map<Long, ContextScheme> findContextSchemeMap;
-
     public ContextScheme findContextScheme(long ctxSchemeId) {
         return (ctxSchemeId > 0L) ? findContextSchemeMap.get(ctxSchemeId) : null;
     }
-
-    private Map<Long, ContextCategory> findContextCategoryMap;
 
     public ContextCategory findContextCategory(long ctxCategoryId) {
         return (ctxCategoryId > 0L) ? findContextCategoryMap.get(ctxCategoryId) : null;
@@ -683,6 +635,24 @@ public class GenerationContext implements InitializingBean {
         }
 
         return null;
+    }
+
+    class ValueComparator implements Comparator<BIE> {
+
+        Map<BIE, Double> base;
+
+        public ValueComparator(Map<BIE, Double> base) {
+            this.base = base;
+        }
+
+        // Note: this comparator imposes orderings that are inconsistent with equals.
+        public int compare(BIE a, BIE b) {
+            if (base.get(a) <= base.get(b)) {
+                return -1;
+            } else {
+                return 1;
+            } // returning 0 would merge keys
+        }
     }
 
 }

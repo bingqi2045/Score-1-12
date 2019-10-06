@@ -30,7 +30,7 @@ import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
 import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 import org.oagi.srt.entity.jooq.tables.BizCtx;
-import org.oagi.srt.entity.jooq.tables.BizCtxRule;
+import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
 import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 import org.oagi.srt.entity.jooq.tables.BlobContent;
 import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
@@ -73,8 +73,8 @@ import org.oagi.srt.entity.jooq.tables.records.BdtPriRestriRecord;
 import org.oagi.srt.entity.jooq.tables.records.BdtScPriRestriRecord;
 import org.oagi.srt.entity.jooq.tables.records.BieUsageRuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.BieUserExtRevisionRecord;
+import org.oagi.srt.entity.jooq.tables.records.BizCtxAssignmentRecord;
 import org.oagi.srt.entity.jooq.tables.records.BizCtxRecord;
-import org.oagi.srt.entity.jooq.tables.records.BizCtxRuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.BizCtxValueRecord;
 import org.oagi.srt.entity.jooq.tables.records.BlobContentRecord;
 import org.oagi.srt.entity.jooq.tables.records.CdtAwdPriRecord;
@@ -138,7 +138,7 @@ public class Keys {
     public static final Identity<BieUsageRuleRecord, ULong> IDENTITY_BIE_USAGE_RULE = Identities0.IDENTITY_BIE_USAGE_RULE;
     public static final Identity<BieUserExtRevisionRecord, ULong> IDENTITY_BIE_USER_EXT_REVISION = Identities0.IDENTITY_BIE_USER_EXT_REVISION;
     public static final Identity<BizCtxRecord, ULong> IDENTITY_BIZ_CTX = Identities0.IDENTITY_BIZ_CTX;
-    public static final Identity<BizCtxRuleRecord, ULong> IDENTITY_BIZ_CTX_RULE = Identities0.IDENTITY_BIZ_CTX_RULE;
+    public static final Identity<BizCtxAssignmentRecord, ULong> IDENTITY_BIZ_CTX_ASSIGNMENT = Identities0.IDENTITY_BIZ_CTX_ASSIGNMENT;
     public static final Identity<BizCtxValueRecord, ULong> IDENTITY_BIZ_CTX_VALUE = Identities0.IDENTITY_BIZ_CTX_VALUE;
     public static final Identity<BlobContentRecord, ULong> IDENTITY_BLOB_CONTENT = Identities0.IDENTITY_BLOB_CONTENT;
     public static final Identity<CdtAwdPriRecord, ULong> IDENTITY_CDT_AWD_PRI = Identities0.IDENTITY_CDT_AWD_PRI;
@@ -191,8 +191,7 @@ public class Keys {
     public static final UniqueKey<BieUserExtRevisionRecord> KEY_BIE_USER_EXT_REVISION_PRIMARY = UniqueKeys0.KEY_BIE_USER_EXT_REVISION_PRIMARY;
     public static final UniqueKey<BizCtxRecord> KEY_BIZ_CTX_PRIMARY = UniqueKeys0.KEY_BIZ_CTX_PRIMARY;
     public static final UniqueKey<BizCtxRecord> KEY_BIZ_CTX_BIZ_CTX_UK1 = UniqueKeys0.KEY_BIZ_CTX_BIZ_CTX_UK1;
-    public static final UniqueKey<BizCtxRuleRecord> KEY_BIZ_CTX_RULE_PRIMARY = UniqueKeys0.KEY_BIZ_CTX_RULE_PRIMARY;
-    public static final UniqueKey<BizCtxRuleRecord> KEY_BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY = UniqueKeys0.KEY_BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY;
+    public static final UniqueKey<BizCtxAssignmentRecord> KEY_BIZ_CTX_ASSIGNMENT_PRIMARY = UniqueKeys0.KEY_BIZ_CTX_ASSIGNMENT_PRIMARY;
     public static final UniqueKey<BizCtxValueRecord> KEY_BIZ_CTX_VALUE_PRIMARY = UniqueKeys0.KEY_BIZ_CTX_VALUE_PRIMARY;
     public static final UniqueKey<BlobContentRecord> KEY_BLOB_CONTENT_PRIMARY = UniqueKeys0.KEY_BLOB_CONTENT_PRIMARY;
     public static final UniqueKey<CdtAwdPriRecord> KEY_CDT_AWD_PRI_PRIMARY = UniqueKeys0.KEY_CDT_AWD_PRI_PRIMARY;
@@ -231,6 +230,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final ForeignKey<AbieRecord, AccRecord> ABIE_BASED_ACC_ID_FK = ForeignKeys0.ABIE_BASED_ACC_ID_FK;
+    public static final ForeignKey<AbieRecord, BizCtxRecord> ABIE_BIZ_CTX_ID_FK = ForeignKeys0.ABIE_BIZ_CTX_ID_FK;
     public static final ForeignKey<AbieRecord, AppUserRecord> ABIE_CREATED_BY_FK = ForeignKeys0.ABIE_CREATED_BY_FK;
     public static final ForeignKey<AbieRecord, AppUserRecord> ABIE_LAST_UPDATED_BY_FK = ForeignKeys0.ABIE_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AbieRecord, ClientRecord> ABIE_CLIENT_ID_FK = ForeignKeys0.ABIE_CLIENT_ID_FK;
@@ -326,8 +326,8 @@ public class Keys {
     public static final ForeignKey<BieUserExtRevisionRecord, AccRecord> BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK = ForeignKeys0.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK;
     public static final ForeignKey<BizCtxRecord, AppUserRecord> BIZ_CTX_CREATED_BY_FK = ForeignKeys0.BIZ_CTX_CREATED_BY_FK;
     public static final ForeignKey<BizCtxRecord, AppUserRecord> BIZ_CTX_LAST_UPDATED_BY_FK = ForeignKeys0.BIZ_CTX_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<BizCtxRuleRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_1 = ForeignKeys0.BIZ_CTX_RULE_IBFK_1;
-    public static final ForeignKey<BizCtxRuleRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_2 = ForeignKeys0.BIZ_CTX_RULE_IBFK_2;
+    public static final ForeignKey<BizCtxAssignmentRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_1 = ForeignKeys0.BIZ_CTX_RULE_IBFK_1;
+    public static final ForeignKey<BizCtxAssignmentRecord, TopLevelAbieRecord> BIZ_CTX_RULE_IBFK_2 = ForeignKeys0.BIZ_CTX_RULE_IBFK_2;
     public static final ForeignKey<BizCtxValueRecord, BizCtxRecord> BIZ_CTX_VALUE_BIZ_CTX_ID_FK = ForeignKeys0.BIZ_CTX_VALUE_BIZ_CTX_ID_FK;
     public static final ForeignKey<BizCtxValueRecord, CtxSchemeValueRecord> BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = ForeignKeys0.BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK;
     public static final ForeignKey<BlobContentRecord, ReleaseRecord> BLOB_CONTENT_RELEASE_ID_FK = ForeignKeys0.BLOB_CONTENT_RELEASE_ID_FK;
@@ -347,6 +347,7 @@ public class Keys {
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.CODE_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = ForeignKeys0.CTX_SCHEME_CTX_CATEGORY_ID_FK;
+    public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_IBFK_1 = ForeignKeys0.CTX_SCHEME_IBFK_1;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = ForeignKeys0.CTX_SCHEME_CREATED_BY_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = ForeignKeys0.CTX_SCHEME_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = ForeignKeys0.CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK;
@@ -412,7 +413,7 @@ public class Keys {
         public static Identity<BieUsageRuleRecord, ULong> IDENTITY_BIE_USAGE_RULE = Internal.createIdentity(BieUsageRule.BIE_USAGE_RULE, BieUsageRule.BIE_USAGE_RULE.BIE_USAGE_RULE_ID);
         public static Identity<BieUserExtRevisionRecord, ULong> IDENTITY_BIE_USER_EXT_REVISION = Internal.createIdentity(BieUserExtRevision.BIE_USER_EXT_REVISION, BieUserExtRevision.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID);
         public static Identity<BizCtxRecord, ULong> IDENTITY_BIZ_CTX = Internal.createIdentity(BizCtx.BIZ_CTX, BizCtx.BIZ_CTX.BIZ_CTX_ID);
-        public static Identity<BizCtxRuleRecord, ULong> IDENTITY_BIZ_CTX_RULE = Internal.createIdentity(BizCtxRule.BIZ_CTX_RULE, BizCtxRule.BIZ_CTX_RULE.BIZ_CTX_RULE_ID);
+        public static Identity<BizCtxAssignmentRecord, ULong> IDENTITY_BIZ_CTX_ASSIGNMENT = Internal.createIdentity(BizCtxAssignment.BIZ_CTX_ASSIGNMENT, BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID);
         public static Identity<BizCtxValueRecord, ULong> IDENTITY_BIZ_CTX_VALUE = Internal.createIdentity(BizCtxValue.BIZ_CTX_VALUE, BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID);
         public static Identity<BlobContentRecord, ULong> IDENTITY_BLOB_CONTENT = Internal.createIdentity(BlobContent.BLOB_CONTENT, BlobContent.BLOB_CONTENT.BLOB_CONTENT_ID);
         public static Identity<CdtAwdPriRecord, ULong> IDENTITY_CDT_AWD_PRI = Internal.createIdentity(CdtAwdPri.CDT_AWD_PRI, CdtAwdPri.CDT_AWD_PRI.CDT_AWD_PRI_ID);
@@ -463,8 +464,7 @@ public class Keys {
         public static final UniqueKey<BieUserExtRevisionRecord> KEY_BIE_USER_EXT_REVISION_PRIMARY = Internal.createUniqueKey(BieUserExtRevision.BIE_USER_EXT_REVISION, "KEY_bie_user_ext_revision_PRIMARY", BieUserExtRevision.BIE_USER_EXT_REVISION.BIE_USER_EXT_REVISION_ID);
         public static final UniqueKey<BizCtxRecord> KEY_BIZ_CTX_PRIMARY = Internal.createUniqueKey(BizCtx.BIZ_CTX, "KEY_biz_ctx_PRIMARY", BizCtx.BIZ_CTX.BIZ_CTX_ID);
         public static final UniqueKey<BizCtxRecord> KEY_BIZ_CTX_BIZ_CTX_UK1 = Internal.createUniqueKey(BizCtx.BIZ_CTX, "KEY_biz_ctx_biz_ctx_uk1", BizCtx.BIZ_CTX.GUID);
-        public static final UniqueKey<BizCtxRuleRecord> KEY_BIZ_CTX_RULE_PRIMARY = Internal.createUniqueKey(BizCtxRule.BIZ_CTX_RULE, "KEY_biz_ctx_rule_PRIMARY", BizCtxRule.BIZ_CTX_RULE.BIZ_CTX_RULE_ID);
-        public static final UniqueKey<BizCtxRuleRecord> KEY_BIZ_CTX_RULE_BIZ_CTX_RULE_UNICITY = Internal.createUniqueKey(BizCtxRule.BIZ_CTX_RULE, "KEY_biz_ctx_rule_biz_ctx_rule_unicity", BizCtxRule.BIZ_CTX_RULE.FROM_BIZ_CTX_ID, BizCtxRule.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID);
+        public static final UniqueKey<BizCtxAssignmentRecord> KEY_BIZ_CTX_ASSIGNMENT_PRIMARY = Internal.createUniqueKey(BizCtxAssignment.BIZ_CTX_ASSIGNMENT, "KEY_biz_ctx_assignment_PRIMARY", BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID);
         public static final UniqueKey<BizCtxValueRecord> KEY_BIZ_CTX_VALUE_PRIMARY = Internal.createUniqueKey(BizCtxValue.BIZ_CTX_VALUE, "KEY_biz_ctx_value_PRIMARY", BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID);
         public static final UniqueKey<BlobContentRecord> KEY_BLOB_CONTENT_PRIMARY = Internal.createUniqueKey(BlobContent.BLOB_CONTENT, "KEY_blob_content_PRIMARY", BlobContent.BLOB_CONTENT.BLOB_CONTENT_ID);
         public static final UniqueKey<CdtAwdPriRecord> KEY_CDT_AWD_PRI_PRIMARY = Internal.createUniqueKey(CdtAwdPri.CDT_AWD_PRI, "KEY_cdt_awd_pri_PRIMARY", CdtAwdPri.CDT_AWD_PRI.CDT_AWD_PRI_ID);
@@ -501,6 +501,7 @@ public class Keys {
 
     private static class ForeignKeys0 {
         public static final ForeignKey<AbieRecord, AccRecord> ABIE_BASED_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, Abie.ABIE, "abie_based_acc_id_fk", Abie.ABIE.BASED_ACC_ID);
+        public static final ForeignKey<AbieRecord, BizCtxRecord> ABIE_BIZ_CTX_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BIZ_CTX_PRIMARY, Abie.ABIE, "abie_biz_ctx_id_fk", Abie.ABIE.BIZ_CTX_ID);
         public static final ForeignKey<AbieRecord, AppUserRecord> ABIE_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Abie.ABIE, "abie_created_by_fk", Abie.ABIE.CREATED_BY);
         public static final ForeignKey<AbieRecord, AppUserRecord> ABIE_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Abie.ABIE, "abie_last_updated_by_fk", Abie.ABIE.LAST_UPDATED_BY);
         public static final ForeignKey<AbieRecord, ClientRecord> ABIE_CLIENT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CLIENT_PRIMARY, Abie.ABIE, "abie_client_id_fk", Abie.ABIE.CLIENT_ID);
@@ -596,8 +597,8 @@ public class Keys {
         public static final ForeignKey<BieUserExtRevisionRecord, AccRecord> BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, BieUserExtRevision.BIE_USER_EXT_REVISION, "bie_user_ext_revision_user_ext_acc_id_fk", BieUserExtRevision.BIE_USER_EXT_REVISION.USER_EXT_ACC_ID);
         public static final ForeignKey<BizCtxRecord, AppUserRecord> BIZ_CTX_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, BizCtx.BIZ_CTX, "biz_ctx_created_by_fk", BizCtx.BIZ_CTX.CREATED_BY);
         public static final ForeignKey<BizCtxRecord, AppUserRecord> BIZ_CTX_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, BizCtx.BIZ_CTX, "biz_ctx_last_updated_by_fk", BizCtx.BIZ_CTX.LAST_UPDATED_BY);
-        public static final ForeignKey<BizCtxRuleRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_1 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BIZ_CTX_PRIMARY, BizCtxRule.BIZ_CTX_RULE, "biz_ctx_rule_ibfk_1", BizCtxRule.BIZ_CTX_RULE.FROM_BIZ_CTX_ID);
-        public static final ForeignKey<BizCtxRuleRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_2 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BIZ_CTX_PRIMARY, BizCtxRule.BIZ_CTX_RULE, "biz_ctx_rule_ibfk_2", BizCtxRule.BIZ_CTX_RULE.FROM_BIZ_CTX_ID);
+        public static final ForeignKey<BizCtxAssignmentRecord, BizCtxRecord> BIZ_CTX_RULE_IBFK_1 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BIZ_CTX_PRIMARY, BizCtxAssignment.BIZ_CTX_ASSIGNMENT, "biz_ctx_rule_ibfk_1", BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID);
+        public static final ForeignKey<BizCtxAssignmentRecord, TopLevelAbieRecord> BIZ_CTX_RULE_IBFK_2 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, BizCtxAssignment.BIZ_CTX_ASSIGNMENT, "biz_ctx_rule_ibfk_2", BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID);
         public static final ForeignKey<BizCtxValueRecord, BizCtxRecord> BIZ_CTX_VALUE_BIZ_CTX_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BIZ_CTX_PRIMARY, BizCtxValue.BIZ_CTX_VALUE, "biz_ctx_value_biz_ctx_id_fk", BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_ID);
         public static final ForeignKey<BizCtxValueRecord, CtxSchemeValueRecord> BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_SCHEME_VALUE_PRIMARY, BizCtxValue.BIZ_CTX_VALUE, "biz_ctx_value_ctx_scheme_value_id_fk", BizCtxValue.BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID);
         public static final ForeignKey<BlobContentRecord, ReleaseRecord> BLOB_CONTENT_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, BlobContent.BLOB_CONTENT, "blob_content_release_id_fk", BlobContent.BLOB_CONTENT.RELEASE_ID);
@@ -617,6 +618,7 @@ public class Keys {
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_last_updated_by_fk", CodeList.CODE_LIST.LAST_UPDATED_BY);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_CATEGORY_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID);
+        public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_IBFK_1 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ibfk_1", CtxScheme.CTX_SCHEME.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_created_by_fk", CtxScheme.CTX_SCHEME.CREATED_BY);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME.LAST_UPDATED_BY);
         public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_SCHEME_PRIMARY, CtxSchemeValue.CTX_SCHEME_VALUE, "ctx_scheme_value_owner_ctx_scheme_id_fk", CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID);
