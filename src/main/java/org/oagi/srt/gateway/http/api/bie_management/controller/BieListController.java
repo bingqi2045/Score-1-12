@@ -114,7 +114,7 @@ public class BieListController {
     @RequestMapping(value="/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BizCtx findBizCtxFromAbieId(@PathVariable("id") long abieId) {
-        return service.findBizCtxFromAbieId(abieId);
+        return service.findBizCtxByAbieId(abieId);
     }
 
     @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,

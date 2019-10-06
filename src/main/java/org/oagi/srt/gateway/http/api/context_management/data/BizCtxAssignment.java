@@ -7,8 +7,8 @@ import java.io.Serializable;
 @Data
 public class BizCtxAssignment implements Serializable {
 
-    private long bizCtxRuleId;
-    private long fromBizCtxId;
-    private long topLevelBieId;
+    private long bizCtxAssignmentId;
+    private long bizCtxId;
+    private long topLevelAbieId;
 
 }

@@ -595,13 +595,13 @@ public class GenerationContext implements InitializingBean {
     }
 
     public BizCtx findBusinessContext(TopLevelAbie topLevelAbie) {
-        long bizCtxId = (topLevelAbie != null) ? bizCtxRepository.findAllFromTopLvlBie(topLevelAbie).get(0).getBizCtxId() : 0L;
+        long bizCtxId = (topLevelAbie != null) ? bizCtxRepository.findByTopLevelAbie(topLevelAbie).get(0).getBizCtxId() : 0L;
         //return the first one of the list
         return bizCtxRepository.findById(bizCtxId);
     }
 
     public List<BizCtx> findBusinessContexts(TopLevelAbie topLevelAbie) {
-        return bizCtxRepository.findAllFromTopLvlBie(topLevelAbie);
+        return bizCtxRepository.findByTopLevelAbie(topLevelAbie);
     }
 
     public List<ContextSchemeValue> findContextSchemeValue(BizCtx businessContext) {

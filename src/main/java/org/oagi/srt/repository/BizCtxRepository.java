@@ -8,13 +8,12 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class BizCtxRepository implements SrtRepository<BizCtx> {
@@ -53,22 +52,14 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
                 .fetchOneInto(BizCtx.class);
     }
 
-    public List<BizCtx> findAllFromTopLvlBie(TopLevelAbie topLevelAbie) {
-        List <BizCtxAssignment> bizCtxAssignments = dslContext.select(
-                Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID,
-                Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
-                Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+    public List<BizCtx> findByTopLevelAbie(TopLevelAbie topLevelAbie) {
+        List<Long> bizCtxIds = dslContext.select(
+                Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
                 .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
-                .fetchInto(BizCtxAssignment.class);
+                .fetchInto(Long.class);
 
-        List<BizCtx> bizCtx = new ArrayList<>();
-
-        for(BizCtxAssignment bizCtxRule: bizCtxAssignments) {
-            bizCtx.add(findById(bizCtxRule.getFromBizCtxId()));
-        }
-
-        return bizCtx;
+        return bizCtxIds.stream().map(bizCtxId -> findById(bizCtxId)).collect(Collectors.toList());
     }
 
 }

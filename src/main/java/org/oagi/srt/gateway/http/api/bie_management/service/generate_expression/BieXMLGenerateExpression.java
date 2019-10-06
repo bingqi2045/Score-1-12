@@ -201,9 +201,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         Element documentation = newElement("documentation");
         annotation.addContent(documentation);
-        List<BizCtx> businessContext = generationContext.findBusinessContexts(topLevelAbie);
+        List<BizCtx> bizCtxList = generationContext.findBusinessContexts(topLevelAbie);
 
-        for (BizCtx bizCtx: businessContext) {
+        for (BizCtx bizCtx : bizCtxList) {
             Element ccts_BusinessContext = new Element("ccts_BusinessContext", OAGI_NS);
             documentation.addContent(ccts_BusinessContext);
 

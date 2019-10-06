@@ -458,13 +458,12 @@ public class BieService {
         return getBieList(request.getUser(), condition);
     }
 
-    @Transactional
-    public BizCtx findBizCtxFromAbieId(long abieId) {
+    public BizCtx findBizCtxByAbieId(long abieId) {
         long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
-        //return the first biz ctx of the specific topLevelAbieId
+        // return the first biz ctx of the specific topLevelAbieId
         TopLevelAbie top = new TopLevelAbie();
         top.setTopLevelAbieId(topLevelAbieId);
-        return bizCtxRepository.findAllFromTopLvlBie(top).get(0);
+        return bizCtxRepository.findByTopLevelAbie(top).get(0);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {
