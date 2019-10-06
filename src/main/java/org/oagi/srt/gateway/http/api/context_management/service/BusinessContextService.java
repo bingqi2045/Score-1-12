@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,6 +45,10 @@ public class BusinessContextService {
 
     public BusinessContext getBusinessContext(long bizCtxId) {
         return repository.findBusinessContextByBizCtxId(bizCtxId);
+    }
+
+    public List<BusinessContext> getBusinessContexts(List<Long> bizCtxIds) {
+        return repository.findBusinessContextsByBizCtxIdIn(bizCtxIds);
     }
 
     public List<BusinessContextValue> getBusinessContextValues() {

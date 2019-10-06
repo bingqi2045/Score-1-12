@@ -12,4 +12,6 @@ CREATE TABLE `biz_ctx_assignment` (
   CONSTRAINT `biz_ctx_rule_ibfk_2` FOREIGN KEY (`top_level_abie_id`) REFERENCES `top_level_abie` (`top_level_abie_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `abie` MODIFY COLUMN `biz_ctx_id` bigint(20) unsigned DEFAULT NULL COMMENT '(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.';
+
 SET FOREIGN_KEY_CHECKS = 1;

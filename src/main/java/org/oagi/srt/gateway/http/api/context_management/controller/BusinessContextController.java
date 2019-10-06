@@ -65,6 +65,16 @@ public class BusinessContextController {
         return service.getBusinessContext(id);
     }
 
+    @RequestMapping(value = "/business_contexts/{bizCtxIds}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BusinessContext> getBusinessContexts(
+            @PathVariable("bizCtxIds") String bizCtxIds) {
+        return service.getBusinessContexts(
+                Arrays.asList(bizCtxIds.split(",")).stream()
+                        .map(e -> Long.valueOf(e))
+                        .collect(Collectors.toList()));
+    }
+
     @RequestMapping(value = "/business_context_values", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<BusinessContextValue> getBusinessContextValues() {

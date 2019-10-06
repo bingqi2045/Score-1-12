@@ -385,18 +385,16 @@ public class BieRepository {
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
-    public long createBizCtxRule(long topLevelAbieId, long bizCtxId) {
-        return dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
-                .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
-                .execute();
+    public void createBizCtxAssignments(long topLevelAbieId, List<Long> bizCtxIds) {
+        bizCtxIds.stream().forEach(bizCtxId -> {
+            dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                    .execute();
+        });
     }
 
     public long createAbie(User user, long basedAccId, long topLevelAbieId) {
-        return createAbie(user, basedAccId, getBizCtxIdByTopLevelAbieId(topLevelAbieId), topLevelAbieId);
-    }
-
-    public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 

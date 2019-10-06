@@ -104,12 +104,12 @@ public class BusinessContextRepository {
             Map<Long, BusinessContext> bixCtxMap = result.stream()
                     .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
 
-            dslContext.select(BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
-                    coalesce(count(BIZ_CTX_RULE.BIZ_CTX_RULE_ID), 0))
-                    .from(BIZ_CTX_RULE)
-                    .where(BIZ_CTX_RULE.FROM_BIZ_CTX_ID.in(
+            dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
+                    coalesce(count(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID), 0))
+                    .from(BIZ_CTX_ASSIGNMENT)
+                    .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.in(
                             bixCtxMap.keySet().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                    .groupBy(BIZ_CTX_RULE.BIZ_CTX_RULE_ID)
+                    .groupBy(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID)
                     .fetch().stream().forEach(record -> {
                 long bizCtxId = record.value1().longValue();
                 int cnt = record.value2();
@@ -133,22 +133,33 @@ public class BusinessContextRepository {
         if (bizCtxId <= 0L) {
             return null;
         }
+
         BusinessContext bizCtx = getSelectOnConditionStepForBusinessContext()
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchOptionalInto(BusinessContext.class).orElse(null);
         if (bizCtx == null) {
             return null;
         }
+
         bizCtx.setBizCtxValues(findBusinessContextValuesByBizCtxId(bizCtxId));
 
-        int cnt = dslContext.select(coalesce(count(BIZ_CTX_RULE.BIZ_CTX_RULE_ID), 0))
-                .from(BIZ_CTX_RULE)
-                .where(BIZ_CTX_RULE.FROM_BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .groupBy(BIZ_CTX_RULE.BIZ_CTX_RULE_ID)
-                .fetchAny().value1();
+        int cnt = dslContext.selectCount()
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
         bizCtx.setUsed(cnt > 0);
 
         return bizCtx;
+    }
+
+    public List<BusinessContext> findBusinessContextsByBizCtxIdIn(List<Long> bizCtxIds) {
+        if (bizCtxIds == null || bizCtxIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return bizCtxIds.stream()
+                .map(e -> findBusinessContextByBizCtxId(e))
+                .collect(Collectors.toList());
     }
 
     private SelectOnConditionStep

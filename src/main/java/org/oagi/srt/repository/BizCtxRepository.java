@@ -55,11 +55,11 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
 
     public List<BizCtx> findAllFromTopLvlBie(TopLevelAbie topLevelAbie) {
         List <BizCtxAssignment> bizCtxAssignments = dslContext.select(
-                Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID,
-                Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
-                Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID)
-                .from(Tables.BIZ_CTX_RULE)
-                .where(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
+                Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID,
+                Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
+                Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+                .from(Tables.BIZ_CTX_ASSIGNMENT)
+                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
                 .fetchInto(BizCtxAssignment.class);
 
         List<BizCtx> bizCtx = new ArrayList<>();

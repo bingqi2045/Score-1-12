@@ -12,8 +12,8 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.ABIERepository;
 import org.oagi.srt.repository.BizCtxRepository;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
@@ -112,12 +112,11 @@ public class BieService {
         AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
 
         long basedAccId = accForBie.getAccId();
-        long bizCtxId = request.getBizCtxId();
+        List<Long> bizCtxIds = request.getBizCtxIds();
 
-        long abieId = repository.createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
-        long bizCtxRuleId = repository.createBizCtxRule(topLevelAbieId, bizCtxId);
+        long abieId = repository.createAbie(user, basedAccId, topLevelAbieId);
+        repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
-
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
 
         BieCreateResponse response = new BieCreateResponse();
@@ -283,9 +282,9 @@ public class BieService {
                 offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
         result.forEach(bieList -> {
             List<ULong> bizCtxsRule = dslContext.selectDistinct(
-                    BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
-                    .from(BIZ_CTX_RULE)
-                    .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                    BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                    .from(BIZ_CTX_ASSIGNMENT)
+                    .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
                     .fetchInto(ULong.class);
 
             bieList.setBusinessCtxs(
@@ -402,9 +401,9 @@ public class BieService {
             bieLists = selectOnConditionStep.where(condition).fetchInto(BieList.class);
             bieLists.forEach(bieList -> {
                 List<ULong> bizCtxsRule = dslContext.selectDistinct(
-                        BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
-                        .from(BIZ_CTX_RULE)
-                        .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                        BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                        .from(BIZ_CTX_ASSIGNMENT)
+                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
                         .fetchInto(ULong.class);
 
                 bieList.setBusinessCtxs(
@@ -424,9 +423,9 @@ public class BieService {
             bieLists = selectOnConditionStep.fetchInto(BieList.class);
             bieLists.forEach(bieList -> {
                 List<ULong> bizCtxsRule = dslContext.selectDistinct(
-                        BIZ_CTX_RULE.FROM_BIZ_CTX_ID)
-                        .from(BIZ_CTX_RULE)
-                        .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                        BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                        .from(BIZ_CTX_ASSIGNMENT)
+                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
                         .fetchInto(ULong.class);
 
                 bieList.setBusinessCtxs(
@@ -525,11 +524,11 @@ public class BieService {
     @Transactional
     public List<BizCtxAssignment> getAssignBizCtx(long topLevelAbieId) {
         return dslContext.select(
-                BIZ_CTX_RULE.BIZ_CTX_RULE_ID,
-                BIZ_CTX_RULE.FROM_BIZ_CTX_ID,
-                BIZ_CTX_RULE.TOP_LEVEL_BIE_ID)
-                .from(BIZ_CTX_RULE)
-                .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID,
+                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
+                BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchInto(BizCtxAssignment.class);
     }
 
@@ -537,14 +536,14 @@ public class BieService {
      public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
          ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
          //remove all records of previous assignment if not in the current assignment
-         dslContext.delete(BIZ_CTX_RULE)
-                 .where(BIZ_CTX_RULE.TOP_LEVEL_BIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+         dslContext.delete(BIZ_CTX_ASSIGNMENT)
+                 .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                  .execute();
 
         for (int i=0; i < newList.size() ; i++) {
-            dslContext.insertInto(Tables.BIZ_CTX_RULE)
-                    .set(Tables.BIZ_CTX_RULE.TOP_LEVEL_BIE_ID, ULong.valueOf(topLevelAbieId))
-                    .set(Tables.BIZ_CTX_RULE.FROM_BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
+            dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
                     .onDuplicateKeyIgnore()
                     .execute();
             //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
