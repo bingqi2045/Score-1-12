@@ -14,4 +14,10 @@ CREATE TABLE `biz_ctx_assignment` (
 
 ALTER TABLE `abie` MODIFY COLUMN `biz_ctx_id` bigint(20) unsigned DEFAULT NULL COMMENT '(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.';
 
+INSERT INTO `biz_ctx_assignment` (`top_level_abie_id`, `biz_ctx_id`)
+SELECT `top_level_abie_id`, `abie`.`biz_ctx_id`
+FROM `top_level_abie`
+         JOIN `abie` ON `top_level_abie`.`abie_id` = `abie`.`abie_id`
+WHERE `abie`.`biz_ctx_id` IS NOT NULL;
+
 SET FOREIGN_KEY_CHECKS = 1;
