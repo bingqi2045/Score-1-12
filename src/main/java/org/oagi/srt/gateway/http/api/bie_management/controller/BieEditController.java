@@ -184,26 +184,4 @@ public class BieEditController {
         response.setExtensionId(extensionId);
         return response;
     }
-
-    @RequestMapping(value = "/profile_bie/{id}/bie_user_ext_revision", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BieUserExtRevision> getBieUserExtRevisions(@AuthenticationPrincipal User user,
-                                                           @PathVariable("id") long topLevelAbieId) {
-        return service.getBieUserExtRevisions(user, topLevelAbieId);
-    }
-
-    @RequestMapping(value = "/profile_bie/{id}/bie_user_ext_revision", method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity discardBieUserExtRevisions(@AuthenticationPrincipal User user,
-                                                     @PathVariable("id") long topLevelAbieId) {
-        service.discardBieUserExtRevisions(user, topLevelAbieId);
-        return ResponseEntity.accepted().build();
-    }
-
-    @RequestMapping(value = "/profile_bie/node/extension/path", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Collection<String> getExtensionPath(@RequestParam("bieUserExtRevisionId") long bieUserExtRevisionId) {
-        return service.getExtensionPath(bieUserExtRevisionId);
-    }
-
 }

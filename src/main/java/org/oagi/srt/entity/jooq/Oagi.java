@@ -30,7 +30,6 @@ import org.oagi.srt.entity.jooq.tables.Bccp;
 import org.oagi.srt.entity.jooq.tables.BdtPriRestri;
 import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
-import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 import org.oagi.srt.entity.jooq.tables.BizCtx;
 import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 import org.oagi.srt.entity.jooq.tables.BlobContent;
@@ -170,11 +169,6 @@ It should be noted that the table does not store the fact about primitive restri
      * This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and all kinds of BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID, TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID.
      */
     public final BieUsageRule BIE_USAGE_RULE = org.oagi.srt.entity.jooq.tables.BieUsageRule.BIE_USAGE_RULE;
-
-    /**
-     * This table is a log of events. It keeps track of the User Extension ACC (the specific revision) used by an Extension ABIE. This can be a named extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR flag is designed such that a revision of a User Extension can notify the user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID column makes it more efficient to when opening a top-level ABIE, the user can be notified of any new revision of the extension. A record in this table is created only when there is a user extension to the the OAGIS extension component/ACC.
-     */
-    public final BieUserExtRevision BIE_USER_EXT_REVISION = org.oagi.srt.entity.jooq.tables.BieUserExtRevision.BIE_USER_EXT_REVISION;
 
     /**
      * This table represents a business context. A business context is a combination of one or more business context values.
@@ -347,7 +341,6 @@ If we use a separate table for each expression, then we need binding all the way
             BdtPriRestri.BDT_PRI_RESTRI,
             BdtScPriRestri.BDT_SC_PRI_RESTRI,
             BieUsageRule.BIE_USAGE_RULE,
-            BieUserExtRevision.BIE_USER_EXT_REVISION,
             BizCtx.BIZ_CTX,
             BizCtxValue.BIZ_CTX_VALUE,
             BlobContent.BLOB_CONTENT,

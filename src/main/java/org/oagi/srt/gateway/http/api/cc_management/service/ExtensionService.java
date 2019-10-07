@@ -1035,24 +1035,6 @@ public class ExtensionService {
                                     ACC.as("ueAcc").ACC_ID.eq(ULong.valueOf(extensionId)),
                                     ASCC.REVISION_NUM.eq(0)
                             )).fetchOneInto(ULong.class);
-
-            if (extensionPathHandler.containsExtension(basedAccId, eAccId.longValue())) {
-                BieUserExtRevisionRecord record = new BieUserExtRevisionRecord();
-                record.setTopLevelAbieId(ULong.valueOf(topLevelAbie.getTopLevelAbieId()));
-                record.setUserExtAccId(ULong.valueOf(extensionId));
-                record.setExtAccId(eAccId);
-
-                Long extAbieId = dslContext.select(Tables.ABIE.ABIE_ID).from(Tables.ABIE)
-                        .where(and(
-                                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())),
-                                Tables.ABIE.BASED_ACC_ID.eq(ULong.valueOf(extensionId))))
-                        .fetchOneInto(Long.class);
-                record.setExtAbieId((extAbieId != null) ? ULong.valueOf(extAbieId) : null);
-                record.setRevisedIndicator((byte) 0);
-
-                dslContext.insertInto(BIE_USER_EXT_REVISION)
-                        .set(record).execute();
-            }
         }
     }
 
