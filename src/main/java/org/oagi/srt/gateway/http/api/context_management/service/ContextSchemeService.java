@@ -285,7 +285,7 @@ public class ContextSchemeService {
                 contextScheme.getSchemeId(),
                 contextScheme.getSchemeAgencyId(),
                 contextScheme.getSchemeVersionId(),
-                contextScheme.getCodeListId() == 0 ? null : ULong.valueOf(contextScheme.getCodeListId()),
+                contextScheme.getCodeListId() == null ? null : ULong.valueOf(contextScheme.getCodeListId()),
                 contextScheme.getDescription(),
                 userId, userId, timestamp, timestamp
         ).returning(CTX_SCHEME.CTX_SCHEME_ID)
@@ -317,7 +317,7 @@ public class ContextSchemeService {
                 .set(CTX_SCHEME.SCHEME_NAME, contextScheme.getSchemeName())
                 .set(CTX_SCHEME.CTX_CATEGORY_ID, ULong.valueOf(contextScheme.getCtxCategoryId()))
                 .set(CTX_SCHEME.SCHEME_ID, contextScheme.getSchemeId())
-                .set(CTX_SCHEME.CODE_LIST_ID, contextScheme.getCodeListId() == 0 ? null : ULong.valueOf(contextScheme.getCodeListId()))
+                .set(CTX_SCHEME.CODE_LIST_ID, contextScheme.getCodeListId() == null ? null : ULong.valueOf(contextScheme.getCodeListId()))
                 .set(CTX_SCHEME.SCHEME_AGENCY_ID, contextScheme.getSchemeAgencyId())
                 .set(CTX_SCHEME.SCHEME_VERSION_ID, contextScheme.getSchemeVersionId())
                 .set(CTX_SCHEME.DESCRIPTION, contextScheme.getDescription())
