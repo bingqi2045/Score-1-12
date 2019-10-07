@@ -25,17 +25,22 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PageResponse<BusinessContext> getBusinessContextList(
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "bizCtxIds", required = false) String bizCtxIds,
+            @RequestParam(name = "topLevelAbieId", required = false) Long topLevelAbieId,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
-            @RequestParam(name = "sortActive") String sortActive,
-            @RequestParam(name = "sortDirection") String sortDirection,
-            @RequestParam(name = "pageIndex") int pageIndex,
-            @RequestParam(name = "pageSize") int pageSize) {
+            @RequestParam(name = "sortActive", required = false) String sortActive,
+            @RequestParam(name = "sortDirection", required = false) String sortDirection,
+            @RequestParam(name = "pageIndex", defaultValue = "-1") int pageIndex,
+            @RequestParam(name = "pageSize", defaultValue = "-1") int pageSize) {
 
         BusinessContextListRequest request = new BusinessContextListRequest();
 
         request.setName(name);
+        request.setTopLevelAbieId(topLevelAbieId);
+        request.setBizCtxIds(StringUtils.isEmpty(bizCtxIds) ? Collections.emptyList() :
+                Arrays.asList(bizCtxIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> Long.valueOf(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
@@ -63,16 +68,6 @@ public class BusinessContextController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BusinessContext getBusinessContext(@PathVariable("id") long id) {
         return service.getBusinessContext(id);
-    }
-
-    @RequestMapping(value = "/business_contexts/{bizCtxIds}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BusinessContext> getBusinessContexts(
-            @PathVariable("bizCtxIds") String bizCtxIds) {
-        return service.getBusinessContexts(
-                Arrays.asList(bizCtxIds.split(",")).stream()
-                        .map(e -> Long.valueOf(e))
-                        .collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "/business_context_values", method = RequestMethod.GET,
@@ -111,10 +106,25 @@ public class BusinessContextController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "/business_context/{id}", method = RequestMethod.PUT)
+    public ResponseEntity assign(
+            @AuthenticationPrincipal User user,
+            @PathVariable("id") long id,
+            @RequestParam(name = "topLevelAbieId", required = true) long topLevelAbieId) {
+        service.assign(id, topLevelAbieId);
+        return ResponseEntity.noContent().build();
+    }
+
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @PathVariable("id") long id) {
-        service.delete(id);
+            @AuthenticationPrincipal User user,
+            @PathVariable("id") long id,
+            @RequestParam(name = "topLevelAbieId", required = false) Long topLevelAbieId) {
+        if (topLevelAbieId != null) {
+            service.dismiss(id, topLevelAbieId);
+        } else {
+            service.delete(id);
+        }
         return ResponseEntity.noContent().build();
     }
 

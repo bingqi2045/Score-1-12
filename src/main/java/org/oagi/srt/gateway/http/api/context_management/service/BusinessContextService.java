@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextListRequest;
@@ -39,6 +40,9 @@ public class BusinessContextService {
     @Autowired
     private BusinessContextRepository repository;
 
+    @Autowired
+    private BieRepository bieRepository;
+
     public PageResponse<BusinessContext> getBusinessContextList(BusinessContextListRequest request) {
         return repository.findBusinessContexts(request);
     }
@@ -49,6 +53,14 @@ public class BusinessContextService {
 
     public List<BusinessContext> getBusinessContexts(List<Long> bizCtxIds) {
         return repository.findBusinessContextsByBizCtxIdIn(bizCtxIds);
+    }
+
+    public List<BusinessContext> getBusinessContextsByTopLevelAbieId(long topLevelAbieId) {
+        List<Long> bizCtxIds = bieRepository.getBizCtxIdByTopLevelAbieId(topLevelAbieId);
+        if (bizCtxIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getBusinessContexts(bizCtxIds);
     }
 
     public List<BusinessContextValue> getBusinessContextValues() {
@@ -168,6 +180,24 @@ public class BusinessContextService {
                 .where(and(
                         BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(bizCtxValueId)),
                         BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))))
+                .execute();
+    }
+
+    @Transactional
+    public void assign(long bizCtxId, long topLevelAbieId) {
+        dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                .execute();
+    }
+
+    @Transactional
+    public void dismiss(long bizCtxId, long topLevelAbieId) {
+        dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT)
+                .where(and(
+                        BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))
+                ))
                 .execute();
     }
 

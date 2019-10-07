@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.min;
 
 @Repository
 public class BieRepository {
@@ -376,13 +375,12 @@ public class BieRepository {
                 .execute();
     }
 
-    public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
-        return dslContext.select(
-                min(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID))
+    public List<Long> getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
+        return dslContext.select(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
-                .join(Tables.TOP_LEVEL_ABIE).on(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .fetchOptionalInto(Long.class).orElse(0L);
+                .fetchInto(Long.class);
     }
 
     public void createBizCtxAssignments(long topLevelAbieId, List<Long> bizCtxIds) {

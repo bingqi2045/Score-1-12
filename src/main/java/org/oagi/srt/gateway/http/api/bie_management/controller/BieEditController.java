@@ -6,6 +6,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
+import org.oagi.srt.gateway.http.api.context_management.service.BusinessContextService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +24,9 @@ public class BieEditController {
 
     @Autowired
     private BieEditService service;
+
+    @Autowired
+    private BusinessContextService businessContextService;
 
     @Autowired
     private SessionService sessionService;
