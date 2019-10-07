@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.context_management.repository;
 
-import com.google.common.base.Functions;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -16,11 +15,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.count;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -42,12 +38,19 @@ public class BusinessContextRepository {
     }
 
     public PageResponse<BusinessContext> findBusinessContexts(BusinessContextListRequest request) {
+        if (request.getTopLevelAbieId() != null) {
+            request.setBizCtxIds(findBizCtxIdsByTopLevelAbieId(request.getTopLevelAbieId()));
+        }
+
         SelectOnConditionStep
                 <Record5<ULong, String, String, Timestamp, String>> step = getSelectOnConditionStepForBusinessContext();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
             conditions.add(BIZ_CTX.NAME.containsIgnoreCase(request.getName().trim()));
+        }
+        if (!request.getBizCtxIds().isEmpty()) {
+            conditions.add(BIZ_CTX.BIZ_CTX_ID.in(request.getBizCtxIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
@@ -65,29 +68,31 @@ public class BusinessContextRepository {
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
-        switch (pageRequest.getSortActive()) {
-            case "name":
-                if ("asc".equals(sortDirection)) {
-                    sortField = BIZ_CTX.NAME.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = BIZ_CTX.NAME.desc();
-                }
+        if (!StringUtils.isEmpty(pageRequest.getSortActive())) {
+            switch (pageRequest.getSortActive()) {
+                case "name":
+                    if ("asc".equals(sortDirection)) {
+                        sortField = BIZ_CTX.NAME.asc();
+                    } else if ("desc".equals(sortDirection)) {
+                        sortField = BIZ_CTX.NAME.desc();
+                    }
 
-                break;
+                    break;
 
-            case "lastUpdateTimestamp":
-                if ("asc".equals(sortDirection)) {
-                    sortField = BIZ_CTX.LAST_UPDATE_TIMESTAMP.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = BIZ_CTX.LAST_UPDATE_TIMESTAMP.desc();
-                }
+                case "lastUpdateTimestamp":
+                    if ("asc".equals(sortDirection)) {
+                        sortField = BIZ_CTX.LAST_UPDATE_TIMESTAMP.asc();
+                    } else if ("desc".equals(sortDirection)) {
+                        sortField = BIZ_CTX.LAST_UPDATE_TIMESTAMP.desc();
+                    }
 
-                break;
+                    break;
+            }
         }
 
         SelectWithTiesAfterOffsetStep
                 <Record5<ULong, String, String, Timestamp, String>> offsetStep = null;
-        if (sortField != null) {
+        if (sortField != null && pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
         } else {
@@ -101,19 +106,8 @@ public class BusinessContextRepository {
         List<BusinessContext> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BusinessContext.class) : conditionStep.fetchInto(BusinessContext.class);
         if (!result.isEmpty()) {
-            Map<Long, BusinessContext> bixCtxMap = result.stream()
-                    .collect(Collectors.toMap(BusinessContext::getBizCtxId, Functions.identity()));
-
-            dslContext.select(ABIE.BIZ_CTX_ID,
-                    coalesce(count(ABIE.ABIE_ID), 0))
-                    .from(ABIE)
-                    .where(ABIE.BIZ_CTX_ID.in(
-                            bixCtxMap.keySet().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                    .groupBy(ABIE.BIZ_CTX_ID)
-                    .fetch().stream().forEach(record -> {
-                long bizCtxId = record.value1().longValue();
-                int cnt = record.value2();
-                bixCtxMap.get(bizCtxId).setUsed(cnt > 0);
+            result.stream().forEach(bizCtx -> {
+                bizCtx.setUsed(used(bizCtx.getBizCtxId()));
             });
         }
 
@@ -133,22 +127,38 @@ public class BusinessContextRepository {
         if (bizCtxId <= 0L) {
             return null;
         }
+
         BusinessContext bizCtx = getSelectOnConditionStepForBusinessContext()
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchOptionalInto(BusinessContext.class).orElse(null);
         if (bizCtx == null) {
             return null;
         }
-        bizCtx.setBizCtxValues(findBusinessContextValuesByBizCtxId(bizCtxId));
 
-        int cnt = dslContext.select(coalesce(count(ABIE.ABIE_ID), 0))
-                .from(ABIE)
-                .where(ABIE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .groupBy(ABIE.BIZ_CTX_ID)
-                .fetchOptionalInto(Integer.class).orElse(0);
-        bizCtx.setUsed(cnt > 0);
+        bizCtx.setBizCtxValues(findBusinessContextValuesByBizCtxId(bizCtxId));
+        bizCtx.setUsed(used(bizCtxId));
 
         return bizCtx;
+    }
+
+    private boolean used(long bizCtxId) {
+        if (bizCtxId <= 0L) {
+            return false;
+        }
+        return dslContext.selectCount()
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+    }
+
+    public List<BusinessContext> findBusinessContextsByBizCtxIdIn(List<Long> bizCtxIds) {
+        if (bizCtxIds == null || bizCtxIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return bizCtxIds.stream()
+                .map(e -> findBusinessContextByBizCtxId(e))
+                .collect(Collectors.toList());
     }
 
     private SelectOnConditionStep
@@ -167,6 +177,17 @@ public class BusinessContextRepository {
                 .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
                 .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID));
+    }
+
+    public List<Long> findBizCtxIdsByTopLevelAbieId(Long topLevelAbieId) {
+        if (topLevelAbieId == null || topLevelAbieId <= 0L) {
+            return Collections.emptyList();
+        }
+
+        return dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchInto(Long.class);
     }
 
     public List<BusinessContextValue> findBusinessContextValues() {

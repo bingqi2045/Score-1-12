@@ -201,84 +201,85 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         Element documentation = newElement("documentation");
         annotation.addContent(documentation);
+        List<BizCtx> bizCtxList = generationContext.findBusinessContexts(topLevelAbie);
 
-        Element ccts_BusinessContext = new Element("ccts_BusinessContext", OAGI_NS);
-        documentation.addContent(ccts_BusinessContext);
+        for (BizCtx bizCtx : bizCtxList) {
+            Element ccts_BusinessContext = new Element("ccts_BusinessContext", OAGI_NS);
+            documentation.addContent(ccts_BusinessContext);
 
-        BizCtx businessContext = generationContext.findBusinessContext(topLevelAbie);
+            Element ccts_BusinessContextGUID = new Element("ccts_GUID", OAGI_NS);
+            ccts_BusinessContext.addContent(ccts_BusinessContextGUID);
+            ccts_BusinessContextGUID.setText(bizCtx.getGuid());
 
-        Element ccts_BusinessContextGUID = new Element("ccts_GUID", OAGI_NS);
-        ccts_BusinessContext.addContent(ccts_BusinessContextGUID);
-        ccts_BusinessContextGUID.setText(businessContext.getGuid());
+            Element ccts_BusinessContextName = new Element("ccts_Name", OAGI_NS);
+            ccts_BusinessContext.addContent(ccts_BusinessContextName);
+            ccts_BusinessContextName.setText(bizCtx.getName());
 
-        Element ccts_BusinessContextName = new Element("ccts_Name", OAGI_NS);
-        ccts_BusinessContext.addContent(ccts_BusinessContextName);
-        ccts_BusinessContextName.setText(businessContext.getName());
+            List<ContextSchemeValue> contextSchemeValues = generationContext.findContextSchemeValue(bizCtx);
+            for (ContextSchemeValue contextSchemeValue : contextSchemeValues) {
+                Element ccts_ContextValue = new Element("ccts_ContextValue", OAGI_NS);
+                ccts_BusinessContext.addContent(ccts_ContextValue);
 
-        List<ContextSchemeValue> contextSchemeValues = generationContext.findContextSchemeValue(businessContext);
-        for (ContextSchemeValue contextSchemeValue : contextSchemeValues) {
-            Element ccts_ContextValue = new Element("ccts_ContextValue", OAGI_NS);
-            ccts_BusinessContext.addContent(ccts_ContextValue);
+                Element ccts_ContextSchemeValueGUID = new Element("ccts_GUID", OAGI_NS);
+                ccts_ContextValue.addContent(ccts_ContextSchemeValueGUID);
+                ccts_ContextSchemeValueGUID.setText(contextSchemeValue.getGuid());
 
-            Element ccts_ContextSchemeValueGUID = new Element("ccts_GUID", OAGI_NS);
-            ccts_ContextValue.addContent(ccts_ContextSchemeValueGUID);
-            ccts_ContextSchemeValueGUID.setText(contextSchemeValue.getGuid());
+                Element ccts_ContextSchemeValue = new Element("ccts_Value", OAGI_NS);
+                ccts_ContextValue.addContent(ccts_ContextSchemeValue);
+                ccts_ContextSchemeValue.setText(contextSchemeValue.getValue());
 
-            Element ccts_ContextSchemeValue = new Element("ccts_Value", OAGI_NS);
-            ccts_ContextValue.addContent(ccts_ContextSchemeValue);
-            ccts_ContextSchemeValue.setText(contextSchemeValue.getValue());
+                Element ccts_ContextSchemeValueMeaning = new Element("ccts_Meaning", OAGI_NS);
+                ccts_ContextValue.addContent(ccts_ContextSchemeValueMeaning);
+                ccts_ContextSchemeValueMeaning.setText(contextSchemeValue.getMeaning());
 
-            Element ccts_ContextSchemeValueMeaning = new Element("ccts_Meaning", OAGI_NS);
-            ccts_ContextValue.addContent(ccts_ContextSchemeValueMeaning);
-            ccts_ContextSchemeValueMeaning.setText(contextSchemeValue.getMeaning());
+                ContextScheme contextScheme = generationContext.findContextScheme(contextSchemeValue.getOwnerCtxSchemeId());
 
-            ContextScheme contextScheme = generationContext.findContextScheme(contextSchemeValue.getOwnerCtxSchemeId());
+                Element ccts_ClassificationScheme = new Element("ccts_ClassificationScheme", OAGI_NS);
+                ccts_ContextValue.addContent(ccts_ClassificationScheme);
 
-            Element ccts_ClassificationScheme = new Element("ccts_ClassificationScheme", OAGI_NS);
-            ccts_ContextValue.addContent(ccts_ClassificationScheme);
+                Element ccts_ClassificationSchemeGUID = new Element("ccts_GUID", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeGUID);
+                ccts_ClassificationSchemeGUID.setText(contextScheme.getGuid());
 
-            Element ccts_ClassificationSchemeGUID = new Element("ccts_GUID", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeGUID);
-            ccts_ClassificationSchemeGUID.setText(contextScheme.getGuid());
+                {
+                    ContextCategory contextCategory = generationContext.findContextCategory(contextScheme.getCtxCategoryId());
 
-            {
-                ContextCategory contextCategory = generationContext.findContextCategory(contextScheme.getCtxCategoryId());
+                    Element ccts_ContextCategory = new Element("ccts_ContextCategory", OAGI_NS);
+                    ccts_ClassificationScheme.addContent(ccts_ContextCategory);
 
-                Element ccts_ContextCategory = new Element("ccts_ContextCategory", OAGI_NS);
-                ccts_ClassificationScheme.addContent(ccts_ContextCategory);
+                    Element ccts_ContextCategoryGUID = new Element("ccts_GUID", OAGI_NS);
+                    ccts_ContextCategory.addContent(ccts_ContextCategoryGUID);
+                    ccts_ContextCategoryGUID.setText(contextCategory.getGuid());
 
-                Element ccts_ContextCategoryGUID = new Element("ccts_GUID", OAGI_NS);
-                ccts_ContextCategory.addContent(ccts_ContextCategoryGUID);
-                ccts_ContextCategoryGUID.setText(contextCategory.getGuid());
+                    Element ccts_ContextCategoryName = new Element("ccts_Name", OAGI_NS);
+                    ccts_ContextCategory.addContent(ccts_ContextCategoryName);
+                    ccts_ContextCategoryName.setText(contextCategory.getName());
 
-                Element ccts_ContextCategoryName = new Element("ccts_Name", OAGI_NS);
-                ccts_ContextCategory.addContent(ccts_ContextCategoryName);
-                ccts_ContextCategoryName.setText(contextCategory.getName());
+                    Element ccts_ContextCategoryDefinition = new Element("ccts_Definition", OAGI_NS);
+                    ccts_ContextCategory.addContent(ccts_ContextCategoryDefinition);
+                    ccts_ContextCategoryDefinition.setText(contextCategory.getDescription());
+                }
 
-                Element ccts_ContextCategoryDefinition = new Element("ccts_Definition", OAGI_NS);
-                ccts_ContextCategory.addContent(ccts_ContextCategoryDefinition);
-                ccts_ContextCategoryDefinition.setText(contextCategory.getDescription());
+                Element ccts_ClassificationSchemeId = new Element("ccts_ID", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeId);
+                ccts_ClassificationSchemeId.setText(contextScheme.getSchemeId());
+
+                Element ccts_ClassificationSchemeName = new Element("ccts_Name", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeName);
+                ccts_ClassificationSchemeName.setText(contextScheme.getSchemeName());
+
+                Element ccts_ClassificationSchemeAgencyID = new Element("ccts_AgencyID", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeAgencyID);
+                ccts_ClassificationSchemeAgencyID.setText(contextScheme.getSchemeAgencyId());
+
+                Element ccts_ClassificationSchemeVersionID = new Element("ccts_VersionID", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeVersionID);
+                ccts_ClassificationSchemeVersionID.setText(contextScheme.getSchemeVersionId());
+
+                Element ccts_ClassificationSchemeDefinition = new Element("ccts_Definition", OAGI_NS);
+                ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeDefinition);
+                ccts_ClassificationSchemeDefinition.setText(contextScheme.getDescription());
             }
-
-            Element ccts_ClassificationSchemeId = new Element("ccts_ID", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeId);
-            ccts_ClassificationSchemeId.setText(contextScheme.getSchemeId());
-
-            Element ccts_ClassificationSchemeName = new Element("ccts_Name", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeName);
-            ccts_ClassificationSchemeName.setText(contextScheme.getSchemeName());
-
-            Element ccts_ClassificationSchemeAgencyID = new Element("ccts_AgencyID", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeAgencyID);
-            ccts_ClassificationSchemeAgencyID.setText(contextScheme.getSchemeAgencyId());
-
-            Element ccts_ClassificationSchemeVersionID = new Element("ccts_VersionID", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeVersionID);
-            ccts_ClassificationSchemeVersionID.setText(contextScheme.getSchemeVersionId());
-
-            Element ccts_ClassificationSchemeDefinition = new Element("ccts_Definition", OAGI_NS);
-            ccts_ClassificationScheme.addContent(ccts_ClassificationSchemeDefinition);
-            ccts_ClassificationSchemeDefinition.setText(contextScheme.getDescription());
         }
     }
 

@@ -43,7 +43,6 @@ public class BieCopyService implements InitializingBean {
     @Autowired
     private DSLContext dslContext;
 
-
     @Autowired
     private SessionService sessionService;
 
@@ -76,7 +75,7 @@ public class BieCopyService implements InitializingBean {
     @Transactional
     public void copyBie(User user, BieCopyRequest request) {
         long sourceTopLevelAbieId = request.getTopLevelAbieId();
-        long bizCtxId = request.getBizCtxId();
+        List<Long> bizCtxIds = request.getBizCtxIds();
         long userId = sessionService.userId(user);
 
         TopLevelAbie sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
@@ -84,7 +83,7 @@ public class BieCopyService implements InitializingBean {
                 repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Initiating);
 
         BieCopyRequestEvent bieCopyRequestEvent = new BieCopyRequestEvent(
-                sourceTopLevelAbieId, copiedTopLevelAbieId, bizCtxId, userId
+                sourceTopLevelAbieId, copiedTopLevelAbieId, bizCtxIds, userId
         );
 
         /*
@@ -326,7 +325,7 @@ public class BieCopyService implements InitializingBean {
 
         private TopLevelAbie sourceTopLevelAbie;
         private TopLevelAbie copiedTopLevelAbie;
-        private long bizCtxId;
+        private List<Long> bizCtxIds;
         private long userId;
 
         private Timestamp timestamp;
@@ -357,7 +356,7 @@ public class BieCopyService implements InitializingBean {
             long copiedTopLevelAbieId = bieCopyRequestEvent.getCopiedTopLevelAbieId();
             copiedTopLevelAbie = topLevelAbieRepository.findById(copiedTopLevelAbieId);
 
-            bizCtxId = bieCopyRequestEvent.getBizCtxId();
+            bizCtxIds = bieCopyRequestEvent.getBizCtxIds();
             userId = bieCopyRequestEvent.getUserId();
 
             abieList = getAbieByOwnerTopLevelAbieId(sourceTopLevelAbieId);
@@ -383,6 +382,10 @@ public class BieCopyService implements InitializingBean {
             timestamp = new Timestamp(System.currentTimeMillis());
             logger.debug("Begin copying from " + sourceTopLevelAbie.getTopLevelAbieId() +
                     " to " + copiedTopLevelAbie.getTopLevelAbieId());
+
+            repository.createBizCtxAssignments(
+                    copiedTopLevelAbie.getTopLevelAbieId(),
+                    bizCtxIds);
 
             for (BieCopyAbie abie : abieList) {
                 long previousAbieId = abie.getAbieId();
@@ -485,7 +488,6 @@ public class BieCopyService implements InitializingBean {
             return dslContext.insertInto(Tables.ABIE)
                     .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
                     .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(abie.getBasedAccId()))
-                    .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
                     .set(Tables.ABIE.DEFINITION, abie.getDefinition())
                     .set(Tables.ABIE.CREATED_BY, ULong.valueOf(userId))
                     .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))

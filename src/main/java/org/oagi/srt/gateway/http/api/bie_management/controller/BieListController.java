@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.DeleteBieListRequest;
@@ -8,6 +9,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.GetBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,7 @@ public class BieListController {
         BieListRequest request = new BieListRequest();
 
         request.setPropertyTerm(propertyTerm);
+        //todo make it a list for all the business context
         request.setBusinessContext(businessContext);
         request.setAccess(access);
         request.setStates(!StringUtils.isEmpty(states) ?
@@ -74,7 +77,6 @@ public class BieListController {
         pageRequest.setPageIndex(pageIndex);
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
-
         return service.getBieList(user, request);
     }
 
@@ -109,6 +111,27 @@ public class BieListController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value="/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BizCtx findBizCtxFromAbieId(@PathVariable("id") long abieId) {
+        return service.findBizCtxByAbieId(abieId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") long topLevelAbieId) {
+        return service.getAssignBizCtx(topLevelAbieId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{id}/assign_biz_ctx", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity assignBizCtx(@AuthenticationPrincipal User user,
+                                       @PathVariable("id") long topLevelAbieId,
+                                       @RequestBody Map<String, List<Long>> request) {
+        service.assignBizCtx(user, topLevelAbieId, request.getOrDefault("bizCtxList", Collections.emptyList()));
+        return ResponseEntity.noContent().build();
+    }
+
     @RequestMapping(value = "/profile_bie/{id}/transfer_ownership", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
@@ -118,4 +141,5 @@ public class BieListController {
         service.transferOwnership(user, topLevelAbieId, targetLoginId);
         return ResponseEntity.noContent().build();
     }
+
 }

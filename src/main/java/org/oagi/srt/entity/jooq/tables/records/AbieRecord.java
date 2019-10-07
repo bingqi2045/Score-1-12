@@ -38,7 +38,7 @@ import org.oagi.srt.entity.jooq.tables.Abie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record16<ULong, String, ULong, ULong, String, ULong, ULong, Timestamp, Timestamp, Integer, ULong, String, String, String, String, ULong> {
 
-    private static final long serialVersionUID = -1488306017;
+    private static final long serialVersionUID = 1558767043;
 
     /**
      * Setter for <code>oagi.abie.abie_id</code>. A internal, primary database key of an ABIE.
@@ -83,14 +83,14 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.abie.biz_ctx_id</code>. A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
+     * Setter for <code>oagi.abie.biz_ctx_id</code>. (Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
      */
     public void setBizCtxId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.abie.biz_ctx_id</code>. A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
+     * Getter for <code>oagi.abie.biz_ctx_id</code>. (Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
      */
     public ULong getBizCtxId() {
         return (ULong) get(3);

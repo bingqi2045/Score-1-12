@@ -3,6 +3,8 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.BizCtx;
+import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -10,7 +12,11 @@ import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repository.ABIERepository;
+import org.oagi.srt.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -19,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +41,6 @@ import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 @Transactional(readOnly = true)
 public class BieService {
 
-
     @Autowired
     private SessionService sessionService;
 
@@ -42,7 +48,14 @@ public class BieService {
     private BieRepository repository;
 
     @Autowired
+    private ABIERepository abieRepository;
+
+    @Autowired
+    private BizCtxRepository bizCtxRepository;
+
+    @Autowired
     private DSLContext dslContext;
+
     private String GET_BIE_LIST_STATEMENT =
             "SELECT top_level_abie_id, asccp.guid, asccp.property_term, `release`.release_num, " +
                     "biz_ctx.biz_ctx_id, biz_ctx.name as biz_ctx_name, " +
@@ -99,11 +112,11 @@ public class BieService {
         AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
 
         long basedAccId = accForBie.getAccId();
-        long bizCtxId = request.getBizCtxId();
+        List<Long> bizCtxIds = request.getBizCtxIds();
 
-        long abieId = repository.createAbie(user, basedAccId, bizCtxId, topLevelAbieId);
+        long abieId = repository.createAbie(user, basedAccId, topLevelAbieId);
+        repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
-
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
 
         BieCreateResponse response = new BieCreateResponse();
@@ -137,17 +150,15 @@ public class BieService {
         return (accForBieList.isEmpty()) ? null : accForBieList.get(0);
     }
 
-    private SelectOnConditionStep<Record13<
-            ULong, String, String, String, ULong,
-            String, ULong, String, String, String,
+    private SelectOnConditionStep<Record11<
+            ULong, String, String, String,
+            ULong, String, String, String,
             Timestamp, String, Integer>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.BIZ_CTX.BIZ_CTX_ID,
-                Tables.BIZ_CTX.NAME.as("biz_ctx_name"),
                 Tables.TOP_LEVEL_ABIE.OWNER_USER_ID,
                 Tables.APP_USER.LOGIN_ID.as("owner"),
                 Tables.ABIE.VERSION,
@@ -160,16 +171,15 @@ public class BieService {
                 .and(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID))
                 .join(Tables.ASBIEP).on(Tables.ASBIEP.ROLE_OF_ABIE_ID.eq(Tables.ABIE.ABIE_ID))
                 .join(Tables.ASCCP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
-                .join(Tables.BIZ_CTX).on(Tables.BIZ_CTX.BIZ_CTX_ID.eq(Tables.ABIE.BIZ_CTX_ID))
                 .join(Tables.APP_USER).on(Tables.APP_USER.APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID))
                 .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
                 .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID));
     }
 
     public PageResponse<BieList> getBieList(User user, BieListRequest request) {
-        SelectOnConditionStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectOnConditionStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
@@ -178,9 +188,6 @@ public class BieService {
         }
         if (!request.getExcludes().isEmpty()) {
             conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
-        }
-        if (!StringUtils.isEmpty(request.getBusinessContext())) {
-            conditions.add(Tables.BIZ_CTX.NAME.containsIgnoreCase(request.getBusinessContext().trim()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
@@ -199,7 +206,7 @@ public class BieService {
         }
         if (!StringUtils.isEmpty(request.getAccess())) {
             switch (request.getAccess()) {
-                case "CanEdit":
+                case "canEdit":
                     conditions.add(
                             and(
                                     Tables.ABIE.STATE.notEqual(Initiating.getValue()),
@@ -208,7 +215,7 @@ public class BieService {
                     );
                     break;
 
-                case "CanView":
+                case "canView":
                     conditions.add(
                             or(
                                     Tables.ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
@@ -222,11 +229,10 @@ public class BieService {
             }
         }
 
-        SelectConnectByStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectConnectByStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> conditionStep = step.where(conditions);
-
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
@@ -249,15 +255,6 @@ public class BieService {
 
                 break;
 
-            case "bizCtxName":
-                if ("asc".equals(sortDirection)) {
-                    sortField = Tables.BIZ_CTX.NAME.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = Tables.BIZ_CTX.NAME.desc();
-                }
-
-                break;
-
             case "lastUpdateTimestamp":
                 if ("asc".equals(sortDirection)) {
                     sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.asc();
@@ -267,10 +264,9 @@ public class BieService {
 
                 break;
         }
-
-        SelectWithTiesAfterOffsetStep<Record13<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectWithTiesAfterOffsetStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, String, Integer>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
@@ -284,26 +280,45 @@ public class BieService {
 
         List<BieList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
+        result.forEach(bieList -> setBusinessContexts(bieList));
+
+        if (!StringUtils.isEmpty(request.getBusinessContext())) {
+            String nameFiltered = request.getBusinessContext();
+            result = result.stream().
+                    filter(bieList ->
+                            bieList.getBusinessContexts().stream().anyMatch(businessContext ->
+                                    businessContext.getName().toLowerCase().contains(nameFiltered.toLowerCase())))
+                    .collect(Collectors.toList());
+        }
         result = appendAccessPrivilege(result, user);
 
         PageResponse<BieList> response = new PageResponse();
         response.setList(result);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(dslContext.selectCount()
-                .from(Tables.TOP_LEVEL_ABIE)
-                .join(Tables.ABIE).on(Tables.TOP_LEVEL_ABIE.ABIE_ID.eq(Tables.ABIE.ABIE_ID))
-                .and(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID))
-                .join(Tables.ASBIEP).on(Tables.ASBIEP.ROLE_OF_ABIE_ID.eq(Tables.ABIE.ABIE_ID))
-                .join(Tables.ASCCP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
-                .join(Tables.BIZ_CTX).on(Tables.BIZ_CTX.BIZ_CTX_ID.eq(Tables.ABIE.BIZ_CTX_ID))
-                .join(Tables.APP_USER).on(Tables.APP_USER.APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
-                .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID))
-                .where(conditions)
-                .fetchOptionalInto(Integer.class).orElse(0));
-
+        response.setLength(result.size());
         return response;
+    }
+
+    private void setBusinessContexts(BieList bieList) {
+        List<ULong> bizCtxIds = dslContext.selectDistinct(
+                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
+                .fetchInto(ULong.class);
+
+        bieList.setBusinessContexts(
+                dslContext.select(
+                        BIZ_CTX.BIZ_CTX_ID,
+                        BIZ_CTX.NAME,
+                        BIZ_CTX.GUID,
+                        BIZ_CTX.CREATION_TIMESTAMP,
+                        BIZ_CTX.LAST_UPDATED_BY,
+                        BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                        .from(BIZ_CTX)
+                        .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxIds))
+                        .fetchInto(BusinessContext.class)
+        );
     }
 
     private List<BieList> appendAccessPrivilege(List<BieList> bieLists, User user) {
@@ -349,16 +364,14 @@ public class BieService {
     }
 
     private List<BieList> getBieList(User user, Condition condition) {
-        SelectOnConditionStep<Record12<
-                ULong, String, String, String, ULong,
-                String, ULong, String, String, String,
+        SelectOnConditionStep<Record10<
+                ULong, String, String, String,
+                ULong, String, String, String,
                 Timestamp, Integer>> selectOnConditionStep = dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
                 RELEASE.RELEASE_NUM,
-                BIZ_CTX.BIZ_CTX_ID,
-                BIZ_CTX.NAME.as("biz_ctx_name"),
                 TOP_LEVEL_ABIE.OWNER_USER_ID,
                 APP_USER.LOGIN_ID.as("owner"),
                 ABIE.VERSION,
@@ -371,7 +384,6 @@ public class BieService {
                         TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
-                .join(BIZ_CTX).on(BIZ_CTX.BIZ_CTX_ID.eq(ABIE.BIZ_CTX_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
                 .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
 
@@ -381,6 +393,8 @@ public class BieService {
         } else {
             bieLists = selectOnConditionStep.fetchInto(BieList.class);
         }
+
+        bieLists.forEach(bieList -> setBusinessContexts(bieList));
         return appendAccessPrivilege(bieLists, user);
     }
 
@@ -395,6 +409,14 @@ public class BieService {
         }
 
         return getBieList(request.getUser(), condition);
+    }
+
+    public BizCtx findBizCtxByAbieId(long abieId) {
+        long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
+        // return the first biz ctx of the specific topLevelAbieId
+        TopLevelAbie top = new TopLevelAbie();
+        top.setTopLevelAbieId(topLevelAbieId);
+        return bizCtxRepository.findByTopLevelAbie(top).get(0);
     }
 
     public List<BieList> getMetaHeaderBieList(User user) {
@@ -450,5 +472,36 @@ public class BieService {
                 ))
                 .execute();
     }
+
+    @Transactional
+    public List<BizCtxAssignment> getAssignBizCtx(long topLevelAbieId) {
+        return dslContext.select(
+                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID,
+                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
+                BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+                .from(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchInto(BizCtxAssignment.class);
+    }
+
+     @Transactional
+     public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
+         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
+         //remove all records of previous assignment if not in the current assignment
+         dslContext.delete(BIZ_CTX_ASSIGNMENT)
+                 .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                 .execute();
+
+        for (int i=0; i < newList.size() ; i++) {
+            dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
+                    .onDuplicateKeyIgnore()
+                    .execute();
+            //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
+         }
+
+     }
+
 
 }

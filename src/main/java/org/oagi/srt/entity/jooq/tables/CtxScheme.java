@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxSchemeRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxScheme extends TableImpl<CtxSchemeRecord> {
 
-    private static final long serialVersionUID = -8438479;
+    private static final long serialVersionUID = 1681794799;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme</code>
@@ -169,7 +169,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK, Indexes.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_UK1, Indexes.CTX_SCHEME_FK_CODE_LIST_ID, Indexes.CTX_SCHEME_PRIMARY);
+        return Arrays.<Index>asList(Indexes.CTX_SCHEME_CODE_LIST_ID, Indexes.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK, Indexes.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_UK1, Indexes.CTX_SCHEME_PRIMARY);
     }
 
     /**

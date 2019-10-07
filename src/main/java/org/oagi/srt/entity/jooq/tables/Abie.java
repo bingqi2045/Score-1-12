@@ -50,7 +50,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 1944598653;
+    private static final long serialVersionUID = 1429916880;
 
     /**
      * The reference instance of <code>oagi.abie</code>
@@ -81,9 +81,9 @@ public class Abie extends TableImpl<AbieRecord> {
     public final TableField<AbieRecord, ULong> BASED_ACC_ID = createField("based_acc_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ACC table refering to the ACC, on which the business context has been applied to derive this ABIE.");
 
     /**
-     * The column <code>oagi.abie.biz_ctx_id</code>. A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
+     * The column <code>oagi.abie.biz_ctx_id</code>. (Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
      */
-    public final TableField<AbieRecord, ULong> BIZ_CTX_ID = createField("biz_ctx_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.");
+    public final TableField<AbieRecord, ULong> BIZ_CTX_ID = createField("biz_ctx_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "(Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.");
 
     /**
      * The column <code>oagi.abie.definition</code>. Definition to override the ACC's definition. If NULL, it means that the definition should be inherited from the based CC.

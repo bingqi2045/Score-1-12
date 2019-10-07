@@ -375,27 +375,30 @@ public class BieRepository {
                 .execute();
     }
 
-    public long getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
-        return dslContext.select(
-                Tables.ABIE.BIZ_CTX_ID)
-                .from(Tables.ABIE)
-                .join(Tables.TOP_LEVEL_ABIE).on(Tables.ABIE.ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.ABIE_ID))
+    public List<Long> getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
+        return dslContext.select(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
+                .from(Tables.BIZ_CTX_ASSIGNMENT)
+                .join(Tables.TOP_LEVEL_ABIE).on(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .fetchOptionalInto(Long.class).orElse(0L);
+                .fetchInto(Long.class);
+    }
+
+    public void createBizCtxAssignments(long topLevelAbieId, List<Long> bizCtxIds) {
+        bizCtxIds.stream().forEach(bizCtxId -> {
+            dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                    .execute();
+        });
     }
 
     public long createAbie(User user, long basedAccId, long topLevelAbieId) {
-        return createAbie(user, basedAccId, getBizCtxIdByTopLevelAbieId(topLevelAbieId), topLevelAbieId);
-    }
-
-    public long createAbie(User user, long basedAccId, long bizCtxId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         return dslContext.insertInto(Tables.ABIE)
                 .set(Tables.ABIE.GUID, SrtGuid.randomGuid())
                 .set(Tables.ABIE.BASED_ACC_ID, ULong.valueOf(basedAccId))
-                .set(Tables.ABIE.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
                 .set(Tables.ABIE.CREATED_BY, ULong.valueOf(userId))
                 .set(Tables.ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.ABIE.CREATION_TIMESTAMP, timestamp)

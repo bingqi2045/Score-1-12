@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.gateway.http.api.module_management.data.*;
+import org.oagi.srt.gateway.http.api.module_management.data.Module;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

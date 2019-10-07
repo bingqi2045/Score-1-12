@@ -142,7 +142,6 @@ public class BieGenerateService {
             }
             targetFiles.put(topLevelAbie.getTopLevelAbieId(), schemaExpressionFile);
         }
-
         return targetFiles;
     }
 
