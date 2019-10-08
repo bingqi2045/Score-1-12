@@ -1,3 +1,11 @@
+-- ----------------------------------------------------
+-- Migration script for Score v1.2.0                 --
+--                                                   --
+-- Author: Sofian Chouder <sofian.chouder@nist.gov>    --
+--         Kwanghoon Lee <kwanghoon.lee@nist.gov>    --
+--         Hakju Oh <hakju.oh@nist.gov>              --
+-- ----------------------------------------------------
+
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `biz_ctx_assignment`;
@@ -18,7 +26,11 @@ ALTER TABLE `abie` MODIFY COLUMN `biz_ctx_id` bigint(20) unsigned DEFAULT NULL C
 INSERT INTO `biz_ctx_assignment` (`top_level_abie_id`, `biz_ctx_id`)
 SELECT `top_level_abie_id`, `abie`.`biz_ctx_id`
 FROM `top_level_abie`
-         JOIN `abie` ON `top_level_abie`.`abie_id` = `abie`.`abie_id`
+JOIN `abie` ON `top_level_abie`.`abie_id` = `abie`.`abie_id`
 WHERE `abie`.`biz_ctx_id` IS NOT NULL;
+
+-- Add `code_list_id` column on `ctx_scheme` table.
+ALTER TABLE `ctx_scheme` ADD COLUMN `code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.' AFTER `ctx_category_id`;
+ALTER TABLE `ctx_scheme` ADD CONSTRAINT `ctx_scheme_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`);
 
 SET FOREIGN_KEY_CHECKS = 1;
