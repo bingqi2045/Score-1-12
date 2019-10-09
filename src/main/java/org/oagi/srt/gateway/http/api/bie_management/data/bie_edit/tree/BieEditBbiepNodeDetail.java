@@ -38,6 +38,9 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String associationDefinition;
     private String componentDefinition;
 
+    private String exampleContentType;
+    private String exampleText;
+
     public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 
         this.setTopLevelAbieId(bbiepNode.getTopLevelAbieId());
