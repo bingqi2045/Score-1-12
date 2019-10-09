@@ -7,6 +7,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.DeleteBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.GetBieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
@@ -48,9 +49,9 @@ public class BieListController {
         BieListRequest request = new BieListRequest();
 
         request.setPropertyTerm(propertyTerm);
-        //todo make it a list for all the business context
+        // todo make it a list for all the business context
         request.setBusinessContext(businessContext);
-        request.setAccess(access);
+        request.setAccess(!StringUtils.isEmpty(access) ? AccessPrivilege.valueOf(access) : null);
         request.setStates(!StringUtils.isEmpty(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());

@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.data;
 
 import lombok.Data;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 
 import java.util.Collections;
@@ -13,7 +14,7 @@ public class BieListRequest {
 
     private String propertyTerm;
     private String businessContext;
-    private String access;
+    private AccessPrivilege access;
     private List<String> excludes = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();

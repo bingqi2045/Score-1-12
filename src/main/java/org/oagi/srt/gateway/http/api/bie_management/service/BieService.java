@@ -204,9 +204,9 @@ public class BieService {
         if (request.getUpdateEndDate() != null) {
             conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
-        if (!StringUtils.isEmpty(request.getAccess())) {
+        if (request.getAccess() != null) {
             switch (request.getAccess()) {
-                case "canEdit":
+                case CanEdit:
                     conditions.add(
                             and(
                                     Tables.ABIE.STATE.notEqual(Initiating.getValue()),
@@ -215,7 +215,7 @@ public class BieService {
                     );
                     break;
 
-                case "canView":
+                case CanView:
                     conditions.add(
                             or(
                                     Tables.ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
