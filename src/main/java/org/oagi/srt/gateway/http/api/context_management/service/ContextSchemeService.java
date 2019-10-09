@@ -185,8 +185,11 @@ public class ContextSchemeService {
                 CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
                 CTX_SCHEME_VALUE.GUID,
                 CTX_SCHEME_VALUE.VALUE,
-                CTX_SCHEME_VALUE.MEANING
+                CTX_SCHEME_VALUE.MEANING,
+                iif(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.isNotNull(), true, false).as("used")
         ).from(CTX_SCHEME_VALUE)
+                .leftJoin(BIZ_CTX_VALUE)
+                .on(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID))
                 .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
                 .fetchInto(ContextSchemeValue.class);
     }

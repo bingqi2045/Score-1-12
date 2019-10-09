@@ -12,5 +12,6 @@ public class ContextSchemeValue implements Serializable {
     private String value;
     private String meaning;
     private long ownerCtxSchemeId;
+    boolean used;
 
 }
