@@ -279,6 +279,7 @@ public class Indexes {
     public static final Index TEXT_CONTENT_PRIMARY = Indexes0.TEXT_CONTENT_PRIMARY;
     public static final Index TOP_LEVEL_ABIE_PRIMARY = Indexes0.TOP_LEVEL_ABIE_PRIMARY;
     public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK;
+    public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK;
     public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK;
     public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_RELEASE_ID_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_RELEASE_ID_FK;
     public static final Index USAGE_RULE_PRIMARY = Indexes0.USAGE_RULE_PRIMARY;
@@ -504,6 +505,7 @@ public class Indexes {
         public static Index TEXT_CONTENT_PRIMARY = Internal.createIndex("PRIMARY", TextContent.TEXT_CONTENT, new OrderField[] { TextContent.TEXT_CONTENT.TEXT_CONTENT_ID }, true);
         public static Index TOP_LEVEL_ABIE_PRIMARY = Internal.createIndex("PRIMARY", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID }, true);
         public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK = Internal.createIndex("top_level_abie_abie_id_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.ABIE_ID }, false);
+        public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = Internal.createIndex("top_level_abie_last_updated_by_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.LAST_UPDATED_BY }, false);
         public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Internal.createIndex("top_level_abie_owner_user_id_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.OWNER_USER_ID }, false);
         public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_RELEASE_ID_FK = Internal.createIndex("top_level_abie_release_id_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.RELEASE_ID }, false);
         public static Index USAGE_RULE_PRIMARY = Internal.createIndex("PRIMARY", UsageRule.USAGE_RULE, new OrderField[] { UsageRule.USAGE_RULE.USAGE_RULE_ID }, true);

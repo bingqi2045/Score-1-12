@@ -386,6 +386,7 @@ public class Keys {
     public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_LAST_UPDATED_BY_FK = ForeignKeys0.RELEASE_LAST_UPDATED_BY_FK;
     public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_ABIE_ID_FK;
     public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_OWNER_USER_ID_FK;
+    public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = ForeignKeys0.TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK;
     public static final ForeignKey<TopLevelAbieRecord, ReleaseRecord> TOP_LEVEL_ABIE_RELEASE_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_RELEASE_ID_FK;
     public static final ForeignKey<UsageRuleExpressionRecord, UsageRuleRecord> USAGE_RULE_EXPRESSION_REPRESENTED_USAGE_RULE_ID_FK = ForeignKeys0.USAGE_RULE_EXPRESSION_REPRESENTED_USAGE_RULE_ID_FK;
     public static final ForeignKey<XbtRecord, XbtRecord> XBT_SUBTYPE_OF_XBT_ID_FK = ForeignKeys0.XBT_SUBTYPE_OF_XBT_ID_FK;
@@ -662,6 +663,7 @@ public class Keys {
         public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Release.RELEASE, "release_last_updated_by_fk", Release.RELEASE.LAST_UPDATED_BY);
         public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ABIE_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_abie_id_fk", TopLevelAbie.TOP_LEVEL_ABIE.ABIE_ID);
         public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_owner_user_id_fk", TopLevelAbie.TOP_LEVEL_ABIE.OWNER_USER_ID);
+        public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_last_updated_by_fk", TopLevelAbie.TOP_LEVEL_ABIE.LAST_UPDATED_BY);
         public static final ForeignKey<TopLevelAbieRecord, ReleaseRecord> TOP_LEVEL_ABIE_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_release_id_fk", TopLevelAbie.TOP_LEVEL_ABIE.RELEASE_ID);
         public static final ForeignKey<UsageRuleExpressionRecord, UsageRuleRecord> USAGE_RULE_EXPRESSION_REPRESENTED_USAGE_RULE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_USAGE_RULE_PRIMARY, UsageRuleExpression.USAGE_RULE_EXPRESSION, "usage_rule_expression_represented_usage_rule_id_fk", UsageRuleExpression.USAGE_RULE_EXPRESSION.REPRESENTED_USAGE_RULE_ID);
         public static final ForeignKey<XbtRecord, XbtRecord> XBT_SUBTYPE_OF_XBT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_XBT_PRIMARY, Xbt.XBT, "xbt_subtype_of_xbt_id_fk", Xbt.XBT.SUBTYPE_OF_XBT_ID);

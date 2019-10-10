@@ -65,4 +65,17 @@ ADD COLUMN `example_text_content_id` bigint(20) unsigned DEFAULT NULL AFTER `def
 ADD KEY `bbie_sc_example_text_content_id_fk` (`example_text_content_id`),
 ADD CONSTRAINT `bbie_sc_example_text_content_id_fk` FOREIGN KEY (`example_text_content_id`) REFERENCES `text_content` (`text_content_id`);
 
+-- Add `last_update_timestamp` and `last_updated_by` columns on `top_level_abie` table.
+ALTER TABLE `top_level_abie`
+ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'The timestamp when among all related bie records was last updated.' AFTER `owner_user_id`,
+ADD COLUMN `last_updated_by` bigint(20) unsigned COMMENT 'A foreign key referring to the last user who has updated any related bie records.' AFTER `last_update_timestamp`,
+ADD KEY `top_level_abie_last_updated_by_fk` (`last_updated_by`),
+ADD CONSTRAINT `top_level_abie_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+UPDATE `top_level_abie` SET `last_updated_by` = `owner_user_id`;
+UPDATE `top_level_abie`, (SELECT `top_level_abie`.`top_level_abie_id`, `abie`.`last_update_timestamp` FROM `abie` JOIN `top_level_abie` ON `abie`.`abie_id` = `top_level_abie`.`abie_id`) AS t SET `top_level_abie`.`last_update_timestamp` = t.`last_update_timestamp` WHERE `top_level_abie`.`top_level_abie_id` = t.`top_level_abie_id`;
+
+ALTER TABLE `top_level_abie`
+MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL;
+
 SET FOREIGN_KEY_CHECKS = 1;

@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = -503598087;
+    private static final long serialVersionUID = -366597692;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>
@@ -79,6 +79,11 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
      * The column <code>oagi.top_level_abie.last_update_timestamp</code>. The timestamp when among all related bie records was last updated.
      */
     public final TableField<TopLevelAbieRecord, Timestamp> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "The timestamp when among all related bie records was last updated.");
+
+    /**
+     * The column <code>oagi.top_level_abie.last_updated_by</code>.
+     */
+    public final TableField<TopLevelAbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.top_level_abie.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.
@@ -130,7 +135,7 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.TOP_LEVEL_ABIE_PRIMARY, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_RELEASE_ID_FK);
+        return Arrays.<Index>asList(Indexes.TOP_LEVEL_ABIE_PRIMARY, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK, Indexes.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_RELEASE_ID_FK);
     }
 
     @Override
@@ -150,15 +155,19 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
     @Override
     public List<ForeignKey<TopLevelAbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<TopLevelAbieRecord, ?>>asList(Keys.TOP_LEVEL_ABIE_ABIE_ID_FK, Keys.TOP_LEVEL_ABIE_OWNER_USER_ID_FK, Keys.TOP_LEVEL_ABIE_RELEASE_ID_FK);
+        return Arrays.<ForeignKey<TopLevelAbieRecord, ?>>asList(Keys.TOP_LEVEL_ABIE_ABIE_ID_FK, Keys.TOP_LEVEL_ABIE_OWNER_USER_ID_FK, Keys.TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK, Keys.TOP_LEVEL_ABIE_RELEASE_ID_FK);
     }
 
     public Abie abie() {
         return new Abie(this, Keys.TOP_LEVEL_ABIE_ABIE_ID_FK);
     }
 
-    public AppUser appUser() {
+    public AppUser topLevelAbieOwnerUserIdFk() {
         return new AppUser(this, Keys.TOP_LEVEL_ABIE_OWNER_USER_ID_FK);
+    }
+
+    public AppUser topLevelAbieLastUpdatedByFk() {
+        return new AppUser(this, Keys.TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK);
     }
 
     public Release release() {
@@ -192,11 +201,11 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, Timestamp, ULong, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<ULong, ULong, ULong, Timestamp, ULong, ULong, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
