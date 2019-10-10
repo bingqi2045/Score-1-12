@@ -4,6 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = 734708381;
+    private static final long serialVersionUID = -1736612611;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>
@@ -72,6 +73,11 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
      * The column <code>oagi.top_level_abie.owner_user_id</code>.
      */
     public final TableField<TopLevelAbieRecord, ULong> OWNER_USER_ID = createField("owner_user_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.top_level_abie.last_update_timestamp</code>. The timestamp when among all related bie records was last updated.
+     */
+    public final TableField<TopLevelAbieRecord, Timestamp> LAST_UPDATE_TIMESTAMP = createField("last_update_timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "The timestamp when among all related bie records was last updated.");
 
     /**
      * The column <code>oagi.top_level_abie.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.

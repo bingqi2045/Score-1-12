@@ -33,4 +33,16 @@ WHERE `abie`.`biz_ctx_id` IS NOT NULL;
 ALTER TABLE `ctx_scheme` ADD COLUMN `code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.' AFTER `ctx_category_id`;
 ALTER TABLE `ctx_scheme` ADD CONSTRAINT `ctx_scheme_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`);
 
+-- Add `openapi30_map` column on `xbt` table.
+ALTER TABLE `xbt` ADD COLUMN `openapi30_map` varchar(500) AFTER `jbt_draft05_map`;
+UPDATE `xbt` SET `openapi30_map` = `jbt_draft05_map`;
+UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"date"}' WHERE `name` = 'date';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format": "float"}' WHERE `name` = 'float';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"integer"}' WHERE `name` = 'integer';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"integer", "minimum":0, "exclusiveMinimum":false}' WHERE `name` = 'non negative integer';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"integer", "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
+UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":false}' WHERE `name` = 'non negative integer';
+UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
+UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format":"double"}' WHERE `name` = 'double';
+
 SET FOREIGN_KEY_CHECKS = 1;

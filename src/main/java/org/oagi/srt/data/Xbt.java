@@ -11,6 +11,7 @@ public class Xbt {
     private String name;
     private String builtinType;
     private String jbtDraft05Map;
+    private String openapi30Map;
     private Long subtypeOfXbtId;
     private String schemaDefinition;
     private Long moduleId;

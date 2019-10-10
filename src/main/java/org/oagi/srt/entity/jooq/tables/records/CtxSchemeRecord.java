@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.CtxScheme;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = -2105487427;
+    private static final long serialVersionUID = 1620142439;
 
     /**
      * Setter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary, database key.
@@ -146,14 +146,14 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.ctx_scheme.code_list_id</code>.
+     * Setter for <code>oagi.ctx_scheme.code_list_id</code>. This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.
      */
     public void setCodeListId(ULong value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_scheme.code_list_id</code>.
+     * Getter for <code>oagi.ctx_scheme.code_list_id</code>. This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.
      */
     public ULong getCodeListId() {
         return (ULong) get(8);

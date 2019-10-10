@@ -51,6 +51,7 @@ import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
+import org.oagi.srt.entity.jooq.tables.TextContent;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
@@ -95,6 +96,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
 import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.NamespaceRecord;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
+import org.oagi.srt.entity.jooq.tables.records.TextContentRecord;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleExpressionRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleRecord;
@@ -159,6 +161,7 @@ public class Keys {
     public static final Identity<ModuleDepRecord, ULong> IDENTITY_MODULE_DEP = Identities0.IDENTITY_MODULE_DEP;
     public static final Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Identities0.IDENTITY_NAMESPACE;
     public static final Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Identities0.IDENTITY_RELEASE;
+    public static final Identity<TextContentRecord, ULong> IDENTITY_TEXT_CONTENT = Identities0.IDENTITY_TEXT_CONTENT;
     public static final Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Identities0.IDENTITY_TOP_LEVEL_ABIE;
     public static final Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Identities0.IDENTITY_USAGE_RULE;
     public static final Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Identities0.IDENTITY_USAGE_RULE_EXPRESSION;
@@ -221,6 +224,7 @@ public class Keys {
     public static final UniqueKey<ModuleDepRecord> KEY_MODULE_DEP_PRIMARY = UniqueKeys0.KEY_MODULE_DEP_PRIMARY;
     public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = UniqueKeys0.KEY_NAMESPACE_PRIMARY;
     public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = UniqueKeys0.KEY_RELEASE_PRIMARY;
+    public static final UniqueKey<TextContentRecord> KEY_TEXT_CONTENT_PRIMARY = UniqueKeys0.KEY_TEXT_CONTENT_PRIMARY;
     public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = UniqueKeys0.KEY_TOP_LEVEL_ABIE_PRIMARY;
     public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_PRIMARY;
     public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_EXPRESSION_PRIMARY;
@@ -279,6 +283,7 @@ public class Keys {
     public static final ForeignKey<BbieRecord, BdtPriRestriRecord> BBIE_BDT_PRI_RESTRI_ID_FK = ForeignKeys0.BBIE_BDT_PRI_RESTRI_ID_FK;
     public static final ForeignKey<BbieRecord, CodeListRecord> BBIE_CODE_LIST_ID_FK = ForeignKeys0.BBIE_CODE_LIST_ID_FK;
     public static final ForeignKey<BbieRecord, AgencyIdListRecord> BBIE_AGENCY_ID_LIST_ID_FK = ForeignKeys0.BBIE_AGENCY_ID_LIST_ID_FK;
+    public static final ForeignKey<BbieRecord, TextContentRecord> BBIE_EXAMPLE_TEXT_CONTENT_ID_FK = ForeignKeys0.BBIE_EXAMPLE_TEXT_CONTENT_ID_FK;
     public static final ForeignKey<BbieRecord, AppUserRecord> BBIE_CREATED_BY_FK = ForeignKeys0.BBIE_CREATED_BY_FK;
     public static final ForeignKey<BbieRecord, AppUserRecord> BBIE_LAST_UPDATED_BY_FK = ForeignKeys0.BBIE_LAST_UPDATED_BY_FK;
     public static final ForeignKey<BbieRecord, TopLevelAbieRecord> BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK;
@@ -291,6 +296,7 @@ public class Keys {
     public static final ForeignKey<BbieScRecord, BdtScPriRestriRecord> BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = ForeignKeys0.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK;
     public static final ForeignKey<BbieScRecord, CodeListRecord> BBIE_SC_CODE_LIST_ID_FK = ForeignKeys0.BBIE_SC_CODE_LIST_ID_FK;
     public static final ForeignKey<BbieScRecord, AgencyIdListRecord> BBIE_SC_AGENCY_ID_LIST_ID_FK = ForeignKeys0.BBIE_SC_AGENCY_ID_LIST_ID_FK;
+    public static final ForeignKey<BbieScRecord, TextContentRecord> BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK = ForeignKeys0.BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK;
     public static final ForeignKey<BbieScRecord, TopLevelAbieRecord> BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = ForeignKeys0.BCC_TO_BCCP_ID_FK;
     public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = ForeignKeys0.BCC_FROM_ACC_ID_FK;
@@ -348,7 +354,7 @@ public class Keys {
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.CODE_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = ForeignKeys0.CTX_SCHEME_CTX_CATEGORY_ID_FK;
-    public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_IBFK_1 = ForeignKeys0.CTX_SCHEME_IBFK_1;
+    public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = ForeignKeys0.CTX_SCHEME_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = ForeignKeys0.CTX_SCHEME_CREATED_BY_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = ForeignKeys0.CTX_SCHEME_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = ForeignKeys0.CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK;
@@ -435,6 +441,7 @@ public class Keys {
         public static Identity<ModuleDepRecord, ULong> IDENTITY_MODULE_DEP = Internal.createIdentity(ModuleDep.MODULE_DEP, ModuleDep.MODULE_DEP.MODULE_DEP_ID);
         public static Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Internal.createIdentity(Namespace.NAMESPACE, Namespace.NAMESPACE.NAMESPACE_ID);
         public static Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Internal.createIdentity(Release.RELEASE, Release.RELEASE.RELEASE_ID);
+        public static Identity<TextContentRecord, ULong> IDENTITY_TEXT_CONTENT = Internal.createIdentity(TextContent.TEXT_CONTENT, TextContent.TEXT_CONTENT.TEXT_CONTENT_ID);
         public static Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Internal.createIdentity(TopLevelAbie.TOP_LEVEL_ABIE, TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID);
         public static Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Internal.createIdentity(UsageRule.USAGE_RULE, UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Internal.createIdentity(UsageRuleExpression.USAGE_RULE_EXPRESSION, UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
@@ -495,6 +502,7 @@ public class Keys {
         public static final UniqueKey<ModuleDepRecord> KEY_MODULE_DEP_PRIMARY = Internal.createUniqueKey(ModuleDep.MODULE_DEP, "KEY_module_dep_PRIMARY", ModuleDep.MODULE_DEP.MODULE_DEP_ID);
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_PRIMARY", Namespace.NAMESPACE.NAMESPACE_ID);
         public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = Internal.createUniqueKey(Release.RELEASE, "KEY_release_PRIMARY", Release.RELEASE.RELEASE_ID);
+        public static final UniqueKey<TextContentRecord> KEY_TEXT_CONTENT_PRIMARY = Internal.createUniqueKey(TextContent.TEXT_CONTENT, "KEY_text_content_PRIMARY", TextContent.TEXT_CONTENT.TEXT_CONTENT_ID);
         public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = Internal.createUniqueKey(TopLevelAbie.TOP_LEVEL_ABIE, "KEY_top_level_abie_PRIMARY", TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID);
         public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = Internal.createUniqueKey(UsageRule.USAGE_RULE, "KEY_usage_rule_PRIMARY", UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = Internal.createUniqueKey(UsageRuleExpression.USAGE_RULE_EXPRESSION, "KEY_usage_rule_expression_PRIMARY", UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
@@ -551,6 +559,7 @@ public class Keys {
         public static final ForeignKey<BbieRecord, BdtPriRestriRecord> BBIE_BDT_PRI_RESTRI_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BDT_PRI_RESTRI_PRIMARY, Bbie.BBIE, "bbie_bdt_pri_restri_id_fk", Bbie.BBIE.BDT_PRI_RESTRI_ID);
         public static final ForeignKey<BbieRecord, CodeListRecord> BBIE_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, Bbie.BBIE, "bbie_code_list_id_fk", Bbie.BBIE.CODE_LIST_ID);
         public static final ForeignKey<BbieRecord, AgencyIdListRecord> BBIE_AGENCY_ID_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_AGENCY_ID_LIST_PRIMARY, Bbie.BBIE, "bbie_agency_id_list_id_fk", Bbie.BBIE.AGENCY_ID_LIST_ID);
+        public static final ForeignKey<BbieRecord, TextContentRecord> BBIE_EXAMPLE_TEXT_CONTENT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_TEXT_CONTENT_PRIMARY, Bbie.BBIE, "bbie_example_text_content_id_fk", Bbie.BBIE.EXAMPLE_TEXT_CONTENT_ID);
         public static final ForeignKey<BbieRecord, AppUserRecord> BBIE_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bbie.BBIE, "bbie_created_by_fk", Bbie.BBIE.CREATED_BY);
         public static final ForeignKey<BbieRecord, AppUserRecord> BBIE_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bbie.BBIE, "bbie_last_updated_by_fk", Bbie.BBIE.LAST_UPDATED_BY);
         public static final ForeignKey<BbieRecord, TopLevelAbieRecord> BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, Bbie.BBIE, "bbie_owner_top_level_abie_id_fk", Bbie.BBIE.OWNER_TOP_LEVEL_ABIE_ID);
@@ -563,6 +572,7 @@ public class Keys {
         public static final ForeignKey<BbieScRecord, BdtScPriRestriRecord> BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BDT_SC_PRI_RESTRI_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_dt_sc_pri_restri_id_fk", BbieSc.BBIE_SC.DT_SC_PRI_RESTRI_ID);
         public static final ForeignKey<BbieScRecord, CodeListRecord> BBIE_SC_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_code_list_id_fk", BbieSc.BBIE_SC.CODE_LIST_ID);
         public static final ForeignKey<BbieScRecord, AgencyIdListRecord> BBIE_SC_AGENCY_ID_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_AGENCY_ID_LIST_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_agency_id_list_id_fk", BbieSc.BBIE_SC.AGENCY_ID_LIST_ID);
+        public static final ForeignKey<BbieScRecord, TextContentRecord> BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_TEXT_CONTENT_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_example_text_content_id_fk", BbieSc.BBIE_SC.EXAMPLE_TEXT_CONTENT_ID);
         public static final ForeignKey<BbieScRecord, TopLevelAbieRecord> BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_owner_top_level_abie_id_fk", BbieSc.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID);
         public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCCP_PRIMARY, Bcc.BCC, "bcc_to_bccp_id_fk", Bcc.BCC.TO_BCCP_ID);
         public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, Bcc.BCC, "bcc_from_acc_id_fk", Bcc.BCC.FROM_ACC_ID);
@@ -620,7 +630,7 @@ public class Keys {
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_last_updated_by_fk", CodeList.CODE_LIST.LAST_UPDATED_BY);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_CATEGORY_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID);
-        public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_IBFK_1 = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ibfk_1", CtxScheme.CTX_SCHEME.CODE_LIST_ID);
+        public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_code_list_id_fk", CtxScheme.CTX_SCHEME.CODE_LIST_ID);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_created_by_fk", CtxScheme.CTX_SCHEME.CREATED_BY);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME.LAST_UPDATED_BY);
         public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CTX_SCHEME_PRIMARY, CtxSchemeValue.CTX_SCHEME_VALUE, "ctx_scheme_value_owner_ctx_scheme_id_fk", CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID);

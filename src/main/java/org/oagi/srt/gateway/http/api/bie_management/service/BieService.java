@@ -153,7 +153,7 @@ public class BieService {
             Timestamp, String, Integer>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                Tables.ASCCP.GUID,
+                Tables.ABIE.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
                 Tables.RELEASE.RELEASE_NUM,
                 Tables.TOP_LEVEL_ABIE.OWNER_USER_ID,

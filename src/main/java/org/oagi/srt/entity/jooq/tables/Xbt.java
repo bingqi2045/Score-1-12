@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = 934586994;
+    private static final long serialVersionUID = 1550203846;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -78,6 +78,11 @@ public class Xbt extends TableImpl<XbtRecord> {
      * The column <code>oagi.xbt.jbt_draft05_map</code>.
      */
     public final TableField<XbtRecord, String> JBT_DRAFT05_MAP = createField("jbt_draft05_map", org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
+
+    /**
+     * The column <code>oagi.xbt.openapi30_map</code>.
+     */
+    public final TableField<XbtRecord, String> OPENAPI30_MAP = createField("openapi30_map", org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
 
     /**
      * The column <code>oagi.xbt.subtype_of_xbt_id</code>. Foreign key to the XBT table itself. It indicates a super type of this XSD built-in type.
