@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -385,8 +382,7 @@ public class BieService {
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID))
-                .join(BIZ_CTX_ASSIGNMENT).on(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID));
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
 
         List<BieList> bieLists;
         if (condition != null) {
@@ -404,7 +400,16 @@ public class BieService {
         Boolean excludeJsonRelated = request.getExcludeJsonRelated();
         Condition condition = null;
         if (bizCtxId != null && bizCtxId > 0L) {
-            condition = BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId));
+            List<ULong> topLevelAbieIds =
+                    dslContext.select(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+                    .from(BIZ_CTX_ASSIGNMENT)
+                    .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                    .fetchInto(ULong.class);
+            if (topLevelAbieIds.isEmpty()) {
+                return Collections.emptyList();
+            }
+            
+            condition = TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds);
         } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
             condition = ASCCP.PROPERTY_TERM.notIn("Meta Header", "Pagination Response");
         }
