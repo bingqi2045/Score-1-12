@@ -1,6 +1,8 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
+import org.jooq.Record18;
+import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BBIESC;
 import org.oagi.srt.entity.jooq.Tables;
@@ -9,33 +11,61 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
+
 @Repository
 public class BBIESCRepository implements SrtRepository<BBIESC> {
 
     @Autowired
     private DSLContext dslContext;
 
+    private SelectJoinStep<Record18<
+            ULong, String, ULong, ULong, ULong,
+            ULong, ULong, Integer, Integer, String,
+            String, String, String, String, String,
+            String, Byte, ULong>> getSelectJoinStep() {
+        return dslContext.select(
+                Tables.BBIE_SC.BBIE_SC_ID,
+                Tables.BBIE_SC.GUID,
+                Tables.BBIE_SC.BBIE_ID,
+                Tables.BBIE_SC.DT_SC_ID,
+                Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
+                Tables.BBIE_SC.CODE_LIST_ID,
+                Tables.BBIE_SC.AGENCY_ID_LIST_ID,
+                Tables.BBIE_SC.CARDINALITY_MIN,
+                Tables.BBIE_SC.CARDINALITY_MAX,
+                Tables.BBIE_SC.DEFAULT_VALUE,
+                Tables.BBIE_SC.FIXED_VALUE,
+                Tables.BBIE_SC.DEFINITION,
+                Tables.BBIE_SC.REMARK,
+                Tables.BBIE_SC.BIZ_TERM,
+                Tables.TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
+                Tables.TEXT_CONTENT.TEXT_CONTENT_.as("example_text"),
+                Tables.BBIE_SC.IS_USED.as("used"),
+                Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID)
+                .from(Tables.BBIE_SC)
+                .leftJoin(Tables.TEXT_CONTENT).on(Tables.BBIE_SC.EXAMPLE_TEXT_CONTENT_ID.eq(Tables.TEXT_CONTENT.TEXT_CONTENT_ID));
+    }
+
     @Override
     public List<BBIESC> findAll() {
-        return dslContext.select(Tables.BBIE_SC.fields())
-                .select(Tables.BBIE_SC.IS_USED.as("used"))
-                .from(Tables.BBIE_SC).fetchInto(BBIESC.class);
+        return getSelectJoinStep().fetchInto(BBIESC.class);
     }
 
     @Override
     public BBIESC findById(long id) {
-        return dslContext.select(Tables.BBIE_SC.fields())
-                .select(Tables.BBIE_SC.IS_USED.as("used"))
-                .from(Tables.BBIE_SC)
+        if (id <= 0L) {
+            return null;
+        }
+        return getSelectJoinStep()
                 .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(id)))
-                .fetchOneInto(BBIESC.class);
+                .fetchOptionalInto(BBIESC.class).orElse(null);
     }
 
     public List<BBIESC> findByOwnerTopLevelAbieIdAndUsed(long ownerTopLevelAbieId, boolean used) {
-        return dslContext.select(Tables.BBIE_SC.fields()).select(Tables.BBIE_SC.IS_USED.as("used"))
-                .from(Tables.BBIE_SC)
-                .where(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)),
-                        Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0)))
+        return getSelectJoinStep()
+                .where(and(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)),
+                        Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIESC.class);
     }
 

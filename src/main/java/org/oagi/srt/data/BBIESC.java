@@ -18,6 +18,8 @@ public class BBIESC implements BIE {
     private String definition;
     private String remark;
     private String bizTerm;
+    private String exampleContentType;
+    private String exampleText;
     private boolean used;
     private long ownerTopLevelAbieId;
 }
