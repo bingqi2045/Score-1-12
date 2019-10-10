@@ -385,7 +385,8 @@ public class BieService {
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID))
+                .join(BIZ_CTX_ASSIGNMENT).on(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID));
 
         List<BieList> bieLists;
         if (condition != null) {
@@ -403,7 +404,7 @@ public class BieService {
         Boolean excludeJsonRelated = request.getExcludeJsonRelated();
         Condition condition = null;
         if (bizCtxId != null && bizCtxId > 0L) {
-            condition = BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId));
+            condition = BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId));
         } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
             condition = ASCCP.PROPERTY_TERM.notIn("Meta Header", "Pagination Response");
         }
