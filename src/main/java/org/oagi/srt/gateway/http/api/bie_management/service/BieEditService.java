@@ -21,8 +21,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
@@ -121,6 +120,8 @@ public class BieEditService {
                     treeController.updateDetail(bbieScNodeDetail));
         }
 
+        this.updateTopLevelAbieTimestamp(user, topLevelAbieId);
+
         return response;
     }
 
@@ -162,5 +163,20 @@ public class BieEditService {
 
         long ueAccId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return ueAccId;
+    }
+
+    @Transactional
+    public void updateTopLevelAbieTimestamp(User user, long topLevelAbieId){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        TopLevelAbie topLevelAbie = topLevelAbieRepository.findById(topLevelAbieId);
+        topLevelAbie.setLastUpdateTimestamp(timestamp);
+        topLevelAbie.setLastUpdatedBy(sessionService.userId(user));
+
+        dslContext.update(Tables.TOP_LEVEL_ABIE)
+                .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
+
     }
 }

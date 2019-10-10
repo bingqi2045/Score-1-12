@@ -359,9 +359,12 @@ public class BieRepository {
 
     public long createTopLevelAbie(long userId, long releaseId, BieState state) {
         TopLevelAbieRecord record = new TopLevelAbieRecord();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         record.setOwnerUserId(ULong.valueOf(userId));
         record.setReleaseId(ULong.valueOf(releaseId));
         record.setState(state.getValue());
+        record.setLastUpdatedBy(ULong.valueOf(userId));
+        record.setLastUpdateTimestamp(timestamp);
 
         return dslContext.insertInto(Tables.TOP_LEVEL_ABIE)
                 .set(record)
