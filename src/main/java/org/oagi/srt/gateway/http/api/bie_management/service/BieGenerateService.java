@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,10 @@ public class BieGenerateService {
 
             case "EACH":
                 Map<Long, File> files = generateSchemaForEach(topLevelAbies, option);
+                if (files.size() == 1) {
+                    return files.values().iterator().next();
+                }
+
                 try {
                     return Zip.compression(files.values(), SrtGuid.randomGuid());
                 } catch (IOException e) {
@@ -182,7 +187,7 @@ public class BieGenerateService {
             case "JSON":
                 generateExpression = applicationContext.getBean(BieJSONGenerateExpression.class);
                 break;
-            case "OpenAPI30":
+            case "OPENAPI30":
                 generateExpression = applicationContext.getBean(BieOpenAPIGenerateExpression.class);
                 break;
             default:
