@@ -444,8 +444,32 @@ public class BieService {
         dslContext.deleteFrom(Tables.ABIE).where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
         dslContext.deleteFrom(Tables.ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
         dslContext.deleteFrom(Tables.ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+
+        List<ULong> bbieExampleTextContentIds =
+                dslContext.select(BBIE.EXAMPLE_TEXT_CONTENT_ID)
+                        .from(BBIE)
+                        .where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds))
+                        .fetchInto(ULong.class);
+        if (!bbieExampleTextContentIds.isEmpty()) {
+            dslContext.deleteFrom(TEXT_CONTENT)
+                    .where(TEXT_CONTENT.TEXT_CONTENT_ID.in(bbieExampleTextContentIds))
+                    .execute();
+        }
+
         dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
         dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+
+        List<ULong> bbieScExampleTextContentIds =
+                dslContext.select(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
+                        .from(BBIE_SC)
+                        .where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds))
+                        .fetchInto(ULong.class);
+        if (!bbieScExampleTextContentIds.isEmpty()) {
+            dslContext.deleteFrom(TEXT_CONTENT)
+                    .where(TEXT_CONTENT.TEXT_CONTENT_ID.in(bbieScExampleTextContentIds))
+                    .execute();
+        }
+
         dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
         dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
