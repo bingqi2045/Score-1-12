@@ -160,7 +160,7 @@ public class BieService {
                 Tables.APP_USER.LOGIN_ID.as("owner"),
                 Tables.ABIE.VERSION,
                 Tables.ABIE.STATUS,
-                Tables.ABIE.LAST_UPDATE_TIMESTAMP,
+                Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 Tables.ABIE.STATE.as("raw_state"))
                 .from(Tables.TOP_LEVEL_ABIE)
@@ -169,7 +169,7 @@ public class BieService {
                 .join(Tables.ASBIEP).on(Tables.ASBIEP.ROLE_OF_ABIE_ID.eq(Tables.ABIE.ABIE_ID))
                 .join(Tables.ASCCP).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASBIEP.BASED_ASCCP_ID))
                 .join(Tables.APP_USER).on(Tables.APP_USER.APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.ABIE.LAST_UPDATED_BY))
+                .join(Tables.APP_USER.as("updater")).on(Tables.APP_USER.as("updater").APP_USER_ID.eq(Tables.TOP_LEVEL_ABIE.LAST_UPDATED_BY))
                 .join(Tables.RELEASE).on(Tables.RELEASE.RELEASE_ID.eq(Tables.TOP_LEVEL_ABIE.RELEASE_ID));
     }
 
@@ -196,10 +196,10 @@ public class BieService {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(Tables.ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
         if (request.getAccess() != null) {
             switch (request.getAccess()) {
@@ -254,9 +254,9 @@ public class BieService {
 
             case "lastUpdateTimestamp":
                 if ("asc".equals(sortDirection)) {
-                    sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.asc();
+                    sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.asc();
                 } else if ("desc".equals(sortDirection)) {
-                    sortField = Tables.ABIE.LAST_UPDATE_TIMESTAMP.desc();
+                    sortField = Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.desc();
                 }
 
                 break;
@@ -373,7 +373,7 @@ public class BieService {
                 APP_USER.LOGIN_ID.as("owner"),
                 ABIE.VERSION,
                 ABIE.STATUS,
-                ABIE.LAST_UPDATE_TIMESTAMP,
+                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
                 TOP_LEVEL_ABIE.STATE.as("raw_state"))
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(and(
