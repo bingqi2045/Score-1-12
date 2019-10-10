@@ -512,6 +512,20 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
     }
 
+    private Object readJsonValue(String textContent) {
+        try {
+            return mapper.readValue(textContent, Map.class);
+        } catch (Exception ignore) {
+            // Text content probably would be an array.
+        }
+        try {
+            return mapper.readValue(textContent, List.class);
+        } catch (Exception e) {
+            logger.warn("Can't read JSON value from given text: " + textContent, e);
+        }
+        return null;
+    }
+
     private void fillProperties(Map<String, Object> parent,
                                 Map<String, Object> schemas,
                                 BBIE bbie,
@@ -583,6 +597,18 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         // Issue #596
         if (!StringUtils.isEmpty(bbie.getFixedValue())) {
             properties.put("const", bbie.getFixedValue());
+        }
+
+        // Issue #692
+        String exampleContentType = bbie.getExampleContentType();
+        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
+            String exampleText = bbie.getExampleText();
+            if (!StringUtils.isEmpty(exampleText)) {
+                Object example = readJsonValue(exampleText);
+                if (example != null) {
+                    properties.put("example", example);
+                }
+            }
         }
 
         // Issue #564
@@ -667,6 +693,18 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         // Issue #596
         if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
             properties.put("const", bbieSc.getFixedValue());
+        }
+
+        // Issue #692
+        String exampleContentType = bbieSc.getExampleContentType();
+        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
+            String exampleText = bbieSc.getExampleText();
+            if (!StringUtils.isEmpty(exampleText)) {
+                Object example = readJsonValue(exampleText);
+                if (example != null) {
+                    properties.put("example", example);
+                }
+            }
         }
 
         CodeList codeList = generationContext.getCodeList(bbieSc);

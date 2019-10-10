@@ -22,6 +22,8 @@ public class BBIE implements BIE {
     private boolean nill;
     private String definition;
     private String remark;
+    private String exampleContentType;
+    private String exampleText;
     private long createdBy;
     private long lastUpdatedBy;
     private Date creationTimestamp;
