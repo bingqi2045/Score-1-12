@@ -166,7 +166,7 @@ public class BieEditService {
     }
 
     @Transactional
-    public void updateTopLevelAbieTimestamp(User user, long topLevelAbieId){
+    public void updateTopLevelAbieTimestamp(User user, long topLevelAbieId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         TopLevelAbie topLevelAbie = topLevelAbieRepository.findById(topLevelAbieId);
         topLevelAbie.setLastUpdateTimestamp(timestamp);
@@ -174,7 +174,7 @@ public class BieEditService {
 
         dslContext.update(Tables.TOP_LEVEL_ABIE)
                 .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
+                .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATED_BY, ULong.valueOf(topLevelAbie.getLastUpdatedBy()))
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
 
