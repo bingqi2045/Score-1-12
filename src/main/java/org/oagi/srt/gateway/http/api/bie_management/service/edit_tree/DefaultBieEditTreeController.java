@@ -1224,7 +1224,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         String exampleText = bbieScNodeDetail.getExampleText();
         ULong exampleTextContentId = dslContext.select(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
                 .from(BBIE_SC)
-                .where(Tables.BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                 .fetchOptionalInto(ULong.class).orElse(null);
 
         if (StringUtils.isEmpty(exampleText)) {
