@@ -12,7 +12,7 @@ spring:
     password: ${DB_PASSWORD:oagi}
 
   jooq:
-    sql-dialect: mysql_5_7
+    sql-dialect: mysql
 
   session:
     store-type: redis
