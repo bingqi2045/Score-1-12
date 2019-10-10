@@ -53,6 +53,7 @@ import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
+import org.oagi.srt.entity.jooq.tables.TextContent;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
@@ -72,7 +73,7 @@ import org.oagi.srt.entity.jooq.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 982587862;
+    private static final long serialVersionUID = 531477665;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -292,6 +293,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final Release RELEASE = org.oagi.srt.entity.jooq.tables.Release.RELEASE;
 
     /**
+     * The table <code>oagi.text_content</code>.
+     */
+    public final TextContent TEXT_CONTENT = org.oagi.srt.entity.jooq.tables.TextContent.TEXT_CONTENT;
+
+    /**
      * This table indexes the ABIE which is a top-level ABIE. This table and the owner_top_level_abie_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.
      */
     public final TopLevelAbie TOP_LEVEL_ABIE = org.oagi.srt.entity.jooq.tables.TopLevelAbie.TOP_LEVEL_ABIE;
@@ -376,6 +382,7 @@ If we use a separate table for each expression, then we need binding all the way
             ModuleDep.MODULE_DEP,
             Namespace.NAMESPACE,
             Release.RELEASE,
+            TextContent.TEXT_CONTENT,
             TopLevelAbie.TOP_LEVEL_ABIE,
             UsageRule.USAGE_RULE,
             UsageRuleExpression.USAGE_RULE_EXPRESSION,

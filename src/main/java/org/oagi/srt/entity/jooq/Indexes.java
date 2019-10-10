@@ -49,6 +49,7 @@ import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
+import org.oagi.srt.entity.jooq.tables.TextContent;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
@@ -132,6 +133,7 @@ public class Indexes {
     public static final Index BBIE_BBIE_BDT_PRI_RESTRI_ID_FK = Indexes0.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK;
     public static final Index BBIE_BBIE_CODE_LIST_ID_FK = Indexes0.BBIE_BBIE_CODE_LIST_ID_FK;
     public static final Index BBIE_BBIE_CREATED_BY_FK = Indexes0.BBIE_BBIE_CREATED_BY_FK;
+    public static final Index BBIE_BBIE_EXAMPLE_TEXT_CONTENT_ID_FK = Indexes0.BBIE_BBIE_EXAMPLE_TEXT_CONTENT_ID_FK;
     public static final Index BBIE_BBIE_FROM_ABIE_ID_FK = Indexes0.BBIE_BBIE_FROM_ABIE_ID_FK;
     public static final Index BBIE_BBIE_LAST_UPDATED_BY_FK = Indexes0.BBIE_BBIE_LAST_UPDATED_BY_FK;
     public static final Index BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK;
@@ -147,6 +149,7 @@ public class Indexes {
     public static final Index BBIE_SC_BBIE_SC_CODE_LIST_ID_FK = Indexes0.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_DT_SC_ID_FK = Indexes0.BBIE_SC_BBIE_SC_DT_SC_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Indexes0.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK;
+    public static final Index BBIE_SC_BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK = Indexes0.BBIE_SC_BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final Index BBIE_SC_PRIMARY = Indexes0.BBIE_SC_PRIMARY;
     public static final Index BCC_BCC_CREATED_BY_FK = Indexes0.BCC_BCC_CREATED_BY_FK;
@@ -229,7 +232,7 @@ public class Indexes {
     public static final Index CODE_LIST_VALUE_PRIMARY = Indexes0.CODE_LIST_VALUE_PRIMARY;
     public static final Index CTX_CATEGORY_CTX_CATEGORY_UK1 = Indexes0.CTX_CATEGORY_CTX_CATEGORY_UK1;
     public static final Index CTX_CATEGORY_PRIMARY = Indexes0.CTX_CATEGORY_PRIMARY;
-    public static final Index CTX_SCHEME_CODE_LIST_ID = Indexes0.CTX_SCHEME_CODE_LIST_ID;
+    public static final Index CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK;
     public static final Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Indexes0.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK;
@@ -273,6 +276,7 @@ public class Indexes {
     public static final Index RELEASE_RELEASE_CREATED_BY_FK = Indexes0.RELEASE_RELEASE_CREATED_BY_FK;
     public static final Index RELEASE_RELEASE_LAST_UPDATED_BY_FK = Indexes0.RELEASE_RELEASE_LAST_UPDATED_BY_FK;
     public static final Index RELEASE_RELEASE_NAMESPACE_ID_FK = Indexes0.RELEASE_RELEASE_NAMESPACE_ID_FK;
+    public static final Index TEXT_CONTENT_PRIMARY = Indexes0.TEXT_CONTENT_PRIMARY;
     public static final Index TOP_LEVEL_ABIE_PRIMARY = Indexes0.TOP_LEVEL_ABIE_PRIMARY;
     public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK;
     public static final Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Indexes0.TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK;
@@ -354,6 +358,7 @@ public class Indexes {
         public static Index BBIE_BBIE_BDT_PRI_RESTRI_ID_FK = Internal.createIndex("bbie_bdt_pri_restri_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.BDT_PRI_RESTRI_ID }, false);
         public static Index BBIE_BBIE_CODE_LIST_ID_FK = Internal.createIndex("bbie_code_list_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.CODE_LIST_ID }, false);
         public static Index BBIE_BBIE_CREATED_BY_FK = Internal.createIndex("bbie_created_by_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.CREATED_BY }, false);
+        public static Index BBIE_BBIE_EXAMPLE_TEXT_CONTENT_ID_FK = Internal.createIndex("bbie_example_text_content_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.EXAMPLE_TEXT_CONTENT_ID }, false);
         public static Index BBIE_BBIE_FROM_ABIE_ID_FK = Internal.createIndex("bbie_from_abie_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.FROM_ABIE_ID }, false);
         public static Index BBIE_BBIE_LAST_UPDATED_BY_FK = Internal.createIndex("bbie_last_updated_by_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.LAST_UPDATED_BY }, false);
         public static Index BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("bbie_owner_top_level_abie_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.OWNER_TOP_LEVEL_ABIE_ID }, false);
@@ -369,6 +374,7 @@ public class Indexes {
         public static Index BBIE_SC_BBIE_SC_CODE_LIST_ID_FK = Internal.createIndex("bbie_sc_code_list_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.CODE_LIST_ID }, false);
         public static Index BBIE_SC_BBIE_SC_DT_SC_ID_FK = Internal.createIndex("bbie_sc_dt_sc_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.DT_SC_ID }, false);
         public static Index BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Internal.createIndex("bbie_sc_dt_sc_pri_restri_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.DT_SC_PRI_RESTRI_ID }, false);
+        public static Index BBIE_SC_BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK = Internal.createIndex("bbie_sc_example_text_content_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.EXAMPLE_TEXT_CONTENT_ID }, false);
         public static Index BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("bbie_sc_owner_top_level_abie_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID }, false);
         public static Index BBIE_SC_PRIMARY = Internal.createIndex("PRIMARY", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.BBIE_SC_ID }, true);
         public static Index BCC_BCC_CREATED_BY_FK = Internal.createIndex("bcc_created_by_fk", Bcc.BCC, new OrderField[] { Bcc.BCC.CREATED_BY }, false);
@@ -451,7 +457,7 @@ public class Indexes {
         public static Index CODE_LIST_VALUE_PRIMARY = Internal.createIndex("PRIMARY", CodeListValue.CODE_LIST_VALUE, new OrderField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID }, true);
         public static Index CTX_CATEGORY_CTX_CATEGORY_UK1 = Internal.createIndex("ctx_category_uk1", CtxCategory.CTX_CATEGORY, new OrderField[] { CtxCategory.CTX_CATEGORY.GUID }, true);
         public static Index CTX_CATEGORY_PRIMARY = Internal.createIndex("PRIMARY", CtxCategory.CTX_CATEGORY, new OrderField[] { CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID }, true);
-        public static Index CTX_SCHEME_CODE_LIST_ID = Internal.createIndex("code_list_id", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CODE_LIST_ID }, false);
+        public static Index CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK = Internal.createIndex("ctx_scheme_code_list_id_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CODE_LIST_ID }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK = Internal.createIndex("ctx_scheme_created_by_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CREATED_BY }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createIndex("ctx_scheme_ctx_category_id_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID }, false);
         public static Index CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK = Internal.createIndex("ctx_scheme_last_updated_by_fk", CtxScheme.CTX_SCHEME, new OrderField[] { CtxScheme.CTX_SCHEME.LAST_UPDATED_BY }, false);
@@ -495,6 +501,7 @@ public class Indexes {
         public static Index RELEASE_RELEASE_CREATED_BY_FK = Internal.createIndex("release_created_by_fk", Release.RELEASE, new OrderField[] { Release.RELEASE.CREATED_BY }, false);
         public static Index RELEASE_RELEASE_LAST_UPDATED_BY_FK = Internal.createIndex("release_last_updated_by_fk", Release.RELEASE, new OrderField[] { Release.RELEASE.LAST_UPDATED_BY }, false);
         public static Index RELEASE_RELEASE_NAMESPACE_ID_FK = Internal.createIndex("release_namespace_id_fk", Release.RELEASE, new OrderField[] { Release.RELEASE.NAMESPACE_ID }, false);
+        public static Index TEXT_CONTENT_PRIMARY = Internal.createIndex("PRIMARY", TextContent.TEXT_CONTENT, new OrderField[] { TextContent.TEXT_CONTENT.TEXT_CONTENT_ID }, true);
         public static Index TOP_LEVEL_ABIE_PRIMARY = Internal.createIndex("PRIMARY", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID }, true);
         public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_ABIE_ID_FK = Internal.createIndex("top_level_abie_abie_id_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.ABIE_ID }, false);
         public static Index TOP_LEVEL_ABIE_TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Internal.createIndex("top_level_abie_owner_user_id_fk", TopLevelAbie.TOP_LEVEL_ABIE, new OrderField[] { TopLevelAbie.TOP_LEVEL_ABIE.OWNER_USER_ID }, false);

@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxSchemeRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxScheme extends TableImpl<CtxSchemeRecord> {
 
-    private static final long serialVersionUID = 1681794799;
+    private static final long serialVersionUID = -1360487089;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme</code>
@@ -99,9 +99,9 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     public final TableField<CtxSchemeRecord, ULong> CTX_CATEGORY_ID = createField("ctx_category_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.");
 
     /**
-     * The column <code>oagi.ctx_scheme.code_list_id</code>.
+     * The column <code>oagi.ctx_scheme.code_list_id</code>. This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField("code_list_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField("code_list_id", org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this context scheme.
@@ -169,7 +169,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.CTX_SCHEME_CODE_LIST_ID, Indexes.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK, Indexes.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_UK1, Indexes.CTX_SCHEME_PRIMARY);
+        return Arrays.<Index>asList(Indexes.CTX_SCHEME_CTX_SCHEME_CODE_LIST_ID_FK, Indexes.CTX_SCHEME_CTX_SCHEME_CREATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_CTX_CATEGORY_ID_FK, Indexes.CTX_SCHEME_CTX_SCHEME_LAST_UPDATED_BY_FK, Indexes.CTX_SCHEME_CTX_SCHEME_UK1, Indexes.CTX_SCHEME_PRIMARY);
     }
 
     /**
@@ -201,7 +201,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
      */
     @Override
     public List<ForeignKey<CtxSchemeRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CtxSchemeRecord, ?>>asList(Keys.CTX_SCHEME_CTX_CATEGORY_ID_FK, Keys.CTX_SCHEME_IBFK_1, Keys.CTX_SCHEME_CREATED_BY_FK, Keys.CTX_SCHEME_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<CtxSchemeRecord, ?>>asList(Keys.CTX_SCHEME_CTX_CATEGORY_ID_FK, Keys.CTX_SCHEME_CODE_LIST_ID_FK, Keys.CTX_SCHEME_CREATED_BY_FK, Keys.CTX_SCHEME_LAST_UPDATED_BY_FK);
     }
 
     public CtxCategory ctxCategory() {
@@ -209,7 +209,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     }
 
     public CodeList codeList() {
-        return new CodeList(this, Keys.CTX_SCHEME_IBFK_1);
+        return new CodeList(this, Keys.CTX_SCHEME_CODE_LIST_ID_FK);
     }
 
     public AppUser ctxSchemeCreatedByFk() {
