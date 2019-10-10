@@ -44,7 +44,7 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
                 Tables.BBIE_SC.IS_USED.as("used"),
                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID)
                 .from(Tables.BBIE_SC)
-                .leftJoin(Tables.TEXT_CONTENT).on(Tables.BBIE.EXAMPLE_TEXT_CONTENT_ID.eq(Tables.TEXT_CONTENT.TEXT_CONTENT_ID));
+                .leftJoin(Tables.TEXT_CONTENT).on(Tables.BBIE_SC.EXAMPLE_TEXT_CONTENT_ID.eq(Tables.TEXT_CONTENT.TEXT_CONTENT_ID));
     }
 
     @Override

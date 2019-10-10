@@ -1143,6 +1143,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             if (exampleTextContentId != null) {
                 dslContext.update(BBIE)
                         .setNull(BBIE.EXAMPLE_TEXT_CONTENT_ID)
+                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
                         .execute();
                 dslContext.deleteFrom(TEXT_CONTENT)
                         .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
@@ -1153,6 +1154,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 dslContext.update(TEXT_CONTENT)
                         .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
                         .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
                         .execute();
             } else {
                 exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
@@ -1163,6 +1165,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                         .fetchOne().getTextContentId();
                 dslContext.update(BBIE)
                         .set(BBIE.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
+                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
                         .execute();
             }
         }
@@ -1228,6 +1231,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             if (exampleTextContentId != null) {
                 dslContext.update(BBIE_SC)
                         .setNull(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
+                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                         .execute();
                 dslContext.deleteFrom(TEXT_CONTENT)
                         .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
@@ -1238,6 +1242,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 dslContext.update(TEXT_CONTENT)
                         .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
                         .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
                         .execute();
             } else {
                 exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
@@ -1248,6 +1253,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                         .fetchOne().getTextContentId();
                 dslContext.update(BBIE_SC)
                         .set(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
+                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                         .execute();
             }
         }
