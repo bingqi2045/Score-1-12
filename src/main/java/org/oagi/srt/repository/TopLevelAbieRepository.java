@@ -33,13 +33,12 @@ public class TopLevelAbieRepository implements SrtRepository<TopLevelAbie> {
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).fetchInto(TopLevelAbie.class);
     }
 
-    public void updateTopLevelAbieLastUpdated(long userId, long topLevelAbieId){
+    public void updateTopLevelAbieLastUpdated(long userId, long topLevelAbieId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         dslContext.update(Tables.TOP_LEVEL_ABIE)
                 .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.TOP_LEVEL_ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .where(Tables.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
-
     }
 }
