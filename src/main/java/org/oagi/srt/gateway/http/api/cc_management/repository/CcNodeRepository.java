@@ -654,7 +654,6 @@ public class CcNodeRepository {
         CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
 
         long asccId = asccpNode.getAsccId();
-        long asccIdOrigin = asccId + 1;
         if (asccId > 0L) {
             CcAsccpNodeDetail.Ascc ascc = dslContext.select(
                     Tables.ASCC.ASCC_ID,
@@ -667,17 +666,8 @@ public class CcNodeRepository {
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
 
-            CcAsccpNodeDetail.Ascc asccOrigin = dslContext.select(
-                    Tables.ASCC.CARDINALITY_MIN, Tables.ASCC.CARDINALITY_MAX)
-                    .from(Tables.ASCC)
-                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccIdOrigin)))
-                    .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
-
-            ascc.setCardinalityOriginMax(asccOrigin.getCardinalityMax());
-            ascc.setCardinalityOriginMin(asccOrigin.getCardinalityMin());
             asccpNodeDetail.setAscc(ascc);
         }
-
 
         long asccpId = asccpNode.getAsccpId();
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
@@ -715,7 +705,6 @@ public class CcNodeRepository {
         CcBccpNodeDetail bccpNodeDetail = new CcBccpNodeDetail();
 
         long bccId = bccpNode.getBccId();
-        long bccIdOrigin = bccId + 1;
         if (bccId > 0L) {
             CcBccpNodeDetail.Bcc bcc = dslContext.select(
                     Tables.BCC.BCC_ID,
@@ -729,15 +718,6 @@ public class CcNodeRepository {
                     Tables.BCC.DEFINITION).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
-
-            CcBccpNodeDetail.Bcc bccOrigin = dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN, Tables.BCC.CARDINALITY_MAX)
-                    .from(Tables.BCC)
-                    .where(BCC.BCC_ID.eq(ULong.valueOf(bccIdOrigin)))
-                    .fetchOneInto(CcBccpNodeDetail.Bcc.class);
-
-            bcc.setCardinalityOriginMax(bccOrigin.getCardinalityMax());
-            bcc.setCardinalityOriginMin(bccOrigin.getCardinalityMin());
 
             bccpNodeDetail.setBcc(bcc);
         }
