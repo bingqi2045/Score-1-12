@@ -399,8 +399,6 @@ public class Keys {
     public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = ForeignKeys0.DT_CREATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = ForeignKeys0.DT_LAST_UPDATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = ForeignKeys0.DT_OWNER_USER_ID_FK;
-    public static final ForeignKey<DtRecord, ReleaseRecord> DT_RELEASE_ID_FK = ForeignKeys0.DT_RELEASE_ID_FK;
-    public static final ForeignKey<DtRecord, DtRecord> DT_CURRENT_BDT_ID_FK = ForeignKeys0.DT_CURRENT_BDT_ID_FK;
     public static final ForeignKey<DtReleaseManifestRecord, ReleaseRecord> DT_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.DT_RELEASE_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<DtReleaseManifestRecord, DtRecord> DT_RELEASE_MANIFEST_DT_ID_FK = ForeignKeys0.DT_RELEASE_MANIFEST_DT_ID_FK;
     public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = ForeignKeys0.DT_SC_OWNER_DT_ID_FK;
@@ -701,8 +699,6 @@ public class Keys {
         public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_created_by_fk", Dt.DT.CREATED_BY);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_last_updated_by_fk", Dt.DT.LAST_UPDATED_BY);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_owner_user_id_fk", Dt.DT.OWNER_USER_ID);
-        public static final ForeignKey<DtRecord, ReleaseRecord> DT_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Dt.DT, "dt_release_id_fk", Dt.DT.RELEASE_ID);
-        public static final ForeignKey<DtRecord, DtRecord> DT_CURRENT_BDT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, Dt.DT, "dt_current_bdt_id_fk", Dt.DT.CURRENT_BDT_ID);
         public static final ForeignKey<DtReleaseManifestRecord, ReleaseRecord> DT_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, DtReleaseManifest.DT_RELEASE_MANIFEST, "dt_release_manifest_release_id_fk", DtReleaseManifest.DT_RELEASE_MANIFEST.RELEASE_ID);
         public static final ForeignKey<DtReleaseManifestRecord, DtRecord> DT_RELEASE_MANIFEST_DT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, DtReleaseManifest.DT_RELEASE_MANIFEST, "dt_release_manifest_dt_id_fk", DtReleaseManifest.DT_RELEASE_MANIFEST.DT_ID);
         public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, DtSc.DT_SC, "dt_sc_owner_dt_id_fk", DtSc.DT_SC.OWNER_DT_ID);
