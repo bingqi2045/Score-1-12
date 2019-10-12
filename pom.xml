@@ -187,7 +187,7 @@
                     <skip>${jOOQ.configuration.skip}</skip>
 
                     <jdbc>
-                        <driver>com.mysql.jdbc.Driver</driver>
+                        <driver>com.mysql.cj.jdbc.Driver</driver>
                         <url>jdbc:mysql://localhost:3306/oagi</url>
                         <user>oagi</user>
                         <password>oagi</password>

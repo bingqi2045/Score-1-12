@@ -13,18 +13,23 @@ import org.jooq.impl.Internal;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Abie;
 import org.oagi.srt.entity.jooq.tables.Acc;
+import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.Asbie;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
 import org.oagi.srt.entity.jooq.tables.Ascc;
+import org.oagi.srt.entity.jooq.tables.AsccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Asccp;
+import org.oagi.srt.entity.jooq.tables.AsccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Bbie;
 import org.oagi.srt.entity.jooq.tables.BbieSc;
 import org.oagi.srt.entity.jooq.tables.Bbiep;
 import org.oagi.srt.entity.jooq.tables.Bcc;
+import org.oagi.srt.entity.jooq.tables.BccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Bccp;
+import org.oagi.srt.entity.jooq.tables.BccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.BdtPriRestri;
 import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
@@ -45,6 +50,7 @@ import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
 import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 import org.oagi.srt.entity.jooq.tables.Dt;
+import org.oagi.srt.entity.jooq.tables.DtReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.DtSc;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
@@ -56,20 +62,26 @@ import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
 import org.oagi.srt.entity.jooq.tables.Xbt;
+import org.oagi.srt.entity.jooq.tables.XbtReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AgencyIdListRecord;
 import org.oagi.srt.entity.jooq.tables.records.AgencyIdListValueRecord;
 import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 import org.oagi.srt.entity.jooq.tables.records.BbiepRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BdtPriRestriRecord;
 import org.oagi.srt.entity.jooq.tables.records.BdtScPriRestriRecord;
 import org.oagi.srt.entity.jooq.tables.records.BieUsageRuleRecord;
@@ -90,6 +102,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 import org.oagi.srt.entity.jooq.tables.records.CtxSchemeRecord;
 import org.oagi.srt.entity.jooq.tables.records.CtxSchemeValueRecord;
 import org.oagi.srt.entity.jooq.tables.records.DtRecord;
+import org.oagi.srt.entity.jooq.tables.records.DtReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 import org.oagi.srt.entity.jooq.tables.records.DtUsageRuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
@@ -101,6 +114,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleExpressionRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
+import org.oagi.srt.entity.jooq.tables.records.XbtReleaseManifestRecord;
 
 
 /**
@@ -123,6 +137,7 @@ public class Keys {
 
     public static final Identity<AbieRecord, ULong> IDENTITY_ABIE = Identities0.IDENTITY_ABIE;
     public static final Identity<AccRecord, ULong> IDENTITY_ACC = Identities0.IDENTITY_ACC;
+    public static final Identity<AccReleaseManifestRecord, ULong> IDENTITY_ACC_RELEASE_MANIFEST = Identities0.IDENTITY_ACC_RELEASE_MANIFEST;
     public static final Identity<AgencyIdListRecord, ULong> IDENTITY_AGENCY_ID_LIST = Identities0.IDENTITY_AGENCY_ID_LIST;
     public static final Identity<AgencyIdListValueRecord, ULong> IDENTITY_AGENCY_ID_LIST_VALUE = Identities0.IDENTITY_AGENCY_ID_LIST_VALUE;
     public static final Identity<AppUserRecord, ULong> IDENTITY_APP_USER = Identities0.IDENTITY_APP_USER;
@@ -130,11 +145,15 @@ public class Keys {
     public static final Identity<AsbiepRecord, ULong> IDENTITY_ASBIEP = Identities0.IDENTITY_ASBIEP;
     public static final Identity<AsccRecord, ULong> IDENTITY_ASCC = Identities0.IDENTITY_ASCC;
     public static final Identity<AsccpRecord, ULong> IDENTITY_ASCCP = Identities0.IDENTITY_ASCCP;
+    public static final Identity<AsccpReleaseManifestRecord, ULong> IDENTITY_ASCCP_RELEASE_MANIFEST = Identities0.IDENTITY_ASCCP_RELEASE_MANIFEST;
+    public static final Identity<AsccReleaseManifestRecord, ULong> IDENTITY_ASCC_RELEASE_MANIFEST = Identities0.IDENTITY_ASCC_RELEASE_MANIFEST;
     public static final Identity<BbieRecord, ULong> IDENTITY_BBIE = Identities0.IDENTITY_BBIE;
     public static final Identity<BbiepRecord, ULong> IDENTITY_BBIEP = Identities0.IDENTITY_BBIEP;
     public static final Identity<BbieScRecord, ULong> IDENTITY_BBIE_SC = Identities0.IDENTITY_BBIE_SC;
     public static final Identity<BccRecord, ULong> IDENTITY_BCC = Identities0.IDENTITY_BCC;
     public static final Identity<BccpRecord, ULong> IDENTITY_BCCP = Identities0.IDENTITY_BCCP;
+    public static final Identity<BccpReleaseManifestRecord, ULong> IDENTITY_BCCP_RELEASE_MANIFEST = Identities0.IDENTITY_BCCP_RELEASE_MANIFEST;
+    public static final Identity<BccReleaseManifestRecord, ULong> IDENTITY_BCC_RELEASE_MANIFEST = Identities0.IDENTITY_BCC_RELEASE_MANIFEST;
     public static final Identity<BdtPriRestriRecord, ULong> IDENTITY_BDT_PRI_RESTRI = Identities0.IDENTITY_BDT_PRI_RESTRI;
     public static final Identity<BdtScPriRestriRecord, ULong> IDENTITY_BDT_SC_PRI_RESTRI = Identities0.IDENTITY_BDT_SC_PRI_RESTRI;
     public static final Identity<BieUsageRuleRecord, ULong> IDENTITY_BIE_USAGE_RULE = Identities0.IDENTITY_BIE_USAGE_RULE;
@@ -155,6 +174,7 @@ public class Keys {
     public static final Identity<CtxSchemeRecord, ULong> IDENTITY_CTX_SCHEME = Identities0.IDENTITY_CTX_SCHEME;
     public static final Identity<CtxSchemeValueRecord, ULong> IDENTITY_CTX_SCHEME_VALUE = Identities0.IDENTITY_CTX_SCHEME_VALUE;
     public static final Identity<DtRecord, ULong> IDENTITY_DT = Identities0.IDENTITY_DT;
+    public static final Identity<DtReleaseManifestRecord, ULong> IDENTITY_DT_RELEASE_MANIFEST = Identities0.IDENTITY_DT_RELEASE_MANIFEST;
     public static final Identity<DtScRecord, ULong> IDENTITY_DT_SC = Identities0.IDENTITY_DT_SC;
     public static final Identity<DtUsageRuleRecord, ULong> IDENTITY_DT_USAGE_RULE = Identities0.IDENTITY_DT_USAGE_RULE;
     public static final Identity<ModuleRecord, ULong> IDENTITY_MODULE = Identities0.IDENTITY_MODULE;
@@ -166,6 +186,7 @@ public class Keys {
     public static final Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Identities0.IDENTITY_USAGE_RULE;
     public static final Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Identities0.IDENTITY_USAGE_RULE_EXPRESSION;
     public static final Identity<XbtRecord, ULong> IDENTITY_XBT = Identities0.IDENTITY_XBT;
+    public static final Identity<XbtReleaseManifestRecord, ULong> IDENTITY_XBT_RELEASE_MANIFEST = Identities0.IDENTITY_XBT_RELEASE_MANIFEST;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -173,6 +194,7 @@ public class Keys {
 
     public static final UniqueKey<AbieRecord> KEY_ABIE_PRIMARY = UniqueKeys0.KEY_ABIE_PRIMARY;
     public static final UniqueKey<AccRecord> KEY_ACC_PRIMARY = UniqueKeys0.KEY_ACC_PRIMARY;
+    public static final UniqueKey<AccReleaseManifestRecord> KEY_ACC_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_ACC_RELEASE_MANIFEST_PRIMARY;
     public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_PRIMARY = UniqueKeys0.KEY_AGENCY_ID_LIST_PRIMARY;
     public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK1 = UniqueKeys0.KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK1;
     public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK2 = UniqueKeys0.KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK2;
@@ -183,11 +205,15 @@ public class Keys {
     public static final UniqueKey<AsbiepRecord> KEY_ASBIEP_PRIMARY = UniqueKeys0.KEY_ASBIEP_PRIMARY;
     public static final UniqueKey<AsccRecord> KEY_ASCC_PRIMARY = UniqueKeys0.KEY_ASCC_PRIMARY;
     public static final UniqueKey<AsccpRecord> KEY_ASCCP_PRIMARY = UniqueKeys0.KEY_ASCCP_PRIMARY;
+    public static final UniqueKey<AsccpReleaseManifestRecord> KEY_ASCCP_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_ASCCP_RELEASE_MANIFEST_PRIMARY;
+    public static final UniqueKey<AsccReleaseManifestRecord> KEY_ASCC_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_ASCC_RELEASE_MANIFEST_PRIMARY;
     public static final UniqueKey<BbieRecord> KEY_BBIE_PRIMARY = UniqueKeys0.KEY_BBIE_PRIMARY;
     public static final UniqueKey<BbiepRecord> KEY_BBIEP_PRIMARY = UniqueKeys0.KEY_BBIEP_PRIMARY;
     public static final UniqueKey<BbieScRecord> KEY_BBIE_SC_PRIMARY = UniqueKeys0.KEY_BBIE_SC_PRIMARY;
     public static final UniqueKey<BccRecord> KEY_BCC_PRIMARY = UniqueKeys0.KEY_BCC_PRIMARY;
     public static final UniqueKey<BccpRecord> KEY_BCCP_PRIMARY = UniqueKeys0.KEY_BCCP_PRIMARY;
+    public static final UniqueKey<BccpReleaseManifestRecord> KEY_BCCP_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_BCCP_RELEASE_MANIFEST_PRIMARY;
+    public static final UniqueKey<BccReleaseManifestRecord> KEY_BCC_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_BCC_RELEASE_MANIFEST_PRIMARY;
     public static final UniqueKey<BdtPriRestriRecord> KEY_BDT_PRI_RESTRI_PRIMARY = UniqueKeys0.KEY_BDT_PRI_RESTRI_PRIMARY;
     public static final UniqueKey<BdtScPriRestriRecord> KEY_BDT_SC_PRI_RESTRI_PRIMARY = UniqueKeys0.KEY_BDT_SC_PRI_RESTRI_PRIMARY;
     public static final UniqueKey<BieUsageRuleRecord> KEY_BIE_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_BIE_USAGE_RULE_PRIMARY;
@@ -217,6 +243,7 @@ public class Keys {
     public static final UniqueKey<CtxSchemeValueRecord> KEY_CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1 = UniqueKeys0.KEY_CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1;
     public static final UniqueKey<DtRecord> KEY_DT_PRIMARY = UniqueKeys0.KEY_DT_PRIMARY;
     public static final UniqueKey<DtRecord> KEY_DT_DT_UK1 = UniqueKeys0.KEY_DT_DT_UK1;
+    public static final UniqueKey<DtReleaseManifestRecord> KEY_DT_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_DT_RELEASE_MANIFEST_PRIMARY;
     public static final UniqueKey<DtScRecord> KEY_DT_SC_PRIMARY = UniqueKeys0.KEY_DT_SC_PRIMARY;
     public static final UniqueKey<DtScRecord> KEY_DT_SC_DT_SC_UK1 = UniqueKeys0.KEY_DT_SC_DT_SC_UK1;
     public static final UniqueKey<DtUsageRuleRecord> KEY_DT_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_DT_USAGE_RULE_PRIMARY;
@@ -229,6 +256,7 @@ public class Keys {
     public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_PRIMARY;
     public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_EXPRESSION_PRIMARY;
     public static final UniqueKey<XbtRecord> KEY_XBT_PRIMARY = UniqueKeys0.KEY_XBT_PRIMARY;
+    public static final UniqueKey<XbtReleaseManifestRecord> KEY_XBT_RELEASE_MANIFEST_PRIMARY = UniqueKeys0.KEY_XBT_RELEASE_MANIFEST_PRIMARY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -246,8 +274,9 @@ public class Keys {
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_CREATED_BY_FK = ForeignKeys0.ACC_CREATED_BY_FK;
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_OWNER_USER_ID_FK = ForeignKeys0.ACC_OWNER_USER_ID_FK;
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_LAST_UPDATED_BY_FK = ForeignKeys0.ACC_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<AccRecord, ReleaseRecord> ACC_RELEASE_ID_FK = ForeignKeys0.ACC_RELEASE_ID_FK;
-    public static final ForeignKey<AccRecord, AccRecord> ACC_CURRENT_ACC_ID_FK = ForeignKeys0.ACC_CURRENT_ACC_ID_FK;
+    public static final ForeignKey<AccReleaseManifestRecord, ReleaseRecord> ACC_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ACC_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<AccReleaseManifestRecord, AccRecord> ACC_RELEASE_MANIFEST_ACC_ID_FK = ForeignKeys0.ACC_RELEASE_MANIFEST_ACC_ID_FK;
+    public static final ForeignKey<AccReleaseManifestRecord, AccRecord> ACC_RELEASE_MANIFEST_BASED_ACC_ID_FK = ForeignKeys0.ACC_RELEASE_MANIFEST_BASED_ACC_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, ModuleRecord> AGENCY_ID_LIST_MODULE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MODULE_ID_FK;
     public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK;
@@ -267,16 +296,19 @@ public class Keys {
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = ForeignKeys0.ASCC_CREATED_BY_FK;
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_OWNER_USER_ID_FK = ForeignKeys0.ASCC_OWNER_USER_ID_FK;
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_LAST_UPDATED_BY_FK = ForeignKeys0.ASCC_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<AsccRecord, ReleaseRecord> ASCC_RELEASE_ID_FK = ForeignKeys0.ASCC_RELEASE_ID_FK;
-    public static final ForeignKey<AsccRecord, AsccRecord> ASCC_CURRENT_ASCC_ID_FK = ForeignKeys0.ASCC_CURRENT_ASCC_ID_FK;
     public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = ForeignKeys0.ASCCP_ROLE_OF_ACC_ID_FK;
     public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_CREATED_BY_FK = ForeignKeys0.ASCCP_CREATED_BY_FK;
     public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_OWNER_USER_ID_FK = ForeignKeys0.ASCCP_OWNER_USER_ID_FK;
     public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_LAST_UPDATED_BY_FK = ForeignKeys0.ASCCP_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AsccpRecord, ModuleRecord> ASCCP_MODULE_ID_FK = ForeignKeys0.ASCCP_MODULE_ID_FK;
     public static final ForeignKey<AsccpRecord, NamespaceRecord> ASCCP_NAMESPACE_ID_FK = ForeignKeys0.ASCCP_NAMESPACE_ID_FK;
-    public static final ForeignKey<AsccpRecord, ReleaseRecord> ASCCP_RELEASE_ID_FK = ForeignKeys0.ASCCP_RELEASE_ID_FK;
-    public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_CURRENT_ASCCP_ID_FK = ForeignKeys0.ASCCP_CURRENT_ASCCP_ID_FK;
+    public static final ForeignKey<AsccpReleaseManifestRecord, ReleaseRecord> ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<AsccpReleaseManifestRecord, AsccpRecord> ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK = ForeignKeys0.ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK;
+    public static final ForeignKey<AsccpReleaseManifestRecord, AccRecord> ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK = ForeignKeys0.ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK;
+    public static final ForeignKey<AsccReleaseManifestRecord, ReleaseRecord> ASCC_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ASCC_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<AsccReleaseManifestRecord, AsccRecord> ASCC_RELEASE_MANIFEST_ASCC_ID_FK = ForeignKeys0.ASCC_RELEASE_MANIFEST_ASCC_ID_FK;
+    public static final ForeignKey<AsccReleaseManifestRecord, AccRecord> ASCC_RELEASE_MANIFEST_FROM_ACC_ID_FK = ForeignKeys0.ASCC_RELEASE_MANIFEST_FROM_ACC_ID_FK;
+    public static final ForeignKey<AsccReleaseManifestRecord, AsccpRecord> ASCC_RELEASE_MANIFEST_TO_ASCCP_ID_FK = ForeignKeys0.ASCC_RELEASE_MANIFEST_TO_ASCCP_ID_FK;
     public static final ForeignKey<BbieRecord, BccRecord> BBIE_BASED_BCC_ID_FK = ForeignKeys0.BBIE_BASED_BCC_ID_FK;
     public static final ForeignKey<BbieRecord, AbieRecord> BBIE_FROM_ABIE_ID_FK = ForeignKeys0.BBIE_FROM_ABIE_ID_FK;
     public static final ForeignKey<BbieRecord, BbiepRecord> BBIE_TO_BBIEP_ID_FK = ForeignKeys0.BBIE_TO_BBIEP_ID_FK;
@@ -303,16 +335,19 @@ public class Keys {
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = ForeignKeys0.BCC_CREATED_BY_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = ForeignKeys0.BCC_OWNER_USER_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = ForeignKeys0.BCC_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<BccRecord, ReleaseRecord> BCC_RELEASE_ID_FK = ForeignKeys0.BCC_RELEASE_ID_FK;
-    public static final ForeignKey<BccRecord, BccRecord> BCC_CURRENT_BCC_ID_FK = ForeignKeys0.BCC_CURRENT_BCC_ID_FK;
     public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = ForeignKeys0.BCCP_BDT_ID_FK;
     public static final ForeignKey<BccpRecord, ModuleRecord> BCCP_MODULE_ID_FK = ForeignKeys0.BCCP_MODULE_ID_FK;
     public static final ForeignKey<BccpRecord, NamespaceRecord> BCCP_NAMESPACE_ID_FK = ForeignKeys0.BCCP_NAMESPACE_ID_FK;
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_CREATED_BY_FK = ForeignKeys0.BCCP_CREATED_BY_FK;
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_OWNER_USER_ID_FK = ForeignKeys0.BCCP_OWNER_USER_ID_FK;
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_LAST_UPDATED_BY_FK = ForeignKeys0.BCCP_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<BccpRecord, ReleaseRecord> BCCP_RELEASE_ID_FK = ForeignKeys0.BCCP_RELEASE_ID_FK;
-    public static final ForeignKey<BccpRecord, BccpRecord> BCCP_CURRENT_BCCP_ID_FK = ForeignKeys0.BCCP_CURRENT_BCCP_ID_FK;
+    public static final ForeignKey<BccpReleaseManifestRecord, ReleaseRecord> BCCP_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BCCP_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<BccpReleaseManifestRecord, BccpRecord> BCCP_RELEASE_MANIFEST_BCCP_ID_FK = ForeignKeys0.BCCP_RELEASE_MANIFEST_BCCP_ID_FK;
+    public static final ForeignKey<BccpReleaseManifestRecord, DtRecord> BCCP_RELEASE_MANIFEST_BDT_ID_FK = ForeignKeys0.BCCP_RELEASE_MANIFEST_BDT_ID_FK;
+    public static final ForeignKey<BccReleaseManifestRecord, ReleaseRecord> BCC_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BCC_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<BccReleaseManifestRecord, BccRecord> BCC_RELEASE_MANIFEST_BCC_ID_FK = ForeignKeys0.BCC_RELEASE_MANIFEST_BCC_ID_FK;
+    public static final ForeignKey<BccReleaseManifestRecord, AccRecord> BCC_RELEASE_MANIFEST_FROM_ACC_ID_FK = ForeignKeys0.BCC_RELEASE_MANIFEST_FROM_ACC_ID_FK;
+    public static final ForeignKey<BccReleaseManifestRecord, BccpRecord> BCC_RELEASE_MANIFEST_TO_BCCP_ID_FK = ForeignKeys0.BCC_RELEASE_MANIFEST_TO_BCCP_ID_FK;
     public static final ForeignKey<BdtPriRestriRecord, DtRecord> BDT_PRI_RESTRI_BDT_ID_FK = ForeignKeys0.BDT_PRI_RESTRI_BDT_ID_FK;
     public static final ForeignKey<BdtPriRestriRecord, CdtAwdPriXpsTypeMapRecord> BDT_PRI_RESTRI_CDT_AWD_PRI_XPS_TYPE_MAP_ID_FK = ForeignKeys0.BDT_PRI_RESTRI_CDT_AWD_PRI_XPS_TYPE_MAP_ID_FK;
     public static final ForeignKey<BdtPriRestriRecord, CodeListRecord> BDT_PRI_RESTRI_CODE_LIST_ID_FK = ForeignKeys0.BDT_PRI_RESTRI_CODE_LIST_ID_FK;
@@ -366,6 +401,8 @@ public class Keys {
     public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = ForeignKeys0.DT_OWNER_USER_ID_FK;
     public static final ForeignKey<DtRecord, ReleaseRecord> DT_RELEASE_ID_FK = ForeignKeys0.DT_RELEASE_ID_FK;
     public static final ForeignKey<DtRecord, DtRecord> DT_CURRENT_BDT_ID_FK = ForeignKeys0.DT_CURRENT_BDT_ID_FK;
+    public static final ForeignKey<DtReleaseManifestRecord, ReleaseRecord> DT_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.DT_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<DtReleaseManifestRecord, DtRecord> DT_RELEASE_MANIFEST_DT_ID_FK = ForeignKeys0.DT_RELEASE_MANIFEST_DT_ID_FK;
     public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = ForeignKeys0.DT_SC_OWNER_DT_ID_FK;
     public static final ForeignKey<DtScRecord, DtScRecord> DT_SC_BASED_DT_SC_ID_FK = ForeignKeys0.DT_SC_BASED_DT_SC_ID_FK;
     public static final ForeignKey<DtUsageRuleRecord, UsageRuleRecord> DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = ForeignKeys0.DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK;
@@ -396,6 +433,8 @@ public class Keys {
     public static final ForeignKey<XbtRecord, AppUserRecord> XBT_OWNER_USER_ID_FK = ForeignKeys0.XBT_OWNER_USER_ID_FK;
     public static final ForeignKey<XbtRecord, AppUserRecord> XBT_LAST_UPDATED_BY_FK = ForeignKeys0.XBT_LAST_UPDATED_BY_FK;
     public static final ForeignKey<XbtRecord, XbtRecord> XBT_CURRENT_XBT_ID_FK = ForeignKeys0.XBT_CURRENT_XBT_ID_FK;
+    public static final ForeignKey<XbtReleaseManifestRecord, ReleaseRecord> XBT_RELEASE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.XBT_RELEASE_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<XbtReleaseManifestRecord, XbtRecord> XBT_RELEASE_MANIFEST_XBT_ID_FK = ForeignKeys0.XBT_RELEASE_MANIFEST_XBT_ID_FK;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -404,6 +443,7 @@ public class Keys {
     private static class Identities0 {
         public static Identity<AbieRecord, ULong> IDENTITY_ABIE = Internal.createIdentity(Abie.ABIE, Abie.ABIE.ABIE_ID);
         public static Identity<AccRecord, ULong> IDENTITY_ACC = Internal.createIdentity(Acc.ACC, Acc.ACC.ACC_ID);
+        public static Identity<AccReleaseManifestRecord, ULong> IDENTITY_ACC_RELEASE_MANIFEST = Internal.createIdentity(AccReleaseManifest.ACC_RELEASE_MANIFEST, AccReleaseManifest.ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID);
         public static Identity<AgencyIdListRecord, ULong> IDENTITY_AGENCY_ID_LIST = Internal.createIdentity(AgencyIdList.AGENCY_ID_LIST, AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_ID);
         public static Identity<AgencyIdListValueRecord, ULong> IDENTITY_AGENCY_ID_LIST_VALUE = Internal.createIdentity(AgencyIdListValue.AGENCY_ID_LIST_VALUE, AgencyIdListValue.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID);
         public static Identity<AppUserRecord, ULong> IDENTITY_APP_USER = Internal.createIdentity(AppUser.APP_USER, AppUser.APP_USER.APP_USER_ID);
@@ -411,11 +451,15 @@ public class Keys {
         public static Identity<AsbiepRecord, ULong> IDENTITY_ASBIEP = Internal.createIdentity(Asbiep.ASBIEP, Asbiep.ASBIEP.ASBIEP_ID);
         public static Identity<AsccRecord, ULong> IDENTITY_ASCC = Internal.createIdentity(Ascc.ASCC, Ascc.ASCC.ASCC_ID);
         public static Identity<AsccpRecord, ULong> IDENTITY_ASCCP = Internal.createIdentity(Asccp.ASCCP, Asccp.ASCCP.ASCCP_ID);
+        public static Identity<AsccpReleaseManifestRecord, ULong> IDENTITY_ASCCP_RELEASE_MANIFEST = Internal.createIdentity(AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST, AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID);
+        public static Identity<AsccReleaseManifestRecord, ULong> IDENTITY_ASCC_RELEASE_MANIFEST = Internal.createIdentity(AsccReleaseManifest.ASCC_RELEASE_MANIFEST, AsccReleaseManifest.ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID);
         public static Identity<BbieRecord, ULong> IDENTITY_BBIE = Internal.createIdentity(Bbie.BBIE, Bbie.BBIE.BBIE_ID);
         public static Identity<BbiepRecord, ULong> IDENTITY_BBIEP = Internal.createIdentity(Bbiep.BBIEP, Bbiep.BBIEP.BBIEP_ID);
         public static Identity<BbieScRecord, ULong> IDENTITY_BBIE_SC = Internal.createIdentity(BbieSc.BBIE_SC, BbieSc.BBIE_SC.BBIE_SC_ID);
         public static Identity<BccRecord, ULong> IDENTITY_BCC = Internal.createIdentity(Bcc.BCC, Bcc.BCC.BCC_ID);
         public static Identity<BccpRecord, ULong> IDENTITY_BCCP = Internal.createIdentity(Bccp.BCCP, Bccp.BCCP.BCCP_ID);
+        public static Identity<BccpReleaseManifestRecord, ULong> IDENTITY_BCCP_RELEASE_MANIFEST = Internal.createIdentity(BccpReleaseManifest.BCCP_RELEASE_MANIFEST, BccpReleaseManifest.BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID);
+        public static Identity<BccReleaseManifestRecord, ULong> IDENTITY_BCC_RELEASE_MANIFEST = Internal.createIdentity(BccReleaseManifest.BCC_RELEASE_MANIFEST, BccReleaseManifest.BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID);
         public static Identity<BdtPriRestriRecord, ULong> IDENTITY_BDT_PRI_RESTRI = Internal.createIdentity(BdtPriRestri.BDT_PRI_RESTRI, BdtPriRestri.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID);
         public static Identity<BdtScPriRestriRecord, ULong> IDENTITY_BDT_SC_PRI_RESTRI = Internal.createIdentity(BdtScPriRestri.BDT_SC_PRI_RESTRI, BdtScPriRestri.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID);
         public static Identity<BieUsageRuleRecord, ULong> IDENTITY_BIE_USAGE_RULE = Internal.createIdentity(BieUsageRule.BIE_USAGE_RULE, BieUsageRule.BIE_USAGE_RULE.BIE_USAGE_RULE_ID);
@@ -436,6 +480,7 @@ public class Keys {
         public static Identity<CtxSchemeRecord, ULong> IDENTITY_CTX_SCHEME = Internal.createIdentity(CtxScheme.CTX_SCHEME, CtxScheme.CTX_SCHEME.CTX_SCHEME_ID);
         public static Identity<CtxSchemeValueRecord, ULong> IDENTITY_CTX_SCHEME_VALUE = Internal.createIdentity(CtxSchemeValue.CTX_SCHEME_VALUE, CtxSchemeValue.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID);
         public static Identity<DtRecord, ULong> IDENTITY_DT = Internal.createIdentity(Dt.DT, Dt.DT.DT_ID);
+        public static Identity<DtReleaseManifestRecord, ULong> IDENTITY_DT_RELEASE_MANIFEST = Internal.createIdentity(DtReleaseManifest.DT_RELEASE_MANIFEST, DtReleaseManifest.DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID);
         public static Identity<DtScRecord, ULong> IDENTITY_DT_SC = Internal.createIdentity(DtSc.DT_SC, DtSc.DT_SC.DT_SC_ID);
         public static Identity<DtUsageRuleRecord, ULong> IDENTITY_DT_USAGE_RULE = Internal.createIdentity(DtUsageRule.DT_USAGE_RULE, DtUsageRule.DT_USAGE_RULE.DT_USAGE_RULE_ID);
         public static Identity<ModuleRecord, ULong> IDENTITY_MODULE = Internal.createIdentity(Module.MODULE, Module.MODULE.MODULE_ID);
@@ -447,11 +492,13 @@ public class Keys {
         public static Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Internal.createIdentity(UsageRule.USAGE_RULE, UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Internal.createIdentity(UsageRuleExpression.USAGE_RULE_EXPRESSION, UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
         public static Identity<XbtRecord, ULong> IDENTITY_XBT = Internal.createIdentity(Xbt.XBT, Xbt.XBT.XBT_ID);
+        public static Identity<XbtReleaseManifestRecord, ULong> IDENTITY_XBT_RELEASE_MANIFEST = Internal.createIdentity(XbtReleaseManifest.XBT_RELEASE_MANIFEST, XbtReleaseManifest.XBT_RELEASE_MANIFEST.XBT_RELEASE_MANIFEST_ID);
     }
 
     private static class UniqueKeys0 {
         public static final UniqueKey<AbieRecord> KEY_ABIE_PRIMARY = Internal.createUniqueKey(Abie.ABIE, "KEY_abie_PRIMARY", Abie.ABIE.ABIE_ID);
         public static final UniqueKey<AccRecord> KEY_ACC_PRIMARY = Internal.createUniqueKey(Acc.ACC, "KEY_acc_PRIMARY", Acc.ACC.ACC_ID);
+        public static final UniqueKey<AccReleaseManifestRecord> KEY_ACC_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(AccReleaseManifest.ACC_RELEASE_MANIFEST, "KEY_acc_release_manifest_PRIMARY", AccReleaseManifest.ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID);
         public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_PRIMARY = Internal.createUniqueKey(AgencyIdList.AGENCY_ID_LIST, "KEY_agency_id_list_PRIMARY", AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_ID);
         public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK1 = Internal.createUniqueKey(AgencyIdList.AGENCY_ID_LIST, "KEY_agency_id_list_agency_id_list_uk1", AgencyIdList.AGENCY_ID_LIST.GUID);
         public static final UniqueKey<AgencyIdListRecord> KEY_AGENCY_ID_LIST_AGENCY_ID_LIST_UK2 = Internal.createUniqueKey(AgencyIdList.AGENCY_ID_LIST, "KEY_agency_id_list_agency_id_list_uk2", AgencyIdList.AGENCY_ID_LIST.ENUM_TYPE_GUID);
@@ -462,11 +509,15 @@ public class Keys {
         public static final UniqueKey<AsbiepRecord> KEY_ASBIEP_PRIMARY = Internal.createUniqueKey(Asbiep.ASBIEP, "KEY_asbiep_PRIMARY", Asbiep.ASBIEP.ASBIEP_ID);
         public static final UniqueKey<AsccRecord> KEY_ASCC_PRIMARY = Internal.createUniqueKey(Ascc.ASCC, "KEY_ascc_PRIMARY", Ascc.ASCC.ASCC_ID);
         public static final UniqueKey<AsccpRecord> KEY_ASCCP_PRIMARY = Internal.createUniqueKey(Asccp.ASCCP, "KEY_asccp_PRIMARY", Asccp.ASCCP.ASCCP_ID);
+        public static final UniqueKey<AsccpReleaseManifestRecord> KEY_ASCCP_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST, "KEY_asccp_release_manifest_PRIMARY", AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID);
+        public static final UniqueKey<AsccReleaseManifestRecord> KEY_ASCC_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(AsccReleaseManifest.ASCC_RELEASE_MANIFEST, "KEY_ascc_release_manifest_PRIMARY", AsccReleaseManifest.ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID);
         public static final UniqueKey<BbieRecord> KEY_BBIE_PRIMARY = Internal.createUniqueKey(Bbie.BBIE, "KEY_bbie_PRIMARY", Bbie.BBIE.BBIE_ID);
         public static final UniqueKey<BbiepRecord> KEY_BBIEP_PRIMARY = Internal.createUniqueKey(Bbiep.BBIEP, "KEY_bbiep_PRIMARY", Bbiep.BBIEP.BBIEP_ID);
         public static final UniqueKey<BbieScRecord> KEY_BBIE_SC_PRIMARY = Internal.createUniqueKey(BbieSc.BBIE_SC, "KEY_bbie_sc_PRIMARY", BbieSc.BBIE_SC.BBIE_SC_ID);
         public static final UniqueKey<BccRecord> KEY_BCC_PRIMARY = Internal.createUniqueKey(Bcc.BCC, "KEY_bcc_PRIMARY", Bcc.BCC.BCC_ID);
         public static final UniqueKey<BccpRecord> KEY_BCCP_PRIMARY = Internal.createUniqueKey(Bccp.BCCP, "KEY_bccp_PRIMARY", Bccp.BCCP.BCCP_ID);
+        public static final UniqueKey<BccpReleaseManifestRecord> KEY_BCCP_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(BccpReleaseManifest.BCCP_RELEASE_MANIFEST, "KEY_bccp_release_manifest_PRIMARY", BccpReleaseManifest.BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID);
+        public static final UniqueKey<BccReleaseManifestRecord> KEY_BCC_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(BccReleaseManifest.BCC_RELEASE_MANIFEST, "KEY_bcc_release_manifest_PRIMARY", BccReleaseManifest.BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID);
         public static final UniqueKey<BdtPriRestriRecord> KEY_BDT_PRI_RESTRI_PRIMARY = Internal.createUniqueKey(BdtPriRestri.BDT_PRI_RESTRI, "KEY_bdt_pri_restri_PRIMARY", BdtPriRestri.BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID);
         public static final UniqueKey<BdtScPriRestriRecord> KEY_BDT_SC_PRI_RESTRI_PRIMARY = Internal.createUniqueKey(BdtScPriRestri.BDT_SC_PRI_RESTRI, "KEY_bdt_sc_pri_restri_PRIMARY", BdtScPriRestri.BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID);
         public static final UniqueKey<BieUsageRuleRecord> KEY_BIE_USAGE_RULE_PRIMARY = Internal.createUniqueKey(BieUsageRule.BIE_USAGE_RULE, "KEY_bie_usage_rule_PRIMARY", BieUsageRule.BIE_USAGE_RULE.BIE_USAGE_RULE_ID);
@@ -496,6 +547,7 @@ public class Keys {
         public static final UniqueKey<CtxSchemeValueRecord> KEY_CTX_SCHEME_VALUE_CTX_SCHEME_VALUE_UK1 = Internal.createUniqueKey(CtxSchemeValue.CTX_SCHEME_VALUE, "KEY_ctx_scheme_value_ctx_scheme_value_uk1", CtxSchemeValue.CTX_SCHEME_VALUE.GUID);
         public static final UniqueKey<DtRecord> KEY_DT_PRIMARY = Internal.createUniqueKey(Dt.DT, "KEY_dt_PRIMARY", Dt.DT.DT_ID);
         public static final UniqueKey<DtRecord> KEY_DT_DT_UK1 = Internal.createUniqueKey(Dt.DT, "KEY_dt_dt_uk1", Dt.DT.GUID);
+        public static final UniqueKey<DtReleaseManifestRecord> KEY_DT_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(DtReleaseManifest.DT_RELEASE_MANIFEST, "KEY_dt_release_manifest_PRIMARY", DtReleaseManifest.DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID);
         public static final UniqueKey<DtScRecord> KEY_DT_SC_PRIMARY = Internal.createUniqueKey(DtSc.DT_SC, "KEY_dt_sc_PRIMARY", DtSc.DT_SC.DT_SC_ID);
         public static final UniqueKey<DtScRecord> KEY_DT_SC_DT_SC_UK1 = Internal.createUniqueKey(DtSc.DT_SC, "KEY_dt_sc_dt_sc_uk1", DtSc.DT_SC.GUID);
         public static final UniqueKey<DtUsageRuleRecord> KEY_DT_USAGE_RULE_PRIMARY = Internal.createUniqueKey(DtUsageRule.DT_USAGE_RULE, "KEY_dt_usage_rule_PRIMARY", DtUsageRule.DT_USAGE_RULE.DT_USAGE_RULE_ID);
@@ -508,6 +560,7 @@ public class Keys {
         public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = Internal.createUniqueKey(UsageRule.USAGE_RULE, "KEY_usage_rule_PRIMARY", UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = Internal.createUniqueKey(UsageRuleExpression.USAGE_RULE_EXPRESSION, "KEY_usage_rule_expression_PRIMARY", UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
         public static final UniqueKey<XbtRecord> KEY_XBT_PRIMARY = Internal.createUniqueKey(Xbt.XBT, "KEY_xbt_PRIMARY", Xbt.XBT.XBT_ID);
+        public static final UniqueKey<XbtReleaseManifestRecord> KEY_XBT_RELEASE_MANIFEST_PRIMARY = Internal.createUniqueKey(XbtReleaseManifest.XBT_RELEASE_MANIFEST, "KEY_xbt_release_manifest_PRIMARY", XbtReleaseManifest.XBT_RELEASE_MANIFEST.XBT_RELEASE_MANIFEST_ID);
     }
 
     private static class ForeignKeys0 {
@@ -523,8 +576,9 @@ public class Keys {
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_created_by_fk", Acc.ACC.CREATED_BY);
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_owner_user_id_fk", Acc.ACC.OWNER_USER_ID);
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_last_updated_by_fk", Acc.ACC.LAST_UPDATED_BY);
-        public static final ForeignKey<AccRecord, ReleaseRecord> ACC_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Acc.ACC, "acc_release_id_fk", Acc.ACC.RELEASE_ID);
-        public static final ForeignKey<AccRecord, AccRecord> ACC_CURRENT_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, Acc.ACC, "acc_current_acc_id_fk", Acc.ACC.CURRENT_ACC_ID);
+        public static final ForeignKey<AccReleaseManifestRecord, ReleaseRecord> ACC_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, AccReleaseManifest.ACC_RELEASE_MANIFEST, "acc_release_manifest_release_id_fk", AccReleaseManifest.ACC_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<AccReleaseManifestRecord, AccRecord> ACC_RELEASE_MANIFEST_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, AccReleaseManifest.ACC_RELEASE_MANIFEST, "acc_release_manifest_acc_id_fk", AccReleaseManifest.ACC_RELEASE_MANIFEST.ACC_ID);
+        public static final ForeignKey<AccReleaseManifestRecord, AccRecord> ACC_RELEASE_MANIFEST_BASED_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, AccReleaseManifest.ACC_RELEASE_MANIFEST, "acc_release_manifest_based_acc_id_fk", AccReleaseManifest.ACC_RELEASE_MANIFEST.BASED_ACC_ID);
         public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_agency_id_list_value_id_fk", AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID);
         public static final ForeignKey<AgencyIdListRecord, ModuleRecord> AGENCY_ID_LIST_MODULE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_MODULE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_module_id_fk", AgencyIdList.AGENCY_ID_LIST.MODULE_ID);
         public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_AGENCY_ID_LIST_PRIMARY, AgencyIdListValue.AGENCY_ID_LIST_VALUE, "agency_id_list_value_owner_list_id_fk", AgencyIdListValue.AGENCY_ID_LIST_VALUE.OWNER_LIST_ID);
@@ -544,16 +598,19 @@ public class Keys {
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_created_by_fk", Ascc.ASCC.CREATED_BY);
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_owner_user_id_fk", Ascc.ASCC.OWNER_USER_ID);
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_last_updated_by_fk", Ascc.ASCC.LAST_UPDATED_BY);
-        public static final ForeignKey<AsccRecord, ReleaseRecord> ASCC_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Ascc.ASCC, "ascc_release_id_fk", Ascc.ASCC.RELEASE_ID);
-        public static final ForeignKey<AsccRecord, AsccRecord> ASCC_CURRENT_ASCC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ASCC_PRIMARY, Ascc.ASCC, "ascc_current_ascc_id_fk", Ascc.ASCC.CURRENT_ASCC_ID);
         public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, Asccp.ASCCP, "asccp_role_of_acc_id_fk", Asccp.ASCCP.ROLE_OF_ACC_ID);
         public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Asccp.ASCCP, "asccp_created_by_fk", Asccp.ASCCP.CREATED_BY);
         public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Asccp.ASCCP, "asccp_owner_user_id_fk", Asccp.ASCCP.OWNER_USER_ID);
         public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Asccp.ASCCP, "asccp_last_updated_by_fk", Asccp.ASCCP.LAST_UPDATED_BY);
         public static final ForeignKey<AsccpRecord, ModuleRecord> ASCCP_MODULE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_MODULE_PRIMARY, Asccp.ASCCP, "asccp_module_id_fk", Asccp.ASCCP.MODULE_ID);
         public static final ForeignKey<AsccpRecord, NamespaceRecord> ASCCP_NAMESPACE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_NAMESPACE_PRIMARY, Asccp.ASCCP, "asccp_namespace_id_fk", Asccp.ASCCP.NAMESPACE_ID);
-        public static final ForeignKey<AsccpRecord, ReleaseRecord> ASCCP_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Asccp.ASCCP, "asccp_release_id_fk", Asccp.ASCCP.RELEASE_ID);
-        public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_CURRENT_ASCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ASCCP_PRIMARY, Asccp.ASCCP, "asccp_current_asccp_id_fk", Asccp.ASCCP.CURRENT_ASCCP_ID);
+        public static final ForeignKey<AsccpReleaseManifestRecord, ReleaseRecord> ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST, "asccp_release_manifest_release_id_fk", AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<AsccpReleaseManifestRecord, AsccpRecord> ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ASCCP_PRIMARY, AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST, "asccp_release_manifest_asccp_id_fk", AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST.ASCCP_ID);
+        public static final ForeignKey<AsccpReleaseManifestRecord, AccRecord> ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST, "asccp_release_manifest_role_of_acc_id_fk", AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID);
+        public static final ForeignKey<AsccReleaseManifestRecord, ReleaseRecord> ASCC_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, AsccReleaseManifest.ASCC_RELEASE_MANIFEST, "ascc_release_manifest_release_id_fk", AsccReleaseManifest.ASCC_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<AsccReleaseManifestRecord, AsccRecord> ASCC_RELEASE_MANIFEST_ASCC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ASCC_PRIMARY, AsccReleaseManifest.ASCC_RELEASE_MANIFEST, "ascc_release_manifest_ascc_id_fk", AsccReleaseManifest.ASCC_RELEASE_MANIFEST.ASCC_ID);
+        public static final ForeignKey<AsccReleaseManifestRecord, AccRecord> ASCC_RELEASE_MANIFEST_FROM_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, AsccReleaseManifest.ASCC_RELEASE_MANIFEST, "ascc_release_manifest_from_acc_id_fk", AsccReleaseManifest.ASCC_RELEASE_MANIFEST.FROM_ACC_ID);
+        public static final ForeignKey<AsccReleaseManifestRecord, AsccpRecord> ASCC_RELEASE_MANIFEST_TO_ASCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ASCCP_PRIMARY, AsccReleaseManifest.ASCC_RELEASE_MANIFEST, "ascc_release_manifest_to_asccp_id_fk", AsccReleaseManifest.ASCC_RELEASE_MANIFEST.TO_ASCCP_ID);
         public static final ForeignKey<BbieRecord, BccRecord> BBIE_BASED_BCC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCC_PRIMARY, Bbie.BBIE, "bbie_based_bcc_id_fk", Bbie.BBIE.BASED_BCC_ID);
         public static final ForeignKey<BbieRecord, AbieRecord> BBIE_FROM_ABIE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ABIE_PRIMARY, Bbie.BBIE, "bbie_from_abie_id_fk", Bbie.BBIE.FROM_ABIE_ID);
         public static final ForeignKey<BbieRecord, BbiepRecord> BBIE_TO_BBIEP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BBIEP_PRIMARY, Bbie.BBIE, "bbie_to_bbiep_id_fk", Bbie.BBIE.TO_BBIEP_ID);
@@ -580,16 +637,19 @@ public class Keys {
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_created_by_fk", Bcc.BCC.CREATED_BY);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_owner_user_id_fk", Bcc.BCC.OWNER_USER_ID);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_last_updated_by_fk", Bcc.BCC.LAST_UPDATED_BY);
-        public static final ForeignKey<BccRecord, ReleaseRecord> BCC_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Bcc.BCC, "bcc_release_id_fk", Bcc.BCC.RELEASE_ID);
-        public static final ForeignKey<BccRecord, BccRecord> BCC_CURRENT_BCC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCC_PRIMARY, Bcc.BCC, "bcc_current_bcc_id_fk", Bcc.BCC.CURRENT_BCC_ID);
         public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, Bccp.BCCP, "bccp_bdt_id_fk", Bccp.BCCP.BDT_ID);
         public static final ForeignKey<BccpRecord, ModuleRecord> BCCP_MODULE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_MODULE_PRIMARY, Bccp.BCCP, "bccp_module_id_fk", Bccp.BCCP.MODULE_ID);
         public static final ForeignKey<BccpRecord, NamespaceRecord> BCCP_NAMESPACE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_NAMESPACE_PRIMARY, Bccp.BCCP, "bccp_namespace_id_fk", Bccp.BCCP.NAMESPACE_ID);
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_CREATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_created_by_fk", Bccp.BCCP.CREATED_BY);
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_owner_user_id_fk", Bccp.BCCP.OWNER_USER_ID);
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_last_updated_by_fk", Bccp.BCCP.LAST_UPDATED_BY);
-        public static final ForeignKey<BccpRecord, ReleaseRecord> BCCP_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Bccp.BCCP, "bccp_release_id_fk", Bccp.BCCP.RELEASE_ID);
-        public static final ForeignKey<BccpRecord, BccpRecord> BCCP_CURRENT_BCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCCP_PRIMARY, Bccp.BCCP, "bccp_current_bccp_id_fk", Bccp.BCCP.CURRENT_BCCP_ID);
+        public static final ForeignKey<BccpReleaseManifestRecord, ReleaseRecord> BCCP_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, BccpReleaseManifest.BCCP_RELEASE_MANIFEST, "bccp_release_manifest_release_id_fk", BccpReleaseManifest.BCCP_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<BccpReleaseManifestRecord, BccpRecord> BCCP_RELEASE_MANIFEST_BCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCCP_PRIMARY, BccpReleaseManifest.BCCP_RELEASE_MANIFEST, "bccp_release_manifest_bccp_id_fk", BccpReleaseManifest.BCCP_RELEASE_MANIFEST.BCCP_ID);
+        public static final ForeignKey<BccpReleaseManifestRecord, DtRecord> BCCP_RELEASE_MANIFEST_BDT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, BccpReleaseManifest.BCCP_RELEASE_MANIFEST, "bccp_release_manifest_bdt_id_fk", BccpReleaseManifest.BCCP_RELEASE_MANIFEST.BDT_ID);
+        public static final ForeignKey<BccReleaseManifestRecord, ReleaseRecord> BCC_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, BccReleaseManifest.BCC_RELEASE_MANIFEST, "bcc_release_manifest_release_id_fk", BccReleaseManifest.BCC_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<BccReleaseManifestRecord, BccRecord> BCC_RELEASE_MANIFEST_BCC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCC_PRIMARY, BccReleaseManifest.BCC_RELEASE_MANIFEST, "bcc_release_manifest_bcc_id_fk", BccReleaseManifest.BCC_RELEASE_MANIFEST.BCC_ID);
+        public static final ForeignKey<BccReleaseManifestRecord, AccRecord> BCC_RELEASE_MANIFEST_FROM_ACC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_ACC_PRIMARY, BccReleaseManifest.BCC_RELEASE_MANIFEST, "bcc_release_manifest_from_acc_id_fk", BccReleaseManifest.BCC_RELEASE_MANIFEST.FROM_ACC_ID);
+        public static final ForeignKey<BccReleaseManifestRecord, BccpRecord> BCC_RELEASE_MANIFEST_TO_BCCP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_BCCP_PRIMARY, BccReleaseManifest.BCC_RELEASE_MANIFEST, "bcc_release_manifest_to_bccp_id_fk", BccReleaseManifest.BCC_RELEASE_MANIFEST.TO_BCCP_ID);
         public static final ForeignKey<BdtPriRestriRecord, DtRecord> BDT_PRI_RESTRI_BDT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, BdtPriRestri.BDT_PRI_RESTRI, "bdt_pri_restri_bdt_id_fk", BdtPriRestri.BDT_PRI_RESTRI.BDT_ID);
         public static final ForeignKey<BdtPriRestriRecord, CdtAwdPriXpsTypeMapRecord> BDT_PRI_RESTRI_CDT_AWD_PRI_XPS_TYPE_MAP_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CDT_AWD_PRI_XPS_TYPE_MAP_PRIMARY, BdtPriRestri.BDT_PRI_RESTRI, "bdt_pri_restri_cdt_awd_pri_xps_type_map_id_fk", BdtPriRestri.BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID);
         public static final ForeignKey<BdtPriRestriRecord, CodeListRecord> BDT_PRI_RESTRI_CODE_LIST_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_CODE_LIST_PRIMARY, BdtPriRestri.BDT_PRI_RESTRI, "bdt_pri_restri_code_list_id_fk", BdtPriRestri.BDT_PRI_RESTRI.CODE_LIST_ID);
@@ -643,6 +703,8 @@ public class Keys {
         public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_owner_user_id_fk", Dt.DT.OWNER_USER_ID);
         public static final ForeignKey<DtRecord, ReleaseRecord> DT_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, Dt.DT, "dt_release_id_fk", Dt.DT.RELEASE_ID);
         public static final ForeignKey<DtRecord, DtRecord> DT_CURRENT_BDT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, Dt.DT, "dt_current_bdt_id_fk", Dt.DT.CURRENT_BDT_ID);
+        public static final ForeignKey<DtReleaseManifestRecord, ReleaseRecord> DT_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, DtReleaseManifest.DT_RELEASE_MANIFEST, "dt_release_manifest_release_id_fk", DtReleaseManifest.DT_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<DtReleaseManifestRecord, DtRecord> DT_RELEASE_MANIFEST_DT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, DtReleaseManifest.DT_RELEASE_MANIFEST, "dt_release_manifest_dt_id_fk", DtReleaseManifest.DT_RELEASE_MANIFEST.DT_ID);
         public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_PRIMARY, DtSc.DT_SC, "dt_sc_owner_dt_id_fk", DtSc.DT_SC.OWNER_DT_ID);
         public static final ForeignKey<DtScRecord, DtScRecord> DT_SC_BASED_DT_SC_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_DT_SC_PRIMARY, DtSc.DT_SC, "dt_sc_based_dt_sc_id_fk", DtSc.DT_SC.BASED_DT_SC_ID);
         public static final ForeignKey<DtUsageRuleRecord, UsageRuleRecord> DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_USAGE_RULE_PRIMARY, DtUsageRule.DT_USAGE_RULE, "dt_usage_rule_assigned_usage_rule_id_fk", DtUsageRule.DT_USAGE_RULE.ASSIGNED_USAGE_RULE_ID);
@@ -673,5 +735,7 @@ public class Keys {
         public static final ForeignKey<XbtRecord, AppUserRecord> XBT_OWNER_USER_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Xbt.XBT, "xbt_owner_user_id_fk", Xbt.XBT.OWNER_USER_ID);
         public static final ForeignKey<XbtRecord, AppUserRecord> XBT_LAST_UPDATED_BY_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_APP_USER_PRIMARY, Xbt.XBT, "xbt_last_updated_by_fk", Xbt.XBT.LAST_UPDATED_BY);
         public static final ForeignKey<XbtRecord, XbtRecord> XBT_CURRENT_XBT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_XBT_PRIMARY, Xbt.XBT, "xbt_current_xbt_id_fk", Xbt.XBT.CURRENT_XBT_ID);
+        public static final ForeignKey<XbtReleaseManifestRecord, ReleaseRecord> XBT_RELEASE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_RELEASE_PRIMARY, XbtReleaseManifest.XBT_RELEASE_MANIFEST, "xbt_release_manifest_release_id_fk", XbtReleaseManifest.XBT_RELEASE_MANIFEST.RELEASE_ID);
+        public static final ForeignKey<XbtReleaseManifestRecord, XbtRecord> XBT_RELEASE_MANIFEST_XBT_ID_FK = Internal.createForeignKey(org.oagi.srt.entity.jooq.Keys.KEY_XBT_PRIMARY, XbtReleaseManifest.XBT_RELEASE_MANIFEST, "xbt_release_manifest_xbt_id_fk", XbtReleaseManifest.XBT_RELEASE_MANIFEST.XBT_ID);
     }
 }

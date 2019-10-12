@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1369951710;
+    private static final long serialVersionUID = -692463533;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -185,7 +185,7 @@ The value of this column in the latest history record should be the same as that
     public final TableField<DtRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
-     * The column <code>oagi.dt.release_id</code>. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
+     * The column <code>oagi.dt.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
 
 Not all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.
 
@@ -193,10 +193,10 @@ Unpublished components cannot be released.
 
 This column is NULL for the current record.
      */
-    public final TableField<DtRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.");
+    public final TableField<DtRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.");
 
     /**
-     * The column <code>oagi.dt.current_bdt_id</code>. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
+     * The column <code>oagi.dt.current_bdt_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
 
 It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
 
@@ -204,7 +204,7 @@ The value of this column for the current record should be left NULL.
 
 The column name is specific to BDT because, the column does not apply to CDT.
      */
-    public final TableField<DtRecord, ULong> CURRENT_BDT_ID = createField(DSL.name("current_bdt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.");
+    public final TableField<DtRecord, ULong> CURRENT_BDT_ID = createField(DSL.name("current_bdt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.");
 
     /**
      * The column <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
@@ -251,7 +251,7 @@ The column name is specific to BDT because, the column does not apply to CDT.
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.DT_DT_BASED_DT_ID_FK, Indexes.DT_DT_CREATED_BY_FK, Indexes.DT_DT_CURRENT_BDT_ID_FK, Indexes.DT_DT_LAST_UPDATED_BY_FK, Indexes.DT_DT_MODULE_ID_FK, Indexes.DT_DT_OWNER_USER_ID_FK, Indexes.DT_DT_PREVIOUS_VERSION_DT_ID_FK, Indexes.DT_DT_RELEASE_ID_FK, Indexes.DT_DT_UK1, Indexes.DT_PRIMARY);
+        return Arrays.<Index>asList(Indexes.DT_DT_BASED_DT_ID_FK, Indexes.DT_DT_CREATED_BY_FK, Indexes.DT_DT_CURRENT_BDT_ID_FK, Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATED_BY_FK, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.DT_DT_MODULE_ID_FK, Indexes.DT_DT_OWNER_USER_ID_FK, Indexes.DT_DT_PREVIOUS_VERSION_DT_ID_FK, Indexes.DT_DT_RELEASE_ID_FK, Indexes.DT_DT_REVISION_IDX, Indexes.DT_DT_UK1, Indexes.DT_PRIMARY);
     }
 
     @Override
