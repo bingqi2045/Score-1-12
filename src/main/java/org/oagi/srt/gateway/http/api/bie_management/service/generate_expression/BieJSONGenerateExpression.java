@@ -391,6 +391,15 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         }
     }
 
+    private Object readJsonValue(String textContent) {
+        try {
+            return mapper.readValue(textContent, Object.class);
+        } catch (Exception e) {
+            logger.warn("Can't read JSON value from given text: " + textContent, e);
+        }
+        return null;
+    }
+
     private void fillProperties(Map<String, Object> parent,
                                 Map<String, Object> definitions,
                                 BBIE bbie,
@@ -439,10 +448,11 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             }
         }
 
+        Object type;
         if (isNillable) {
-            properties.put("type", Arrays.asList(isArray ? "array" : "object", "null"));
+            type = Arrays.asList(isArray ? "array" : "object", "null");
         } else {
-            properties.put("type", isArray ? "array" : "object");
+            type = isArray ? "array" : "object";
         }
 
         if (isArray) {
@@ -463,16 +473,34 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         // Issue #596
         if (!StringUtils.isEmpty(bbie.getFixedValue())) {
             properties.put("const", bbie.getFixedValue());
+        } else if (!StringUtils.isEmpty(bbie.getDefaultValue())) {
+            properties.put("default", bbie.getDefaultValue());
+        }
+
+        // Issue #692
+        String exampleContentType = bbie.getExampleContentType();
+        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
+            String exampleText = bbie.getExampleText();
+            if (!StringUtils.isEmpty(exampleText)) {
+                Object example = readJsonValue(exampleText);
+                if (example != null) {
+                    if (example instanceof List) {
+                        properties.put("examples", example);
+                    } else {
+                        properties.put("examples", Arrays.asList(example));
+                    }
+                }
+            }
         }
 
         // Issue #564
         String ref = getReference(definitions, bbie, bdt, generationContext);
         List<BBIESC> bbieScList = generationContext.queryBBIESCs(bbie)
                 .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
-        if (bbieScList.isEmpty()) {
-            properties.remove("type");
+        if (bbieScList.isEmpty() && properties.isEmpty()) {
             properties.put("$ref", ref);
         } else {
+            properties.put("type", type);
             properties.put("required", new ArrayList());
             properties.put("additionalProperties", false);
             properties.put("properties", new LinkedHashMap<String, Object>());
@@ -547,6 +575,24 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         // Issue #596
         if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
             properties.put("const", bbieSc.getFixedValue());
+        } else if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
+            properties.put("default", bbieSc.getDefaultValue());
+        }
+
+        // Issue #692
+        String exampleContentType = bbieSc.getExampleContentType();
+        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
+            String exampleText = bbieSc.getExampleText();
+            if (!StringUtils.isEmpty(exampleText)) {
+                Object example = readJsonValue(exampleText);
+                if (example != null) {
+                    if (example instanceof List) {
+                        properties.put("examples", example);
+                    } else {
+                        properties.put("examples", Arrays.asList(example));
+                    }
+                }
+            }
         }
 
         CodeList codeList = generationContext.getCodeList(bbieSc);
@@ -577,7 +623,20 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             }
         }
 
-        properties.put("$ref", ref);
+        if (properties.isEmpty()) {
+            properties.put("$ref", ref);
+        } else {
+            properties.put("type", "object");
+            properties.put("required", new ArrayList());
+            properties.put("additionalProperties", false);
+            properties.put("properties", new LinkedHashMap<String, Object>());
+
+            ((List<String>) properties.get("required")).add("content");
+            ((Map<String, Object>) properties.get("properties"))
+                    .put("content", ImmutableMap.<String, Object>builder()
+                            .put("$ref", ref)
+                            .build());
+        }
     }
 
     private void ensureRoot() {
