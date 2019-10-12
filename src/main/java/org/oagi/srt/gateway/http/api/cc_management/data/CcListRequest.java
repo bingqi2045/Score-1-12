@@ -13,6 +13,7 @@ public class CcListRequest {
     private long releaseId;
     private CcListTypes types;
     private List<CcState> states;
+    private Boolean deprecated;
     private List<String> ownerLoginIds;
     private List<String> updaterLoginIds;
     private String den;

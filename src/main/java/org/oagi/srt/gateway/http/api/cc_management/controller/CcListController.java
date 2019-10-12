@@ -47,8 +47,16 @@ public class CcListController {
 
         request.setReleaseId(releaseId);
         request.setTypes(CcListTypes.fromString(types));
-        request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
-                Arrays.asList(states.split(",")).stream().map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
+        if (!StringUtils.isEmpty(states)) {
+            List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
+            request.setStates(stateStrings.stream().filter(e -> !"Deprecated".equals(e))
+                    .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
+            if (stateStrings.contains("Deprecated")) {
+                request.setDeprecated(true);
+            }
+        } else {
+            request.setStates(Collections.emptyList());
+        }
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
