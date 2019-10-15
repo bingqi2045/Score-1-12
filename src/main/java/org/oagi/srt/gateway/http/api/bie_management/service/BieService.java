@@ -261,6 +261,7 @@ public class BieService {
 
                 break;
         }
+        int pageCount = dslContext.fetchCount(conditionStep);
         SelectWithTiesAfterOffsetStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
@@ -293,7 +294,7 @@ public class BieService {
         response.setList(result);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(result.size());
+        response.setLength(pageCount);
         return response;
     }
 
