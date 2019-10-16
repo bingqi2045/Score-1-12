@@ -80,10 +80,7 @@ public class CcNodeRepository {
                 .fetchInto(CcAccNode.class);
 
         CcAccNode accNode = CcUtility.getLatestEntity(releaseId, accNodes);
-        if (accNode == null) {
-            throw new IllegalStateException();
-        }
-        return arrangeAccNode(accNode, releaseId);
+        return (accNode == null) ? null : arrangeAccNode(accNode, releaseId);
     }
 
     public CcAccNode getAccNodeFromAsccByAsccpId(long toAsccpId, Long releaseId) {
@@ -457,6 +454,10 @@ public class CcNodeRepository {
     }
 
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
+        if (accNode == null) {
+            return Collections.emptyList();
+        }
+
         List<CcNode> descendants = new ArrayList();
 
         Long basedAccId = dslContext.select(Tables.ACC.BASED_ACC_ID).from(Tables.ACC)
