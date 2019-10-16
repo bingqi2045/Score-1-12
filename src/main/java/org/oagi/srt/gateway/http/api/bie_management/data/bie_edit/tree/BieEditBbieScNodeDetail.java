@@ -33,9 +33,6 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
     private String contextDefinition;
     private String componentDefinition;
 
-    private String exampleContentType;
-    private String exampleText;
-
     public BieEditBbieScNodeDetail append(BieEditBbieScNode bbieScNode) {
 
         this.setTopLevelAbieId(bbieScNode.getTopLevelAbieId());

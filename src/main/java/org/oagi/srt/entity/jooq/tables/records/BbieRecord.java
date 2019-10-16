@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -161491629;
+    private static final long serialVersionUID = -1925558123;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -191,31 +191,31 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public void setFixedValue(String value) {
-        set(11, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public String getFixedValue() {
-        return (String) get(11);
-    }
-
-    /**
      * Setter for <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(12, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(12);
+        return (Byte) get(11);
+    }
+
+    /**
+     * Setter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public void setFixedValue(String value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public String getFixedValue() {
+        return (String) get(12);
     }
 
     /**
@@ -247,129 +247,115 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.example_text_content_id</code>.
-     */
-    public void setExampleTextContentId(ULong value) {
-        set(15, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bbie.example_text_content_id</code>.
-     */
-    public ULong getExampleTextContentId() {
-        return (ULong) get(15);
-    }
-
-    /**
      * Setter for <code>oagi.bbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public void setRemark(String value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public String getRemark() {
-        return (String) get(16);
+        return (String) get(15);
     }
 
     /**
      * Setter for <code>oagi.bbie.created_by</code>. A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.
      */
     public void setCreatedBy(ULong value) {
-        set(17, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.created_by</code>. A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(17);
+        return (ULong) get(16);
     }
 
     /**
      * Setter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(ULong value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(18);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.bbie.creation_timestamp</code>. Timestamp when the BBIE record was first created. BBIEs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public void setCreationTimestamp(Timestamp value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.creation_timestamp</code>. Timestamp when the BBIE record was first created. BBIEs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public Timestamp getCreationTimestamp() {
-        return (Timestamp) get(19);
+        return (Timestamp) get(18);
     }
 
     /**
      * Setter for <code>oagi.bbie.last_update_timestamp</code>. The timestamp when the ASBIE was last updated.
      */
     public void setLastUpdateTimestamp(Timestamp value) {
-        set(20, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.last_update_timestamp</code>. The timestamp when the ASBIE was last updated.
      */
     public Timestamp getLastUpdateTimestamp() {
-        return (Timestamp) get(20);
+        return (Timestamp) get(19);
     }
 
     /**
      * Setter for <code>oagi.bbie.seq_key</code>. This indicates the order of the associations among other siblings. The SEQ_KEY for BIEs is decimal in order to accomodate the removal of inheritance hierarchy and group. For example, children of the most abstract ACC will have SEQ_KEY = 1.1, 1.2, 1.3, and so on; and SEQ_KEY of the next abstraction level ACC will have SEQ_KEY = 2.1, 2.2, 2.3 and so on so forth.
      */
     public void setSeqKey(BigDecimal value) {
-        set(21, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.seq_key</code>. This indicates the order of the associations among other siblings. The SEQ_KEY for BIEs is decimal in order to accomodate the removal of inheritance hierarchy and group. For example, children of the most abstract ACC will have SEQ_KEY = 1.1, 1.2, 1.3, and so on; and SEQ_KEY of the next abstraction level ACC will have SEQ_KEY = 2.1, 2.2, 2.3 and so on so forth.
      */
     public BigDecimal getSeqKey() {
-        return (BigDecimal) get(21);
+        return (BigDecimal) get(20);
     }
 
     /**
      * Setter for <code>oagi.bbie.is_used</code>. Flag to indicate whether the field/component is used in the content model. It indicates whether the field/component should be generated in the expression generation.
      */
     public void setIsUsed(Byte value) {
-        set(22, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.is_used</code>. Flag to indicate whether the field/component is used in the content model. It indicates whether the field/component should be generated in the expression generation.
      */
     public Byte getIsUsed() {
-        return (Byte) get(22);
+        return (Byte) get(21);
     }
 
     /**
      * Setter for <code>oagi.bbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
-        set(23, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.
      */
     public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(23);
+        return (ULong) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -395,7 +381,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, Byte isNillable, Byte isNull, String definition, ULong exampleTextContentId, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Bbie.BBIE);
 
         set(0, bbieId);
@@ -409,18 +395,17 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
         set(8, cardinalityMin);
         set(9, cardinalityMax);
         set(10, defaultValue);
-        set(11, fixedValue);
-        set(12, isNillable);
+        set(11, isNillable);
+        set(12, fixedValue);
         set(13, isNull);
         set(14, definition);
-        set(15, exampleTextContentId);
-        set(16, remark);
-        set(17, createdBy);
-        set(18, lastUpdatedBy);
-        set(19, creationTimestamp);
-        set(20, lastUpdateTimestamp);
-        set(21, seqKey);
-        set(22, isUsed);
-        set(23, ownerTopLevelAbieId);
+        set(15, remark);
+        set(16, createdBy);
+        set(17, lastUpdatedBy);
+        set(18, creationTimestamp);
+        set(19, lastUpdateTimestamp);
+        set(20, seqKey);
+        set(21, isUsed);
+        set(22, ownerTopLevelAbieId);
     }
 }

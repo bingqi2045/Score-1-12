@@ -49,7 +49,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -1339348938;
+    private static final long serialVersionUID = -1240461010;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -120,14 +120,14 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
-     * The column <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
-
-    /**
      * The column <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public final TableField<BbieRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.");
+
+    /**
+     * The column <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.bbie.is_null</code>. This column indicates whether the field is fixed to NULL. IS_NULLl can be true only if the IS_NILLABLE is true. If IS_NULL is true then the FIX_VALUE and DEFAULT_VALUE columns cannot have a value.
@@ -138,11 +138,6 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.definition</code>. Description to override the BCC definition. If NULLl, it means that the definition should be inherited from the based BCC.
      */
     public final TableField<BbieRecord, String> DEFINITION = createField(DSL.name("definition"), org.jooq.impl.SQLDataType.CLOB, this, "Description to override the BCC definition. If NULLl, it means that the definition should be inherited from the based BCC.");
-
-    /**
-     * The column <code>oagi.bbie.example_text_content_id</code>.
-     */
-    public final TableField<BbieRecord, ULong> EXAMPLE_TEXT_CONTENT_ID = createField(DSL.name("example_text_content_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.bbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
@@ -224,7 +219,7 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIE_BBIE_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_BBIE_BASED_BCC_ID_FK, Indexes.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK, Indexes.BBIE_BBIE_CODE_LIST_ID_FK, Indexes.BBIE_BBIE_CREATED_BY_FK, Indexes.BBIE_BBIE_EXAMPLE_TEXT_CONTENT_ID_FK, Indexes.BBIE_BBIE_FROM_ABIE_ID_FK, Indexes.BBIE_BBIE_LAST_UPDATED_BY_FK, Indexes.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_BBIE_TO_BBIEP_ID_FK, Indexes.BBIE_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BBIE_BBIE_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_BBIE_BASED_BCC_ID_FK, Indexes.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK, Indexes.BBIE_BBIE_CODE_LIST_ID_FK, Indexes.BBIE_BBIE_CREATED_BY_FK, Indexes.BBIE_BBIE_FROM_ABIE_ID_FK, Indexes.BBIE_BBIE_LAST_UPDATED_BY_FK, Indexes.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_BBIE_TO_BBIEP_ID_FK, Indexes.BBIE_PRIMARY);
     }
 
     @Override
@@ -244,7 +239,7 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     @Override
     public List<ForeignKey<BbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_EXAMPLE_TEXT_CONTENT_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
     public Bcc bcc() {
@@ -269,10 +264,6 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     public AgencyIdList agencyIdList() {
         return new AgencyIdList(this, Keys.BBIE_AGENCY_ID_LIST_ID_FK);
-    }
-
-    public TextContent textContent() {
-        return new TextContent(this, Keys.BBIE_EXAMPLE_TEXT_CONTENT_ID_FK);
     }
 
     public AppUser bbieCreatedByFk() {

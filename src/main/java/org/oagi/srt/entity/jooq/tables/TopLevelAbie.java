@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = -366597692;
+    private static final long serialVersionUID = 915275716;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>
@@ -81,9 +81,9 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
     public final TableField<TopLevelAbieRecord, Timestamp> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "The timestamp when among all related bie records was last updated.");
 
     /**
-     * The column <code>oagi.top_level_abie.last_updated_by</code>.
+     * The column <code>oagi.top_level_abie.last_updated_by</code>. A foreign key referring to the last user who has updated any related bie records.
      */
-    public final TableField<TopLevelAbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TopLevelAbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated any related bie records.");
 
     /**
      * The column <code>oagi.top_level_abie.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.

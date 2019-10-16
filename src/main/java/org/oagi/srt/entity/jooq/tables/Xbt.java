@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = 1380272153;
+    private static final long serialVersionUID = -990555809;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -79,11 +79,6 @@ public class Xbt extends TableImpl<XbtRecord> {
      * The column <code>oagi.xbt.jbt_draft05_map</code>.
      */
     public final TableField<XbtRecord, String> JBT_DRAFT05_MAP = createField(DSL.name("jbt_draft05_map"), org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
-
-    /**
-     * The column <code>oagi.xbt.openapi30_map</code>.
-     */
-    public final TableField<XbtRecord, String> OPENAPI30_MAP = createField(DSL.name("openapi30_map"), org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
 
     /**
      * The column <code>oagi.xbt.subtype_of_xbt_id</code>. Foreign key to the XBT table itself. It indicates a super type of this XSD built-in type.
@@ -283,11 +278,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

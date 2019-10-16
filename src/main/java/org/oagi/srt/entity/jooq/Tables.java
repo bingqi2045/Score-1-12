@@ -46,7 +46,6 @@ import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
-import org.oagi.srt.entity.jooq.tables.TextContent;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
@@ -277,11 +276,6 @@ If we use a separate table for each expression, then we need binding all the way
      * The is table store the release information.
      */
     public static final Release RELEASE = Release.RELEASE;
-
-    /**
-     * The table <code>oagi.text_content</code>.
-     */
-    public static final TextContent TEXT_CONTENT = TextContent.TEXT_CONTENT;
 
     /**
      * This table indexes the ABIE which is a top-level ABIE. This table and the owner_top_level_abie_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.
