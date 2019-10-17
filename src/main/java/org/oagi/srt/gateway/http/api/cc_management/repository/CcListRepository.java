@@ -94,8 +94,9 @@ public class CcListRepository {
         Map<Long, String> usernameMap = request.getUsernameMap();
         return asccList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
-                .filter(item -> item != null)
-                .filter(item -> !item.getDen().endsWith("User Extension Group"))
+                .filter(e -> e != null)
+                .filter(e -> releaseId > 0 || !e.getDen().contains("User Extension Group"))
+                .filter(e -> !e.getDen().endsWith("User Extension Group"))
                 .filter(e -> request.getDeprecated() == null || request.getDeprecated() == e.isDeprecated())
                 .filter(e -> request.getStates().isEmpty() || request.getStates().contains(CcState.valueOf(e.getState())))
                 .filter(e -> request.getOwnerLoginIds().isEmpty() || request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
@@ -150,7 +151,8 @@ public class CcListRepository {
         Map<Long, String> usernameMap = request.getUsernameMap();
         return bccList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
-                .filter(item -> item != null)
+                .filter(e -> e != null)
+                .filter(e -> releaseId > 0 || !e.getDen().contains("User Extension Group"))
                 .filter(e -> request.getDeprecated() == null || request.getDeprecated() == e.isDeprecated())
                 .filter(e -> request.getStates().isEmpty() || request.getStates().contains(CcState.valueOf(e.getState())))
                 .filter(e -> request.getOwnerLoginIds().isEmpty() || request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
@@ -205,8 +207,9 @@ public class CcListRepository {
         Map<Long, String> usernameMap = request.getUsernameMap();
         return asccpList.entrySet().stream()
                 .map(entry -> getLatestEntity(releaseId, entry.getValue()))
-                .filter(item -> item != null)
-                .filter(asccp -> (!asccp.getDen().endsWith("User Extension Group")))
+                .filter(e -> e != null)
+                .filter(e -> releaseId > 0 || !e.getDen().contains("User Extension Group"))
+                .filter(e -> !e.getDen().endsWith("User Extension Group"))
                 .filter(e -> request.getDeprecated() == null || request.getDeprecated() == e.isDeprecated())
                 .filter(e -> request.getStates().isEmpty() || request.getStates().contains(CcState.valueOf(e.getState())))
                 .filter(e -> request.getOwnerLoginIds().isEmpty() || request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
