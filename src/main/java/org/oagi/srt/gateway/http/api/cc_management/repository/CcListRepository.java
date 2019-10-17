@@ -1,18 +1,28 @@
 package org.oagi.srt.gateway.http.api.cc_management.repository;
 
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.*;
+import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.repository.ACCRepository;
+import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getLatestEntity;
 import static org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility.getRevision;
 
@@ -22,64 +32,89 @@ public class CcListRepository {
     @Autowired
     private CoreComponentRepository coreComponentRepository;
 
+    @Autowired
+    private DSLContext dslContext;
+
+    @Autowired
+    private ReleaseRepository releaseRepository;
+
+
     public List<CcList> getAccList(CcListRequest request) {
         if (!request.getTypes().isAcc()) {
             return Collections.emptyList();
         }
+        long releaseId = request.getReleaseId() + 1;
+        Release release = releaseRepository.findById(request.getReleaseId());
 
-        Map<String, List<ACC>> accList = coreComponentRepository.getAccList()
-                .stream().collect(groupingBy(CoreComponent::getGuid));
+        Condition whereCondition = DSL.trueCondition();
 
-        long releaseId = request.getReleaseId();
-        Map<Long, String> usernameMap = request.getUsernameMap();
-        return accList.entrySet().stream()
-                .map(entry -> getLatestEntity(releaseId, entry.getValue()))
-                .filter(item -> item != null)
-                .filter(e -> releaseId > 0 || !e.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue()))
-                .filter(e -> request.getDeprecated() == null || request.getDeprecated() == e.isDeprecated())
-                .filter(e -> request.getStates().isEmpty() || request.getStates().contains(CcState.valueOf(e.getState())))
-                .filter(e -> request.getOwnerLoginIds().isEmpty() || request.getOwnerLoginIds().contains(usernameMap.get(e.getOwnerUserId())))
-                .filter(e -> request.getUpdaterLoginIds().isEmpty() || request.getOwnerLoginIds().contains(usernameMap.get(e.getLastUpdatedBy())))
-                .filter(getDenFilter(request.getDen()))
-                .filter(e -> StringUtils.isEmpty(request.getDefinition()) || (!StringUtils.isEmpty(e.getDefinition()) && e.getDefinition().toLowerCase().contains(request.getDefinition().trim().toLowerCase())))
-                .filter(e -> StringUtils.isEmpty(request.getModule()) || (!StringUtils.isEmpty(e.getModule()) && e.getModule().toLowerCase().contains(request.getModule().trim().toLowerCase())))
-                .filter(e -> {
-                    Date start = request.getUpdateStartDate();
-                    if (start != null) {
-                        if (e.getLastUpdateTimestamp().getTime() < start.getTime()) {
-                            return false;
-                        }
-                    }
+        if (release.getReleaseNum().equals("Working")){
+            whereCondition = whereCondition.and(Tables.ACC.OAGIS_COMPONENT_TYPE.notEqual(OagisComponentType.UserExtensionGroup.getValue()));
+        }
 
-                    Date end = request.getUpdateEndDate();
-                    if (end != null) {
-                        return e.getLastUpdateTimestamp().getTime() <= end.getTime();
-                    }
+        if (request.getDeprecated() != null) {
+            whereCondition = whereCondition.and(Tables.ACC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+        }
 
-                    return true;
-                })
-                .map(acc -> {
-                    OagisComponentType oagisComponentType = OagisComponentType.valueOf(acc.getOagisComponentType());
-                    CcList ccList = new CcList();
-                    ccList.setType("ACC");
-                    ccList.setId(acc.getAccId());
-                    ccList.setGuid(acc.getGuid());
-                    ccList.setDen(acc.getDen());
-                    ccList.setDefinition(acc.getDefinition());
-                    ccList.setDefinitionSource(acc.getDefinitionSource());
-                    ccList.setModule(acc.getModule());
-                    ccList.setOagisComponentType(oagisComponentType);
-                    ccList.setState(CcState.valueOf(acc.getState()));
-                    ccList.setDeprecated(acc.isDeprecated());
-                    ccList.setCurrentId(acc.getCurrentAccId());
-                    ccList.setLastUpdateTimestamp(acc.getLastUpdateTimestamp());
-                    ccList.setRevision(getRevision(releaseId, accList.getOrDefault(acc.getGuid(), Collections.emptyList())));
-                    ccList.setOwner(usernameMap.get(acc.getOwnerUserId()));
-                    ccList.setLastUpdateUser(usernameMap.get(acc.getLastUpdatedBy()));
+        if (!request.getStates().isEmpty()) {
+            whereCondition = whereCondition.and(Tables.ACC.STATE.in(request.getStates()));
+        }
 
-                    return ccList;
-                })
-                .collect(Collectors.toList());
+        if (!request.getOwnerLoginIds().isEmpty()) {
+            whereCondition = whereCondition.and(Tables.ACC.OWNER_USER_ID.in(request.getOwnerLoginIds()));
+        }
+
+        if (!request.getOwnerLoginIds().isEmpty()) {
+            whereCondition = whereCondition.and(Tables.ACC.OWNER_USER_ID.in(request.getOwnerLoginIds()));
+        }
+
+        if (!request.getUpdaterLoginIds().isEmpty()) {
+            whereCondition = whereCondition.and(Tables.ACC.OWNER_USER_ID.in(request.getUpdaterLoginIds()));
+        }
+
+        if (!request.getDen().isEmpty()){
+            whereCondition = whereCondition.and(getDenFilter(Tables.ACC.DEN, request.getDen()));
+        }
+
+        if (!request.getDefinition().isEmpty()){
+            whereCondition = whereCondition.and(DSL.lower(Tables.ACC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        }
+
+        if (!request.getModule().isEmpty()){
+            whereCondition = whereCondition.and(DSL.lower(Tables.MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+        }
+
+        if (request.getUpdateStartDate() != null){
+            whereCondition = whereCondition.and(Tables.ACC.LAST_UPDATE_TIMESTAMP.greaterThan((Timestamp) request.getUpdateStartDate()));
+        }
+
+        if (request.getUpdateEndDate() != null){
+            whereCondition = whereCondition.and(Tables.ACC.LAST_UPDATE_TIMESTAMP.lessThan((Timestamp) request.getUpdateEndDate()));
+        }
+
+        return dslContext.select(Tables.ACC.ACC_ID.as("id"),
+                    DSL.inline("ACC").as("type"),
+                    Tables.ACC.GUID,
+                    Tables.ACC.DEN,
+                    Tables.ACC.DEFINITION,
+                    Tables.ACC.DEFINITION_SOURCE,
+                    Tables.ACC.MODULE_ID.as("module"),
+                    Tables.ACC.OAGIS_COMPONENT_TYPE,
+                    Tables.ACC.STATE,
+                    Tables.ACC.IS_DEPRECATED,
+                    Tables.ACC.CURRENT_ACC_ID.as("current_id"),
+                    Tables.ACC.LAST_UPDATE_TIMESTAMP,
+                    Tables.ACC.RELEASE_ID.as("revision"),
+                    Tables.ACC.OWNER_USER_ID.as("owner"),
+                    Tables.ACC.LAST_UPDATED_BY.as("last_update_user")
+                )
+                .from(Tables.ACC)
+                .join(Tables.ACC_RELEASE_MANIFEST)
+                .on(Tables.ACC.ACC_ID.eq(Tables.ACC_RELEASE_MANIFEST.ACC_ID).and(Tables.ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .join(Tables.MODULE)
+                .on(Tables.ACC.MODULE_ID.eq(Tables.MODULE.MODULE_ID))
+                .where(whereCondition)
+                .fetchInto(CcList.class);
     }
 
     public List<CcList> getAsccList(CcListRequest request) {
@@ -385,5 +420,11 @@ public class CcListRepository {
         } else {
             return coreComponent -> true;
         }
+    }
+
+    private Condition getDenFilter(TableField<AccRecord, String> field, String keyword){
+        List<String> filters = Arrays.asList(keyword.toLowerCase().split(" ")).stream()
+                .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
+        return field.in(filters);
     }
 }

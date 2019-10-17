@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccReleaseManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccReleaseManifest extends TableImpl<BccReleaseManifestRecord> {
 
-    private static final long serialVersionUID = 39461426;
+    private static final long serialVersionUID = 981538209;
 
     /**
      * The reference instance of <code>oagi.bcc_release_manifest</code>

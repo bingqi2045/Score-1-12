@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxSchemeValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
-    private static final long serialVersionUID = -931081379;
+    private static final long serialVersionUID = 251726668;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme_value</code>

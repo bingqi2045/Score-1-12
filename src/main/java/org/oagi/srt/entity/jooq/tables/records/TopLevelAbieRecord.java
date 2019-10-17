@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> implements Record7<ULong, ULong, ULong, Timestamp, ULong, ULong, Integer> {
 
-    private static final long serialVersionUID = 1983387108;
+    private static final long serialVersionUID = -1372337715;
 
     /**
      * Setter for <code>oagi.top_level_abie.top_level_abie_id</code>. A internal, primary database key of an ACC.
@@ -91,14 +91,14 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     }
 
     /**
-     * Setter for <code>oagi.top_level_abie.last_updated_by</code>.
+     * Setter for <code>oagi.top_level_abie.last_updated_by</code>. A foreign key referring to the last user who has updated any related bie records.
      */
     public void setLastUpdatedBy(ULong value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.top_level_abie.last_updated_by</code>.
+     * Getter for <code>oagi.top_level_abie.last_updated_by</code>. A foreign key referring to the last user who has updated any related bie records.
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(4);

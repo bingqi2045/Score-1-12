@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.ClientRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Client extends TableImpl<ClientRecord> {
 
-    private static final long serialVersionUID = 2026538189;
+    private static final long serialVersionUID = -949800580;
 
     /**
      * The reference instance of <code>oagi.client</code>

@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
-    private static final long serialVersionUID = 656176702;
+    private static final long serialVersionUID = -2057066515;
 
     /**
      * The reference instance of <code>oagi.module_dep</code>

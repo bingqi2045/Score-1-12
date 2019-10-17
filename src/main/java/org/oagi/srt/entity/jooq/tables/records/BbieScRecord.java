@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.BbieSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements Record17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, ULong, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = 1171990251;
+    private static final long serialVersionUID = -369772210;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.

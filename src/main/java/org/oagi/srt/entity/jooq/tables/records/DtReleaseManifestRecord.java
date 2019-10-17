@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.DtReleaseManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtReleaseManifestRecord extends UpdatableRecordImpl<DtReleaseManifestRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -591000214;
+    private static final long serialVersionUID = 1305981325;
 
     /**
      * Setter for <code>oagi.dt_release_manifest.dt_release_manifest_id</code>.

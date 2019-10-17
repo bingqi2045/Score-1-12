@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.BlobContent;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record4<ULong, byte[], ULong, ULong> {
 
-    private static final long serialVersionUID = 732819990;
+    private static final long serialVersionUID = -1084724077;
 
     /**
      * Setter for <code>oagi.blob_content.blob_content_id</code>. Primary, internal database key.

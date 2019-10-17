@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.AsccReleaseManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccReleaseManifestRecord extends UpdatableRecordImpl<AsccReleaseManifestRecord> implements Record5<ULong, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -595015872;
+    private static final long serialVersionUID = -1477138461;
 
     /**
      * Setter for <code>oagi.ascc_release_manifest.ascc_release_manifest_id</code>.

@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.AppUser;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record6<ULong, String, String, String, String, Byte> {
 
-    private static final long serialVersionUID = 68683445;
+    private static final long serialVersionUID = 1720840728;
 
     /**
      * Setter for <code>oagi.app_user.app_user_id</code>. Primary key column.

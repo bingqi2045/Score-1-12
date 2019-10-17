@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtReleaseManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
 
-    private static final long serialVersionUID = -1609586067;
+    private static final long serialVersionUID = 2041159134;
 
     /**
      * The reference instance of <code>oagi.xbt_release_manifest</code>

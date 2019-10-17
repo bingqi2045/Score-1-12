@@ -16,7 +16,6 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -51,7 +50,7 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 1552802428;
+    private static final long serialVersionUID = 1133751007;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -169,6 +168,16 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AccRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
+     * The column <code>oagi.acc.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.
+     */
+    public final TableField<AccRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\\n\\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\\n\\nUnpublished components cannot be released.\\n\\nThis column is NULL for the current record.");
+
+    /**
+     * The column <code>oagi.acc.current_acc_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.
+     */
+    public final TableField<AccRecord, ULong> CURRENT_ACC_ID = createField(DSL.name("current_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\\n\\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\\n\\nThe value of this column for the current record should be left NULL.");
+
+    /**
      * The column <code>oagi.acc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
      */
     public final TableField<AccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
@@ -218,7 +227,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ACC_ACC_BASED_ACC_ID_FK, Indexes.ACC_ACC_CREATED_BY_FK, Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATED_BY_FK, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_ACC_MODULE_ID_FK, Indexes.ACC_ACC_NAMESPACE_ID_FK, Indexes.ACC_ACC_OWNER_USER_ID_FK, Indexes.ACC_ACC_REVISION_IDX, Indexes.ACC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ACC_ACC_BASED_ACC_ID_FK, Indexes.ACC_ACC_CREATED_BY_FK, Indexes.ACC_ACC_CURRENT_ACC_ID_FK, Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATED_BY_FK, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_ACC_MODULE_ID_FK, Indexes.ACC_ACC_NAMESPACE_ID_FK, Indexes.ACC_ACC_OWNER_USER_ID_FK, Indexes.ACC_ACC_RELEASE_ID_FK, Indexes.ACC_ACC_REVISION_IDX, Indexes.ACC_PRIMARY);
     }
 
     @Override
@@ -238,10 +247,10 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_MODULE_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_MODULE_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_RELEASE_ID_FK, Keys.ACC_CURRENT_ACC_ID_FK);
     }
 
-    public org.oagi.srt.entity.jooq.tables.Acc acc() {
+    public org.oagi.srt.entity.jooq.tables.Acc accBasedAccIdFk() {
         return new org.oagi.srt.entity.jooq.tables.Acc(this, Keys.ACC_BASED_ACC_ID_FK);
     }
 
@@ -263,6 +272,14 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser accLastUpdatedByFk() {
         return new AppUser(this, Keys.ACC_LAST_UPDATED_BY_FK);
+    }
+
+    public Release release() {
+        return new Release(this, Keys.ACC_RELEASE_ID_FK);
+    }
+
+    public org.oagi.srt.entity.jooq.tables.Acc accCurrentAccIdFk() {
+        return new org.oagi.srt.entity.jooq.tables.Acc(this, Keys.ACC_CURRENT_ACC_ID_FK);
     }
 
     @Override
@@ -289,14 +306,5 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Acc rename(Name name) {
         return new Acc(name, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Row22 type methods
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row22<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte, Byte, Byte> fieldsRow() {
-        return (Row22) super.fieldsRow();
     }
 }

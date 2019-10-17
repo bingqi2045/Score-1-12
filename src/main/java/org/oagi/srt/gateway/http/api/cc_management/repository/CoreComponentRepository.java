@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.oagi.srt.cache.impl.*;
 import org.oagi.srt.data.*;
+import org.oagi.srt.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +16,17 @@ public class CoreComponentRepository {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ACCCachingRepository accRepository;
+    private ACCRepository accRepository;
     @Autowired
-    private ASCCCachingRepository asccRepository;
+    private ASCCRepository asccRepository;
     @Autowired
-    private BCCCachingRepository bccRepository;
+    private BCCRepository bccRepository;
     @Autowired
-    private ASCCPCachingRepository asccpRepository;
+    private ASCCPRepository asccpRepository;
     @Autowired
-    private BCCPCachingRepository bccpRepository;
+    private BCCPRepository bccpRepository;
     @Autowired
-    private BDTCachingRepository bdtRepository;
+    private BdtRepository bdtRepository;
 
     public List<ACC> getAccList() {
         return accRepository.findAll();

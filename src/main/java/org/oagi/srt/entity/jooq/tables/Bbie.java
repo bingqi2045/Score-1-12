@@ -49,7 +49,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -1339348938;
+    private static final long serialVersionUID = -1223314429;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -120,14 +120,14 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
-     * The column <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
-
-    /**
      * The column <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public final TableField<BbieRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.");
+
+    /**
+     * The column <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public final TableField<BbieRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.bbie.is_null</code>. This column indicates whether the field is fixed to NULL. IS_NULLl can be true only if the IS_NILLABLE is true. If IS_NULL is true then the FIX_VALUE and DEFAULT_VALUE columns cannot have a value.

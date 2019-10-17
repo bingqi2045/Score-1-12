@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Module;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = 659389868;
+    private static final long serialVersionUID = -427373099;
 
     /**
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database key.

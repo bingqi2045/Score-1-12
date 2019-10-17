@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUser extends TableImpl<AppUserRecord> {
 
-    private static final long serialVersionUID = -955742186;
+    private static final long serialVersionUID = -1675170619;
 
     /**
      * The reference instance of <code>oagi.app_user</code>

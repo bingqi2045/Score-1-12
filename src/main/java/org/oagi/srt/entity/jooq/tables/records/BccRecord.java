@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 565356706;
+    private static final long serialVersionUID = -580402262;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -343,45 +343,93 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
+     * Setter for <code>oagi.bcc.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
+
+Not all component revisions have an associated RELEASE_ID because some revisions may never be released.
+
+Unpublished components cannot be released.
+
+This column is NULLl for the current record.
+     */
+    public void setReleaseId(ULong value) {
+        set(20, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
+
+Not all component revisions have an associated RELEASE_ID because some revisions may never be released.
+
+Unpublished components cannot be released.
+
+This column is NULLl for the current record.
+     */
+    public ULong getReleaseId() {
+        return (ULong) get(20);
+    }
+
+    /**
+     * Setter for <code>oagi.bcc.current_bcc_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
+
+It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
+
+The value of this column for the current record should be left NULL.
+     */
+    public void setCurrentBccId(ULong value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.current_bcc_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
+
+It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
+
+The value of this column for the current record should be left NULL.
+     */
+    public ULong getCurrentBccId() {
+        return (ULong) get(21);
+    }
+
+    /**
      * Setter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(20, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(20);
+        return (Byte) get(22);
     }
 
     /**
      * Setter for <code>oagi.bcc.is_nillable</code>. Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(21, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.is_nillable</code>. Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(21);
+        return (Byte) get(23);
     }
 
     /**
      * Setter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public void setDefaultValue(String value) {
-        set(22, value);
+        set(24, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public String getDefaultValue() {
-        return (String) get(22);
+        return (String) get(24);
     }
 
     // -------------------------------------------------------------------------
@@ -407,7 +455,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isNillable, String defaultValue) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, ULong releaseId, ULong currentBccId, Byte isDeprecated, Byte isNillable, String defaultValue) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -430,8 +478,10 @@ State change can't be undone. But the history record can still keep the records 
         set(17, revisionNum);
         set(18, revisionTrackingNum);
         set(19, revisionAction);
-        set(20, isDeprecated);
-        set(21, isNillable);
-        set(22, defaultValue);
+        set(20, releaseId);
+        set(21, currentBccId);
+        set(22, isDeprecated);
+        set(23, isNillable);
+        set(24, defaultValue);
     }
 }

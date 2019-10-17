@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -161491629;
+    private static final long serialVersionUID = -1286679566;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -191,31 +191,31 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public void setFixedValue(String value) {
-        set(11, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public String getFixedValue() {
-        return (String) get(11);
-    }
-
-    /**
      * Setter for <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(12, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.bbie.is_nillable</code>. Indicate whether the field can have a null  This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(12);
+        return (Byte) get(11);
+    }
+
+    /**
+     * Setter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public void setFixedValue(String value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public String getFixedValue() {
+        return (String) get(12);
     }
 
     /**
@@ -395,7 +395,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, Byte isNillable, Byte isNull, String definition, ULong exampleTextContentId, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, ULong exampleTextContentId, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Bbie.BBIE);
 
         set(0, bbieId);
@@ -409,8 +409,8 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
         set(8, cardinalityMin);
         set(9, cardinalityMax);
         set(10, defaultValue);
-        set(11, fixedValue);
-        set(12, isNillable);
+        set(11, isNillable);
+        set(12, fixedValue);
         set(13, isNull);
         set(14, definition);
         set(15, exampleTextContentId);

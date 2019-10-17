@@ -51,7 +51,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 1536496089;
+    private static final long serialVersionUID = -1372016814;
 
     /**
      * The reference instance of <code>oagi.abie</code>
