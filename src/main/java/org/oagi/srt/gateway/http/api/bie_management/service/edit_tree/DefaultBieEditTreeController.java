@@ -164,7 +164,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         try {
             if (lock != null) {
                 try {
-                    boolean locked = lock.tryLock(10, 5, TimeUnit.SECONDS);
+                    boolean locked = lock.tryLock(10, TimeUnit.SECONDS);
                     if (!locked) {
                         throw new IllegalStateException("Lock is held by another thread/process.");
                     }
