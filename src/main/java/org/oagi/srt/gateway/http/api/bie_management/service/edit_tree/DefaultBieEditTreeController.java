@@ -101,7 +101,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 ASBIEP.BASED_ASCCP_ID.as("asccp_id"),
                 ABIE.ABIE_ID,
                 ABIE.BASED_ACC_ID.as("acc_id"),
-                inline("abie").as("type"))
+                inline("abie").as("type"),
+                inline(true).as("used"))
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
