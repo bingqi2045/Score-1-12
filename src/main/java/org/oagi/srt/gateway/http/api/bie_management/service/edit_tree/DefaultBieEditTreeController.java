@@ -566,8 +566,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditAsbiepNodeDetail detail;
         if (asbiepNode.getAsbieId() > 0L) {
             detail = dslContext.select(
-                    Tables.ASBIE.CARDINALITY_MIN,
-                    Tables.ASBIE.CARDINALITY_MAX,
+                    Tables.ASBIE.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.ASBIE.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.ASBIE.IS_USED.as("used"),
                     Tables.ASBIE.IS_NILLABLE.as("nillable"),
                     Tables.ASBIE.DEFINITION.as("context_definition")
@@ -577,15 +577,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         } else {
             detail = dslContext.select(
-                    Tables.ASCC.CARDINALITY_MIN,
-                    Tables.ASCC.CARDINALITY_MAX
-            ).from(Tables.ASCC)
+                    Tables.ASCC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.ASCC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
                     .fetchOneInto(BieEditAsbiepNodeDetail.class);
 
         }
         if (asbiepNode.getAsbiepId() > 0L) {
-
             detail.setBizTerm(dslContext.select(
                     Tables.ASBIEP.BIZ_TERM).from(Tables.ASBIEP)
                     .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
@@ -598,16 +597,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (asbiepNode.getAsccId() > 0L) {
-
-            detail.setCardinalityOriginMin(dslContext.select(
-                    Tables.ASCC.CARDINALITY_MIN).from(Tables.ASCC)
+            Record2<Integer, Integer> res = dslContext.select(
+                    Tables.ASCC.CARDINALITY_MIN,
+                    Tables.ASCC.CARDINALITY_MAX)
+                    .from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
-                    .fetchOneInto(String.class));
+                    .fetchOne();
 
-            detail.setCardinalityOriginMax(dslContext.select(
-                    Tables.ASCC.CARDINALITY_MAX).from(Tables.ASCC)
-                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
-                    .fetchOneInto(String.class));
+            detail.setCcCardinalityMin(res.get(Tables.ASCC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.ASCC.CARDINALITY_MAX));
         }
         detail.setAssociationDefinition(dslContext.select(
                 Tables.ASCC.DEFINITION).from(Tables.ASCC)
@@ -637,8 +635,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBbiepNodeDetail detail;
         if (bbiepNode.getBbieId() > 0L) {
             detail = dslContext.select(
-                    Tables.BBIE.CARDINALITY_MIN,
-                    Tables.BBIE.CARDINALITY_MAX,
+                    Tables.BBIE.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BBIE.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.BBIE.IS_USED.as("used"),
                     Tables.BBIE.BDT_PRI_RESTRI_ID,
                     Tables.BBIE.CODE_LIST_ID,
@@ -653,9 +651,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         } else {
             detail = dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN,
-                    Tables.BCC.CARDINALITY_MAX
-            ).from(Tables.BCC)
+                    Tables.BCC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BCC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
         }
@@ -700,17 +698,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBccId() > 0L) {
-            detail.setCardinalityOriginMin(dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN).from(Tables.BCC)
+            Record2<Integer, Integer> res = dslContext.select(
+                    Tables.BCC.CARDINALITY_MIN,
+                    Tables.BCC.CARDINALITY_MAX)
+                    .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
-                    .fetchOneInto(String.class)
-            );
+                    .fetchOne();
 
-            detail.setCardinalityOriginMax(dslContext.select(
-                    Tables.BCC.CARDINALITY_MAX).from(Tables.BCC)
-                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
-                    .fetchOneInto(String.class)
-            );
+            detail.setCcCardinalityMin(res.get(Tables.BCC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.BCC.CARDINALITY_MAX));
         }
 
         BieEditBdtPriRestri bdtPriRestri = getBdtPriRestri(bbiepNode);
@@ -791,8 +787,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         BieEditBdtPriRestri bdtPriRestri = new BieEditBdtPriRestri();
 
+        bieEditXbtList.sort(Comparator.comparingLong(BieEditXbt::getPriRestriId));
         bdtPriRestri.setXbtList(bieEditXbtList);
+
+        bieEditCodeLists.sort(Comparator.comparingLong(BieEditCodeList::getCodeListId));
         bdtPriRestri.setCodeLists(bieEditCodeLists);
+
+        bieEditAgencyIdLists.sort(Comparator.comparingLong(BieEditAgencyIdList::getAgencyIdListId));
         bdtPriRestri.setAgencyIdLists(bieEditAgencyIdLists);
 
         return bdtPriRestri;
@@ -802,8 +803,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBbieScNodeDetail detail;
         if (bbieScNode.getBbieScId() > 0L) {
             detail = dslContext.select(
-                    Tables.BBIE_SC.CARDINALITY_MIN,
-                    Tables.BBIE_SC.CARDINALITY_MAX,
+                    Tables.BBIE_SC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BBIE_SC.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.BBIE_SC.IS_USED.as("used"),
                     Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
                     Tables.BBIE_SC.CODE_LIST_ID,
@@ -818,8 +819,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         } else {
             detail = dslContext.select(
-                    Tables.DT_SC.CARDINALITY_MIN,
-                    Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+                    Tables.DT_SC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.DT_SC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.DT_SC)
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         }
@@ -843,8 +845,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
                     .fetchOne();
 
-            detail.setCardinalityOriginMin(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MIN)));
-            detail.setCardinalityOriginMax(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MAX)));
+            detail.setCcCardinalityMin(res.get(Tables.DT_SC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.DT_SC.CARDINALITY_MAX));
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
@@ -1025,15 +1027,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditAsbiepNodeDetail asbiepNodeDetail) {
-        if (asbiepNodeDetail.getCardinalityMin() != null) {
+        if (asbiepNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.ASBIE)
-                    .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getCardinalityMin())
+                    .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getBieCardinalityMin())
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                     .execute();
         }
-        if (asbiepNodeDetail.getCardinalityMax() != null) {
+        if (asbiepNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.ASBIE)
-                    .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getCardinalityMax())
+                    .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getBieCardinalityMax())
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                     .execute();
         }
@@ -1065,14 +1067,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditBbiepNodeDetail bbiepNodeDetail) {
-        if (bbiepNodeDetail.getCardinalityMin() != null) {
+        if (bbiepNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.BBIE)
-                    .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getCardinalityMin())
+                    .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getBieCardinalityMin())
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
-        if (bbiepNodeDetail.getCardinalityMax() != null) {
+        if (bbiepNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.BBIE)
-                    .set(Tables.BBIE.CARDINALITY_MAX, bbiepNodeDetail.getCardinalityMax())
+                    .set(Tables.BBIE.CARDINALITY_MAX, bbiepNodeDetail.getBieCardinalityMax())
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
         if (bbiepNodeDetail.getNillable() != null) {
@@ -1124,15 +1126,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditBbieScNodeDetail bbieScNodeDetail) {
-        if (bbieScNodeDetail.getCardinalityMin() != null) {
+        if (bbieScNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.BBIE_SC)
-                    .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getCardinalityMin())
+                    .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getBieCardinalityMin())
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
-
         }
-        if (bbieScNodeDetail.getCardinalityMax() != null) {
+
+        if (bbieScNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.BBIE_SC)
-                    .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getCardinalityMax())
+                    .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getBieCardinalityMax())
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 

@@ -13,10 +13,11 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditNodeDetail {
 
-    private Integer cardinalityMin;
-    private Integer cardinalityMax;
-    private String cardinalityOriginMin;
-    private String cardinalityOriginMax;
+    private Integer ccCardinalityMin;
+    private Integer ccCardinalityMax;
+    private Integer bieCardinalityMin;
+    private Integer bieCardinalityMax;
+
     private Boolean nillable;
     private String fixedValue;
     private String defaultValue;
