@@ -29,7 +29,7 @@ public class SessionService {
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
                 APP_USER.NAME,
-                APP_USER.OAGIS_DEVELOPER_INDICATOR.as("oagis_developer"),
+                APP_USER.IS_DEVELOPER.as("developer"),
                 APP_USER.ORGANIZATION
         ).from(APP_USER)
                 .where(APP_USER.LOGIN_ID.eq(username))

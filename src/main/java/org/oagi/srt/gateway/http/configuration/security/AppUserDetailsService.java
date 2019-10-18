@@ -28,9 +28,9 @@ public class AppUserDetailsService implements UserDetailsService {
         }
 
         String password = appUserRecord.get(Tables.APP_USER.PASSWORD);
-        boolean oagisDeveloper = appUserRecord.getOagisDeveloperIndicator() == 1;
+        boolean isDeveloper = appUserRecord.getIsDeveloper() == 1;
 
         return new User(username, password,
-                Arrays.asList(new SimpleGrantedAuthority((oagisDeveloper) ? "developer" : "end-user")));
+                Arrays.asList(new SimpleGrantedAuthority((isDeveloper) ? "developer" : "end-user")));
     }
 }

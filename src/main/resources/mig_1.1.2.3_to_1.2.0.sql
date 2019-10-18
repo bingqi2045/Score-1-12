@@ -8,6 +8,8 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+ALTER TABLE `app_user` CHANGE COLUMN `oagis_developer_indicator` `is_developer` tinyint(1);
+
 -- Add `biz_ctx_assignment` table.
 DROP TABLE IF EXISTS `biz_ctx_assignment`;
 CREATE TABLE `biz_ctx_assignment` (

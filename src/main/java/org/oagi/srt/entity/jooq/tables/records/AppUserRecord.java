@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.AppUser;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record6<ULong, String, String, String, String, Byte> {
 
-    private static final long serialVersionUID = 68683445;
+    private static final long serialVersionUID = -1529611692;
 
     /**
      * Setter for <code>oagi.app_user.app_user_id</code>. Primary key column.
@@ -102,16 +102,16 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.app_user.oagis_developer_indicator</code>. This indicates whether the user can edit OAGIS Model content. Content created by the OAGIS developer is also considered OAGIS Model content.
+     * Setter for <code>oagi.app_user.is_developer</code>.
      */
-    public void setOagisDeveloperIndicator(Byte value) {
+    public void setIsDeveloper(Byte value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.app_user.oagis_developer_indicator</code>. This indicates whether the user can edit OAGIS Model content. Content created by the OAGIS developer is also considered OAGIS Model content.
+     * Getter for <code>oagi.app_user.is_developer</code>.
      */
-    public Byte getOagisDeveloperIndicator() {
+    public Byte getIsDeveloper() {
         return (Byte) get(5);
     }
 
@@ -165,7 +165,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
 
     @Override
     public Field<Byte> field6() {
-        return AppUser.APP_USER.OAGIS_DEVELOPER_INDICATOR;
+        return AppUser.APP_USER.IS_DEVELOPER;
     }
 
     @Override
@@ -195,7 +195,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
 
     @Override
     public Byte component6() {
-        return getOagisDeveloperIndicator();
+        return getIsDeveloper();
     }
 
     @Override
@@ -225,7 +225,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
 
     @Override
     public Byte value6() {
-        return getOagisDeveloperIndicator();
+        return getIsDeveloper();
     }
 
     @Override
@@ -260,7 +260,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
 
     @Override
     public AppUserRecord value6(Byte value) {
-        setOagisDeveloperIndicator(value);
+        setIsDeveloper(value);
         return this;
     }
 
@@ -289,7 +289,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     /**
      * Create a detached, initialised AppUserRecord
      */
-    public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte oagisDeveloperIndicator) {
+    public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte isDeveloper) {
         super(AppUser.APP_USER);
 
         set(0, appUserId);
@@ -297,6 +297,6 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
         set(2, password);
         set(3, name);
         set(4, organization);
-        set(5, oagisDeveloperIndicator);
+        set(5, isDeveloper);
     }
 }

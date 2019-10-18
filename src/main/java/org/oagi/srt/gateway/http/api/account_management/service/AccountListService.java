@@ -34,7 +34,7 @@ public class AccountListService {
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
                 APP_USER.NAME,
-                APP_USER.OAGIS_DEVELOPER_INDICATOR,
+                APP_USER.IS_DEVELOPER.as("developer"),
                 APP_USER.ORGANIZATION
         ).from(APP_USER);
 
@@ -51,10 +51,10 @@ public class AccountListService {
         if (!StringUtils.isEmpty(request.getRole())) {
             switch (request.getRole()) {
                 case "developer":
-                    conditions.add(APP_USER.OAGIS_DEVELOPER_INDICATOR.eq((byte) 1));
+                    conditions.add(APP_USER.IS_DEVELOPER.eq((byte) 1));
                     break;
                 case "end-user":
-                    conditions.add(APP_USER.OAGIS_DEVELOPER_INDICATOR.eq((byte) 0));
+                    conditions.add(APP_USER.IS_DEVELOPER.eq((byte) 0));
                     break;
             }
         }
@@ -127,7 +127,7 @@ public class AccountListService {
                 APP_USER.LOGIN_ID,
                 APP_USER.PASSWORD,
                 APP_USER.NAME,
-                APP_USER.OAGIS_DEVELOPER_INDICATOR,
+                APP_USER.IS_DEVELOPER.as("developer"),
                 APP_USER.ORGANIZATION
         ).from(APP_USER).where(APP_USER.LOGIN_ID.eq(loginId))
                 .fetchOneInto(AppUser.class);
@@ -147,7 +147,7 @@ public class AccountListService {
         record.setPassword(passwordEncoder.encode(account.getPassword()));
         record.setName(account.getName());
         record.setOrganization(account.getOrganization());
-        record.setOagisDeveloperIndicator((byte) (account.isOagisDeveloperIndicator() ? 1 : 0));
+        record.setIsDeveloper((byte) (account.isDeveloper() ? 1 : 0));
 
         dslContext.insertInto(APP_USER)
                 .set(record)
