@@ -25,7 +25,7 @@
 
         <cglib.version>3.3.0</cglib.version>
         <aspectj.version>1.9.4</aspectj.version>
-        <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
         <lettuce.version>5.2.0.RELEASE</lettuce.version>
         <redisson.version>3.11.4</redisson.version>
         <netty.version>4.1.42.Final</netty.version>
