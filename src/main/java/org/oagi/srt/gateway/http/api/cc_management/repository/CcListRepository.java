@@ -45,8 +45,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             whereCondition = whereCondition.and(Tables.ACC.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())
-                    ));
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -136,7 +135,8 @@ public class CcListRepository {
             whereCondition = whereCondition.and(Tables.ASCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(Tables.ASCC.STATE.in(request.getStates()));
+            whereCondition = whereCondition.and(Tables.ASCC.STATE.in(
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -215,7 +215,8 @@ public class CcListRepository {
             whereCondition = whereCondition.and(Tables.BCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(Tables.BCC.STATE.in(request.getStates()));
+            whereCondition = whereCondition.and(Tables.BCC.STATE.in(
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -295,7 +296,8 @@ public class CcListRepository {
             whereCondition = whereCondition.and(Tables.ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(Tables.ASCCP.STATE.in(request.getStates()));
+            whereCondition = whereCondition.and(Tables.ASCCP.STATE.in(
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -370,7 +372,8 @@ public class CcListRepository {
             whereCondition = whereCondition.and(Tables.BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(Tables.BCCP.STATE.in(request.getStates()));
+            whereCondition = whereCondition.and(Tables.BCCP.STATE.in(
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -449,7 +452,8 @@ public class CcListRepository {
             whereCondition = whereCondition.and(Tables.DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(Tables.DT.STATE.in(request.getStates()));
+            whereCondition = whereCondition.and(Tables.DT.STATE.in(
+                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -511,9 +515,18 @@ public class CcListRepository {
                 });
     }
 
-    private Condition getDenFilter(TableField<?, String> field, String keyword){
+    private Condition getDenFilter(TableField<?, String> field, String keyword) {
+        Condition denCondition = null;
         List<String> filters = Arrays.asList(keyword.toLowerCase().split(" ")).stream()
                 .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
-        return field.in(filters);
+        for (String token : filters) {
+            if (denCondition == null){
+                denCondition = field.contains(token);
+            } else {
+                denCondition = denCondition.and(field.contains(token));
+            }
+
+        }
+        return denCondition;
     }
 }
