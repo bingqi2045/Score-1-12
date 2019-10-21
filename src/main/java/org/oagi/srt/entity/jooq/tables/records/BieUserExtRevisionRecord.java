@@ -36,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, Byte> {
 
-    private static final long serialVersionUID = 332707113;
+    private static final long serialVersionUID = -1666746260;
 
     /**
      * Setter for <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>. Primary, internal database key.

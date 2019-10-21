@@ -50,7 +50,7 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 1133751007;
+    private static final long serialVersionUID = 1472537080;
 
     /**
      * The reference instance of <code>oagi.acc</code>

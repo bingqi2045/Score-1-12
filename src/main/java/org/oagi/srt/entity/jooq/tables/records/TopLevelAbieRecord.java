@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> implements Record7<ULong, ULong, ULong, Timestamp, ULong, ULong, Integer> {
 
-    private static final long serialVersionUID = -1372337715;
+    private static final long serialVersionUID = 1277994262;
 
     /**
      * Setter for <code>oagi.top_level_abie.top_level_abie_id</code>. A internal, primary database key of an ACC.

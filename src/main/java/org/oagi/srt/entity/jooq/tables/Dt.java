@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1152683468;
+    private static final long serialVersionUID = -692463533;
 
     /**
      * The reference instance of <code>oagi.dt</code>

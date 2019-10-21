@@ -5,7 +5,7 @@
 
     <groupId>org.oagi</groupId>
     <artifactId>srt-http-gateway</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
     <packaging>war</packaging>
 
     <name>srt-http-gateway</name>
@@ -34,7 +34,7 @@
         <jdom2.version>2.0.6</jdom2.version>
         <commons-io.version>2.6</commons-io.version>
         <jOOQ.version>3.12.1</jOOQ.version>
-        <jOOQ.configuration.skip>false</jOOQ.configuration.skip>
+        <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 
     <dependencies>
@@ -188,7 +188,7 @@
 
                     <jdbc>
                         <driver>com.mysql.cj.jdbc.Driver</driver>
-                        <url>jdbc:mysql://localhost:3307/oagi</url>
+                        <url>jdbc:mysql://localhost:3306/oagi</url>
                         <user>oagi</user>
                         <password>oagi</password>
                     </jdbc>

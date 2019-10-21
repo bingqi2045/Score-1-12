@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = -283947983;
+    private static final long serialVersionUID = 1304192138;
 
     /**
      * The reference instance of <code>oagi.asccp</code>

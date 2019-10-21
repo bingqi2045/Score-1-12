@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BlobContentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContent extends TableImpl<BlobContentRecord> {
 
-    private static final long serialVersionUID = 469503665;
+    private static final long serialVersionUID = -822463744;
 
     /**
      * The reference instance of <code>oagi.blob_content</code>

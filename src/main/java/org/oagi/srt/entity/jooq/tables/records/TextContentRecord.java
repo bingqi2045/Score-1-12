@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.TextContent;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TextContentRecord extends UpdatableRecordImpl<TextContentRecord> implements Record3<ULong, String, String> {
 
-    private static final long serialVersionUID = -858092071;
+    private static final long serialVersionUID = 1182509174;
 
     /**
      * Setter for <code>oagi.text_content.text_content_id</code>.

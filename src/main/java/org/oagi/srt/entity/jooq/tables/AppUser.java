@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUser extends TableImpl<AppUserRecord> {
 
-    private static final long serialVersionUID = -1675170619;
+    private static final long serialVersionUID = -1086215692;
 
     /**
      * The reference instance of <code>oagi.app_user</code>
@@ -84,9 +84,9 @@ public class AppUser extends TableImpl<AppUserRecord> {
     public final TableField<AppUserRecord, String> ORGANIZATION = createField(DSL.name("organization"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "The company the user represents.");
 
     /**
-     * The column <code>oagi.app_user.oagis_developer_indicator</code>. This indicates whether the user can edit OAGIS Model content. Content created by the OAGIS developer is also considered OAGIS Model content.
+     * The column <code>oagi.app_user.is_developer</code>.
      */
-    public final TableField<AppUserRecord, Byte> OAGIS_DEVELOPER_INDICATOR = createField(DSL.name("oagis_developer_indicator"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "This indicates whether the user can edit OAGIS Model content. Content created by the OAGIS developer is also considered OAGIS Model content.");
+    public final TableField<AppUserRecord, Byte> IS_DEVELOPER = createField(DSL.name("is_developer"), org.jooq.impl.SQLDataType.TINYINT, this, "");
 
     /**
      * Create a <code>oagi.app_user</code> table reference

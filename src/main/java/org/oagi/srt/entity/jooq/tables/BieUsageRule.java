@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.BieUsageRuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
 
-    private static final long serialVersionUID = 2010844821;
+    private static final long serialVersionUID = -1892349724;
 
     /**
      * The reference instance of <code>oagi.bie_usage_rule</code>

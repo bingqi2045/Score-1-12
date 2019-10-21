@@ -644,8 +644,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.DEFAULT_VALUE,
                     Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.FIXED_VALUE,
-                    Tables.BBIE.DEFINITION.as("context_definition"))
-                    .from(Tables.BBIE)
+                    Tables.BBIE.DEFINITION.as("context_definition"),
+                    TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
+                    TEXT_CONTENT.TEXT_CONTENT_.as("example_text")
+            ).from(Tables.BBIE)
+                    .leftJoin(TEXT_CONTENT).on(BBIE.EXAMPLE_TEXT_CONTENT_ID.eq(TEXT_CONTENT.TEXT_CONTENT_ID))
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNode.getBbieId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
 
@@ -813,8 +816,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE_SC.FIXED_VALUE,
                     Tables.BBIE_SC.BIZ_TERM,
                     Tables.BBIE_SC.REMARK,
-                    Tables.BBIE_SC.DEFINITION.as("context_definition"))
+                    Tables.BBIE_SC.DEFINITION.as("context_definition"),
+                    TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
+                    TEXT_CONTENT.TEXT_CONTENT_.as("example_text")
+            )
                     .from(Tables.BBIE_SC)
+                    .leftJoin(TEXT_CONTENT).on(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID.eq(TEXT_CONTENT.TEXT_CONTENT_ID))
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         } else {
@@ -1123,6 +1130,48 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbiepId())))
                 .execute();
+
+        // Issue #692
+        String exampleContentType = bbiepNodeDetail.getExampleContentType();
+        if (StringUtils.isEmpty(exampleContentType)) {
+            exampleContentType = DEFAULT_TEXT_CONTENT_TYPE;
+        }
+        String exampleText = bbiepNodeDetail.getExampleText();
+        ULong exampleTextContentId = dslContext.select(BBIE.EXAMPLE_TEXT_CONTENT_ID)
+                .from(BBIE)
+                .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
+                .fetchOptionalInto(ULong.class).orElse(null);
+
+        if (StringUtils.isEmpty(exampleText)) {
+            if (exampleTextContentId != null) {
+                dslContext.update(BBIE)
+                        .setNull(BBIE.EXAMPLE_TEXT_CONTENT_ID)
+                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
+                        .execute();
+                dslContext.deleteFrom(TEXT_CONTENT)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
+                        .execute();
+            }
+        } else {
+            if (exampleTextContentId != null) {
+                dslContext.update(TEXT_CONTENT)
+                        .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
+                        .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
+                        .execute();
+            } else {
+                exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
+                        TEXT_CONTENT.TEXT_CONTENT_TYPE,
+                        TEXT_CONTENT.TEXT_CONTENT_)
+                        .values(exampleContentType, exampleText)
+                        .returning(TEXT_CONTENT.TEXT_CONTENT_ID)
+                        .fetchOne().getTextContentId();
+                dslContext.update(BBIE)
+                        .set(BBIE.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
+                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
+                        .execute();
+            }
+        }
     }
 
     private void updateDetail(BieEditBbieScNodeDetail bbieScNodeDetail) {
@@ -1169,6 +1218,48 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
                 .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                 .execute();
+
+        // Issue #692
+        String exampleContentType = bbieScNodeDetail.getExampleContentType();
+        if (StringUtils.isEmpty(exampleContentType)) {
+            exampleContentType = DEFAULT_TEXT_CONTENT_TYPE;
+        }
+        String exampleText = bbieScNodeDetail.getExampleText();
+        ULong exampleTextContentId = dslContext.select(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
+                .from(BBIE_SC)
+                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                .fetchOptionalInto(ULong.class).orElse(null);
+
+        if (StringUtils.isEmpty(exampleText)) {
+            if (exampleTextContentId != null) {
+                dslContext.update(BBIE_SC)
+                        .setNull(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
+                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                        .execute();
+                dslContext.deleteFrom(TEXT_CONTENT)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
+                        .execute();
+            }
+        } else {
+            if (exampleTextContentId != null) {
+                dslContext.update(TEXT_CONTENT)
+                        .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
+                        .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
+                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
+                        .execute();
+            } else {
+                exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
+                        TEXT_CONTENT.TEXT_CONTENT_TYPE,
+                        TEXT_CONTENT.TEXT_CONTENT_)
+                        .values(exampleContentType, exampleText)
+                        .returning(TEXT_CONTENT.TEXT_CONTENT_ID)
+                        .fetchOne().getTextContentId();
+                dslContext.update(BBIE_SC)
+                        .set(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
+                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                        .execute();
+            }
+        }
     }
 
     private String emptyToNull(String str) {

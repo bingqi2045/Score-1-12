@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = -1080850218;
+    private static final long serialVersionUID = 764565853;
 
     /**
      * The reference instance of <code>oagi.bccp</code>

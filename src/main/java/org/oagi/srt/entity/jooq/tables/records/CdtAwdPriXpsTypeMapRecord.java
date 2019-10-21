@@ -40,7 +40,7 @@ import org.oagi.srt.entity.jooq.tables.CdtAwdPriXpsTypeMap;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -826410970;
+    private static final long serialVersionUID = -1802612861;
 
     /**
      * Setter for <code>oagi.cdt_awd_pri_xps_type_map.cdt_awd_pri_xps_type_map_id</code>. Internal, primary database key.

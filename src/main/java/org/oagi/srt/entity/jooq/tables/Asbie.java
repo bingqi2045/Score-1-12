@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbie extends TableImpl<AsbieRecord> {
 
-    private static final long serialVersionUID = -706111214;
+    private static final long serialVersionUID = 1975626559;
 
     /**
      * The reference instance of <code>oagi.asbie</code>

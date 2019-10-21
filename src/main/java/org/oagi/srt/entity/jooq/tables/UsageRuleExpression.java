@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.UsageRuleExpressionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
-    private static final long serialVersionUID = 2123573920;
+    private static final long serialVersionUID = 2008224687;
 
     /**
      * The reference instance of <code>oagi.usage_rule_expression</code>

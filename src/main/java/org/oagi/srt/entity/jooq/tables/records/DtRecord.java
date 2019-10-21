@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1931461180;
+    private static final long serialVersionUID = 1446537869;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.

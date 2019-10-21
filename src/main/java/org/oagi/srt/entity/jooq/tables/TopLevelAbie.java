@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = 783616235;
+    private static final long serialVersionUID = 915275716;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>

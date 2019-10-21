@@ -80,7 +80,7 @@ import org.oagi.srt.entity.jooq.tables.XbtReleaseManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 576134735;
+    private static final long serialVersionUID = 1882341272;
 
     /**
      * The reference instance of <code>oagi</code>

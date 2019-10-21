@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Ascc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record22<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -229158228;
+    private static final long serialVersionUID = -61835005;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.

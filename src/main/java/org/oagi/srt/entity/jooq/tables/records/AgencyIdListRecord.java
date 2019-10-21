@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record9<ULong, String, String, String, String, ULong, String, ULong, String> {
 
-    private static final long serialVersionUID = -1365132470;
+    private static final long serialVersionUID = -1925883609;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.

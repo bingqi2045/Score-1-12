@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.CtxCategory;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record4<ULong, String, String, String> {
 
-    private static final long serialVersionUID = -655271245;
+    private static final long serialVersionUID = -1134362416;
 
     /**
      * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Internal, primary, database key.

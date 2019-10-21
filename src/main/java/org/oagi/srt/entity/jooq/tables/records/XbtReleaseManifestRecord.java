@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.XbtReleaseManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtReleaseManifestRecord extends UpdatableRecordImpl<XbtReleaseManifestRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 593942927;
+    private static final long serialVersionUID = 1043389458;
 
     /**
      * Setter for <code>oagi.xbt_release_manifest.xbt_release_manifest_id</code>.

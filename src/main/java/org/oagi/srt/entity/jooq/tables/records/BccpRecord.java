@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Bccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpRecord extends UpdatableRecordImpl<BccpRecord> {
 
-    private static final long serialVersionUID = -1294243538;
+    private static final long serialVersionUID = -283252809;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.

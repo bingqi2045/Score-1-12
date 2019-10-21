@@ -27,7 +27,7 @@ import org.oagi.srt.entity.jooq.tables.Asccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = -159807483;
+    private static final long serialVersionUID = 1056076238;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.

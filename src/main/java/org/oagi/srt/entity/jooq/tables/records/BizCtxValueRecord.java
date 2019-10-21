@@ -30,7 +30,7 @@ import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 498722940;
+    private static final long serialVersionUID = 915155327;
 
     /**
      * Setter for <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary, internal database key.
