@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = 1304192138;
+    private static final long serialVersionUID = -1013145759;
 
     /**
      * The reference instance of <code>oagi.asccp</code>
@@ -170,7 +170,7 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AsccpRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
-     * The column <code>oagi.asccp.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
+     * The column <code>oagi.asccp.release_id</code>. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
 
 Not all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.
 
@@ -178,16 +178,16 @@ Unpublished components cannot be released.
 
 This column is NULLl for the current record.
      */
-    public final TableField<AsccpRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.");
+    public final TableField<AsccpRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.");
 
     /**
-     * The column <code>oagi.asccp.current_asccp_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
+     * The column <code>oagi.asccp.current_asccp_id</code>. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
 
 It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
 
 The value of this column for the current record should be left NULL.
      */
-    public final TableField<AsccpRecord, ULong> CURRENT_ASCCP_ID = createField(DSL.name("current_asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.");
+    public final TableField<AsccpRecord, ULong> CURRENT_ASCCP_ID = createField(DSL.name("current_asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.");
 
     /**
      * The column <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
@@ -234,7 +234,7 @@ The value of this column for the current record should be left NULL.
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ASCCP_ASCCP_CREATED_BY_FK, Indexes.ASCCP_ASCCP_CURRENT_ASCCP_ID_FK, Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATED_BY_FK, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ASCCP_ASCCP_MODULE_ID_FK, Indexes.ASCCP_ASCCP_NAMESPACE_ID_FK, Indexes.ASCCP_ASCCP_OWNER_USER_ID_FK, Indexes.ASCCP_ASCCP_RELEASE_ID_FK, Indexes.ASCCP_ASCCP_REVISION_IDX, Indexes.ASCCP_ASCCP_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ASCCP_ASCCP_CREATED_BY_FK, Indexes.ASCCP_ASCCP_CURRENT_ASCCP_ID_FK, Indexes.ASCCP_ASCCP_LAST_UPDATED_BY_FK, Indexes.ASCCP_ASCCP_MODULE_ID_FK, Indexes.ASCCP_ASCCP_NAMESPACE_ID_FK, Indexes.ASCCP_ASCCP_OWNER_USER_ID_FK, Indexes.ASCCP_ASCCP_RELEASE_ID_FK, Indexes.ASCCP_ASCCP_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_PRIMARY);
     }
 
     @Override

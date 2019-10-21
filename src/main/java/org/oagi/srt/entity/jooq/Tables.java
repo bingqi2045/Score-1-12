@@ -8,23 +8,18 @@ import javax.annotation.Generated;
 
 import org.oagi.srt.entity.jooq.tables.Abie;
 import org.oagi.srt.entity.jooq.tables.Acc;
-import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.Asbie;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
 import org.oagi.srt.entity.jooq.tables.Ascc;
-import org.oagi.srt.entity.jooq.tables.AsccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Asccp;
-import org.oagi.srt.entity.jooq.tables.AsccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Bbie;
 import org.oagi.srt.entity.jooq.tables.BbieSc;
 import org.oagi.srt.entity.jooq.tables.Bbiep;
 import org.oagi.srt.entity.jooq.tables.Bcc;
-import org.oagi.srt.entity.jooq.tables.BccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.Bccp;
-import org.oagi.srt.entity.jooq.tables.BccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.BdtPriRestri;
 import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 import org.oagi.srt.entity.jooq.tables.BieUsageRule;
@@ -45,7 +40,6 @@ import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
 import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 import org.oagi.srt.entity.jooq.tables.Dt;
-import org.oagi.srt.entity.jooq.tables.DtReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.DtSc;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
@@ -57,7 +51,6 @@ import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
 import org.oagi.srt.entity.jooq.tables.Xbt;
-import org.oagi.srt.entity.jooq.tables.XbtReleaseManifest;
 
 
 /**
@@ -88,11 +81,6 @@ Note that only Extension is supported when deriving ACC from another ACC. (So if
 In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      */
     public static final Acc ACC = Acc.ACC;
-
-    /**
-     * The table <code>oagi.acc_release_manifest</code>.
-     */
-    public static final AccReleaseManifest ACC_RELEASE_MANIFEST = AccReleaseManifest.ACC_RELEASE_MANIFEST;
 
     /**
      * The AGENCY_ID_LIST table stores information about agency identification lists. The list's values are however kept in the AGENCY_ID_LIST_VALUE.
@@ -130,16 +118,6 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
     public static final Asccp ASCCP = Asccp.ASCCP;
 
     /**
-     * The table <code>oagi.asccp_release_manifest</code>.
-     */
-    public static final AsccpReleaseManifest ASCCP_RELEASE_MANIFEST = AsccpReleaseManifest.ASCCP_RELEASE_MANIFEST;
-
-    /**
-     * The table <code>oagi.ascc_release_manifest</code>.
-     */
-    public static final AsccReleaseManifest ASCC_RELEASE_MANIFEST = AsccReleaseManifest.ASCC_RELEASE_MANIFEST;
-
-    /**
      * A BBIE represents a relationship/association between an ABIE and a BBIEP. It is a contextualization of a BCC. The BBIE table also stores some information about the specific constraints related to the BDT associated with the BBIEP. In particular, the three columns including the BDT_PRI_RESTRI_ID, CODE_LIST_ID, and AGENCY_ID_LIST_ID allows for capturing of the specific primitive to be used in the context. Only one column among the three can have a value in a particular record.
      */
     public static final Bbie BBIE = Bbie.BBIE;
@@ -163,16 +141,6 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      * An BCCP specifies a property concept and data type associated with it. A BCCP can be then added as a property of an ACC.
      */
     public static final Bccp BCCP = Bccp.BCCP;
-
-    /**
-     * The table <code>oagi.bccp_release_manifest</code>.
-     */
-    public static final BccpReleaseManifest BCCP_RELEASE_MANIFEST = BccpReleaseManifest.BCCP_RELEASE_MANIFEST;
-
-    /**
-     * The table <code>oagi.bcc_release_manifest</code>.
-     */
-    public static final BccReleaseManifest BCC_RELEASE_MANIFEST = BccReleaseManifest.BCC_RELEASE_MANIFEST;
 
     /**
      * This table captures the allowed primitives for a BDT. The allowed primitives are captured by three columns the CDT_AWD_PRI_XPS_TYPE_MAP_ID, CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive by the built-in type of an expression language such as the XML Schema built-in type. The second specifies the primitive, which is a code list, while the last one specifies the primitive which is an agency identification list. Only one column among the three can have a value in a particular record.
@@ -281,11 +249,6 @@ If we use a separate table for each expression, then we need binding all the way
     public static final Dt DT = Dt.DT;
 
     /**
-     * The table <code>oagi.dt_release_manifest</code>.
-     */
-    public static final DtReleaseManifest DT_RELEASE_MANIFEST = DtReleaseManifest.DT_RELEASE_MANIFEST;
-
-    /**
      * This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it. 
      */
     public static final DtSc DT_SC = DtSc.DT_SC;
@@ -339,9 +302,4 @@ If we use a separate table for each expression, then we need binding all the way
      * This table stores XML schema built-in types and OAGIS built-in types. OAGIS built-in types are those types defined in the XMLSchemaBuiltinType and the XMLSchemaBuiltinType Patterns schemas.
      */
     public static final Xbt XBT = Xbt.XBT;
-
-    /**
-     * The table <code>oagi.xbt_release_manifest</code>.
-     */
-    public static final XbtReleaseManifest XBT_RELEASE_MANIFEST = XbtReleaseManifest.XBT_RELEASE_MANIFEST;
 }

@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = 764565853;
+    private static final long serialVersionUID = -1671716150;
 
     /**
      * The reference instance of <code>oagi.bccp</code>
@@ -171,7 +171,7 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<BccpRecord, Integer> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGER)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
-     * The column <code>oagi.bccp.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
+     * The column <code>oagi.bccp.release_id</code>. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
 
 Not all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.
 
@@ -179,16 +179,16 @@ Unpublished components cannot be released.
 
 This column is NULLl for the current record.
      */
-    public final TableField<BccpRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.");
+    public final TableField<BccpRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.");
 
     /**
-     * The column <code>oagi.bccp.current_bccp_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
+     * The column <code>oagi.bccp.current_bccp_id</code>. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
 
 It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
 
 The value of this column for the current record should be left NULL.
      */
-    public final TableField<BccpRecord, ULong> CURRENT_BCCP_ID = createField(DSL.name("current_bccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.");
+    public final TableField<BccpRecord, ULong> CURRENT_BCCP_ID = createField(DSL.name("current_bccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.");
 
     /**
      * The column <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
@@ -240,7 +240,7 @@ The value of this column for the current record should be left NULL.
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BCCP_BCCP_BDT_ID_FK, Indexes.BCCP_BCCP_CREATED_BY_FK, Indexes.BCCP_BCCP_CURRENT_BCCP_ID_FK, Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATED_BY_FK, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCCP_BCCP_MODULE_ID_FK, Indexes.BCCP_BCCP_NAMESPACE_ID_FK, Indexes.BCCP_BCCP_OWNER_USER_ID_FK, Indexes.BCCP_BCCP_RELEASE_ID_FK, Indexes.BCCP_BCCP_REVISION_IDX, Indexes.BCCP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BCCP_BCCP_BDT_ID_FK, Indexes.BCCP_BCCP_CREATED_BY_FK, Indexes.BCCP_BCCP_CURRENT_BCCP_ID_FK, Indexes.BCCP_BCCP_LAST_UPDATED_BY_FK, Indexes.BCCP_BCCP_MODULE_ID_FK, Indexes.BCCP_BCCP_NAMESPACE_ID_FK, Indexes.BCCP_BCCP_OWNER_USER_ID_FK, Indexes.BCCP_BCCP_RELEASE_ID_FK, Indexes.BCCP_PRIMARY);
     }
 
     @Override

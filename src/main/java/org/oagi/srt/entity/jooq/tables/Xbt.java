@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = 1032143424;
+    private static final long serialVersionUID = 1380272153;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -64,11 +64,6 @@ public class Xbt extends TableImpl<XbtRecord> {
      * The column <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
      */
     public final TableField<XbtRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
-
-    /**
-     * The column <code>oagi.xbt.guid</code>. A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
-     */
-    public final TableField<XbtRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
      * The column <code>oagi.xbt.name</code>. Human understandable name of the built-in type.
@@ -106,9 +101,9 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.xbt.release_id</code>. @deprecated since 1.2.0.
+     * The column <code>oagi.xbt.release_id</code>.
      */
-    public final TableField<XbtRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0.");
+    public final TableField<XbtRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.xbt.revision_doc</code>.
@@ -161,9 +156,9 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
 
     /**
-     * The column <code>oagi.xbt.current_xbt_id</code>. @deprecated since 1.2.0.
+     * The column <code>oagi.xbt.current_xbt_id</code>.
      */
-    public final TableField<XbtRecord, ULong> CURRENT_XBT_ID = createField(DSL.name("current_xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0.");
+    public final TableField<XbtRecord, ULong> CURRENT_XBT_ID = createField(DSL.name("current_xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.xbt.is_deprecated</code>.
@@ -210,7 +205,7 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.XBT_PRIMARY, Indexes.XBT_XBT_CREATED_BY_FK, Indexes.XBT_XBT_CURRENT_XBT_ID_FK, Indexes.XBT_XBT_GUID_IDX, Indexes.XBT_XBT_LAST_UPDATED_BY_FK, Indexes.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.XBT_XBT_MODULE_ID_FK, Indexes.XBT_XBT_OWNER_USER_ID_FK, Indexes.XBT_XBT_RELEASE_ID_FK, Indexes.XBT_XBT_REVISION_IDX, Indexes.XBT_XBT_SUBTYPE_OF_XBT_ID_FK);
+        return Arrays.<Index>asList(Indexes.XBT_PRIMARY, Indexes.XBT_XBT_CREATED_BY_FK, Indexes.XBT_XBT_CURRENT_XBT_ID_FK, Indexes.XBT_XBT_LAST_UPDATED_BY_FK, Indexes.XBT_XBT_MODULE_ID_FK, Indexes.XBT_XBT_OWNER_USER_ID_FK, Indexes.XBT_XBT_RELEASE_ID_FK, Indexes.XBT_XBT_SUBTYPE_OF_XBT_ID_FK);
     }
 
     @Override
@@ -288,11 +283,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row22 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> fieldsRow() {
-        return (Row22) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }
