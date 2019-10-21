@@ -32,7 +32,7 @@ public class UserRepository implements SrtRepository<AppUser> {
                 Tables.APP_USER.PASSWORD,
                 Tables.APP_USER.NAME,
                 Tables.APP_USER.ORGANIZATION,
-                Tables.APP_USER.OAGIS_DEVELOPER_INDICATOR.as("oagis_developer"))
+                Tables.APP_USER.IS_DEVELOPER.as("developer"))
                 .from(Tables.APP_USER);
     }
 

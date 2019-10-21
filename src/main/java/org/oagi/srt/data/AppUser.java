@@ -10,6 +10,6 @@ public class AppUser {
     private String password;
     private String name;
     private String organization;
-    private boolean oagisDeveloper;
+    private boolean developer;
 
 }

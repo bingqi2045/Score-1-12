@@ -101,7 +101,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 ASBIEP.BASED_ASCCP_ID.as("asccp_id"),
                 ABIE.ABIE_ID,
                 ABIE.BASED_ACC_ID.as("acc_id"),
-                inline("abie").as("type"))
+                inline("abie").as("type"),
+                inline(true).as("used"))
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
@@ -163,7 +164,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         try {
             if (lock != null) {
                 try {
-                    boolean locked = lock.tryLock(10, 5, TimeUnit.SECONDS);
+                    boolean locked = lock.tryLock(10, TimeUnit.SECONDS);
                     if (!locked) {
                         throw new IllegalStateException("Lock is held by another thread/process.");
                     }
@@ -565,8 +566,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditAsbiepNodeDetail detail;
         if (asbiepNode.getAsbieId() > 0L) {
             detail = dslContext.select(
-                    Tables.ASBIE.CARDINALITY_MIN,
-                    Tables.ASBIE.CARDINALITY_MAX,
+                    Tables.ASBIE.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.ASBIE.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.ASBIE.IS_USED.as("used"),
                     Tables.ASBIE.IS_NILLABLE.as("nillable"),
                     Tables.ASBIE.DEFINITION.as("context_definition")
@@ -576,15 +577,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         } else {
             detail = dslContext.select(
-                    Tables.ASCC.CARDINALITY_MIN,
-                    Tables.ASCC.CARDINALITY_MAX
-            ).from(Tables.ASCC)
+                    Tables.ASCC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.ASCC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
                     .fetchOneInto(BieEditAsbiepNodeDetail.class);
 
         }
         if (asbiepNode.getAsbiepId() > 0L) {
-
             detail.setBizTerm(dslContext.select(
                     Tables.ASBIEP.BIZ_TERM).from(Tables.ASBIEP)
                     .where(Tables.ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
@@ -597,16 +597,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (asbiepNode.getAsccId() > 0L) {
-
-            detail.setCardinalityOriginMin(dslContext.select(
-                    Tables.ASCC.CARDINALITY_MIN).from(Tables.ASCC)
+            Record2<Integer, Integer> res = dslContext.select(
+                    Tables.ASCC.CARDINALITY_MIN,
+                    Tables.ASCC.CARDINALITY_MAX)
+                    .from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
-                    .fetchOneInto(String.class));
+                    .fetchOne();
 
-            detail.setCardinalityOriginMax(dslContext.select(
-                    Tables.ASCC.CARDINALITY_MAX).from(Tables.ASCC)
-                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
-                    .fetchOneInto(String.class));
+            detail.setCcCardinalityMin(res.get(Tables.ASCC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.ASCC.CARDINALITY_MAX));
         }
         detail.setAssociationDefinition(dslContext.select(
                 Tables.ASCC.DEFINITION).from(Tables.ASCC)
@@ -636,8 +635,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBbiepNodeDetail detail;
         if (bbiepNode.getBbieId() > 0L) {
             detail = dslContext.select(
-                    Tables.BBIE.CARDINALITY_MIN,
-                    Tables.BBIE.CARDINALITY_MAX,
+                    Tables.BBIE.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BBIE.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.BBIE.IS_USED.as("used"),
                     Tables.BBIE.BDT_PRI_RESTRI_ID,
                     Tables.BBIE.CODE_LIST_ID,
@@ -645,19 +644,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.DEFAULT_VALUE,
                     Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.FIXED_VALUE,
-                    Tables.BBIE.DEFINITION.as("context_definition"),
-                    TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
-                    TEXT_CONTENT.TEXT_CONTENT_.as("example_text")
-            ).from(Tables.BBIE)
-                    .leftJoin(TEXT_CONTENT).on(BBIE.EXAMPLE_TEXT_CONTENT_ID.eq(TEXT_CONTENT.TEXT_CONTENT_ID))
+                    Tables.BBIE.DEFINITION.as("context_definition"))
+                    .from(Tables.BBIE)
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNode.getBbieId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
 
         } else {
             detail = dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN,
-                    Tables.BCC.CARDINALITY_MAX
-            ).from(Tables.BCC)
+                    Tables.BCC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BCC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
         }
@@ -702,17 +698,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBccId() > 0L) {
-            detail.setCardinalityOriginMin(dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN).from(Tables.BCC)
+            Record2<Integer, Integer> res = dslContext.select(
+                    Tables.BCC.CARDINALITY_MIN,
+                    Tables.BCC.CARDINALITY_MAX)
+                    .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
-                    .fetchOneInto(String.class)
-            );
+                    .fetchOne();
 
-            detail.setCardinalityOriginMax(dslContext.select(
-                    Tables.BCC.CARDINALITY_MAX).from(Tables.BCC)
-                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
-                    .fetchOneInto(String.class)
-            );
+            detail.setCcCardinalityMin(res.get(Tables.BCC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.BCC.CARDINALITY_MAX));
         }
 
         BieEditBdtPriRestri bdtPriRestri = getBdtPriRestri(bbiepNode);
@@ -793,8 +787,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         BieEditBdtPriRestri bdtPriRestri = new BieEditBdtPriRestri();
 
+        bieEditXbtList.sort(Comparator.comparingLong(BieEditXbt::getPriRestriId));
         bdtPriRestri.setXbtList(bieEditXbtList);
+
+        bieEditCodeLists.sort(Comparator.comparingLong(BieEditCodeList::getCodeListId));
         bdtPriRestri.setCodeLists(bieEditCodeLists);
+
+        bieEditAgencyIdLists.sort(Comparator.comparingLong(BieEditAgencyIdList::getAgencyIdListId));
         bdtPriRestri.setAgencyIdLists(bieEditAgencyIdLists);
 
         return bdtPriRestri;
@@ -804,8 +803,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBbieScNodeDetail detail;
         if (bbieScNode.getBbieScId() > 0L) {
             detail = dslContext.select(
-                    Tables.BBIE_SC.CARDINALITY_MIN,
-                    Tables.BBIE_SC.CARDINALITY_MAX,
+                    Tables.BBIE_SC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.BBIE_SC.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.BBIE_SC.IS_USED.as("used"),
                     Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
                     Tables.BBIE_SC.CODE_LIST_ID,
@@ -814,18 +813,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE_SC.FIXED_VALUE,
                     Tables.BBIE_SC.BIZ_TERM,
                     Tables.BBIE_SC.REMARK,
-                    Tables.BBIE_SC.DEFINITION.as("context_definition"),
-                    TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
-                    TEXT_CONTENT.TEXT_CONTENT_.as("example_text")
-            )
+                    Tables.BBIE_SC.DEFINITION.as("context_definition"))
                     .from(Tables.BBIE_SC)
-                    .leftJoin(TEXT_CONTENT).on(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID.eq(TEXT_CONTENT.TEXT_CONTENT_ID))
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         } else {
             detail = dslContext.select(
-                    Tables.DT_SC.CARDINALITY_MIN,
-                    Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+                    Tables.DT_SC.CARDINALITY_MIN.as("bie_cardinality_min"),
+                    Tables.DT_SC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    .from(Tables.DT_SC)
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         }
@@ -849,8 +845,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
                     .fetchOne();
 
-            detail.setCardinalityOriginMin(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MIN)));
-            detail.setCardinalityOriginMax(Integer.toString(res.get(Tables.DT_SC.CARDINALITY_MAX)));
+            detail.setCcCardinalityMin(res.get(Tables.DT_SC.CARDINALITY_MIN));
+            detail.setCcCardinalityMax(res.get(Tables.DT_SC.CARDINALITY_MAX));
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
@@ -1031,15 +1027,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditAsbiepNodeDetail asbiepNodeDetail) {
-        if (asbiepNodeDetail.getCardinalityMin() != null) {
+        if (asbiepNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.ASBIE)
-                    .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getCardinalityMin())
+                    .set(Tables.ASBIE.CARDINALITY_MIN, asbiepNodeDetail.getBieCardinalityMin())
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                     .execute();
         }
-        if (asbiepNodeDetail.getCardinalityMax() != null) {
+        if (asbiepNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.ASBIE)
-                    .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getCardinalityMax())
+                    .set(Tables.ASBIE.CARDINALITY_MAX, asbiepNodeDetail.getBieCardinalityMax())
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                     .execute();
         }
@@ -1071,14 +1067,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditBbiepNodeDetail bbiepNodeDetail) {
-        if (bbiepNodeDetail.getCardinalityMin() != null) {
+        if (bbiepNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.BBIE)
-                    .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getCardinalityMin())
+                    .set(Tables.BBIE.CARDINALITY_MIN, bbiepNodeDetail.getBieCardinalityMin())
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
-        if (bbiepNodeDetail.getCardinalityMax() != null) {
+        if (bbiepNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.BBIE)
-                    .set(Tables.BBIE.CARDINALITY_MAX, bbiepNodeDetail.getCardinalityMax())
+                    .set(Tables.BBIE.CARDINALITY_MAX, bbiepNodeDetail.getBieCardinalityMax())
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
         if (bbiepNodeDetail.getNillable() != null) {
@@ -1127,60 +1123,18 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbiepId())))
                 .execute();
-
-        // Issue #692
-        String exampleContentType = bbiepNodeDetail.getExampleContentType();
-        if (StringUtils.isEmpty(exampleContentType)) {
-            exampleContentType = DEFAULT_TEXT_CONTENT_TYPE;
-        }
-        String exampleText = bbiepNodeDetail.getExampleText();
-        ULong exampleTextContentId = dslContext.select(BBIE.EXAMPLE_TEXT_CONTENT_ID)
-                .from(BBIE)
-                .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
-                .fetchOptionalInto(ULong.class).orElse(null);
-
-        if (StringUtils.isEmpty(exampleText)) {
-            if (exampleTextContentId != null) {
-                dslContext.update(BBIE)
-                        .setNull(BBIE.EXAMPLE_TEXT_CONTENT_ID)
-                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
-                        .execute();
-                dslContext.deleteFrom(TEXT_CONTENT)
-                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
-                        .execute();
-            }
-        } else {
-            if (exampleTextContentId != null) {
-                dslContext.update(TEXT_CONTENT)
-                        .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
-                        .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
-                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
-                        .execute();
-            } else {
-                exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
-                        TEXT_CONTENT.TEXT_CONTENT_TYPE,
-                        TEXT_CONTENT.TEXT_CONTENT_)
-                        .values(exampleContentType, exampleText)
-                        .returning(TEXT_CONTENT.TEXT_CONTENT_ID)
-                        .fetchOne().getTextContentId();
-                dslContext.update(BBIE)
-                        .set(BBIE.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
-                        .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId())))
-                        .execute();
-            }
-        }
     }
 
     private void updateDetail(BieEditBbieScNodeDetail bbieScNodeDetail) {
-        if (bbieScNodeDetail.getCardinalityMin() != null) {
+        if (bbieScNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(Tables.BBIE_SC)
-                    .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getCardinalityMin())
+                    .set(Tables.BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getBieCardinalityMin())
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
-
         }
-        if (bbieScNodeDetail.getCardinalityMax() != null) {
+
+        if (bbieScNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(Tables.BBIE_SC)
-                    .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getCardinalityMax())
+                    .set(Tables.BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getBieCardinalityMax())
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
@@ -1215,48 +1169,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
                 .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                 .execute();
-
-        // Issue #692
-        String exampleContentType = bbieScNodeDetail.getExampleContentType();
-        if (StringUtils.isEmpty(exampleContentType)) {
-            exampleContentType = DEFAULT_TEXT_CONTENT_TYPE;
-        }
-        String exampleText = bbieScNodeDetail.getExampleText();
-        ULong exampleTextContentId = dslContext.select(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
-                .from(BBIE_SC)
-                .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
-                .fetchOptionalInto(ULong.class).orElse(null);
-
-        if (StringUtils.isEmpty(exampleText)) {
-            if (exampleTextContentId != null) {
-                dslContext.update(BBIE_SC)
-                        .setNull(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
-                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
-                        .execute();
-                dslContext.deleteFrom(TEXT_CONTENT)
-                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
-                        .execute();
-            }
-        } else {
-            if (exampleTextContentId != null) {
-                dslContext.update(TEXT_CONTENT)
-                        .set(TEXT_CONTENT.TEXT_CONTENT_TYPE, exampleContentType)
-                        .set(TEXT_CONTENT.TEXT_CONTENT_, exampleText)
-                        .where(TEXT_CONTENT.TEXT_CONTENT_ID.eq(exampleTextContentId))
-                        .execute();
-            } else {
-                exampleTextContentId = dslContext.insertInto(TEXT_CONTENT,
-                        TEXT_CONTENT.TEXT_CONTENT_TYPE,
-                        TEXT_CONTENT.TEXT_CONTENT_)
-                        .values(exampleContentType, exampleText)
-                        .returning(TEXT_CONTENT.TEXT_CONTENT_ID)
-                        .fetchOne().getTextContentId();
-                dslContext.update(BBIE_SC)
-                        .set(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID, exampleTextContentId)
-                        .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
-                        .execute();
-            }
-        }
     }
 
     private String emptyToNull(String str) {
