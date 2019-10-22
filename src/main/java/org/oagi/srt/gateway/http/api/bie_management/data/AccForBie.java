@@ -9,17 +9,11 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 public class AccForBie extends TrackableImpl {
 
     private long accId;
-    private Long currentAccId;
     private String guid;
 
     @Override
     public long getId() {
         return accId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentAccId;
     }
 
 }

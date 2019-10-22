@@ -9,7 +9,6 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 public class AsccpForAppendAsccp extends TrackableImpl {
 
     private long asccpId;
-    private Long currentAsccpId;
     private String guid;
     private String propertyTerm;
     private String module;
@@ -20,10 +19,5 @@ public class AsccpForAppendAsccp extends TrackableImpl {
     @Override
     public long getId() {
         return asccpId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentAsccpId;
     }
 }

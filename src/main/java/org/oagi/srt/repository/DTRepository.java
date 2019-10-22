@@ -42,11 +42,12 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.LAST_UPDATE_TIMESTAMP,
                 Tables.DT.REVISION_NUM,
                 Tables.DT.REVISION_TRACKING_NUM,
-                Tables.DT.RELEASE_ID,
-                Tables.DT.CURRENT_BDT_ID,
+                Tables.DT_RELEASE_MANIFEST.RELEASE_ID,
                 Tables.DT.IS_DEPRECATED.as("deprecated"),
-                Tables.MODULE.MODULE_.as("module")
-        ).from(Tables.DT)
+                Tables.MODULE.MODULE_.as("module"))
+                .from(Tables.DT)
+                .join(Tables.DT_RELEASE_MANIFEST)
+                .on(Tables.DT.DT_ID.eq(Tables.DT_RELEASE_MANIFEST.DT_ID))
                 .leftJoin(Tables.MODULE).on(Tables.DT.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

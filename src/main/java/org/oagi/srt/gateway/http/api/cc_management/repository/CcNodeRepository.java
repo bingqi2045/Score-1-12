@@ -4,18 +4,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-import org.jooq.Record11;
-import org.jooq.SelectJoinStep;
+import org.jooq.Record10;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
-import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
-import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -27,7 +25,6 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -41,61 +38,61 @@ public class CcNodeRepository {
     @Autowired
     private SessionService sessionService;
 
-    private SelectJoinStep<Record11<
+    private SelectOnConditionStep<Record10<
             ULong, String, String, ULong, Integer,
-            String, Integer, Integer, Integer, ULong,
-            ULong>> getSelectJoinStepForAccNode() {
+            String, Integer, Integer, Integer, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
-                Tables.ACC.ACC_ID,
-                Tables.ACC.GUID,
-                Tables.ACC.DEN.as("name"),
-                Tables.ACC.BASED_ACC_ID,
-                Tables.ACC.OAGIS_COMPONENT_TYPE,
-                Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.STATE.as("raw_state"),
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.RELEASE_ID,
-                Tables.ACC.CURRENT_ACC_ID
-        ).from(Tables.ACC);
+                ACC.ACC_ID,
+                ACC.GUID,
+                ACC.DEN.as("name"),
+                ACC.BASED_ACC_ID,
+                ACC.OAGIS_COMPONENT_TYPE,
+                ACC.OBJECT_CLASS_TERM,
+                ACC.STATE.as("raw_state"),
+                ACC.REVISION_NUM,
+                ACC.REVISION_TRACKING_NUM,
+                ACC_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ACC)
+                .join(ACC_RELEASE_MANIFEST)
+                .on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID));
     }
 
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = getSelectJoinStepForAccNode()
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(accNode, releaseId);
     }
 
     public Record1<ULong> getLastAccId() {
         Record1<ULong> maxId = dslContext.select(
-                max(Tables.ACC.ACC_ID)
-        ).from(Tables.ACC).fetchAny();
+                max(ACC.ACC_ID)
+        ).from(ACC).fetchAny();
         return maxId;
     }
 
     public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
         List<CcAccNode> accNodes = getSelectJoinStepForAccNode()
-                .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(currentAccId)))
+                .where(ACC.ACC_ID.eq(ULong.valueOf(currentAccId)))
                 .fetchInto(CcAccNode.class);
 
-        CcAccNode accNode = CcUtility.getLatestEntity(releaseId, accNodes);
-        return (accNode == null) ? null : arrangeAccNode(accNode, releaseId);
+        return (accNodes.isEmpty()) ? null : accNodes.get(accNodes.size() - 1);
     }
 
     public CcAccNode getAccNodeFromAsccByAsccpId(long toAsccpId, Long releaseId) {
-        List<CcAsccNode> asccNodes = dslContext.select(
-                Tables.ASCC.ASCC_ID,
-                Tables.ASCC.CURRENT_ASCC_ID,
-                Tables.ASCC.FROM_ACC_ID,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.RELEASE_ID
-        ).from(Tables.ASCC).where(Tables.ASCC.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)))
-                .fetchInto(CcAsccNode.class);
+        CcAsccNode asccNode = dslContext.select(
+                ASCC.ASCC_ID,
+                ASCC.FROM_ACC_ID,
+                ASCC.SEQ_KEY,
+                ASCC.REVISION_NUM,
+                ASCC.REVISION_TRACKING_NUM,
+                ASCC_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ASCC)
+                .join(ASCC_RELEASE_MANIFEST)
+                .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
+                .where(ASCC.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)))
+                .fetchOneInto(CcAsccNode.class);
 
-        CcAsccNode asccNode = CcUtility.getLatestEntity(releaseId, asccNodes);
         return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
     }
 
@@ -115,24 +112,24 @@ public class CcNodeRepository {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        dslContext.insertInto(Tables.ASCC,
-                Tables.ASCC.GUID,
-                Tables.ASCC.CARDINALITY_MIN,
-                Tables.ASCC.CARDINALITY_MAX,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.FROM_ACC_ID,
-                Tables.ASCC.TO_ASCCP_ID,
-                Tables.ASCC.DEN,
-                Tables.ASCC.IS_DEPRECATED,
-                Tables.ASCC.CREATED_BY,
-                Tables.ASCC.LAST_UPDATED_BY,
-                Tables.ASCC.OWNER_USER_ID,
-                Tables.ASCC.CREATION_TIMESTAMP,
-                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION).values(
+        dslContext.insertInto(ASCC,
+                ASCC.GUID,
+                ASCC.CARDINALITY_MIN,
+                ASCC.CARDINALITY_MAX,
+                ASCC.SEQ_KEY,
+                ASCC.FROM_ACC_ID,
+                ASCC.TO_ASCCP_ID,
+                ASCC.DEN,
+                ASCC.IS_DEPRECATED,
+                ASCC.CREATED_BY,
+                ASCC.LAST_UPDATED_BY,
+                ASCC.OWNER_USER_ID,
+                ASCC.CREATION_TIMESTAMP,
+                ASCC.LAST_UPDATE_TIMESTAMP,
+                ASCC.STATE,
+                ASCC.REVISION_NUM,
+                ASCC.REVISION_TRACKING_NUM,
+                ASCC.REVISION_ACTION).values(
                 SrtGuid.randomGuid(),
                 0,
                 1,
@@ -173,7 +170,7 @@ public class CcNodeRepository {
         accRecord.setLastUpdateTimestamp(timestamp);
 
         accRecord.setAccId(
-                dslContext.insertInto(Tables.ACC)
+                dslContext.insertInto(ACC)
                         .set(accRecord)
                         .returning(ACC.ACC_ID).fetchOne().getAccId()
         );
@@ -192,9 +189,8 @@ public class CcNodeRepository {
         accHistoryRecord.setOwnerUserId(accRecord.getOwnerUserId());
         accHistoryRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
         accHistoryRecord.setLastUpdateTimestamp(accRecord.getLastUpdateTimestamp());
-        accHistoryRecord.setCurrentAccId(accRecord.getAccId());
 
-        dslContext.insertInto(Tables.ACC)
+        dslContext.insertInto(ACC)
                 .set(accHistoryRecord)
                 .execute();
 
@@ -247,71 +243,74 @@ public class CcNodeRepository {
         if (accNode.getBasedAccId() != null) {
             return true;
         } else {
-            Long fromAccId = (releaseId == null || releaseId == 0L) ?
-                    accNode.getAccId() : accNode.getCurrentAccId();
+            Long fromAccId = accNode.getAccId();
             if (fromAccId == null) {
                 return false;
             }
             List<AsccForAccHasChild> asccList = dslContext.select(
-                    Tables.ASCC.ASCC_ID,
-                    Tables.ASCC.CURRENT_ASCC_ID,
-                    Tables.ASCC.GUID,
-                    Tables.ASCC.REVISION_NUM,
-                    Tables.ASCC.REVISION_TRACKING_NUM,
-                    Tables.ASCC.RELEASE_ID
-            ).from(Tables.ASCC).where(Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                    ASCC.ASCC_ID,
+                    ASCC.GUID,
+                    ASCC.REVISION_NUM,
+                    ASCC.REVISION_TRACKING_NUM,
+                    ASCC_RELEASE_MANIFEST.RELEASE_ID)
+                    .from(ASCC)
+                    .join(ASCC_RELEASE_MANIFEST)
+                    .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
+                    .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                     .fetchInto(AsccForAccHasChild.class);
 
-            long asccCount = asccList.stream().collect(groupingBy(e -> e.getGuid())).values().stream()
-                    .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                    .count();
+            long asccCount = asccList.size();
             if (asccCount > 0L) {
                 return true;
             }
 
             List<BccForAccHasChild> bccList = dslContext.select(
-                    Tables.BCC.BCC_ID,
-                    Tables.BCC.CURRENT_BCC_ID,
-                    Tables.BCC.GUID,
-                    Tables.BCC.REVISION_NUM,
-                    Tables.BCC.REVISION_TRACKING_NUM,
-                    Tables.BCC.RELEASE_ID
-            ).from(Tables.BCC).where(Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                    BCC.BCC_ID,
+                    BCC.BCC_ID,
+                    BCC.GUID,
+                    BCC.REVISION_NUM,
+                    BCC.REVISION_TRACKING_NUM,
+                    BCC_RELEASE_MANIFEST.RELEASE_ID)
+                    .from(BCC)
+                    .join(BCC_RELEASE_MANIFEST)
+                    .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID))
+                    .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                     .fetchInto(BccForAccHasChild.class);
 
-            long bccCount = bccList.stream().collect(groupingBy(e -> e.getGuid())).values().stream()
-                    .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                    .count();
+            long bccCount = bccList.size();
             return (bccCount > 0L);
         }
     }
 
     public Record1<ULong> getLastAsccpId() {
         Record1<ULong> maxId = dslContext.select(
-                max(Tables.ASCCP.ASCCP_ID)
-        ).from(Tables.ASCCP).fetchAny();
+                max(ASCCP.ASCCP_ID)
+        ).from(ASCCP).fetchAny();
         return maxId;
     }
 
     public Record1<ULong> getLastBccpId() {
         Record1<ULong> maxId = dslContext.select(
-                max(Tables.BCCP.BCCP_ID)
-        ).from(Tables.BCCP).fetchAny();
+                max(BCCP.BCCP_ID)
+        ).from(BCCP).fetchAny();
         return maxId;
     }
 
     public CcAsccpNode getAsccpNodeByAsccpId(long asccpId, Long releaseId) {
         CcAsccpNode asccpNode = dslContext.select(
-                Tables.ASCCP.ASCCP_ID,
-                Tables.ASCCP.CURRENT_ASCCP_ID,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM.as("name"),
-                Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.STATE.as("raw_state"),
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
-                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                ASCCP.ASCCP_ID,
+                ASCCP.ASCCP_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM.as("name"),
+                ASCCP.ROLE_OF_ACC_ID,
+                ASCCP.STATE.as("raw_state"),
+                ASCCP.REVISION_NUM,
+                ASCCP.REVISION_TRACKING_NUM,
+                ASCCP_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ASCCP)
+                .join(ASCCP_RELEASE_MANIFEST)
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNode.class);
 
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
@@ -320,39 +319,42 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
-        List<CcAsccpNode> asccpNodes = dslContext.select(
-                Tables.ASCCP.ASCCP_ID,
-                Tables.ASCCP.CURRENT_ASCCP_ID,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM.as("name"),
-                Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.STATE.as("raw_state"),
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
-                .where(Tables.ASCCP.CURRENT_ASCCP_ID.eq(ULong.valueOf(currentAsccpId)))
-                .fetchInto(CcAsccpNode.class);
+        CcAsccpNode asccpNode = dslContext.select(
+                ASCCP.ASCCP_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM.as("name"),
+                ASCCP.ROLE_OF_ACC_ID,
+                ASCCP.STATE.as("raw_state"),
+                ASCCP.REVISION_NUM,
+                ASCCP.REVISION_TRACKING_NUM,
+                ASCCP_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ASCCP)
+                .join(ASCCP_RELEASE_MANIFEST)
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(currentAsccpId)))
+                .fetchOneInto(CcAsccpNode.class);
 
-        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId, asccpNodes);
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
     }
 
     public CcAsccpNode getAsccpNodeByRoleOfAccId(long roleOfAccId, Long releaseId) {
-        List<CcAsccpNode> asccpNodes = dslContext.select(
-                Tables.ASCCP.ASCCP_ID,
-                Tables.ASCCP.CURRENT_ASCCP_ID,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM.as("name"),
-                Tables.ASCCP.STATE.as("raw_state"),
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.RELEASE_ID).from(Tables.ASCCP)
-                .where(Tables.ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(roleOfAccId)))
-                .fetchInto(CcAsccpNode.class);
+        CcAsccpNode asccpNode = dslContext.select(
+                ASCCP.ASCCP_ID,
+                ASCCP.ASCCP_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM.as("name"),
+                ASCCP.STATE.as("raw_state"),
+                ASCCP.REVISION_NUM,
+                ASCCP.REVISION_TRACKING_NUM,
+                ASCCP_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ASCCP)
+                .join(ASCCP_RELEASE_MANIFEST)
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
+                .where(ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(roleOfAccId)))
+                .fetchOneInto(CcAsccpNode.class);
 
-        CcAsccpNode asccpNode = CcUtility.getLatestEntity(releaseId, asccpNodes);
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
@@ -370,22 +372,21 @@ public class CcNodeRepository {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        dslContext.insertInto(Tables.ASCCP,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM,
-                Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.DEN,
-                Tables.ASCCP.CREATED_BY,
-                Tables.ASCCP.OWNER_USER_ID,
-                Tables.ASCCP.LAST_UPDATED_BY,
-                Tables.ASCCP.CREATION_TIMESTAMP,
-                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCCP.STATE,
-                Tables.ASCCP.IS_DEPRECATED,
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.REVISION_ACTION,
-                Tables.ASCCP.RELEASE_ID).values(
+        dslContext.insertInto(ASCCP,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM,
+                ASCCP.ROLE_OF_ACC_ID,
+                ASCCP.DEN,
+                ASCCP.CREATED_BY,
+                ASCCP.OWNER_USER_ID,
+                ASCCP.LAST_UPDATED_BY,
+                ASCCP.CREATION_TIMESTAMP,
+                ASCCP.LAST_UPDATE_TIMESTAMP,
+                ASCCP.STATE,
+                ASCCP.IS_DEPRECATED,
+                ASCCP.REVISION_NUM,
+                ASCCP.REVISION_TRACKING_NUM,
+                ASCCP.REVISION_ACTION).values(
                 SrtGuid.randomGuid(),
                 "A new ASCCP property",
                 ULong.valueOf(roleOfAccId),
@@ -399,22 +400,24 @@ public class CcNodeRepository {
                 Byte.valueOf((byte) 0),
                 0,
                 0,
-                null,
-                ULong.valueOf(1)).returning().fetchOne();
+                null).returning().fetchOne();
     }
 
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
         CcBccpNode bccpNode = dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.PROPERTY_TERM.as("name"),
-                Tables.BCCP.BDT_ID,
-                Tables.BCCP.STATE.as("raw_state"),
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                BCCP.BCCP_ID,
+                BCCP.BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM.as("name"),
+                BCCP.BDT_ID,
+                BCCP.STATE.as("raw_state"),
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM,
+                BCCP_RELEASE_MANIFEST.RELEASE_ID)
+                .from(BCCP)
+                .join(BCCP_RELEASE_MANIFEST)
+                .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNode.class);
 
         bccpNode.setHasChild(hasChild(bccpNode));
@@ -423,32 +426,34 @@ public class CcNodeRepository {
     }
 
     public CcBccpNode getBccpNodeByCurrentBccpId(long currentBccpId, Long releaseId) {
-        List<CcBccpNode> bccpNodes = dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.PROPERTY_TERM.as("name"),
-                Tables.BCCP.BDT_ID,
-                Tables.BCCP.STATE.as("raw_state"),
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.RELEASE_ID).from(Tables.BCCP)
-                .where(Tables.BCCP.CURRENT_BCCP_ID.eq(ULong.valueOf(currentBccpId)))
-                .fetchInto(CcBccpNode.class);
+        CcBccpNode bccpNode = dslContext.select(
+                BCCP.BCCP_ID,
+                BCCP.BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM.as("name"),
+                BCCP.BDT_ID,
+                BCCP.STATE.as("raw_state"),
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM,
+                BCCP_RELEASE_MANIFEST.RELEASE_ID)
+                .from(BCCP)
+                .join(BCCP_RELEASE_MANIFEST)
+                .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(currentBccpId)))
+                .fetchOneInto(CcBccpNode.class);
 
-        CcBccpNode bccpNode = CcUtility.getLatestEntity(releaseId, bccpNodes);
         bccpNode.setHasChild(hasChild(bccpNode));
         return bccpNode;
     }
 
     private boolean hasChild(CcBccpNode bccpNode) {
         long bdtId = bccpNode.getBdtId();
-        int dtScCount = dslContext.selectCount().from(Tables.DT_SC)
+        int dtScCount = dslContext.selectCount().from(DT_SC)
                 .where(and(
-                        Tables.DT_SC.OWNER_DT_ID.eq(ULong.valueOf(bdtId)),
+                        DT_SC.OWNER_DT_ID.eq(ULong.valueOf(bdtId)),
                         or(
-                                Tables.DT_SC.CARDINALITY_MIN.ne(0),
-                                Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                                DT_SC.CARDINALITY_MIN.ne(0),
+                                DT_SC.CARDINALITY_MAX.ne(0)
                         ))).fetchOneInto(Integer.class);
         return (dtScCount > 0);
     }
@@ -460,8 +465,8 @@ public class CcNodeRepository {
 
         List<CcNode> descendants = new ArrayList();
 
-        Long basedAccId = dslContext.select(Tables.ACC.BASED_ACC_ID).from(Tables.ACC)
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
+        Long basedAccId = dslContext.select(ACC.BASED_ACC_ID).from(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
                 .fetchOneInto(Long.class);
         if (basedAccId != null) {
             Long releaseId = accNode.getReleaseId();
@@ -479,8 +484,8 @@ public class CcNodeRepository {
         if (releaseId == null) {
             fromAccId = accNode.getAccId();
         } else {
-            fromAccId = dslContext.select(Tables.ACC.CURRENT_ACC_ID).from(Tables.ACC)
-                    .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
+            fromAccId = dslContext.select(ACC.ACC_ID).from(ACC)
+                    .where(ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
                     .fetchOneInto(Long.class);
         }
 
@@ -521,34 +526,32 @@ public class CcNodeRepository {
     }
 
     public OagisComponentType getOagisComponentTypeByAccId(long accId) {
-        int oagisComponentType = dslContext.select(Tables.ACC.OAGIS_COMPONENT_TYPE)
-                .from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+        int oagisComponentType = dslContext.select(ACC.OAGIS_COMPONENT_TYPE)
+                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(Integer.class);
         return OagisComponentType.valueOf(oagisComponentType);
     }
 
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
-                Tables.ASCC.ASCC_ID,
-                Tables.ASCC.CURRENT_ASCC_ID,
-                Tables.ASCC.GUID,
-                Tables.ASCC.TO_ASCCP_ID,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.STATE.as("raw_state"),
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.RELEASE_ID
-        ).from(Tables.ASCC).where(Tables.ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                ASCC.ASCC_ID,
+                ASCC.ASCC_ID,
+                ASCC.GUID,
+                ASCC.TO_ASCCP_ID,
+                ASCC.SEQ_KEY,
+                ASCC.STATE.as("raw_state"),
+                ASCC.REVISION_NUM,
+                ASCC.REVISION_TRACKING_NUM,
+                ASCC_RELEASE_MANIFEST.RELEASE_ID)
+                .from(ASCC)
+                .join(ASCC_RELEASE_MANIFEST)
+                .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
+                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
             return Collections.emptyList();
         }
-
-        asccNodes = asccNodes.stream()
-                .collect(groupingBy(CcAsccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
 
         List<CcAsccpNode> asccpNodes = new ArrayList();
         for (CcAsccNode asccNode : asccNodes) {
@@ -568,27 +571,25 @@ public class CcNodeRepository {
 
     private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcBccNode> bccNodes = dslContext.select(
-                Tables.BCC.BCC_ID,
-                Tables.BCC.CURRENT_BCC_ID,
-                Tables.BCC.GUID,
-                Tables.BCC.TO_BCCP_ID,
-                Tables.BCC.SEQ_KEY,
-                Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.STATE.as("raw_state"),
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.RELEASE_ID
-        ).from(Tables.BCC).where(Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                BCC.BCC_ID,
+                BCC.BCC_ID,
+                BCC.GUID,
+                BCC.TO_BCCP_ID,
+                BCC.SEQ_KEY,
+                BCC.ENTITY_TYPE,
+                BCC.STATE.as("raw_state"),
+                BCC.REVISION_NUM,
+                BCC.REVISION_TRACKING_NUM,
+                BCC_RELEASE_MANIFEST.RELEASE_ID)
+                .from(BCC)
+                .join(BCC_RELEASE_MANIFEST)
+                .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID))
+                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                 .fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
             return Collections.emptyList();
         }
-
-        bccNodes = bccNodes.stream()
-                .collect(groupingBy(CcBccNode::getGuid)).values().stream()
-                .map(entities -> CcUtility.getLatestEntity(releaseId, entities))
-                .collect(Collectors.toList());
 
         return bccNodes.stream().map(bccNode -> {
             CcBccpNode bccpNode;
@@ -607,8 +608,8 @@ public class CcNodeRepository {
     public List<? extends CcNode> getDescendants(User user, CcAsccpNode asccpNode) {
         long asccpId = asccpNode.getAsccpId();
 
-        long roleOfAccId = dslContext.select(Tables.ASCCP.ROLE_OF_ACC_ID).from(Tables.ASCCP)
-                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+        long roleOfAccId = dslContext.select(ASCCP.ROLE_OF_ACC_ID).from(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(Long.class);
 
         Long releaseId = asccpNode.getReleaseId();
@@ -623,15 +624,15 @@ public class CcNodeRepository {
         long bccpId = bccpNode.getBccpId();
 
         return dslContext.select(
-                Tables.DT_SC.DT_SC_ID.as("bdt_sc_id"),
-                Tables.DT_SC.GUID,
-                concat(Tables.DT_SC.PROPERTY_TERM, val(". "), Tables.DT_SC.REPRESENTATION_TERM).as("name")
-        ).from(Tables.DT_SC).join(Tables.BCCP).on(Tables.DT_SC.OWNER_DT_ID.eq(Tables.BCCP.BDT_ID))
+                DT_SC.DT_SC_ID.as("bdt_sc_id"),
+                DT_SC.GUID,
+                concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.REPRESENTATION_TERM).as("name")
+        ).from(DT_SC).join(BCCP).on(DT_SC.OWNER_DT_ID.eq(BCCP.BDT_ID))
                 .where(and(
-                        Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)),
+                        BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)),
                         or(
-                                Tables.DT_SC.CARDINALITY_MIN.ne(0),
-                                Tables.DT_SC.CARDINALITY_MAX.ne(0)
+                                DT_SC.CARDINALITY_MIN.ne(0),
+                                DT_SC.CARDINALITY_MAX.ne(0)
                         ))).fetchInto(CcBdtScNode.class);
     }
 
@@ -639,15 +640,15 @@ public class CcNodeRepository {
         long accId = accNode.getAccId();
 
         return dslContext.select(
-                Tables.ACC.ACC_ID,
-                Tables.ACC.GUID,
-                Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.DEN,
-                Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagisComponentType"),
-                Tables.ACC.IS_ABSTRACT.as("abstracted"),
-                Tables.ACC.IS_DEPRECATED.as("deprecated"),
-                Tables.ACC.DEFINITION
-        ).from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                ACC.ACC_ID,
+                ACC.GUID,
+                ACC.OBJECT_CLASS_TERM,
+                ACC.DEN,
+                ACC.OAGIS_COMPONENT_TYPE.as("oagisComponentType"),
+                ACC.IS_ABSTRACT.as("abstracted"),
+                ACC.IS_DEPRECATED.as("deprecated"),
+                ACC.DEFINITION
+        ).from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(CcAccNodeDetail.class);
     }
 
@@ -657,14 +658,15 @@ public class CcNodeRepository {
         long asccId = asccpNode.getAsccId();
         if (asccId > 0L) {
             CcAsccpNodeDetail.Ascc ascc = dslContext.select(
-                    Tables.ASCC.ASCC_ID,
-                    Tables.ASCC.GUID,
-                    Tables.ASCC.DEN,
-                    Tables.ASCC.CARDINALITY_MIN,
-                    Tables.ASCC.CARDINALITY_MAX,
-                    Tables.ASCC.IS_DEPRECATED.as("deprecated"),
-                    Tables.ASCC.DEFINITION).from(Tables.ASCC)
-                    .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                    ASCC.ASCC_ID,
+                    ASCC.GUID,
+                    ASCC.DEN,
+                    ASCC.CARDINALITY_MIN,
+                    ASCC.CARDINALITY_MAX,
+                    ASCC.IS_DEPRECATED.as("deprecated"),
+                    ASCC.DEFINITION)
+                    .from(ASCC)
+                    .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
 
             asccpNodeDetail.setAscc(ascc);
@@ -672,14 +674,15 @@ public class CcNodeRepository {
 
         long asccpId = asccpNode.getAsccpId();
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
-                Tables.ASCCP.ASCCP_ID,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM,
-                Tables.ASCCP.DEN,
-                Tables.ASCCP.REUSABLE_INDICATOR.as("reusable"),
-                Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.ASCCP.DEFINITION).from(Tables.ASCCP)
-                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                ASCCP.ASCCP_ID,
+                ASCCP.GUID,
+                ASCCP.PROPERTY_TERM,
+                ASCCP.DEN,
+                ASCCP.REUSABLE_INDICATOR.as("reusable"),
+                ASCCP.IS_DEPRECATED.as("deprecated"),
+                ASCCP.DEFINITION)
+                .from(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
 
@@ -689,14 +692,14 @@ public class CcNodeRepository {
     public CcAsccpNodeDetail.Asccp getAsccp(long asccpId) {
 
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
-                Tables.ASCCP.ASCCP_ID,
-                Tables.ASCCP.DEN,
-                Tables.ASCCP.PROPERTY_TERM.as("name"),
-                Tables.ASCCP.RELEASE_ID.as("releaseId"),
-                Tables.ASCCP.DEFINITION,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.ROLE_OF_ACC_ID).from(Tables.ASCCP)
-                .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                ASCCP.ASCCP_ID,
+                ASCCP.DEN,
+                ASCCP.PROPERTY_TERM,
+                ASCCP.DEFINITION,
+                ASCCP.GUID,
+                ASCCP.ROLE_OF_ACC_ID)
+                .from(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
 
         return asccp;
@@ -708,16 +711,17 @@ public class CcNodeRepository {
         long bccId = bccpNode.getBccId();
         if (bccId > 0L) {
             CcBccpNodeDetail.Bcc bcc = dslContext.select(
-                    Tables.BCC.BCC_ID,
-                    Tables.BCC.GUID,
-                    Tables.BCC.DEN,
-                    Tables.BCC.ENTITY_TYPE,
-                    Tables.BCC.CARDINALITY_MIN,
-                    Tables.BCC.CARDINALITY_MAX,
-                    Tables.BCC.IS_DEPRECATED.as("deprecated"),
-                    Tables.BCC.DEFAULT_VALUE,
-                    Tables.BCC.DEFINITION).from(Tables.BCC)
-                    .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                    BCC.BCC_ID,
+                    BCC.GUID,
+                    BCC.DEN,
+                    BCC.ENTITY_TYPE,
+                    BCC.CARDINALITY_MIN,
+                    BCC.CARDINALITY_MAX,
+                    BCC.IS_DEPRECATED.as("deprecated"),
+                    BCC.DEFAULT_VALUE,
+                    BCC.DEFINITION)
+                    .from(BCC)
+                    .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
 
             bccpNodeDetail.setBcc(bcc);
@@ -725,29 +729,30 @@ public class CcNodeRepository {
 
         long bccpId = bccpNode.getBccpId();
         CcBccpNodeDetail.Bccp bccp = dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.PROPERTY_TERM,
-                Tables.BCCP.DEN,
-                Tables.BCCP.IS_NILLABLE.as("nillable"),
-                Tables.BCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.BCCP.DEFAULT_VALUE,
-                Tables.BCCP.DEFINITION).from(Tables.BCCP)
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                BCCP.BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM,
+                BCCP.DEN,
+                BCCP.IS_NILLABLE.as("nillable"),
+                BCCP.IS_DEPRECATED.as("deprecated"),
+                BCCP.DEFAULT_VALUE,
+                BCCP.DEFINITION)
+                .from(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
 
-        long bdtId = dslContext.select(Tables.BCCP.BDT_ID).from(Tables.BCCP)
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId))).fetchOneInto(Long.class);
+        long bdtId = dslContext.select(BCCP.BDT_ID).from(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId))).fetchOneInto(Long.class);
 
         CcBccpNodeDetail.Bdt bdt = dslContext.select(
-                Tables.DT.DT_ID.as("bdt_id"),
-                Tables.DT.GUID,
-                Tables.DT.DATA_TYPE_TERM,
-                Tables.DT.QUALIFIER,
-                Tables.DT.DEN,
-                Tables.DT.DEFINITION).from(Tables.DT)
-                .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId)))
+                DT.DT_ID.as("bdt_id"),
+                DT.GUID,
+                DT.DATA_TYPE_TERM,
+                DT.QUALIFIER,
+                DT.DEN,
+                DT.DEFINITION).from(DT)
+                .where(DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
 
@@ -757,13 +762,13 @@ public class CcNodeRepository {
     public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
         long bdtScId = bdtScNode.getBdtScId();
         return dslContext.select(
-                Tables.DT_SC.DT_SC_ID.as("bdt_sc_id"),
-                Tables.DT_SC.GUID,
-                concat(Tables.DT_SC.PROPERTY_TERM, val(". "), Tables.DT_SC.PROPERTY_TERM).as("den"),
-                Tables.DT_SC.CARDINALITY_MIN,
-                Tables.DT_SC.CARDINALITY_MAX,
-                Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
-                .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
+                DT_SC.DT_SC_ID.as("bdt_sc_id"),
+                DT_SC.GUID,
+                concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.PROPERTY_TERM).as("den"),
+                DT_SC.CARDINALITY_MIN,
+                DT_SC.CARDINALITY_MAX,
+                DT_SC.DEFINITION).from(DT_SC)
+                .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }
 
@@ -771,17 +776,11 @@ public class CcNodeRepository {
     @EqualsAndHashCode(callSuper = true)
     public static class AsccForAccHasChild extends TrackableImpl {
         private long asccId;
-        private Long currentAsccId;
         private String guid;
 
         @Override
         public long getId() {
             return asccId;
-        }
-
-        @Override
-        public Long getCurrentId() {
-            return currentAsccId;
         }
     }
 
@@ -789,17 +788,11 @@ public class CcNodeRepository {
     @EqualsAndHashCode(callSuper = true)
     public static class BccForAccHasChild extends TrackableImpl {
         private long bccId;
-        private Long currentBccId;
         private String guid;
 
         @Override
         public long getId() {
             return bccId;
-        }
-
-        @Override
-        public Long getCurrentId() {
-            return currentBccId;
         }
     }
 

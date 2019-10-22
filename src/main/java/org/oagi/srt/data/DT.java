@@ -35,17 +35,11 @@ public class DT implements CoreComponent {
     private int revisionTrackingNum;
     private Integer revisionAction;
     private Long releaseId;
-    private Long currentBdtId;
     private boolean deprecated;
 
     @Override
     public long getId() {
         return getDtId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentBdtId;
     }
 
 }

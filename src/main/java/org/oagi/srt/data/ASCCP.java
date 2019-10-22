@@ -29,18 +29,12 @@ public class ASCCP implements CoreComponent {
     private Integer revisionAction;
     private Long releaseId;
     private int state;
-    private Long currentAsccpId;
     private boolean reusableIndicator;
     private boolean deprecated;
     private boolean nillable;
 
     public long getId() {
         return getAsccpId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return getCurrentAsccpId();
     }
 
 }

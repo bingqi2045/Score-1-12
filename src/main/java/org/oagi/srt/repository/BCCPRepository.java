@@ -39,12 +39,13 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,
                 Tables.BCCP.REVISION_ACTION,
-                Tables.BCCP.RELEASE_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
+                Tables.BCCP_RELEASE_MANIFEST.RELEASE_ID,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.IS_NILLABLE.as("nillable"),
-                Tables.MODULE.MODULE_.as("module")
-        ).from(Tables.BCCP)
+                Tables.MODULE.MODULE_.as("module"))
+                .from(Tables.BCCP)
+                .join(Tables.BCCP_RELEASE_MANIFEST)
+                .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_RELEASE_MANIFEST.BCCP_ID))
                 .leftJoin(Tables.MODULE).on(Tables.BCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

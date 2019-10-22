@@ -37,13 +37,14 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.REVISION_ACTION,
-                Tables.ASCCP.RELEASE_ID,
-                Tables.ASCCP.CURRENT_ASCCP_ID,
+                Tables.ASCCP_RELEASE_MANIFEST.RELEASE_ID,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCCP.IS_NILLABLE.as("nillable"),
-                Tables.MODULE.MODULE_.as("module")
-        ).from(Tables.ASCCP)
+                Tables.MODULE.MODULE_.as("module"))
+                .from(Tables.ASCCP)
+                .join(Tables.ASCCP_RELEASE_MANIFEST)
+                .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_RELEASE_MANIFEST.ASCCP_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ASCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

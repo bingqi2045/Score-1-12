@@ -12,16 +12,10 @@ public class BieEditBccp extends TrackableImpl {
     private String guid;
     private String propertyTerm;
     private long bdtId;
-    private long currentBccpId;
 
     @Override
     public long getId() {
         return bccpId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentBccpId;
     }
 
 }

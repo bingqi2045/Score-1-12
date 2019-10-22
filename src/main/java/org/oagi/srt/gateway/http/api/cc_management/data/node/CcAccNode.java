@@ -13,7 +13,6 @@ public class CcAccNode extends CcNode {
     private String guid;
     private String objectClassTerm;
     private Long basedAccId;
-    private Long currentAccId;
     private int oagisComponentType;
     private String definition;
     private boolean group;
@@ -23,10 +22,5 @@ public class CcAccNode extends CcNode {
     @Override
     public long getId() {
         return accId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentAccId;
     }
 }

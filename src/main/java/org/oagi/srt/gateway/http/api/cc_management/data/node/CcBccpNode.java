@@ -15,16 +15,10 @@ public class CcBccpNode extends CcNode implements SeqKeySupportable {
     private int seqKey;
 
     private long bccpId;
-    private Long currentBccpId;
     private long bdtId;
 
     @Override
     public long getId() {
         return bccpId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentBccpId;
     }
 }

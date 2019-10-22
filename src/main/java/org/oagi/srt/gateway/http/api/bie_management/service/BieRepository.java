@@ -9,7 +9,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 
 @Repository
@@ -119,14 +116,15 @@ public class BieRepository {
     public BieEditBccp getBccp(long bccpId) {
         return dslContext.select(
                 Tables.BCCP.BCCP_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
                 Tables.BCCP.GUID,
                 Tables.BCCP.BDT_ID,
                 Tables.BCCP.PROPERTY_TERM,
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.RELEASE_ID)
+                Tables.BCCP_RELEASE_MANIFEST.RELEASE_ID)
                 .from(Tables.BCCP)
+                .join(Tables.BCCP_RELEASE_MANIFEST)
+                .on(Tables.BCCP_RELEASE_MANIFEST.BCCP_ID.eq(Tables.BCCP.BCCP_ID))
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }

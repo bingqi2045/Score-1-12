@@ -20,7 +20,6 @@ public class CcList {
     private CcState state;
     private String revision;
     private boolean deprecated;
-    private Long currentId;
     private String lastUpdateUser;
     private Date lastUpdateTimestamp;
 

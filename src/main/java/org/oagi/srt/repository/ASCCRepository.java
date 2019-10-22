@@ -1,8 +1,6 @@
 package org.oagi.srt.repository;
 
-import org.jooq.DSLContext;
-import org.jooq.Record22;
-import org.jooq.SelectJoinStep;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ASCC;
 import org.oagi.srt.entity.jooq.Tables;
@@ -18,12 +16,12 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record22<
+    private SelectOnConditionStep<Record21<
             ULong, String, Integer, Integer, Integer,
             ULong, ULong, String, String, String,
             ULong, ULong, ULong, Timestamp, Timestamp,
             Integer, Integer, Integer, Byte, ULong,
-            ULong, Byte>> getSelectJoinStep() {
+            Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,
                 Tables.ASCC.GUID,
@@ -44,10 +42,11 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
                 Tables.ASCC.REVISION_ACTION,
-                Tables.ASCC.RELEASE_ID,
-                Tables.ASCC.CURRENT_ASCC_ID,
-                Tables.ASCC.IS_DEPRECATED.as("deprecated")
-        ).from(Tables.ASCC);
+                Tables.ASCC_RELEASE_MANIFEST.RELEASE_ID,
+                Tables.ASCC.IS_DEPRECATED.as("deprecated"))
+                .from(Tables.ASCC)
+                .join(Tables.ASCC_RELEASE_MANIFEST)
+                .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_RELEASE_MANIFEST.ASCC_ID));
     }
 
     @Override

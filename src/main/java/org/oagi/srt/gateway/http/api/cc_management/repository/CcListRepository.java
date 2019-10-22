@@ -7,7 +7,6 @@ import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.Release;
-import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
@@ -86,14 +85,12 @@ public class CcListRepository {
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.STATE,
                 ACC.IS_DEPRECATED,
-                ACC.CURRENT_ACC_ID,
                 ACC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ACC.REVISION_NUM,
                 ACC.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM
-        )
+                RELEASE.RELEASE_NUM)
                 .from(ACC)
                 .join(ACC_RELEASE_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID).and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -118,7 +115,6 @@ public class CcListRepository {
                     ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
                     ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
                     ccList.setDeprecated(row.getValue(ACC.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(ACC.CURRENT_ACC_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(ACC.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
@@ -174,7 +170,6 @@ public class CcListRepository {
                 ASCC.DEFINITION_SOURCE,
                 ASCC.STATE,
                 ASCC.IS_DEPRECATED,
-                ASCC.CURRENT_ASCC_ID,
                 ASCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
@@ -201,7 +196,6 @@ public class CcListRepository {
                     ccList.setDefinitionSource(row.getValue(ASCC.DEFINITION_SOURCE));
                     ccList.setState(CcState.valueOf(row.getValue(ASCC.STATE)));
                     ccList.setDeprecated(row.getValue(ASCC.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(ASCC.CURRENT_ASCC_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
@@ -256,7 +250,6 @@ public class CcListRepository {
                 BCC.DEFINITION_SOURCE,
                 BCC.STATE,
                 BCC.IS_DEPRECATED,
-                BCC.CURRENT_BCC_ID,
                 BCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
@@ -283,7 +276,6 @@ public class CcListRepository {
                     ccList.setDefinitionSource(row.getValue(BCC.DEFINITION_SOURCE));
                     ccList.setState(CcState.valueOf(row.getValue(BCC.STATE)));
                     ccList.setDeprecated(row.getValue(BCC.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(BCC.CURRENT_BCC_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(BCC.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
@@ -339,7 +331,6 @@ public class CcListRepository {
                 ASCCP.DEFINITION_SOURCE,
                 ASCCP.STATE,
                 ASCCP.IS_DEPRECATED,
-                ASCCP.CURRENT_ASCCP_ID,
                 ASCCP.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
@@ -366,7 +357,6 @@ public class CcListRepository {
                     ccList.setDefinitionSource(row.getValue(ASCCP.DEFINITION_SOURCE));
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(ASCCP.CURRENT_ASCCP_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
@@ -418,7 +408,6 @@ public class CcListRepository {
                 MODULE.MODULE_,
                 BCCP.STATE,
                 BCCP.IS_DEPRECATED,
-                BCCP.CURRENT_BCCP_ID,
                 BCCP.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
@@ -448,7 +437,6 @@ public class CcListRepository {
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
                     ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(BCCP.CURRENT_BCCP_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
@@ -499,7 +487,6 @@ public class CcListRepository {
                 DT.DEFINITION_SOURCE,
                 DT.STATE,
                 DT.IS_DEPRECATED,
-                DT.CURRENT_BDT_ID,
                 DT.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
@@ -524,7 +511,6 @@ public class CcListRepository {
                     ccList.setDefinitionSource(row.getValue(DT.DEFINITION_SOURCE));
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
-                    ccList.setCurrentId(row.getValue(DT.CURRENT_BDT_ID).longValue());
                     ccList.setLastUpdateTimestamp(row.getValue(DT.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));

@@ -11,7 +11,6 @@ import java.util.Date;
 public class AsccpForBie extends TrackableImpl {
 
     private long asccpId;
-    private Long currentAsccpId;
     private String guid;
     private String propertyTerm;
     private Long moduleId;
@@ -22,11 +21,6 @@ public class AsccpForBie extends TrackableImpl {
     @Override
     public long getId() {
         return asccpId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentAsccpId;
     }
 
 }

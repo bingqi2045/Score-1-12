@@ -30,17 +30,11 @@ public class BCC implements CoreComponent {
     private Integer revisionAction;
     private Long releaseId;
     private int state;
-    private Long currentBccId;
     private boolean deprecated;
     private boolean nillable;
 
     public long getId() {
         return getBccId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return getCurrentBccId();
     }
 
 }

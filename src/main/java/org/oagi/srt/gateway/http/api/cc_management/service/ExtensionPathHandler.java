@@ -3,7 +3,6 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.ASCC;
 import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.repository.ACCRepository;
 import org.oagi.srt.repository.ASCCPRepository;
 import org.oagi.srt.repository.ASCCRepository;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -51,24 +49,9 @@ public class ExtensionPathHandler implements InitializingBean {
     }
 
     private void init(Long releaseId) {
-        accMap = accRepository.findAll().stream()
-                .collect(Collectors.groupingBy(e -> e.getGuid()))
-                .entrySet().stream()
-                .map(entries -> CcUtility.getLatestEntity(releaseId, entries.getValue()))
-                .filter(e -> e != null)
-                .collect(Collectors.toMap(e -> e.getCurrentAccId(), Function.identity()));
-        asccMap = asccRepository.findAll().stream()
-                .collect(Collectors.groupingBy(e -> e.getGuid()))
-                .entrySet().stream()
-                .map(entries -> CcUtility.getLatestEntity(releaseId, entries.getValue()))
-                .filter(e -> e != null)
-                .collect(Collectors.groupingBy(e -> e.getFromAccId()));
-        asccpMap = asccpRepository.findAll().stream()
-                .collect(Collectors.groupingBy(e -> e.getGuid()))
-                .entrySet().stream()
-                .map(entries -> CcUtility.getLatestEntity(releaseId, entries.getValue()))
-                .filter(e -> e != null)
-                .collect(Collectors.toMap(e -> e.getCurrentAsccpId(), Function.identity()));
+        accMap = Collections.emptyMap();
+        asccMap = Collections.emptyMap();
+        asccpMap = Collections.emptyMap();
     }
 
     public boolean containsExtension(long accId, long targetExtensionId) {
@@ -91,12 +74,12 @@ public class ExtensionPathHandler implements InitializingBean {
         }
 
         List<Long> accList =
-                asccMap.getOrDefault(acc.getCurrentAccId(), Collections.emptyList()).stream()
+                asccMap.getOrDefault(acc.getAccId(), Collections.emptyList()).stream()
                         .map(e -> asccpMap.getOrDefault(e.getToAsccpId(), null))
                         .filter(e -> e != null)
                         .map(e -> accMap.getOrDefault(e.getRoleOfAccId(), null))
                         .filter(e -> e != null)
-                        .map(e -> e.getCurrentAccId())
+                        .map(e -> e.getAccId())
                         .collect(Collectors.toList());
 
         if (accList.contains(targetExtensionId)) {
@@ -131,7 +114,7 @@ public class ExtensionPathHandler implements InitializingBean {
         }
 
         List<ACC> accList =
-                asccMap.getOrDefault(acc.getCurrentAccId(), Collections.emptyList()).stream()
+                asccMap.getOrDefault(acc.getAccId(), Collections.emptyList()).stream()
                         .map(e -> asccpMap.getOrDefault(e.getToAsccpId(), null))
                         .filter(e -> e != null)
                         .map(e -> accMap.getOrDefault(e.getRoleOfAccId(), null))
@@ -139,12 +122,12 @@ public class ExtensionPathHandler implements InitializingBean {
                         .collect(Collectors.toList());
 
         for (ACC next : accList) {
-            if (targetExtensionId == next.getCurrentAccId()) {
+            if (targetExtensionId == next.getAccId()) {
                 path.push(next.getObjectClassTerm());
                 return true;
             }
 
-            if (fillPath(next.getCurrentAccId(), targetExtensionId, path, true)) {
+            if (fillPath(next.getAccId(), targetExtensionId, path, true)) {
                 return true;
             }
         }

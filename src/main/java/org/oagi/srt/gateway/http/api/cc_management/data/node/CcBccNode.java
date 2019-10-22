@@ -9,17 +9,11 @@ public class CcBccNode extends CcNode {
 
     private int seqKey;
     private long bccId;
-    private Long currentBccId;
     private long toBccpId;
     private int entityType;
 
     @Override
     public long getId() {
         return bccId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentBccId;
     }
 }

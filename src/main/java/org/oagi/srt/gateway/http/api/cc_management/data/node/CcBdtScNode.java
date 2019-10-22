@@ -15,9 +15,4 @@ public class CcBdtScNode extends CcNode {
     public long getId() {
         return bdtScId;
     }
-
-    @Override
-    public Long getCurrentId() {
-        return null;
-    }
 }

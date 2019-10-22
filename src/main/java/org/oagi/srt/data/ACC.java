@@ -31,17 +31,11 @@ public class ACC implements CoreComponent {
     private Integer revisionAction;
     private Long releaseId;
     private int state;
-    private Long currentAccId;
     private boolean deprecated;
     private boolean abstracted;
 
     public long getId() {
         return getAccId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return getCurrentAccId();
     }
 
 }

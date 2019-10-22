@@ -31,17 +31,11 @@ public class BCCP implements CoreComponent {
     private Integer revisionAction;
     private Long releaseId;
     private int state;
-    private Long currentBccpId;
     private boolean deprecated;
     private boolean nillable;
 
     public long getId() {
         return getBccpId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return getCurrentBccpId();
     }
 
 }

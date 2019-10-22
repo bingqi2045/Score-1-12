@@ -29,16 +29,10 @@ public class ASCC implements CoreComponent {
     private Integer revisionAction;
     private Long releaseId;
     private int state;
-    private Long currentAsccId;
     private boolean deprecated;
 
     public long getId() {
         return getAsccId();
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return getCurrentAsccId();
     }
 
 

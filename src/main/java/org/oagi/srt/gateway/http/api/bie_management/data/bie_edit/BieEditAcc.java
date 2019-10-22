@@ -12,15 +12,9 @@ public class BieEditAcc extends TrackableImpl {
     private String guid;
     private int oagisComponentType;
     private Long basedAccId;
-    private long currentAccId;
 
     @Override
     public long getId() {
         return accId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentAccId;
     }
 }

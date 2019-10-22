@@ -5,10 +5,8 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
-import static org.oagi.srt.entity.jooq.Tables.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -24,14 +22,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
-
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
 @Service
@@ -63,7 +63,7 @@ public class BieService {
                 ASCCP.STATE,
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
-                ASCCP.RELEASE_ID,
+                ASCCP_RELEASE_MANIFEST.RELEASE_ID,
                 ASCCP.LAST_UPDATE_TIMESTAMP)
                 .from(ASCCP)
                 .join(ASCCP_RELEASE_MANIFEST)

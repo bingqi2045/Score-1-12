@@ -39,12 +39,13 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.REVISION_NUM,
                 Tables.ACC.REVISION_TRACKING_NUM,
                 Tables.ACC.REVISION_ACTION,
-                Tables.ACC.RELEASE_ID,
-                Tables.ACC.CURRENT_ACC_ID,
+                Tables.ACC_RELEASE_MANIFEST.RELEASE_ID,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),
-                Tables.MODULE.MODULE_.as("module")
-        ).from(Tables.ACC)
+                Tables.MODULE.MODULE_.as("module"))
+                .from(Tables.ACC)
+                .join(Tables.ACC_RELEASE_MANIFEST)
+                .on(Tables.ACC.ACC_ID.eq(Tables.ACC_RELEASE_MANIFEST.ACC_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ACC.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

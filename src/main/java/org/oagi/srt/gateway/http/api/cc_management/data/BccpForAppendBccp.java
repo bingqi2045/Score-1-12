@@ -9,7 +9,6 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 public class BccpForAppendBccp extends TrackableImpl {
 
     private long bccpId;
-    private Long currentBccpId;
     private String guid;
     private String propertyTerm;
     private String module;
@@ -20,11 +19,6 @@ public class BccpForAppendBccp extends TrackableImpl {
     @Override
     public long getId() {
         return bccpId;
-    }
-
-    @Override
-    public Long getCurrentId() {
-        return currentBccpId;
     }
 
 }

@@ -2,7 +2,7 @@ package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.SelectJoinStep;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCC;
 import org.oagi.srt.entity.jooq.Tables;
@@ -17,7 +17,7 @@ public class BCCRepository implements SrtRepository<BCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record> getSelectJoinStep() {
+    private SelectOnConditionStep<Record> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BCC.BCC_ID,
                 Tables.BCC.GUID,
@@ -40,11 +40,12 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.REVISION_NUM,
                 Tables.BCC.REVISION_TRACKING_NUM,
                 Tables.BCC.REVISION_ACTION,
-                Tables.BCC.RELEASE_ID,
-                Tables.BCC.CURRENT_BCC_ID,
+                Tables.BCC_RELEASE_MANIFEST.RELEASE_ID,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
-                Tables.BCC.IS_NILLABLE.as("nillable")
-        ).from(Tables.BCC);
+                Tables.BCC.IS_NILLABLE.as("nillable"))
+                .from(Tables.BCC)
+                .join(Tables.BCC_RELEASE_MANIFEST)
+                .on(Tables.BCC.BCC_ID.eq(Tables.BCC_RELEASE_MANIFEST.BCC_ID));
     }
 
     @Override
