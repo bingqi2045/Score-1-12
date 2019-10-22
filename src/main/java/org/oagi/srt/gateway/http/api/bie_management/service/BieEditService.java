@@ -146,7 +146,7 @@ public class BieEditService {
     }
 
     private long createAbieExtension(User user, long roleOfAccId, long releaseId) {
-        BieEditAcc eAcc = bieRepository.getAccByCurrentAccId(roleOfAccId, releaseId);
+        BieEditAcc eAcc = bieRepository.getAccByAccId(roleOfAccId, releaseId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
         if (ueAcc != null) {
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
