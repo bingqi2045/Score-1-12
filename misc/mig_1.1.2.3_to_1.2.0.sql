@@ -36,37 +36,6 @@ WHERE `abie`.`biz_ctx_id` IS NOT NULL;
 ALTER TABLE `ctx_scheme` ADD COLUMN `code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.' AFTER `ctx_category_id`;
 ALTER TABLE `ctx_scheme` ADD CONSTRAINT `ctx_scheme_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`);
 
--- Add `openapi30_map` column on `xbt` table.
-ALTER TABLE `xbt` ADD COLUMN `openapi30_map` varchar(500) AFTER `jbt_draft05_map`;
-UPDATE `xbt` SET `openapi30_map` = `jbt_draft05_map`;
-UPDATE `xbt` SET `openapi30_map` = '{"type":"string", "format":"date"}' WHERE `name` = 'date';
-UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format": "float"}' WHERE `name` = 'float';
-UPDATE `xbt` SET `openapi30_map` = '{"type":"integer"}' WHERE `name` = 'integer';
-UPDATE `xbt` SET `openapi30_map` = '{"type":"integer", "minimum":0, "exclusiveMinimum":false}' WHERE `name` = 'non negative integer';
-UPDATE `xbt` SET `openapi30_map` = '{"type":"integer", "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
-UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":false}' WHERE `name` = 'non negative integer';
-UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
-UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format":"double"}' WHERE `name` = 'double';
-
--- Add `text_content` table.
-DROP TABLE IF EXISTS `text_content`;
-CREATE TABLE `text_content` (
-  `text_content_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `text_content_type` varchar(20) NOT NULL DEFAULT 'json',
-  `text_content` text,
-  PRIMARY KEY (`text_content_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-ALTER TABLE `bbie`
-ADD COLUMN `example_text_content_id` bigint(20) unsigned DEFAULT NULL AFTER `definition`,
-ADD KEY `bbie_example_text_content_id_fk` (`example_text_content_id`),
-ADD CONSTRAINT `bbie_example_text_content_id_fk` FOREIGN KEY (`example_text_content_id`) REFERENCES `text_content` (`text_content_id`);
-
-ALTER TABLE `bbie_sc`
-ADD COLUMN `example_text_content_id` bigint(20) unsigned DEFAULT NULL AFTER `definition`,
-ADD KEY `bbie_sc_example_text_content_id_fk` (`example_text_content_id`),
-ADD CONSTRAINT `bbie_sc_example_text_content_id_fk` FOREIGN KEY (`example_text_content_id`) REFERENCES `text_content` (`text_content_id`);
-
 -- Add `last_update_timestamp` and `last_updated_by` columns on `top_level_abie` table.
 ALTER TABLE `top_level_abie`
 ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'The timestamp when among all related bie records was last updated.' AFTER `owner_user_id`,
