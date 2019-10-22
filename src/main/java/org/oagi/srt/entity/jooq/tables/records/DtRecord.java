@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1446537869;
+    private static final long serialVersionUID = -1459968194;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -379,69 +379,17 @@ The value of this column in the latest history record should be the same as that
     }
 
     /**
-     * Setter for <code>oagi.dt.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
-
-Not all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.
-
-Unpublished components cannot be released.
-
-This column is NULL for the current record.
-     */
-    public void setReleaseId(ULong value) {
-        set(24, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
-
-Not all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.
-
-Unpublished components cannot be released.
-
-This column is NULL for the current record.
-     */
-    public ULong getReleaseId() {
-        return (ULong) get(24);
-    }
-
-    /**
-     * Setter for <code>oagi.dt.current_bdt_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
-
-It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
-
-The value of this column for the current record should be left NULL.
-
-The column name is specific to BDT because, the column does not apply to CDT.
-     */
-    public void setCurrentBdtId(ULong value) {
-        set(25, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.current_bdt_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
-
-It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
-
-The value of this column for the current record should be left NULL.
-
-The column name is specific to BDT because, the column does not apply to CDT.
-     */
-    public ULong getCurrentBdtId() {
-        return (ULong) get(25);
-    }
-
-    /**
      * Setter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(26, value);
+        set(24, value);
     }
 
     /**
      * Getter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(26);
+        return (Byte) get(24);
     }
 
     // -------------------------------------------------------------------------
@@ -467,7 +415,7 @@ The column name is specific to BDT because, the column does not apply to CDT.
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, Integer state, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, ULong releaseId, ULong currentBdtId, Byte isDeprecated) {
+    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, Integer state, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -494,8 +442,6 @@ The column name is specific to BDT because, the column does not apply to CDT.
         set(21, revisionNum);
         set(22, revisionTrackingNum);
         set(23, revisionAction);
-        set(24, releaseId);
-        set(25, currentBdtId);
-        set(26, isDeprecated);
+        set(24, isDeprecated);
     }
 }

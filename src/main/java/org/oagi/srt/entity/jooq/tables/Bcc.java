@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = 2144382626;
+    private static final long serialVersionUID = -1816443941;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -175,26 +175,6 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<BccRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
-     * The column <code>oagi.bcc.release_id</code>. @deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).
-
-Not all component revisions have an associated RELEASE_ID because some revisions may never be released.
-
-Unpublished components cannot be released.
-
-This column is NULLl for the current record.
-     */
-    public final TableField<BccRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.");
-
-    /**
-     * The column <code>oagi.bcc.current_bcc_id</code>. @deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.
-
-It is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.
-
-The value of this column for the current record should be left NULL.
-     */
-    public final TableField<BccRecord, ULong> CURRENT_BCC_ID = createField(DSL.name("current_bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don't specify a foreign key in the data model. This is because when an entity is deleted the current record won't exist anymore.\n\nThe value of this column for the current record should be left NULL.");
-
-    /**
      * The column <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public final TableField<BccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
@@ -249,7 +229,7 @@ The value of this column for the current record should be left NULL.
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BCC_BCC_CREATED_BY_FK, Indexes.BCC_BCC_CURRENT_BCC_ID_FK, Indexes.BCC_BCC_FROM_ACC_ID_FK, Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATED_BY_FK, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCC_BCC_OWNER_USER_ID_FK, Indexes.BCC_BCC_RELEASE_ID_FK, Indexes.BCC_BCC_REVISION_IDX, Indexes.BCC_BCC_TO_BCCP_ID_FK, Indexes.BCC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BCC_BCC_CREATED_BY_FK, Indexes.BCC_BCC_FROM_ACC_ID_FK, Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATED_BY_FK, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCC_BCC_OWNER_USER_ID_FK, Indexes.BCC_BCC_REVISION_IDX, Indexes.BCC_BCC_TO_BCCP_ID_FK, Indexes.BCC_PRIMARY);
     }
 
     @Override
@@ -269,7 +249,7 @@ The value of this column for the current record should be left NULL.
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_RELEASE_ID_FK, Keys.BCC_CURRENT_BCC_ID_FK);
+        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK);
     }
 
     public Bccp bccp() {
@@ -290,14 +270,6 @@ The value of this column for the current record should be left NULL.
 
     public AppUser bccLastUpdatedByFk() {
         return new AppUser(this, Keys.BCC_LAST_UPDATED_BY_FK);
-    }
-
-    public Release release() {
-        return new Release(this, Keys.BCC_RELEASE_ID_FK);
-    }
-
-    public org.oagi.srt.entity.jooq.tables.Bcc bcc() {
-        return new org.oagi.srt.entity.jooq.tables.Bcc(this, Keys.BCC_CURRENT_BCC_ID_FK);
     }
 
     @Override

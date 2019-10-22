@@ -498,80 +498,80 @@ ALTER TABLE `xbt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
 CREATE INDEX `xbt_guid_idx` ON `xbt` (`guid`);
 CREATE INDEX `xbt_revision_idx` ON `xbt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `xbt_last_update_timestamp_desc_idx` ON `xbt` (`last_update_timestamp` DESC);
---
--- -- DROP `current_acc_id` column on `acc` table.
--- ALTER TABLE `acc` DROP FOREIGN KEY `acc_current_acc_id_fk`;
--- DROP INDEX `acc_current_acc_id_fk` ON `acc`;
--- ALTER TABLE `acc` DROP COLUMN `current_acc_id`;
---
--- -- DELETE `current` rows
--- DELETE FROM `acc` WHERE `release_id` IS NULL AND `revision_num` = 0;
---
--- -- DROP `release_id` column on `acc` table.
--- ALTER TABLE `acc` DROP FOREIGN KEY `acc_release_id_fk`;
--- DROP INDEX `acc_release_id_fk` ON `acc`;
--- ALTER TABLE `acc` DROP COLUMN `release_id`;
---
--- -- DROP `current_asccp_id` column on `asccp` table.
--- ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_current_asccp_id_fk`;
--- DROP INDEX `asccp_current_asccp_id_fk` ON `asccp`;
--- ALTER TABLE `asccp` DROP COLUMN `current_asccp_id`;
---
--- -- DELETE `current` rows
--- DELETE FROM `asccp` WHERE `release_id` IS NULL AND `revision_num` = 0;
---
--- -- DROP `release_id` column on `asccp` table.
--- ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_release_id_fk`;
--- DROP INDEX `asccp_release_id_fk` ON `asccp`;
--- ALTER TABLE `asccp` DROP COLUMN `release_id`;
---
--- -- DROP `current_bccp_id` column on `bccp` table.
--- ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_current_bccp_id_fk`;
--- DROP INDEX `bccp_current_bccp_id_fk` ON `bccp`;
--- ALTER TABLE `bccp` DROP COLUMN `current_bccp_id`;
---
--- -- DELETE `current` rows
--- DELETE FROM `bccp` WHERE `release_id` IS NULL AND `revision_num` = 0;
---
--- -- DROP `release_id` column on `bccp` table.
--- ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_release_id_fk`;
--- DROP INDEX `bccp_release_id_fk` ON `bccp`;
--- ALTER TABLE `bccp` DROP COLUMN `release_id`;
---
--- -- DROP `current_ascc_id` column on `ascc` table.
--- ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_current_ascc_id_fk`;
--- DROP INDEX `ascc_current_ascc_id_fk` ON `ascc`;
--- ALTER TABLE `ascc` DROP COLUMN `current_ascc_id`;
---
--- -- DELETE `current` rows on `ascc` table.
--- DELETE FROM `ascc` WHERE `release_id` IS NULL AND `revision_num` = 0;
---
--- -- DROP `release_id` column
--- ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_release_id_fk`;
--- DROP INDEX `ascc_release_id_fk` ON `ascc`;
--- ALTER TABLE `ascc` DROP COLUMN `release_id`;
---
--- -- DROP `current_bcc_id` column on `bcc` table.
--- ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_current_bcc_id_fk`;
--- DROP INDEX `bcc_current_bcc_id_fk` ON `bcc`;
--- ALTER TABLE `bcc` DROP COLUMN `current_bcc_id`;
---
--- -- DELETE `current` rows
--- DELETE FROM `bcc` WHERE `release_id` IS NULL AND `revision_num` = 0;
---
--- -- DROP `release_id` column on `bcc` table.
--- ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_release_id_fk`;
--- DROP INDEX `bcc_release_id_fk` ON `bcc`;
--- ALTER TABLE `bcc` DROP COLUMN `release_id`;
---
--- -- DROP `current_bdt_id` column on `dt` table.
--- ALTER TABLE `dt` DROP FOREIGN KEY `dt_current_bdt_id_fk`;
--- DROP INDEX `dt_current_bdt_id_fk` ON `dt`;
--- ALTER TABLE `dt` DROP COLUMN `current_bdt_id`;
---
--- -- DROP `release_id` column on `dt` table.
--- ALTER TABLE `dt` DROP FOREIGN KEY `dt_release_id_fk`;
--- DROP INDEX `dt_release_id_fk` ON `dt`;
--- ALTER TABLE `dt` DROP COLUMN `release_id`;
+
+-- DROP `current_acc_id` column on `acc` table.
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_current_acc_id_fk`;
+DROP INDEX `acc_current_acc_id_fk` ON `acc`;
+ALTER TABLE `acc` DROP COLUMN `current_acc_id`;
+
+-- DELETE `current` rows
+DELETE FROM `acc` WHERE `release_id` IS NULL AND `revision_num` = 0;
+
+-- DROP `release_id` column on `acc` table.
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_release_id_fk`;
+DROP INDEX `acc_release_id_fk` ON `acc`;
+ALTER TABLE `acc` DROP COLUMN `release_id`;
+
+-- DROP `current_asccp_id` column on `asccp` table.
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_current_asccp_id_fk`;
+DROP INDEX `asccp_current_asccp_id_fk` ON `asccp`;
+ALTER TABLE `asccp` DROP COLUMN `current_asccp_id`;
+
+-- DELETE `current` rows
+DELETE FROM `asccp` WHERE `release_id` IS NULL AND `revision_num` = 0;
+
+-- DROP `release_id` column on `asccp` table.
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_release_id_fk`;
+DROP INDEX `asccp_release_id_fk` ON `asccp`;
+ALTER TABLE `asccp` DROP COLUMN `release_id`;
+
+-- DROP `current_bccp_id` column on `bccp` table.
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_current_bccp_id_fk`;
+DROP INDEX `bccp_current_bccp_id_fk` ON `bccp`;
+ALTER TABLE `bccp` DROP COLUMN `current_bccp_id`;
+
+-- DELETE `current` rows
+DELETE FROM `bccp` WHERE `release_id` IS NULL AND `revision_num` = 0;
+
+-- DROP `release_id` column on `bccp` table.
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_release_id_fk`;
+DROP INDEX `bccp_release_id_fk` ON `bccp`;
+ALTER TABLE `bccp` DROP COLUMN `release_id`;
+
+-- DROP `current_ascc_id` column on `ascc` table.
+ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_current_ascc_id_fk`;
+DROP INDEX `ascc_current_ascc_id_fk` ON `ascc`;
+ALTER TABLE `ascc` DROP COLUMN `current_ascc_id`;
+
+-- DELETE `current` rows on `ascc` table.
+DELETE FROM `ascc` WHERE `release_id` IS NULL AND `revision_num` = 0;
+
+-- DROP `release_id` column
+ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_release_id_fk`;
+DROP INDEX `ascc_release_id_fk` ON `ascc`;
+ALTER TABLE `ascc` DROP COLUMN `release_id`;
+
+-- DROP `current_bcc_id` column on `bcc` table.
+ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_current_bcc_id_fk`;
+DROP INDEX `bcc_current_bcc_id_fk` ON `bcc`;
+ALTER TABLE `bcc` DROP COLUMN `current_bcc_id`;
+
+-- DELETE `current` rows
+DELETE FROM `bcc` WHERE `release_id` IS NULL AND `revision_num` = 0;
+
+-- DROP `release_id` column on `bcc` table.
+ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_release_id_fk`;
+DROP INDEX `bcc_release_id_fk` ON `bcc`;
+ALTER TABLE `bcc` DROP COLUMN `release_id`;
+
+-- DROP `current_bdt_id` column on `dt` table.
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_current_bdt_id_fk`;
+DROP INDEX `dt_current_bdt_id_fk` ON `dt`;
+ALTER TABLE `dt` DROP COLUMN `current_bdt_id`;
+
+-- DROP `release_id` column on `dt` table.
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_release_id_fk`;
+DROP INDEX `dt_release_id_fk` ON `dt`;
+ALTER TABLE `dt` DROP COLUMN `release_id`;
 
 SET FOREIGN_KEY_CHECKS = 1;
