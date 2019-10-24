@@ -10,6 +10,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -138,9 +139,12 @@ public class BieEditService {
         long releaseId = extension.getReleaseId();
         long roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
                 .from(Tables.ACC)
+                .join(Tables.ACC_RELEASE_MANIFEST)
+                .on(Tables.ACC_RELEASE_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
                 .where(and(
+                        Tables.ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
-                        Tables.ACC.REVISION_NUM.eq(0)))
+                        Tables.ACC.STATE.eq(CcState.Published.getValue())))
                 .fetchOneInto(Long.class);
         return createAbieExtension(user, roleOfAccId, releaseId);
     }

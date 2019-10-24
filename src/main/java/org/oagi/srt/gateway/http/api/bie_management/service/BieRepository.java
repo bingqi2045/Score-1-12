@@ -113,7 +113,7 @@ public class BieRepository {
                 .fetchOptionalInto(BccForBie.class).orElse(null);
     }
 
-    public BieEditBccp getBccp(long bccpId) {
+    public BieEditBccp getBccp(long bccpId, long releaseId) {
         return dslContext.select(
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.GUID,
@@ -125,7 +125,7 @@ public class BieRepository {
                 .from(Tables.BCCP)
                 .join(Tables.BCCP_RELEASE_MANIFEST)
                 .on(Tables.BCCP_RELEASE_MANIFEST.BCCP_ID.eq(Tables.BCCP.BCCP_ID))
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(Tables.BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 

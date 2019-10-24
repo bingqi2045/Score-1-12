@@ -6,10 +6,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.AccRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
@@ -57,8 +54,8 @@ public class ExtensionService {
 
 
     public CcAccNode getExtensionNode(User user, long extensionId, long releaseId) {
-        CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, null);
-        CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), null);
+        CcAccNode ueAcc = repository.getAccNodeByAccId(extensionId, releaseId);
+        CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), releaseId);
         CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(asccpNode.getAsccpId(), releaseId);
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
 
@@ -296,13 +293,13 @@ public class ExtensionService {
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
         AccRecord ueAcc = createACCForExtension(eAcc, user);
-        createACCHistoryForExtension(ueAcc, 1, releaseId);
+        createACCReleaseManifestForExtension(ueAcc, releaseId);
 
         AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
-        createASCCPHistoryForExtension(ueAsccp, 1, releaseId);
+        createASCCPReleaseManifestForExtension(ueAsccp, releaseId);
 
-        AsccRecord ueAscc = createASCCForExtension(eAcc, user, ueAcc, ueAsccp);
-        createASCCHistoryForExtension(ueAscc, 1, releaseId);
+        AsccRecord ueAscc = createASCCForExtension(ueAcc, ueAsccp, user);
+        createASCCReleaseManifestForExtension(ueAscc, releaseId);
 
         return ueAcc.getAccId().longValue();
     }
@@ -338,44 +335,21 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.Editing.getValue(),
-                0,
-                0,
-                null
+                1,
+                1,
+                (byte) 1
         ).returning().fetchOne();
     }
 
-    private void createACCHistoryForExtension(AccRecord ueAcc, int revisionNum, long releaseId) {
-        dslContext.insertInto(Tables.ACC,
-                Tables.ACC.GUID,
-                Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.DEN,
-                Tables.ACC.DEFINITION,
-                Tables.ACC.OAGIS_COMPONENT_TYPE,
-                Tables.ACC.CREATED_BY,
-                Tables.ACC.LAST_UPDATED_BY,
-                Tables.ACC.OWNER_USER_ID,
-                Tables.ACC.CREATION_TIMESTAMP,
-                Tables.ACC.LAST_UPDATE_TIMESTAMP,
-                Tables.ACC.STATE,
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.REVISION_ACTION,
-                Tables.ACC.ACC_ID).values(
-                ueAcc.getGuid(),
-                ueAcc.getObjectClassTerm(),
-                ueAcc.getDen(),
-                ueAcc.getDefinition(),
-                ueAcc.getOagisComponentType(),
-                ueAcc.getCreatedBy(),
-                ueAcc.getLastUpdatedBy(),
-                ueAcc.getOwnerUserId(),
-                ueAcc.getCreationTimestamp(),
-                ueAcc.getLastUpdateTimestamp(),
-                ueAcc.getState(),
-                revisionNum,
-                1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
-                ueAcc.getAccId()
+    private void createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
+        dslContext.insertInto(ACC_RELEASE_MANIFEST,
+                ACC_RELEASE_MANIFEST.ACC_ID,
+                ACC_RELEASE_MANIFEST.BASED_ACC_ID,
+                ACC_RELEASE_MANIFEST.RELEASE_ID
+                ).values(
+                ueAcc.getAccId(),
+                ueAcc.getBasedAccId(),
+                ULong.valueOf(releaseId)
         ).execute();
     }
 
@@ -406,63 +380,34 @@ public class ExtensionService {
                 ueAcc.getAccId(),
                 ueAcc.getObjectClassTerm() + ". " + ueAcc.getObjectClassTerm(),
                 "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".",
-                Byte.valueOf((byte) 0),
-                Byte.valueOf((byte) 0),
-                Byte.valueOf((byte) 0),
+                (byte) 0,
+                (byte) 0,
+                (byte) 0,
                 userId,
                 userId,
                 userId,
                 timestamp,
                 timestamp,
                 CcState.Published.getValue(),
-                0,
-                0,
-                null
+                1,
+                1,
+                (byte) 1
         ).returning().fetchOne();
     }
 
-    private void createASCCPHistoryForExtension(AsccpRecord ueAsccp, int revisionNum, long releaseId) {
-        dslContext.insertInto(Tables.ASCCP,
-                Tables.ASCCP.GUID,
-                Tables.ASCCP.PROPERTY_TERM,
-                Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.DEN,
-                Tables.ASCCP.DEFINITION,
-                Tables.ASCCP.REUSABLE_INDICATOR,
-                Tables.ASCCP.IS_DEPRECATED,
-                Tables.ASCCP.IS_NILLABLE,
-                Tables.ASCCP.CREATED_BY,
-                Tables.ASCCP.LAST_UPDATED_BY,
-                Tables.ASCCP.OWNER_USER_ID,
-                Tables.ASCCP.CREATION_TIMESTAMP,
-                Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCCP.STATE,
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.REVISION_ACTION,
-                Tables.ASCCP.ASCCP_ID).values(
-                ueAsccp.getGuid(),
-                ueAsccp.getPropertyTerm(),
+    private void createASCCPReleaseManifestForExtension(AsccpRecord ueAsccp, long releaseId) {
+        dslContext.insertInto(ASCCP_RELEASE_MANIFEST,
+                ASCCP_RELEASE_MANIFEST.ASCCP_ID,
+                ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID,
+                ASCCP_RELEASE_MANIFEST.RELEASE_ID
+        ).values(
+                ueAsccp.getAsccpId(),
                 ueAsccp.getRoleOfAccId(),
-                ueAsccp.getDen(),
-                ueAsccp.getDefinition(),
-                ueAsccp.getReusableIndicator(),
-                ueAsccp.getIsDeprecated(),
-                ueAsccp.getIsNillable(),
-                ueAsccp.getCreatedBy(),
-                ueAsccp.getLastUpdatedBy(),
-                ueAsccp.getOwnerUserId(),
-                ueAsccp.getCreationTimestamp(),
-                ueAsccp.getLastUpdateTimestamp(),
-                ueAsccp.getState(),
-                revisionNum,
-                1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
-                ueAsccp.getAsccpId()
+                ULong.valueOf(releaseId)
         ).execute();
     }
 
-    private AsccRecord createASCCForExtension(ACC eAcc, User user, AccRecord ueAcc, AsccpRecord ueAsccp) {
+    private AsccRecord createASCCForExtension(AccRecord ueAcc, AsccpRecord ueAsccp, User user) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -488,60 +433,33 @@ public class ExtensionService {
                 0,
                 1,
                 1,
-                ULong.valueOf(eAcc.getAccId()),
+                ueAcc.getAccId(),
                 ueAsccp.getAsccpId(),
-                eAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
-                Byte.valueOf((byte) 0),
+                ueAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
+                (byte) 0,
                 userId,
                 userId,
                 userId,
                 timestamp,
                 timestamp,
                 CcState.Published.getValue(),
-                0,
-                0,
-                null
+                1,
+                1,
+                (byte) 1
         ).returning().fetchOne();
     }
 
-    private void createASCCHistoryForExtension(AsccRecord ueAscc, int revisionNum, long releaseId) {
-        dslContext.insertInto(Tables.ASCC,
-                Tables.ASCC.GUID,
-                Tables.ASCC.CARDINALITY_MIN,
-                Tables.ASCC.CARDINALITY_MAX,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.FROM_ACC_ID,
-                Tables.ASCC.TO_ASCCP_ID,
-                Tables.ASCC.DEN,
-                Tables.ASCC.IS_DEPRECATED,
-                Tables.ASCC.CREATED_BY,
-                Tables.ASCC.LAST_UPDATED_BY,
-                Tables.ASCC.OWNER_USER_ID,
-                Tables.ASCC.CREATION_TIMESTAMP,
-                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION,
-                Tables.ASCC.ASCC_ID).values(
-                ueAscc.getGuid(),
-                ueAscc.getCardinalityMin(),
-                ueAscc.getCardinalityMax(),
-                ueAscc.getSeqKey(),
+    private void createASCCReleaseManifestForExtension(AsccRecord ueAscc, long releaseId) {
+        dslContext.insertInto(ASCC_RELEASE_MANIFEST,
+                ASCC_RELEASE_MANIFEST.ASCC_ID,
+                ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
+                ASCC_RELEASE_MANIFEST.TO_ASCCP_ID,
+                ASCC_RELEASE_MANIFEST.RELEASE_ID
+        ).values(
+                ueAscc.getAsccId(),
                 ueAscc.getFromAccId(),
                 ueAscc.getToAsccpId(),
-                ueAscc.getDen(),
-                ueAscc.getIsDeprecated(),
-                ueAscc.getCreatedBy(),
-                ueAscc.getLastUpdatedBy(),
-                ueAscc.getOwnerUserId(),
-                ueAscc.getCreationTimestamp(),
-                ueAscc.getLastUpdateTimestamp(),
-                ueAscc.getState(),
-                revisionNum,
-                1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
-                ueAscc.getAsccId()
+                ULong.valueOf(releaseId)
         ).execute();
     }
 
@@ -644,8 +562,7 @@ public class ExtensionService {
                 Tables.ASCC.STATE,
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION,
-                Tables.ASCC.ASCC_ID).values(
+                Tables.ASCC.REVISION_ACTION).values(
                 ascc.getGuid(),
                 ascc.getCardinalityMin(),
                 ascc.getCardinalityMax(),
@@ -662,8 +579,7 @@ public class ExtensionService {
                 ascc.getState(),
                 revisionNum,
                 1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
-                ascc.getAsccId()
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
         ).execute();
     }
 
@@ -769,8 +685,7 @@ public class ExtensionService {
                 Tables.BCC.STATE,
                 Tables.BCC.REVISION_NUM,
                 Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.REVISION_ACTION,
-                Tables.BCC.BCC_ID).values(
+                Tables.BCC.REVISION_ACTION).values(
                 bcc.getGuid(),
                 bcc.getCardinalityMin(),
                 bcc.getCardinalityMax(),
@@ -788,8 +703,7 @@ public class ExtensionService {
                 bcc.getState(),
                 revisionNum,
                 1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
-                bcc.getBccId()
+                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
         ).execute();
     }
 

@@ -472,7 +472,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     bbiepNode.getBbieId(), true, bbiepNode.getTopLevelAbieId()) > 0;
 
         } else {
-            BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId());
+            BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId(), bbiepNode.getReleaseId());
             return repository.getCountDtScByOwnerDtId(bccp.getBdtId()) > 0;
         }
     }
@@ -483,13 +483,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BieEditBccp bccp;
         if (bbiepId > 0L) {
             BieEditBbiep bbiep = repository.getBbiep(bbiepId, topLevelAbieId);
-            bccp = repository.getBccp(bbiep.getBasedBccpId());
+            bccp = repository.getBccp(bbiep.getBasedBccpId(), bbiepNode.getReleaseId());
         } else {
             if (hideUnused) {
                 return Collections.emptyList();
             }
 
-            bccp = repository.getBccp(bbiepNode.getBccpId());
+            bccp = repository.getBccp(bbiepNode.getBccpId(), bbiepNode.getReleaseId());
         }
 
         List<BieEditNode> children = new ArrayList();

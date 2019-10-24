@@ -45,7 +45,7 @@ public class CcNodeRepository {
                 ACC.ACC_ID,
                 ACC.GUID,
                 ACC.DEN.as("name"),
-                ACC.BASED_ACC_ID,
+                ACC_RELEASE_MANIFEST.BASED_ACC_ID,
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE.as("raw_state"),
@@ -59,7 +59,7 @@ public class CcNodeRepository {
 
     public CcAccNode getAccNodeByAccId(long accId, Long releaseId) {
         CcAccNode accNode = getSelectJoinStepForAccNode()
-                .where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC.ACC_ID.eq(ULong.valueOf(accId)).and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(accNode, releaseId);
     }
@@ -71,18 +71,10 @@ public class CcNodeRepository {
         return maxId;
     }
 
-    public CcAccNode getAccNodeByCurrentAccId(long currentAccId, Long releaseId) {
-        List<CcAccNode> accNodes = getSelectJoinStepForAccNode()
-                .where(ACC.ACC_ID.eq(ULong.valueOf(currentAccId)))
-                .fetchInto(CcAccNode.class);
-
-        return (accNodes.isEmpty()) ? null : accNodes.get(accNodes.size() - 1);
-    }
-
     public CcAccNode getAccNodeFromAsccByAsccpId(long toAsccpId, Long releaseId) {
         CcAsccNode asccNode = dslContext.select(
                 ASCC.ASCC_ID,
-                ASCC.FROM_ACC_ID,
+                ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
                 ASCC.SEQ_KEY,
                 ASCC.REVISION_NUM,
                 ASCC.REVISION_TRACKING_NUM,
@@ -90,10 +82,10 @@ public class CcNodeRepository {
                 .from(ASCC)
                 .join(ASCC_RELEASE_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
-                .where(ASCC.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)))
+                .where(ASCC.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)).and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(CcAsccNode.class);
 
-        return getAccNodeByCurrentAccId(asccNode.getFromAccId(), releaseId);
+        return getAccNodeByAccId(asccNode.getFromAccId(), releaseId);
     }
 
     public void createAscc(User user, long accId, long releaseId, long asccId) {
@@ -302,7 +294,7 @@ public class CcNodeRepository {
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
-                ASCCP.ROLE_OF_ACC_ID,
+                ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID,
                 ASCCP.STATE.as("raw_state"),
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
@@ -310,28 +302,7 @@ public class CcNodeRepository {
                 .from(ASCCP)
                 .join(ASCCP_RELEASE_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
-                .fetchOneInto(CcAsccpNode.class);
-
-        asccpNode.setHasChild(true); // role_of_acc_id must not be null.
-
-        return asccpNode;
-    }
-
-    public CcAsccpNode getAsccpNodeByCurrentAsccpId(long currentAsccpId, Long releaseId) {
-        CcAsccpNode asccpNode = dslContext.select(
-                ASCCP.ASCCP_ID,
-                ASCCP.GUID,
-                ASCCP.PROPERTY_TERM.as("name"),
-                ASCCP.ROLE_OF_ACC_ID,
-                ASCCP.STATE.as("raw_state"),
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
-                ASCCP_RELEASE_MANIFEST.RELEASE_ID)
-                .from(ASCCP)
-                .join(ASCCP_RELEASE_MANIFEST)
-                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(currentAsccpId)))
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)).and(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(CcAsccpNode.class);
 
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
@@ -406,7 +377,6 @@ public class CcNodeRepository {
     public CcBccpNode getBccpNodeByBccpId(long bccpId, Long releaseId) {
         CcBccpNode bccpNode = dslContext.select(
                 BCCP.BCCP_ID,
-                BCCP.BCCP_ID,
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
                 BCCP.BDT_ID,
@@ -417,7 +387,7 @@ public class CcNodeRepository {
                 .from(BCCP)
                 .join(BCCP_RELEASE_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(CcBccpNode.class);
 
         bccpNode.setHasChild(hasChild(bccpNode));
@@ -471,31 +441,22 @@ public class CcNodeRepository {
         if (basedAccId != null) {
             Long releaseId = accNode.getReleaseId();
             CcAccNode basedAccNode;
-            if (releaseId == null) {
-                basedAccNode = getAccNodeByAccId(basedAccId, releaseId);
-            } else {
-                basedAccNode = getAccNodeByCurrentAccId(basedAccId, releaseId);
-            }
+
+            basedAccNode = getAccNodeByAccId(basedAccId, releaseId);
+
             descendants.add(basedAccNode);
         }
 
         Long releaseId = accNode.getReleaseId();
         long fromAccId;
-        if (releaseId == null) {
-            fromAccId = accNode.getAccId();
-        } else {
-            fromAccId = dslContext.select(ACC.ACC_ID).from(ACC)
-                    .where(ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
-                    .fetchOneInto(Long.class);
-        }
+        fromAccId = accNode.getAccId();
 
-        boolean isUserExtensionGroup = accNode.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue();
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
         seqKeySupportableList.addAll(
-                getAsccpNodes(user, fromAccId, (isUserExtensionGroup) ? null : releaseId)
+                getAsccpNodes(user, fromAccId, releaseId)
         );
         seqKeySupportableList.addAll(
-                getBccpNodes(user, fromAccId, (isUserExtensionGroup) ? null : releaseId)
+                getBccpNodes(user, fromAccId, releaseId)
         );
         seqKeySupportableList.sort(Comparator.comparingInt(SeqKeySupportable::getSeqKey));
 
@@ -505,7 +466,7 @@ public class CcNodeRepository {
                 CcAsccpNode asccpNode = (CcAsccpNode) e;
                 OagisComponentType oagisComponentType = getOagisComponentTypeByAccId(asccpNode.getRoleOfAccId());
                 if (oagisComponentType.equals(OagisComponentType.UserExtensionGroup)) {
-                    CcAccNode uegAccNode = getAccNodeByCurrentAccId(asccpNode.getRoleOfAccId(), releaseId);
+                    CcAccNode uegAccNode = getAccNodeByAccId(asccpNode.getRoleOfAccId(), releaseId);
                     List<? extends CcNode> uegChildren = getDescendants(user, uegAccNode);
                     for (CcNode uegChild : uegChildren) {
                         ((SeqKeySupportable) uegChild).setSeqKey(seqKey++);
@@ -535,7 +496,6 @@ public class CcNodeRepository {
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
-                ASCC.ASCC_ID,
                 ASCC.GUID,
                 ASCC.TO_ASCCP_ID,
                 ASCC.SEQ_KEY,
@@ -546,7 +506,7 @@ public class CcNodeRepository {
                 .from(ASCC)
                 .join(ASCC_RELEASE_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
-                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                .where(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)).and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
@@ -556,11 +516,8 @@ public class CcNodeRepository {
         List<CcAsccpNode> asccpNodes = new ArrayList();
         for (CcAsccNode asccNode : asccNodes) {
             CcAsccpNode asccpNode;
-            if (releaseId == null) {
-                asccpNode = getAsccpNodeByAsccpId(asccNode.getToAsccpId(), releaseId);
-            } else {
-                asccpNode = getAsccpNodeByCurrentAsccpId(asccNode.getToAsccpId(), releaseId);
-            }
+
+            asccpNode = getAsccpNodeByAsccpId(asccNode.getToAsccpId(), releaseId);
 
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
@@ -574,7 +531,7 @@ public class CcNodeRepository {
                 BCC.BCC_ID,
                 BCC.BCC_ID,
                 BCC.GUID,
-                BCC.TO_BCCP_ID,
+                BCC_RELEASE_MANIFEST.TO_BCCP_ID,
                 BCC.SEQ_KEY,
                 BCC.ENTITY_TYPE,
                 BCC.STATE.as("raw_state"),
@@ -584,7 +541,7 @@ public class CcNodeRepository {
                 .from(BCC)
                 .join(BCC_RELEASE_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID))
-                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
@@ -593,11 +550,7 @@ public class CcNodeRepository {
 
         return bccNodes.stream().map(bccNode -> {
             CcBccpNode bccpNode;
-            if (releaseId == null) {
-                bccpNode = getBccpNodeByBccpId(bccNode.getToBccpId(), releaseId);
-            } else {
-                bccpNode = getBccpNodeByCurrentBccpId(bccNode.getToBccpId(), releaseId);
-            }
+            bccpNode = getBccpNodeByBccpId(bccNode.getToBccpId(), releaseId);
             bccpNode.setSeqKey(bccNode.getSeqKey());
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());
@@ -613,11 +566,8 @@ public class CcNodeRepository {
                 .fetchOneInto(Long.class);
 
         Long releaseId = asccpNode.getReleaseId();
-        if (releaseId == null) {
-            return Arrays.asList(getAccNodeByAccId(roleOfAccId, releaseId));
-        } else {
-            return Arrays.asList(getAccNodeByCurrentAccId(roleOfAccId, releaseId));
-        }
+
+        return Arrays.asList(getAccNodeByAccId(roleOfAccId, releaseId));
     }
 
     public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
