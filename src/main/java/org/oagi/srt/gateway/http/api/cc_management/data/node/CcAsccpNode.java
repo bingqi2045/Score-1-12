@@ -10,10 +10,10 @@ public class CcAsccpNode extends CcNode implements SeqKeySupportable {
 
     private String type = "asccp";
 
-    private long asccId;
-    private int seqKey;
     private long asccpId;
+    private long asccId;
     private int roleOfAccId;
+    private int seqKey;
 
     @Override
     public long getId() {

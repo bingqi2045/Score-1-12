@@ -73,18 +73,6 @@ public class CcNodeController {
         service.updateAsccp(user, ccAsccpNodeDetail, id);
     }
 
-    @RequestMapping(value = "/core_component/asccp_id", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public long getLastAsccp() {
-        return service.getLastAsccp().value1().longValue();
-    }
-
-    @RequestMapping(value = "/core_component/bccp_id", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public long getLastBccp() {
-        return service.getLastBccp().value1().longValue();
-    }
-
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
@@ -96,26 +84,22 @@ public class CcNodeController {
         return service.createAcc(user);
     }
 
-    @RequestMapping(value = "/core_component/node/children/{type}/{releaseId:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/children/{type}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<? extends CcNode> getNodeChildren(@AuthenticationPrincipal User user,
                                                   @PathVariable("type") String type,
-                                                  @PathVariable("releaseId") long releaseId,
                                                   @RequestParam("data") String data) {
 
         switch (type) {
             case "acc":
                 CcAccNode accNode = convertValue(data, CcAccNode.class);
-                accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getDescendants(user, accNode);
             case "asccp":
                 CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
-                asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getDescendants(user, asccpNode);
             case "bccp":
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
-                bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getDescendants(user, bccpNode);
             default:
                 throw new UnsupportedOperationException();
@@ -134,29 +118,24 @@ public class CcNodeController {
         return objectMapper.convertValue(params, clazz);
     }
 
-    @RequestMapping(value = "/core_component/node/detail/{type}/{releaseId:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/detail/{type}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
                                       @PathVariable("type") String type,
-                                      @PathVariable("releaseId") long releaseId,
                                       @RequestParam("data") String data) {
         switch (type) {
             case "acc":
                 CcAccNode accNode = convertValue(data, CcAccNode.class);
-                accNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getAccNodeDetail(user, accNode);
             case "asccp":
                 CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
-                asccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getAsccpNodeDetail(user, asccpNode);
             case "bccp":
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
-                bccpNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getBccpNodeDetail(user, bccpNode);
             case "bdt_sc":
                 CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
-                bdtScNode.setReleaseId((releaseId == 0L) ? null : releaseId);
                 return service.getBdtScNodeDetail(user, bdtScNode);
             default:
                 throw new UnsupportedOperationException();
