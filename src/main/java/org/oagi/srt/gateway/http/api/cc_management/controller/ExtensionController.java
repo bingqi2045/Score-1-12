@@ -25,32 +25,30 @@ public class ExtensionController {
     @Autowired
     private DSLContext dslContext;
 
-    @RequestMapping(value = "/core_component/node/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/extension/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
-                            @PathVariable("releaseId") long releaseId,
-                            @PathVariable("id") long extensionId) {
-        return service.getExtensionNode(user, extensionId, releaseId);
+                            @PathVariable("manifestId") long manifestId) {
+        return service.getExtensionNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
+    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
-                                            @PathVariable("releaseId") long releaseId,
-                                            @PathVariable("id") long extensionId,
+                                            @PathVariable("manifestId") long manifestId,
                                             @RequestBody CcActionRequest actionRequest) {
 
         switch (actionRequest.getAction()) {
             case "append":
                 switch (actionRequest.getType()) {
                     case "asccp":
-                        service.appendAsccp(user, extensionId, releaseId, actionRequest.getId());
+                        service.appendAsccp(user, manifestId, actionRequest.getManifestId());
                         break;
 
                     case "bccp":
-                        service.appendBccp(user, extensionId, releaseId, actionRequest.getId());
+                        service.appendBccp(user, manifestId, actionRequest.getManifestId());
                         break;
                 }
 
@@ -59,11 +57,11 @@ public class ExtensionController {
             case "discard":
                 switch (actionRequest.getType()) {
                     case "ascc":
-                        service.discardAscc(user, extensionId, releaseId, actionRequest.getId());
+                        service.discardAscc(user, manifestId, actionRequest.getManifestId());
                         break;
 
                     case "bcc":
-                        service.discardBcc(user, extensionId, releaseId, actionRequest.getId());
+                        service.discardBcc(user, manifestId, actionRequest.getManifestId());
                         break;
                 }
 
@@ -73,28 +71,25 @@ public class ExtensionController {
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/state",
+    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal User user,
-                                               @PathVariable("releaseId") long releaseId,
-                                               @PathVariable("id") long extensionId,
+                                               @PathVariable("manifestId") long manifestId,
                                                @RequestBody Map<String, Object> body) {
         CcState state = CcState.valueOf((String) body.get("state"));
-        service.updateState(user, extensionId, releaseId, state);
+        service.updateState(user, manifestId, state);
 
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/detail",
+    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/detail",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal User user,
-                                                 @PathVariable("releaseId") long releaseId,
-                                                 @PathVariable("id") long extensionId,
+                                                 @PathVariable("manifestId") long manifestId,
                                                  @RequestBody ExtensionUpdateRequest request) {
-        request.setExtensionId(extensionId);
-        request.setReleaseId(releaseId);
+        request.setManifestId(manifestId);
         return service.updateDetails(user, request);
     }
 }

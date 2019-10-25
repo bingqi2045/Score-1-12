@@ -1,6 +1,9 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
-import org.oagi.srt.gateway.http.api.cc_management.data.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -85,33 +88,14 @@ public class CcListController {
         return service.getCcList(request);
     }
 
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/asccp_list",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<AsccpForAppendAsccp> getAsccpForAppendAsccList(@AuthenticationPrincipal User user,
-                                                               @PathVariable("releaseId") long releaseId,
-                                                               @PathVariable("id") long extensionId) {
-        return service.getAsccpForAppendAsccpList(user, releaseId, extensionId);
-    }
-
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/bccp_list",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<BccpForAppendBccp> getBccpForAppendBccList(@AuthenticationPrincipal User user,
-                                                           @PathVariable("releaseId") long releaseId,
-                                                           @PathVariable("id") long extensionId) {
-        return service.getBccpForAppendBccpList(user, releaseId, extensionId);
-    }
-
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/transfer_ownership",
+    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/transfer_ownership",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
-                                            @PathVariable("releaseId") long releaseId,
-                                            @PathVariable("id") long extensionId,
+                                            @PathVariable("manifestId") long manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
-        extensionService.transferOwnership(user, releaseId, extensionId, targetLoginId);
+        extensionService.transferOwnership(user, manifestId, targetLoginId);
         return ResponseEntity.noContent().build();
     }
 }

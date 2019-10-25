@@ -78,7 +78,8 @@ public class CcListRepository {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(ACC.ACC_ID,
+        return dslContext.select(
+                ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID,
                 ACC.GUID,
                 ACC.DEN,
                 ACC.DEFINITION,
@@ -107,7 +108,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ACC");
-                    ccList.setId(row.getValue(ACC.ACC_ID).longValue());
+                    ccList.setManifestId(row.getValue(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(ACC.GUID));
                     ccList.setDen(row.getValue(ACC.DEN));
                     ccList.setDefinition(row.getValue(ACC.DEFINITION));
@@ -166,7 +167,8 @@ public class CcListRepository {
             conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(ASCC.ASCC_ID,
+        return dslContext.select(
+                ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID,
                 ASCC.GUID,
                 ASCC.DEN,
                 ASCC.DEFINITION,
@@ -191,7 +193,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCC");
-                    ccList.setId(row.getValue(ASCC.ASCC_ID).longValue());
+                    ccList.setManifestId(row.getValue(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(ASCC.GUID));
                     ccList.setDen(row.getValue(ASCC.DEN));
                     ccList.setDefinition(row.getValue(ASCC.DEFINITION));
@@ -246,7 +248,8 @@ public class CcListRepository {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(BCC.BCC_ID,
+        return dslContext.select(
+                BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID,
                 BCC.GUID,
                 BCC.DEN,
                 BCC.DEFINITION,
@@ -271,7 +274,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCC");
-                    ccList.setId(row.getValue(BCC.BCC_ID).longValue());
+                    ccList.setManifestId(row.getValue(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(BCC.GUID));
                     ccList.setDen(row.getValue(BCC.DEN));
                     ccList.setDefinition(row.getValue(BCC.DEFINITION));
@@ -328,7 +331,8 @@ public class CcListRepository {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(ASCCP.ASCCP_ID,
+        return dslContext.select(
+                ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID,
                 ASCCP.GUID,
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
@@ -356,7 +360,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCCP");
-                    ccList.setId(row.getValue(ASCCP.ASCCP_ID).longValue());
+                    ccList.setManifestId(row.getValue(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(ASCCP.GUID));
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(row.getValue(ASCCP.DEFINITION));
@@ -409,7 +413,8 @@ public class CcListRepository {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(BCCP.BCCP_ID,
+        return dslContext.select(
+                BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID,
                 BCCP.GUID,
                 BCCP.DEN,
                 BCCP.DEFINITION,
@@ -437,7 +442,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCCP");
-                    ccList.setId(row.getValue(BCCP.BCCP_ID).longValue());
+                    ccList.setManifestId(row.getValue(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(BCCP.GUID));
                     ccList.setDen(row.getValue(BCCP.DEN));
                     ccList.setDefinition(row.getValue(BCCP.DEFINITION));
@@ -490,7 +495,8 @@ public class CcListRepository {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
-        return dslContext.select(DT.DT_ID,
+        return dslContext.select(
+                DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID,
                 DT.GUID,
                 DT.DEN,
                 DT.DEFINITION,
@@ -518,7 +524,7 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BDT");
-                    ccList.setId(row.getValue(DT.DT_ID).longValue());
+                    ccList.setManifestId(row.getValue(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(DT.GUID));
                     ccList.setDen(row.getValue(DT.DEN));
                     ccList.setDefinition(row.getValue(DT.DEFINITION));

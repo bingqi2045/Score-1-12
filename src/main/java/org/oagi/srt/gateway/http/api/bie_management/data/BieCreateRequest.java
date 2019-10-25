@@ -7,8 +7,7 @@ import java.util.List;
 @Data
 public class BieCreateRequest {
 
-    private long asccpId;
-    private long releaseId;
+    private long asccpManifestId;
     private List<Long> bizCtxIds;
 
 }

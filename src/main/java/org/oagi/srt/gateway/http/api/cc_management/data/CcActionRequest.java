@@ -6,5 +6,5 @@ import lombok.Data;
 public class CcActionRequest {
     private String action;
     private String type;
-    private Long id;
+    private Long manifestId;
 }

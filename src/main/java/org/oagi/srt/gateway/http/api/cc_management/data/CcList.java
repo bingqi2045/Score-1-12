@@ -9,7 +9,7 @@ import java.util.Date;
 public class CcList {
 
     private String type;
-    private long id;
+    private long manifestId;
     private String guid;
     private String den;
     private String definition;

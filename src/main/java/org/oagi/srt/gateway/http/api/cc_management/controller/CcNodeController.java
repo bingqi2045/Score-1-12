@@ -24,35 +24,34 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/node/{type}/{releaseId:[\\d]+}/{id:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
-                            @PathVariable("releaseId") long releaseId,
-                            @PathVariable("id") long ccId) {
+                            @PathVariable("manifestId") long manifestId) {
         switch (type) {
             case "acc":
-                return getAccNode(user, ccId, (releaseId == 0L) ? null : releaseId);
+                return getAccNode(user, manifestId);
             case "asccp":
-                return getAsccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
+                return getAsccpNode(user, manifestId);
             case "bccp":
-                return getBccpNode(user, ccId, (releaseId == 0L) ? null : releaseId);
+                return getBccpNode(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
         }
     }
 
-    private CcAccNode getAccNode(User user, long accId, Long releaseId) {
-        return service.getAccNode(user, accId, releaseId);
+    private CcAccNode getAccNode(User user, long manifestId) {
+        return service.getAccNode(user, manifestId);
     }
 
-    private CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
-        return service.getAsccpNode(user, asccpId, releaseId);
+    private CcAsccpNode getAsccpNode(User user, long manifestId) {
+        return service.getAsccpNode(user, manifestId);
     }
 
-    private CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
-        return service.getBccpNode(user, bccpId, releaseId);
+    private CcBccpNode getBccpNode(User user, long manifestId) {
+        return service.getBccpNode(user, manifestId);
     }
 
     @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,
@@ -171,21 +170,20 @@ public class CcNodeController {
         return service.updateDetails(user, request);
     }
 
-    @RequestMapping(value = "/core_component/ascc/{releaseId:[\\d]+}/{id:[\\d]+}",
+    @RequestMapping(value = "/core_component/ascc/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doAsccAction(@AuthenticationPrincipal User user,
-                                       @PathVariable("releaseId") long releaseId,
-                                       @PathVariable("id") long accId,
+                                       @PathVariable("manifestId") long manifestId,
                                        @RequestBody CcActionRequest actionRequest) {
 
         switch (actionRequest.getAction()) {
             case "append":
-                service.appendAscc(user, accId, releaseId, actionRequest.getId());
+                service.appendAscc(user, manifestId, actionRequest.getManifestId());
                 break;
 
             case "discard":
-                service.discardAscc(user, accId, releaseId, actionRequest.getId());
+                service.discardAscc(user, manifestId, actionRequest.getManifestId());
                 break;
         }
 

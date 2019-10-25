@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import org.jooq.Record1;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -15,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.ACC_RELEASE_MANIFEST;
+
 @Service
 @Transactional(readOnly = true)
 public class CcNodeService {
@@ -25,16 +29,18 @@ public class CcNodeService {
     @Autowired
     private SessionService sessionService;
 
-    public CcAccNode getAccNode(User user, long accId, Long releaseId) {
-        return repository.getAccNodeByAccId(accId, releaseId);
+    public CcAccNode getAccNode(User user, long manifestId) {
+        AccReleaseManifestRecord accReleaseManifestRecord =
+                repository.accReleaseManifestRecord(manifestId);
+        return repository.getAccNodeByAccId(accReleaseManifestRecord);
     }
 
-    public CcAsccpNode getAsccpNode(User user, long asccpId, Long releaseId) {
-        return repository.getAsccpNodeByAsccpId(asccpId, releaseId);
+    public CcAsccpNode getAsccpNode(User user, long manifestId) {
+        return repository.getAsccpNodeByAsccpId(manifestId);
     }
 
-    public CcBccpNode getBccpNode(User user, long bccpId, Long releaseId) {
-        return repository.getBccpNodeByBccpId(bccpId, releaseId);
+    public CcBccpNode getBccpNode(User user, long manifestId) {
+        return repository.getBccpNodeByBccpId(manifestId);
     }
 
     public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
@@ -73,7 +79,7 @@ public class CcNodeService {
     public CcAccNode createAcc(User user) {
         long userId = sessionService.userId(user);
         AccRecord accRecord = repository.createAcc(userId);
-        return getAccNode(user, accRecord.getAccId().longValue(), 0L);
+        return getAccNode(user, accRecord.getAccId().longValue());
     }
 
     @Transactional
@@ -87,12 +93,12 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void appendAscc(User user, long accId, long releaseId, long asccId) {
-        repository.createAscc(user, accId, releaseId, asccId);
+    public void appendAscc(User user, long accManifestId, long asccManifestId) {
+        repository.createAscc(user, accManifestId, asccManifestId);
     }
 
     @Transactional
-    public void discardAscc(User user, long extensionId, Long releaseId, long accId) {
+    public void discardAscc(User user, long accManifestId, long asccManifestId) {
         // repository method discard specific id
     }
 

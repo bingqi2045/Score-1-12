@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
-import org.oagi.srt.gateway.http.api.cc_management.data.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -12,7 +13,6 @@ import org.oagi.srt.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.ACC;
 
 @Service
 @Transactional(readOnly = true)
@@ -112,52 +111,6 @@ public class CcListService {
         }
 
         return pageResponse;
-    }
-
-    public List<AsccpForAppendAsccp> getAsccpForAppendAsccpList(User user, long releaseId, long extensionId) {
-        return dslContext.select(
-                ASCCP.ASCCP_ID,
-                ASCCP.PROPERTY_TERM,
-                ASCCP.GUID,
-                MODULE.MODULE_.as("module"),
-                ASCCP.DEFINITION,
-                ASCCP.IS_DEPRECATED.as("deprecated"),
-                ASCCP.STATE,
-                ASCCP_RELEASE_MANIFEST.RELEASE_ID,
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM)
-                .from(ASCCP)
-                .join(ASCCP_RELEASE_MANIFEST)
-                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .leftJoin(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID))
-                .where(and(
-                        ASCCP_RELEASE_MANIFEST.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
-                        ASCCP.STATE.eq(CcState.Published.getValue()))
-                ).fetchInto(AsccpForAppendAsccp.class)
-                .stream().collect(Collectors.toList());
-    }
-
-    public List<BccpForAppendBccp> getBccpForAppendBccpList(User user, long releaseId, long extensionId) {
-        return dslContext.select(
-                BCCP.BCCP_ID,
-                BCCP.PROPERTY_TERM,
-                BCCP.GUID,
-                MODULE.MODULE_.as("module"),
-                BCCP.DEFINITION,
-                BCCP.IS_DEPRECATED.as("deprecated"),
-                BCCP.STATE,
-                BCCP_RELEASE_MANIFEST.RELEASE_ID,
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM)
-                .from(BCCP)
-                .join(BCCP_RELEASE_MANIFEST)
-                .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
-                .leftJoin(MODULE).on(BCCP.MODULE_ID.eq(MODULE.MODULE_ID))
-                .where(and(
-                        BCCP_RELEASE_MANIFEST.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId)),
-                        BCCP.STATE.eq(CcState.Published.getValue()))
-                ).fetchInto(BccpForAppendBccp.class)
-                .stream().collect(Collectors.toList());
     }
 
     public ACC getAcc(long id) {

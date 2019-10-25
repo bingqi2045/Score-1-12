@@ -5,8 +5,8 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -53,40 +53,29 @@ public class BieService {
     @Autowired
     private DSLContext dslContext;
 
-    public List<AsccpForBie> getAsccpListForBie(long releaseId) {
-        return dslContext.select(
-                ASCCP.ASCCP_ID,
-                ASCCP.GUID,
-                ASCCP.PROPERTY_TERM,
-                ASCCP.MODULE_ID,
-                MODULE.MODULE_.as("module"),
-                ASCCP.STATE,
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
-                ASCCP_RELEASE_MANIFEST.RELEASE_ID,
-                ASCCP.LAST_UPDATE_TIMESTAMP)
-                .from(ASCCP)
-                .join(ASCCP_RELEASE_MANIFEST)
-                .on(ASCCP_RELEASE_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID).and(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .leftJoin(MODULE).on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID))
-                .where(ASCCP.STATE.eq(CcState.Published.getValue()))
-                .fetchInto(AsccpForBie.class);
-    }
-
     @Transactional
     public BieCreateResponse createBie(User user, BieCreateRequest request) {
 
         long userId = sessionService.userId(user);
-        long releaseId = request.getReleaseId();
+        long asccpManifestId = request.getAsccpManifestId();
+
+        AsccpReleaseManifestRecord asccpReleaseManifest =
+                dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                        .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                        .fetchOptionalInto(AsccpReleaseManifestRecord.class).orElse(null);
+        if (asccpReleaseManifest == null) {
+            throw new IllegalArgumentException();
+        }
+
+        long releaseId = asccpReleaseManifest.getReleaseId().longValue();
         long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId, Editing);
 
-        long asccpId = request.getAsccpId();
-        AccForBie accForBie = findRoleOfAccByAsccpId(asccpId, releaseId);
+        long asccpId = asccpReleaseManifest.getAsccpId().longValue();
+        long roleOfAccId = asccpReleaseManifest.getRoleOfAccId().longValue();
 
-        long basedAccId = accForBie.getAccId();
         List<Long> bizCtxIds = request.getBizCtxIds();
 
-        long abieId = repository.createAbie(user, basedAccId, topLevelAbieId);
+        long abieId = repository.createAbie(user, roleOfAccId, topLevelAbieId);
         repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
@@ -94,25 +83,6 @@ public class BieService {
         BieCreateResponse response = new BieCreateResponse();
         response.setTopLevelAbieId(topLevelAbieId);
         return response;
-    }
-
-    private AccForBie findRoleOfAccByAsccpId(long asccpId, long releaseId) {
-        return dslContext.select(
-                ACC.ACC_ID,
-                ACC.GUID,
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
-                ACC.REVISION_ACTION,
-                RELEASE.RELEASE_ID)
-                .from(ASCCP)
-                .join(ASCCP_RELEASE_MANIFEST)
-                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .join(RELEASE)
-                .on(RELEASE.RELEASE_ID.eq(ASCCP_RELEASE_MANIFEST.RELEASE_ID).and(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .join(ACC)
-                .on(ACC.ACC_ID.eq(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID))
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
-                .fetchOneInto(AccForBie.class);
     }
 
     private SelectOnConditionStep<Record11<
