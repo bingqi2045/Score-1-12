@@ -6,7 +6,10 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
@@ -27,7 +30,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -485,17 +487,27 @@ public class ExtensionService {
             throw new IllegalArgumentException("You cannot associate the same component.");
         }
 
-        AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey);
-
         int revisionNum = dslContext.select(ACC.REVISION_NUM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
-                .orderBy(ACC.ACC_ID.desc()).limit(1)
                 .fetchOneInto(Integer.class);
 
-        createASCCHistory(ascc, revisionNum, releaseId);
+        AsccRecord ascc = createASCC(user, extensionId, asccpId, nextSeqKey, revisionNum);
+        /* Create ascc_release_manifest */
+        dslContext.insertInto(ASCC_RELEASE_MANIFEST,
+                ASCC_RELEASE_MANIFEST.ASCC_ID,
+                ASCC_RELEASE_MANIFEST.RELEASE_ID,
+                ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
+                ASCC_RELEASE_MANIFEST.TO_ASCCP_ID)
+                .values(ascc.getAsccId(),
+                        ULong.valueOf(releaseId),
+                        ascc.getFromAccId(),
+                        ascc.getToAsccpId())
+                .execute();
     }
 
-    private AsccRecord createASCC(User user, long accId, long asccpId, int seqKey) {
+    private AsccRecord createASCC(User user, long accId, long asccpId, int seqKey,
+                                  int revisionNum) {
+
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
@@ -538,49 +550,10 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.Editing.getValue(),
-                0,
-                0,
-                null
-        ).returning().fetchOne();
-    }
-
-    private void createASCCHistory(AsccRecord ascc, int revisionNum, long releaseId) {
-        dslContext.insertInto(Tables.ASCC,
-                Tables.ASCC.GUID,
-                Tables.ASCC.CARDINALITY_MIN,
-                Tables.ASCC.CARDINALITY_MAX,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.FROM_ACC_ID,
-                Tables.ASCC.TO_ASCCP_ID,
-                Tables.ASCC.DEN,
-                Tables.ASCC.IS_DEPRECATED,
-                Tables.ASCC.CREATED_BY,
-                Tables.ASCC.LAST_UPDATED_BY,
-                Tables.ASCC.OWNER_USER_ID,
-                Tables.ASCC.CREATION_TIMESTAMP,
-                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION).values(
-                ascc.getGuid(),
-                ascc.getCardinalityMin(),
-                ascc.getCardinalityMax(),
-                ascc.getSeqKey(),
-                ascc.getFromAccId(),
-                ascc.getToAsccpId(),
-                ascc.getDen(),
-                ascc.getIsDeprecated(),
-                ascc.getCreatedBy(),
-                ascc.getLastUpdatedBy(),
-                ascc.getOwnerUserId(),
-                ascc.getCreationTimestamp(),
-                ascc.getLastUpdateTimestamp(),
-                ascc.getState(),
                 revisionNum,
                 1,
                 Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
-        ).execute();
+        ).returning().fetchOne();
     }
 
     @Transactional
@@ -611,17 +584,27 @@ public class ExtensionService {
             throw new IllegalArgumentException("You cannot associate the same component.");
         }
 
-        BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey);
-
         int revisionNum = dslContext.select(ACC.REVISION_NUM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
-                .orderBy(ACC.ACC_ID.desc()).limit(1)
                 .fetchOneInto(Integer.class);
 
-        createBCCHistory(bcc, revisionNum, releaseId);
+        BccRecord bcc = createBCC(user, extensionId, bccpId, nextSeqKey, revisionNum);
+        /* Create bcc_release_manifest */
+        dslContext.insertInto(BCC_RELEASE_MANIFEST,
+                BCC_RELEASE_MANIFEST.BCC_ID,
+                BCC_RELEASE_MANIFEST.RELEASE_ID,
+                BCC_RELEASE_MANIFEST.FROM_ACC_ID,
+                BCC_RELEASE_MANIFEST.TO_BCCP_ID)
+                .values(bcc.getBccId(),
+                        ULong.valueOf(releaseId),
+                        bcc.getFromAccId(),
+                        bcc.getToBccpId())
+                .execute();
     }
 
-    private BccRecord createBCC(User user, long accId, long bccpId, int seqKey) {
+    private BccRecord createBCC(User user, long accId, long bccpId, int seqKey,
+                                int revisionNum) {
+
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(String.class);
@@ -666,51 +649,10 @@ public class ExtensionService {
                 timestamp,
                 timestamp,
                 CcState.Editing.getValue(),
-                0,
-                0,
-                null
-        ).returning().fetchOne();
-    }
-
-    private void createBCCHistory(BccRecord bcc, int revisionNum, long releaseId) {
-        dslContext.insertInto(Tables.BCC,
-                Tables.BCC.GUID,
-                Tables.BCC.CARDINALITY_MIN,
-                Tables.BCC.CARDINALITY_MAX,
-                Tables.BCC.SEQ_KEY,
-                Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.FROM_ACC_ID,
-                Tables.BCC.TO_BCCP_ID,
-                Tables.BCC.DEN,
-                Tables.BCC.IS_DEPRECATED,
-                Tables.BCC.CREATED_BY,
-                Tables.BCC.LAST_UPDATED_BY,
-                Tables.BCC.OWNER_USER_ID,
-                Tables.BCC.CREATION_TIMESTAMP,
-                Tables.BCC.LAST_UPDATE_TIMESTAMP,
-                Tables.BCC.STATE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.REVISION_ACTION).values(
-                bcc.getGuid(),
-                bcc.getCardinalityMin(),
-                bcc.getCardinalityMax(),
-                bcc.getSeqKey(),
-                bcc.getEntityType(),
-                bcc.getFromAccId(),
-                bcc.getToBccpId(),
-                bcc.getDen(),
-                bcc.getIsDeprecated(),
-                bcc.getCreatedBy(),
-                bcc.getLastUpdatedBy(),
-                bcc.getOwnerUserId(),
-                bcc.getCreationTimestamp(),
-                bcc.getLastUpdateTimestamp(),
-                bcc.getState(),
                 revisionNum,
                 1,
                 Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
-        ).execute();
+        ).returning().fetchOne();
     }
 
     private int getNextSeqKey(long accId) {
@@ -735,12 +677,15 @@ public class ExtensionService {
 
     @Transactional
     public void discardAscc(User user, long extensionId, Long releaseId, long asccId) {
-        dslContext.deleteFrom(Tables.ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
-                .execute();
         int seqKey = dslContext.select(ASCC.SEQ_KEY)
                 .from(Tables.ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                 .fetchOneInto(Integer.class);
+
+        dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
+                .where(and(
+                        ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).execute();
         dslContext.deleteFrom(Tables.ASCC)
                 .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                 .execute();
@@ -750,12 +695,15 @@ public class ExtensionService {
 
     @Transactional
     public void discardBcc(User user, long extensionId, Long releaseId, long bccId) {
-        dslContext.deleteFrom(Tables.BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
-                .execute();
         int seqKey = dslContext.select(BCC.SEQ_KEY)
                 .from(Tables.BCC).where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                 .fetchOneInto(Integer.class);
+
+        dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
+                .where(and(
+                        BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).execute();
         dslContext.deleteFrom(Tables.BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                 .execute();
@@ -795,19 +743,22 @@ public class ExtensionService {
         }
     }
 
+    private ULong getLatestAccId(long extensionId) {
+        String guid = dslContext.select(ACC.GUID).from(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
+                .fetchOneInto(String.class);
+
+        return dslContext.select(ACC.ACC_ID).from(ACC)
+                .where(ACC.GUID.eq(guid))
+                .orderBy(ACC.ACC_ID.desc()).limit(1).fetchOneInto(ULong.class);
+    }
+
     private void updateAccState(long extensionId, Long releaseId, CcState state,
                                 ULong userId, Timestamp timestamp) {
-        dslContext.update(Tables.ACC)
-                .set(ACC.STATE, state.getValue())
-                .set(ACC.LAST_UPDATED_BY, userId)
-                .set(ACC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
-                .execute();
 
+        ULong accId = getLatestAccId(extensionId);
         AccRecord history = dslContext.selectFrom(Tables.ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(extensionId)))
-                .orderBy(ACC.ACC_ID.desc()).limit(1)
-                .fetchOne();
+                .where(ACC.ACC_ID.eq(accId)).fetchOne();
 
         history.setAccId(null);
         history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
@@ -817,11 +768,34 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
         history.setState(state.getValue());
-        dslContext.insertInto(Tables.ACC).set(history).execute();
+
+        history = dslContext.insertInto(ACC).set(history).returning().fetchOne();
+        dslContext.update(ACC_RELEASE_MANIFEST)
+                .set(ACC_RELEASE_MANIFEST.ACC_ID, history.getAccId())
+                .where(and(
+                        ACC_RELEASE_MANIFEST.ACC_ID.eq(accId),
+                        ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).execute();
+
+        dslContext.update(ASCC_RELEASE_MANIFEST)
+                .set(ASCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
+                .where(and(
+                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accId),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).execute();
+
+        dslContext.update(BCC_RELEASE_MANIFEST)
+                .set(BCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
+                .where(and(
+                        BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accId),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).execute();
     }
 
     private void updateAsccState(long extensionId, Long releaseId, CcState state,
                                  ULong userId, Timestamp timestamp) {
+
+        ULong accId = getLatestAccId(extensionId);
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC.GUID,
@@ -832,8 +806,8 @@ public class ExtensionService {
                 .join(ASCC_RELEASE_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
                 .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        ASCC.REVISION_NUM.greaterThan(0)
+                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accId),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 ))
                 .fetchInto(CcAsccNode.class);
 
@@ -841,19 +815,10 @@ public class ExtensionService {
             return;
         }
 
-        // Update a state of the 'current record'.
-        dslContext.update(ASCC)
-                .set(ASCC.STATE, state.getValue())
-                .set(ASCC.LAST_UPDATED_BY, userId)
-                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        ASCC.REVISION_NUM.eq(0)))
-                .execute();
-
         Result<AsccRecord> asccRecordResult = asccRecordResult(asccNodes, releaseId);
 
         for (AsccRecord history : asccRecordResult) {
+            ULong asccId = history.getAsccId();
             history.setAsccId(null);
             history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
             history.setRevisionAction((byte) RevisionAction.Update.getValue());
@@ -863,12 +828,20 @@ public class ExtensionService {
             history.setLastUpdateTimestamp(timestamp);
             history.setState(state.getValue());
 
-            dslContext.insertInto(ASCC).set(history).execute();
+            history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
+            dslContext.update(ASCC_RELEASE_MANIFEST)
+                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, history.getAsccId())
+                    .where(and(
+                            ASCC_RELEASE_MANIFEST.ASCC_ID.eq(asccId),
+                            ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                    )).execute();
         }
     }
 
     private void updateBccState(long extensionId, Long releaseId, CcState state,
                                 ULong userId, Timestamp timestamp) {
+
+        ULong accId = getLatestAccId(extensionId);
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
                 BCC.GUID,
@@ -879,27 +852,18 @@ public class ExtensionService {
                 .join(BCC_RELEASE_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID))
                 .where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        BCC.REVISION_NUM.greaterThan(0)
+                        BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accId),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 )).fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
             return;
         }
 
-        // Update a state of the 'current record'.
-        dslContext.update(BCC)
-                .set(BCC.STATE, state.getValue())
-                .set(BCC.LAST_UPDATED_BY, userId)
-                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        BCC.REVISION_NUM.eq(0)))
-                .execute();
-
         Result<BccRecord> bccRecordResult = bccRecordResult(bccNodes, releaseId);
 
         for (BccRecord history : bccRecordResult) {
+            ULong bccId = history.getBccId();
             history.setBccId(null);
             history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
             history.setRevisionAction((byte) RevisionAction.Update.getValue());
@@ -909,7 +873,13 @@ public class ExtensionService {
             history.setLastUpdateTimestamp(timestamp);
             history.setState(state.getValue());
 
-            dslContext.insertInto(BCC).set(history).execute();
+            history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
+            dslContext.update(BCC_RELEASE_MANIFEST)
+                    .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
+                    .where(and(
+                            BCC_RELEASE_MANIFEST.BCC_ID.eq(bccId),
+                            BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                    )).execute();
         }
     }
 
@@ -955,7 +925,8 @@ public class ExtensionService {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        List<CcAsccpNodeDetail.Ascc> asccList = request.getAsccpDetails().stream().map(asccpDetail -> asccpDetail.getAscc())
+        List<CcAsccpNodeDetail.Ascc> asccList = request.getAsccpDetails().stream()
+                .map(asccpDetail -> asccpDetail.getAscc())
                 .collect(Collectors.toList());
 
         for (CcAsccpNodeDetail.Ascc ascc : asccList) {
@@ -964,8 +935,10 @@ public class ExtensionService {
             );
         }
 
-        List<CcBccpNodeDetail.Bcc> bccList = request.getBccpDetails().stream().map(bccpDetail -> bccpDetail.getBcc())
+        List<CcBccpNodeDetail.Bcc> bccList = request.getBccpDetails().stream()
+                .map(bccpDetail -> bccpDetail.getBcc())
                 .collect(Collectors.toList());
+
         for (CcBccpNodeDetail.Bcc bcc : bccList) {
             response.getBccResults().put(bcc.getBccId(),
                     updateBcc(extensionId, releaseId, bcc, userId, timestamp)
@@ -979,19 +952,17 @@ public class ExtensionService {
                                CcAsccpNodeDetail.Ascc ascc,
                                ULong userId, Timestamp timestamp) {
 
-        int result = dslContext.update(Tables.ASCC)
-                .set(ASCC.CARDINALITY_MIN, ascc.getCardinalityMin())
-                .set(ASCC.CARDINALITY_MAX, ascc.getCardinalityMax())
-                .set(ASCC.IS_DEPRECATED, (byte) ((ascc.isDeprecated()) ? 1 : 0))
-                .set(ASCC.DEFINITION, ascc.getDefinition())
-                .set(ASCC.LAST_UPDATED_BY, userId)
-                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
+        String guid = dslContext.select(ASCC.GUID).from(ASCC)
                 .where(ASCC.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
-                .execute();
+                .fetchOneInto(String.class);
+
+        ULong asccId = dslContext.select(ASCC.ASCC_ID).from(ASCC)
+                .where(ASCC.GUID.eq(guid))
+                .orderBy(ASCC.ASCC_ID.desc()).limit(1).fetchOneInto(ULong.class);
 
         AsccRecord history = dslContext.selectFrom(Tables.ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
-                .orderBy(ASCC.ASCC_ID.desc()).limit(1).fetchOne();
+                .where(ASCC.ASCC_ID.eq(asccId))
+                .fetchOne();
 
         history.setAsccId(null);
         history.setCardinalityMin(ascc.getCardinalityMin());
@@ -1005,7 +976,13 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
 
-        dslContext.insertInto(ASCC).set(history).execute();
+        history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
+        int result = dslContext.update(ASCC_RELEASE_MANIFEST)
+                .set(ASCC_RELEASE_MANIFEST.ASCC_ID, history.getAsccId())
+                .where(and(
+                        ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(releaseId)
+                )).execute();
 
         return (result == 1);
     }
@@ -1014,22 +991,17 @@ public class ExtensionService {
                               CcBccpNodeDetail.Bcc bcc,
                               ULong userId, Timestamp timestamp) {
 
-        int result = dslContext.update(Tables.BCC)
-                .set(BCC.ENTITY_TYPE, bcc.getEntityType())
-                .set(BCC.CARDINALITY_MIN, bcc.getCardinalityMin())
-                .set(BCC.CARDINALITY_MAX, bcc.getCardinalityMax())
-                .set(BCC.IS_NILLABLE, (byte) ((bcc.isNillable()) ? 1 : 0))
-                .set(BCC.IS_DEPRECATED, (byte) ((bcc.isDeprecated()) ? 1 : 0))
-                .set(BCC.DEFAULT_VALUE, bcc.getDefaultValue())
-                .set(BCC.DEFINITION, bcc.getDefinition())
-                .set(BCC.LAST_UPDATED_BY, userId)
-                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
+        String guid = dslContext.select(BCC.GUID).from(BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
-                .execute();
+                .fetchOneInto(String.class);
+
+        ULong bccId = dslContext.select(BCC.BCC_ID).from(BCC)
+                .where(BCC.GUID.eq(guid))
+                .orderBy(BCC.BCC_ID.desc()).limit(1).fetchOneInto(ULong.class);
 
         BccRecord history = dslContext.selectFrom(Tables.BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
-                .orderBy(BCC.BCC_ID.desc()).limit(1).fetchOne();
+                .where(BCC.BCC_ID.eq(bccId))
+                .fetchOne();
 
         history.setBccId(null);
         history.setEntityType(bcc.getEntityType());
@@ -1046,7 +1018,13 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
 
-        dslContext.insertInto(BCC).set(history).execute();
+        history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
+        int result = dslContext.update(BCC_RELEASE_MANIFEST)
+                .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
+                .where(and(
+                        BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bcc.getBccId())),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(releaseId)
+                )).execute();
 
         return (result == 1);
     }
