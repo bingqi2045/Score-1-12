@@ -6,6 +6,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -132,7 +133,8 @@ public class ExtensionService {
             if (CcState.Published.getValue() == ueAcc.getState()) {
                 return increaseRevisionNum(ueAcc, releaseId, user);
             } else {
-                return ueAcc.getAccId();
+                AccReleaseManifestRecord ueAccManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                return ueAccManifest.getAccReleaseManifestId().longValue();
             }
         } else {
             return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
@@ -147,7 +149,9 @@ public class ExtensionService {
         increaseAsccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
         increaseBccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
 
-        return ueAcc.getAccId();
+        AccReleaseManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+
+        return accManifest.getAccReleaseManifestId().longValue();
     }
 
     private int increaseAccRevisionNum(ACC ueAcc, long releaseId,
@@ -170,7 +174,15 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
 
-        dslContext.insertInto(Tables.ACC).set(history).execute();
+        AccRecord newUeAcc = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne();
+
+        dslContext.update(ACC_RELEASE_MANIFEST)
+                .set(ACC_RELEASE_MANIFEST.ACC_ID, newUeAcc.getAccId())
+                .where(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        .and(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))))
+                .execute();
+
+
 
         dslContext.update(Tables.ACC)
                 .set(Tables.ACC.STATE, history.getState())
@@ -178,6 +190,8 @@ public class ExtensionService {
                 .set(Tables.ACC.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
                 .execute();
+
+        dslContext.insertInto(ACC_RELEASE_MANIFEST).set(history).execute();
 
         return newRevisionNum;
     }
@@ -216,6 +230,7 @@ public class ExtensionService {
         Result<AsccRecord> asccRecordResult = asccRecordResult(asccNodes, releaseId);
 
         for (AsccRecord history : asccRecordResult) {
+            long historyAsccId = history.getAsccId().longValue();
             history.setAsccId(null);
             history.setRevisionNum(revisionNum);
             history.setRevisionTrackingNum(1);
@@ -227,7 +242,12 @@ public class ExtensionService {
             history.setLastUpdateTimestamp(timestamp);
             history.setState(CcState.Editing.getValue());
 
-            dslContext.insertInto(ASCC).set(history).execute();
+            AsccRecord asccRecord = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
+
+            dslContext.update(ASCC_RELEASE_MANIFEST)
+                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, asccRecord.getAsccId())
+                    .where(ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(historyAsccId))
+                            .and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))));
         }
     }
 
@@ -274,6 +294,7 @@ public class ExtensionService {
         Result<BccRecord> bccRecordResult = bccRecordResult(bccNodes, releaseId);
 
         for (BccRecord history : bccRecordResult) {
+            long historyBccId = history.getBccId().longValue();
             history.setBccId(null);
             history.setRevisionNum(revisionNum);
             history.setRevisionTrackingNum(1);
@@ -285,7 +306,11 @@ public class ExtensionService {
             history.setLastUpdateTimestamp(timestamp);
             history.setState(CcState.Editing.getValue());
 
-            dslContext.insertInto(BCC).set(history).execute();
+            BccRecord bccRecord = dslContext.insertInto(BCC).set(history).returning().fetchOne();
+            dslContext.update(BCC_RELEASE_MANIFEST)
+                    .set(BCC_RELEASE_MANIFEST.BCC_ID, bccRecord.getBccId())
+                    .where(BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(historyBccId))
+                            .and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))));
         }
     }
 
@@ -301,7 +326,7 @@ public class ExtensionService {
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
         AccRecord ueAcc = createACCForExtension(eAcc, user);
-        createACCReleaseManifestForExtension(ueAcc, releaseId);
+        AccReleaseManifestRecord ueAccManifest = createACCReleaseManifestForExtension(ueAcc, releaseId);
 
         AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
         createASCCPReleaseManifestForExtension(ueAsccp, releaseId);
@@ -309,7 +334,7 @@ public class ExtensionService {
         AsccRecord ueAscc = createASCCForExtension(eAcc, ueAsccp, user);
         createASCCReleaseManifestForExtension(ueAscc, releaseId);
 
-        return ueAcc.getAccId().longValue();
+        return ueAccManifest.getAccReleaseManifestId().longValue();
     }
 
     private AccRecord createACCForExtension(ACC eAcc, User user) {
@@ -349,16 +374,16 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
-        dslContext.insertInto(ACC_RELEASE_MANIFEST,
+    private AccReleaseManifestRecord createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
+        return dslContext.insertInto(ACC_RELEASE_MANIFEST,
                 ACC_RELEASE_MANIFEST.ACC_ID,
                 ACC_RELEASE_MANIFEST.BASED_ACC_ID,
                 ACC_RELEASE_MANIFEST.RELEASE_ID
-                ).values(
+        ).values(
                 ueAcc.getAccId(),
                 ueAcc.getBasedAccId(),
                 ULong.valueOf(releaseId)
-        ).execute();
+        ).returning().fetchOne();
     }
 
     private AsccpRecord createASCCPForExtension(ACC eAcc, User user, AccRecord ueAcc) {

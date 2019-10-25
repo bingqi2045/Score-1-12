@@ -773,6 +773,14 @@ public class CcNodeRepository {
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }
 
+    public AccReleaseManifestRecord getAccReleaseManifestByAcc(long accId, long releaseId) {
+        return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
+                .where(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(accId))
+                        .and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetchOne();
+
+    }
+
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class AsccForAccHasChild extends TrackableImpl {

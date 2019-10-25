@@ -164,8 +164,8 @@ public class BieEditService {
             }
         }
 
-        long ueAccId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
-        return ueAccId;
+        long manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
+        return manifestId;
     }
 
     @Transactional
