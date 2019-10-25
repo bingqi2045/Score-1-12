@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,40 +41,41 @@ public class CcListRepository {
         }
 
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
+        List<Condition> conditions = new ArrayList();
+        conditions.add(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (release.getReleaseNum().equals("Working")) {
-            whereCondition = whereCondition.and(ACC.OAGIS_COMPONENT_TYPE.notEqual(OagisComponentType.UserExtensionGroup.getValue()));
+            conditions.add(ACC.OAGIS_COMPONENT_TYPE.notEqual(OagisComponentType.UserExtensionGroup.getValue()));
         }
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(ACC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(ACC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(ACC.STATE.in(
+            conditions.add(ACC.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(ACC.DEN, request.getDen()));
+            conditions.add(getDenFilter(ACC.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(ACC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(ACC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getModule() != null && !request.getModule().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(ACC.ACC_ID,
@@ -89,20 +91,19 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                ACC.REVISION_TRACKING_NUM)
                 .from(ACC)
                 .join(ACC_RELEASE_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID).and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
                 .join(RELEASE)
                 .on(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(MODULE)
-                .on(ACC.MODULE_ID.eq(MODULE.MODULE_ID))
                 .join(appUserOwner)
                 .on(ACC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ACC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .leftJoin(MODULE)
+                .on(ACC.MODULE_ID.eq(MODULE.MODULE_ID))
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ACC");
@@ -127,40 +128,42 @@ public class CcListRepository {
         if (!request.getTypes().isAscc() || !StringUtils.isEmpty(request.getModule())) {
             return Collections.emptyList();
         }
+        
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
-        whereCondition = whereCondition.and(ASCC.DEN.notLike("%User Extension Group"));
+        List<Condition> conditions = new ArrayList();
+        conditions.add(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ASCC.DEN.notLike("%User Extension Group"));
 
         if (release.getReleaseNum().equals("Working")) {
-            whereCondition = whereCondition.and(ASCC.DEN.notContains("User Extension Group"));
+            conditions.add(ASCC.DEN.notContains("User Extension Group"));
         }
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(ASCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(ASCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(ASCC.STATE.in(
+            conditions.add(ASCC.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(ASCC.DEN, request.getDen()));
+            conditions.add(getDenFilter(ASCC.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(ASCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(ASCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(ASCC.ASCC_ID,
@@ -174,8 +177,7 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                ASCC.REVISION_TRACKING_NUM)
                 .from(ASCC)
                 .join(ASCC_RELEASE_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID).and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -185,7 +187,7 @@ public class CcListRepository {
                 .on(ASCC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ASCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCC");
@@ -210,37 +212,38 @@ public class CcListRepository {
         }
 
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
+        List<Condition> conditions = new ArrayList();
+        conditions.add(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (release.getReleaseNum().equals("Working")) {
-            whereCondition = whereCondition.and(BCC.DEN.notContains("User Extension Group"));
+            conditions.add(BCC.DEN.notContains("User Extension Group"));
         }
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(BCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(BCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(BCC.STATE.in(
+            conditions.add(BCC.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(BCC.DEN, request.getDen()));
+            conditions.add(getDenFilter(BCC.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(BCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(BCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(BCC.BCC_ID,
@@ -254,8 +257,7 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                BCC.REVISION_TRACKING_NUM)
                 .from(BCC)
                 .join(BCC_RELEASE_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -265,7 +267,7 @@ public class CcListRepository {
                 .on(BCC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(BCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCC");
@@ -288,40 +290,42 @@ public class CcListRepository {
         if (!request.getTypes().isAsccp()) {
             return Collections.emptyList();
         }
+
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
-        whereCondition = whereCondition.and(ASCCP.DEN.notLike("%User Extension Group"));
+        List<Condition> conditions = new ArrayList();
+        conditions.add(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ASCCP.DEN.notLike("%User Extension Group"));
 
         if (release.getReleaseNum().equals("Working")) {
-            whereCondition = whereCondition.and(ASCCP.DEN.notContains("User Extension Group"));
+            conditions.add(ASCCP.DEN.notContains("User Extension Group"));
         }
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(ASCCP.STATE.in(
+            conditions.add(ASCCP.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(ASCCP.DEN, request.getDen()));
+            conditions.add(getDenFilter(ASCCP.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(ASCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(ASCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(ASCCP.ASCCP_ID,
@@ -329,14 +333,14 @@ public class CcListRepository {
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
                 ASCCP.DEFINITION_SOURCE,
+                MODULE.MODULE_,
                 ASCCP.STATE,
                 ASCCP.IS_DEPRECATED,
                 ASCCP.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                ASCCP.REVISION_TRACKING_NUM)
                 .from(ASCCP)
                 .join(ASCCP_RELEASE_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID).and(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -346,7 +350,9 @@ public class CcListRepository {
                 .on(ASCCP.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ASCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .leftJoin(MODULE)
+                .on(ASCCP.MODULE_ID.eq(MODULE.MODULE_ID))
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCCP");
@@ -355,6 +361,7 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(row.getValue(ASCCP.DEFINITION));
                     ccList.setDefinitionSource(row.getValue(ASCCP.DEFINITION_SOURCE));
+                    ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP));
@@ -369,35 +376,37 @@ public class CcListRepository {
         if (!request.getTypes().isBccp()) {
             return Collections.emptyList();
         }
+
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
+        List<Condition> conditions = new ArrayList();
+        conditions.add(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(BCCP.STATE.in(
+            conditions.add(BCCP.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(BCCP.DEN, request.getDen()));
+            conditions.add(getDenFilter(BCCP.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(BCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(BCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(BCCP.BCCP_ID,
@@ -412,20 +421,19 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                BCCP.REVISION_TRACKING_NUM)
                 .from(BCCP)
                 .join(BCCP_RELEASE_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID).and(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
                 .join(RELEASE)
                 .on(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(MODULE)
-                .on(BCCP.MODULE_ID.eq(MODULE.MODULE_ID))
                 .join(appUserOwner)
                 .on(BCCP.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(BCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .leftJoin(MODULE)
+                .on(BCCP.MODULE_ID.eq(MODULE.MODULE_ID))
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCCP");
@@ -449,35 +457,37 @@ public class CcListRepository {
         if (!request.getTypes().isBdt()) {
             return Collections.emptyList();
         }
+
         Release release = releaseRepository.findById(request.getReleaseId());
-        Condition whereCondition = DSL.trueCondition();
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
+        List<Condition> conditions = new ArrayList();
+        conditions.add(DT_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (request.getDeprecated() != null) {
-            whereCondition = whereCondition.and(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
+            conditions.add(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
         if (!request.getStates().isEmpty()) {
-            whereCondition = whereCondition.and(DT.STATE.in(
+            conditions.add(DT.STATE.in(
                     request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
+            conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
-            whereCondition = whereCondition.and(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+            conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
-            whereCondition = whereCondition.and(getDenFilter(DT.DEN, request.getDen()));
+            conditions.add(getDenFilter(DT.DEN, request.getDen()));
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            whereCondition = whereCondition.and(DSL.lower(DT.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+            conditions.add(DSL.lower(DT.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            whereCondition = whereCondition.and(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
         if (request.getUpdateEndDate() != null) {
-            whereCondition = whereCondition.and(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
 
         return dslContext.select(DT.DT_ID,
@@ -485,12 +495,14 @@ public class CcListRepository {
                 DT.DEN,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
+                MODULE.MODULE_,
                 DT.STATE,
                 DT.IS_DEPRECATED,
                 DT.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                RELEASE.RELEASE_NUM)
+                DT.REVISION_NUM,
+                DT.REVISION_TRACKING_NUM)
                 .from(DT)
                 .join(DT_RELEASE_MANIFEST)
                 .on(DT.DT_ID.eq(DT_RELEASE_MANIFEST.DT_ID).and(DT_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -500,7 +512,9 @@ public class CcListRepository {
                 .on(DT.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(DT.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .where(whereCondition)
+                .leftJoin(MODULE)
+                .on(DT.MODULE_ID.eq(MODULE.MODULE_ID))
+                .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BDT");
@@ -509,12 +523,13 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(DT.DEN));
                     ccList.setDefinition(row.getValue(DT.DEFINITION));
                     ccList.setDefinitionSource(row.getValue(DT.DEFINITION_SOURCE));
+                    ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(row.getValue(DT.LAST_UPDATE_TIMESTAMP));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(RELEASE.RELEASE_NUM));
+                    ccList.setRevision(row.getValue(DT.REVISION_NUM) + "." + row.getValue(DT.REVISION_TRACKING_NUM));
                     return ccList;
                 });
     }

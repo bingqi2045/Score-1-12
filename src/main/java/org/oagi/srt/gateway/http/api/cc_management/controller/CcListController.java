@@ -28,7 +28,7 @@ public class CcListController {
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public PageResponse<CcList> getCcList(
-            @RequestParam(name = "releaseId", required = false) long releaseId,
+            @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "den", required = false) String den,
             @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "module", required = false) String module,
