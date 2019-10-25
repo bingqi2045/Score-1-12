@@ -298,7 +298,7 @@ public class ExtensionService {
         AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
         createASCCPReleaseManifestForExtension(ueAsccp, releaseId);
 
-        AsccRecord ueAscc = createASCCForExtension(ueAcc, ueAsccp, user);
+        AsccRecord ueAscc = createASCCForExtension(eAcc, ueAsccp, user);
         createASCCReleaseManifestForExtension(ueAscc, releaseId);
 
         return ueAcc.getAccId().longValue();
@@ -407,7 +407,7 @@ public class ExtensionService {
         ).execute();
     }
 
-    private AsccRecord createASCCForExtension(AccRecord ueAcc, AsccpRecord ueAsccp, User user) {
+    private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, User user) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -433,9 +433,9 @@ public class ExtensionService {
                 0,
                 1,
                 1,
-                ueAcc.getAccId(),
+                ULong.valueOf(eAcc.getAccId()),
                 ueAsccp.getAsccpId(),
-                ueAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
+                eAcc.getObjectClassTerm() + ". " + ueAsccp.getDen(),
                 (byte) 0,
                 userId,
                 userId,
@@ -588,7 +588,10 @@ public class ExtensionService {
         int nextSeqKey = getNextSeqKey(extensionId);
 
         bccpId = dslContext.select(BCCP.BCCP_ID)
-                .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .from(BCCP)
+                .join(BCCP_RELEASE_MANIFEST)
+                .on(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)).and(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID)))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(Long.class);
 
         /*
@@ -596,9 +599,12 @@ public class ExtensionService {
          * Duplicated associations cannot be existed.
          */
         boolean exists = dslContext.selectCount()
-                .from(BCC).where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId))
+                .from(BCC)
+                .join(BCC_RELEASE_MANIFEST)
+                .on(BCC_RELEASE_MANIFEST.BCC_ID.eq(BCC.BCC_ID).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(and(
+                        BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(ULong.valueOf(bccpId))
                 ))
                 .fetchOptionalInto(Integer.class).orElse(0) > 0;
         if (exists) {

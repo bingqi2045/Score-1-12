@@ -379,7 +379,7 @@ public class CcNodeRepository {
                 BCCP.BCCP_ID,
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
-                BCCP.BDT_ID,
+                BCCP_RELEASE_MANIFEST.BDT_ID,
                 BCCP.STATE.as("raw_state"),
                 BCCP.REVISION_NUM,
                 BCCP.REVISION_TRACKING_NUM,
@@ -387,7 +387,7 @@ public class CcNodeRepository {
                 .from(BCCP)
                 .join(BCCP_RELEASE_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)).and(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(CcBccpNode.class);
 
         bccpNode.setHasChild(hasChild(bccpNode));
