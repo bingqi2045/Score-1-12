@@ -52,6 +52,68 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
+    @RequestMapping(value = "/core_component",
+            method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity deleteCcNodes(@AuthenticationPrincipal User user,
+                                        @RequestParam(value = "acc", required = false) List<Long> accManifestIdList,
+                                        @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
+                                        @RequestParam(value = "bccp", required = false) List<Long> bccpManifestIdList) {
+
+        if (accManifestIdList != null && !accManifestIdList.isEmpty()) {
+            for (Long accManifestId : accManifestIdList) {
+                deleteCcNode(user, "acc", accManifestId);
+            }
+        }
+        if (asccpManifestIdList != null && !asccpManifestIdList.isEmpty()) {
+            for (Long asccpManifestId : asccpManifestIdList) {
+                deleteCcNode(user, "asccp", asccpManifestId);
+            }
+        }
+        if (bccpManifestIdList != null && !bccpManifestIdList.isEmpty()) {
+            for (Long bccpManifestId : bccpManifestIdList) {
+                deleteCcNode(user, "bccp", bccpManifestId);
+            }
+        }
+
+        return ResponseEntity.accepted().build();
+    }
+
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
+            method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
+                                       @PathVariable("type") String type,
+                                       @PathVariable("manifestId") long manifestId) {
+        switch (type) {
+            case "acc":
+                deleteAccNode(user, manifestId);
+                break;
+            case "asccp":
+                deleteAsccpNode(user, manifestId);
+                break;
+            case "bccp":
+                deleteBccpNode(user, manifestId);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        return ResponseEntity.accepted().build();
+    }
+
+    private void deleteAccNode(User user, long manifestId) {
+        service.deleteAccNode(user, manifestId);
+    }
+
+    private void deleteAsccpNode(User user, long manifestId) {
+        service.deleteAsccpNode(user, manifestId);
+    }
+
+    private void deleteBccpNode(User user, long manifestId) {
+        service.deleteBccpNode(user, manifestId);
+    }
+
     @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void update(

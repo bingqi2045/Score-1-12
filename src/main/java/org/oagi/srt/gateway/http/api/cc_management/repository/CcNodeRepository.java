@@ -36,6 +36,9 @@ public class CcNodeRepository {
     private DSLContext dslContext;
 
     @Autowired
+    private ReleaseManifestRepository manifestRepository;
+
+    @Autowired
     private SessionService sessionService;
 
     private SelectOnConditionStep<Record10<
@@ -55,18 +58,6 @@ public class CcNodeRepository {
                 .from(ACC)
                 .join(ACC_RELEASE_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID));
-    }
-
-    public AccReleaseManifestRecord accReleaseManifestRecord(long manifestId) {
-        return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
-                .fetchOne();
-    }
-
-    public AsccReleaseManifestRecord asccReleaseManifestRecord(long manifestId) {
-        return dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
-                .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
-                .fetchOne();
     }
 
     public CcAccNode getAccNodeByAccId(long accId, long releaseId) {
@@ -117,8 +108,10 @@ public class CcNodeRepository {
     }
 
     public void createAscc(User user, long accManifestId, long asccManifestId) {
-        AccReleaseManifestRecord accReleaseManifestRecord = accReleaseManifestRecord(accManifestId);
-        AsccReleaseManifestRecord asccReleaseManifestRecord = asccReleaseManifestRecord(asccManifestId);
+        AccReleaseManifestRecord accReleaseManifestRecord =
+                manifestRepository.getAccReleaseManifestById(accManifestId);
+        AsccReleaseManifestRecord asccReleaseManifestRecord =
+                manifestRepository.getAsccReleaseManifestById(asccManifestId);
 
         String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
                 .from(ACC).where(ACC.ACC_ID.eq(accReleaseManifestRecord.getAccId()))
@@ -898,5 +891,142 @@ public class CcNodeRepository {
         }
     }
 
+    public boolean isAccUsed(long accId) {
+        int cnt = dslContext.selectCount()
+                .from(ASCCP)
+                .where(ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(ACC)
+                .where(ACC.BASED_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(BCC)
+                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(ABIE)
+                .where(ABIE.BASED_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isAsccpUsed(long asccpId) {
+        int cnt = dslContext.selectCount()
+                .from(ASCC)
+                .where(ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(ASBIEP)
+                .where(ASBIEP.BASED_ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isBccpUsed(long bccpId) {
+        int cnt = dslContext.selectCount()
+                .from(BCC)
+                .where(BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        cnt = dslContext.selectCount()
+                .from(BBIEP)
+                .where(BBIEP.BASED_BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        if (cnt > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void deleteAccRecords(long accId) {
+        String guid = dslContext.select(ACC.GUID)
+                .from(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(String.class);
+
+        List<ULong> accIds = dslContext.select(ACC.ACC_ID)
+                .from(ACC)
+                .where(ACC.GUID.eq(guid))
+                .fetchInto(ULong.class);
+
+        dslContext.deleteFrom(ASCC)
+                .where(ASCC.FROM_ACC_ID.in(accIds))
+                .execute();
+        dslContext.deleteFrom(BCC)
+                .where(BCC.FROM_ACC_ID.in(accIds))
+                .execute();
+        dslContext.deleteFrom(ACC)
+                .where(ACC.ACC_ID.in(accIds))
+                .execute();
+    }
+
+    public void deleteAsccpRecords(long asccpId) {
+        String guid = dslContext.select(ASCCP.GUID)
+                .from(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .fetchOneInto(String.class);
+
+        List<ULong> asccpIds = dslContext.select(ASCCP.ASCCP_ID)
+                .from(ASCCP)
+                .where(ASCCP.GUID.eq(guid))
+                .fetchInto(ULong.class);
+
+        dslContext.deleteFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.in(asccpIds))
+                .execute();
+    }
+
+    public void deleteBccpRecords(long bccpId) {
+        String guid = dslContext.select(BCCP.GUID)
+                .from(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOneInto(String.class);
+
+        List<ULong> asccpIds = dslContext.select(BCCP.BCCP_ID)
+                .from(BCCP)
+                .where(BCCP.GUID.eq(guid))
+                .fetchInto(ULong.class);
+
+        dslContext.deleteFrom(BCCP)
+                .where(BCCP.BCCP_ID.in(asccpIds))
+                .execute();
+    }
 }
 
