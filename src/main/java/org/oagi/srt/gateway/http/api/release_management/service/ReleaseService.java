@@ -1,18 +1,27 @@
 package org.oagi.srt.gateway.http.api.release_management.service;
 
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.ReleaseState;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.release_management.data.ReleaseList;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseState;
+import org.oagi.srt.gateway.http.api.release_management.data.ReleaseListRequest;
 import org.oagi.srt.gateway.http.api.release_management.data.SimpleRelease;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,5 +65,101 @@ public class ReleaseService {
             releaseList.setState(ReleaseState.valueOf(releaseList.getRawState()).name());
         });
         return releaseLists;
+    }
+
+    private SelectOnConditionStep<Record6<
+            ULong, String, Integer, String, String,
+            Timestamp>> getSelectOnConditionStep() {
+        return dslContext.select(
+                RELEASE.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                RELEASE.STATE.as("raw_state"),
+                NAMESPACE.URI.as("namespace"),
+                APP_USER.as("updater").LOGIN_ID.as("last_updated_by"),
+                RELEASE.LAST_UPDATE_TIMESTAMP)
+                .from(RELEASE)
+                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(RELEASE.LAST_UPDATED_BY))
+                .leftJoin(NAMESPACE).on(RELEASE.NAMESPACE_ID.eq(NAMESPACE.NAMESPACE_ID));
+    }
+
+    public PageResponse<ReleaseList> getReleases(User user, ReleaseListRequest request) {
+        SelectOnConditionStep<Record6<
+                ULong, String, Integer, String, String,
+                Timestamp>> step = getSelectOnConditionStep();
+
+        List<Condition> conditions = new ArrayList();
+        if (!StringUtils.isEmpty(request.getReleaseNum())) {
+            conditions.add(RELEASE.RELEASE_NUM.containsIgnoreCase(request.getReleaseNum().trim()));
+        }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(RELEASE.RELEASE_NUM.notIn(request.getExcludes()));
+        }
+        if (!StringUtils.isEmpty(request.getNamespace())) {
+            conditions.add(NAMESPACE.URI.containsIgnoreCase(request.getNamespace().trim()));
+        }
+        if (!request.getStates().isEmpty()) {
+            conditions.add(RELEASE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
+        }
+        if (!request.getUpdaterLoginIds().isEmpty()) {
+            conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (request.getUpdateStartDate() != null) {
+            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+        }
+        if (request.getUpdateEndDate() != null) {
+            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+        }
+
+        SelectConnectByStep<Record6<
+                ULong, String, Integer, String, String,
+                Timestamp>> conditionStep = step.where(conditions);
+        PageRequest pageRequest = request.getPageRequest();
+        String sortDirection = pageRequest.getSortDirection();
+        SortField sortField = null;
+        switch (pageRequest.getSortActive()) {
+            case "releaseNum":
+                if ("asc".equals(sortDirection)) {
+                    sortField = RELEASE.RELEASE_NUM.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = RELEASE.RELEASE_NUM.desc();
+                }
+
+                break;
+
+            case "lastUpdateTimestamp":
+                if ("asc".equals(sortDirection)) {
+                    sortField = RELEASE.LAST_UPDATE_TIMESTAMP.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = RELEASE.LAST_UPDATE_TIMESTAMP.desc();
+                }
+
+                break;
+        }
+        int pageCount = dslContext.fetchCount(conditionStep);
+        SelectWithTiesAfterOffsetStep<Record6<
+                ULong, String, Integer, String, String,
+                Timestamp>> offsetStep = null;
+        if (sortField != null) {
+            offsetStep = conditionStep.orderBy(sortField)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = conditionStep
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<ReleaseList> result = (offsetStep != null) ?
+                offsetStep.fetchInto(ReleaseList.class) : conditionStep.fetchInto(ReleaseList.class);
+        result.forEach(releaseList -> {
+            releaseList.setState(ReleaseState.valueOf(releaseList.getRawState()).name());
+        });
+
+        PageResponse<ReleaseList> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(pageCount);
+        return response;
     }
 }

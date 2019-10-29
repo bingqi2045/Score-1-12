@@ -1,4 +1,4 @@
-package org.oagi.srt.gateway.http.api.release_management.data;
+package org.oagi.srt.data;
 
 public enum ReleaseState {
 
@@ -23,4 +23,5 @@ public enum ReleaseState {
     public int getValue() {
         return value;
     }
+
 }
