@@ -11,9 +11,7 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
-import org.oagi.srt.entity.jooq.tables.records.AccRecord;
-import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
@@ -176,7 +174,16 @@ public class CcNodeRepository {
         ).returning().fetchOne();
     }
 
-    public AccRecord createAcc(long requesterId) {
+    /**
+     * Create a new ACC record.
+     * The release ID of this record should link to 'Working' release.
+     *
+     * @param requesterId a requester user ID
+     * @param releaseId a release ID
+     *
+     * @return ACC release manifest ID
+     */
+    public long createAcc(long requesterId, long releaseId) {
         ULong userId = ULong.valueOf(requesterId);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -186,41 +193,127 @@ public class CcNodeRepository {
         accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
         accRecord.setOagisComponentType(OagisComponentType.Semantics.getValue());
         accRecord.setState(CcState.Editing.getValue());
-        accRecord.setRevisionNum(0);
-        accRecord.setRevisionTrackingNum(0);
-        accRecord.setRevisionAction((byte) 0);
+        accRecord.setRevisionNum(1);
+        accRecord.setRevisionTrackingNum(1);
+        accRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
         accRecord.setCreatedBy(userId);
         accRecord.setLastUpdatedBy(userId);
         accRecord.setOwnerUserId(userId);
         accRecord.setCreationTimestamp(timestamp);
         accRecord.setLastUpdateTimestamp(timestamp);
-
         accRecord.setAccId(
                 dslContext.insertInto(ACC)
                         .set(accRecord)
                         .returning(ACC.ACC_ID).fetchOne().getAccId()
         );
 
-        AccRecord accHistoryRecord = new AccRecord();
-        accHistoryRecord.setGuid(accRecord.getGuid());
-        accHistoryRecord.setObjectClassTerm(accRecord.getObjectClassTerm());
-        accHistoryRecord.setDen(accRecord.getDen());
-        accHistoryRecord.setOagisComponentType(accRecord.getOagisComponentType());
-        accHistoryRecord.setState(accRecord.getState());
-        accHistoryRecord.setRevisionNum(1);
-        accHistoryRecord.setRevisionTrackingNum(1);
-        accHistoryRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
-        accHistoryRecord.setCreatedBy(accRecord.getCreatedBy());
-        accHistoryRecord.setLastUpdatedBy(accRecord.getLastUpdatedBy());
-        accHistoryRecord.setOwnerUserId(accRecord.getOwnerUserId());
-        accHistoryRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
-        accHistoryRecord.setLastUpdateTimestamp(accRecord.getLastUpdateTimestamp());
+        AccReleaseManifestRecord accReleaseManifestRecord =
+                new AccReleaseManifestRecord();
+        accReleaseManifestRecord.setAccId(accRecord.getAccId());
+        accReleaseManifestRecord.setReleaseId(ULong.valueOf(releaseId));
 
-        dslContext.insertInto(ACC)
-                .set(accHistoryRecord)
-                .execute();
+        return dslContext.insertInto(ACC_RELEASE_MANIFEST)
+                .set(accReleaseManifestRecord)
+                .returning(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID)
+                .fetchOne().getAccReleaseManifestId().longValue();
+    }
 
-        return accRecord;
+    public long createAsccp(long requesterId, long roleOfAccManifestId) {
+        AccReleaseManifestRecord accReleaseManifestRecord =
+                dslContext.selectFrom(ACC_RELEASE_MANIFEST)
+                        .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(roleOfAccManifestId)))
+                        .fetchOneInto(AccReleaseManifestRecord.class);
+
+        String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+                .from(ACC)
+                .where(ACC.ACC_ID.eq(accReleaseManifestRecord.getAccId()))
+                .fetchOneInto(String.class);
+
+        ULong userId = ULong.valueOf(requesterId);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        AsccpRecord asccpRecord = new AsccpRecord();
+        asccpRecord.setGuid(SrtGuid.randomGuid());
+        asccpRecord.setPropertyTerm("A new ASCCP property");
+        asccpRecord.setRoleOfAccId(accReleaseManifestRecord.getAccId());
+        asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accObjectClassTerm);
+        asccpRecord.setState(CcState.Editing.getValue());
+        asccpRecord.setReusableIndicator((byte) 0);
+        asccpRecord.setIsDeprecated((byte) 0);
+        asccpRecord.setIsNillable((byte) 0);
+        asccpRecord.setRevisionNum(1);
+        asccpRecord.setRevisionTrackingNum(1);
+        asccpRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
+        asccpRecord.setCreatedBy(userId);
+        asccpRecord.setLastUpdatedBy(userId);
+        asccpRecord.setOwnerUserId(userId);
+        asccpRecord.setCreationTimestamp(timestamp);
+        asccpRecord.setLastUpdateTimestamp(timestamp);
+        asccpRecord.setAsccpId(
+                dslContext.insertInto(ASCCP)
+                        .set(asccpRecord)
+                        .returning(ASCCP.ASCCP_ID).fetchOne().getAsccpId()
+        );
+
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord =
+                new AsccpReleaseManifestRecord();
+        asccpReleaseManifestRecord.setAsccpId(asccpRecord.getAsccpId());
+        asccpReleaseManifestRecord.setReleaseId(accReleaseManifestRecord.getReleaseId());
+        asccpReleaseManifestRecord.setRoleOfAccId(accReleaseManifestRecord.getAccId());
+
+        return dslContext.insertInto(ASCCP_RELEASE_MANIFEST)
+                .set(asccpReleaseManifestRecord)
+                .returning(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID)
+                .fetchOne().getAsccpReleaseManifestId().longValue();
+    }
+
+    public long createBccp(long requesterId, long bdtManifestId) {
+        DtReleaseManifestRecord dtReleaseManifestRecord =
+                dslContext.selectFrom(DT_RELEASE_MANIFEST)
+                        .where(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID.eq(ULong.valueOf(bdtManifestId)))
+                        .fetchOneInto(DtReleaseManifestRecord.class);
+
+        String dtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
+                .from(DT)
+                .where(DT.DT_ID.eq(dtReleaseManifestRecord.getDtId()))
+                .fetchOneInto(String.class);
+
+        ULong userId = ULong.valueOf(requesterId);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        BccpRecord bccpRecord = new BccpRecord();
+        bccpRecord.setGuid(SrtGuid.randomGuid());
+        bccpRecord.setPropertyTerm("A new BCCP property");
+        bccpRecord.setRepresentationTerm(dtDataTypeTerm);
+        bccpRecord.setBdtId(dtReleaseManifestRecord.getDtId());
+        bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + dtDataTypeTerm);
+        bccpRecord.setState(CcState.Editing.getValue());
+        bccpRecord.setIsDeprecated((byte) 0);
+        bccpRecord.setIsNillable((byte) 0);
+        bccpRecord.setRevisionNum(1);
+        bccpRecord.setRevisionTrackingNum(1);
+        bccpRecord.setRevisionAction(RevisionAction.Insert.getValue());
+        bccpRecord.setCreatedBy(userId);
+        bccpRecord.setLastUpdatedBy(userId);
+        bccpRecord.setOwnerUserId(userId);
+        bccpRecord.setCreationTimestamp(timestamp);
+        bccpRecord.setLastUpdateTimestamp(timestamp);
+        bccpRecord.setBccpId(
+                dslContext.insertInto(BCCP)
+                        .set(bccpRecord)
+                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
+        );
+
+        BccpReleaseManifestRecord bccpReleaseManifestRecord =
+                new BccpReleaseManifestRecord();
+        bccpReleaseManifestRecord.setBccpId(bccpRecord.getBccpId());
+        bccpReleaseManifestRecord.setReleaseId(dtReleaseManifestRecord.getReleaseId());
+        bccpReleaseManifestRecord.setBdtId(dtReleaseManifestRecord.getDtId());
+
+        return dslContext.insertInto(BCCP_RELEASE_MANIFEST)
+                .set(bccpReleaseManifestRecord)
+                .returning(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID)
+                .fetchOne().getBccpReleaseManifestId().longValue();
     }
 
     public void updateAcc(User user, CcAccNode ccAccNode) {

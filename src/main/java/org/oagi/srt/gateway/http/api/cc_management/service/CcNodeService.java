@@ -1,11 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
-import org.jooq.Record1;
-import org.jooq.types.ULong;
-import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateRequest;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateResponse;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -15,9 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.ACC_RELEASE_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -76,10 +69,21 @@ public class CcNodeService {
     }
 
     @Transactional
-    public CcAccNode createAcc(User user) {
+    public long createAcc(User user, CcAccCreateRequest request) {
         long userId = sessionService.userId(user);
-        AccRecord accRecord = repository.createAcc(userId);
-        return getAccNode(user, accRecord.getAccId().longValue());
+        return repository.createAcc(userId, request.getReleaseId());
+    }
+
+    @Transactional
+    public long createAsccp(User user, CcAsccpCreateRequest request) {
+        long userId = sessionService.userId(user);
+        return repository.createAsccp(userId, request.getRoleOfAccManifestId());
+    }
+
+    @Transactional
+    public long createBccp(User user, CcBccpCreateRequest request) {
+        long userId = sessionService.userId(user);
+        return repository.createBccp(userId, request.getBdtManifestId());
     }
 
     @Transactional
@@ -100,11 +104,6 @@ public class CcNodeService {
     @Transactional
     public void discardAscc(User user, long accManifestId, long asccManifestId) {
         // repository method discard specific id
-    }
-
-    @Transactional
-    public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
-        repository.createAsccp(user, ccAsccpNode);
     }
 
     @Transactional

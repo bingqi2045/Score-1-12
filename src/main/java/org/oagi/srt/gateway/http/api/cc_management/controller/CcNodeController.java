@@ -1,9 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateRequest;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcEditUpdateResponse;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,11 +75,6 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
         return service.getAsccp(id);
-    }
-
-    @RequestMapping(value = "/core_component/acc", method = RequestMethod.PUT)
-    public CcAccNode createAcc(@AuthenticationPrincipal User user) {
-        return service.createAcc(user);
     }
 
     @RequestMapping(value = "/core_component/node/children/{type}",
@@ -169,12 +162,35 @@ public class CcNodeController {
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/asccp/create", method = RequestMethod.PUT,
+    @RequestMapping(value = "/core_component/acc", method = RequestMethod.POST)
+    public CcCreateResponse createAcc(@AuthenticationPrincipal User user,
+                                      @RequestBody CcAccCreateRequest request) {
+        long manifestId = service.createAcc(user, request);
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
+    }
+
+    @RequestMapping(value = "/core_component/asccp", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity createAsccp(
-            @AuthenticationPrincipal User user,
-            @RequestBody CcAsccpNode ccAsccpNode) {
-        service.createAsccp(user, ccAsccpNode);
-        return ResponseEntity.noContent().build();
+    public CcCreateResponse createAsccp(@AuthenticationPrincipal User user,
+                                        @RequestBody CcAsccpCreateRequest request) {
+        long manifestId = service.createAsccp(user, request);
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
+    }
+
+    @RequestMapping(value = "/core_component/bccp", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CcCreateResponse createBccp(@AuthenticationPrincipal User user,
+                                       @RequestBody CcBccpCreateRequest request) {
+        long manifestId = service.createBccp(user, request);
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
     }
 }

@@ -49,6 +49,7 @@ public class CcListTypes {
                     case "bcc":
                         types.setBcc(true);
                         break;
+
                     case "bdt":
                         types.setBdt(true);
                         break;

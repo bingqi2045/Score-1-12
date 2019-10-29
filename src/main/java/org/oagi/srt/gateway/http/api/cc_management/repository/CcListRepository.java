@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.oagi.srt.data.DTType.BDT;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -468,6 +469,7 @@ public class CcListRepository {
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
+        conditions.add(DT.TYPE.eq(BDT.getValue()));
         conditions.add(DT_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (request.getDeprecated() != null) {
             conditions.add(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
@@ -526,7 +528,10 @@ public class CcListRepository {
                     ccList.setType("BDT");
                     ccList.setManifestId(row.getValue(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(DT.GUID));
-                    ccList.setDen(row.getValue(DT.DEN));
+                    String den = row.getValue(DT.DEN);
+                    if (!StringUtils.isEmpty(den)) {
+                        ccList.setDen(den.replaceAll("_", " ").replaceAll("  ", " "));
+                    }
                     ccList.setDefinition(row.getValue(DT.DEFINITION));
                     ccList.setDefinitionSource(row.getValue(DT.DEFINITION_SOURCE));
                     ccList.setModule(row.getValue(MODULE.MODULE_));
@@ -543,7 +548,7 @@ public class CcListRepository {
     private Condition getDenFilter(TableField<?, String> field, String keyword) {
         Condition denCondition = null;
         List<String> filters = Arrays.asList(keyword.toLowerCase().split(" ")).stream()
-                .map(e -> e.replaceAll("[^a-z]", "").trim()).collect(Collectors.toList());
+                .map(e -> e.replaceAll("[^a-z0-9]", "").trim()).collect(Collectors.toList());
         for (String token : filters) {
             if (denCondition == null) {
                 denCondition = field.contains(token);
