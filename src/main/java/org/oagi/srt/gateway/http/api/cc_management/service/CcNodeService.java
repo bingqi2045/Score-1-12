@@ -147,8 +147,7 @@ public class CcNodeService {
 
     @Transactional
     public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
-        AsccpReleaseManifestRecord asccpReleaseManifestRecord = repository.getAsccpReleaseManifestById(manifestId);
-        repository.updateAsccp(user, asccpNodeDetail, asccpReleaseManifestRecord.getRoleOfAccId().longValue());
+        repository.updateAsccp(user, asccpNodeDetail, manifestId);
     }
 
     @Transactional

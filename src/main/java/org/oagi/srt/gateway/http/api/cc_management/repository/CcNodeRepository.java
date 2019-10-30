@@ -11,6 +11,7 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.entity.jooq.tables.AsccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -327,21 +328,40 @@ public class CcNodeRepository {
                 .where(ACC.ACC_ID.eq(ULong.valueOf(ccAccNode.getAccId())));
     }
 
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long accId) {
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(asccpReleaseManifestRecord.getRoleOfAccId())).fetchOne();
+        AsccpRecord baseAsccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpNodeDetail.getAsccpId()))).fetchOne();
 
-        AccRecord accRecord = dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId))).fetchOne();
-
-        dslContext.update(ASCCP)
-                .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
-                .set(ASCCP.DEN, asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
-                .set(ASCCP.IS_DEPRECATED, (byte) ((asccpNodeDetail.isDeprecated()) ? 1 : 0))
-                .set(ASCCP.REUSABLE_INDICATOR, (byte) ((asccpNodeDetail.isReusable()) ? 1 : 0))
+        AsccpRecord InsertedAsccpRecord = dslContext.insertInto(ASCCP)
                 .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
+                .set(ASCCP.GUID, SrtGuid.randomGuid())
+                .set(ASCCP.DEN, asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
+                .set(ASCCP.ROLE_OF_ACC_ID, accRecord.getAccId())
+                .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
+                .set(ASCCP.IS_DEPRECATED,(byte) (asccpNodeDetail.isDeprecated() ? 1 : 0))
+                .set(ASCCP.STATE, baseAsccpRecord.getState())
+                .set(ASCCP.OWNER_USER_ID, baseAsccpRecord.getOwnerUserId())
                 .set(ASCCP.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpNodeDetail.getAsccpId())))
+                .set(ASCCP.CREATED_BY, baseAsccpRecord.getCreatedBy())
+                .set(ASCCP.CREATION_TIMESTAMP, baseAsccpRecord.getCreationTimestamp())
+                .set(ASCCP.MODULE_ID, baseAsccpRecord.getModuleId())
+                .set(ASCCP.REUSABLE_INDICATOR, (byte) (asccpNodeDetail.isReusable() ? 1 : 0))
+                .set(ASCCP.NAMESPACE_ID, baseAsccpRecord.getNamespaceId())
+                .set(ASCCP.IS_NILLABLE, baseAsccpRecord.getIsNillable())
+                .set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue())
+                .set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1)
+                .set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum()).returning().fetchOne();
+
+        dslContext.update(ASCCP_RELEASE_MANIFEST)
+                .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, InsertedAsccpRecord.getAsccpId())
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
     }
 
