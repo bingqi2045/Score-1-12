@@ -27,13 +27,13 @@
         <aspectj.version>1.9.4</aspectj.version>
         <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
         <lettuce.version>5.2.0.RELEASE</lettuce.version>
-        <redisson.version>3.11.4</redisson.version>
+        <redisson.version>3.11.5</redisson.version>
         <netty.version>4.1.42.Final</netty.version>
         <lombok.version>1.18.10</lombok.version>
         <guava.version>28.1-jre</guava.version>
         <jdom2.version>2.0.6</jdom2.version>
         <commons-io.version>2.6</commons-io.version>
-        <jOOQ.version>3.12.1</jOOQ.version>
+        <jOOQ.version>3.12.2</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 
