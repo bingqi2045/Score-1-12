@@ -52,6 +52,7 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
+
     @RequestMapping(value = "/core_component",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -130,7 +131,7 @@ public class CcNodeController {
             @AuthenticationPrincipal User user,
             @PathVariable("id") long id,
             @RequestBody CcAsccpNodeDetail.Asccp ccAsccpNodeDetail) {
-        service.updateAsccp(user, ccAsccpNodeDetail, id);
+        service.updateAsccp(user, ccAsccpNodeDetail);
     }
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,

@@ -35,7 +35,7 @@ public class CcNodeService {
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
-        return repository.getAsccpNodeByAsccpId(manifestId);
+        return repository.getAsccpNodeByAsccpId(user, manifestId);
     }
 
     public CcBccpNode getBccpNode(User user, long manifestId) {
@@ -146,8 +146,8 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long id) {
-        repository.updateAsccp(user, asccpNodeDetail, id);
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail) {
+        repository.updateAsccp(user, asccpNodeDetail);
     }
 
     @Transactional
@@ -162,8 +162,9 @@ public class CcNodeService {
 
     @Transactional
     public CcEditUpdateResponse updateDetails(User user, CcEditUpdateRequest request) {
-        long accId = request.getAccId();
-
+        for (CcAsccpNodeDetail asccpNodeDetail : request.getAsccpNodeDetails()) {
+            updateAsccp(user, asccpNodeDetail.getAsccp());
+        }
         CcEditUpdateResponse response = new CcEditUpdateResponse();
 
         return response;
