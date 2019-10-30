@@ -125,15 +125,6 @@ public class CcNodeController {
         service.updateAcc(user, ccAccNode);
     }
 
-    @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void updateAsccp(
-            @AuthenticationPrincipal User user,
-            @PathVariable("id") long id,
-            @RequestBody CcAsccpNodeDetail.Asccp ccAsccpNodeDetail) {
-        service.updateAsccp(user, ccAsccpNodeDetail);
-    }
-
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
@@ -198,13 +189,6 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/node/detail", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public CcEditUpdateResponse updateDetails(@AuthenticationPrincipal User user,
-                                              @RequestBody CcEditUpdateRequest request) {
-        return service.updateDetails(user, request);
-    }
-
     @RequestMapping(value = "/core_component/ascc/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -219,6 +203,26 @@ public class CcNodeController {
 
             case "discard":
                 service.discardAscc(user, manifestId, actionRequest.getManifestId());
+                break;
+        }
+
+        return ResponseEntity.accepted().build();
+    }
+
+    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity doAsccpAction(@AuthenticationPrincipal User user,
+                                       @PathVariable("manifestId") long manifestId,
+                                       @RequestBody CcActionRequest actionRequest) {
+
+        switch (actionRequest.getAction()) {
+            case "update":
+                service.updateAsccp(user, actionRequest.getAsccpNodeDetail().getAsccp(), manifestId);
+                break;
+
+            case "discard":
+                //
                 break;
         }
 

@@ -146,8 +146,9 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail) {
-        repository.updateAsccp(user, asccpNodeDetail);
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord = repository.getAsccpReleaseManifestById(manifestId);
+        repository.updateAsccp(user, asccpNodeDetail, asccpReleaseManifestRecord.getRoleOfAccId().longValue());
     }
 
     @Transactional
@@ -159,16 +160,5 @@ public class CcNodeService {
     public void discardAscc(User user, long accManifestId, long asccManifestId) {
         // repository method discard specific id
     }
-
-    @Transactional
-    public CcEditUpdateResponse updateDetails(User user, CcEditUpdateRequest request) {
-        for (CcAsccpNodeDetail asccpNodeDetail : request.getAsccpNodeDetails()) {
-            updateAsccp(user, asccpNodeDetail.getAsccp());
-        }
-        CcEditUpdateResponse response = new CcEditUpdateResponse();
-
-        return response;
-    }
-
 }
 

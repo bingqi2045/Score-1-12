@@ -327,13 +327,15 @@ public class CcNodeRepository {
                 .where(ACC.ACC_ID.eq(ULong.valueOf(ccAccNode.getAccId())));
     }
 
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail) {
+    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long accId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+        AccRecord accRecord = dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId))).fetchOne();
+
         dslContext.update(ASCCP)
                 .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
-                .set(ASCCP.DEN, asccpNodeDetail.getDen())
+                .set(ASCCP.DEN, asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
                 .set(ASCCP.IS_DEPRECATED, (byte) ((asccpNodeDetail.isDeprecated()) ? 1 : 0))
                 .set(ASCCP.REUSABLE_INDICATOR, (byte) ((asccpNodeDetail.isReusable()) ? 1 : 0))
                 .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
@@ -485,49 +487,6 @@ public class CcNodeRepository {
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
-    }
-
-    public void createAsccp(User user, CcAsccpNode ccAsccpNode) {
-        long roleOfAccId = ccAsccpNode.getRoleOfAccId();
-
-        String asccpDen = dslContext.select(ACC.DEN)
-                .from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(roleOfAccId)))
-                .fetchOneInto(String.class);
-        asccpDen = asccpDen.split("\\.")[0];
-        asccpDen = "A new ASCCP property. " + asccpDen;
-
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        dslContext.insertInto(ASCCP,
-                ASCCP.GUID,
-                ASCCP.PROPERTY_TERM,
-                ASCCP.ROLE_OF_ACC_ID,
-                ASCCP.DEN,
-                ASCCP.CREATED_BY,
-                ASCCP.OWNER_USER_ID,
-                ASCCP.LAST_UPDATED_BY,
-                ASCCP.CREATION_TIMESTAMP,
-                ASCCP.LAST_UPDATE_TIMESTAMP,
-                ASCCP.STATE,
-                ASCCP.IS_DEPRECATED,
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
-                ASCCP.REVISION_ACTION).values(
-                SrtGuid.randomGuid(),
-                "A new ASCCP property",
-                ULong.valueOf(roleOfAccId),
-                asccpDen,
-                userId,
-                userId,
-                userId,
-                timestamp,
-                timestamp,
-                CcState.Editing.getValue(),
-                Byte.valueOf((byte) 0),
-                0,
-                0,
-                null).returning().fetchOne();
     }
 
     public CcBccpNode getBccpNodeByBccpId(long manifestId) {
@@ -769,8 +728,7 @@ public class CcNodeRepository {
                 ACC.OAGIS_COMPONENT_TYPE.as("oagisComponentType"),
                 ACC.IS_ABSTRACT.as("abstracted"),
                 ACC.IS_DEPRECATED.as("deprecated"),
-                ACC.DEFINITION,
-                ACC.STATE
+                ACC.DEFINITION
         ).from(ACC).where(ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(CcAccNodeDetail.class);
     }
@@ -787,8 +745,7 @@ public class CcNodeRepository {
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX,
                     ASCC.IS_DEPRECATED.as("deprecated"),
-                    ASCC.DEFINITION,
-                    ASCC.STATE)
+                    ASCC.DEFINITION)
                     .from(ASCC)
                     .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
@@ -804,8 +761,7 @@ public class CcNodeRepository {
                 ASCCP.DEN,
                 ASCCP.REUSABLE_INDICATOR.as("reusable"),
                 ASCCP.IS_DEPRECATED.as("deprecated"),
-                ASCCP.DEFINITION,
-                ASCCP.STATE)
+                ASCCP.DEFINITION)
                 .from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
@@ -815,20 +771,23 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNodeDetail.Asccp getAsccp(long asccpId) {
-
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.DEN,
                 ASCCP.PROPERTY_TERM,
                 ASCCP.DEFINITION,
                 ASCCP.GUID,
-                ASCCP.ROLE_OF_ACC_ID,
-                ASCCP.STATE)
+                ASCCP.ROLE_OF_ACC_ID)
                 .from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
-
         return asccp;
+    }
+
+    public AsccpReleaseManifestRecord getAsccpReleaseManifestById(long manifestId) {
+        return dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .fetchOne();
     }
 
     public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {
@@ -845,8 +804,7 @@ public class CcNodeRepository {
                     BCC.CARDINALITY_MAX,
                     BCC.IS_DEPRECATED.as("deprecated"),
                     BCC.DEFAULT_VALUE,
-                    BCC.DEFINITION,
-                    BCC.STATE)
+                    BCC.DEFINITION)
                     .from(BCC)
                     .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
@@ -863,8 +821,7 @@ public class CcNodeRepository {
                 BCCP.IS_NILLABLE.as("nillable"),
                 BCCP.IS_DEPRECATED.as("deprecated"),
                 BCCP.DEFAULT_VALUE,
-                BCCP.DEFINITION,
-                BCCP.STATE)
+                BCCP.DEFINITION)
                 .from(BCCP)
                 .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
@@ -879,8 +836,7 @@ public class CcNodeRepository {
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
                 DT.DEN,
-                DT.DEFINITION,
-                DT.STATE).from(DT)
+                DT.DEFINITION).from(DT)
                 .where(DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
