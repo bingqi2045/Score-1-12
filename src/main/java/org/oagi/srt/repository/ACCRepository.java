@@ -28,7 +28,7 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.BASED_ACC_ID,
                 Tables.ACC.OBJECT_CLASS_QUALIFIER,
                 Tables.ACC.OAGIS_COMPONENT_TYPE,
-                Tables.ACC.MODULE_ID,
+                Tables.ACC_RELEASE_MANIFEST.MODULE_ID,
                 Tables.ACC.NAMESPACE_ID,
                 Tables.ACC.CREATED_BY,
                 Tables.ACC.OWNER_USER_ID,
@@ -46,7 +46,7 @@ public class ACCRepository implements SrtRepository<ACC> {
                 .from(Tables.ACC)
                 .join(Tables.ACC_RELEASE_MANIFEST)
                 .on(Tables.ACC.ACC_ID.eq(Tables.ACC_RELEASE_MANIFEST.ACC_ID))
-                .leftJoin(Tables.MODULE).on(Tables.ACC.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .leftJoin(Tables.MODULE).on(Tables.ACC_RELEASE_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override

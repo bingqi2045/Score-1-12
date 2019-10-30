@@ -15,7 +15,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtReleaseManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
 
-    private static final long serialVersionUID = -1609586067;
+    private static final long serialVersionUID = -1271409672;
 
     /**
      * The reference instance of <code>oagi.xbt_release_manifest</code>
@@ -66,6 +66,11 @@ public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
      * The column <code>oagi.xbt_release_manifest.release_id</code>.
      */
     public final TableField<XbtReleaseManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.xbt_release_manifest.module_id</code>.
+     */
+    public final TableField<XbtReleaseManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.xbt_release_manifest.xbt_id</code>.
@@ -112,7 +117,7 @@ public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.XBT_RELEASE_MANIFEST_PRIMARY, Indexes.XBT_RELEASE_MANIFEST_XBT_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.XBT_RELEASE_MANIFEST_XBT_RELEASE_MANIFEST_XBT_ID_FK);
+        return Arrays.<Index>asList(Indexes.XBT_RELEASE_MANIFEST_PRIMARY, Indexes.XBT_RELEASE_MANIFEST_XBT_RELEASE_MANIFEST_MODULE_ID_FK, Indexes.XBT_RELEASE_MANIFEST_XBT_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.XBT_RELEASE_MANIFEST_XBT_RELEASE_MANIFEST_XBT_ID_FK);
     }
 
     @Override
@@ -132,11 +137,15 @@ public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
 
     @Override
     public List<ForeignKey<XbtReleaseManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtReleaseManifestRecord, ?>>asList(Keys.XBT_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.XBT_RELEASE_MANIFEST_XBT_ID_FK);
+        return Arrays.<ForeignKey<XbtReleaseManifestRecord, ?>>asList(Keys.XBT_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.XBT_RELEASE_MANIFEST_MODULE_ID_FK, Keys.XBT_RELEASE_MANIFEST_XBT_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.XBT_RELEASE_MANIFEST_RELEASE_ID_FK);
+    }
+
+    public Module module() {
+        return new Module(this, Keys.XBT_RELEASE_MANIFEST_MODULE_ID_FK);
     }
 
     public Xbt xbt() {
@@ -170,11 +179,11 @@ public class XbtReleaseManifest extends TableImpl<XbtReleaseManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

@@ -26,7 +26,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.DEFINITION,
                 Tables.ASCCP.DEFINITION_SOURCE,
                 Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP.MODULE_ID,
+                Tables.ASCCP_RELEASE_MANIFEST.MODULE_ID,
                 Tables.ASCCP.NAMESPACE_ID,
                 Tables.ASCCP.CREATED_BY,
                 Tables.ASCCP.OWNER_USER_ID,
@@ -45,7 +45,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 .from(Tables.ASCCP)
                 .join(Tables.ASCCP_RELEASE_MANIFEST)
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .leftJoin(Tables.MODULE).on(Tables.ASCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .leftJoin(Tables.MODULE).on(Tables.ASCCP_RELEASE_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override

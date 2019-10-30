@@ -15,7 +15,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtReleaseManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtReleaseManifest extends TableImpl<DtReleaseManifestRecord> {
 
-    private static final long serialVersionUID = -1862464321;
+    private static final long serialVersionUID = 186484270;
 
     /**
      * The reference instance of <code>oagi.dt_release_manifest</code>
@@ -66,6 +66,11 @@ public class DtReleaseManifest extends TableImpl<DtReleaseManifestRecord> {
      * The column <code>oagi.dt_release_manifest.release_id</code>.
      */
     public final TableField<DtReleaseManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.dt_release_manifest.module_id</code>.
+     */
+    public final TableField<DtReleaseManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.dt_release_manifest.dt_id</code>.
@@ -112,7 +117,7 @@ public class DtReleaseManifest extends TableImpl<DtReleaseManifestRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.DT_RELEASE_MANIFEST_DT_RELEASE_MANIFEST_DT_ID_FK, Indexes.DT_RELEASE_MANIFEST_DT_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.DT_RELEASE_MANIFEST_PRIMARY);
+        return Arrays.<Index>asList(Indexes.DT_RELEASE_MANIFEST_DT_RELEASE_MANIFEST_DT_ID_FK, Indexes.DT_RELEASE_MANIFEST_DT_RELEASE_MANIFEST_MODULE_ID_FK, Indexes.DT_RELEASE_MANIFEST_DT_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.DT_RELEASE_MANIFEST_PRIMARY);
     }
 
     @Override
@@ -132,11 +137,15 @@ public class DtReleaseManifest extends TableImpl<DtReleaseManifestRecord> {
 
     @Override
     public List<ForeignKey<DtReleaseManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtReleaseManifestRecord, ?>>asList(Keys.DT_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.DT_RELEASE_MANIFEST_DT_ID_FK);
+        return Arrays.<ForeignKey<DtReleaseManifestRecord, ?>>asList(Keys.DT_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.DT_RELEASE_MANIFEST_MODULE_ID_FK, Keys.DT_RELEASE_MANIFEST_DT_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.DT_RELEASE_MANIFEST_RELEASE_ID_FK);
+    }
+
+    public Module module() {
+        return new Module(this, Keys.DT_RELEASE_MANIFEST_MODULE_ID_FK);
     }
 
     public Dt dt() {
@@ -170,11 +179,11 @@ public class DtReleaseManifest extends TableImpl<DtReleaseManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<ULong, ULong, ULong> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

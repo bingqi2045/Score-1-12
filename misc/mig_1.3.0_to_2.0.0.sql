@@ -34,15 +34,18 @@ VALUES
 CREATE TABLE `acc_release_manifest` (
     `acc_release_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned,
     `acc_id` bigint(20) unsigned NOT NULL,
     `based_acc_id` bigint(20) unsigned,
     PRIMARY KEY (`acc_release_manifest_id`),
     KEY `acc_release_manifest_acc_id_fk` (`acc_id`),
     KEY `acc_release_manifest_based_acc_id_fk` (`based_acc_id`),
     KEY `acc_release_manifest_release_id_fk` (`release_id`),
+    KEY `acc_release_manifest_module_id_fk` (`module_id`),
     CONSTRAINT `acc_release_manifest_acc_id_fk` FOREIGN KEY (`acc_id`) REFERENCES `acc` (`acc_id`),
     CONSTRAINT `acc_release_manifest_based_acc_id_fk` FOREIGN KEY (`based_acc_id`) REFERENCES `acc` (`acc_id`),
-    CONSTRAINT `acc_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `acc_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `acc_release_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `based_acc_id`
@@ -82,15 +85,18 @@ CREATE INDEX `acc_last_update_timestamp_desc_idx` ON `acc` (`last_update_timesta
 CREATE TABLE `asccp_release_manifest` (
     `asccp_release_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned,
     `asccp_id` bigint(20) unsigned NOT NULL,
     `role_of_acc_id` bigint(20) unsigned NOT NULL,
     PRIMARY KEY (`asccp_release_manifest_id`),
     KEY `asccp_release_manifest_asccp_id_fk` (`asccp_id`),
     KEY `asccp_release_manifest_role_of_acc_id_fk` (`role_of_acc_id`),
     KEY `asccp_release_manifest_release_id_fk` (`release_id`),
+    KEY `asccp_release_manifest_module_id_fk` (`module_id`),
     CONSTRAINT `asccp_release_manifest_asccp_id_fk` FOREIGN KEY (`asccp_id`) REFERENCES `asccp` (`asccp_id`),
     CONSTRAINT `asccp_release_manifest_role_of_acc_id_fk` FOREIGN KEY (`role_of_acc_id`) REFERENCES `acc` (`acc_id`),
-    CONSTRAINT `asccp_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `asccp_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `asccp_release_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `role_of_acc_id`
@@ -102,16 +108,16 @@ UPDATE `asccp`, (
 SET `asccp`.`role_of_acc_id` = t.current_acc_id
 WHERE `asccp`.`asccp_id` = t.asccp_id;
 
-INSERT `asccp_release_manifest` (`release_id`, `asccp_id`, `role_of_acc_id`)
+INSERT `asccp_release_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `asccp`.`module_id`,
     `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`
 FROM `asccp` JOIN (SELECT MAX(`asccp_id`) as `asccp_id` FROM `asccp` GROUP BY `guid`) t ON `asccp`.`asccp_id` = t.`asccp_id`
 ORDER BY `asccp`.`asccp_id`;
 
-INSERT `asccp_release_manifest` (`release_id`, `asccp_id`, `role_of_acc_id`)
+INSERT `asccp_release_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_id`)
 SELECT
-    `release`.`release_id`,
+    `release`.`release_id`, `asccp`.`module_id`,
     `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`
 FROM `asccp` JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 3;
@@ -130,27 +136,30 @@ CREATE INDEX `asccp_last_update_timestamp_desc_idx` ON `asccp` (`last_update_tim
 CREATE TABLE `bccp_release_manifest` (
     `bccp_release_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned,
     `bccp_id` bigint(20) unsigned NOT NULL,
     `bdt_id` bigint(20) unsigned NOT NULL,
     PRIMARY KEY (`bccp_release_manifest_id`),
     KEY `bccp_release_manifest_bccp_id_fk` (`bccp_id`),
     KEY `bccp_release_manifest_bdt_id_fk` (`bdt_id`),
     KEY `bccp_release_manifest_release_id_fk` (`release_id`),
+    KEY `bccp_release_manifest_module_id_fk` (`module_id`),
     CONSTRAINT `bccp_release_manifest_bccp_id_fk` FOREIGN KEY (`bccp_id`) REFERENCES `bccp` (`bccp_id`),
     CONSTRAINT `bccp_release_manifest_bdt_id_fk` FOREIGN KEY (`bdt_id`) REFERENCES `dt` (`dt_id`),
-    CONSTRAINT `bccp_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `bccp_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `bccp_release_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT `bccp_release_manifest` (`release_id`, `bccp_id`, `bdt_id`)
+INSERT `bccp_release_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `bccp`.`module_id`,
     `bccp`.`bccp_id`, `bccp`.`bdt_id`
 FROM `bccp` JOIN (SELECT MAX(`bccp_id`) as `bccp_id` FROM `bccp` GROUP BY `guid`) t ON `bccp`.`bccp_id` = t.`bccp_id`
 ORDER BY `bccp`.`bccp_id`;
 
-INSERT `bccp_release_manifest` (`release_id`, `bccp_id`, `bdt_id`)
+INSERT `bccp_release_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_id`)
 SELECT
-    `release`.`release_id`,
+    `release`.`release_id`, `bccp`.`module_id`,
     `bccp`.`bccp_id`, `bccp`.`bdt_id`
 FROM `bccp` JOIN `release` ON `bccp`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 3;
@@ -297,24 +306,27 @@ CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timesta
 CREATE TABLE `dt_release_manifest` (
     `dt_release_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned,
     `dt_id` bigint(20) unsigned NOT NULL,
     PRIMARY KEY (`dt_release_manifest_id`),
     KEY `dt_release_manifest_dt_id_fk` (`dt_id`),
     KEY `dt_release_manifest_release_id_fk` (`release_id`),
+    KEY `dt_release_manifest_module_id_fk` (`module_id`),
     CONSTRAINT `dt_release_manifest_dt_id_fk` FOREIGN KEY (`dt_id`) REFERENCES `dt` (`dt_id`),
-    CONSTRAINT `dt_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `dt_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `dt_release_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT `dt_release_manifest` (`release_id`, `dt_id`)
+INSERT `dt_release_manifest` (`release_id`, `module_id`, `dt_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    MAX(`dt_id`) as `dt_id`
-FROM `dt`
-GROUP BY `guid` ORDER BY MAX(`dt_id`);
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `dt`.`module_id`,
+    `dt`.`dt_id`
+FROM `dt` JOIN (SELECT MAX(`dt_id`) as `dt_id` FROM `dt` GROUP BY `guid`) t ON `dt`.`dt_id` = t.`dt_id`
+ORDER BY `dt`.`dt_id`;
 
-INSERT `dt_release_manifest` (`release_id`, `dt_id`)
+INSERT `dt_release_manifest` (`release_id`, `module_id`, `dt_id`)
 SELECT
-    `release`.`release_id`,
+    `release`.`release_id`, `dt`.`module_id`,
     `dt`.`dt_id`
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
 WHERE `dt`.`state` = 3;
@@ -335,12 +347,15 @@ CREATE INDEX `dt_last_update_timestamp_desc_idx` ON `dt` (`last_update_timestamp
 CREATE TABLE `xbt_release_manifest` (
     `xbt_release_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned,
     `xbt_id` bigint(20) unsigned NOT NULL,
     PRIMARY KEY (`xbt_release_manifest_id`),
     KEY `xbt_release_manifest_xbt_id_fk` (`xbt_id`),
     KEY `xbt_release_manifest_release_id_fk` (`release_id`),
+    KEY `xbt_release_manifest_module_id_fk` (`module_id`),
     CONSTRAINT `xbt_release_manifest_xbt_id_fk` FOREIGN KEY (`xbt_id`) REFERENCES `xbt` (`xbt_id`),
-    CONSTRAINT `xbt_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `xbt_release_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `xbt_release_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Add `guid` into `xbt` table.
@@ -474,16 +489,16 @@ UPDATE `xbt` SET `guid` = 'oagis-id-6aba2f0c928d426384417bc1a2b0d300' WHERE `nam
 
 ALTER TABLE `xbt` MODIFY COLUMN `guid` varchar(41) NOT NULL COMMENT 'A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.';
 
-INSERT `xbt_release_manifest` (`release_id`, `xbt_id`)
+INSERT `xbt_release_manifest` (`release_id`, `module_id`, `xbt_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    MAX(`xbt_id`) as `xbt_id`
-FROM `xbt`
-GROUP BY `guid` ORDER BY MAX(`xbt_id`);
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `xbt`.`module_id`,
+    `xbt`.`xbt_id`
+FROM `xbt` JOIN (SELECT MAX(`xbt_id`) as `xbt_id` FROM `xbt` GROUP BY `guid`) t ON `xbt`.`xbt_id` = t.`xbt_id`
+ORDER BY `xbt`.`xbt_id`;
 
-INSERT `xbt_release_manifest` (`release_id`, `xbt_id`)
+INSERT `xbt_release_manifest` (`release_id`, `module_id`, `xbt_id`)
 SELECT
-    `release`.`release_id`,
+    `release`.`release_id`, `xbt`.`module_id`,
     `xbt`.`xbt_id`
 FROM `xbt` JOIN `release` ON `xbt`.`release_id` = `release`.`release_id`
 WHERE `xbt`.`state` = 3;
@@ -512,6 +527,11 @@ ALTER TABLE `acc` DROP FOREIGN KEY `acc_release_id_fk`;
 DROP INDEX `acc_release_id_fk` ON `acc`;
 ALTER TABLE `acc` DROP COLUMN `release_id`;
 
+-- DROP `module_id` column on `acc` table.
+ALTER TABLE `acc` DROP FOREIGN KEY `acc_module_id_fk`;
+DROP INDEX `acc_module_id_fk` ON `acc`;
+ALTER TABLE `acc` DROP COLUMN `module_id`;
+
 -- DROP `current_asccp_id` column on `asccp` table.
 ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_current_asccp_id_fk`;
 DROP INDEX `asccp_current_asccp_id_fk` ON `asccp`;
@@ -525,6 +545,11 @@ ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_release_id_fk`;
 DROP INDEX `asccp_release_id_fk` ON `asccp`;
 ALTER TABLE `asccp` DROP COLUMN `release_id`;
 
+-- DROP `module_id` column on `asccp` table.
+ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_module_id_fk`;
+DROP INDEX `asccp_module_id_fk` ON `asccp`;
+ALTER TABLE `asccp` DROP COLUMN `module_id`;
+
 -- DROP `current_bccp_id` column on `bccp` table.
 ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_current_bccp_id_fk`;
 DROP INDEX `bccp_current_bccp_id_fk` ON `bccp`;
@@ -537,6 +562,11 @@ DELETE FROM `bccp` WHERE `release_id` IS NULL AND `revision_num` = 0;
 ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_release_id_fk`;
 DROP INDEX `bccp_release_id_fk` ON `bccp`;
 ALTER TABLE `bccp` DROP COLUMN `release_id`;
+
+-- DROP `module_id` column on `bccp` table.
+ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_module_id_fk`;
+DROP INDEX `bccp_module_id_fk` ON `bccp`;
+ALTER TABLE `bccp` DROP COLUMN `module_id`;
 
 -- DROP `current_ascc_id` column on `ascc` table.
 ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_current_ascc_id_fk`;
@@ -573,5 +603,25 @@ ALTER TABLE `dt` DROP COLUMN `current_bdt_id`;
 ALTER TABLE `dt` DROP FOREIGN KEY `dt_release_id_fk`;
 DROP INDEX `dt_release_id_fk` ON `dt`;
 ALTER TABLE `dt` DROP COLUMN `release_id`;
+
+-- DROP `module_id` column on `dt` table.
+ALTER TABLE `dt` DROP FOREIGN KEY `dt_module_id_fk`;
+DROP INDEX `dt_module_id_fk` ON `dt`;
+ALTER TABLE `dt` DROP COLUMN `module_id`;
+
+-- DROP `current_xbt_id` column on `xbt` table.
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_current_xbt_id_fk`;
+DROP INDEX `xbt_current_xbt_id_fk` ON `xbt`;
+ALTER TABLE `xbt` DROP COLUMN `current_xbt_id`;
+
+-- DROP `release_id` column on `xbt` table.
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_release_id_fk`;
+DROP INDEX `xbt_release_id_fk` ON `xbt`;
+ALTER TABLE `xbt` DROP COLUMN `release_id`;
+
+-- DROP `module_id` column on `xbt` table.
+ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_module_id_fk`;
+DROP INDEX `xbt_module_id_fk` ON `xbt`;
+ALTER TABLE `xbt` DROP COLUMN `module_id`;
 
 SET FOREIGN_KEY_CHECKS = 1;

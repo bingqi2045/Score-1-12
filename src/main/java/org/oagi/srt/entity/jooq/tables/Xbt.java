@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = 1032143424;
+    private static final long serialVersionUID = -1128568630;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -101,16 +101,6 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, String> SCHEMA_DEFINITION = createField(DSL.name("schema_definition"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
-     * The column <code>oagi.xbt.module_id</code>.
-     */
-    public final TableField<XbtRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
-
-    /**
-     * The column <code>oagi.xbt.release_id</code>. @deprecated since 1.2.0.
-     */
-    public final TableField<XbtRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0.");
-
-    /**
      * The column <code>oagi.xbt.revision_doc</code>.
      */
     public final TableField<XbtRecord, String> REVISION_DOC = createField(DSL.name("revision_doc"), org.jooq.impl.SQLDataType.CLOB, this, "");
@@ -161,11 +151,6 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
 
     /**
-     * The column <code>oagi.xbt.current_xbt_id</code>. @deprecated since 1.2.0.
-     */
-    public final TableField<XbtRecord, ULong> CURRENT_XBT_ID = createField(DSL.name("current_xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "@deprecated since 1.2.0.");
-
-    /**
      * The column <code>oagi.xbt.is_deprecated</code>.
      */
     public final TableField<XbtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
@@ -210,7 +195,7 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.XBT_PRIMARY, Indexes.XBT_XBT_CREATED_BY_FK, Indexes.XBT_XBT_CURRENT_XBT_ID_FK, Indexes.XBT_XBT_GUID_IDX, Indexes.XBT_XBT_LAST_UPDATED_BY_FK, Indexes.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.XBT_XBT_MODULE_ID_FK, Indexes.XBT_XBT_OWNER_USER_ID_FK, Indexes.XBT_XBT_RELEASE_ID_FK, Indexes.XBT_XBT_REVISION_IDX, Indexes.XBT_XBT_SUBTYPE_OF_XBT_ID_FK);
+        return Arrays.<Index>asList(Indexes.XBT_PRIMARY, Indexes.XBT_XBT_CREATED_BY_FK, Indexes.XBT_XBT_GUID_IDX, Indexes.XBT_XBT_LAST_UPDATED_BY_FK, Indexes.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.XBT_XBT_OWNER_USER_ID_FK, Indexes.XBT_XBT_REVISION_IDX, Indexes.XBT_XBT_SUBTYPE_OF_XBT_ID_FK);
     }
 
     @Override
@@ -230,19 +215,11 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<ForeignKey<XbtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_MODULE_ID_FK, Keys.XBT_RELEASE_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK, Keys.XBT_CURRENT_XBT_ID_FK);
+        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK);
     }
 
-    public org.oagi.srt.entity.jooq.tables.Xbt xbtSubtypeOfXbtIdFk() {
+    public org.oagi.srt.entity.jooq.tables.Xbt xbt() {
         return new org.oagi.srt.entity.jooq.tables.Xbt(this, Keys.XBT_SUBTYPE_OF_XBT_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.XBT_MODULE_ID_FK);
-    }
-
-    public Release release() {
-        return new Release(this, Keys.XBT_RELEASE_ID_FK);
     }
 
     public AppUser xbtCreatedByFk() {
@@ -255,10 +232,6 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     public AppUser xbtLastUpdatedByFk() {
         return new AppUser(this, Keys.XBT_LAST_UPDATED_BY_FK);
-    }
-
-    public org.oagi.srt.entity.jooq.tables.Xbt xbtCurrentXbtIdFk() {
-        return new org.oagi.srt.entity.jooq.tables.Xbt(this, Keys.XBT_CURRENT_XBT_ID_FK);
     }
 
     @Override
@@ -288,11 +261,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row22 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> fieldsRow() {
-        return (Row22) super.fieldsRow();
+    public Row19<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, Byte> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

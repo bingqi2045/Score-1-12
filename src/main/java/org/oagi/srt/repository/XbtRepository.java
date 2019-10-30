@@ -1,8 +1,6 @@
 package org.oagi.srt.repository;
 
-import org.jooq.DSLContext;
-import org.jooq.Record21;
-import org.jooq.SelectJoinStep;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Xbt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.XBT;
+import static org.oagi.srt.entity.jooq.Tables.XBT_RELEASE_MANIFEST;
 
 @Repository
 public class XbtRepository implements SrtRepository<Xbt> {
@@ -19,20 +18,20 @@ public class XbtRepository implements SrtRepository<Xbt> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record21<
-            ULong, ULong, ULong, ULong, ULong,
-            String, ULong, ULong, ULong, String,
-            Timestamp, Byte, String, String, Timestamp,
-            Byte, String, Integer, Integer, String,
-            Integer>> getSelectJoinStep() {
-        return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY, XBT.CURRENT_XBT_ID,
-                XBT.LAST_UPDATED_BY, XBT.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
-                XBT.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
+    private SelectOnConditionStep<Record20<
+            ULong, ULong, ULong, ULong, String,
+            ULong, ULong, ULong, String, Timestamp,
+            Byte, String, String, Timestamp, Byte,
+            String, Integer, Integer, String, Integer>> getSelectJoinStep() {
+        return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
+                XBT.LAST_UPDATED_BY, XBT_RELEASE_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
+                XBT_RELEASE_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
                 XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_ACTION, XBT.REVISION_DOC,
                 XBT.REVISION_NUM, XBT.REVISION_TRACKING_NUM, XBT.SCHEMA_DEFINITION,
                 XBT.STATE)
-                .from(XBT);
+                .from(XBT)
+                .join(XBT_RELEASE_MANIFEST).on(XBT.XBT_ID.eq(XBT_RELEASE_MANIFEST.XBT_ID));
     }
 
     @Override

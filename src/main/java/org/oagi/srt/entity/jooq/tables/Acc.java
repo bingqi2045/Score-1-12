@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -51,7 +51,7 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 1552802428;
+    private static final long serialVersionUID = 1788646071;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -110,11 +110,6 @@ public class Acc extends TableImpl<AccRecord> {
      * The column <code>oagi.acc.oagis_component_type</code>. The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains "Base" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains "Extension" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS. 
      */
     public final TableField<AccRecord, Integer> OAGIS_COMPONENT_TYPE = createField(DSL.name("oagis_component_type"), org.jooq.impl.SQLDataType.INTEGER, this, "The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains \"Base\" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains \"Extension\" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS. ");
-
-    /**
-     * The column <code>oagi.acc.module_id</code>. Foreign key to the module table indicating the physical schema the ACC belongs to.
-     */
-    public final TableField<AccRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the module table indicating the physical schema the ACC belongs to.");
 
     /**
      * The column <code>oagi.acc.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
@@ -218,7 +213,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ACC_ACC_BASED_ACC_ID_FK, Indexes.ACC_ACC_CREATED_BY_FK, Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATED_BY_FK, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_ACC_MODULE_ID_FK, Indexes.ACC_ACC_NAMESPACE_ID_FK, Indexes.ACC_ACC_OWNER_USER_ID_FK, Indexes.ACC_ACC_REVISION_IDX, Indexes.ACC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ACC_ACC_BASED_ACC_ID_FK, Indexes.ACC_ACC_CREATED_BY_FK, Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATED_BY_FK, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_ACC_NAMESPACE_ID_FK, Indexes.ACC_ACC_OWNER_USER_ID_FK, Indexes.ACC_ACC_REVISION_IDX, Indexes.ACC_PRIMARY);
     }
 
     @Override
@@ -238,15 +233,11 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_MODULE_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK);
     }
 
     public org.oagi.srt.entity.jooq.tables.Acc acc() {
         return new org.oagi.srt.entity.jooq.tables.Acc(this, Keys.ACC_BASED_ACC_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.ACC_MODULE_ID_FK);
     }
 
     public Namespace namespace() {
@@ -292,11 +283,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row22 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte, Byte, Byte> fieldsRow() {
-        return (Row22) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte, Byte, Byte> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

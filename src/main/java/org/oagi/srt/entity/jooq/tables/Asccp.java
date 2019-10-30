@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = -1486451442;
+    private static final long serialVersionUID = -786563565;
 
     /**
      * The reference instance of <code>oagi.asccp</code>
@@ -136,11 +136,6 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AsccpRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "1 = EDITING, 2 = CANDIDATE, 3 = PUBLISHED. This the revision life cycle state of the ACC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
-     * The column <code>oagi.asccp.module_id</code>. This column stores the name of the physical schema module the ASCCP belongs to. Right now the schema file name is assigned. In the future, this needs to be updated to a file path from the base of the release directory.
-     */
-    public final TableField<AsccpRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This column stores the name of the physical schema module the ASCCP belongs to. Right now the schema file name is assigned. In the future, this needs to be updated to a file path from the base of the release directory.");
-
-    /**
      * The column <code>oagi.asccp.namespace_id</code>. Foreign key to the Namespace table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
      */
     public final TableField<AsccpRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the Namespace table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
@@ -215,7 +210,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ASCCP_ASCCP_CREATED_BY_FK, Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATED_BY_FK, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ASCCP_ASCCP_MODULE_ID_FK, Indexes.ASCCP_ASCCP_NAMESPACE_ID_FK, Indexes.ASCCP_ASCCP_OWNER_USER_ID_FK, Indexes.ASCCP_ASCCP_REVISION_IDX, Indexes.ASCCP_ASCCP_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ASCCP_ASCCP_CREATED_BY_FK, Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATED_BY_FK, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ASCCP_ASCCP_NAMESPACE_ID_FK, Indexes.ASCCP_ASCCP_OWNER_USER_ID_FK, Indexes.ASCCP_ASCCP_REVISION_IDX, Indexes.ASCCP_ASCCP_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_PRIMARY);
     }
 
     @Override
@@ -235,7 +230,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AsccpRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpRecord, ?>>asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_MODULE_ID_FK, Keys.ASCCP_NAMESPACE_ID_FK);
+        return Arrays.<ForeignKey<AsccpRecord, ?>>asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_NAMESPACE_ID_FK);
     }
 
     public Acc acc() {
@@ -252,10 +247,6 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser asccpLastUpdatedByFk() {
         return new AppUser(this, Keys.ASCCP_LAST_UPDATED_BY_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.ASCCP_MODULE_ID_FK);
     }
 
     public Namespace namespace() {
@@ -289,11 +280,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, Timestamp, Timestamp, Integer, ULong, ULong, Byte, Byte, Integer, Integer, Byte, Byte> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, Timestamp, Timestamp, Integer, ULong, Byte, Byte, Integer, Integer, Byte, Byte> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

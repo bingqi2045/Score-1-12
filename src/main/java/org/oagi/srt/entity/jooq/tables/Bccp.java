@@ -16,7 +16,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = 335041903;
+    private static final long serialVersionUID = 785496328;
 
     /**
      * The reference instance of <code>oagi.bccp</code>
@@ -98,11 +98,6 @@ public class Bccp extends TableImpl<BccpRecord> {
      * The column <code>oagi.bccp.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public final TableField<BccpRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "This is typically a URL identifying the source of the DEFINITION column.");
-
-    /**
-     * The column <code>oagi.bccp.module_id</code>. Foreign key to the module table indicating physical schema module the BCCP belongs to.
-     */
-    public final TableField<BccpRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the module table indicating physical schema module the BCCP belongs to.");
 
     /**
      * The column <code>oagi.bccp.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
@@ -221,7 +216,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BCCP_BCCP_BDT_ID_FK, Indexes.BCCP_BCCP_CREATED_BY_FK, Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATED_BY_FK, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCCP_BCCP_MODULE_ID_FK, Indexes.BCCP_BCCP_NAMESPACE_ID_FK, Indexes.BCCP_BCCP_OWNER_USER_ID_FK, Indexes.BCCP_BCCP_REVISION_IDX, Indexes.BCCP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BCCP_BCCP_BDT_ID_FK, Indexes.BCCP_BCCP_CREATED_BY_FK, Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATED_BY_FK, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCCP_BCCP_NAMESPACE_ID_FK, Indexes.BCCP_BCCP_OWNER_USER_ID_FK, Indexes.BCCP_BCCP_REVISION_IDX, Indexes.BCCP_PRIMARY);
     }
 
     @Override
@@ -241,15 +236,11 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<BccpRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_MODULE_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK);
     }
 
     public Dt dt() {
         return new Dt(this, Keys.BCCP_BDT_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.BCCP_MODULE_ID_FK);
     }
 
     public Namespace namespace() {
@@ -295,11 +286,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row22 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, ULong, Byte, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Integer, Byte, String> fieldsRow() {
-        return (Row22) super.fieldsRow();
+    public Row21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Integer, Byte, String> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

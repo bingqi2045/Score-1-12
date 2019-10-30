@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1521762967;
+    private static final long serialVersionUID = -720809429;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -132,11 +132,6 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.state</code>. 1 = EDITING, 2 = CANDIDATE, 3 = PUBLISHED. This the revision life cycle state of the entity.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<DtRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = EDITING, 2 = CANDIDATE, 3 = PUBLISHED. This the revision life cycle state of the entity.\\n\\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
-
-    /**
-     * The column <code>oagi.dt.module_id</code>. Foreign key to the MODULE table indicating physical file where the DT shall belong to when it is generated in an expression. 
-     */
-    public final TableField<DtRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the MODULE table indicating physical file where the DT shall belong to when it is generated in an expression. ");
 
     /**
      * The column <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
@@ -229,7 +224,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.DT_DT_BASED_DT_ID_FK, Indexes.DT_DT_CREATED_BY_FK, Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATED_BY_FK, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.DT_DT_MODULE_ID_FK, Indexes.DT_DT_OWNER_USER_ID_FK, Indexes.DT_DT_PREVIOUS_VERSION_DT_ID_FK, Indexes.DT_DT_REVISION_IDX, Indexes.DT_DT_UK1, Indexes.DT_PRIMARY);
+        return Arrays.<Index>asList(Indexes.DT_DT_BASED_DT_ID_FK, Indexes.DT_DT_CREATED_BY_FK, Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATED_BY_FK, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.DT_DT_OWNER_USER_ID_FK, Indexes.DT_DT_PREVIOUS_VERSION_DT_ID_FK, Indexes.DT_DT_REVISION_IDX, Indexes.DT_DT_UK1, Indexes.DT_PRIMARY);
     }
 
     @Override
@@ -249,7 +244,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_MODULE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK);
     }
 
     public org.oagi.srt.entity.jooq.tables.Dt dtPreviousVersionDtIdFk() {
@@ -258,10 +253,6 @@ The value of this column in the latest history record should be the same as that
 
     public org.oagi.srt.entity.jooq.tables.Dt dtBasedDtIdFk() {
         return new org.oagi.srt.entity.jooq.tables.Dt(this, Keys.DT_BASED_DT_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.DT_MODULE_ID_FK);
     }
 
     public AppUser dtCreatedByFk() {

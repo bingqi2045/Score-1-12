@@ -34,7 +34,7 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.CONTENT_COMPONENT_DEFINITION,
                 Tables.DT.REVISION_DOC,
                 Tables.DT.STATE,
-                Tables.DT.MODULE_ID,
+                Tables.DT_RELEASE_MANIFEST.MODULE_ID,
                 Tables.DT.CREATED_BY,
                 Tables.DT.LAST_UPDATED_BY,
                 Tables.DT.OWNER_USER_ID,
@@ -48,7 +48,7 @@ public class DTRepository implements SrtRepository<DT> {
                 .from(Tables.DT)
                 .join(Tables.DT_RELEASE_MANIFEST)
                 .on(Tables.DT.DT_ID.eq(Tables.DT_RELEASE_MANIFEST.DT_ID))
-                .leftJoin(Tables.MODULE).on(Tables.DT.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .leftJoin(Tables.MODULE).on(Tables.DT_RELEASE_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override

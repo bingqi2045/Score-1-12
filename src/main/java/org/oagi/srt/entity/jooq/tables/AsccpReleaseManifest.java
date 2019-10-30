@@ -15,7 +15,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpReleaseManifest extends TableImpl<AsccpReleaseManifestRecord> {
 
-    private static final long serialVersionUID = -1691341432;
+    private static final long serialVersionUID = -1144197679;
 
     /**
      * The reference instance of <code>oagi.asccp_release_manifest</code>
@@ -66,6 +66,11 @@ public class AsccpReleaseManifest extends TableImpl<AsccpReleaseManifestRecord> 
      * The column <code>oagi.asccp_release_manifest.release_id</code>.
      */
     public final TableField<AsccpReleaseManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.asccp_release_manifest.module_id</code>.
+     */
+    public final TableField<AsccpReleaseManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.asccp_release_manifest.asccp_id</code>.
@@ -117,7 +122,7 @@ public class AsccpReleaseManifest extends TableImpl<AsccpReleaseManifestRecord> 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_MODULE_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK, Indexes.ASCCP_RELEASE_MANIFEST_PRIMARY);
     }
 
     @Override
@@ -137,11 +142,15 @@ public class AsccpReleaseManifest extends TableImpl<AsccpReleaseManifestRecord> 
 
     @Override
     public List<ForeignKey<AsccpReleaseManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpReleaseManifestRecord, ?>>asList(Keys.ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK);
+        return Arrays.<ForeignKey<AsccpReleaseManifestRecord, ?>>asList(Keys.ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_RELEASE_MANIFEST_MODULE_ID_FK, Keys.ASCCP_RELEASE_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_RELEASE_MANIFEST_ROLE_OF_ACC_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.ASCCP_RELEASE_MANIFEST_RELEASE_ID_FK);
+    }
+
+    public Module module() {
+        return new Module(this, Keys.ASCCP_RELEASE_MANIFEST_MODULE_ID_FK);
     }
 
     public Asccp asccp() {
@@ -179,11 +188,11 @@ public class AsccpReleaseManifest extends TableImpl<AsccpReleaseManifestRecord> 
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<ULong, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }
