@@ -399,21 +399,7 @@ public class CcNodeRepository {
         }
     }
 
-    public Record1<ULong> getLastAsccpId() {
-        Record1<ULong> maxId = dslContext.select(
-                max(ASCCP.ASCCP_ID)
-        ).from(ASCCP).fetchAny();
-        return maxId;
-    }
-
-    public Record1<ULong> getLastBccpId() {
-        Record1<ULong> maxId = dslContext.select(
-                max(BCCP.BCCP_ID)
-        ).from(BCCP).fetchAny();
-        return maxId;
-    }
-
-    public CcAsccpNode getAsccpNodeByAsccpId(User user, long manifestId) {
+    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, long manifestId) {
         CcAsccpNode asccpNode = dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
@@ -489,7 +475,7 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public CcBccpNode getBccpNodeByBccpId(long manifestId) {
+    public CcBccpNode getBccpNodeByBccpManifestId(long manifestId) {
         CcBccpNode bccpNode = dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -507,27 +493,6 @@ public class CcNodeRepository {
         bccpNode.setState(CcState.valueOf(bccpNode.getRawState()));
         bccpNode.setHasChild(hasChild(bccpNode));
 
-        return bccpNode;
-    }
-
-    public CcBccpNode getBccpNodeByCurrentBccpId(long currentBccpId, Long releaseId) {
-        CcBccpNode bccpNode = dslContext.select(
-                BCCP.BCCP_ID,
-                BCCP.BCCP_ID,
-                BCCP.GUID,
-                BCCP.PROPERTY_TERM.as("name"),
-                BCCP.BDT_ID,
-                BCCP.STATE.as("raw_state"),
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
-                BCCP_RELEASE_MANIFEST.RELEASE_ID)
-                .from(BCCP)
-                .join(BCCP_RELEASE_MANIFEST)
-                .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID))
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(currentBccpId)))
-                .fetchOneInto(CcBccpNode.class);
-        bccpNode.setState(CcState.valueOf(bccpNode.getRawState()));
-        bccpNode.setHasChild(hasChild(bccpNode));
         return bccpNode;
     }
 
@@ -642,7 +607,7 @@ public class CcNodeRepository {
                     .fetchOneInto(ULong.class).longValue();
 
             CcAsccpNode asccpNode =
-                    getAsccpNodeByAsccpId(user, manifestId);
+                    getAsccpNodeByAsccpManifestId(user, manifestId);
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
             return asccpNode;
@@ -681,7 +646,7 @@ public class CcNodeRepository {
                             ))
                             .fetchOneInto(ULong.class).longValue();
 
-            CcBccpNode bccpNode = getBccpNodeByBccpId(manifestId);
+            CcBccpNode bccpNode = getBccpNodeByBccpManifestId(manifestId);
             bccpNode.setSeqKey(bccNode.getSeqKey());
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());

@@ -35,11 +35,11 @@ public class CcNodeService {
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
-        return repository.getAsccpNodeByAsccpId(user, manifestId);
+        return repository.getAsccpNodeByAsccpManifestId(user, manifestId);
     }
 
     public CcBccpNode getBccpNode(User user, long manifestId) {
-        return repository.getBccpNodeByBccpId(manifestId);
+        return repository.getBccpNodeByBccpManifestId(manifestId);
     }
 
     @Transactional
