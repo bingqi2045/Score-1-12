@@ -351,7 +351,6 @@ public class CcNodeRepository {
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASCCP.CREATED_BY, baseAsccpRecord.getCreatedBy())
                 .set(ASCCP.CREATION_TIMESTAMP, baseAsccpRecord.getCreationTimestamp())
-                .set(ASCCP.MODULE_ID, baseAsccpRecord.getModuleId())
                 .set(ASCCP.REUSABLE_INDICATOR, (byte) (asccpNodeDetail.isReusable() ? 1 : 0))
                 .set(ASCCP.NAMESPACE_ID, baseAsccpRecord.getNamespaceId())
                 .set(ASCCP.IS_NILLABLE, baseAsccpRecord.getIsNillable())
