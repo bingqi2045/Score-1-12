@@ -43,7 +43,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcUpdateResponse updateCcNodes(@AuthenticationPrincipal User user,
+    public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal User user,
                                 @RequestBody CcUpdateRequest ccUpdateRequest) {
 
         CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
@@ -52,6 +52,30 @@ public class CcNodeController {
 //        ccUpdateResponse.setBccpNodeResults(service.updateBccp(user, ccUpdateRequest.getAccNodeDetails()));
 //        ccUpdateResponse.setBdtScNodeResults(service.updateBdt(user, ccUpdateRequest.getAccNodeDetails()));
         return ccUpdateResponse;
+    }
+
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateCcNodeManifest(@AuthenticationPrincipal User user,
+                                               @PathVariable("type") String type,
+                                               @PathVariable("manifestId") long manifestId,
+                                               @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
+
+        switch (type) {
+            case "acc":
+                //return getAccNode(user, manifestId);
+                break;
+            case "asccp":
+                service.updateAsccpManifest(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
+                //return getAsccpNode(user, manifestId);
+            case "bccp":
+                //return getBccpNode(user, manifestId);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return ResponseEntity.accepted().build();
     }
 
     private CcAccNode getAccNode(User user, long manifestId) {

@@ -167,5 +167,10 @@ public class CcNodeService {
     public void discardAscc(User user, long accManifestId, long asccManifestId) {
         // repository method discard specific id
     }
+
+    @Transactional
+    public void updateAsccpManifest(User user, long asccpManifestId, long accManifestId) {
+        repository.updateAsccpManifest(user, asccpManifestId, accManifestId);
+    }
 }
 

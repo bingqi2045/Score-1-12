@@ -340,7 +340,7 @@ public class CcNodeRepository {
 
         AsccpRecord InsertedAsccpRecord = dslContext.insertInto(ASCCP)
                 .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
-                .set(ASCCP.GUID, SrtGuid.randomGuid())
+                .set(ASCCP.GUID, baseAsccpRecord.getGuid())
                 .set(ASCCP.DEN, asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
                 .set(ASCCP.ROLE_OF_ACC_ID, accRecord.getAccId())
                 .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
@@ -1020,6 +1020,50 @@ public class CcNodeRepository {
 
         dslContext.deleteFrom(BCCP)
                 .where(BCCP.BCCP_ID.in(asccpIds))
+                .execute();
+    }
+
+    public void updateAsccpManifest(User user, long asccpManifestId, long accManifestId) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        long roleOfAccId = dslContext.select(ACC_RELEASE_MANIFEST.ACC_ID).from(ACC_RELEASE_MANIFEST)
+                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .fetchOneInto(long.class);
+
+        AccRecord roleOfAccRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(roleOfAccId))).fetchOne();
+
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId))).fetchOne();
+
+        AsccpRecord baseAsccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
+
+        AsccpRecord InsertedAsccpRecord = dslContext.insertInto(ASCCP)
+                .set(ASCCP.PROPERTY_TERM, baseAsccpRecord.getPropertyTerm())
+                .set(ASCCP.GUID, baseAsccpRecord.getGuid())
+                .set(ASCCP.DEN, baseAsccpRecord.getPropertyTerm() + ". " + roleOfAccRecord.getObjectClassTerm())
+                .set(ASCCP.ROLE_OF_ACC_ID, roleOfAccRecord.getAccId())
+                .set(ASCCP.DEFINITION, baseAsccpRecord.getDefinition())
+                .set(ASCCP.IS_DEPRECATED, baseAsccpRecord.getIsDeprecated())
+                .set(ASCCP.STATE, baseAsccpRecord.getState())
+                .set(ASCCP.OWNER_USER_ID, baseAsccpRecord.getOwnerUserId())
+                .set(ASCCP.LAST_UPDATED_BY, userId)
+                .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(ASCCP.CREATED_BY, baseAsccpRecord.getCreatedBy())
+                .set(ASCCP.CREATION_TIMESTAMP, baseAsccpRecord.getCreationTimestamp())
+                .set(ASCCP.REUSABLE_INDICATOR, baseAsccpRecord.getReusableIndicator())
+                .set(ASCCP.NAMESPACE_ID, baseAsccpRecord.getNamespaceId())
+                .set(ASCCP.IS_NILLABLE, baseAsccpRecord.getIsNillable())
+                .set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue())
+                .set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1)
+                .set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum()).returning().fetchOne();
+
+        dslContext.update(ASCCP_RELEASE_MANIFEST)
+                .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, InsertedAsccpRecord.getAsccpId())
+                .set(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID, InsertedAsccpRecord.getRoleOfAccId())
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
     }
 }
