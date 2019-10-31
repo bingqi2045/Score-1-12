@@ -40,4 +40,10 @@ public class ModuleController {
                             @PathVariable("id") long moduleId) {
         return moduleService.getModule(user, moduleId);
     }
+
+    @RequestMapping(value = "/modules", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleElement getModuleElement() {
+        return moduleService.getModuleElement();
+    }
 }
