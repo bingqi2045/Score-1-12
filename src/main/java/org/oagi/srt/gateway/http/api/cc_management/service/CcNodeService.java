@@ -172,5 +172,23 @@ public class CcNodeService {
     public void updateAsccpManifest(User user, long asccpManifestId, long accManifestId) {
         repository.updateAsccpManifest(user, asccpManifestId, accManifestId);
     }
+
+    @Transactional
+    public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, String state) {
+        CcState ccState;
+        if(CcState.Editing.name().equals(state)) {
+            ccState = CcState.Editing;
+        }
+        else if(CcState.Candidate.name().equals(state)) {
+            ccState = CcState.Candidate;
+        }
+        else if(CcState.Published.name().equals(state)) {
+            ccState = CcState.Published;
+        } else{
+            return null;
+        }
+
+        return repository.updateAsccpState(user, asccpManifestId, ccState);
+    }
 }
 

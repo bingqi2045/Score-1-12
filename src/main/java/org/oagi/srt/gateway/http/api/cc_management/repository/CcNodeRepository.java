@@ -1066,5 +1066,34 @@ public class CcNodeRepository {
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
     }
+
+    public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, CcState ccState) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId))).fetchOne();
+
+        AsccpRecord baseAsccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
+
+        baseAsccpRecord.set(ASCCP.ASCCP_ID, null);
+        baseAsccpRecord.set(ASCCP.STATE, ccState.getValue());
+        baseAsccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
+        baseAsccpRecord.set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp);
+        baseAsccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
+        baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1);
+
+        AsccpRecord InsertedAsccpRecord = dslContext.insertInto(ASCCP)
+                .set(baseAsccpRecord).returning().fetchOne();
+
+        dslContext.update(ASCCP_RELEASE_MANIFEST)
+                .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, InsertedAsccpRecord.getAsccpId())
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
+                .execute();
+
+        CcAsccpNode ccAsccpNode = getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
+        return getAsccpNodeDetail(user, ccAsccpNode);
+    }
 }
 

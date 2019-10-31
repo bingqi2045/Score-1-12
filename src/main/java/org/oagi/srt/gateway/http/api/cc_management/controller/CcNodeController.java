@@ -78,6 +78,28 @@ public class CcNodeController {
         return ResponseEntity.accepted().build();
     }
 
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcAsccpNodeDetail updateState(@AuthenticationPrincipal User user,
+                            @PathVariable("type") String type,
+                            @PathVariable("manifestId") long manifestId,
+                            @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
+        switch (type) {
+            case "acc":
+                //return getAccNode(user, manifestId);
+                break;
+            case "asccp":
+                return service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState());
+                //return getAsccpNode(user, manifestId);
+            case "bccp":
+                //return getBccpNode(user, manifestId);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return null;
+    }
+
     private CcAccNode getAccNode(User user, long manifestId) {
         return service.getAccNode(user, manifestId);
     }
