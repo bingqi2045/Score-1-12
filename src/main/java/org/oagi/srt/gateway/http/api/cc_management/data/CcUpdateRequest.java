@@ -10,11 +10,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class CcEditUpdateRequest {
-    private long accId;
-    private List<CcAccNodeDetail> accNodeDetails;
-    private List<CcAsccpNodeDetail> asccpNodeDetails;
+public class CcUpdateRequest {
+    private List<CcAccNodeDetail> accNodeDetails = Collections.emptyList();
+    private List<CcAsccpNodeDetail> asccpNodeDetails = Collections.emptyList();
     private List<CcBccpNodeDetail> bccpNodeResults = Collections.emptyList();
     private List<CcBdtScNodeDetail> bdtScNodeResults = Collections.emptyList();
-
 }

@@ -40,6 +40,20 @@ public class CcNodeController {
         }
     }
 
+    @RequestMapping(value = "/core_component",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public CcUpdateResponse updateCcNodes(@AuthenticationPrincipal User user,
+                                @RequestBody CcUpdateRequest ccUpdateRequest) {
+
+        CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
+        ccUpdateResponse.setAccNodeResults(service.updateAcc(user, ccUpdateRequest.getAccNodeDetails()));
+        ccUpdateResponse.setAsccpNodeResults(service.updateAsccp(user, ccUpdateRequest.getAsccpNodeDetails()));
+//        ccUpdateResponse.setBccpNodeResults(service.updateBccp(user, ccUpdateRequest.getAccNodeDetails()));
+//        ccUpdateResponse.setBdtScNodeResults(service.updateBdt(user, ccUpdateRequest.getAccNodeDetails()));
+        return ccUpdateResponse;
+    }
+
     private CcAccNode getAccNode(User user, long manifestId) {
         return service.getAccNode(user, manifestId);
     }
@@ -113,16 +127,6 @@ public class CcNodeController {
 
     private void deleteBccpNode(User user, long manifestId) {
         service.deleteBccpNode(user, manifestId);
-    }
-
-    @RequestMapping(value = "/core_component/acc/{id}", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void update(
-            @AuthenticationPrincipal User user,
-            @PathVariable("id") long id,
-            @RequestBody CcAccNode ccAccNode) {
-        ccAccNode.setAccId(id);
-        service.updateAcc(user, ccAccNode);
     }
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
@@ -203,26 +207,6 @@ public class CcNodeController {
 
             case "discard":
                 service.discardAscc(user, manifestId, actionRequest.getManifestId());
-                break;
-        }
-
-        return ResponseEntity.accepted().build();
-    }
-
-    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity doAsccpAction(@AuthenticationPrincipal User user,
-                                       @PathVariable("manifestId") long manifestId,
-                                       @RequestBody CcActionRequest actionRequest) {
-
-        switch (actionRequest.getAction()) {
-            case "update":
-                service.updateAsccp(user, actionRequest.getAsccpNodeDetail().getAsccp(), manifestId);
-                break;
-
-            case "discard":
-                //
                 break;
         }
 

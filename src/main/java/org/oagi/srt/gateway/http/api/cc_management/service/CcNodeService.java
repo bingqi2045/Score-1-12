@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -141,13 +142,20 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void updateAcc(User user, CcAccNode ccAccNode) {
-        repository.updateAcc(user, ccAccNode);
+    public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodes) {
+        return ccAccNodes;
+        //repository.updateAcc(user, ccAccNode);
     }
 
     @Transactional
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
-        repository.updateAsccp(user, asccpNodeDetail, manifestId);
+    public List<CcAsccpNodeDetail> updateAsccp(User user, List<CcAsccpNodeDetail> asccpNodeDetail) {
+        List<CcAsccpNodeDetail> ccAsccpNodeDetails = new ArrayList<>();
+        for (CcAsccpNodeDetail detail : asccpNodeDetail) {
+            CcAsccpNodeDetail ccAsccpNodeDetail =
+                    repository.updateAsccp(user, detail.getAsccp(), detail.getAsccp().getManifestId());
+            ccAsccpNodeDetails.add(ccAsccpNodeDetail);
+        }
+        return ccAsccpNodeDetails;
     }
 
     @Transactional

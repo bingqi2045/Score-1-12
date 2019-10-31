@@ -328,7 +328,7 @@ public class CcNodeRepository {
                 .where(ACC.ACC_ID.eq(ULong.valueOf(ccAccNode.getAccId())));
     }
 
-    public void updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
+    public CcAsccpNodeDetail updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
@@ -362,6 +362,9 @@ public class CcNodeRepository {
                 .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, InsertedAsccpRecord.getAsccpId())
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
+
+        CcAsccpNode ccAsccpNode = getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
+        return getAsccpNodeDetail(user, ccAsccpNode);
     }
 
     private CcAccNode arrangeAccNode(CcAccNode accNode, ULong releaseId) {
@@ -428,6 +431,7 @@ public class CcNodeRepository {
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
                 ASCCP_RELEASE_MANIFEST.RELEASE_ID,
+                ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.as("manifest_id"),
                 ASCCP.OWNER_USER_ID)
                 .from(ASCCP)
                 .join(ASCCP_RELEASE_MANIFEST)
@@ -723,6 +727,7 @@ public class CcNodeRepository {
         long asccId = asccpNode.getAsccId();
         if (asccId > 0L) {
             CcAsccpNodeDetail.Ascc ascc = dslContext.select(
+                    ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.as("manifest_id"),
                     ASCC.ASCC_ID,
                     ASCC.GUID,
                     ASCC.DEN,
@@ -731,6 +736,9 @@ public class CcNodeRepository {
                     ASCC.IS_DEPRECATED.as("deprecated"),
                     ASCC.DEFINITION)
                     .from(ASCC)
+                    .join(ASCC_RELEASE_MANIFEST)
+                    .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID)
+                            .and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(asccpNode.getReleaseId()))))
                     .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
 
@@ -739,6 +747,7 @@ public class CcNodeRepository {
 
         long asccpId = asccpNode.getAsccpId();
         CcAsccpNodeDetail.Asccp asccp = dslContext.select(
+                ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.as("manifest_id"),
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
@@ -747,6 +756,9 @@ public class CcNodeRepository {
                 ASCCP.IS_DEPRECATED.as("deprecated"),
                 ASCCP.DEFINITION)
                 .from(ASCCP)
+                .join(ASCCP_RELEASE_MANIFEST)
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID)
+                        .and(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(asccpNode.getReleaseId()))))
                 .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
