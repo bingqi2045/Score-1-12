@@ -336,7 +336,7 @@ public class CcNodeRepository {
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(asccpReleaseManifestRecord.getRoleOfAccId())).fetchOne();
         AsccpRecord baseAsccpRecord = dslContext.selectFrom(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpNodeDetail.getAsccpId()))).fetchOne();
+                .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
 
         AsccpRecord InsertedAsccpRecord = dslContext.insertInto(ASCCP)
                 .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
