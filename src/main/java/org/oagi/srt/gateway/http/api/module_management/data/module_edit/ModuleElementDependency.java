@@ -1,11 +1,14 @@
 package org.oagi.srt.gateway.http.api.module_management.data.module_edit;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class ModuleElementDependency implements Serializable {
+@JsonSerialize(using = ModuleElementDependencySerializer.class)
+public class ModuleElementDependency
+        implements Serializable, Comparable<ModuleElementDependency> {
     private String dependencyType;
     private ModuleElement dependingElement;
     private ModuleElement dependedElement;
@@ -13,6 +16,10 @@ public class ModuleElementDependency implements Serializable {
     public ModuleElementDependency(String dependencyType, ModuleElement dependingElement) {
         this.dependencyType = dependencyType;
         this.dependingElement = dependingElement;
+    }
+
+    public String toString() {
+        return toString(0);
     }
 
     public String toString(int indent) {
@@ -29,5 +36,11 @@ public class ModuleElementDependency implements Serializable {
                 .append(getDependingElement().getRelativePath(from))
                 .append("]");
         return sb.toString();
+    }
+
+
+    @Override
+    public int compareTo(ModuleElementDependency o) {
+        return this.toString().compareTo(o.toString());
     }
 }

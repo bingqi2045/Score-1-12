@@ -1,18 +1,21 @@
 package org.oagi.srt.gateway.http.api.module_management.data.module_edit;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.*;
 
 @Data
+@JsonSerialize(using = ModuleElementSerializer.class)
 public class ModuleElement implements Serializable, Comparable<ModuleElement> {
+
     private final String name;
     private final boolean directory;
     private long moduleId;
     private ModuleElement parent;
     private SortedSet<ModuleElement> elements = new TreeSet();
-    private Set<ModuleElementDependency> dependents = new HashSet();
+    private SortedSet<ModuleElementDependency> dependents = new TreeSet();
 
     public ModuleElement(String name, boolean directory) {
         this.name = name;
