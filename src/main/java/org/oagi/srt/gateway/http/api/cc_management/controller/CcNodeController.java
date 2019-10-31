@@ -24,7 +24,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
                             @PathVariable("manifestId") long manifestId) {
@@ -42,7 +42,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcUpdateResponse updateCcNodes(@AuthenticationPrincipal User user,
                                 @RequestBody CcUpdateRequest ccUpdateRequest) {
 
@@ -69,7 +69,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component",
             method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteCcNodes(@AuthenticationPrincipal User user,
                                         @RequestParam(value = "acc", required = false) List<Long> accManifestIdList,
                                         @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
@@ -96,7 +96,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
                                        @PathVariable("type") String type,
                                        @PathVariable("manifestId") long manifestId) {
@@ -130,14 +130,14 @@ public class CcNodeController {
     }
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
         return service.getAsccp(id);
     }
 
     @RequestMapping(value = "/core_component/node/children/{type}",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<? extends CcNode> getNodeChildren(@AuthenticationPrincipal User user,
                                                   @PathVariable("type") String type,
                                                   @RequestParam("data") String data) {
@@ -171,7 +171,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/node/detail/{type}",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
                                       @PathVariable("type") String type,
                                       @RequestParam("data") String data) {
@@ -195,7 +195,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/ascc/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doAsccAction(@AuthenticationPrincipal User user,
                                        @PathVariable("manifestId") long manifestId,
                                        @RequestBody CcActionRequest actionRequest) {
@@ -224,7 +224,7 @@ public class CcNodeController {
     }
 
     @RequestMapping(value = "/core_component/asccp", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createAsccp(@AuthenticationPrincipal User user,
                                         @RequestBody CcAsccpCreateRequest request) {
         long manifestId = service.createAsccp(user, request);
@@ -235,7 +235,7 @@ public class CcNodeController {
     }
 
     @RequestMapping(value = "/core_component/bccp", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createBccp(@AuthenticationPrincipal User user,
                                        @RequestBody CcBccpCreateRequest request) {
         long manifestId = service.createBccp(user, request);

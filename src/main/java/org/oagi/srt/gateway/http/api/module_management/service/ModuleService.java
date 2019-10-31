@@ -4,15 +4,19 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.AppUser;
+import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
+import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 import org.oagi.srt.gateway.http.api.module_management.data.*;
+import org.oagi.srt.gateway.http.api.module_management.data.module_edit.ModuleElement;
+import org.oagi.srt.gateway.http.api.module_management.data.module_edit.ModuleElementDependency;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.inline;
 
@@ -101,6 +105,62 @@ public class ModuleService {
         );
 
         return moduleDependencies;
+    }
+
+    public ModuleElement getModuleElement() {
+        List<ModuleRecord> modules =
+                dslContext.selectFrom(Tables.MODULE).fetch()
+                        .stream().collect(Collectors.toList());
+
+        ModuleElement root = new ModuleElement("/", true);
+
+        Map<Long, ModuleElement> moduleMap = new HashMap();
+
+        for (ModuleRecord moduleRecord : modules) {
+            String module = moduleRecord.getModule();
+            List<String> splitModule = Arrays.asList(module.split("\\\\"));
+
+            String parentName = null;
+            for (int i = 0; i < splitModule.size(); ++i) {
+                String name = splitModule.get(i);
+                boolean isDirectory = !((i + 1) == splitModule.size());
+
+                ModuleElement element = new ModuleElement(name, isDirectory);
+                if (!element.isDirectory()) {
+                    long moduleId = moduleRecord.getModuleId().longValue();
+                    element.setModuleId(moduleId);
+
+                    moduleMap.put(moduleId, element);
+                }
+
+                if (!root.addElement(parentName, element)) {
+                    throw new IllegalStateException("Can't add a module: " + module);
+                }
+
+                parentName = name;
+            }
+        }
+
+        List<ModuleDepRecord> moduleDeps =
+                dslContext.selectFrom(Tables.MODULE_DEP).fetch()
+                        .stream().collect(Collectors.toList());
+
+        for (ModuleDepRecord moduleDep : moduleDeps) {
+            ModuleElement dependedModule =
+                    moduleMap.get(moduleDep.getDependedModuleId().longValue());
+
+            ModuleElement dependingModule =
+                    moduleMap.get(moduleDep.getDependingModuleId().longValue());
+
+            String type =
+                    (moduleDep.getDependencyType() == 0) ? "include" : "import";
+
+            dependedModule.addDependent(
+                    new ModuleElementDependency(type, dependingModule)
+            );
+        }
+        
+        return root;
     }
 
 }

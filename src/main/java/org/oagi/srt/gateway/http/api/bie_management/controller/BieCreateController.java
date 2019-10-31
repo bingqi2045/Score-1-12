@@ -19,7 +19,7 @@ public class BieCreateController {
     private BieService bieService;
 
     @RequestMapping(value = "/profile_bie/create", method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public BieCreateResponse create(
             @AuthenticationPrincipal User user,
             @RequestBody BieCreateRequest bieCreateRequest) {

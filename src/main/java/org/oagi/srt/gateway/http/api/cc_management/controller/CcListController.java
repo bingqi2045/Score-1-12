@@ -29,7 +29,7 @@ public class CcListController {
     private ExtensionService extensionService;
 
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CcList> getCcList(
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "den", required = false) String den,
@@ -90,7 +90,7 @@ public class CcListController {
 
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/transfer_ownership",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
                                             @PathVariable("manifestId") long manifestId,
                                             @RequestBody Map<String, String> request) {

@@ -27,7 +27,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/node/extension/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("manifestId") long manifestId) {
         return service.getExtensionNode(user, manifestId);
@@ -35,7 +35,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
                                             @PathVariable("manifestId") long manifestId,
                                             @RequestBody CcActionRequest actionRequest) {
@@ -73,7 +73,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal User user,
                                                @PathVariable("manifestId") long manifestId,
                                                @RequestBody Map<String, Object> body) {
@@ -85,7 +85,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/detail",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal User user,
                                                  @PathVariable("manifestId") long manifestId,
                                                  @RequestBody ExtensionUpdateRequest request) {

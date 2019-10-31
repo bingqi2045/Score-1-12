@@ -24,26 +24,26 @@ public class ReleaseController {
     private ReleaseService service;
 
     @RequestMapping(value = "/simple_releases", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<SimpleRelease> getSimpleReleases() {
         return service.getSimpleReleases();
     }
 
     @RequestMapping(value = "/simple_release/{id}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public SimpleRelease getSimpleRelease(@PathVariable("id") long releaseId) {
         return service.getSimpleReleaseByReleaseId(releaseId);
     }
 
     @RequestMapping(value = "/release_list", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ReleaseList> getReleaseList(@AuthenticationPrincipal User user) {
         return service.getReleaseList(user);
     }
 
     @RequestMapping(value = "/releases",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<ReleaseList> getReleases(@AuthenticationPrincipal User user,
                                                  @RequestParam(name = "releaseNum", required = false) String releaseNum,
                                                  @RequestParam(name = "namespace", required = false) String namespace,
