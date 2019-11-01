@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class CcUpdateManifestRequest {
     private long accManifestId;
+    private long bdtManifestId;
 }

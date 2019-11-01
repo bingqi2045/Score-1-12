@@ -16,6 +16,7 @@ public class CcBccpNode extends CcNode implements SeqKeySupportable {
 
     private long bccpId;
     private long bdtId;
+    private int manifestId;
 
     @Override
     public long getId() {

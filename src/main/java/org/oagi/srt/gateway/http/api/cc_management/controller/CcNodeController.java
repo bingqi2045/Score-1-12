@@ -45,13 +45,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal User user,
                                 @RequestBody CcUpdateRequest ccUpdateRequest) {
-
-        CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
-        ccUpdateResponse.setAccNodeResults(service.updateAcc(user, ccUpdateRequest.getAccNodeDetails()));
-        ccUpdateResponse.setAsccpNodeResults(service.updateAsccp(user, ccUpdateRequest.getAsccpNodeDetails()));
-//        ccUpdateResponse.setBccpNodeResults(service.updateBccp(user, ccUpdateRequest.getAccNodeDetails()));
-//        ccUpdateResponse.setBdtScNodeResults(service.updateBdt(user, ccUpdateRequest.getAccNodeDetails()));
-        return ccUpdateResponse;
+        return service.updateCcDetails(user, ccUpdateRequest);
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
@@ -61,7 +55,6 @@ public class CcNodeController {
                                                @PathVariable("type") String type,
                                                @PathVariable("manifestId") long manifestId,
                                                @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
-
         switch (type) {
             case "acc":
                 //return getAccNode(user, manifestId);
@@ -70,7 +63,7 @@ public class CcNodeController {
                 service.updateAsccpManifest(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
                 //return getAsccpNode(user, manifestId);
             case "bccp":
-                //return getBccpNode(user, manifestId);
+                service.updateBccpManifest(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -80,7 +73,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcAsccpNodeDetail updateState(@AuthenticationPrincipal User user,
+    public CcNodeDetail updateState(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
                             @PathVariable("manifestId") long manifestId,
                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
@@ -92,8 +85,8 @@ public class CcNodeController {
                 return service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState());
                 //return getAsccpNode(user, manifestId);
             case "bccp":
-                //return getBccpNode(user, manifestId);
-                break;
+                return service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState());
+
             default:
                 throw new UnsupportedOperationException();
         }

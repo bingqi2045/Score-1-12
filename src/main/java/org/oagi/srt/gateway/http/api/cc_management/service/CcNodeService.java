@@ -40,7 +40,7 @@ public class CcNodeService {
     }
 
     public CcBccpNode getBccpNode(User user, long manifestId) {
-        return repository.getBccpNodeByBccpManifestId(manifestId);
+        return repository.getBccpNodeByBccpManifestId(user, manifestId);
     }
 
     @Transactional
@@ -142,20 +142,44 @@ public class CcNodeService {
     }
 
     @Transactional
+    public CcUpdateResponse updateCcDetails(User user, CcUpdateRequest ccUpdateRequest) {
+        CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
+        ccUpdateResponse.setAccNodeResults(
+                updateAcc(user, ccUpdateRequest.getAccNodeDetails()));
+        ccUpdateResponse.setAsccpNodeResults(
+                updateAsccp(user, ccUpdateRequest.getAsccpNodeDetails()));
+        ccUpdateResponse.setBccpNodeResults(
+                updateBccp(user, ccUpdateRequest.getBccpNodeDetails()));
+
+        return ccUpdateResponse;
+    }
+
+    @Transactional
     public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodes) {
         return ccAccNodes;
         //repository.updateAcc(user, ccAccNode);
     }
 
     @Transactional
-    public List<CcAsccpNodeDetail> updateAsccp(User user, List<CcAsccpNodeDetail> asccpNodeDetail) {
-        List<CcAsccpNodeDetail> ccAsccpNodeDetails = new ArrayList<>();
-        for (CcAsccpNodeDetail detail : asccpNodeDetail) {
-            CcAsccpNodeDetail ccAsccpNodeDetail =
+    public List<CcAsccpNodeDetail> updateAsccp(User user, List<CcAsccpNodeDetail> asccpNodeDetails) {
+        List<CcAsccpNodeDetail> updatedAsccpNodeDetails = new ArrayList<>();
+        for (CcAsccpNodeDetail detail : asccpNodeDetails) {
+            CcAsccpNodeDetail updatedAsccpNodeDetail =
                     repository.updateAsccp(user, detail.getAsccp(), detail.getAsccp().getManifestId());
-            ccAsccpNodeDetails.add(ccAsccpNodeDetail);
+            updatedAsccpNodeDetails.add(updatedAsccpNodeDetail);
         }
-        return ccAsccpNodeDetails;
+        return updatedAsccpNodeDetails;
+    }
+
+    @Transactional
+    public List<CcBccpNodeDetail> updateBccp(User user, List<CcBccpNodeDetail> bccpNodeDetails) {
+        List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
+        for (CcBccpNodeDetail detail : bccpNodeDetails) {
+            CcBccpNodeDetail updatedBccpNodeDetail =
+                    repository.updateBccp(user, detail.getBccp(), detail.getBccp().getManifestId());
+            updatedBccpNodeDetails.add(updatedBccpNodeDetail);
+        }
+        return updatedBccpNodeDetails;
     }
 
     @Transactional
@@ -174,21 +198,35 @@ public class CcNodeService {
     }
 
     @Transactional
+    public void updateBccpManifest(User user, long bccpManifestId, long bdtManifestId) {
+        repository.updateBccpManifest(user, bccpManifestId, bdtManifestId);
+    }
+
+
+
+    @Transactional
     public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, String state) {
-        CcState ccState;
+        CcState ccState = getStateCode(state);
+        return repository.updateAsccpState(user, asccpManifestId, ccState);
+    }
+
+    @Transactional
+    public CcBccpNodeDetail updateBccpState(User user, long bccpManifestId, String state) {
+        CcState ccState = getStateCode(state);
+        return repository.updateBccpState(user, bccpManifestId, ccState);
+    }
+
+    private CcState getStateCode(String state) {
         if(CcState.Editing.name().equals(state)) {
-            ccState = CcState.Editing;
+            return CcState.Editing;
         }
         else if(CcState.Candidate.name().equals(state)) {
-            ccState = CcState.Candidate;
+            return CcState.Candidate;
         }
         else if(CcState.Published.name().equals(state)) {
-            ccState = CcState.Published;
-        } else{
-            return null;
+            return CcState.Published;
         }
-
-        return repository.updateAsccpState(user, asccpManifestId, ccState);
+        return null;
     }
 }
 

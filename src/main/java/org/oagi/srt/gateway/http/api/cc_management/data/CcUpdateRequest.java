@@ -13,6 +13,6 @@ import java.util.List;
 public class CcUpdateRequest {
     private List<CcAccNodeDetail> accNodeDetails = Collections.emptyList();
     private List<CcAsccpNodeDetail> asccpNodeDetails = Collections.emptyList();
-    private List<CcBccpNodeDetail> bccpNodeResults = Collections.emptyList();
-    private List<CcBdtScNodeDetail> bdtScNodeResults = Collections.emptyList();
+    private List<CcBccpNodeDetail> bccpNodeDetails = Collections.emptyList();
+    private List<CcBdtScNodeDetail> bdtNodeDetails = Collections.emptyList();
 }
