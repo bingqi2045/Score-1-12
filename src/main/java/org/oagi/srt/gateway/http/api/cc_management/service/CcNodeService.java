@@ -32,7 +32,7 @@ public class CcNodeService {
     public CcAccNode getAccNode(User user, long manifestId) {
         AccReleaseManifestRecord accReleaseManifestRecord =
                 manifestRepository.getAccReleaseManifestById(manifestId);
-        return repository.getAccNodeByAccId(accReleaseManifestRecord);
+        return repository.getAccNodeByAccId(user, accReleaseManifestRecord);
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
@@ -155,9 +155,14 @@ public class CcNodeService {
     }
 
     @Transactional
-    public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodes) {
-        return ccAccNodes;
-        //repository.updateAcc(user, ccAccNode);
+    public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
+        List<CcAccNodeDetail> updatedAccNodeDetails = new ArrayList<>();
+        for (CcAccNodeDetail detail : ccAccNodeDetails) {
+            CcAccNodeDetail updatedAccNodeDetail =
+                    repository.updateAcc(user, detail);
+            updatedAccNodeDetails.add(updatedAccNodeDetail);
+        }
+        return updatedAccNodeDetails;
     }
 
     @Transactional
@@ -184,12 +189,12 @@ public class CcNodeService {
 
     @Transactional
     public void appendAscc(User user, long accManifestId, long asccManifestId) {
-        repository.createAscc(user, accManifestId, asccManifestId);
+        repository.appendAscc(user, accManifestId, asccManifestId);
     }
 
     @Transactional
-    public void discardAscc(User user, long accManifestId, long asccManifestId) {
-        // repository method discard specific id
+    public void appendBcc(User user, long accManifestId, long bccManifestId) {
+        repository.appendBcc(user, accManifestId, bccManifestId);
     }
 
     @Transactional
@@ -215,6 +220,12 @@ public class CcNodeService {
         CcState ccState = getStateCode(state);
         return repository.updateBccpState(user, bccpManifestId, ccState);
     }
+
+    @Transactional
+    public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId) {
+        return repository.updateAccBasedId(user, accManifestId, basedAccManifestId);
+    }
+
 
     private CcState getStateCode(String state) {
         if(CcState.Editing.name().equals(state)) {

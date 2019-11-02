@@ -15,4 +15,5 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private boolean deprecated;
     private String definition;
     private CcState state;
+    private long manifestId;
 }

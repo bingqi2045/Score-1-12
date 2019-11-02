@@ -63,9 +63,9 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(User user, long manifestId) {
         AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
-        CcAccNode ueAcc = repository.getAccNodeByAccId(extensionAcc);
+        CcAccNode ueAcc = repository.getAccNodeByAccId(user, extensionAcc);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
-        CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(asccpNode.getAsccpId(), extensionAcc.getReleaseId());
+        CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
 
         long userId = sessionService.userId(user);

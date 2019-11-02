@@ -232,24 +232,32 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/ascc/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/node/append",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity doAsccAction(@AuthenticationPrincipal User user,
-                                       @PathVariable("manifestId") long manifestId,
-                                       @RequestBody CcActionRequest actionRequest) {
+    public ResponseEntity appendNode(@AuthenticationPrincipal User user,
+                                       @RequestBody CcAppendRequest ccAppendRequest) {
 
-        switch (actionRequest.getAction()) {
-            case "append":
-                service.appendAscc(user, manifestId, actionRequest.getManifestId());
-                break;
-
-            case "discard":
-                service.discardAscc(user, manifestId, actionRequest.getManifestId());
-                break;
+        if (ccAppendRequest.getAccManifestId() != null) {
+            if (ccAppendRequest.getAsccManifestId() != null) {
+                service.appendAscc(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccManifestId());
+            }
+            if (ccAppendRequest.getBccManifestId() != null) {
+                service.appendBcc(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccManifestId());
+            }
         }
 
         return ResponseEntity.accepted().build();
+    }
+
+    @RequestMapping(value = "/core_component/node/acc/{manifestId}/base",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcAccNode setBasedNode(@AuthenticationPrincipal User user,
+                                       @PathVariable("manifestId") long manifestId,
+                                       @RequestBody CcAccRequest ccAccRequest) {
+
+        return service.updateAccBasedId(user, manifestId, ccAccRequest.getBasedAccManifestId());
     }
 
     @RequestMapping(value = "/core_component/acc", method = RequestMethod.POST)

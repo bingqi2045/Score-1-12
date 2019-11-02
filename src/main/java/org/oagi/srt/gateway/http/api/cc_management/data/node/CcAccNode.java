@@ -18,6 +18,7 @@ public class CcAccNode extends CcNode {
     private boolean group;
     private boolean isDeprecated;
     private boolean isAbstract;
+    private long manifestId;
 
     @Override
     public long getId() {
