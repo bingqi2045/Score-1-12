@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Comparator;
@@ -1180,6 +1181,96 @@ public class CcNodeRepository {
                 .set(BCCP_RELEASE_MANIFEST.BDT_ID, InsertedBccpRecord.getBdtId())
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
                 .execute();
+    }
+    public CcAccNodeDetail updateAccState(User user, long accManifestId, CcState ccState) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AccReleaseManifestRecord accReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(accManifestId);
+        AccRecord baseAccRecord = getAccRecordById(accReleaseManifestRecord.getAccId().longValue());
+        long originAccId = baseAccRecord.getAccId().longValue();
+
+        baseAccRecord.set(ACC.ACC_ID, null);
+        baseAccRecord.set(ACC.STATE, ccState.getValue());
+        baseAccRecord.set(ACC.LAST_UPDATED_BY, userId);
+        baseAccRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
+        baseAccRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
+        baseAccRecord.set(ACC.REVISION_TRACKING_NUM, baseAccRecord.getRevisionTrackingNum() + 1);
+
+        AccRecord insertedAccRecord = dslContext.insertInto(ACC)
+                .set(baseAccRecord).returning().fetchOne();
+
+        dslContext.update(ACC_RELEASE_MANIFEST)
+                .set(ACC_RELEASE_MANIFEST.ACC_ID, insertedAccRecord.getAccId())
+                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(accReleaseManifestRecord.getAccReleaseManifestId()))
+                .execute();
+
+        updateBccStateByAccId(userId.longValue(), originAccId, insertedAccRecord.getAccId().longValue(),
+                accReleaseManifestRecord.getReleaseId().longValue(), timestamp, ccState);
+
+        updateAsccStateByAccId(userId.longValue(), originAccId, insertedAccRecord.getAccId().longValue(),
+                accReleaseManifestRecord.getReleaseId().longValue(), timestamp, ccState);
+        
+        CcAccNode ccAccNode = getAccNodeByAccId(user, accReleaseManifestRecord);
+        return getAccNodeDetail(user, ccAccNode);
+    }
+
+    private void updateBccStateByAccId(long userId, long orginAccId, long insertedAccId, long releaseId,
+                                       Timestamp timestamp, CcState ccState) {
+
+        List<BccReleaseManifestRecord> bccReleaseManifestRecords = dslContext.selectFrom(BCC_RELEASE_MANIFEST)
+                .where(and(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(orginAccId)),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).fetch();
+        
+        for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
+            BccRecord baseBccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
+
+            baseBccRecord.set(BCC.BCC_ID, null);
+            baseBccRecord.set(BCC.STATE, ccState.getValue());
+            baseBccRecord.set(BCC.FROM_ACC_ID, ULong.valueOf(insertedAccId));
+            baseBccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
+            baseBccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
+            baseBccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
+            baseBccRecord.set(BCC.REVISION_TRACKING_NUM, baseBccRecord.getRevisionTrackingNum() + 1);
+
+            BccRecord insertedBccRecord = dslContext.insertInto(BCC)
+                    .set(baseBccRecord).returning().fetchOne();
+
+            dslContext.update(BCC_RELEASE_MANIFEST)
+                    .set(BCC_RELEASE_MANIFEST.BCC_ID, insertedBccRecord.getBccId())
+                    .set(BCC_RELEASE_MANIFEST.FROM_ACC_ID, ULong.valueOf(insertedAccId))
+                    .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
+                    .execute();
+        }
+    }
+
+    private void updateAsccStateByAccId(long userId, long orginAccId, long insertedAccId, long releaseId,
+                                        Timestamp timestamp, CcState ccState) {
+
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords = dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
+                .where(and(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(orginAccId)),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).fetch();
+
+        for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
+            AsccRecord baseAsccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
+
+            baseAsccRecord.set(ASCC.ASCC_ID, null);
+            baseAsccRecord.set(ASCC.STATE, ccState.getValue());
+            baseAsccRecord.set(ASCC.FROM_ACC_ID, ULong.valueOf(insertedAccId));
+            baseAsccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
+            baseAsccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
+            baseAsccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
+            baseAsccRecord.set(ASCC.REVISION_TRACKING_NUM, baseAsccRecord.getRevisionTrackingNum() + 1);
+
+            AsccRecord insertedAsccRecord = dslContext.insertInto(ASCC)
+                    .set(baseAsccRecord).returning().fetchOne();
+
+            dslContext.update(ASCC_RELEASE_MANIFEST)
+                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, insertedAsccRecord.getAsccId())
+                    .set(ASCC_RELEASE_MANIFEST.FROM_ACC_ID, ULong.valueOf(insertedAccId))
+                    .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
+                    .execute();
+        }
     }
 
     public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, CcState ccState) {

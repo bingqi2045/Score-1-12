@@ -79,18 +79,15 @@ public class CcNodeController {
                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
         switch (type) {
             case "acc":
-                //return getAccNode(user, manifestId);
-                break;
+                return service.updateAccState(user, manifestId, ccUpdateStateRequest.getState());
             case "asccp":
                 return service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState());
-                //return getAsccpNode(user, manifestId);
             case "bccp":
                 return service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState());
 
             default:
                 throw new UnsupportedOperationException();
         }
-        return null;
     }
 
     private CcAccNode getAccNode(User user, long manifestId) {
