@@ -877,8 +877,12 @@ public class CcNodeRepository {
                     BCC.CARDINALITY_MAX,
                     BCC.IS_DEPRECATED.as("deprecated"),
                     BCC.DEFAULT_VALUE,
-                    BCC.DEFINITION)
+                    BCC.DEFINITION,
+                    BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.as("manifest_id"))
                     .from(BCC)
+                    .join(BCC_RELEASE_MANIFEST)
+                    .on(and(BCC_RELEASE_MANIFEST.BCC_ID.eq(BCC.BCC_ID),
+                            BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(bccpNode.getReleaseId()))))
                     .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
 
@@ -1533,11 +1537,27 @@ public class CcNodeRepository {
 
     }
 
-    private void UpdateAsccStatusByAccReleaseManifest(AccReleaseManifest accReleaseManifest) {
+    public void discardAsccByManifestId(long manifestId){
+        AsccReleaseManifestRecord asccReleaseManifestRecord = manifestRepository.getAsccReleaseManifestById(manifestId);
 
+        dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
+                .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId())).execute();
+        dslContext.deleteFrom(ASCC)
+                .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
+                .execute();
+
+        // decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
     }
 
-    private void UpdateBccStatusByAccReleaseManifest(AccReleaseManifest accReleaseManifest) {
+    public void discardBccByManifestId(long manifestId){
+        BccReleaseManifestRecord bccReleaseManifestRecord = manifestRepository.getBccReleaseManifestById(manifestId);
 
+        dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
+                .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
+        dslContext.deleteFrom(BCC)
+                .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
+                .execute();
+
+        // decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
     }
 }

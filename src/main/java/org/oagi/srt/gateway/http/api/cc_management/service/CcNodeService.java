@@ -1,8 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
-import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
@@ -229,6 +227,16 @@ public class CcNodeService {
     @Transactional
     public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId) {
         return repository.updateAccBasedId(user, accManifestId, basedAccManifestId);
+    }
+
+    @Transactional
+    public void discardAscc(User user, long asccpManifestId) {
+        repository.discardAsccByManifestId(asccpManifestId);
+    }
+
+    @Transactional
+    public void discardBcc(User user, long bccpManifestId) {
+        repository.discardBccByManifestId(bccpManifestId);
     }
 
 

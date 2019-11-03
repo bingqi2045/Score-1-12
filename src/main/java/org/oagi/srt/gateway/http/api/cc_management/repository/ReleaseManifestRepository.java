@@ -6,6 +6,7 @@ import org.oagi.srt.entity.jooq.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -47,6 +48,20 @@ public class ReleaseManifestRepository {
     public DtReleaseManifestRecord getDtReleaseManifestById(long manifestId) {
         return dslContext.selectFrom(DT_RELEASE_MANIFEST)
                 .where(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .fetchOne();
+    }
+
+    public AsccReleaseManifestRecord getAsccReleaseManifestByToAsccpId(long toAsccpId, long releaseId) {
+        return dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
+                .where(and(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetchOne();
+    }
+
+    public BccReleaseManifestRecord getBccReleaseManifestByToBccpId(long toBccpId, long releaseId) {
+        return dslContext.selectFrom(BCC_RELEASE_MANIFEST)
+                .where(and(BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(ULong.valueOf(toBccpId)),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOne();
     }
 
