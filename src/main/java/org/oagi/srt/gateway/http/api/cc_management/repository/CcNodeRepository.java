@@ -1343,10 +1343,9 @@ public class CcNodeRepository {
         AsccReleaseManifestRecord asccReleaseManifestRecord = 
                 manifestRepository.getAsccReleaseManifestById(baseAsccManifestId);
         AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
-
         AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(accManifestId);
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
         AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
-
         AsccpRecord asccpRecord = getAsccpRecordById(asccReleaseManifestRecord.getToAsccpId().longValue());
 
         asccRecord.setAsccId(null);
@@ -1359,6 +1358,7 @@ public class CcNodeRepository {
         asccRecord.setLastUpdateTimestamp(timestamp);
         asccRecord.setOwnerUserId(ULong.valueOf(userId));
         asccRecord.setState(CcState.Editing.getValue());
+        asccRecord.setSeqKey(seqKey);
         asccRecord.setRevisionNum(1);
         asccRecord.setRevisionTrackingNum(1);
         asccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
@@ -1382,7 +1382,7 @@ public class CcNodeRepository {
 
         AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(accManifestId);
         AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
-
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
         BccpRecord bccpRecord = getBccpRecordById(bccReleaseManifestRecord.getToBccpId().longValue());
 
         bccRecord.setBccId(null);
@@ -1395,6 +1395,7 @@ public class CcNodeRepository {
         bccRecord.setLastUpdateTimestamp(timestamp);
         bccRecord.setOwnerUserId(ULong.valueOf(userId));
         bccRecord.setState(CcState.Editing.getValue());
+        bccRecord.setState(seqKey);
         bccRecord.setRevisionNum(1);
         bccRecord.setRevisionTrackingNum(1);
         bccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
@@ -1542,11 +1543,13 @@ public class CcNodeRepository {
 
         dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
                 .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId())).execute();
+
+        AsccRecord ascc = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
         dslContext.deleteFrom(ASCC)
                 .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
                 .execute();
 
-        // decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
+        decreaseSeqKeyGreaterThan(ascc.getFromAccId().longValue(), ascc.getSeqKey());
     }
 
     public void discardBccByManifestId(long manifestId){
@@ -1554,10 +1557,49 @@ public class CcNodeRepository {
 
         dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
+        BccRecord bcc = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
         dslContext.deleteFrom(BCC)
                 .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
                 .execute();
 
-        // decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
+        decreaseSeqKeyGreaterThan(bcc.getFromAccId().longValue(), bcc.getSeqKey());
+    }
+
+    private int getNextSeqKey(long accId) {
+        Integer asccMaxSeqKey = dslContext.select(max(ASCC.SEQ_KEY))
+                .from(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(Integer.class);
+        if (asccMaxSeqKey == null) {
+            asccMaxSeqKey = 0;
+        }
+
+        Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
+                .from(BCC)
+                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .fetchOneInto(Integer.class);
+        if (bccMaxSeqKey == null) {
+            bccMaxSeqKey = 0;
+        }
+
+        return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
+    }
+
+    private void decreaseSeqKeyGreaterThan(long accId, int seqKey) {
+        dslContext.update(ASCC)
+                .set(ASCC.SEQ_KEY, ASCC.SEQ_KEY.subtract(1))
+                .where(and(
+                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
+                        ASCC.SEQ_KEY.greaterThan(seqKey)
+                ))
+                .execute();
+
+        dslContext.update(BCC)
+                .set(BCC.SEQ_KEY, BCC.SEQ_KEY.subtract(1))
+                .where(and(
+                        BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
+                        BCC.SEQ_KEY.greaterThan(seqKey)
+                ))
+                .execute();
     }
 }
