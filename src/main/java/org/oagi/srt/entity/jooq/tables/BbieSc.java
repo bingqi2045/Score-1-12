@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = -743234194;
+    private static final long serialVersionUID = -1741296646;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -129,9 +129,9 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     public final TableField<BbieScRecord, String> DEFINITION = createField(DSL.name("definition"), org.jooq.impl.SQLDataType.CLOB, this, "Description to override the BDT SC definition. If NULL, it means that the definition should be inherited from the based BDT SC.");
 
     /**
-     * The column <code>oagi.bbie_sc.example_text_content_id</code>.
+     * The column <code>oagi.bbie_sc.example</code>.
      */
-    public final TableField<BbieScRecord, ULong> EXAMPLE_TEXT_CONTENT_ID = createField(DSL.name("example_text_content_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BbieScRecord, String> EXAMPLE = createField(DSL.name("example"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.bbie_sc.remark</code>. This column allows the user to specify a very context-specific usage of the BBIE SC. It is different from the Definition column in that the Definition column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. 
@@ -193,7 +193,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_BBIE_ID_FK, Indexes.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Indexes.BBIE_SC_BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK, Indexes.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_SC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_BBIE_ID_FK, Indexes.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Indexes.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_SC_PRIMARY);
     }
 
     @Override
@@ -213,7 +213,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<ForeignKey<BbieScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
     public Bbie bbie() {
@@ -234,10 +234,6 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     public AgencyIdList agencyIdList() {
         return new AgencyIdList(this, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK);
-    }
-
-    public TextContent textContent() {
-        return new TextContent(this, Keys.BBIE_SC_EXAMPLE_TEXT_CONTENT_ID_FK);
     }
 
     public TopLevelAbie topLevelAbie() {
@@ -275,7 +271,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, ULong, String, String, Byte, ULong> fieldsRow() {
+    public Row17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
         return (Row17) super.fieldsRow();
     }
 }

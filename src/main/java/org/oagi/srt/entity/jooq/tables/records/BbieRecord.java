@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 1192851391;
+    private static final long serialVersionUID = 1913024915;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -247,17 +247,17 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.example_text_content_id</code>.
+     * Setter for <code>oagi.bbie.example</code>.
      */
-    public void setExampleTextContentId(ULong value) {
+    public void setExample(String value) {
         set(15, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.example_text_content_id</code>.
+     * Getter for <code>oagi.bbie.example</code>.
      */
-    public ULong getExampleTextContentId() {
-        return (ULong) get(15);
+    public String getExample() {
+        return (String) get(15);
     }
 
     /**
@@ -395,7 +395,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, ULong exampleTextContentId, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Bbie.BBIE);
 
         set(0, bbieId);
@@ -413,7 +413,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
         set(12, fixedValue);
         set(13, isNull);
         set(14, definition);
-        set(15, exampleTextContentId);
+        set(15, example);
         set(16, remark);
         set(17, createdBy);
         set(18, lastUpdatedBy);
