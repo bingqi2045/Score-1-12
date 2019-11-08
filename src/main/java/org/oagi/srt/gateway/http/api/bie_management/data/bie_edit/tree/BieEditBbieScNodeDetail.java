@@ -33,9 +33,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
 
     private String contextDefinition;
     private String componentDefinition;
-
-    private String exampleContentType;
-    private String exampleText;
+    private String example;
 
     public BieEditBbieScNodeDetail append(BieEditBbieScNode bbieScNode) {
 
