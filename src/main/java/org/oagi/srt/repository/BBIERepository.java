@@ -2,6 +2,7 @@ package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.SelectJoinStep;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BBIE;
@@ -19,7 +20,7 @@ public class BBIERepository implements SrtRepository<BBIE> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
+    private SelectJoinStep<Record> getSelectOnConditionStep() {
         return dslContext.select(Tables.BBIE.BBIE_ID,
                 Tables.BBIE.GUID,
                 Tables.BBIE.BASED_BCC_ID,
@@ -36,8 +37,7 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 Tables.BBIE.IS_NULL.as("nill"),
                 Tables.BBIE.DEFINITION,
                 Tables.BBIE.REMARK,
-                Tables.TEXT_CONTENT.TEXT_CONTENT_TYPE.as("example_content_type"),
-                Tables.TEXT_CONTENT.TEXT_CONTENT_.as("example_text"),
+                Tables.BBIE.EXAMPLE,
                 Tables.BBIE.CREATED_BY,
                 Tables.BBIE.CREATION_TIMESTAMP,
                 Tables.BBIE.LAST_UPDATED_BY,
@@ -45,8 +45,7 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 Tables.BBIE.SEQ_KEY,
                 Tables.BBIE.IS_USED.as("used"),
                 Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID)
-                .from(Tables.BBIE)
-                .leftJoin(Tables.TEXT_CONTENT).on(Tables.BBIE.EXAMPLE_TEXT_CONTENT_ID.eq(Tables.TEXT_CONTENT.TEXT_CONTENT_ID));
+                .from(Tables.BBIE);
     }
 
     @Override
