@@ -25,4 +25,12 @@ ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
 ALTER TABLE `bbie_sc`
 ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
 
+ALTER TABLE `dt`
+ADD COLUMN `default_value` text COMMENT 'This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.',
+ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';
+
+ALTER TABLE `dt_sc`
+ADD COLUMN `default_value` text COMMENT 'This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.',
+ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';
+
 SET FOREIGN_KEY_CHECKS = 1;

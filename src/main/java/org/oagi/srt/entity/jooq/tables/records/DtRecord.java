@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1451406185;
+    private static final long serialVersionUID = 2146906008;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -444,6 +444,34 @@ The column name is specific to BDT because, the column does not apply to CDT.
         return (Byte) get(26);
     }
 
+    /**
+     * Setter for <code>oagi.dt.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public void setDefaultValue(String value) {
+        set(27, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public String getDefaultValue() {
+        return (String) get(27);
+    }
+
+    /**
+     * Setter for <code>oagi.dt.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public void setFixedValue(String value) {
+        set(28, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public String getFixedValue() {
+        return (String) get(28);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -467,7 +495,7 @@ The column name is specific to BDT because, the column does not apply to CDT.
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, Integer state, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, ULong releaseId, ULong currentBdtId, Byte isDeprecated) {
+    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, Integer state, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, ULong releaseId, ULong currentBdtId, Byte isDeprecated, String defaultValue, String fixedValue) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -497,5 +525,7 @@ The column name is specific to BDT because, the column does not apply to CDT.
         set(24, releaseId);
         set(25, currentBdtId);
         set(26, isDeprecated);
+        set(27, defaultValue);
+        set(28, fixedValue);
     }
 }
