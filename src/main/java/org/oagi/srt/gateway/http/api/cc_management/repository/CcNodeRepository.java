@@ -746,7 +746,9 @@ public class CcNodeRepository {
                 Tables.DT.DATA_TYPE_TERM,
                 Tables.DT.QUALIFIER,
                 Tables.DT.DEN,
-                Tables.DT.DEFINITION).from(Tables.DT)
+                Tables.DT.DEFINITION,
+                Tables.DT.DEFAULT_VALUE,
+                Tables.DT.FIXED_VALUE).from(Tables.DT)
                 .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
@@ -762,7 +764,9 @@ public class CcNodeRepository {
                 concat(Tables.DT_SC.PROPERTY_TERM, val(". "), Tables.DT_SC.PROPERTY_TERM).as("den"),
                 Tables.DT_SC.CARDINALITY_MIN,
                 Tables.DT_SC.CARDINALITY_MAX,
-                Tables.DT_SC.DEFINITION).from(Tables.DT_SC)
+                Tables.DT_SC.DEFINITION,
+                Tables.DT_SC.DEFAULT_VALUE,
+                Tables.DT_SC.FIXED_VALUE).from(Tables.DT_SC)
                 .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }

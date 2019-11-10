@@ -44,5 +44,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String qualifier;
         private String den;
         private String definition;
+        private String defaultValue;
+        private String fixedValue;
     }
 }

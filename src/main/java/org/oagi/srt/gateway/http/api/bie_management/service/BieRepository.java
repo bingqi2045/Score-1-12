@@ -6,9 +6,12 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.DtRecord;
+import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBdtScNode;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -486,6 +489,9 @@ public class BieRepository {
                 .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
                 .fetchOneInto(Cardinality.class);
 
+        DtRecord dtRecord = dslContext.selectFrom(Tables.DT)
+                .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId))).fetchOne();
+
         return dslContext.insertInto(Tables.BBIE)
                 .set(Tables.BBIE.GUID, SrtGuid.randomGuid())
                 .set(Tables.BBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
@@ -503,6 +509,8 @@ public class BieRepository {
                 .set(Tables.BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
                 .set(Tables.BBIE.IS_USED, (byte) ((0)))
                 .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(Tables.BBIE.DEFAULT_VALUE, dtRecord.getDefaultValue())
+                .set(Tables.BBIE.FIXED_VALUE, dtRecord.getFixedValue())
                 .returning().fetchOne().getBbieId().longValue();
     }
 
@@ -519,21 +527,21 @@ public class BieRepository {
     public long createBbieSc(User user, long bbieId, long dtScId,
                              long topLevelAbieId) {
 
-        Cardinality cardinality = dslContext.select(
-                Tables.DT_SC.CARDINALITY_MIN,
-                Tables.DT_SC.CARDINALITY_MAX).from(Tables.DT_SC)
+        DtScRecord dtScRecord = dslContext.selectFrom(Tables.DT_SC)
                 .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(dtScId)))
-                .fetchOneInto(Cardinality.class);
+                .fetchOne();
 
         return dslContext.insertInto(Tables.BBIE_SC)
                 .set(Tables.BBIE_SC.GUID, SrtGuid.randomGuid())
                 .set(Tables.BBIE_SC.BBIE_ID, ULong.valueOf(bbieId))
                 .set(Tables.BBIE_SC.DT_SC_ID, ULong.valueOf(dtScId))
                 .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScId)))
-                .set(Tables.BBIE_SC.CARDINALITY_MIN, cardinality.getCardinalityMin())
-                .set(Tables.BBIE_SC.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(Tables.BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
+                .set(Tables.BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
                 .set(Tables.BBIE_SC.IS_USED, (byte) (0))
                 .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(Tables.BBIE_SC.DEFAULT_VALUE, dtScRecord.getDefaultValue())
+                .set(Tables.BBIE_SC.FIXED_VALUE, dtScRecord.getFixedValue())
                 .returning().fetchOne().getBbieScId().longValue();
     }
 
