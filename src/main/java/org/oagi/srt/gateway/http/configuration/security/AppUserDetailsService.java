@@ -27,7 +27,8 @@ public class AppUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        String password = appUserRecord.get(Tables.APP_USER.PASSWORD);
+        username = appUserRecord.getLoginId();
+        String password = appUserRecord.getPassword();
         boolean isDeveloper = appUserRecord.getIsDeveloper() == 1;
 
         return new User(username, password,
