@@ -1,15 +1,13 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Record4;
-import org.jooq.RecordMapper;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
@@ -28,6 +26,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -632,6 +631,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .addValue("bcc_id", bbiepNode.getBccId())
                 .addValue("bccp_id", bbiepNode.getBccpId());
 
+        String bccpDefaultValue = null;
+        String bccpFixedValue = null;
+        String bccDefaultValue = null;
+        String bccFixedValue = null;
+
         BieEditBbiepNodeDetail detail;
         if (bbiepNode.getBbieId() > 0L) {
             detail = dslContext.select(
@@ -642,8 +646,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.CODE_LIST_ID,
                     Tables.BBIE.AGENCY_ID_LIST_ID,
                     Tables.BBIE.DEFAULT_VALUE,
-                    Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.FIXED_VALUE,
+                    Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.DEFINITION.as("context_definition"),
                     Tables.BBIE.EXAMPLE
             ).from(Tables.BBIE)
@@ -653,39 +657,36 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         } else {
             detail = dslContext.select(
                     Tables.BCC.CARDINALITY_MIN.as("bie_cardinality_min"),
-                    Tables.BCC.CARDINALITY_MAX.as("bie_cardinality_max"))
+                    Tables.BCC.CARDINALITY_MAX.as("bie_cardinality_max"),
+                    Tables.BBIE.DEFAULT_VALUE,
+                    Tables.BBIE.FIXED_VALUE)
                     .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
-            dslContext.select(BBIEP.BIZ_TERM, BBIEP.REMARK, BCCP.BDT_ID, DT.DEN)
+            Record6<String, String, ULong, String, String, String> rs = dslContext.select(BBIEP.BIZ_TERM, BBIEP.REMARK,
+                    BCCP.BDT_ID, DT.DEN, BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE)
                     .from(BBIEP)
                     .join(BCCP).on(BBIEP.BASED_BCCP_ID.eq(BCCP.BCCP_ID))
                     .join(DT).on(BCCP.BDT_ID.eq(DT.DT_ID))
                     .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOne((RecordMapper<Record4<String, String, ULong, String>, Object>) rs -> {
-                        detail.setBizTerm(rs.getValue(BBIEP.BIZ_TERM));
-                        detail.setRemark(rs.getValue(BBIEP.REMARK));
-                        detail.setBdtId(rs.getValue(BCCP.BDT_ID).longValue());
-                        detail.setBdtDen(rs.getValue(DT.DEN));
-                        return detail;
-                    });
+                    .fetchOne();
+            detail.setBizTerm(rs.getValue(BBIEP.BIZ_TERM));
+            detail.setRemark(rs.getValue(BBIEP.REMARK));
+            detail.setBdtId(rs.getValue(BCCP.BDT_ID).longValue());
+            detail.setBdtDen(rs.getValue(DT.DEN));
+            bccpDefaultValue = rs.getValue(BCCP.DEFAULT_VALUE);
+            bccpFixedValue = rs.getValue(BCCP.FIXED_VALUE);
         } else {
-            detail.setBdtDen(dslContext.select(
-                    Tables.DT.DEN.as("bdt_den")).from(Tables.BCCP)
-                    .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
-                    .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOneInto(String.class)
-            );
-
-            detail.setBdtId(dslContext.select(
+            Record2<String, ULong> rs = dslContext.select(
+                    Tables.DT.DEN,
                     Tables.BCCP.BDT_ID).from(Tables.BCCP)
                     .join(Tables.DT).on(Tables.BCCP.BDT_ID.eq(Tables.DT.DT_ID))
-                    .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOneInto(Long.class)
-            );
+                    .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId()))).fetchOne();
+            detail.setBdtDen(rs.getValue(Tables.DT.DEN));
+            detail.setBdtId(rs.getValue(Tables.BCCP.BDT_ID).longValue());
         }
         if (bbiepNode.getBbieId() == 0L) {
             long defaultBdtPriRestriId = dslContext.select(
@@ -699,13 +700,16 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBccId() > 0L) {
-            Record2<Integer, Integer> res = dslContext.select(
-                    Tables.BCC.CARDINALITY_MIN,
-                    Tables.BCC.CARDINALITY_MAX)
+            Record4<Integer, Integer, String, String> res = dslContext.select(
+                    BCC.CARDINALITY_MIN,
+                    BCC.CARDINALITY_MAX,
+                    BCC.DEFAULT_VALUE,
+                    BCC.FIXED_VALUE)
                     .from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
                     .fetchOne();
-
+            bccDefaultValue = res.get(BCC.DEFAULT_VALUE);
+            bccFixedValue = res.get(BCC.FIXED_VALUE);
             detail.setCcCardinalityMin(res.get(Tables.BCC.CARDINALITY_MIN));
             detail.setCcCardinalityMax(res.get(Tables.BCC.CARDINALITY_MAX));
         }
@@ -725,6 +729,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBccpId())))
                 .fetchOneInto(String.class)
         );
+
+        if (bccDefaultValue == null &&  bccFixedValue == null && bccpDefaultValue == null && bccpFixedValue == null) {
+            detail.setInheritValue(false);
+        } else {
+            detail.setInheritValue(true);
+            if (bccDefaultValue == null &&  bccFixedValue == null) {
+                detail.setDefaultValue(bccpDefaultValue);
+                detail.setFixedValue(bccpFixedValue);
+            } else {
+                detail.setDefaultValue(bccDefaultValue);
+                detail.setFixedValue(bccFixedValue);
+            }
+        }
 
         return detail.append(bbiepNode);
     }
@@ -839,17 +856,22 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .fetchOneInto(Long.class);
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
-
+        detail.setInheritValue(false);
         if (bbieScNode.getDtScId() > 0L) {
-            Record2<Integer, Integer> res = dslContext.select(
+            Record4<Integer, Integer, String, String> res = dslContext.select(
                     Tables.DT_SC.CARDINALITY_MIN,
-                    Tables.DT_SC.CARDINALITY_MAX)
+                    Tables.DT_SC.CARDINALITY_MAX,
+                    Tables.DT_SC.DEFAULT_VALUE,
+                    Tables.DT_SC.FIXED_VALUE)
                     .from(Tables.DT_SC)
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScId())))
                     .fetchOne();
 
             detail.setCcCardinalityMin(res.get(Tables.DT_SC.CARDINALITY_MIN));
             detail.setCcCardinalityMax(res.get(Tables.DT_SC.CARDINALITY_MAX));
+            if (res.get(DT_SC.DEFAULT_VALUE) != null || res.get(DT_SC.FIXED_VALUE) != null) {
+                detail.setInheritValue(true);
+            }
         }
 
         BieEditBdtScPriRestri bdtScPriRestri = getBdtScPriRestri(bbieScNode);
@@ -1108,11 +1130,27 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
         }
 
+        Record2<String, String> bcc = dslContext.select(BCC.DEFAULT_VALUE, BCC.FIXED_VALUE)
+                .from(BCC).where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccId()))).fetchOne();
+
+        Record2<String, String> bccp = dslContext.select(BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE)
+                .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccpId()))).fetchOne();
+
+        if (bcc.getValue(BCC.DEFAULT_VALUE) == null &&
+                bcc.getValue(BCC.FIXED_VALUE) == null &&
+                bccp.getValue(BCCP.DEFAULT_VALUE) == null &&
+                bccp.getValue(BCCP.FIXED_VALUE) == null) {
+
+            dslContext.update(Tables.BBIE)
+                    .set(Tables.BBIE.FIXED_VALUE, emptyToNull(bbiepNodeDetail.getFixedValue()))
+                    .set(Tables.BBIE.DEFAULT_VALUE, emptyToNull(bbiepNodeDetail.getDefaultValue()))
+                    .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
+        }
+
         dslContext.update(Tables.BBIE)
                 .set(Tables.BBIE.IS_USED, (byte) (bbiepNodeDetail.isUsed() ? 1 : 0))
                 .set(Tables.BBIE.DEFINITION, emptyToNull(bbiepNodeDetail.getContextDefinition()))
-                .set(Tables.BBIE.FIXED_VALUE, emptyToNull(bbiepNodeDetail.getFixedValue()))
-                .set(Tables.BBIE.DEFAULT_VALUE, emptyToNull(bbiepNodeDetail.getDefaultValue()))
+
                 .set(Tables.BBIE.EXAMPLE, emptyToNull(bbiepNodeDetail.getExample()))
                 .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
@@ -1163,10 +1201,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
         }
 
+        DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
+                .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getDtScId()))).fetchOne();
+
+        if (dtScRecord.getDefaultValue() == null && dtScRecord.getFixedValue() == null) {
+            dslContext.update(Tables.BBIE_SC)
+                    .set(Tables.BBIE_SC.DEFAULT_VALUE, emptyToNull(bbieScNodeDetail.getDefaultValue()))
+                    .set(Tables.BBIE_SC.FIXED_VALUE, emptyToNull(bbieScNodeDetail.getFixedValue()))
+                    .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                    .execute();
+        }
+
         dslContext.update(Tables.BBIE_SC)
                 .set(Tables.BBIE_SC.IS_USED, (byte) (bbieScNodeDetail.isUsed() ? 1 : 0))
-                .set(Tables.BBIE_SC.DEFAULT_VALUE, emptyToNull(bbieScNodeDetail.getDefaultValue()))
-                .set(Tables.BBIE_SC.FIXED_VALUE, emptyToNull(bbieScNodeDetail.getFixedValue()))
                 .set(Tables.BBIE_SC.DEFINITION, emptyToNull(bbieScNodeDetail.getContextDefinition()))
                 .set(Tables.BBIE_SC.BIZ_TERM, emptyToNull(bbieScNodeDetail.getBizTerm()))
                 .set(Tables.BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
