@@ -20,6 +20,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
 
     private String fixedValue;
     private String defaultValue;
+    private boolean isInheritValue;
     private String bizTerm;
     private String remark;
 
