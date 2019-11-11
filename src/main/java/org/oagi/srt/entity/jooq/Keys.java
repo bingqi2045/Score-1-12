@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
 import org.jooq.Identity;

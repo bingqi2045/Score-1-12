@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.oagi.srt.entity.jooq.tables.Abie;
 import org.oagi.srt.entity.jooq.tables.Acc;

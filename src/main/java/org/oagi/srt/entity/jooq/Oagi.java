@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Catalog;
 import org.jooq.Table;
@@ -72,7 +72,7 @@ import org.oagi.srt.entity.jooq.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 38878474;
+    private static final long serialVersionUID = 1344847425;
 
     /**
      * The reference instance of <code>oagi</code>

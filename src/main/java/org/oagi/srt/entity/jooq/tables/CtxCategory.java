@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategory extends TableImpl<CtxCategoryRecord> {
 
-    private static final long serialVersionUID = -106750821;
+    private static final long serialVersionUID = 456645130;
 
     /**
      * The reference instance of <code>oagi.ctx_category</code>

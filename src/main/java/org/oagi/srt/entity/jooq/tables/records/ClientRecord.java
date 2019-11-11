@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.Client;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ClientRecord extends UpdatableRecordImpl<ClientRecord> implements Record2<ULong, String> {
 
-    private static final long serialVersionUID = -1386962223;
+    private static final long serialVersionUID = -1490802674;
 
     /**
      * Setter for <code>oagi.client.client_id</code>. Primary, internal database key.

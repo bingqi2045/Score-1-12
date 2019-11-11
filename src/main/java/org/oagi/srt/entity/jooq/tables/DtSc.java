@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = -1993934517;
+    private static final long serialVersionUID = -895215812;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>

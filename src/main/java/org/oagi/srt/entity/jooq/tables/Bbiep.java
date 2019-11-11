@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbiep extends TableImpl<BbiepRecord> {
 
-    private static final long serialVersionUID = -987426111;
+    private static final long serialVersionUID = -1798365638;
 
     /**
      * The reference instance of <code>oagi.bbiep</code>

@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> implements Record4<ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 2122160092;
+    private static final long serialVersionUID = -402519681;
 
     /**
      * Setter for <code>oagi.dt_usage_rule.dt_usage_rule_id</code>. Primary key of the table.

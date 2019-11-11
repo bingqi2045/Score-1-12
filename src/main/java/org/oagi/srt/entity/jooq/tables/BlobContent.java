@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BlobContentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContent extends TableImpl<BlobContentRecord> {
 
-    private static final long serialVersionUID = -822463744;
+    private static final long serialVersionUID = 469503665;
 
     /**
      * The reference instance of <code>oagi.blob_content</code>

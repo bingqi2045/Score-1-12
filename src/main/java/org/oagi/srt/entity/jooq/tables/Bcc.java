@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1648422183;
+    private static final long serialVersionUID = -796005838;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -208,6 +208,11 @@ The value of this column for the current record should be left NULL.
      * The column <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public final TableField<BccRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), org.jooq.impl.SQLDataType.CLOB, this, "This set the default value at the association level. ");
+
+    /**
+     * The column <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
+     */
+    public final TableField<BccRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * Create a <code>oagi.bcc</code> table reference

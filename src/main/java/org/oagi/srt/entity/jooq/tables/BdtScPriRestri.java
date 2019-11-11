@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -55,7 +55,7 @@ import org.oagi.srt.entity.jooq.tables.records.BdtScPriRestriRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BdtScPriRestri extends TableImpl<BdtScPriRestriRecord> {
 
-    private static final long serialVersionUID = -847006203;
+    private static final long serialVersionUID = 1967884662;
 
     /**
      * The reference instance of <code>oagi.bdt_sc_pri_restri</code>

@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.BizCtxRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtx extends TableImpl<BizCtxRecord> {
 
-    private static final long serialVersionUID = -548376653;
+    private static final long serialVersionUID = 530788314;
 
     /**
      * The reference instance of <code>oagi.biz_ctx</code>

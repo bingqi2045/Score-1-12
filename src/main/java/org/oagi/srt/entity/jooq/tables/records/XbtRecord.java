@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record21<ULong, String, String, String, String, ULong, String, ULong, ULong, String, Integer, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Byte, ULong, Byte> {
 
-    private static final long serialVersionUID = -1932629673;
+    private static final long serialVersionUID = 1155711438;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.

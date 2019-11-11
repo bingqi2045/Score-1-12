@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -146409495;
+    private static final long serialVersionUID = -553808293;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -210,16 +210,6 @@ The column name is specific to BDT because, the column does not apply to CDT.
      * The column <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public final TableField<DtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
-
-    /**
-     * The column <code>oagi.dt.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public final TableField<DtRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
-
-    /**
-     * The column <code>oagi.dt.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
-     */
-    public final TableField<DtRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * Create a <code>oagi.dt</code> table reference

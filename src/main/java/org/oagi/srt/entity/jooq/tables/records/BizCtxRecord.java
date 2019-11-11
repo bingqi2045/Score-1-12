@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.BizCtx;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = 2009835766;
+    private static final long serialVersionUID = 1555958317;
 
     /**
      * Setter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal database key.

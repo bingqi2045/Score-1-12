@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.CodeListValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record9<ULong, ULong, String, String, String, String, Byte, Byte, Byte> {
 
-    private static final long serialVersionUID = -74475599;
+    private static final long serialVersionUID = 123589012;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.

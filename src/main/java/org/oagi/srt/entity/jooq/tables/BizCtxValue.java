@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.BizCtxValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
 
-    private static final long serialVersionUID = 1287759712;
+    private static final long serialVersionUID = 2137454799;
 
     /**
      * The reference instance of <code>oagi.biz_ctx_value</code>

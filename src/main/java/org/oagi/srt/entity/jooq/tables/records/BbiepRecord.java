@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Bbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record11<ULong, String, ULong, String, String, String, ULong, ULong, Timestamp, Timestamp, ULong> {
 
-    private static final long serialVersionUID = -1728456884;
+    private static final long serialVersionUID = -1763044939;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.

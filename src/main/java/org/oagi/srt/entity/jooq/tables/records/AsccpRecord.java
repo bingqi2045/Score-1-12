@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -27,7 +27,7 @@ import org.oagi.srt.entity.jooq.tables.Asccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = 171025754;
+    private static final long serialVersionUID = -128433391;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.

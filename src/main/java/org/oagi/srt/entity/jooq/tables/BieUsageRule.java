@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.BieUsageRuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
 
-    private static final long serialVersionUID = -1892349724;
+    private static final long serialVersionUID = 2010844821;
 
     /**
      * The reference instance of <code>oagi.bie_usage_rule</code>

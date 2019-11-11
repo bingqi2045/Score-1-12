@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Module extends TableImpl<ModuleRecord> {
 
-    private static final long serialVersionUID = -1385421614;
+    private static final long serialVersionUID = -1220852999;
 
     /**
      * The reference instance of <code>oagi.module</code>

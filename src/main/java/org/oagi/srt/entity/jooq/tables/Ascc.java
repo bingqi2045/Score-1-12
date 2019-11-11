@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = -523121041;
+    private static final long serialVersionUID = -1232020202;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
