@@ -460,7 +460,7 @@ public class BieService {
     public void transferOwnership(User user, long topLevelAbieId, String targetLoginId) {
         long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.eq(user.getUsername()))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (ownerAppUserId == 0L) {
             throw new IllegalArgumentException("Not found an owner user.");
@@ -468,7 +468,7 @@ public class BieService {
 
         long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.eq(targetLoginId))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (targetAppUserId == 0L) {
             throw new IllegalArgumentException("Not found a target user.");

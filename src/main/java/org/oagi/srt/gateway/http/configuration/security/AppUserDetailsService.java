@@ -21,7 +21,7 @@ public class AppUserDetailsService implements UserDetailsService {
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUserRecord appUserRecord = dslContext.selectFrom(Tables.APP_USER)
-                .where(Tables.APP_USER.LOGIN_ID.eq(username))
+                .where(Tables.APP_USER.LOGIN_ID.equalIgnoreCase(username))
                 .fetchOptional().orElse(null);
         if (appUserRecord == null) {
             throw new UsernameNotFoundException(username);
