@@ -16,17 +16,17 @@ public class CoreComponentRepository {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ACCRepository accRepository;
+    private ACCCachingRepository accRepository;
     @Autowired
-    private ASCCRepository asccRepository;
+    private ASCCCachingRepository asccRepository;
     @Autowired
-    private BCCRepository bccRepository;
+    private BCCCachingRepository bccRepository;
     @Autowired
-    private ASCCPRepository asccpRepository;
+    private ASCCPCachingRepository asccpRepository;
     @Autowired
-    private BCCPRepository bccpRepository;
+    private BCCPCachingRepository bccpRepository;
     @Autowired
-    private BdtRepository bdtRepository;
+    private BDTCachingRepository bdtRepository;
 
     public List<ACC> getAccList() {
         return accRepository.findAll();
