@@ -666,17 +666,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBbiepId() > 0L) {
-            Record6<String, String, ULong, String, String, String> rs = dslContext.select(BBIEP.BIZ_TERM, BBIEP.REMARK,
-                    BCCP.BDT_ID, DT.DEN, BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE)
-                    .from(BBIEP)
-                    .join(BCCP).on(BBIEP.BASED_BCCP_ID.eq(BCCP.BCCP_ID))
-                    .join(DT).on(BCCP.BDT_ID.eq(DT.DT_ID))
-                    .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
-                    .fetchOne();
+            Record6<String, String, ULong, String, String, String> rs =
+                    dslContext.select(BBIEP.BIZ_TERM, BBIEP.REMARK,
+                            BCCP.BDT_ID, DT.DEN, BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE)
+                            .from(BBIEP)
+                            .join(BCCP).on(BBIEP.BASED_BCCP_ID.eq(BCCP.BCCP_ID))
+                            .join(DT).on(BCCP.BDT_ID.eq(DT.DT_ID))
+                            .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepNode.getBbiepId())))
+                            .fetchOne();
+
             detail.setBizTerm(rs.getValue(BBIEP.BIZ_TERM));
             detail.setRemark(rs.getValue(BBIEP.REMARK));
             detail.setBdtId(rs.getValue(BCCP.BDT_ID).longValue());
-            detail.setBdtDen(rs.getValue(DT.DEN));
+            detail.setBdtDen(rs.getValue(DT.DEN).replaceAll("_ ", " "));
             bccpDefaultValue = rs.getValue(BCCP.DEFAULT_VALUE);
             bccpFixedValue = rs.getValue(BCCP.FIXED_VALUE);
         } else {
@@ -910,7 +912,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 Tables.CODE_LIST.CODE_LIST_ID,
                 Tables.CODE_LIST.BASED_CODE_LIST_ID,
                 Tables.BDT_SC_PRI_RESTRI.IS_DEFAULT,
-                Tables.CODE_LIST.NAME.as("code_list_name")).from(Tables.BDT_SC_PRI_RESTRI)
+                Tables.CODE_LIST.NAME.as("code_list_name"))
+                .from(Tables.BDT_SC_PRI_RESTRI)
                 .join(Tables.CODE_LIST).on(Tables.BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(Tables.CODE_LIST.CODE_LIST_ID))
                 .where(Tables.BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)))
                 .fetchInto(BieEditCodeList.class);
