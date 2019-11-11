@@ -2,13 +2,12 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.DtRecord;
-import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
-import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBdtScNode;
@@ -28,6 +27,8 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.BCC;
+import static org.oagi.srt.entity.jooq.Tables.BCCP;
 
 @Repository
 public class BieRepository {
@@ -93,36 +94,36 @@ public class BieRepository {
 
     public BccForBie getBcc(long bccId) {
         return dslContext.select(
-                Tables.BCC.BCC_ID,
-                Tables.BCC.CURRENT_BCC_ID,
-                Tables.BCC.GUID,
-                Tables.BCC.CARDINALITY_MIN,
-                Tables.BCC.CARDINALITY_MAX,
-                Tables.BCC.DEN,
-                Tables.BCC.DEFINITION,
-                Tables.BCC.FROM_ACC_ID,
-                Tables.BCC.TO_BCCP_ID,
-                Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.RELEASE_ID)
-                .from(Tables.BCC)
-                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                BCC.BCC_ID,
+                BCC.CURRENT_BCC_ID,
+                BCC.GUID,
+                BCC.CARDINALITY_MIN,
+                BCC.CARDINALITY_MAX,
+                BCC.DEN,
+                BCC.DEFINITION,
+                BCC.FROM_ACC_ID,
+                BCC.TO_BCCP_ID,
+                BCC.ENTITY_TYPE,
+                BCC.REVISION_NUM,
+                BCC.REVISION_TRACKING_NUM,
+                BCC.RELEASE_ID)
+                .from(BCC)
+                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                 .fetchOptionalInto(BccForBie.class).orElse(null);
     }
 
     public BieEditBccp getBccp(long bccpId) {
         return dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.BDT_ID,
-                Tables.BCCP.PROPERTY_TERM,
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.RELEASE_ID)
-                .from(Tables.BCCP)
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                BCCP.BCCP_ID,
+                BCCP.CURRENT_BCCP_ID,
+                BCCP.GUID,
+                BCCP.BDT_ID,
+                BCCP.PROPERTY_TERM,
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM,
+                BCCP.RELEASE_ID)
+                .from(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 
@@ -189,9 +190,9 @@ public class BieRepository {
 
     public String getBccpPropertyTermByBbiepId(long bbiepId) {
         return dslContext.select(
-                Tables.BCCP.PROPERTY_TERM)
-                .from(Tables.BCCP)
-                .join(Tables.BBIEP).on(Tables.BCCP.BCCP_ID.eq(Tables.BBIEP.BASED_BCCP_ID))
+                BCCP.PROPERTY_TERM)
+                .from(BCCP)
+                .join(Tables.BBIEP).on(BCCP.BCCP_ID.eq(Tables.BBIEP.BASED_BCCP_ID))
                 .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId)))
                 .fetchOptionalInto(String.class).orElse(null);
     }
@@ -216,18 +217,18 @@ public class BieRepository {
 
     public BieEditBccp getBccpByCurrentBccpId(long currentBccpId, long releaseId) {
         List<BieEditBccp> bccpList = dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.CURRENT_BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.PROPERTY_TERM,
-                Tables.BCCP.BDT_ID,
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.RELEASE_ID)
-                .from(Tables.BCCP)
+                BCCP.BCCP_ID,
+                BCCP.CURRENT_BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM,
+                BCCP.BDT_ID,
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM,
+                BCCP.RELEASE_ID)
+                .from(BCCP)
                 .where(and(
-                        Tables.BCCP.REVISION_NUM.greaterThan(0),
-                        Tables.BCCP.CURRENT_BCCP_ID.eq(ULong.valueOf(currentBccpId))))
+                        BCCP.REVISION_NUM.greaterThan(0),
+                        BCCP.CURRENT_BCCP_ID.eq(ULong.valueOf(currentBccpId))))
                 .fetchInto(BieEditBccp.class);
         return CcUtility.getLatestEntity(releaseId, bccpList);
     }
@@ -329,29 +330,29 @@ public class BieRepository {
 
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
-                Tables.BCC.REVISION_NUM.greaterThan(0),
-                Tables.BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
-                Tables.BCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
+                BCC.REVISION_NUM.greaterThan(0),
+                BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                BCC.RELEASE_ID.lessOrEqual(ULong.valueOf(releaseId))
         ));
 
         if (isPublished) {
             conditions.add(
-                    Tables.BCC.STATE.eq(CcState.Published.getValue())
+                    BCC.STATE.eq(CcState.Published.getValue())
             );
         }
 
         List<BieEditBcc> bccList = dslContext.select(
-                Tables.BCC.BCC_ID,
-                Tables.BCC.CURRENT_BCC_ID,
-                Tables.BCC.GUID,
-                Tables.BCC.FROM_ACC_ID,
-                Tables.BCC.TO_BCCP_ID,
-                Tables.BCC.SEQ_KEY,
-                Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.RELEASE_ID)
-                .from(Tables.BCC)
+                BCC.BCC_ID,
+                BCC.CURRENT_BCC_ID,
+                BCC.GUID,
+                BCC.FROM_ACC_ID,
+                BCC.TO_BCCP_ID,
+                BCC.SEQ_KEY,
+                BCC.ENTITY_TYPE,
+                BCC.REVISION_NUM,
+                BCC.REVISION_TRACKING_NUM,
+                BCC.RELEASE_ID)
+                .from(BCC)
                 .where(and(conditions))
                 .fetchInto(BieEditBcc.class);
 
@@ -483,14 +484,22 @@ public class BieRepository {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Cardinality cardinality = dslContext.select(
-                Tables.BCC.CARDINALITY_MIN,
-                Tables.BCC.CARDINALITY_MAX).from(Tables.BCC)
-                .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
-                .fetchOneInto(Cardinality.class);
+        BccRecord bccRecord = dslContext.select(
+                BCC.TO_BCCP_ID,
+                BCC.CARDINALITY_MIN,
+                BCC.CARDINALITY_MAX,
+                BCC.DEFAULT_VALUE,
+                BCC.FIXED_VALUE)
+                .from(BCC)
+                .where(BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
+                .fetchOneInto(BccRecord.class);
 
-        DtRecord dtRecord = dslContext.selectFrom(Tables.DT)
-                .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId))).fetchOne();
+        BccpRecord bccpRecord = dslContext.select(
+                BCCP.DEFAULT_VALUE,
+                BCCP.FIXED_VALUE)
+                .from(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccRecord.getToBccpId()))
+                .fetchOneInto(BccpRecord.class);
 
         return dslContext.insertInto(Tables.BBIE)
                 .set(Tables.BBIE.GUID, SrtGuid.randomGuid())
@@ -498,8 +507,8 @@ public class BieRepository {
                 .set(Tables.BBIE.TO_BBIEP_ID, ULong.valueOf(toBbiepId))
                 .set(Tables.BBIE.BASED_BCC_ID, ULong.valueOf(basedBccId))
                 .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtId)))
-                .set(Tables.BBIE.CARDINALITY_MIN, cardinality.getCardinalityMin())
-                .set(Tables.BBIE.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(Tables.BBIE.CARDINALITY_MIN, bccRecord.getCardinalityMin())
+                .set(Tables.BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
                 .set(Tables.BBIE.IS_NILLABLE, (byte) ((0)))
                 .set(Tables.BBIE.IS_NULL, (byte) ((0)))
                 .set(Tables.BBIE.CREATED_BY, ULong.valueOf(userId))
@@ -509,8 +518,8 @@ public class BieRepository {
                 .set(Tables.BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
                 .set(Tables.BBIE.IS_USED, (byte) ((0)))
                 .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .set(Tables.BBIE.DEFAULT_VALUE, dtRecord.getDefaultValue())
-                .set(Tables.BBIE.FIXED_VALUE, dtRecord.getFixedValue())
+                .set(Tables.BBIE.DEFAULT_VALUE, StringUtils.defaultIfEmpty(bccRecord.getDefaultValue(), bccpRecord.getDefaultValue()))
+                .set(Tables.BBIE.FIXED_VALUE, StringUtils.defaultIfEmpty(bccRecord.getFixedValue(), bccpRecord.getFixedValue()))
                 .returning().fetchOne().getBbieId().longValue();
     }
 

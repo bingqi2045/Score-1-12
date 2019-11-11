@@ -716,6 +716,7 @@ public class CcNodeRepository {
                     Tables.BCC.CARDINALITY_MAX,
                     Tables.BCC.IS_DEPRECATED.as("deprecated"),
                     Tables.BCC.DEFAULT_VALUE,
+                    Tables.BCC.FIXED_VALUE,
                     Tables.BCC.DEFINITION).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
@@ -732,6 +733,7 @@ public class CcNodeRepository {
                 Tables.BCCP.IS_NILLABLE.as("nillable"),
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.DEFAULT_VALUE,
+                Tables.BCCP.FIXED_VALUE,
                 Tables.BCCP.DEFINITION).from(Tables.BCCP)
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
@@ -746,9 +748,7 @@ public class CcNodeRepository {
                 Tables.DT.DATA_TYPE_TERM,
                 Tables.DT.QUALIFIER,
                 Tables.DT.DEN,
-                Tables.DT.DEFINITION,
-                Tables.DT.DEFAULT_VALUE,
-                Tables.DT.FIXED_VALUE).from(Tables.DT)
+                Tables.DT.DEFINITION).from(Tables.DT)
                 .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);

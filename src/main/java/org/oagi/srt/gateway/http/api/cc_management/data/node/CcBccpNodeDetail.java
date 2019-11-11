@@ -21,6 +21,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private boolean nillable;
         private boolean deprecated;
         private String defaultValue;
+        private String fixedValue;
         private String definition;
     }
 
@@ -33,6 +34,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private boolean nillable;
         private boolean deprecated;
         private String defaultValue;
+        private String fixedValue;
         private String definition;
     }
 
@@ -44,7 +46,5 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String qualifier;
         private String den;
         private String definition;
-        private String defaultValue;
-        private String fixedValue;
     }
 }
