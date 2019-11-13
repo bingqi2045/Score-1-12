@@ -41,7 +41,7 @@ public class AccountListService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getLoginId())) {
-            conditions.add(APP_USER.LOGIN_ID.contains(request.getLoginId().trim()));
+            conditions.add(APP_USER.LOGIN_ID.containsIgnoreCase(request.getLoginId().trim()));
         }
         if (!StringUtils.isEmpty(request.getName())) {
             conditions.add(APP_USER.NAME.containsIgnoreCase(request.getName().trim()));
@@ -61,7 +61,7 @@ public class AccountListService {
         }
         Boolean excludeRequester = request.getExcludeRequester();
         if (excludeRequester != null && excludeRequester == true) {
-            conditions.add(APP_USER.LOGIN_ID.ne(requester.getUsername().trim()));
+            conditions.add(APP_USER.LOGIN_ID.notEqualIgnoreCase(requester.getUsername().trim()));
         }
 
         SelectConnectByStep<Record5<ULong, String, String, Byte, String>> conditionStep = step.where(conditions);
