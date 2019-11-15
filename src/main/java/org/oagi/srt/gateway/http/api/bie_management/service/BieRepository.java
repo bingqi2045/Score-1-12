@@ -27,8 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.BCC;
-import static org.oagi.srt.entity.jooq.Tables.BCCP;
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
 public class BieRepository {
@@ -443,6 +442,10 @@ public class BieRepository {
                 .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId)))
                 .fetchOneInto(Cardinality.class);
 
+        Byte AsccpNillable = dslContext.select(ASCCP.IS_NILLABLE).from(ASCCP)
+                .join(ASCC).on(ASCCP.ASCCP_ID.eq(ASCC.TO_ASCCP_ID))
+                .where(ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId))).fetchOne().getValue(ASCCP.IS_NILLABLE);
+
         return dslContext.insertInto(Tables.ASBIE)
                 .set(Tables.ASBIE.GUID, SrtGuid.randomGuid())
                 .set(Tables.ASBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
@@ -450,13 +453,13 @@ public class BieRepository {
                 .set(Tables.ASBIE.BASED_ASCC_ID, ULong.valueOf(basedAsccId))
                 .set(Tables.ASBIE.CARDINALITY_MIN, cardinality.getCardinalityMin())
                 .set(Tables.ASBIE.CARDINALITY_MAX, cardinality.getCardinalityMax())
-                .set(Tables.ASBIE.IS_NILLABLE, (byte) ((0)))
+                .set(Tables.ASBIE.IS_NILLABLE, AsccpNillable)
                 .set(Tables.ASBIE.CREATED_BY, ULong.valueOf(userId))
                 .set(Tables.ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.ASBIE.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
-                .set(Tables.ASBIE.IS_USED, (byte) ((0)))
+                .set(Tables.ASBIE.IS_USED, (byte)(cardinality.getCardinalityMin() > 0 ? 1 : 0))
                 .set(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .returning().fetchOne().getAsbieId().longValue();
 
@@ -489,7 +492,8 @@ public class BieRepository {
                 BCC.CARDINALITY_MIN,
                 BCC.CARDINALITY_MAX,
                 BCC.DEFAULT_VALUE,
-                BCC.FIXED_VALUE)
+                BCC.FIXED_VALUE,
+                BCC.IS_NILLABLE)
                 .from(BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
                 .fetchOneInto(BccRecord.class);
@@ -509,14 +513,14 @@ public class BieRepository {
                 .set(Tables.BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtId)))
                 .set(Tables.BBIE.CARDINALITY_MIN, bccRecord.getCardinalityMin())
                 .set(Tables.BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
-                .set(Tables.BBIE.IS_NILLABLE, (byte) ((0)))
+                .set(Tables.BBIE.IS_NILLABLE, bccRecord.getIsNillable())
                 .set(Tables.BBIE.IS_NULL, (byte) ((0)))
                 .set(Tables.BBIE.CREATED_BY, ULong.valueOf(userId))
                 .set(Tables.BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.BBIE.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
-                .set(Tables.BBIE.IS_USED, (byte) ((0)))
+                .set(Tables.BBIE.IS_USED, (byte)(bccRecord.getCardinalityMin() > 0 ? 1 : 0))
                 .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .set(Tables.BBIE.DEFAULT_VALUE, StringUtils.defaultIfEmpty(bccRecord.getDefaultValue(), bccpRecord.getDefaultValue()))
                 .set(Tables.BBIE.FIXED_VALUE, StringUtils.defaultIfEmpty(bccRecord.getFixedValue(), bccpRecord.getFixedValue()))
@@ -547,7 +551,7 @@ public class BieRepository {
                 .set(Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScId)))
                 .set(Tables.BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(Tables.BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
-                .set(Tables.BBIE_SC.IS_USED, (byte) (0))
+                .set(Tables.BBIE_SC.IS_USED, (byte)(dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
                 .set(Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .set(Tables.BBIE_SC.DEFAULT_VALUE, dtScRecord.getDefaultValue())
                 .set(Tables.BBIE_SC.FIXED_VALUE, dtScRecord.getFixedValue())

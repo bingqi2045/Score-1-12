@@ -19,10 +19,12 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private Integer bieCardinalityMin;
     private Integer bieCardinalityMax;
 
-    private Boolean nillable;
-    private String fixedValue;
-    private String defaultValue;
-    private boolean isInheritValue;
+    private Boolean ccNillable;
+    private Boolean bieNillable;
+    private String ccFixedValue;
+    private String bieFixedValue;
+    private String ccDefaultValue;
+    private String bieDefaultValue;
     private String bizTerm;
     private String remark;
 

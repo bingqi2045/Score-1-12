@@ -12,7 +12,8 @@ public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode implements BieEdi
     private Integer bieCardinalityMin;
     private Integer bieCardinalityMax;
 
-    private Boolean nillable;
+    private Boolean ccNillable;
+    private Boolean bieNillable;
     private String bizTerm;
     private String remark;
 
