@@ -1,14 +1,16 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.edit_tree;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Record2;
+import org.jooq.Record4;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.BccRecord;
-import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
@@ -27,7 +29,6 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -218,7 +219,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         if (abieId == 0L && isForceBieUpdate()) {
             BieEditAcc acc = repository.getAcc(asbiepNode.getAccId());
-            abieId = repository.createAbie(user, acc.getAccId(), asbiepNode.getTopLevelAbieId());
+            AbieRecord abieRecord = repository.createAbie(user, acc.getAccId(), asbiepNode.getTopLevelAbieId());
+            abieId = abieRecord.getAbieId().longValue();
         }
 
         if (abieId > 0L) {
@@ -382,16 +384,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (asbie == null && isForceBieUpdate()) {
-            long abieId = repository.createAbie(user, acc.getAccId(), topLevelAbieId);
-            long asbiepId = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
-            long asbieId = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccId(),
+            AbieRecord abieRecord = repository.createAbie(user, acc.getAccId(), topLevelAbieId);
+            long abieId = abieRecord.getAbieId().longValue();
+            AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
+            long asbiepId = asbiepRecord.getAsbiepId().longValue();
+            AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccId(),
                     seqKey, topLevelAbieId);
 
             asbie = new BieEditAsbie();
-            asbie.setAsbieId(asbieId);
+            asbie.setAsbieId(asbieRecord.getAsbieId().longValue());
             asbie.setBasedAsccId(ascc.getAsccId());
             asbie.setFromAbieId(fromAbieId);
             asbie.setToAsbiepId(asbiepId);
+            asbie.setUsed((asbieRecord.getIsUsed() == 1) ? true : false);
         }
 
         if (asbie != null) {
@@ -435,15 +440,18 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbie == null && isForceBieUpdate()) {
-            long bbiepId = repository.createBbiep(user, bccp.getBccpId(), topLevelAbieId);
-            long bbieId = repository.createBbie(user, fromAbieId, bbiepId,
+            BbiepRecord bbiepRecord = repository.createBbiep(user, bccp.getBccpId(), topLevelAbieId);
+            long bbiepId = bbiepRecord.getBbiepId().longValue();
+            BbieRecord bbieRecord = repository.createBbie(user, fromAbieId, bbiepId,
                     bcc.getBccId(), bccp.getBdtId(), seqKey, topLevelAbieId);
+            long bbieId = bbieRecord.getBbieId().longValue();
 
             bbie = new BieEditBbie();
             bbie.setBasedBccId(bcc.getBccId());
             bbie.setBbieId(bbieId);
             bbie.setFromAbieId(fromAbieId);
             bbie.setToBbiepId(bbiepId);
+            bbie.setUsed((bbieRecord.getIsUsed() == 1) ? true : false);
         }
 
         if (bbie != null) {

@@ -6,6 +6,7 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -111,7 +112,8 @@ public class BieService {
         long basedAccId = accForBie.getAccId();
         List<Long> bizCtxIds = request.getBizCtxIds();
 
-        long abieId = repository.createAbie(user, basedAccId, topLevelAbieId);
+        AbieRecord abieRecord = repository.createAbie(user, basedAccId, topLevelAbieId);
+        long abieId = abieRecord.getAbieId().longValue();
         repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);

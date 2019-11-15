@@ -10,7 +10,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBdtScNode;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -398,7 +397,7 @@ public class BieRepository {
         });
     }
 
-    public long createAbie(User user, long basedAccId, long topLevelAbieId) {
+    public AbieRecord createAbie(User user, long basedAccId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -411,10 +410,10 @@ public class BieRepository {
                 .set(Tables.ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.ABIE.STATE, BieState.Editing.getValue())
                 .set(Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .returning().fetchOne().getAbieId().longValue();
+                .returning().fetchOne();
     }
 
-    public long createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
+    public AsbiepRecord createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -427,11 +426,11 @@ public class BieRepository {
                 .set(Tables.ASBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .returning().fetchOne().getAsbiepId().longValue();
+                .returning().fetchOne();
     }
 
-    public long createAsbie(User user, long fromAbieId, long toAsbiepId, long basedAsccId,
-                            int seqKey, long topLevelAbieId) {
+    public AsbieRecord createAsbie(User user, long fromAbieId, long toAsbiepId, long basedAsccId,
+                                   int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -459,13 +458,13 @@ public class BieRepository {
                 .set(Tables.ASBIE.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
-                .set(Tables.ASBIE.IS_USED, (byte)(cardinality.getCardinalityMin() > 0 ? 1 : 0))
+                .set(Tables.ASBIE.IS_USED, (byte) (cardinality.getCardinalityMin() > 0 ? 1 : 0))
                 .set(Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .returning().fetchOne().getAsbieId().longValue();
+                .returning().fetchOne();
 
     }
 
-    public long createBbiep(User user, long basedBccpId, long topLevelAbieId) {
+    public BbiepRecord createBbiep(User user, long basedBccpId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -477,12 +476,12 @@ public class BieRepository {
                 .set(Tables.BBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .returning().fetchOne().getBbiepId().longValue();
+                .returning().fetchOne();
     }
 
-    public long createBbie(User user, long fromAbieId,
-                           long toBbiepId, long basedBccId, long bdtId,
-                           int seqKey, long topLevelAbieId) {
+    public BbieRecord createBbie(User user, long fromAbieId,
+                                 long toBbiepId, long basedBccId, long bdtId,
+                                 int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -520,11 +519,11 @@ public class BieRepository {
                 .set(Tables.BBIE.CREATION_TIMESTAMP, timestamp)
                 .set(Tables.BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(Tables.BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
-                .set(Tables.BBIE.IS_USED, (byte)(bccRecord.getCardinalityMin() > 0 ? 1 : 0))
+                .set(Tables.BBIE.IS_USED, (byte) (bccRecord.getCardinalityMin() > 0 ? 1 : 0))
                 .set(Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .set(Tables.BBIE.DEFAULT_VALUE, StringUtils.defaultIfEmpty(bccRecord.getDefaultValue(), bccpRecord.getDefaultValue()))
                 .set(Tables.BBIE.FIXED_VALUE, StringUtils.defaultIfEmpty(bccRecord.getFixedValue(), bccpRecord.getFixedValue()))
-                .returning().fetchOne().getBbieId().longValue();
+                .returning().fetchOne();
     }
 
     public long getDefaultBdtPriRestriIdByBdtId(long bdtId) {
