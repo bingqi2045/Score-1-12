@@ -26,7 +26,7 @@ public class CcListController {
     private ExtensionService extensionService;
 
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CcList> getCcList(
             @RequestParam(name = "releaseId", required = false) long releaseId,
             @RequestParam(name = "den", required = false) String den,
@@ -87,7 +87,7 @@ public class CcListController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/asccp_list",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AsccpForAppendAsccp> getAsccpForAppendAsccList(@AuthenticationPrincipal User user,
                                                                @PathVariable("releaseId") long releaseId,
                                                                @PathVariable("id") long extensionId) {
@@ -96,7 +96,7 @@ public class CcListController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/bccp_list",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BccpForAppendBccp> getBccpForAppendBccList(@AuthenticationPrincipal User user,
                                                            @PathVariable("releaseId") long releaseId,
                                                            @PathVariable("id") long extensionId) {
@@ -105,7 +105,7 @@ public class CcListController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/transfer_ownership",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
                                             @PathVariable("releaseId") long releaseId,
                                             @PathVariable("id") long extensionId,

@@ -27,7 +27,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/node/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
             method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("releaseId") long releaseId,
                             @PathVariable("id") long extensionId) {
@@ -36,7 +36,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
                                             @PathVariable("releaseId") long releaseId,
                                             @PathVariable("id") long extensionId,
@@ -75,7 +75,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/state",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal User user,
                                                @PathVariable("releaseId") long releaseId,
                                                @PathVariable("id") long extensionId,
@@ -88,7 +88,7 @@ public class ExtensionController {
 
     @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{id:[\\d]+}/detail",
             method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal User user,
                                                  @PathVariable("releaseId") long releaseId,
                                                  @PathVariable("id") long extensionId,
