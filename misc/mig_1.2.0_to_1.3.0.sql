@@ -19,11 +19,14 @@ UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum
 UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
 UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format":"double"}' WHERE `name` = 'double';
 
--- Add example column on `bbie`, `bbie_sc`
+-- Add `example` and `example_description` column on `bbie`, `bbie_sc`
 ALTER TABLE `bbie`
-ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
+ADD COLUMN `example` text DEFAULT NULL AFTER `definition`,
+ADD COLUMN `example_description` text DEFAULT NULL AFTER `example`;
+
 ALTER TABLE `bbie_sc`
-ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
+ADD COLUMN `example` text DEFAULT NULL AFTER `definition`,
+ADD COLUMN `example_description` text DEFAULT NULL AFTER `example`;
 
 ALTER TABLE `bcc`
 ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';

@@ -49,7 +49,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -230442730;
+    private static final long serialVersionUID = 1886177461;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -143,6 +143,11 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.example</code>.
      */
     public final TableField<BbieRecord, String> EXAMPLE = createField(DSL.name("example"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>oagi.bbie.example_description</code>.
+     */
+    public final TableField<BbieRecord, String> EXAMPLE_DESCRIPTION = createField(DSL.name("example_description"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.bbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."

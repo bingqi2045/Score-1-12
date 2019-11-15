@@ -40,7 +40,9 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String contextDefinition;
     private String associationDefinition;
     private String componentDefinition;
+
     private String example;
+    private String exampleDescription;
 
     public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 

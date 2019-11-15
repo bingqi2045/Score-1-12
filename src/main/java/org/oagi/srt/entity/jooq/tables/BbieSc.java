@@ -15,7 +15,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 542014264;
+    private static final long serialVersionUID = 1178520081;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -132,6 +132,11 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
      * The column <code>oagi.bbie_sc.example</code>.
      */
     public final TableField<BbieScRecord, String> EXAMPLE = createField(DSL.name("example"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>oagi.bbie_sc.example_description</code>.
+     */
+    public final TableField<BbieScRecord, String> EXAMPLE_DESCRIPTION = createField(DSL.name("example_description"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.bbie_sc.remark</code>. This column allows the user to specify a very context-specific usage of the BBIE SC. It is different from the Definition column in that the Definition column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. 
@@ -267,11 +272,11 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row18<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }
