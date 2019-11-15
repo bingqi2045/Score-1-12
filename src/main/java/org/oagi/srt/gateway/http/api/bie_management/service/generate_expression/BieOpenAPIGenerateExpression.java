@@ -1,10 +1,13 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.generate_expression;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.ImmutableMap;
 import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
+import org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.slf4j.Logger;
@@ -22,6 +25,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat.JSON;
+import static org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat.YAML;
 import static org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.Helper.*;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -33,6 +38,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private ObjectMapper mapper;
+    private ObjectMapper expressionMapper;
     private Map<String, Object> root;
     private GenerateExpressionOption option;
 
@@ -54,6 +60,23 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     public void generate(TopLevelAbie topLevelAbie, GenerateExpressionOption option) {
         this.option = option;
         this.generationContext = applicationContext.getBean(GenerationContext.class, topLevelAbie);
+
+        OpenAPIExpressionFormat openAPIExpressionFormat;
+        if (StringUtils.isEmpty(this.option.getOpenAPIExpressionFormat())) {
+            openAPIExpressionFormat = YAML;
+        } else {
+            openAPIExpressionFormat = OpenAPIExpressionFormat.valueOf(this.option.getOpenAPIExpressionFormat());
+        }
+
+        switch (openAPIExpressionFormat) {
+            case YAML:
+                expressionMapper = new ObjectMapper(new YAMLFactory());
+                break;
+            case JSON:
+                expressionMapper = new ObjectMapper();
+                break;
+        }
+        expressionMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         generateTopLevelAbie(topLevelAbie);
     }
@@ -762,9 +785,11 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         ensureRoot();
 
         File tempFile = File.createTempFile(SrtGuid.randomGuid(), null);
-        tempFile = new File(tempFile.getParentFile(), filename + ".json");
+        String extension = (expressionMapper.getFactory() instanceof YAMLFactory) ? "yml" : "json";
 
-        mapper.writeValue(tempFile, root);
+        tempFile = new File(tempFile.getParentFile(), filename + "." + extension);
+
+        expressionMapper.writeValue(tempFile, root);
         logger.info("Open API " + OPEN_API_VERSION + " Schema is generated: " + tempFile);
 
         return tempFile;
