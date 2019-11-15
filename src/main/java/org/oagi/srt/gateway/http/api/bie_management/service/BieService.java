@@ -6,6 +6,8 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -75,7 +77,9 @@ public class BieService {
 
         List<Long> bizCtxIds = request.getBizCtxIds();
 
-        long abieId = repository.createAbie(user, roleOfAccId, topLevelAbieId);
+        AbieRecord abieRecord = repository.createAbie(user, roleOfAccId, topLevelAbieId);
+        long abieId = abieRecord.getAbieId().longValue();
+
         repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
         repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
@@ -384,34 +388,12 @@ public class BieService {
         dslContext.deleteFrom(ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
         dslContext.deleteFrom(ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
-        List<ULong> bbieExampleTextContentIds =
-                dslContext.select(BBIE.EXAMPLE_TEXT_CONTENT_ID)
-                        .from(BBIE)
-                        .where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds))
-                        .fetchInto(ULong.class);
-        if (!bbieExampleTextContentIds.isEmpty()) {
-            dslContext.deleteFrom(TEXT_CONTENT)
-                    .where(TEXT_CONTENT.TEXT_CONTENT_ID.in(bbieExampleTextContentIds))
-                    .execute();
-        }
+        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
-        dslContext.deleteFrom(BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-
-        List<ULong> bbieScExampleTextContentIds =
-                dslContext.select(BBIE_SC.EXAMPLE_TEXT_CONTENT_ID)
-                        .from(BBIE_SC)
-                        .where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds))
-                        .fetchInto(ULong.class);
-        if (!bbieScExampleTextContentIds.isEmpty()) {
-            dslContext.deleteFrom(TEXT_CONTENT)
-                    .where(TEXT_CONTENT.TEXT_CONTENT_ID.in(bbieScExampleTextContentIds))
-                    .execute();
-        }
-
-        dslContext.deleteFrom(BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT).where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BIZ_CTX_ASSIGNMENT).where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
@@ -420,7 +402,7 @@ public class BieService {
     public void transferOwnership(User user, long topLevelAbieId, String targetLoginId) {
         long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.eq(user.getUsername()))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (ownerAppUserId == 0L) {
             throw new IllegalArgumentException("Not found an owner user.");
@@ -428,7 +410,7 @@ public class BieService {
 
         long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.eq(targetLoginId))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (targetAppUserId == 0L) {
             throw new IllegalArgumentException("Not found a target user.");

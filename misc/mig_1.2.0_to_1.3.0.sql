@@ -19,23 +19,21 @@ UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum
 UPDATE `xbt` SET `jbt_draft05_map` = '{"type":"number", "multipleOf":1, "minimum":0, "exclusiveMinimum":true}' WHERE `name` = 'positive integer';
 UPDATE `xbt` SET `openapi30_map` = '{"type":"number", "format":"double"}' WHERE `name` = 'double';
 
--- Add `text_content` table.
-DROP TABLE IF EXISTS `text_content`;
-CREATE TABLE `text_content` (
-  `text_content_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `text_content_type` varchar(20) NOT NULL DEFAULT 'json',
-  `text_content` text,
-  PRIMARY KEY (`text_content_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- Add `example` column on `bbie`, `bbie_sc`
 ALTER TABLE `bbie`
-ADD COLUMN `example_text_content_id` bigint(20) unsigned DEFAULT NULL AFTER `definition`,
-ADD KEY `bbie_example_text_content_id_fk` (`example_text_content_id`),
-ADD CONSTRAINT `bbie_example_text_content_id_fk` FOREIGN KEY (`example_text_content_id`) REFERENCES `text_content` (`text_content_id`);
+ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
 
 ALTER TABLE `bbie_sc`
-ADD COLUMN `example_text_content_id` bigint(20) unsigned DEFAULT NULL AFTER `definition`,
-ADD KEY `bbie_sc_example_text_content_id_fk` (`example_text_content_id`),
-ADD CONSTRAINT `bbie_sc_example_text_content_id_fk` FOREIGN KEY (`example_text_content_id`) REFERENCES `text_content` (`text_content_id`);
+ADD COLUMN `example` text DEFAULT NULL AFTER `definition`;
+
+ALTER TABLE `bcc`
+ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';
+
+ALTER TABLE `bccp`
+ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';
+
+ALTER TABLE `dt_sc`
+ADD COLUMN `default_value` text COMMENT 'This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.',
+ADD COLUMN `fixed_value` text COMMENT 'This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.';
 
 SET FOREIGN_KEY_CHECKS = 1;

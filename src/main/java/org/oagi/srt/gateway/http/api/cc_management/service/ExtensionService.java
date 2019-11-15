@@ -1045,7 +1045,7 @@ public class ExtensionService {
     public void transferOwnership(User user, long accManifestId, String targetLoginId) {
         long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.eq(targetLoginId))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (targetAppUserId == 0L) {
             throw new IllegalArgumentException("Not found a target user.");

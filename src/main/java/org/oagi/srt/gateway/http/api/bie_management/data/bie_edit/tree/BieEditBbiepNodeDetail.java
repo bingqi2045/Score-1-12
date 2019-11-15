@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAgencyIdList;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditCodeList;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,9 +19,12 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private Integer bieCardinalityMin;
     private Integer bieCardinalityMax;
 
-    private Boolean nillable;
-    private String fixedValue;
-    private String defaultValue;
+    private Boolean ccNillable;
+    private Boolean bieNillable;
+    private String ccFixedValue;
+    private String bieFixedValue;
+    private String ccDefaultValue;
+    private String bieDefaultValue;
     private String bizTerm;
     private String remark;
 
@@ -39,8 +43,7 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String associationDefinition;
     private String componentDefinition;
 
-    private String exampleContentType;
-    private String exampleText;
+    private String example;
 
     public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 
@@ -59,5 +62,12 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
         this.setAttribute(bbiepNode.isAttribute());
 
         return this;
+    }
+
+    public void setBdtDen(String bdtDen) {
+        if (!StringUtils.isEmpty(bdtDen)) {
+            this.bdtDen = bdtDen.replaceAll("_ ", " ");
+        }
+
     }
 }

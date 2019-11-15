@@ -130,7 +130,7 @@ public class CcListRepository {
         if (!request.getTypes().isAscc() || !StringUtils.isEmpty(request.getModule())) {
             return Collections.emptyList();
         }
-        
+
         Release release = releaseRepository.findById(request.getReleaseId());
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");

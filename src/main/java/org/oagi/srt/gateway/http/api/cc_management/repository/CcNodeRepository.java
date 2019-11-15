@@ -877,6 +877,7 @@ public class CcNodeRepository {
                     BCC.CARDINALITY_MAX,
                     BCC.IS_DEPRECATED.as("deprecated"),
                     BCC.DEFAULT_VALUE,
+                    BCC.FIXED_VALUE,
                     BCC.DEFINITION,
                     BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.as("manifest_id"))
                     .from(BCC)
@@ -898,6 +899,7 @@ public class CcNodeRepository {
                 BCCP.IS_NILLABLE.as("nillable"),
                 BCCP.IS_DEPRECATED.as("deprecated"),
                 BCCP.DEFAULT_VALUE,
+                BCCP.FIXED_VALUE,
                 BCCP.DEFINITION,
                 BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.as("manifest_id"))
                 .from(BCCP)
@@ -933,7 +935,9 @@ public class CcNodeRepository {
                 concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.PROPERTY_TERM).as("den"),
                 DT_SC.CARDINALITY_MIN,
                 DT_SC.CARDINALITY_MAX,
-                DT_SC.DEFINITION).from(DT_SC)
+                DT_SC.DEFINITION,
+                DT_SC.DEFAULT_VALUE,
+                DT_SC.FIXED_VALUE).from(DT_SC)
                 .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }

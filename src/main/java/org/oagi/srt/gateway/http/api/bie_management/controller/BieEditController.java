@@ -155,7 +155,12 @@ public class BieEditController {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
             String[] keyValue = e.split("=");
-            params.put(keyValue[0], keyValue[1]);
+            if (keyValue.length > 1) {
+                params.put(keyValue[0], keyValue[1]);
+            } else {
+                params.put(keyValue[0], "");
+            }
+
         });
         return objectMapper.convertValue(params, clazz);
     }
