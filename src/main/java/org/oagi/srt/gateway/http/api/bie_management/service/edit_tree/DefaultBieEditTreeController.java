@@ -649,8 +649,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE.FIXED_VALUE,
                     Tables.BBIE.IS_NILLABLE.as("nillable"),
                     Tables.BBIE.DEFINITION.as("context_definition"),
-                    Tables.BBIE.EXAMPLE,
-                    Tables.BBIE.EXAMPLE_DESCRIPTION
+                    Tables.BBIE.EXAMPLE
             ).from(Tables.BBIE)
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNode.getBbieId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
@@ -835,8 +834,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.BBIE_SC.BIZ_TERM,
                     Tables.BBIE_SC.REMARK,
                     Tables.BBIE_SC.DEFINITION.as("context_definition"),
-                    Tables.BBIE_SC.EXAMPLE,
-                    Tables.BBIE_SC.EXAMPLE_DESCRIPTION
+                    Tables.BBIE_SC.EXAMPLE
             )
                     .from(Tables.BBIE_SC)
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScId())))
@@ -1156,7 +1154,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIE.IS_USED, (byte) (bbiepNodeDetail.isUsed() ? 1 : 0))
                 .set(Tables.BBIE.DEFINITION, emptyToNull(bbiepNodeDetail.getContextDefinition()))
                 .set(Tables.BBIE.EXAMPLE, emptyToNull(bbiepNodeDetail.getExample()))
-                .set(Tables.BBIE.EXAMPLE_DESCRIPTION, emptyToNull(bbiepNodeDetail.getExampleDescription()))
                 .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
         long userId = sessionService.userId(user);
@@ -1223,7 +1220,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(Tables.BBIE_SC.BIZ_TERM, emptyToNull(bbieScNodeDetail.getBizTerm()))
                 .set(Tables.BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
                 .set(Tables.BBIE_SC.EXAMPLE, emptyToNull(bbieScNodeDetail.getExample()))
-                .set(Tables.BBIE_SC.EXAMPLE_DESCRIPTION, emptyToNull(bbieScNodeDetail.getExampleDescription()))
                 .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
                 .execute();
     }

@@ -458,7 +458,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (!schemas.containsKey(codeListName)) {
             List<CodeListValue> codeListValues = generationContext.getCodeListValues(codeList);
             List<String> enumerations = codeListValues.stream().map(e -> e.getValue()).collect(Collectors.toList());
-            properties.put("enum", enumerations);
+            if (!enumerations.isEmpty()) {
+                properties.put("enum", enumerations);
+            }
 
             schemas.put(codeListName, properties);
         }
@@ -483,7 +485,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             List<AgencyIdListValue> agencyIdListValues =
                     generationContext.findAgencyIdListValueByOwnerListId(agencyIdList.getAgencyIdListId());
             List<String> enumerations = agencyIdListValues.stream().map(e -> e.getValue()).collect(Collectors.toList());
-            properties.put("enum", enumerations);
+            if (!enumerations.isEmpty()) {
+                properties.put("enum", enumerations);
+            }
 
             schemas.put(agencyListTypeName, properties);
         }
@@ -598,19 +602,11 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #692
-        String exampleContentType = bbie.getExampleContentType();
-        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
-            String exampleText = bbie.getExampleText();
-            if (!StringUtils.isEmpty(exampleText)) {
-                Object example = readJsonValue(exampleText);
-                if (example != null) {
-                    if (example instanceof List) {
-                        properties.put("examples", example);
-                    } else {
-                        properties.put("examples", Arrays.asList(example));
-                    }
-                }
-            }
+        String exampleText = bbie.getExample();
+        if (!StringUtils.isEmpty(exampleText)) {
+            Map<String, Object> example = new LinkedHashMap();
+            example.put(name, exampleText);
+            properties.put("example", example);
         }
 
         // Issue #564
@@ -701,19 +697,11 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         // Issue #692
-        String exampleContentType = bbieSc.getExampleContentType();
-        if (!StringUtils.isEmpty(exampleContentType) && "json".equals(exampleContentType.toLowerCase())) {
-            String exampleText = bbieSc.getExampleText();
-            if (!StringUtils.isEmpty(exampleText)) {
-                Object example = readJsonValue(exampleText);
-                if (example != null) {
-                    if (example instanceof List) {
-                        properties.put("examples", example);
-                    } else {
-                        properties.put("examples", Arrays.asList(example));
-                    }
-                }
-            }
+        String exampleText = bbieSc.getExample();
+        if (!StringUtils.isEmpty(exampleText)) {
+            Map<String, Object> example = new LinkedHashMap();
+            example.put(name, exampleText);
+            properties.put("example", example);
         }
 
         CodeList codeList = generationContext.getCodeList(bbieSc);
