@@ -44,7 +44,6 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String componentDefinition;
 
     private String example;
-    private String exampleDescription;
 
     public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 

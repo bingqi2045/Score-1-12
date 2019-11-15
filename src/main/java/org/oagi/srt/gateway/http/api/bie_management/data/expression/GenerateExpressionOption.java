@@ -23,6 +23,7 @@ public class GenerateExpressionOption {
     private boolean includePaginationResponseForJson;
     private Long paginationResponseTopLevelAbieId;
 
+    private String openAPIExpressionFormat;
     private boolean openAPI30GetTemplate;
     private boolean arrayForJsonExpressionForOpenAPI30GetTemplate;
     private boolean includeMetaHeaderForJsonForOpenAPI30GetTemplate;
