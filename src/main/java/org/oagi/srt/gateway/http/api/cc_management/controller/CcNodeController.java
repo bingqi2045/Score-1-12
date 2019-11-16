@@ -61,7 +61,7 @@ public class CcNodeController {
                 break;
             case "asccp":
                 service.updateAsccpManifest(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
-                //return getAsccpNode(user, manifestId);
+                break;
             case "bccp":
                 service.updateBccpManifest(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
                 break;

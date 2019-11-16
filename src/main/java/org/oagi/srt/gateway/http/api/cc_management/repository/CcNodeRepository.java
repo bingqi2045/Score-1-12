@@ -1417,8 +1417,11 @@ public class CcNodeRepository {
     public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId){
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        AccReleaseManifestRecord basedAccReleaseManifestRecord = null;
+        if (basedAccManifestId != null) {
+            basedAccReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(basedAccManifestId);
+        }
 
-        AccReleaseManifestRecord basedAccReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(basedAccManifestId);
         if (basedAccManifestId != null && basedAccReleaseManifestRecord == null) {
             return getAccNodeByAccId(user, manifestRepository.getAccReleaseManifestById(accManifestId));
         }
