@@ -6,6 +6,8 @@ import org.oagi.srt.entity.jooq.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
@@ -25,6 +27,13 @@ public class ReleaseManifestRepository {
         return dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOne();
+    }
+
+    public List<AsccpReleaseManifestRecord> getAsccpReleaseManifestByRoleOfAccId(long roleOfAccId, long releaseId) {
+        return dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
+                .where(and(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID.eq(ULong.valueOf(roleOfAccId)),
+                        ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetch();
     }
 
     public BccpReleaseManifestRecord getBccpReleaseManifestById(long manifestId) {
