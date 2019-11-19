@@ -4,12 +4,12 @@ import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ReleaseState;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseList;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseListRequest;
-import org.oagi.srt.gateway.http.api.release_management.data.SimpleRelease;
+import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,9 @@ public class ReleaseService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private ReleaseRepository repository;
 
     public List<SimpleRelease> getSimpleReleases() {
         return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM)
@@ -160,6 +163,30 @@ public class ReleaseService {
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(pageCount);
+        return response;
+    }
+
+    @Transactional
+    public ReleaseResponse createRelease(User user, ReleaseDetail releaseDetail) {
+        long userId = sessionService.userId(user);
+        ReleaseResponse response = new ReleaseResponse();
+        if (!repository.findByReleaseNum(releaseDetail.getReleaseNum()).isEmpty()) {
+            response.setStatus("Fail");
+            response.setStatusMessage("'" + releaseDetail.getReleaseNum() + "' is already exist.");
+            response.setReleaseDetail(releaseDetail);
+            return response;
+        }
+
+        ReleaseRecord releaseRecord = repository.create(userId, releaseDetail.getReleaseNum(),
+                releaseDetail.getReleaseNote(), releaseDetail.getNamespaceId());
+
+        response.setStatus("success");
+        response.setStatusMessage("");
+        releaseDetail.setReleaseId(releaseRecord.getReleaseId().longValue());
+        releaseDetail.setReleaseNum(releaseRecord.getReleaseNum());
+        releaseDetail.setReleaseNote(releaseRecord.getReleaseNote());
+        releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().longValue());
+        response.setReleaseDetail(releaseDetail);
         return response;
     }
 }

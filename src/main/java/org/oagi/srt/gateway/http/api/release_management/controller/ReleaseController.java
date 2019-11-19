@@ -3,9 +3,7 @@ package org.oagi.srt.gateway.http.api.release_management.controller;
 import org.oagi.srt.data.ReleaseState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseList;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseListRequest;
-import org.oagi.srt.gateway.http.api.release_management.data.SimpleRelease;
+import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.api.release_management.service.ReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -86,5 +84,11 @@ public class ReleaseController {
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
         return service.getReleases(user, request);
+    }
+
+    @RequestMapping(value = "/release/create", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReleaseResponse createRelease(@AuthenticationPrincipal User user, @RequestBody ReleaseDetail releaseDetail) {
+        return service.createRelease(user, releaseDetail);
     }
 }
