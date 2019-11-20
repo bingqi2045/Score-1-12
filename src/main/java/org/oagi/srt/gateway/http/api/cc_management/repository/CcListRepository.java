@@ -78,6 +78,9 @@ public class CcListRepository {
         if (request.getUpdateEndDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
         }
+        if (request.getComponentTypes() != null && !request.getComponentTypes().isEmpty()) {
+            conditions.add(ACC.OAGIS_COMPONENT_TYPE.in(Arrays.asList(request.getComponentTypes().split(","))));
+        }
 
         return dslContext.select(
                 ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID,

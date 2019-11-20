@@ -19,6 +19,7 @@ public class CcListRequest {
     private String den;
     private String definition;
     private String module;
+    private String componentTypes;
 
     private Date updateStartDate;
     private Date updateEndDate;
