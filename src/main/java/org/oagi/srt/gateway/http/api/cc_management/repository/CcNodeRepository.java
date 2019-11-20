@@ -1089,11 +1089,20 @@ public class CcNodeRepository {
                 .where(ACC.GUID.eq(guid))
                 .fetchInto(ULong.class);
 
+        dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
+                .where(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.in(accIds))
+                .execute();
         dslContext.deleteFrom(ASCC)
                 .where(ASCC.FROM_ACC_ID.in(accIds))
                 .execute();
+        dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
+                .where(BCC_RELEASE_MANIFEST.FROM_ACC_ID.in(accIds))
+                .execute();
         dslContext.deleteFrom(BCC)
                 .where(BCC.FROM_ACC_ID.in(accIds))
+                .execute();
+        dslContext.deleteFrom(ACC_RELEASE_MANIFEST)
+                .where(ACC_RELEASE_MANIFEST.ACC_ID.in(accIds))
                 .execute();
         dslContext.deleteFrom(ACC)
                 .where(ACC.ACC_ID.in(accIds))
