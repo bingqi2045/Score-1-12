@@ -60,18 +60,32 @@ public class ReleaseManifestRepository {
                 .fetchOne();
     }
 
-    public AsccReleaseManifestRecord getAsccReleaseManifestByToAsccpId(long toAsccpId, long releaseId) {
+    public List<AsccReleaseManifestRecord> getAsccReleaseManifestByToAsccpId(long toAsccpId, long releaseId) {
         return dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
                 .where(and(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(ULong.valueOf(toAsccpId)),
                         ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .fetchOne();
+                .fetch();
     }
 
-    public BccReleaseManifestRecord getBccReleaseManifestByToBccpId(long toBccpId, long releaseId) {
+    public List<BccReleaseManifestRecord> getBccReleaseManifestByToBccpId(long toBccpId, long releaseId) {
         return dslContext.selectFrom(BCC_RELEASE_MANIFEST)
                 .where(and(BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(ULong.valueOf(toBccpId)),
                         BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .fetchOne();
+                .fetch();
+    }
+
+    public List<AsccReleaseManifestRecord> getAsccReleaseManifestByFromAccId(long fromAccId, long releaseId) {
+        return dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
+                .where(and(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetch();
+    }
+
+    public List<BccReleaseManifestRecord> getBccReleaseManifestByFromAccId(long fromAccId, long releaseId) {
+        return dslContext.selectFrom(BCC_RELEASE_MANIFEST)
+                .where(and(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetch();
     }
 
     public void deleteAccReleaseManifestById(long manifestId) {

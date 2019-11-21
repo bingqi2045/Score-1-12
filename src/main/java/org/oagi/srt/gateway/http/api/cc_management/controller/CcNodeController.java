@@ -60,10 +60,10 @@ public class CcNodeController {
                 //return getAccNode(user, manifestId);
                 break;
             case "asccp":
-                service.updateAsccpManifest(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
+                service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
                 break;
             case "bccp":
-                service.updateBccpManifest(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
+                service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
                 break;
             default:
                 throw new UnsupportedOperationException();
