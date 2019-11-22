@@ -57,11 +57,11 @@ public class ExtensionController {
             case "discard":
                 switch (actionRequest.getType()) {
                     case "ascc":
-                        service.discardAscc(user, manifestId, actionRequest.getManifestId());
+                        service.discardAscc(user, manifestId, actionRequest.getId());
                         break;
 
                     case "bcc":
-                        service.discardBcc(user, manifestId, actionRequest.getManifestId());
+                        service.discardBcc(user, manifestId, actionRequest.getId());
                         break;
                 }
 

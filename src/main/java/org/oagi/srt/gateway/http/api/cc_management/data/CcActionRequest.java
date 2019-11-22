@@ -8,5 +8,6 @@ public class CcActionRequest {
     private String action;
     private String type;
     private Long manifestId;
+    private Long id;
     private CcAsccpNodeDetail asccpNodeDetail;
 }
