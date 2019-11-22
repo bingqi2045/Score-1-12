@@ -1,6 +1,8 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
-import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;

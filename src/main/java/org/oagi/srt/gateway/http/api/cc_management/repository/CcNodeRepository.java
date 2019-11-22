@@ -2,15 +2,15 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record12;
+import org.jooq.Result;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
-import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
-import org.oagi.srt.entity.jooq.tables.AsccReleaseManifest;
-import org.oagi.srt.entity.jooq.tables.AsccpReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
