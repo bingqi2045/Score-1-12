@@ -2,10 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.DSLContext;
-import org.jooq.Record12;
-import org.jooq.Result;
-import org.jooq.SelectOnConditionStep;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
@@ -1322,12 +1320,28 @@ public class CcNodeRepository {
                 manifestRepository.getAsccpReleaseManifestByRoleOfAccId(accReleaseManifestRecord.getAccId().longValue(),
                         accReleaseManifestRecord.getReleaseId().longValue());
 
-
         for (AsccpReleaseManifestRecord asccpReleaseManifestRecord : asccpReleaseManifestRecords) {
             int asccpState = dslContext.select(ASCCP.STATE).from(ASCCP)
                     .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOneInto(Integer.class);
             if (asccpState > ccState.getValue()) {
                 throw new IllegalArgumentException("ACC must precede the state of ASCCP which based this.");
+            }
+        }
+
+        List<Integer> asccpStates = dslContext.select(ASCCP.STATE).from(ACC_RELEASE_MANIFEST)
+                .join(ASCC_RELEASE_MANIFEST).on(and(
+                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ACC_RELEASE_MANIFEST.RELEASE_ID)))
+                .join(ASCCP_RELEASE_MANIFEST).on(and(
+                        ASCCP_RELEASE_MANIFEST.ASCCP_ID.eq(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID),
+                        ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ASCC_RELEASE_MANIFEST.RELEASE_ID)))
+                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
+                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(accReleaseManifestRecord.getAccReleaseManifestId()))
+                .fetchInto(Integer.class);
+
+        for(Integer state: asccpStates) {
+            if (state > ccState.getValue()) {
+                throw new IllegalArgumentException("ACC must precede the state of child ASCCP.");
             }
         }
 
@@ -1428,12 +1442,28 @@ public class CcNodeRepository {
         AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId))).fetchOne();
 
-        AccRecord accRecord = dslContext.selectFrom(ACC)
+        AccRecord roleOfAccRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(asccpReleaseManifestRecord.getRoleOfAccId())).fetchOne();
 
-        if (accRecord.getState() < ccState.getValue()) {
+        if (roleOfAccRecord.getState() < ccState.getValue()) {
             throw new IllegalArgumentException("ASCCP state can not precede ACC.");
         }
+
+        List<Integer> parentAccStates = dslContext.select().from(ASCC_RELEASE_MANIFEST)
+                .join(ACC_RELEASE_MANIFEST).on(and(
+                        ACC_RELEASE_MANIFEST.ACC_ID.eq(ASCC_RELEASE_MANIFEST.FROM_ACC_ID),
+                        ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ASCC_RELEASE_MANIFEST.RELEASE_ID)))
+                .join(ACC).on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID))
+                .where(and(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId()),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(asccpReleaseManifestRecord.getReleaseId()))).fetch().getValues(ACC.STATE);
+
+        for (Integer state : parentAccStates) {
+            if (state > ccState.getValue()) {
+                throw new IllegalArgumentException("ASCCP state can not precede parent ACC.");
+            }
+        }
+
+
 
         long originAsccpId = asccpReleaseManifestRecord.getAsccpId().longValue();
 
