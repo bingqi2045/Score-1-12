@@ -358,7 +358,7 @@ public class CcListRepository {
                 .on(ASCCP.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ASCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .leftJoin(MODULE)
+                .leftOuterJoin(MODULE)
                 .on(ASCCP_RELEASE_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions)
                 .fetch().map(row -> {

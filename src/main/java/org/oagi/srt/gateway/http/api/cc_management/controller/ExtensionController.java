@@ -22,9 +22,6 @@ public class ExtensionController {
     @Autowired
     private ExtensionService service;
 
-    @Autowired
-    private DSLContext dslContext;
-
     @RequestMapping(value = "/core_component/node/extension/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
