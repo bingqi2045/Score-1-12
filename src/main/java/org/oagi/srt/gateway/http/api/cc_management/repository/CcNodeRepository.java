@@ -1599,60 +1599,61 @@ public class CcNodeRepository {
 
     }
 
-    public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId){
+    public CcAccNode discardAccBasedId(User user, long accManifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        AccReleaseManifestRecord basedAccReleaseManifestRecord = null;
-        if (basedAccManifestId != null) {
-            basedAccReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(basedAccManifestId);
-        }
-
-        if (basedAccManifestId != null && basedAccReleaseManifestRecord == null) {
-            return getAccNodeByAccId(user, manifestRepository.getAccReleaseManifestById(accManifestId));
-        }
-
         AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(accManifestId);
         AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
 
-        long originAccId = accReleaseManifest.getAccId().longValue();
+        long originAccId = accRecord.getAccId().longValue();
 
         accRecord.setAccId(null);
-        accRecord.setBasedAccId(basedAccManifestId == null ? null : basedAccReleaseManifestRecord.getAccId());
+        accRecord.setBasedAccId(null);
         accRecord.setLastUpdatedBy(ULong.valueOf(userId));
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
         accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
 
         AccRecord insertedAccRecord = dslContext.insertInto(ACC).set(accRecord).returning().fetchOne();
-
-        dslContext.update(ACC_RELEASE_MANIFEST)
-                .set(ACC_RELEASE_MANIFEST.BASED_ACC_ID, basedAccManifestId == null ? null : basedAccReleaseManifestRecord.getAccId())
-                .set(ACC_RELEASE_MANIFEST.ACC_ID, insertedAccRecord.getAccId())
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(accReleaseManifest.getAccReleaseManifestId()))
-                .execute();
+        accReleaseManifest.setBasedAccId(null);
+        accReleaseManifest.setAccId(insertedAccRecord.getAccId());
+        accReleaseManifest.update();
 
         long newAccId = insertedAccRecord.getAccId().longValue();
 
-        if (basedAccManifestId != null) {
-            AccReleaseManifestRecord basedAccReleaseManifest = dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                    .where(ACC_RELEASE_MANIFEST.ACC_ID.eq(basedAccReleaseManifestRecord.getAccId())
-                            .and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId()))).fetchOne();
-
-            if(basedAccReleaseManifest == null) {
-                AccReleaseManifestRecord otherReleaseAccReleaseManifest = dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                        .where(ACC_RELEASE_MANIFEST.ACC_ID.eq(basedAccReleaseManifestRecord.getAccId())).fetchAny();
-                dslContext.insertInto(ACC_RELEASE_MANIFEST)
-                        .set(ACC_RELEASE_MANIFEST.RELEASE_ID, accReleaseManifest.getReleaseId())
-                        .set(ACC_RELEASE_MANIFEST.MODULE_ID, otherReleaseAccReleaseManifest.getModuleId())
-                        .set(ACC_RELEASE_MANIFEST.ACC_ID, basedAccReleaseManifestRecord.getAccId())
-                        .set(ACC_RELEASE_MANIFEST.BASED_ACC_ID, otherReleaseAccReleaseManifest.getBasedAccId())
-                        .execute();
-            }
-        }
         updateAsccByFromAccId(originAccId, newAccId, accReleaseManifest.getReleaseId().longValue());
         updateBccByFromAccId(originAccId, newAccId, accReleaseManifest.getReleaseId().longValue());
 
         return getAccNodeByAccId(user, accReleaseManifest);
+    }
+
+    public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId) {
+        long userId = sessionService.userId(user);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        AccReleaseManifestRecord basedAccReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(basedAccManifestId);
+        AccReleaseManifestRecord accReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(accManifestId);
+        AccRecord accRecord = getAccRecordById(accReleaseManifestRecord.getAccId().longValue());
+
+        long originAccId = accReleaseManifestRecord.getAccId().longValue();
+
+        accRecord.setAccId(null);
+        accRecord.setBasedAccId(basedAccReleaseManifestRecord.getAccId());
+        accRecord.setLastUpdatedBy(ULong.valueOf(userId));
+        accRecord.setLastUpdateTimestamp(timestamp);
+        accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
+        accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+
+        AccRecord insertedAccRecord = dslContext.insertInto(ACC).set(accRecord).returning().fetchOne();
+        accReleaseManifestRecord.setBasedAccId(basedAccReleaseManifestRecord.getAccId());
+        accReleaseManifestRecord.setAccId(insertedAccRecord.getAccId());
+        accReleaseManifestRecord.update();
+
+        long newAccId = insertedAccRecord.getAccId().longValue();
+
+        updateAsccByFromAccId(originAccId, newAccId, accReleaseManifestRecord.getReleaseId().longValue());
+        updateBccByFromAccId(originAccId, newAccId, accReleaseManifestRecord.getReleaseId().longValue());
+
+        return getAccNodeByAccId(user, accReleaseManifestRecord);
     }
 
     private AccRecord getAccRecordById(long accId) {

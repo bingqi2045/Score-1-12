@@ -272,7 +272,9 @@ public class CcNodeController {
     public CcAccNode setBasedNode(@AuthenticationPrincipal User user,
                                        @PathVariable("manifestId") long manifestId,
                                        @RequestBody CcAccRequest ccAccRequest) {
-
+        if (ccAccRequest.getBasedAccManifestId() == null) {
+            return service.discardAccBasedId(user, manifestId);
+        }
         return service.updateAccBasedId(user, manifestId, ccAccRequest.getBasedAccManifestId());
     }
 

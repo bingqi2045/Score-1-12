@@ -227,8 +227,16 @@ public class CcNodeService {
     }
 
     @Transactional
-    public CcAccNode updateAccBasedId(User user, long accManifestId, Long basedAccManifestId) {
+    public CcAccNode updateAccBasedId(User user, long accManifestId, long basedAccManifestId) {
+        if (accManifestId == basedAccManifestId) {
+            throw new IllegalArgumentException("Can not choose itself as based Acc.: ");
+        }
         return repository.updateAccBasedId(user, accManifestId, basedAccManifestId);
+    }
+
+    @Transactional
+    public CcAccNode discardAccBasedId(User user, long accManifestId) {
+        return repository.discardAccBasedId(user, accManifestId);
     }
 
     @Transactional
