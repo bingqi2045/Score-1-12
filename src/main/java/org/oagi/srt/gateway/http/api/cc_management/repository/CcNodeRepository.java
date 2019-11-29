@@ -333,7 +333,7 @@ public class CcNodeRepository {
         baseAccRecord.set(ACC.OBJECT_CLASS_TERM, accNodeDetail.getObjectClassTerm());
         baseAccRecord.set(ACC.OAGIS_COMPONENT_TYPE, (int) accNodeDetail.getOagisComponentType());
         baseAccRecord.set(ACC.DEFINITION, accNodeDetail.getDefinition());
-        baseAccRecord.set(ACC.DEN, accNodeDetail.getObjectClassTerm() + ". Detail");
+        baseAccRecord.set(ACC.DEN, accNodeDetail.getObjectClassTerm() + ". Details");
         baseAccRecord.set(ACC.IS_DEPRECATED,(byte) (accNodeDetail.isDeprecated() ? 1 : 0));
         baseAccRecord.set(ACC.IS_ABSTRACT,(byte) (accNodeDetail.isAbstracted() ? 1 : 0));
         baseAccRecord.set(ACC.LAST_UPDATED_BY, ULong.valueOf(userId));
