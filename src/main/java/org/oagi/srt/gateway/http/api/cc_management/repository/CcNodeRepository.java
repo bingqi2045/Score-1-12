@@ -1577,7 +1577,7 @@ public class CcNodeRepository {
         bccRecord.setBccId(null);
         bccRecord.setGuid(SrtGuid.randomGuid());
         bccRecord.setFromAccId(accRecord.getAccId());
-        bccpRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm());
+        bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm());
         bccRecord.setCreatedBy(ULong.valueOf(userId));
         bccRecord.setCreationTimestamp(timestamp);
         bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
@@ -1738,29 +1738,39 @@ public class CcNodeRepository {
 
     }
 
-    public void discardAsccByManifestId(long manifestId){
+    public void discardAsccByManifestId(User user, long manifestId){
+        long userId = sessionService.userId(user);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         AsccReleaseManifestRecord asccReleaseManifestRecord = manifestRepository.getAsccReleaseManifestById(manifestId);
 
         dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
                 .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId())).execute();
 
         AsccRecord ascc = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
-        dslContext.deleteFrom(ASCC)
-                .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
-                .execute();
+        ascc.setAsccId(null);
+        ascc.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
+        ascc.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
+        ascc.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Delete.getValue());
+        ascc.set(ASCC.REVISION_TRACKING_NUM, ascc.getRevisionTrackingNum() + 1);
+        dslContext.insertInto(ASCC).set(ascc).execute();
 
         decreaseSeqKeyGreaterThan(ascc.getFromAccId().longValue(), ascc.getSeqKey());
     }
 
-    public void discardBccByManifestId(long manifestId){
+    public void discardBccByManifestId(User user, long manifestId){
+        long userId = sessionService.userId(user);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         BccReleaseManifestRecord bccReleaseManifestRecord = manifestRepository.getBccReleaseManifestById(manifestId);
 
         dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
         BccRecord bcc = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
-        dslContext.deleteFrom(BCC)
-                .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
-                .execute();
+        bcc.setBccId(null);
+        bcc.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
+        bcc.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
+        bcc.set(BCC.REVISION_ACTION, (byte) RevisionAction.Delete.getValue());
+        bcc.set(BCC.REVISION_TRACKING_NUM, bcc.getRevisionTrackingNum() + 1);
+        dslContext.insertInto(BCC).set(bcc).execute();
 
         decreaseSeqKeyGreaterThan(bcc.getFromAccId().longValue(), bcc.getSeqKey());
     }

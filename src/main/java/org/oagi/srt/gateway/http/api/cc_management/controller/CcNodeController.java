@@ -269,7 +269,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/acc/{manifestId}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcAccNode setBasedNode(@AuthenticationPrincipal User user,
+    public CcNode setBasedNode(@AuthenticationPrincipal User user,
                                        @PathVariable("manifestId") long manifestId,
                                        @RequestBody CcAccRequest ccAccRequest) {
         if (ccAccRequest.getBasedAccManifestId() == null) {
