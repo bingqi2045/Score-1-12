@@ -22,5 +22,5 @@ public class CcList {
     private boolean deprecated;
     private String lastUpdateUser;
     private Date lastUpdateTimestamp;
-
+    private long id;
 }

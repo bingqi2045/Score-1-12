@@ -84,6 +84,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID,
+                ACC.ACC_ID,
                 ACC.GUID,
                 ACC.DEN,
                 ACC.DEFINITION,
@@ -113,6 +114,7 @@ public class CcListRepository {
                     CcList ccList = new CcList();
                     ccList.setType("ACC");
                     ccList.setManifestId(row.getValue(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID).longValue());
+                    ccList.setId(row.getValue(ACC.ACC_ID).longValue());
                     ccList.setGuid(row.getValue(ACC.GUID));
                     ccList.setDen(row.getValue(ACC.DEN));
                     ccList.setDefinition(row.getValue(ACC.DEFINITION));
@@ -502,6 +504,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID,
+                DT.DT_ID,
                 DT.GUID,
                 DT.DEN,
                 DT.DEFINITION,
@@ -530,6 +533,7 @@ public class CcListRepository {
                     CcList ccList = new CcList();
                     ccList.setType("BDT");
                     ccList.setManifestId(row.getValue(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID).longValue());
+                    ccList.setId(row.getValue(DT.DT_ID).longValue());
                     ccList.setGuid(row.getValue(DT.GUID));
                     String den = row.getValue(DT.DEN);
                     if (!StringUtils.isEmpty(den)) {
