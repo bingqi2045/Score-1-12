@@ -250,11 +250,11 @@ public class CcNodeController {
                                        @RequestBody CcAppendRequest ccAppendRequest) {
 
         if (ccAppendRequest.getAccManifestId() != null) {
-            if (ccAppendRequest.getAsccManifestId() != null) {
-                service.appendAscc(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccManifestId());
+            if (ccAppendRequest.getAsccpManifestId() != null) {
+                service.appendAsccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccpManifestId());
             }
-            if (ccAppendRequest.getBccManifestId() != null) {
-                service.appendBcc(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccManifestId());
+            if (ccAppendRequest.getBccpManifestId() != null) {
+                service.appendBccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccpManifestId());
             }
         }
 

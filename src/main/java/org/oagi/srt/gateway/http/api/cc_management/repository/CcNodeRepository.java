@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.nio.file.attribute.AclEntryType;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Comparator;
@@ -1529,21 +1530,34 @@ public class CcNodeRepository {
         return getBccpNodeDetail(user, ccBccpNode);
     }
 
-    public void appendAscc(User user, long accManifestId, long baseAsccManifestId) {
+    public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        AsccReleaseManifestRecord asccReleaseManifestRecord = 
-                manifestRepository.getAsccReleaseManifestById(baseAsccManifestId);
-        AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
         AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(accManifestId);
-        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
-        AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
-        AsccpRecord asccpRecord = getAsccpRecordById(asccReleaseManifestRecord.getToAsccpId().longValue());
+        AsccpReleaseManifestRecord asccpReleaseManifestRecord =
+                manifestRepository.getAsccpReleaseManifestById(asccpManifestId);
 
+        AsccReleaseManifestRecord exist = dslContext.selectFrom(ASCC_RELEASE_MANIFEST).where(
+                and(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
+                        ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId()))).fetchOne();
+        if (exist != null) {
+            throw new IllegalArgumentException("You cannot associate the same component.");
+        }
+
+        AsccpRecord asccpRecord = getAsccpRecordById(asccpReleaseManifestRecord.getAsccpId().longValue());
+        AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
+
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
+
+        AsccRecord asccRecord = new AsccRecord();
         asccRecord.setAsccId(null);
         asccRecord.setGuid(SrtGuid.randomGuid());
+        asccRecord.setCardinalityMin(0);
+        asccRecord.setCardinalityMax(-1);
+        asccRecord.setSeqKey(seqKey);
         asccRecord.setFromAccId(accRecord.getAccId());
+        asccRecord.setToAsccpId(asccpReleaseManifestRecord.getAsccpId());
         asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getPropertyTerm());
         asccRecord.setCreatedBy(ULong.valueOf(userId));
         asccRecord.setCreationTimestamp(timestamp);
@@ -1551,56 +1565,73 @@ public class CcNodeRepository {
         asccRecord.setLastUpdateTimestamp(timestamp);
         asccRecord.setOwnerUserId(ULong.valueOf(userId));
         asccRecord.setState(CcState.Editing.getValue());
-        asccRecord.setSeqKey(seqKey);
         asccRecord.setRevisionNum(1);
         asccRecord.setRevisionTrackingNum(1);
         asccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
         
         AsccRecord insertedAscc = dslContext.insertInto(ASCC).set(asccRecord).returning().fetchOne();
 
+        AsccReleaseManifestRecord asccReleaseManifestRecord = new AsccReleaseManifestRecord();
         asccReleaseManifestRecord.setAsccReleaseManifestId(null);
+        asccReleaseManifestRecord.setReleaseId(accReleaseManifest.getReleaseId());
         asccReleaseManifestRecord.setAsccId(insertedAscc.getAsccId());
         asccReleaseManifestRecord.setFromAccId(accRecord.getAccId());
+        asccReleaseManifestRecord.setToAsccpId(asccpRecord.getAsccpId());
 
         dslContext.insertInto(ASCC_RELEASE_MANIFEST).set(asccReleaseManifestRecord).execute();
     }
 
-    public void appendBcc(User user, long accManifestId, long baseBccManifestId) {
+    public void appendBccp(User user, long accManifestId, long bccpManifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        BccReleaseManifestRecord bccReleaseManifestRecord =
-                manifestRepository.getBccReleaseManifestById(baseBccManifestId);
-        BccRecord bccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
-
+        
         AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(accManifestId);
-        AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
-        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
-        BccpRecord bccpRecord = getBccpRecordById(bccReleaseManifestRecord.getToBccpId().longValue());
+        BccpReleaseManifestRecord bccpReleaseManifestRecord =
+                manifestRepository.getBccpReleaseManifestById(bccpManifestId);
 
+        BccReleaseManifestRecord exist = dslContext.selectFrom(BCC_RELEASE_MANIFEST).where(
+                and(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
+                        BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId()))).fetchOne();
+        if (exist != null) {
+            throw new IllegalArgumentException("You cannot associate the same component.");
+        }
+
+        BccpRecord bccpRecord = getBccpRecordById(bccpReleaseManifestRecord.getBccpId().longValue());
+        AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
+
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
+        BccRecord bccRecord = new BccRecord();
         bccRecord.setBccId(null);
         bccRecord.setGuid(SrtGuid.randomGuid());
+        bccRecord.setCardinalityMin(0);
+        bccRecord.setCardinalityMax(-1);
         bccRecord.setFromAccId(accRecord.getAccId());
+        bccRecord.setToBccpId(bccpRecord.getBccpId());
         bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm());
         bccRecord.setCreatedBy(ULong.valueOf(userId));
+        bccRecord.setSeqKey(seqKey);
+        bccRecord.setIsDeprecated((byte) 0);
         bccRecord.setCreationTimestamp(timestamp);
         bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
         bccRecord.setLastUpdateTimestamp(timestamp);
         bccRecord.setOwnerUserId(ULong.valueOf(userId));
         bccRecord.setState(CcState.Editing.getValue());
-        bccRecord.setState(seqKey);
+        bccRecord.setState(accRecord.getState());
+        bccRecord.setEntityType(Attribute.getValue());
         bccRecord.setRevisionNum(1);
         bccRecord.setRevisionTrackingNum(1);
         bccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
 
         BccRecord insertedBcc = dslContext.insertInto(BCC).set(bccRecord).returning().fetchOne();
 
+        BccReleaseManifestRecord bccReleaseManifestRecord = new BccReleaseManifestRecord();
         bccReleaseManifestRecord.setBccReleaseManifestId(null);
+        bccReleaseManifestRecord.setReleaseId(accReleaseManifest.getReleaseId());
         bccReleaseManifestRecord.setBccId(insertedBcc.getBccId());
         bccReleaseManifestRecord.setFromAccId(accRecord.getAccId());
+        bccReleaseManifestRecord.setToBccpId(bccpRecord.getBccpId());
 
         dslContext.insertInto(BCC_RELEASE_MANIFEST).set(bccReleaseManifestRecord).execute();
-
     }
 
     public CcAccNode discardAccBasedId(User user, long accManifestId) {

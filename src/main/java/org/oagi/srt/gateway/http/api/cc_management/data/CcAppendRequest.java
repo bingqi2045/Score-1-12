@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CcAppendRequest {
     private Long accManifestId;
-    private Long asccManifestId;
-    private Long bccManifestId;
+    private Long asccpManifestId;
+    private Long bccpManifestId;
 }

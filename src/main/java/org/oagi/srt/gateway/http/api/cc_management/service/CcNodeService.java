@@ -188,13 +188,13 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void appendAscc(User user, long accManifestId, long asccManifestId) {
-        repository.appendAscc(user, accManifestId, asccManifestId);
+    public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
+        repository.appendAsccp(user, accManifestId, asccpManifestId);
     }
 
     @Transactional
-    public void appendBcc(User user, long accManifestId, long bccManifestId) {
-        repository.appendBcc(user, accManifestId, bccManifestId);
+    public void appendBccp(User user, long accManifestId, long bccpManifestId) {
+        repository.appendBccp(user, accManifestId, bccpManifestId);
     }
 
     @Transactional
