@@ -1222,7 +1222,7 @@ public class CcNodeRepository {
                 .execute();
     }
 
-    public void updateAsccpRoleOfAcc(User user, long asccpManifestId, long accManifestId) {
+    public CcNode updateAsccpRoleOfAcc(User user, long asccpManifestId, long accManifestId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1268,9 +1268,11 @@ public class CcNodeRepository {
                 .execute();
 
         updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(), asccpReleaseManifestRecord.getReleaseId().longValue());
+
+        return getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
     }
 
-    public void updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
+    public CcNode updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1307,6 +1309,8 @@ public class CcNodeRepository {
                 .execute();
 
         updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue());
+
+        return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
     }
     public CcAccNodeDetail updateAccState(User user, long accManifestId, CcState ccState) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

@@ -198,13 +198,13 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void updateAsccpRoleOfAcc(User user, long asccpManifestId, long accManifestId) {
-        repository.updateAsccpRoleOfAcc(user, asccpManifestId, accManifestId);
+    public CcNode updateAsccpRoleOfAcc(User user, long asccpManifestId, long accManifestId) {
+        return repository.updateAsccpRoleOfAcc(user, asccpManifestId, accManifestId);
     }
 
     @Transactional
-    public void updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
-        repository.updateBccpBdt(user, bccpManifestId, bdtManifestId);
+    public CcNode updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
+        return repository.updateBccpBdt(user, bccpManifestId, bdtManifestId);
     }
 
     @Transactional

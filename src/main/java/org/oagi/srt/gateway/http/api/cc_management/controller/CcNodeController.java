@@ -51,24 +51,19 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateCcNodeManifest(@AuthenticationPrincipal User user,
+    public CcNode updateCcNodeManifest(@AuthenticationPrincipal User user,
                                                @PathVariable("type") String type,
                                                @PathVariable("manifestId") long manifestId,
                                                @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
         switch (type) {
-            case "acc":
-                //return getAccNode(user, manifestId);
-                break;
             case "asccp":
-                service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
-                break;
+                return service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
+
             case "bccp":
-                service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
-                break;
+                return service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
             default:
                 throw new UnsupportedOperationException();
         }
-        return ResponseEntity.accepted().build();
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
