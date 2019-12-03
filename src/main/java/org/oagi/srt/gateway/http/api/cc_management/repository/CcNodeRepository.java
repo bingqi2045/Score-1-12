@@ -19,14 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.nio.file.attribute.AclEntryType;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
-import static org.oagi.srt.data.BCCEntityType.Attribute;
+import static org.oagi.srt.data.BCCEntityType.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
@@ -422,15 +421,18 @@ public class CcNodeRepository {
         }
     }
 
-    public void updateAsccByToAsccpId(long originToAsccpId, long newToAsccpId, long releaseId) {
+    public void updateAsccByToAsccpId(long originToAsccpId, long newToAsccpId, long releaseId, String accpPropertyTerm) {
         List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
                 manifestRepository.getAsccReleaseManifestByToAsccpId(originToAsccpId, releaseId);
 
         for(AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
-            dslContext.update(ASCC)
-                    .set(ASCC.TO_ASCCP_ID, ULong.valueOf(newToAsccpId))
-                    .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId()))
-                    .execute();
+            AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
+            if (!accpPropertyTerm.isEmpty()) {
+                AccRecord accRecord = getAccRecordById(asccReleaseManifestRecord.getFromAccId().longValue());
+                asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + accpPropertyTerm);
+            }
+            asccRecord.setToAsccpId(ULong.valueOf(newToAsccpId));
+            asccRecord.update();
 
             dslContext.update(ASCC_RELEASE_MANIFEST)
                     .set(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID, ULong.valueOf(newToAsccpId))
@@ -439,15 +441,18 @@ public class CcNodeRepository {
         }
     }
 
-    public void updateBccByToBccpId(long originToBccpId, long newToBccpId, long releaseId) {
+    public void updateBccByToBccpId(long originToBccpId, long newToBccpId, long releaseId, String bccpPropertyTerm) {
         List<BccReleaseManifestRecord> bccReleaseManifestRecords =
-                manifestRepository.getBccReleaseManifestByFromAccId(originToBccpId, releaseId);
+                manifestRepository.getBccReleaseManifestByToBccpId(originToBccpId, releaseId);
 
         for(BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
-            dslContext.update(BCC)
-                    .set(BCC.TO_BCCP_ID, ULong.valueOf(newToBccpId))
-                    .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccId()))
-                    .execute();
+            BccRecord bccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
+            if (!bccpPropertyTerm.isEmpty()) {
+                AccRecord accRecord = getAccRecordById(bccReleaseManifestRecord.getFromAccId().longValue());
+                bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpPropertyTerm);
+            }
+            bccRecord.setToBccpId(ULong.valueOf(newToBccpId));
+            bccRecord.update();
 
             dslContext.update(BCC_RELEASE_MANIFEST)
                     .set(BCC_RELEASE_MANIFEST.TO_BCCP_ID, ULong.valueOf(newToBccpId))
@@ -494,7 +499,8 @@ public class CcNodeRepository {
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
 
-
+        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(),
+                asccpReleaseManifestRecord.getReleaseId().longValue(), insertedAsccpRecord.getPropertyTerm());
 
         CcAsccpNode ccAsccpNode = getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
         return getAsccpNodeDetail(user, ccAsccpNode);
@@ -534,7 +540,8 @@ public class CcNodeRepository {
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
                 .execute();
 
-        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue());
+        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(),
+                bccpReleaseManifestRecord.getReleaseId().longValue(), insertedBccpRecord.getPropertyTerm());
 
         CcBccpNode ccBccpNode = getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
         return getBccpNodeDetail(user, ccBccpNode);
@@ -1268,7 +1275,7 @@ public class CcNodeRepository {
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
 
-        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(), asccpReleaseManifestRecord.getReleaseId().longValue());
+        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(), asccpReleaseManifestRecord.getReleaseId().longValue(), "");
 
         return getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
     }
@@ -1309,7 +1316,7 @@ public class CcNodeRepository {
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
                 .execute();
 
-        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue());
+        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue(), "");
 
         return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
     }
@@ -1490,7 +1497,7 @@ public class CcNodeRepository {
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
                 .execute();
 
-        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(), asccpReleaseManifestRecord.getReleaseId().longValue());
+        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(), asccpReleaseManifestRecord.getReleaseId().longValue(), "");
 
         CcAsccpNode ccAsccpNode = getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
         return getAsccpNodeDetail(user, ccAsccpNode);
@@ -1523,7 +1530,7 @@ public class CcNodeRepository {
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
                 .execute();
 
-        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue());
+        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(), bccpReleaseManifestRecord.getReleaseId().longValue(), "");
 
         CcBccpNode ccBccpNode = getBccpNodeByBccpManifestId(user,
                 bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
@@ -1617,7 +1624,7 @@ public class CcNodeRepository {
         bccRecord.setOwnerUserId(ULong.valueOf(userId));
         bccRecord.setState(CcState.Editing.getValue());
         bccRecord.setState(accRecord.getState());
-        bccRecord.setEntityType(Attribute.getValue());
+        bccRecord.setEntityType(Element.getValue());
         bccRecord.setRevisionNum(1);
         bccRecord.setRevisionTrackingNum(1);
         bccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
