@@ -464,28 +464,48 @@ public class CcNodeRepository {
     public long updateAscc(User user, CcAsccpNodeDetail.Ascc asccNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        boolean isChanged = false;
 
         AsccReleaseManifestRecord asccReleaseManifestRecord = dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
                 .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
         AsccRecord baseAsccRecord = dslContext.selectFrom(ASCC)
                 .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId())).fetchOne();
 
-        baseAsccRecord.setAsccId(null);
-        baseAsccRecord.setCardinalityMin(asccNodeDetail.getCardinalityMin());
-        baseAsccRecord.setCardinalityMax(asccNodeDetail.getCardinalityMax());
-        baseAsccRecord.setDefinition(asccNodeDetail.getDefinition());
-        baseAsccRecord.setIsDeprecated((byte) (asccNodeDetail.isDeprecated() ? 1 : 0));
-        baseAsccRecord.setLastUpdatedBy(ULong.valueOf(userId));
-        baseAsccRecord.setLastUpdateTimestamp(timestamp);
-        baseAsccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        baseAsccRecord.setRevisionTrackingNum(baseAsccRecord.getRevisionTrackingNum() + 1);
-        baseAsccRecord.setRevisionNum(baseAsccRecord.getRevisionTrackingNum());
-        baseAsccRecord.insert();
+        if (!baseAsccRecord.getCardinalityMin().equals(asccNodeDetail.getCardinalityMin())) {
+            baseAsccRecord.setCardinalityMin(asccNodeDetail.getCardinalityMin());
+            isChanged = true;
+        }
 
-        dslContext.update(ASCC_RELEASE_MANIFEST)
-                .set(ASCC_RELEASE_MANIFEST.ASCC_ID, baseAsccRecord.getAsccId())
-                .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
-                .execute();
+        if (!baseAsccRecord.getCardinalityMax().equals(asccNodeDetail.getCardinalityMax())) {
+            baseAsccRecord.setCardinalityMax(asccNodeDetail.getCardinalityMax());
+            isChanged = true;
+        }
+
+        byte deprecated = (byte) (asccNodeDetail.isDeprecated() ? 1 : 0);
+        if (!baseAsccRecord.getIsDeprecated().equals(deprecated)) {
+            baseAsccRecord.setIsDeprecated(deprecated);
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseAsccRecord.getDefinition(), asccNodeDetail.getDefinition())) {
+            baseAsccRecord.setDefinition(asccNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            baseAsccRecord.setAsccId(null);
+            baseAsccRecord.setLastUpdatedBy(ULong.valueOf(userId));
+            baseAsccRecord.setLastUpdateTimestamp(timestamp);
+            baseAsccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            baseAsccRecord.setRevisionTrackingNum(baseAsccRecord.getRevisionTrackingNum() + 1);
+            baseAsccRecord.setRevisionNum(baseAsccRecord.getRevisionTrackingNum());
+            baseAsccRecord.insert();
+
+            dslContext.update(ASCC_RELEASE_MANIFEST)
+                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, baseAsccRecord.getAsccId())
+                    .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
+                    .execute();
+        }
 
         return baseAsccRecord.getAsccId().longValue();
     }
@@ -493,43 +513,56 @@ public class CcNodeRepository {
     public CcAsccpNode updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        boolean isChanged = false;
 
         AsccpReleaseManifestRecord asccpReleaseManifestRecord = dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
                 .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
-        AccRecord accRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(asccpReleaseManifestRecord.getRoleOfAccId())).fetchOne();
         AsccpRecord baseAsccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
 
         long originAsccpId = asccpReleaseManifestRecord.getAsccpId().longValue();
 
-        AsccpRecord insertedAsccpRecord = dslContext.insertInto(ASCCP)
-                .set(ASCCP.PROPERTY_TERM, asccpNodeDetail.getPropertyTerm())
-                .set(ASCCP.GUID, baseAsccpRecord.getGuid())
-                .set(ASCCP.DEN, asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
-                .set(ASCCP.ROLE_OF_ACC_ID, accRecord.getAccId())
-                .set(ASCCP.DEFINITION, asccpNodeDetail.getDefinition())
-                .set(ASCCP.IS_DEPRECATED,(byte) (asccpNodeDetail.isDeprecated() ? 1 : 0))
-                .set(ASCCP.STATE, baseAsccpRecord.getState())
-                .set(ASCCP.OWNER_USER_ID, baseAsccpRecord.getOwnerUserId())
-                .set(ASCCP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
-                .set(ASCCP.CREATED_BY, baseAsccpRecord.getCreatedBy())
-                .set(ASCCP.CREATION_TIMESTAMP, baseAsccpRecord.getCreationTimestamp())
-                .set(ASCCP.REUSABLE_INDICATOR, (byte) (asccpNodeDetail.isReusable() ? 1 : 0))
-                .set(ASCCP.NAMESPACE_ID, baseAsccpRecord.getNamespaceId())
-                .set(ASCCP.IS_NILLABLE, baseAsccpRecord.getIsNillable())
-                .set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue())
-                .set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1)
-                .set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum()).returning().fetchOne();
+        if (!baseAsccpRecord.getPropertyTerm().equals(asccpNodeDetail.getPropertyTerm())) {
+            AccRecord accRecord = dslContext.selectFrom(ACC)
+                    .where(ACC.ACC_ID.eq(asccpReleaseManifestRecord.getRoleOfAccId())).fetchOne();
+            baseAsccpRecord.setPropertyTerm(asccpNodeDetail.getPropertyTerm());
+            baseAsccpRecord.setDen(asccpNodeDetail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
+            isChanged = true;
+        }
+        byte reusable = (byte)(asccpNodeDetail.isReusable() ? 1 : 0);
+        if (!baseAsccpRecord.getReusableIndicator().equals(reusable)) {
+            baseAsccpRecord.setReusableIndicator(reusable);
+            isChanged = true;
+        }
 
-        dslContext.update(ASCCP_RELEASE_MANIFEST)
-                .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, insertedAsccpRecord.getAsccpId())
-                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
-                .execute();
+        byte deprecated = (byte)(asccpNodeDetail.isDeprecated() ? 1 : 0);
+        if (!baseAsccpRecord.getIsDeprecated().equals(deprecated)) {
+            baseAsccpRecord.setIsDeprecated(deprecated);
+            isChanged = true;
+        }
 
-        updateAsccByToAsccpId(originAsccpId, insertedAsccpRecord.getAsccpId().longValue(),
-                asccpReleaseManifestRecord.getReleaseId().longValue(), insertedAsccpRecord.getPropertyTerm());
+        if (!Objects.equals(baseAsccpRecord.getDefinition(), asccpNodeDetail.getDefinition())) {
+            baseAsccpRecord.setDefinition(asccpNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            baseAsccpRecord.setAsccpId(null);
+            baseAsccpRecord.setLastUpdatedBy(ULong.valueOf(userId));
+            baseAsccpRecord.setLastUpdateTimestamp(timestamp);
+            baseAsccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            baseAsccpRecord.setRevisionTrackingNum(baseAsccpRecord.getRevisionTrackingNum() + 1);
+            baseAsccpRecord.setRevisionNum(baseAsccpRecord.getRevisionTrackingNum());
+
+            baseAsccpRecord.insert();
+
+            dslContext.update(ASCCP_RELEASE_MANIFEST)
+                    .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, baseAsccpRecord.getAsccpId())
+                    .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(asccpReleaseManifestRecord.getAsccpReleaseManifestId()))
+                    .execute();
+            updateAsccByToAsccpId(originAsccpId, baseAsccpRecord.getAsccpId().longValue(),
+                    asccpReleaseManifestRecord.getReleaseId().longValue(), baseAsccpRecord.getPropertyTerm());
+        }
 
         return getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
     }
@@ -537,31 +570,65 @@ public class CcNodeRepository {
     public long updateBcc(User user, CcBccpNodeDetail.Bcc bccNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        boolean isChanged = false;
 
         BccReleaseManifestRecord bccReleaseManifestRecord = dslContext.selectFrom(BCC_RELEASE_MANIFEST)
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
         BccRecord baseBccRecord = dslContext.selectFrom(BCC)
                 .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccId())).fetchOne();
 
-        baseBccRecord.setBccId(null);
-        baseBccRecord.setCardinalityMin(bccNodeDetail.getCardinalityMin());
-        baseBccRecord.setCardinalityMax(bccNodeDetail.getCardinalityMax());
-        baseBccRecord.setDefinition(bccNodeDetail.getDefinition());
-        baseBccRecord.setIsNillable((byte) (bccNodeDetail.isNillable() ? 1 : 0));
-        baseBccRecord.setIsDeprecated((byte) (bccNodeDetail.isDeprecated() ? 1 : 0));
-        baseBccRecord.setDefaultValue(bccNodeDetail.getDefinition());
-        baseBccRecord.setEntityType(bccNodeDetail.getEntityType());
-        baseBccRecord.setLastUpdatedBy(ULong.valueOf(userId));
-        baseBccRecord.setLastUpdateTimestamp(timestamp);
-        baseBccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        baseBccRecord.setRevisionTrackingNum(baseBccRecord.getRevisionTrackingNum() + 1);
-        baseBccRecord.setRevisionNum(baseBccRecord.getRevisionTrackingNum());
-        baseBccRecord.insert();
+        if (!baseBccRecord.getCardinalityMin().equals(bccNodeDetail.getCardinalityMin())) {
+            baseBccRecord.setCardinalityMin(bccNodeDetail.getCardinalityMin());
+            isChanged = true;
+        }
 
-        dslContext.update(BCC_RELEASE_MANIFEST)
-                .set(BCC_RELEASE_MANIFEST.BCC_ID, baseBccRecord.getBccId())
-                .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
-                .execute();
+        if (!baseBccRecord.getCardinalityMax().equals(bccNodeDetail.getCardinalityMax())) {
+            baseBccRecord.setCardinalityMax(bccNodeDetail.getCardinalityMax());
+            isChanged = true;
+        }
+
+        byte nillable = (byte) (bccNodeDetail.isNillable() ? 1 : 0);
+        if (!baseBccRecord.getIsNillable().equals(nillable)) {
+            baseBccRecord.setIsNillable(nillable);
+            isChanged = true;
+        }
+
+        byte deprecated = (byte) (bccNodeDetail.isDeprecated() ? 1 : 0);
+        if (!baseBccRecord.getIsDeprecated().equals(deprecated)) {
+            baseBccRecord.setIsDeprecated(deprecated);
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccRecord.getDefaultValue(), bccNodeDetail.getDefaultValue())) {
+            baseBccRecord.setDefaultValue(bccNodeDetail.getDefaultValue());
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccRecord.getDefinition(), bccNodeDetail.getDefinition())) {
+            baseBccRecord.setDefinition(bccNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (!baseBccRecord.getEntityType().equals(bccNodeDetail.getEntityType())) {
+            baseBccRecord.setEntityType(bccNodeDetail.getEntityType());
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            baseBccRecord.setBccId(null);
+            baseBccRecord.setDefinition(bccNodeDetail.getDefinition());
+            baseBccRecord.setLastUpdatedBy(ULong.valueOf(userId));
+            baseBccRecord.setLastUpdateTimestamp(timestamp);
+            baseBccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            baseBccRecord.setRevisionTrackingNum(baseBccRecord.getRevisionTrackingNum() + 1);
+            baseBccRecord.setRevisionNum(baseBccRecord.getRevisionTrackingNum());
+            baseBccRecord.insert();
+
+            dslContext.update(BCC_RELEASE_MANIFEST)
+                    .set(BCC_RELEASE_MANIFEST.BCC_ID, baseBccRecord.getBccId())
+                    .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
+                    .execute();
+        }
 
         return baseBccRecord.getBccId().longValue();
     }
@@ -569,39 +636,62 @@ public class CcNodeRepository {
     public CcBccpNode updateBccp(User user, CcBccpNodeDetail.Bccp bccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        boolean isChanged = false;
         
         BccpReleaseManifestRecord bccpReleaseManifestRecord = dslContext.selectFrom(BCCP_RELEASE_MANIFEST)
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
 
         long originBccpId = bccpReleaseManifestRecord.getBccpId().longValue();
 
-        DtRecord dtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(bccpReleaseManifestRecord.getBdtId())).fetchOne();
-
         BccpRecord baseBccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId())).fetchOne();
 
-        baseBccpRecord.set(BCCP.BCCP_ID, null);
-        baseBccpRecord.set(BCCP.PROPERTY_TERM, bccpNodeDetail.getPropertyTerm());
-        baseBccpRecord.set(BCCP.DEFAULT_VALUE, bccpNodeDetail.getDefaultValue());
-        baseBccpRecord.set(BCCP.DEFINITION, bccpNodeDetail.getDefinition());
-        baseBccpRecord.set(BCCP.DEN, bccpNodeDetail.getPropertyTerm() + ". " + dtRecord.getDataTypeTerm());
-        baseBccpRecord.set(BCCP.IS_DEPRECATED,(byte) (bccpNodeDetail.isDeprecated() ? 1 : 0));
-        baseBccpRecord.set(BCCP.IS_NILLABLE,(byte) (bccpNodeDetail.isNillable() ? 1 : 0));
-        baseBccpRecord.set(BCCP.LAST_UPDATED_BY, ULong.valueOf(userId));
-        baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-        baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
+        if (!baseBccpRecord.getPropertyTerm().equals(bccpNodeDetail.getPropertyTerm())) {
+            DtRecord dtRecord = dslContext.selectFrom(DT)
+                    .where(DT.DT_ID.eq(bccpReleaseManifestRecord.getBdtId())).fetchOne();
+            baseBccpRecord.setPropertyTerm(bccpNodeDetail.getPropertyTerm());
+            baseBccpRecord.setDen(bccpNodeDetail.getPropertyTerm() + ". " + dtRecord.getDataTypeTerm());
+            isChanged = true;
+        }
 
-        BccpRecord insertedBccpRecord = dslContext.insertInto(BCCP).set(baseBccpRecord).returning().fetchOne();
+        byte nillable = (byte) (bccpNodeDetail.isNillable() ? 1 : 0);
+        if (!baseBccpRecord.getIsNillable().equals(nillable)) {
+            baseBccpRecord.setIsNillable(nillable);
+            isChanged = true;
+        }
 
-        dslContext.update(BCCP_RELEASE_MANIFEST)
-                .set(BCCP_RELEASE_MANIFEST.BCCP_ID, insertedBccpRecord.getBccpId())
-                .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
-                .execute();
+        byte deprecated = (byte) (bccpNodeDetail.isDeprecated() ? 1 : 0);
+        if (!baseBccpRecord.getIsDeprecated().equals(deprecated)) {
+            baseBccpRecord.setIsDeprecated(deprecated);
+            isChanged = true;
+        }
 
-        updateBccByToBccpId(originBccpId, insertedBccpRecord.getBccpId().longValue(),
-                bccpReleaseManifestRecord.getReleaseId().longValue(), insertedBccpRecord.getPropertyTerm());
+        if (!Objects.equals(baseBccpRecord.getDefaultValue(), bccpNodeDetail.getDefaultValue())) {
+            baseBccpRecord.setDefaultValue(bccpNodeDetail.getDefaultValue());
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccpRecord.getDefinition(), bccpNodeDetail.getDefinition())) {
+            baseBccpRecord.setDefinition(bccpNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            baseBccpRecord.set(BCCP.BCCP_ID, null);
+            baseBccpRecord.set(BCCP.LAST_UPDATED_BY, ULong.valueOf(userId));
+            baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
+            baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
+            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
+            baseBccpRecord.insert();
+
+            dslContext.update(BCCP_RELEASE_MANIFEST)
+                    .set(BCCP_RELEASE_MANIFEST.BCCP_ID, baseBccpRecord.getBccpId())
+                    .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(bccpReleaseManifestRecord.getBccpReleaseManifestId()))
+                    .execute();
+
+            updateBccByToBccpId(originBccpId, baseBccpRecord.getBccpId().longValue(),
+                    bccpReleaseManifestRecord.getReleaseId().longValue(), baseBccpRecord.getPropertyTerm());
+        }
 
         return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
     }

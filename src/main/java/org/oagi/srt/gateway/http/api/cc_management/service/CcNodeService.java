@@ -170,8 +170,10 @@ public class CcNodeService {
         List<CcAsccpNodeDetail> updatedAsccpNodeDetails = new ArrayList<>();
         for (CcAsccpNodeDetail detail : asccpNodeDetails) {
             CcAsccpNode ccAsccpNode = repository.updateAsccp(user, detail.getAsccp(), detail.getAsccp().getManifestId());
-            long accId = repository.updateAscc(user, detail.getAscc(), detail.getAscc().getManifestId());
-            ccAsccpNode.setAsccId(accId);
+            if (detail.getAscc() != null) {
+                long accId = repository.updateAscc(user, detail.getAscc(), detail.getAscc().getManifestId());
+                ccAsccpNode.setAsccId(accId);
+            }
             updatedAsccpNodeDetails.add(getAsccpNodeDetail(user, ccAsccpNode));
         }
         return updatedAsccpNodeDetails;
@@ -182,8 +184,10 @@ public class CcNodeService {
         List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
         for (CcBccpNodeDetail detail : bccpNodeDetails) {
             CcBccpNode ccBccpNode = repository.updateBccp(user, detail.getBccp(), detail.getBccp().getManifestId());
-            long bccId = repository.updateBcc(user, detail.getBcc(), detail.getBcc().getManifestId());
-            ccBccpNode.setBccId(bccId);
+            if (detail.getBcc() != null) {
+                long bccId = repository.updateBcc(user, detail.getBcc(), detail.getBcc().getManifestId());
+                ccBccpNode.setBccId(bccId);
+            }
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
         return updatedBccpNodeDetails;
