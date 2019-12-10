@@ -9,6 +9,7 @@ public class CcAsccNode extends CcNode {
 
     private int seqKey;
     private long asccId;
+    private long manifestId;
     private long fromAccId;
     private long toAsccpId;
 

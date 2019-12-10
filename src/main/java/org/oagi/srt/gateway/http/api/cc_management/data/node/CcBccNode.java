@@ -9,6 +9,7 @@ public class CcBccNode extends CcNode {
 
     private int seqKey;
     private long bccId;
+    private long manifestId;
     private long toBccpId;
     private int entityType;
 

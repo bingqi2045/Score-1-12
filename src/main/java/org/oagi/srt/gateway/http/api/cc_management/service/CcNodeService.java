@@ -173,6 +173,7 @@ public class CcNodeService {
             if (detail.getAscc() != null) {
                 long accId = repository.updateAscc(user, detail.getAscc(), detail.getAscc().getManifestId());
                 ccAsccpNode.setAsccId(accId);
+                ccAsccpNode.setAsccManifestId(detail.getAscc().getManifestId());
             }
             updatedAsccpNodeDetails.add(getAsccpNodeDetail(user, ccAsccpNode));
         }
@@ -187,6 +188,7 @@ public class CcNodeService {
             if (detail.getBcc() != null) {
                 long bccId = repository.updateBcc(user, detail.getBcc(), detail.getBcc().getManifestId());
                 ccBccpNode.setBccId(bccId);
+                ccBccpNode.setBccManifestId(detail.getBcc().getManifestId());
             }
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
