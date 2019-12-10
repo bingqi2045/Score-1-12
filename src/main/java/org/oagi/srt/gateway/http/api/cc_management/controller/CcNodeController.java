@@ -86,18 +86,19 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/discard",
+    @RequestMapping(value = "/core_component/node/{type}/{ccId:[\\d]+}/discard/{releaseId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal User user,
                                     @PathVariable("type") String type,
-                                    @PathVariable("manifestId") long manifestId) {
+                                    @PathVariable("ccId") long ccId,
+                                    @PathVariable("releaseId") long releaseId) {
         switch (type) {
-            case "ascc":
-                service.discardAscc(user, manifestId);
+            case "asccp":
+                service.discardAscc(user, ccId, releaseId);
                 return;
-            case "bcc":
-                service.discardBcc(user, manifestId);
+            case "bccp":
+                service.discardBcc(user, ccId, releaseId);
                 return;
             default:
                 throw new UnsupportedOperationException();

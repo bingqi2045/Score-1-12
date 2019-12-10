@@ -246,13 +246,13 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void discardAscc(User user, long asccpManifestId) {
-        repository.discardAsccByManifestId(user, asccpManifestId);
+    public void discardAscc(User user, long asccId, long releaseId) {
+        repository.discardAsccById(user, asccId, releaseId);
     }
 
     @Transactional
-    public void discardBcc(User user, long bccpManifestId) {
-        repository.discardBccByManifestId(user, bccpManifestId);
+    public void discardBcc(User user, long bccId, long releaseId) {
+        repository.discardBccById(user, bccId, releaseId);
     }
 
 

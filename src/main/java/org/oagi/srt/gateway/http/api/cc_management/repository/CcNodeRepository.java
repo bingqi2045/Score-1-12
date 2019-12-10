@@ -1929,10 +1929,12 @@ public class CcNodeRepository {
 
     }
 
-    public void discardAsccByManifestId(User user, long manifestId){
+    public void discardAsccById(User user, long asccId, long releaseId){
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        AsccReleaseManifestRecord asccReleaseManifestRecord = manifestRepository.getAsccReleaseManifestById(manifestId);
+        AsccReleaseManifestRecord asccReleaseManifestRecord = dslContext.selectFrom(ASCC_RELEASE_MANIFEST).where(
+                and(ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).fetchOne();
 
         dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
                 .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId())).execute();
@@ -1948,10 +1950,12 @@ public class CcNodeRepository {
         decreaseSeqKeyGreaterThan(ascc.getFromAccId().longValue(), ascc.getSeqKey());
     }
 
-    public void discardBccByManifestId(User user, long manifestId){
+    public void discardBccById(User user, long bccId, long releaseId){
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        BccReleaseManifestRecord bccReleaseManifestRecord = manifestRepository.getBccReleaseManifestById(manifestId);
+        BccReleaseManifestRecord bccReleaseManifestRecord = dslContext.selectFrom(BCC_RELEASE_MANIFEST).where(
+                and(BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).fetchOne();
 
         dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
