@@ -8,6 +8,8 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
+import org.oagi.srt.entity.jooq.tables.AsccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -869,8 +871,9 @@ public class CcNodeRepository {
 
         List<CcNode> descendants = new ArrayList();
 
-        Long basedAccId = dslContext.select(ACC.BASED_ACC_ID).from(ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(accNode.getAccId())))
+        Long basedAccId = dslContext.select(ACC_RELEASE_MANIFEST.BASED_ACC_ID).from(ACC_RELEASE_MANIFEST)
+                .where(and(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(accNode.getAccId())),
+                        ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(accNode.getReleaseId()))))
                 .fetchOneInto(Long.class);
         if (basedAccId != null) {
             Long releaseId = accNode.getReleaseId();
@@ -1475,49 +1478,90 @@ public class CcNodeRepository {
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AccReleaseManifestRecord accReleaseManifestRecord = manifestRepository.getAccReleaseManifestById(accManifestId);
+        AccRecord accRecord = getAccRecordById(accReleaseManifestRecord.getAccId().longValue());
+        
+        int minChildState = CcState.Published.getValue();
+        int childState;
 
-        AccRecord baseAccRecord = getAccRecordById(accReleaseManifestRecord.getAccId().longValue());
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
+                manifestRepository.getAsccReleaseManifestByFromAccId(accReleaseManifestRecord.getAccId().longValue(),
+                        accReleaseManifestRecord.getReleaseId().longValue());
+        
+        for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
+            childState = getAsccpRecordById(asccReleaseManifestRecord.getToAsccpId().longValue()).getState();
+            if (childState < minChildState) {
+                minChildState = childState;
+            }
+        }
 
-        List<AsccpReleaseManifestRecord> asccpReleaseManifestRecords =
-                manifestRepository.getAsccpReleaseManifestByRoleOfAccId(accReleaseManifestRecord.getAccId().longValue(),
+        List<BccReleaseManifestRecord> bccReleaseManifestRecords =
+                manifestRepository.getBccReleaseManifestByFromAccId(accReleaseManifestRecord.getAccId().longValue(),
                         accReleaseManifestRecord.getReleaseId().longValue());
 
-        for (AsccpReleaseManifestRecord asccpReleaseManifestRecord : asccpReleaseManifestRecords) {
-            int asccpState = dslContext.select(ASCCP.STATE).from(ASCCP)
-                    .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOneInto(Integer.class);
-            if (asccpState > ccState.getValue()) {
-                throw new IllegalArgumentException("ACC must precede the state of ASCCP which based this.");
+        for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
+            childState = getBccpRecordById(bccReleaseManifestRecord.getToBccpId().longValue()).getState();
+            if (childState < minChildState) {
+                minChildState = childState;
             }
         }
 
-        List<Integer> asccpStates = dslContext.select(ASCCP.STATE).from(ACC_RELEASE_MANIFEST)
-                .join(ASCC_RELEASE_MANIFEST).on(and(
-                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ACC_RELEASE_MANIFEST.RELEASE_ID)))
-                .join(ASCCP_RELEASE_MANIFEST).on(and(
-                        ASCCP_RELEASE_MANIFEST.ASCCP_ID.eq(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID),
-                        ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ASCC_RELEASE_MANIFEST.RELEASE_ID)))
-                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(accReleaseManifestRecord.getAccReleaseManifestId()))
-                .fetchInto(Integer.class);
+        if (minChildState < ccState.getValue()) {
+            throw new IllegalArgumentException("ACC must precede the state of child CCs.");
+        }
 
-        for(Integer state: asccpStates) {
-            if (state > ccState.getValue()) {
-                throw new IllegalArgumentException("ACC must precede the state of child ASCCP.");
+        if (accReleaseManifestRecord.getBasedAccId() != null) {
+            AccRecord basedAccRecord = getAccRecordById(accReleaseManifestRecord.getBasedAccId().longValue());
+            if (basedAccRecord.getState() < ccState.getValue()) {
+                throw new IllegalArgumentException("ACC cannot precede the state of basedAcc.");
             }
         }
 
-        long originAccId = baseAccRecord.getAccId().longValue();
+        int minBasedState = CcState.Editing.getValue();
+        int basedAccState;
 
-        baseAccRecord.set(ACC.ACC_ID, null);
-        baseAccRecord.set(ACC.STATE, ccState.getValue());
-        baseAccRecord.set(ACC.LAST_UPDATED_BY, userId);
-        baseAccRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
-        baseAccRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        baseAccRecord.set(ACC.REVISION_TRACKING_NUM, baseAccRecord.getRevisionTrackingNum() + 1);
+        List<AccReleaseManifestRecord> accReleaseManifestRecordList = manifestRepository
+                .getAccReleaseManifestByBasedAccId(accReleaseManifestRecord.getAccId().longValue(),
+                        accReleaseManifestRecord.getReleaseId().longValue());
+
+        for (AccReleaseManifestRecord basedAcc: accReleaseManifestRecordList) {
+            basedAccState = getAccRecordById(basedAcc.getAccId().longValue()).getState();
+            if (minBasedState < basedAccState) {
+                minBasedState = basedAccState;
+            }
+        }
+
+        if (minBasedState > ccState.getValue()) {
+            throw new IllegalArgumentException("ACC cannot be behind state of Referencing ACC.");
+        }
+
+        List<AsccpReleaseManifestRecord> asccpReleaseManifestList = manifestRepository
+                .getAsccpReleaseManifestByRoleOfAccId(accReleaseManifestRecord.getAccId().longValue(),
+                        accReleaseManifestRecord.getReleaseId().longValue());
+
+        int minRoleOfState = CcState.Editing.getValue();
+        int asccpState;
+
+        for (AsccpReleaseManifestRecord asccpManifest: asccpReleaseManifestList) {
+            asccpState = getAsccpRecordById(asccpManifest.getAsccpId().longValue()).getState();
+            if (asccpState < minRoleOfState) {
+                minRoleOfState = asccpState;
+            }
+        }
+        if (minRoleOfState > ccState.getValue()) {
+            throw new IllegalArgumentException("ACC cannot be behind state of Referencing ASCCP.");
+        }
+
+        long originAccId = accRecord.getAccId().longValue();
+
+        accRecord.set(ACC.ACC_ID, null);
+        accRecord.set(ACC.STATE, ccState.getValue());
+        accRecord.set(ACC.LAST_UPDATED_BY, userId);
+        accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
+        accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
+        accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);
 
         AccRecord insertedAccRecord = dslContext.insertInto(ACC)
-                .set(baseAccRecord).returning().fetchOne();
+                .set(accRecord).returning().fetchOne();
 
         dslContext.update(ACC_RELEASE_MANIFEST)
                 .set(ACC_RELEASE_MANIFEST.ACC_ID, insertedAccRecord.getAccId())
@@ -1532,9 +1576,23 @@ public class CcNodeRepository {
 
         updateAsccStateByAccId(userId.longValue(), originAccId, insertedAccRecord.getAccId().longValue(),
                 accReleaseManifestRecord.getReleaseId().longValue(), timestamp, ccState);
+
+        updateAccRoleOfAccIdByAcc(originAccId, insertedAccRecord.getAccId().longValue(),
+                accReleaseManifestRecord.getReleaseId().longValue());
         
         CcAccNode ccAccNode = getAccNodeByAccId(user, accReleaseManifestRecord);
         return getAccNodeDetail(user, ccAccNode);
+    }
+
+    private void updateAccRoleOfAccIdByAcc(long orginAccId, long insertedAccId, long releaseId) {
+        List<AccReleaseManifestRecord> accReleaseManifestList = manifestRepository.getAccReleaseManifestByBasedAccId(orginAccId, releaseId);
+        for (AccReleaseManifestRecord accManifest : accReleaseManifestList) {
+            AccRecord acc = getAccRecordById(accManifest.getAccId().longValue());
+            acc.setBasedAccId(ULong.valueOf(insertedAccId));
+            acc.update();
+            accManifest.setBasedAccId(ULong.valueOf(insertedAccId));
+            accManifest.update();
+        }
     }
 
     private void updateBccStateByAccId(long userId, long orginAccId, long insertedAccId, long releaseId,
@@ -1621,11 +1679,9 @@ public class CcNodeRepository {
 
         for (Integer state : parentAccStates) {
             if (state > ccState.getValue()) {
-                throw new IllegalArgumentException("ASCCP state can not precede parent ACC.");
+                throw new IllegalArgumentException("ASCCP state cannot be behind of parent ACC.");
             }
         }
-
-
 
         long originAsccpId = asccpReleaseManifestRecord.getAsccpId().longValue();
 
@@ -1664,6 +1720,20 @@ public class CcNodeRepository {
 
         BccpRecord baseBccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId())).fetchOne();
+
+        List<Integer> parentAccStates = dslContext.select().from(BCC_RELEASE_MANIFEST)
+                .join(ACC_RELEASE_MANIFEST).on(and(
+                        ACC_RELEASE_MANIFEST.ACC_ID.eq(BCC_RELEASE_MANIFEST.FROM_ACC_ID),
+                        ACC_RELEASE_MANIFEST.RELEASE_ID.eq(BCC_RELEASE_MANIFEST.RELEASE_ID)))
+                .join(ACC).on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID))
+                .where(and(BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId()),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(bccpReleaseManifestRecord.getReleaseId()))).fetch().getValues(ACC.STATE);
+
+        for (Integer state : parentAccStates) {
+            if (state > ccState.getValue()) {
+                throw new IllegalArgumentException("BCCP state cannot be behind of parent ACC.");
+            }
+        }
 
         baseBccpRecord.set(BCCP.BCCP_ID, null);
         baseBccpRecord.set(BCCP.STATE, ccState.getValue());

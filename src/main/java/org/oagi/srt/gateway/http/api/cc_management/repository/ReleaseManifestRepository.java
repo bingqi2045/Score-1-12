@@ -36,6 +36,13 @@ public class ReleaseManifestRepository {
                 .fetch();
     }
 
+    public List<AccReleaseManifestRecord> getAccReleaseManifestByBasedAccId(long basedAccId, long releaseId) {
+        return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
+                .where(and(ACC_RELEASE_MANIFEST.BASED_ACC_ID.eq(ULong.valueOf(basedAccId)),
+                        ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .fetch();
+    }
+
     public BccpReleaseManifestRecord getBccpReleaseManifestById(long manifestId) {
         return dslContext.selectFrom(BCCP_RELEASE_MANIFEST)
                 .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
