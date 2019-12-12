@@ -63,6 +63,9 @@ public class CcListRepository {
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
+        }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(ACC.DEN, request.getDen()));
         }
@@ -160,6 +163,9 @@ public class CcListRepository {
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
+        }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(ASCC.DEN, request.getDen()));
         }
@@ -240,6 +246,9 @@ public class CcListRepository {
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(BCC.DEN, request.getDen()));
@@ -324,6 +333,9 @@ public class CcListRepository {
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
+        }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(ASCCP.DEN, request.getDen()));
         }
@@ -405,6 +417,9 @@ public class CcListRepository {
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(BCCP.DEN, request.getDen()));
@@ -488,6 +503,9 @@ public class CcListRepository {
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
+        }
+        if (!request.getExcludes().isEmpty()) {
+            conditions.add(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(DT.DEN, request.getDen()));

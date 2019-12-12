@@ -42,6 +42,7 @@ public class CcListController {
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
+            @RequestParam(name = "excludes", required = false) String excludes,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -69,6 +70,8 @@ public class CcListController {
         request.setDefinition(definition);
         request.setModule(module);
         request.setComponentTypes(componentTypes);
+        request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
+                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));

@@ -20,6 +20,7 @@ public class CcListRequest {
     private String definition;
     private String module;
     private String componentTypes;
+    private List<String> excludes;
 
     private Date updateStartDate;
     private Date updateEndDate;
