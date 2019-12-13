@@ -89,16 +89,16 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/discard",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateState(@AuthenticationPrincipal User user,
+    public void discardCc(@AuthenticationPrincipal User user,
                                     @PathVariable("type") String type,
                                     @PathVariable("manifestId") long manifestId) {
         switch (type) {
             case "asccp":
                 service.discardAscc(user, manifestId);
-                return;
+                break;
             case "bccp":
                 service.discardBcc(user, manifestId);
-                return;
+                break;
             default:
                 throw new UnsupportedOperationException();
         }

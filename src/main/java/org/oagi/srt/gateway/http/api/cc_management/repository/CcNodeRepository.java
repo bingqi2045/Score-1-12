@@ -377,7 +377,6 @@ public class CcNodeRepository {
             asccpRecord.setLastUpdateTimestamp(timestamp);
             asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
             asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
-            asccpRecord.setRevisionNum(asccpRecord.getRevisionTrackingNum());
             asccpRecord.insert();
 
             asccpReleaseManifestRecord.setRoleOfAccId(ULong.valueOf(newRoleOfAccId));
@@ -395,7 +394,6 @@ public class CcNodeRepository {
                 asccRecord.setLastUpdateTimestamp(timestamp);
                 asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
                 asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
-                asccRecord.setRevisionNum(asccRecord.getRevisionTrackingNum());
                 asccRecord.insert();
 
                 asccReleaseManifestRecord.setToAsccpId(asccpRecord.getAsccpId());
@@ -420,7 +418,6 @@ public class CcNodeRepository {
             accRecord.setLastUpdateTimestamp(timestamp);
             accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
             accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
-            accRecord.setRevisionNum(accRecord.getRevisionTrackingNum());
             accRecord.insert();
 
             accReleaseManifestRecord.setBasedAccId(ULong.valueOf(newBasedAccId));
@@ -469,7 +466,6 @@ public class CcNodeRepository {
             baseAsccRecord.setLastUpdateTimestamp(timestamp);
             baseAsccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
             baseAsccRecord.setRevisionTrackingNum(baseAsccRecord.getRevisionTrackingNum() + 1);
-            baseAsccRecord.setRevisionNum(baseAsccRecord.getRevisionTrackingNum());
             baseAsccRecord.insert();
 
             asccReleaseManifestRecord.setAsccId(baseAsccRecord.getAsccId());
@@ -521,7 +517,6 @@ public class CcNodeRepository {
             baseAsccpRecord.setLastUpdateTimestamp(timestamp);
             baseAsccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
             baseAsccpRecord.setRevisionTrackingNum(baseAsccpRecord.getRevisionTrackingNum() + 1);
-            baseAsccpRecord.setRevisionNum(baseAsccpRecord.getRevisionTrackingNum());
             baseAsccpRecord.insert();
 
             asccpReleaseManifestRecord.setAsccpId(baseAsccpRecord.getAsccpId());
@@ -588,7 +583,6 @@ public class CcNodeRepository {
             baseBccRecord.setLastUpdateTimestamp(timestamp);
             baseBccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
             baseBccRecord.setRevisionTrackingNum(baseBccRecord.getRevisionTrackingNum() + 1);
-            baseBccRecord.setRevisionNum(baseBccRecord.getRevisionTrackingNum());
             baseBccRecord.insert();
 
             bccReleaseManifestRecord.setBccId(baseBccRecord.getBccId());
@@ -1359,7 +1353,6 @@ public class CcNodeRepository {
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
         asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
-        asccpRecord.setRevisionNum(asccpRecord.getRevisionTrackingNum());
         asccpRecord.insert();
 
         asccpReleaseManifestRecord.setRoleOfAccId(accRecord.getAccId());
@@ -1488,13 +1481,21 @@ public class CcNodeRepository {
         }
 
         long originAccId = accRecord.getAccId().longValue();
+        
+        
 
         accRecord.set(ACC.ACC_ID, null);
         accRecord.set(ACC.STATE, ccState.getValue());
         accRecord.set(ACC.LAST_UPDATED_BY, userId);
         accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
         accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);
+        if(ccState == CcState.Published) {
+            accRecord.set(ACC.REVISION_NUM, accRecord.getRevisionNum() + 1);
+            accRecord.set(ACC.REVISION_TRACKING_NUM, 1);
+        } else {
+            accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);    
+        }
+        
         accRecord.insert();
 
         accReleaseManifestRecord.setAccId(accRecord.getAccId());
@@ -1552,7 +1553,12 @@ public class CcNodeRepository {
         baseAsccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
         baseAsccpRecord.set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp);
         baseAsccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1);
+        if(ccState == CcState.Published) {
+            baseAsccpRecord.set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum() + 1);
+            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 1);
+        } else {
+            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1);
+        }
         baseAsccpRecord.insert();
 
         asccpReleaseManifestRecord.setAsccpId(baseAsccpRecord.getAsccpId());
@@ -1596,7 +1602,12 @@ public class CcNodeRepository {
         baseBccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
         baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
         baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-        baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
+        if(ccState == CcState.Published) {
+            baseBccpRecord.set(BCCP.REVISION_NUM, baseBccpRecord.getRevisionNum() + 1);
+            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, 1);
+        } else {
+            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
+        }
         baseBccpRecord.insert();
 
         bccpReleaseManifestRecord.setBccpId(baseBccpRecord.getBccpId());
@@ -1951,7 +1962,7 @@ public class CcNodeRepository {
         ascc.set(ASCC.REVISION_TRACKING_NUM, ascc.getRevisionTrackingNum() + 1);
         dslContext.insertInto(ASCC).set(ascc).execute();
 
-        decreaseSeqKeyGreaterThan(ascc.getFromAccId().longValue(), ascc.getSeqKey());
+        decreaseSeqKeyGreaterThan(userId, ascc.getFromAccId().longValue(), asccReleaseManifestRecord.getReleaseId().longValue(), ascc.getSeqKey(), timestamp);
 
         dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
                 .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId())).execute();
@@ -1971,7 +1982,7 @@ public class CcNodeRepository {
         bcc.set(BCC.REVISION_TRACKING_NUM, bcc.getRevisionTrackingNum() + 1);
         dslContext.insertInto(BCC).set(bcc).execute();
 
-        decreaseSeqKeyGreaterThan(bcc.getFromAccId().longValue(), bcc.getSeqKey());
+        decreaseSeqKeyGreaterThan(userId, bcc.getFromAccId().longValue(), bccReleaseManifestRecord.getReleaseId().longValue(), bcc.getSeqKey(), timestamp);
 
         dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
@@ -1997,21 +2008,45 @@ public class CcNodeRepository {
         return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
-    private void decreaseSeqKeyGreaterThan(long accId, int seqKey) {
-        dslContext.update(ASCC)
-                .set(ASCC.SEQ_KEY, ASCC.SEQ_KEY.subtract(1))
-                .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
-                        ASCC.SEQ_KEY.greaterThan(seqKey)
-                ))
-                .execute();
+    private void decreaseSeqKeyGreaterThan(long userId, long accId, long releaseId, int seqKey, Timestamp timestamp) {
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords = 
+                manifestRepository.getAsccReleaseManifestByFromAccId(accId, releaseId);
+        
+        for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
+            AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
+            if (asccRecord.getSeqKey() <= seqKey) {
+                continue;
+            }
+            asccRecord.setAsccId(null);
+            asccRecord.setLastUpdatedBy(ULong.valueOf(userId));
+            asccRecord.setLastUpdateTimestamp(timestamp);
+            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
+            asccRecord.setSeqKey(asccRecord.getSeqKey() -1);
+            asccRecord.insert();
 
-        dslContext.update(BCC)
-                .set(BCC.SEQ_KEY, BCC.SEQ_KEY.subtract(1))
-                .where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)),
-                        BCC.SEQ_KEY.greaterThan(seqKey)
-                ))
-                .execute();
+            asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
+            asccReleaseManifestRecord.update();
+        }
+
+        List<BccReleaseManifestRecord> bccReleaseManifestRecords =
+                manifestRepository.getBccReleaseManifestByFromAccId(accId, releaseId);
+
+        for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
+            BccRecord bccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
+            if (bccRecord.getSeqKey() <= seqKey) {
+                continue;
+            }
+            bccRecord.setBccId(null);
+            bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
+            bccRecord.setLastUpdateTimestamp(timestamp);
+            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
+            bccRecord.setSeqKey(bccRecord.getSeqKey() -1);
+            bccRecord.insert();
+
+            bccReleaseManifestRecord.setBccId(bccRecord.getBccId());
+            bccReleaseManifestRecord.update();
+        }
     }
 }
