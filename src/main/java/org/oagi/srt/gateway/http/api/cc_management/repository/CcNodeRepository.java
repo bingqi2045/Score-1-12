@@ -1401,6 +1401,7 @@ public class CcNodeRepository {
         baseBccpRecord.insert();
 
         bccpReleaseManifestRecord.setBccpId(baseBccpRecord.getBccpId());
+        bccpReleaseManifestRecord.setBdtId(baseBccpRecord.getBdtId());
         bccpReleaseManifestRecord.update();
 
         updateBccByToBccp(userId.longValue(), originBccpId, baseBccpRecord.getBccpId().longValue(),

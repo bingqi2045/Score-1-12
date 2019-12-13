@@ -505,7 +505,7 @@ public class CcListRepository {
             conditions.add(appUserUpdater.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (!request.getExcludes().isEmpty()) {
-            conditions.add(DT_RELEASE_MANIFEST.DT_RELEASE_MANIFEST_ID.notIn(request.getExcludes()));
+            conditions.add(DT.DT_ID.notIn(request.getExcludes()));
         }
         if (request.getDen() != null && !request.getDen().isEmpty()) {
             conditions.add(getDenFilter(DT.DEN, request.getDen()));
