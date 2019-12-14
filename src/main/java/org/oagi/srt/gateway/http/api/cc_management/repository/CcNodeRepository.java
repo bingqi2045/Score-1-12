@@ -563,6 +563,13 @@ public class CcNodeRepository {
 
         if (!Objects.equals(baseBccRecord.getDefaultValue(), bccNodeDetail.getDefaultValue())) {
             baseBccRecord.setDefaultValue(bccNodeDetail.getDefaultValue());
+            baseBccRecord.setFixedValue(null);
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccRecord.getFixedValue(), bccNodeDetail.getFixedValue())) {
+            baseBccRecord.setFixedValue(bccNodeDetail.getFixedValue());
+            baseBccRecord.setDefaultValue(null);
             isChanged = true;
         }
 
@@ -624,9 +631,15 @@ public class CcNodeRepository {
             baseBccpRecord.setIsDeprecated(deprecated);
             isChanged = true;
         }
-
         if (!Objects.equals(baseBccpRecord.getDefaultValue(), bccpNodeDetail.getDefaultValue())) {
             baseBccpRecord.setDefaultValue(bccpNodeDetail.getDefaultValue());
+            baseBccpRecord.setFixedValue(null);
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccpRecord.getFixedValue(), bccpNodeDetail.getFixedValue())) {
+            baseBccpRecord.setFixedValue(bccpNodeDetail.getFixedValue());
+            baseBccpRecord.setDefaultValue(null);
             isChanged = true;
         }
 
@@ -1639,7 +1652,7 @@ public class CcNodeRepository {
         AsccpRecord asccpRecord = getAsccpRecordById(asccpReleaseManifestRecord.getAsccpId().longValue());
         AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
 
-        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue(), accReleaseManifest.getReleaseId().longValue());
 
         AsccRecord asccRecord = new AsccRecord();
         asccRecord.setAsccId(null);
@@ -1690,7 +1703,7 @@ public class CcNodeRepository {
         BccpRecord bccpRecord = getBccpRecordById(bccpReleaseManifestRecord.getBccpId().longValue());
         AccRecord accRecord = getAccRecordById(accReleaseManifest.getAccId().longValue());
 
-        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue());
+        int seqKey = getNextSeqKey(accReleaseManifest.getAccId().longValue(), accReleaseManifest.getReleaseId().longValue());
         BccRecord bccRecord = new BccRecord();
         bccRecord.setBccId(null);
         bccRecord.setGuid(SrtGuid.randomGuid());
@@ -1988,9 +2001,12 @@ public class CcNodeRepository {
                 .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId())).execute();
     }
 
-    private int getNextSeqKey(long accId) {
+    private int getNextSeqKey(long accId, long releaseId) {
         Integer asccMaxSeqKey = dslContext.select(max(ASCC.SEQ_KEY))
                 .from(ASCC)
+                .join(ASCC_RELEASE_MANIFEST)
+                .on(and(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID),
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(Integer.class);
         if (asccMaxSeqKey == null) {
@@ -1999,6 +2015,9 @@ public class CcNodeRepository {
 
         Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
                 .from(BCC)
+                .join(BCC_RELEASE_MANIFEST)
+                .on(and(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID),
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(Integer.class);
         if (bccMaxSeqKey == null) {
