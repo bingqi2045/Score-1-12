@@ -1504,9 +1504,9 @@ public class CcNodeRepository {
         accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
         if(ccState == CcState.Published) {
             accRecord.set(ACC.REVISION_NUM, accRecord.getRevisionNum() + 1);
-            accRecord.set(ACC.REVISION_TRACKING_NUM, 1);
+            accRecord.set(ACC.REVISION_TRACKING_NUM, 0);
         } else {
-            accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);    
+            accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);
         }
         
         accRecord.insert();
@@ -1568,7 +1568,7 @@ public class CcNodeRepository {
         baseAsccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
         if(ccState == CcState.Published) {
             baseAsccpRecord.set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum() + 1);
-            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 1);
+            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 0);
         } else {
             baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1);
         }
@@ -1617,7 +1617,7 @@ public class CcNodeRepository {
         baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
         if(ccState == CcState.Published) {
             baseBccpRecord.set(BCCP.REVISION_NUM, baseBccpRecord.getRevisionNum() + 1);
-            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, 1);
+            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, 0);
         } else {
             baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
         }
@@ -1923,12 +1923,17 @@ public class CcNodeRepository {
         for(AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
             AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
             asccRecord.set(ASCC.ASCC_ID, null);
-            asccRecord.set(ASCC.STATE, state.getValue());
             asccRecord.set(ASCC.FROM_ACC_ID, ULong.valueOf(newAccId));
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
             asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
+            asccRecord.set(ASCC.STATE, state.getValue());
+            if(state == CcState.Published) {
+                asccRecord.set(ASCC.REVISION_NUM, asccRecord.getRevisionNum() + 1);
+                asccRecord.set(ASCC.REVISION_TRACKING_NUM, 0);
+            } else {
+                asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
+            }
             asccRecord.insert();
 
             asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -1947,12 +1952,17 @@ public class CcNodeRepository {
         for(BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
             BccRecord bccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
             bccRecord.set(BCC.BCC_ID, null);
-            bccRecord.set(BCC.STATE, state.getValue());
             bccRecord.set(BCC.FROM_ACC_ID, ULong.valueOf(newAccId));
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
             bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
+            bccRecord.set(BCC.STATE, state.getValue());
+            if(state == CcState.Published) {
+                bccRecord.set(BCC.REVISION_NUM, bccRecord.getRevisionNum() + 1);
+                bccRecord.set(BCC.REVISION_TRACKING_NUM, 0);
+            } else {
+                bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
+            }
             bccRecord.insert();
 
             bccReleaseManifestRecord.setBccId(bccRecord.getBccId());
