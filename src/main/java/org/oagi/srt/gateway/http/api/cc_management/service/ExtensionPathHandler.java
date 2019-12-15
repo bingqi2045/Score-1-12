@@ -65,7 +65,7 @@ public class ExtensionPathHandler implements InitializingBean {
         if ("All Extension".equals(targetAcc.getObjectClassTerm())) {
             return true;
         }
-        
+
         ACC acc = accMap.get(accId);
         if (acc.getBasedAccId() != null) {
             if (containsExtension(acc.getBasedAccId(), targetExtensionId)) {

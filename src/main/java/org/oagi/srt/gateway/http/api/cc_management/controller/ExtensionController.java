@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
-import org.jooq.DSLContext;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;

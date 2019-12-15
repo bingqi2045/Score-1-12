@@ -6,7 +6,6 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.AccReleaseManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -59,7 +58,7 @@ public class ExtensionService {
                 .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOptional().orElse(null);
     }
-    
+
     public CcAccNode getExtensionNode(User user, long manifestId) {
         AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
@@ -156,7 +155,7 @@ public class ExtensionService {
 
     private int increaseAccRevisionNum(ACC ueAcc, long releaseId,
                                        ULong userId, Timestamp timestamp) {
-        
+
         AccRecord history = dslContext.selectFrom(Tables.ACC)
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
                 .orderBy(Tables.ACC.ACC_ID.desc()).limit(1)
@@ -181,7 +180,6 @@ public class ExtensionService {
                 .where(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                         .and(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))))
                 .execute();
-
 
 
         dslContext.update(Tables.ACC)

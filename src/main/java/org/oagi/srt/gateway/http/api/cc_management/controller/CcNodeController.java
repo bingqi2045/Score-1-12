@@ -44,7 +44,7 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal User user,
-                                @RequestBody CcUpdateRequest ccUpdateRequest) {
+                                                @RequestBody CcUpdateRequest ccUpdateRequest) {
         return service.updateCcDetails(user, ccUpdateRequest);
     }
 
@@ -52,9 +52,9 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode updateCcNodeManifest(@AuthenticationPrincipal User user,
-                                               @PathVariable("type") String type,
-                                               @PathVariable("manifestId") long manifestId,
-                                               @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
+                                       @PathVariable("type") String type,
+                                       @PathVariable("manifestId") long manifestId,
+                                       @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
         switch (type) {
             case "asccp":
                 return service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
@@ -70,9 +70,9 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeDetail updateState(@AuthenticationPrincipal User user,
-                            @PathVariable("type") String type,
-                            @PathVariable("manifestId") long manifestId,
-                            @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
+                                    @PathVariable("type") String type,
+                                    @PathVariable("manifestId") long manifestId,
+                                    @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
         switch (type) {
             case "acc":
                 return service.updateAccState(user, manifestId, ccUpdateStateRequest.getState());
@@ -90,8 +90,8 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void discardCc(@AuthenticationPrincipal User user,
-                                    @PathVariable("type") String type,
-                                    @PathVariable("manifestId") long manifestId) {
+                          @PathVariable("type") String type,
+                          @PathVariable("manifestId") long manifestId) {
         switch (type) {
             case "asccp":
                 service.discardAscc(user, manifestId);
@@ -247,7 +247,7 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity appendNode(@AuthenticationPrincipal User user,
-                                       @RequestBody CcAppendRequest ccAppendRequest) {
+                                     @RequestBody CcAppendRequest ccAppendRequest) {
 
         if (ccAppendRequest.getAccManifestId() != null) {
             if (ccAppendRequest.getAsccpManifestId() != null) {
@@ -265,8 +265,8 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode setBasedNode(@AuthenticationPrincipal User user,
-                                       @PathVariable("manifestId") long manifestId,
-                                       @RequestBody CcAccRequest ccAccRequest) {
+                               @PathVariable("manifestId") long manifestId,
+                               @RequestBody CcAccRequest ccAccRequest) {
         if (ccAccRequest.getBasedAccManifestId() == null) {
             return service.discardAccBasedId(user, manifestId);
         }
