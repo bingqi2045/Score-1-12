@@ -216,20 +216,20 @@ public class CcNodeService {
     }
 
     @Transactional
-    public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, String state) {
+    public CcAsccpNode updateAsccpState(User user, long asccpManifestId, String state) {
         CcState ccState = getStateCode(state);
         return repository.updateAsccpState(user, asccpManifestId, ccState);
     }
 
     @Transactional
-    public CcAccNodeDetail updateAccState(User user, long accManifestId, String state) {
+    public CcAccNode updateAccState(User user, long accManifestId, String state) {
         CcState ccState = getStateCode(state);
         return repository.updateAccState(user, accManifestId, ccState);
     }
 
 
     @Transactional
-    public CcBccpNodeDetail updateBccpState(User user, long bccpManifestId, String state) {
+    public CcBccpNode updateBccpState(User user, long bccpManifestId, String state) {
         CcState ccState = getStateCode(state);
         return repository.updateBccpState(user, bccpManifestId, ccState);
     }

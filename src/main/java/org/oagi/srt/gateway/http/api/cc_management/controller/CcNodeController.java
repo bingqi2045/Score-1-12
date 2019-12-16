@@ -69,7 +69,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeDetail updateState(@AuthenticationPrincipal User user,
+    public CcNode updateState(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
                             @PathVariable("manifestId") long manifestId,
                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {

@@ -1415,7 +1415,7 @@ public class CcNodeRepository {
 
         return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
     }
-    public CcAccNodeDetail updateAccState(User user, long accManifestId, CcState ccState) {
+    public CcAccNode updateAccState(User user, long accManifestId, CcState ccState) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1494,20 +1494,18 @@ public class CcNodeRepository {
         }
 
         long originAccId = accRecord.getAccId().longValue();
-        
-        
 
         accRecord.set(ACC.ACC_ID, null);
-        accRecord.set(ACC.STATE, ccState.getValue());
         accRecord.set(ACC.LAST_UPDATED_BY, userId);
         accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
         accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        if(ccState == CcState.Published) {
+        if(accRecord.getState() == CcState.Published.getValue() && ccState == CcState.Editing) {
             accRecord.set(ACC.REVISION_NUM, accRecord.getRevisionNum() + 1);
-            accRecord.set(ACC.REVISION_TRACKING_NUM, 0);
+            accRecord.set(ACC.REVISION_TRACKING_NUM, 1);
         } else {
             accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);
         }
+        accRecord.set(ACC.STATE, ccState.getValue());
         
         accRecord.insert();
 
@@ -1524,11 +1522,10 @@ public class CcNodeRepository {
         updateAccByBasedAcc(userId.longValue(), originAccId, accRecord.getAccId().longValue(),
                 accReleaseManifestRecord.getReleaseId().longValue(), timestamp);
                 
-        CcAccNode ccAccNode = getAccNodeByAccId(user, accReleaseManifestRecord);
-        return getAccNodeDetail(user, ccAccNode);
+        return getAccNodeByAccId(user, accReleaseManifestRecord);
     }
 
-    public CcAsccpNodeDetail updateAsccpState(User user, long asccpManifestId, CcState ccState) {
+    public CcAsccpNode updateAsccpState(User user, long asccpManifestId, CcState ccState) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1562,16 +1559,16 @@ public class CcNodeRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
 
         baseAsccpRecord.set(ASCCP.ASCCP_ID, null);
-        baseAsccpRecord.set(ASCCP.STATE, ccState.getValue());
         baseAsccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
         baseAsccpRecord.set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp);
         baseAsccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        if(ccState == CcState.Published) {
+        if(baseAsccpRecord.getState() == CcState.Published.getValue() && ccState == CcState.Editing) {
             baseAsccpRecord.set(ASCCP.REVISION_NUM, baseAsccpRecord.getRevisionNum() + 1);
-            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 0);
+            baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 1);
         } else {
             baseAsccpRecord.set(ASCCP.REVISION_TRACKING_NUM, baseAsccpRecord.getRevisionTrackingNum() + 1);
         }
+        baseAsccpRecord.set(ASCCP.STATE, ccState.getValue());
         baseAsccpRecord.insert();
 
         asccpReleaseManifestRecord.setAsccpId(baseAsccpRecord.getAsccpId());
@@ -1580,11 +1577,10 @@ public class CcNodeRepository {
         updateAsccByToAsccp(userId.longValue(), originAsccpId, baseAsccpRecord.getAsccpId().longValue(),
                 asccpReleaseManifestRecord.getReleaseId().longValue(), baseAsccpRecord.getPropertyTerm(), timestamp);
 
-        CcAsccpNode ccAsccpNode = getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
-        return getAsccpNodeDetail(user, ccAsccpNode);
+        return getAsccpNodeByAsccpManifestId(user, asccpReleaseManifestRecord.getAsccpReleaseManifestId().longValue());
     }
 
-    public CcBccpNodeDetail updateBccpState(User user, long bccpManifestId, CcState ccState) {
+    public CcBccpNode updateBccpState(User user, long bccpManifestId, CcState ccState) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1611,16 +1607,16 @@ public class CcNodeRepository {
         }
 
         baseBccpRecord.set(BCCP.BCCP_ID, null);
-        baseBccpRecord.set(BCCP.STATE, ccState.getValue());
         baseBccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
         baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
         baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-        if(ccState == CcState.Published) {
+        if(baseBccpRecord.getState() == CcState.Published.getValue() && ccState == CcState.Editing) {
             baseBccpRecord.set(BCCP.REVISION_NUM, baseBccpRecord.getRevisionNum() + 1);
-            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, 0);
+            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, 1);
         } else {
             baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
         }
+        baseBccpRecord.set(BCCP.STATE, ccState.getValue());
         baseBccpRecord.insert();
 
         bccpReleaseManifestRecord.setBccpId(baseBccpRecord.getBccpId());
@@ -1629,9 +1625,8 @@ public class CcNodeRepository {
         updateBccByToBccp(userId.longValue(), originBccpId, baseBccpRecord.getBccpId().longValue(),
                 bccpReleaseManifestRecord.getReleaseId().longValue(), baseBccpRecord.getPropertyTerm(), timestamp);
 
-        CcBccpNode ccBccpNode = getBccpNodeByBccpManifestId(user,
+        return getBccpNodeByBccpManifestId(user,
                 bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
-        return getBccpNodeDetail(user, ccBccpNode);
     }
 
     public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
@@ -1927,13 +1922,13 @@ public class CcNodeRepository {
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
             asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            asccRecord.set(ASCC.STATE, state.getValue());
-            if(state == CcState.Published) {
+            if(asccRecord.getState() == CcState.Published.getValue() && state == CcState.Editing) {
                 asccRecord.set(ASCC.REVISION_NUM, asccRecord.getRevisionNum() + 1);
-                asccRecord.set(ASCC.REVISION_TRACKING_NUM, 0);
+                asccRecord.set(ASCC.REVISION_TRACKING_NUM, 1);
             } else {
                 asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
             }
+            asccRecord.set(ASCC.STATE, state.getValue());
             asccRecord.insert();
 
             asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -1956,13 +1951,13 @@ public class CcNodeRepository {
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
             bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            bccRecord.set(BCC.STATE, state.getValue());
-            if(state == CcState.Published) {
+            if(bccRecord.getState() == CcState.Published.getValue() && state == CcState.Editing) {
                 bccRecord.set(BCC.REVISION_NUM, bccRecord.getRevisionNum() + 1);
-                bccRecord.set(BCC.REVISION_TRACKING_NUM, 0);
+                bccRecord.set(BCC.REVISION_TRACKING_NUM, 1);
             } else {
                 bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
             }
+            bccRecord.set(BCC.STATE, state.getValue());
             bccRecord.insert();
 
             bccReleaseManifestRecord.setBccId(bccRecord.getBccId());
