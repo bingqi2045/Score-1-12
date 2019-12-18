@@ -7,7 +7,9 @@ import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.Release;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.AppUser;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -35,6 +37,11 @@ public class CcListRepository {
     @Autowired
     private ReleaseRepository releaseRepository;
 
+    @Autowired
+    private ReleaseManifestRepository manifestRepository;
+
+    @Autowired
+    private CcNodeRepository nodeRepository;
 
     public List<CcList> getAccList(CcListRequest request) {
         if (!request.getTypes().isAcc()) {
@@ -583,5 +590,124 @@ public class CcListRepository {
 
         }
         return denCondition;
+    }
+
+    public ULong updateAccOwnerUserId(AccReleaseManifestRecord accReleaseManifest, ULong target, ULong userId, Timestamp timestamp) {
+        AccRecord acc = dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(accReleaseManifest.getAccId())).fetchOne();
+        acc.setAccId(null);
+        acc.setOwnerUserId(target);
+        acc.setLastUpdatedBy(userId);
+        acc.setLastUpdateTimestamp(timestamp);
+        acc.setRevisionTrackingNum(acc.getRevisionTrackingNum() + 1);
+        acc.setRevisionAction((byte) RevisionAction.Update.getValue());
+        acc.insert();
+        accReleaseManifest.setAccId(acc.getAccId());
+        accReleaseManifest.update();
+
+        return acc.getAccId();
+    }
+
+    public void updateAsccOwnerUserId(ULong originAccId, ULong newAccId, ULong releaseId, ULong target, ULong userId, Timestamp timestamp) {
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords = manifestRepository.getAsccReleaseManifestByFromAccId(originAccId.longValue(), releaseId.longValue());
+        for(AsccReleaseManifestRecord asccReleaseManifestRecord: asccReleaseManifestRecords) {
+            AsccRecord asccRecord = nodeRepository.getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
+            asccRecord.setAsccId(null);
+            asccRecord.setFromAccId(newAccId);
+            asccRecord.setOwnerUserId(target);
+            asccRecord.setLastUpdatedBy(userId);
+            asccRecord.setLastUpdateTimestamp(timestamp);
+            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
+            asccRecord.insert();
+
+            asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
+            asccReleaseManifestRecord.setFromAccId(newAccId);
+            asccReleaseManifestRecord.update();
+        }
+        
+        nodeRepository.updateAsccpByRoleOfAcc(userId.longValue(), originAccId.longValue(), newAccId.longValue(), releaseId.longValue(), null, timestamp);
+        nodeRepository.updateAccByBasedAcc(userId.longValue(), originAccId.longValue(), newAccId.longValue(), releaseId.longValue(), timestamp);
+    }
+
+    public void updateBccOwnerUserId(ULong originAccId, ULong newAccId, ULong releaseId, ULong target, ULong userId, Timestamp timestamp) {
+        List<BccReleaseManifestRecord> bccRelebeManifestRecords = manifestRepository.getBccReleaseManifestByFromAccId(originAccId.longValue(), releaseId.longValue());
+        for(BccReleaseManifestRecord bccRelebeManifestRecord: bccRelebeManifestRecords) {
+            BccRecord bccRecord = nodeRepository.getBccRecordById(bccRelebeManifestRecord.getBccId().longValue());
+            bccRecord.setBccId(null);
+            bccRecord.setFromAccId(newAccId);
+            bccRecord.setOwnerUserId(target);
+            bccRecord.setLastUpdatedBy(userId);
+            bccRecord.setLastUpdateTimestamp(timestamp);
+            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
+            bccRecord.insert();
+
+            bccRelebeManifestRecord.setBccId(bccRecord.getBccId());
+            bccRelebeManifestRecord.setFromAccId(newAccId);
+            bccRelebeManifestRecord.update();
+        }
+        nodeRepository.updateAsccpByRoleOfAcc(userId.longValue(), originAccId.longValue(), newAccId.longValue(), releaseId.longValue(), null, timestamp);
+        nodeRepository.updateAccByBasedAcc(userId.longValue(), originAccId.longValue(), newAccId.longValue(), releaseId.longValue(), timestamp);
+    }
+
+    public void updateAsccpOwnerUserId(AsccpReleaseManifestRecord asccpReleaseManifest, ULong target, ULong userId, Timestamp timestamp) {
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords = manifestRepository.getAsccReleaseManifestByToAsccpId(
+                asccpReleaseManifest.getAsccpId().longValue(), asccpReleaseManifest.getReleaseId().longValue());
+        AsccpRecord asccp = dslContext.selectFrom(ASCCP).where(ASCCP.ASCCP_ID.eq(asccpReleaseManifest.getAsccpId())).fetchOne();
+        asccp.setAsccpId(null);
+        asccp.setOwnerUserId(target);
+        asccp.setLastUpdatedBy(userId);
+        asccp.setLastUpdateTimestamp(timestamp);
+        asccp.setRevisionTrackingNum(asccp.getRevisionTrackingNum() + 1);
+        asccp.setRevisionAction((byte) RevisionAction.Update.getValue());
+        asccp.insert();
+        asccpReleaseManifest.setAsccpId(asccp.getAsccpId());
+        asccpReleaseManifest.update();
+        
+        for(AsccReleaseManifestRecord asccReleaseManifestRecord: asccReleaseManifestRecords) {
+            AsccRecord asccRecord = nodeRepository.getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
+            asccRecord.setAsccId(null);
+            asccRecord.setToAsccpId(asccp.getAsccpId());
+            asccRecord.setLastUpdatedBy(userId);
+            asccRecord.setLastUpdateTimestamp(timestamp);
+            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
+            asccRecord.insert();
+
+            asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
+            asccReleaseManifestRecord.setToAsccpId(asccp.getAsccpId());
+            asccReleaseManifestRecord.update();
+        }
+    }
+
+    public void updateBccpOwnerUserId(BccpReleaseManifestRecord bccpReleaseManifest, ULong target, ULong userId, Timestamp timestamp) {
+        List<BccReleaseManifestRecord> bccReleaseManifestRecords = manifestRepository.getBccReleaseManifestByToBccpId(
+                bccpReleaseManifest.getBccpId().longValue(), bccpReleaseManifest.getReleaseId().longValue());
+        BccpRecord bccp = dslContext.selectFrom(BCCP).where(BCCP.BCCP_ID.eq(bccpReleaseManifest.getBccpId())).fetchOne();
+
+        bccp.setBccpId(null);
+        bccp.setOwnerUserId(target);
+        bccp.setLastUpdatedBy(userId);
+        bccp.setLastUpdateTimestamp(timestamp);
+        bccp.setRevisionTrackingNum(bccp.getRevisionTrackingNum() + 1);
+        bccp.setRevisionAction(RevisionAction.Update.getValue());
+        bccp.insert();
+        bccpReleaseManifest.setBccpId(bccp.getBccpId());
+        bccpReleaseManifest.update();
+
+        for(BccReleaseManifestRecord bccReleaseManifestRecord: bccReleaseManifestRecords) {
+            BccRecord bccRecord = nodeRepository.getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
+            bccRecord.setBccId(null);
+            bccRecord.setToBccpId(bccp.getBccpId());
+            bccRecord.setLastUpdatedBy(userId);
+            bccRecord.setLastUpdateTimestamp(timestamp);
+            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
+            bccRecord.insert();
+
+            bccReleaseManifestRecord.setBccId(bccRecord.getBccId());
+            bccReleaseManifestRecord.setToBccpId(bccp.getBccpId());
+            bccReleaseManifestRecord.update();
+        }
     }
 }

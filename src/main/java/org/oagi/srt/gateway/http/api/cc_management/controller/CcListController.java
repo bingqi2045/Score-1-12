@@ -93,14 +93,15 @@ public class CcListController {
         return service.getCcList(request);
     }
 
-    @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/transfer_ownership",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/transfer_ownership",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
+                                            @PathVariable("type") String type,
                                             @PathVariable("manifestId") long manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
-        extensionService.transferOwnership(user, manifestId, targetLoginId);
+        service.transferOwnership(user, type, manifestId, targetLoginId);
         return ResponseEntity.noContent().build();
     }
 }
