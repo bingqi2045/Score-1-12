@@ -127,8 +127,8 @@ public class CcListRepository {
                     ccList.setId(row.getValue(ACC.ACC_ID).longValue());
                     ccList.setGuid(row.getValue(ACC.GUID));
                     ccList.setDen(row.getValue(ACC.DEN));
-                    ccList.setDefinition(row.getValue(ACC.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(ACC.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION_SOURCE)));
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
                     ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
@@ -215,8 +215,8 @@ public class CcListRepository {
                     ccList.setManifestId(row.getValue(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(ASCC.GUID));
                     ccList.setDen(row.getValue(ASCC.DEN));
-                    ccList.setDefinition(row.getValue(ASCC.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(ASCC.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION_SOURCE)));
                     ccList.setState(CcState.valueOf(row.getValue(ASCC.STATE)));
                     ccList.setDeprecated(row.getValue(ASCC.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP));
@@ -299,8 +299,8 @@ public class CcListRepository {
                     ccList.setManifestId(row.getValue(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(BCC.GUID));
                     ccList.setDen(row.getValue(BCC.DEN));
-                    ccList.setDefinition(row.getValue(BCC.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(BCC.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION_SOURCE)));
                     ccList.setState(CcState.valueOf(row.getValue(BCC.STATE)));
                     ccList.setDeprecated(row.getValue(BCC.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(row.getValue(BCC.LAST_UPDATE_TIMESTAMP));
@@ -388,8 +388,8 @@ public class CcListRepository {
                     ccList.setManifestId(row.getValue(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(ASCCP.GUID));
                     ccList.setDen(row.getValue(ASCCP.DEN));
-                    ccList.setDefinition(row.getValue(ASCCP.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(ASCCP.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION_SOURCE)));
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
@@ -473,8 +473,8 @@ public class CcListRepository {
                     ccList.setManifestId(row.getValue(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID).longValue());
                     ccList.setGuid(row.getValue(BCCP.GUID));
                     ccList.setDen(row.getValue(BCCP.DEN));
-                    ccList.setDefinition(row.getValue(BCCP.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(BCCP.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION_SOURCE)));
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
                     ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
@@ -564,8 +564,8 @@ public class CcListRepository {
                     if (!StringUtils.isEmpty(den)) {
                         ccList.setDen(den.replaceAll("_", " ").replaceAll("  ", " "));
                     }
-                    ccList.setDefinition(row.getValue(DT.DEFINITION));
-                    ccList.setDefinitionSource(row.getValue(DT.DEFINITION_SOURCE));
+                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION)));
+                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION_SOURCE)));
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
