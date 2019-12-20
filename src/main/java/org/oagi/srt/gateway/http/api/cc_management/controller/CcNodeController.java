@@ -86,6 +86,25 @@ public class CcNodeController {
         }
     }
 
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/revision",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNode makeNewRevision(@AuthenticationPrincipal User user,
+                                  @PathVariable("type") String type,
+                                  @PathVariable("manifestId") long manifestId) {
+        switch (type) {
+            case "acc":
+                return service.makeNewRevisionForAcc(user, manifestId);
+            case "asccp":
+                return service.makeNewRevisionForAsccp(user, manifestId);
+            case "bccp":
+                return service.makeNewRevisionForBccp(user, manifestId);
+
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/discard",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)

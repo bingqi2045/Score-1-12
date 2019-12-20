@@ -17,15 +17,21 @@ public class ReleaseManifestRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public AccReleaseManifestRecord getAccReleaseManifestById(long manifestId) {
+    public AccReleaseManifestRecord getAccReleaseManifestById(ULong manifestId) {
         return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
-    public AsccpReleaseManifestRecord getAsccpReleaseManifestById(long manifestId) {
+    public AsccpReleaseManifestRecord getAsccpReleaseManifestById(ULong manifestId) {
         return dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
-                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(manifestId))
+                .fetchOne();
+    }
+
+    public BccpReleaseManifestRecord getBccpReleaseManifestById(ULong manifestId) {
+        return dslContext.selectFrom(BCCP_RELEASE_MANIFEST)
+                .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(manifestId))
                 .fetchOne();
     }
 
@@ -41,12 +47,6 @@ public class ReleaseManifestRepository {
                 .where(and(ACC_RELEASE_MANIFEST.BASED_ACC_ID.eq(ULong.valueOf(basedAccId)),
                         ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetch();
-    }
-
-    public BccpReleaseManifestRecord getBccpReleaseManifestById(long manifestId) {
-        return dslContext.selectFrom(BCCP_RELEASE_MANIFEST)
-                .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
-                .fetchOne();
     }
 
     public AsccReleaseManifestRecord getAsccReleaseManifestById(long manifestId) {

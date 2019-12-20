@@ -43,6 +43,14 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .fetchInto(Release.class);
     }
 
+    public Release getWorkingRelease() {
+        List<Release> releases = findByReleaseNum("Working");
+        if (releases.size() != 1) {
+            throw new IllegalStateException();
+        }
+        return releases.get(0);
+    }
+
     public ReleaseRecord create(long userId, String releaseNum, String releaseNote, long namespaceId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return dslContext.insertInto(Tables.RELEASE)

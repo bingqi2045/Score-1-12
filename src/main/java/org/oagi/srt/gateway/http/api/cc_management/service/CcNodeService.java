@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
+import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
@@ -31,7 +32,7 @@ public class CcNodeService {
 
     public CcAccNode getAccNode(User user, long manifestId) {
         AccReleaseManifestRecord accReleaseManifestRecord =
-                manifestRepository.getAccReleaseManifestById(manifestId);
+                manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
         return repository.getAccNodeByAccId(user, accReleaseManifestRecord);
     }
 
@@ -46,7 +47,7 @@ public class CcNodeService {
     @Transactional
     public void deleteAccNode(User user, long manifestId) {
         AccReleaseManifestRecord accReleaseManifestRecord =
-                manifestRepository.getAccReleaseManifestById(manifestId);
+                manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isAccUsed(accReleaseManifestRecord.getAccId().longValue());
         if (used) {
@@ -62,7 +63,7 @@ public class CcNodeService {
     @Transactional
     public void deleteAsccpNode(User user, long manifestId) {
         AsccpReleaseManifestRecord asccpReleaseManifestRecord =
-                manifestRepository.getAsccpReleaseManifestById(manifestId);
+                manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isAsccpUsed(asccpReleaseManifestRecord.getAsccpId().longValue());
         if (used) {
@@ -78,7 +79,7 @@ public class CcNodeService {
     @Transactional
     public void deleteBccpNode(User user, long manifestId) {
         BccpReleaseManifestRecord bccpReleaseManifestRecord =
-                manifestRepository.getBccpReleaseManifestById(manifestId);
+                manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isBccpUsed(bccpReleaseManifestRecord.getBccpId().longValue());
         if (used) {
@@ -197,22 +198,28 @@ public class CcNodeService {
 
     @Transactional
     public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
-        repository.appendAsccp(user, accManifestId, asccpManifestId);
+        repository.appendAsccp(user, ULong.valueOf(accManifestId), ULong.valueOf(asccpManifestId));
     }
 
     @Transactional
     public void appendBccp(User user, long accManifestId, long bccpManifestId) {
-        repository.appendBccp(user, accManifestId, bccpManifestId);
+        repository.appendBccp(user, ULong.valueOf(accManifestId), ULong.valueOf(bccpManifestId));
     }
 
     @Transactional
     public CcNode updateAsccpRoleOfAcc(User user, long asccpManifestId, long accManifestId) {
-        return repository.updateAsccpRoleOfAcc(user, asccpManifestId, accManifestId);
+        return repository.updateAsccpRoleOfAcc(user, ULong.valueOf(asccpManifestId), ULong.valueOf(accManifestId));
     }
 
     @Transactional
     public CcNode updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
         return repository.updateBccpBdt(user, bccpManifestId, bdtManifestId);
+    }
+
+    @Transactional
+    public CcAccNode updateAccState(User user, long accManifestId, String state) {
+        CcState ccState = getStateCode(state);
+        return repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
     }
 
     @Transactional
@@ -222,29 +229,37 @@ public class CcNodeService {
     }
 
     @Transactional
-    public CcAccNode updateAccState(User user, long accManifestId, String state) {
-        CcState ccState = getStateCode(state);
-        return repository.updateAccState(user, accManifestId, ccState);
-    }
-
-
-    @Transactional
     public CcBccpNode updateBccpState(User user, long bccpManifestId, String state) {
         CcState ccState = getStateCode(state);
         return repository.updateBccpState(user, bccpManifestId, ccState);
     }
 
     @Transactional
+    public CcAccNode makeNewRevisionForAcc(User user, long accManifestId) {
+        return repository.makeNewRevisionForAcc(user, ULong.valueOf(accManifestId));
+    }
+
+    @Transactional
+    public CcAsccpNode makeNewRevisionForAsccp(User user, long asccpManifestId) {
+        return repository.makeNewRevisionForAsccp(user, ULong.valueOf(asccpManifestId));
+    }
+
+    @Transactional
+    public CcBccpNode makeNewRevisionForBccp(User user, long bccpManifestId) {
+        return repository.makeNewRevisionForBccp(user, ULong.valueOf(bccpManifestId));
+    }
+
+    @Transactional
     public CcAccNode updateAccBasedId(User user, long accManifestId, long basedAccManifestId) {
         if (accManifestId == basedAccManifestId) {
-            throw new IllegalArgumentException("Can not choose itself as based Acc.: ");
+            throw new IllegalArgumentException("Cannot choose itself as a based ACC.");
         }
-        return repository.updateAccBasedId(user, accManifestId, basedAccManifestId);
+        return repository.updateAccBasedId(user, ULong.valueOf(accManifestId), ULong.valueOf(basedAccManifestId));
     }
 
     @Transactional
     public CcAccNode discardAccBasedId(User user, long accManifestId) {
-        return repository.discardAccBasedId(user, accManifestId);
+        return repository.discardAccBasedId(user, ULong.valueOf(accManifestId));
     }
 
     @Transactional

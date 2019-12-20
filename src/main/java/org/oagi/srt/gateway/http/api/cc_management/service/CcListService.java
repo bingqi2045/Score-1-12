@@ -148,31 +148,37 @@ public class CcListService {
 
         switch (type) {
             case "ACC":
-                AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(manifestId);
+                AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
                 if (accReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
+
                 ULong originAccId = accReleaseManifest.getAccId();
                 ULong accId = repository.updateAccOwnerUserId(accReleaseManifest, target, userId, timestamp);
                 repository.updateAsccOwnerUserId(originAccId, accId, accReleaseManifest.getReleaseId(), target, userId, timestamp);
                 repository.updateBccOwnerUserId(originAccId, accId, accReleaseManifest.getReleaseId(), target, userId, timestamp);
                 break;
+
             case "ASCCP":
-                AsccpReleaseManifestRecord asccpReleaseManifest = manifestRepository.getAsccpReleaseManifestById(manifestId);
+                AsccpReleaseManifestRecord asccpReleaseManifest = manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
                 if (asccpReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
+
                 repository.updateAsccpOwnerUserId(asccpReleaseManifest, target, userId, timestamp);
                 break;
+
             case "BCCP":
-                BccpReleaseManifestRecord bccpReleaseManifest = manifestRepository.getBccpReleaseManifestById(manifestId);
+                BccpReleaseManifestRecord bccpReleaseManifest = manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
                 if (bccpReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
+
                 repository.updateBccpOwnerUserId(bccpReleaseManifest, target, userId, timestamp);
                 break;
+
             default:
-                throw new IllegalArgumentException("Unsupported type: " + type);
+                throw new UnsupportedOperationException("Unsupported type: " + type);
         }
     }
 }
