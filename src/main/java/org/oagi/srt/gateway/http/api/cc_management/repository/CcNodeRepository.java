@@ -367,7 +367,6 @@ public class CcNodeRepository {
                 manifestRepository.getAsccpReleaseManifestByRoleOfAccId(originRoleOfAccId, releaseId);
 
         for (AsccpReleaseManifestRecord asccpReleaseManifestRecord : asccpReleaseManifestRecords) {
-            long originAsccpId = asccpReleaseManifestRecord.getAsccpId().longValue();
             AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                     .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
             asccpRecord.setAsccpId(null);
@@ -385,7 +384,10 @@ public class CcNodeRepository {
             asccpReleaseManifestRecord.setAsccpId(asccpRecord.getAsccpId());
             asccpReleaseManifestRecord.update();
 
-            List<AsccReleaseManifestRecord> asccReleaseManifestRecordList = manifestRepository.getAsccReleaseManifestByToAsccpId(originAsccpId, releaseId);
+            ULong originAsccpId = asccpReleaseManifestRecord.getAsccpId();
+            List<AsccReleaseManifestRecord> asccReleaseManifestRecordList =
+                    manifestRepository.getAsccReleaseManifestByToAsccpId(originAsccpId, ULong.valueOf(releaseId));
+
             for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecordList) {
                 AsccRecord asccRecord = dslContext.selectFrom(ASCC)
                         .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId())).fetchOne();
@@ -402,7 +404,6 @@ public class CcNodeRepository {
                 asccReleaseManifestRecord.setAsccId(asccRecord.getAsccId());
                 asccReleaseManifestRecord.update();
             }
-
         }
     }
 
@@ -412,7 +413,6 @@ public class CcNodeRepository {
                 manifestRepository.getAccReleaseManifestByBasedAccId(originBasedAccId, releaseId);
 
         for (AccReleaseManifestRecord accReleaseManifestRecord : accReleaseManifestRecords) {
-            long originAccId = accReleaseManifestRecord.getAccId().longValue();
             AccRecord accRecord = dslContext.selectFrom(ACC)
                     .where(ACC.ACC_ID.eq(accReleaseManifestRecord.getAccId())).fetchOne();
             accRecord.setAccId(null);
@@ -427,6 +427,7 @@ public class CcNodeRepository {
             accReleaseManifestRecord.setAccId(accRecord.getAccId());
             accReleaseManifestRecord.update();
 
+            long originAccId = accReleaseManifestRecord.getAccId().longValue();
             updateAccChain(userId, originAccId, accRecord.getAccId().longValue(),
                     accReleaseManifestRecord.getReleaseId().longValue(), accRecord.getObjectClassTerm(), timestamp);
         }
@@ -1430,8 +1431,9 @@ public class CcNodeRepository {
         int childState;
 
         List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
-                manifestRepository.getAsccReleaseManifestByFromAccId(accReleaseManifestRecord.getAccId().longValue(),
-                        accReleaseManifestRecord.getReleaseId().longValue());
+                manifestRepository.getAsccReleaseManifestByFromAccId(
+                        accReleaseManifestRecord.getAccId(),
+                        accReleaseManifestRecord.getReleaseId());
 
         for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
             childState = getAsccpRecordById(asccReleaseManifestRecord.getToAsccpId().longValue()).getState();
@@ -1441,8 +1443,9 @@ public class CcNodeRepository {
         }
 
         List<BccReleaseManifestRecord> bccReleaseManifestRecords =
-                manifestRepository.getBccReleaseManifestByFromAccId(accReleaseManifestRecord.getAccId().longValue(),
-                        accReleaseManifestRecord.getReleaseId().longValue());
+                manifestRepository.getBccReleaseManifestByFromAccId(
+                        accReleaseManifestRecord.getAccId(),
+                        accReleaseManifestRecord.getReleaseId());
 
         for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
             childState = getBccpRecordById(bccReleaseManifestRecord.getToBccpId().longValue()).getState();
@@ -2028,6 +2031,7 @@ public class CcNodeRepository {
                         BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(Integer.class);
+
         if (bccMaxSeqKey == null) {
             bccMaxSeqKey = 0;
         }
@@ -2037,13 +2041,14 @@ public class CcNodeRepository {
 
     private void decreaseSeqKeyGreaterThan(long userId, long accId, long releaseId, int seqKey, Timestamp timestamp) {
         List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
-                manifestRepository.getAsccReleaseManifestByFromAccId(accId, releaseId);
+                manifestRepository.getAsccReleaseManifestByFromAccId(ULong.valueOf(accId), ULong.valueOf(releaseId));
 
         for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
             AsccRecord asccRecord = getAsccRecordById(asccReleaseManifestRecord.getAsccId().longValue());
             if (asccRecord.getSeqKey() <= seqKey) {
                 continue;
             }
+
             asccRecord.setAsccId(null);
             asccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             asccRecord.setLastUpdateTimestamp(timestamp);
@@ -2057,13 +2062,14 @@ public class CcNodeRepository {
         }
 
         List<BccReleaseManifestRecord> bccReleaseManifestRecords =
-                manifestRepository.getBccReleaseManifestByFromAccId(accId, releaseId);
+                manifestRepository.getBccReleaseManifestByFromAccId(ULong.valueOf(accId), ULong.valueOf(releaseId));
 
         for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
             BccRecord bccRecord = getBccRecordById(bccReleaseManifestRecord.getBccId().longValue());
             if (bccRecord.getSeqKey() <= seqKey) {
                 continue;
             }
+
             bccRecord.setBccId(null);
             bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             bccRecord.setLastUpdateTimestamp(timestamp);
