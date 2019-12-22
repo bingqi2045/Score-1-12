@@ -1673,6 +1673,7 @@ public class CcNodeRepository {
 
         if (accReleaseManifestRecordInWorkingRelease != null) {
             accReleaseManifestRecordInWorkingRelease.setAccId(accRecord.getAccId());
+            accReleaseManifestRecordInWorkingRelease.setBasedAccId(accRecord.getBasedAccId());
             accReleaseManifestRecordInWorkingRelease.update();
         } else {
             accReleaseManifestRecordInWorkingRelease = dslContext.insertInto(ACC_RELEASE_MANIFEST)
@@ -1718,6 +1719,7 @@ public class CcNodeRepository {
 
         if (asccpReleaseManifestRecordInWorkingRelease != null) {
             asccpReleaseManifestRecordInWorkingRelease.setAsccpId(asccpRecord.getAsccpId());
+            asccpReleaseManifestRecordInWorkingRelease.setRoleOfAccId(asccpRecord.getRoleOfAccId());
             asccpReleaseManifestRecordInWorkingRelease.update();
         } else {
             asccpReleaseManifestRecordInWorkingRelease = dslContext.insertInto(ASCCP_RELEASE_MANIFEST)
@@ -1764,6 +1766,7 @@ public class CcNodeRepository {
 
         if (bccpReleaseManifestRecordInWorkingRelease != null) {
             bccpReleaseManifestRecordInWorkingRelease.setBccpId(bccpRecord.getBccpId());
+            bccpReleaseManifestRecordInWorkingRelease.setBdtId(bccpRecord.getBdtId());
             bccpReleaseManifestRecordInWorkingRelease.update();
         } else {
             bccpReleaseManifestRecordInWorkingRelease = dslContext.insertInto(BCCP_RELEASE_MANIFEST)
@@ -1774,7 +1777,7 @@ public class CcNodeRepository {
                     .returning().fetchOne();
         }
 
-        return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecord.getBccpReleaseManifestId().longValue());
+        return getBccpNodeByBccpManifestId(user, bccpReleaseManifestRecordInWorkingRelease.getBccpReleaseManifestId().longValue());
     }
 
     public void appendAsccp(User user, ULong accManifestId, ULong asccpManifestId) {
