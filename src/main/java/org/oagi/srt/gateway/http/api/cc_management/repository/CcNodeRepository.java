@@ -1678,13 +1678,118 @@ public class CcNodeRepository {
         } else {
             accReleaseManifestRecordInWorkingRelease = dslContext.insertInto(ACC_RELEASE_MANIFEST)
                     .set(ACC_RELEASE_MANIFEST.ACC_ID, accRecord.getAccId())
-                    .set(ACC_RELEASE_MANIFEST.RELEASE_ID, ULong.valueOf(workingRelease.getReleaseId()))
+                    .set(ACC_RELEASE_MANIFEST.RELEASE_ID, workingReleaseId)
                     .set(ACC_RELEASE_MANIFEST.BASED_ACC_ID, accReleaseManifestRecord.getBasedAccId())
                     .set(ACC_RELEASE_MANIFEST.MODULE_ID, accReleaseManifestRecord.getModuleId())
                     .returning().fetchOne();
         }
 
+        makeNewRevisionForAscc(accReleaseManifestRecord, userId, timestamp, workingReleaseId);
+        makeNewRevisionForBcc(accReleaseManifestRecord, userId, timestamp, workingReleaseId);
+
         return getAccNodeByAccId(user, accReleaseManifestRecordInWorkingRelease);
+    }
+
+    private List<AsccReleaseManifestRecord> makeNewRevisionForAscc(AccReleaseManifestRecord accReleaseManifestRecord,
+                                                                   ULong userId, Timestamp timestamp, ULong workingReleaseId) {
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
+                dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
+                        .where(and(
+                                ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifestRecord.getAccId()),
+                                ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(accReleaseManifestRecord.getReleaseId())
+                        )).fetch();
+
+        List<AsccReleaseManifestRecord> asccReleaseManifestRecordsInWorkingRelease = new ArrayList(asccReleaseManifestRecords.size());
+        for (AsccReleaseManifestRecord asccReleaseManifestRecord : asccReleaseManifestRecords) {
+            AsccRecord asccRecord =
+                    dslContext.selectFrom(ASCC)
+                            .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId())).fetchOne();
+            asccRecord.set(ASCC.ASCC_ID, null);
+            asccRecord.set(ASCC.LAST_UPDATED_BY, userId);
+            asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
+            asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
+            asccRecord.set(ASCC.REVISION_NUM, asccRecord.getRevisionNum() + 1);
+            asccRecord.set(ASCC.REVISION_TRACKING_NUM, 1);
+            asccRecord.set(ASCC.STATE, CcState.Editing.getValue());
+            asccRecord.insert();
+
+            AsccReleaseManifestRecord asccReleaseManifestRecordInWorkingRelease =
+                    dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
+                            .where(and(
+                                    ASCC_RELEASE_MANIFEST.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId()),
+                                    ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(workingReleaseId)
+                            ))
+                            .fetchOptional().orElse(null);
+
+            if (asccReleaseManifestRecordInWorkingRelease != null) {
+                asccReleaseManifestRecordInWorkingRelease.setAsccId(asccRecord.getAsccId());
+                asccReleaseManifestRecordInWorkingRelease.setFromAccId(asccRecord.getFromAccId());
+                asccReleaseManifestRecordInWorkingRelease.setToAsccpId(asccRecord.getToAsccpId());
+                asccReleaseManifestRecordInWorkingRelease.update();
+            } else {
+                asccReleaseManifestRecordInWorkingRelease = dslContext.insertInto(ASCC_RELEASE_MANIFEST)
+                        .set(ASCC_RELEASE_MANIFEST.ASCC_ID, asccRecord.getAsccId())
+                        .set(ASCC_RELEASE_MANIFEST.RELEASE_ID, workingReleaseId)
+                        .set(ASCC_RELEASE_MANIFEST.FROM_ACC_ID, asccRecord.getFromAccId())
+                        .set(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID, asccRecord.getToAsccpId())
+                        .returning().fetchOne();
+            }
+
+            asccReleaseManifestRecordsInWorkingRelease.add(asccReleaseManifestRecordInWorkingRelease);
+        }
+
+        return asccReleaseManifestRecordsInWorkingRelease;
+    }
+
+    private List<BccReleaseManifestRecord> makeNewRevisionForBcc(AccReleaseManifestRecord accReleaseManifestRecord,
+                                                                 ULong userId, Timestamp timestamp, ULong workingReleaseId) {
+        List<BccReleaseManifestRecord> bccReleaseManifestRecords =
+                dslContext.selectFrom(BCC_RELEASE_MANIFEST)
+                        .where(and(
+                                BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifestRecord.getAccId()),
+                                BCC_RELEASE_MANIFEST.RELEASE_ID.eq(accReleaseManifestRecord.getReleaseId())
+                        )).fetch();
+
+        List<BccReleaseManifestRecord> bccReleaseManifestRecordsInWorkingRelease = new ArrayList(bccReleaseManifestRecords.size());
+        for (BccReleaseManifestRecord bccReleaseManifestRecord : bccReleaseManifestRecords) {
+            BccRecord bccRecord =
+                    dslContext.selectFrom(BCC)
+                            .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccId())).fetchOne();
+            bccRecord.set(BCC.BCC_ID, null);
+            bccRecord.set(BCC.LAST_UPDATED_BY, userId);
+            bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
+            bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
+            bccRecord.set(BCC.REVISION_NUM, bccRecord.getRevisionNum() + 1);
+            bccRecord.set(BCC.REVISION_TRACKING_NUM, 1);
+            bccRecord.set(BCC.STATE, CcState.Editing.getValue());
+            bccRecord.insert();
+
+            BccReleaseManifestRecord bccReleaseManifestRecordInWorkingRelease =
+                    dslContext.selectFrom(BCC_RELEASE_MANIFEST)
+                            .where(and(
+                                    BCC_RELEASE_MANIFEST.BCC_ID.eq(bccReleaseManifestRecord.getBccId()),
+                                    BCC_RELEASE_MANIFEST.RELEASE_ID.eq(workingReleaseId)
+                            ))
+                            .fetchOptional().orElse(null);
+
+            if (bccReleaseManifestRecordInWorkingRelease != null) {
+                bccReleaseManifestRecordInWorkingRelease.setBccId(bccRecord.getBccId());
+                bccReleaseManifestRecordInWorkingRelease.setFromAccId(bccRecord.getFromAccId());
+                bccReleaseManifestRecordInWorkingRelease.setToBccpId(bccRecord.getToBccpId());
+                bccReleaseManifestRecordInWorkingRelease.update();
+            } else {
+                bccReleaseManifestRecordInWorkingRelease = dslContext.insertInto(BCC_RELEASE_MANIFEST)
+                        .set(BCC_RELEASE_MANIFEST.BCC_ID, bccRecord.getBccId())
+                        .set(BCC_RELEASE_MANIFEST.RELEASE_ID, workingReleaseId)
+                        .set(BCC_RELEASE_MANIFEST.FROM_ACC_ID, bccRecord.getFromAccId())
+                        .set(BCC_RELEASE_MANIFEST.TO_BCCP_ID, bccRecord.getToBccpId())
+                        .returning().fetchOne();
+            }
+
+            bccReleaseManifestRecordsInWorkingRelease.add(bccReleaseManifestRecordInWorkingRelease);
+        }
+
+        return bccReleaseManifestRecordsInWorkingRelease;
     }
 
     public CcAsccpNode makeNewRevisionForAsccp(User user, ULong asccpManifestId) {
@@ -1724,7 +1829,7 @@ public class CcNodeRepository {
         } else {
             asccpReleaseManifestRecordInWorkingRelease = dslContext.insertInto(ASCCP_RELEASE_MANIFEST)
                     .set(ASCCP_RELEASE_MANIFEST.ASCCP_ID, asccpRecord.getAsccpId())
-                    .set(ASCCP_RELEASE_MANIFEST.RELEASE_ID, ULong.valueOf(workingRelease.getReleaseId()))
+                    .set(ASCCP_RELEASE_MANIFEST.RELEASE_ID, workingReleaseId)
                     .set(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID, asccpReleaseManifestRecord.getRoleOfAccId())
                     .set(ASCCP_RELEASE_MANIFEST.MODULE_ID, asccpReleaseManifestRecord.getModuleId())
                     .returning().fetchOne();
@@ -1771,7 +1876,7 @@ public class CcNodeRepository {
         } else {
             bccpReleaseManifestRecordInWorkingRelease = dslContext.insertInto(BCCP_RELEASE_MANIFEST)
                     .set(BCCP_RELEASE_MANIFEST.BCCP_ID, bccpRecord.getBccpId())
-                    .set(BCCP_RELEASE_MANIFEST.RELEASE_ID, ULong.valueOf(workingRelease.getReleaseId()))
+                    .set(BCCP_RELEASE_MANIFEST.RELEASE_ID, workingReleaseId)
                     .set(BCCP_RELEASE_MANIFEST.BDT_ID, bccpReleaseManifestRecord.getBdtId())
                     .set(BCCP_RELEASE_MANIFEST.MODULE_ID, bccpReleaseManifestRecord.getModuleId())
                     .returning().fetchOne();
