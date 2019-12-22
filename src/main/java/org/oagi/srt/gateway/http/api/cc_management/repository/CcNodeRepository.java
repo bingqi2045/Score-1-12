@@ -2296,6 +2296,10 @@ public class CcNodeRepository {
     }
 
     private void decreaseSeqKeyGreaterThan(long userId, long accId, long releaseId, int seqKey, Timestamp timestamp) {
+        if (seqKey == 0) {
+            return;
+        }
+
         List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
                 manifestRepository.getAsccReleaseManifestByFromAccId(ULong.valueOf(accId), ULong.valueOf(releaseId));
 
