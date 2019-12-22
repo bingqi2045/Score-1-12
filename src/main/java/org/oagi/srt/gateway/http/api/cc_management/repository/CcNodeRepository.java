@@ -1684,13 +1684,14 @@ public class CcNodeRepository {
                     .returning().fetchOne();
         }
 
-        makeNewRevisionForAscc(accReleaseManifestRecord, userId, timestamp, workingReleaseId);
-        makeNewRevisionForBcc(accReleaseManifestRecord, userId, timestamp, workingReleaseId);
+        makeNewRevisionForAscc(accReleaseManifestRecord, accRecord, userId, timestamp, workingReleaseId);
+        makeNewRevisionForBcc(accReleaseManifestRecord, accRecord, userId, timestamp, workingReleaseId);
 
         return getAccNodeByAccId(user, accReleaseManifestRecordInWorkingRelease);
     }
 
     private List<AsccReleaseManifestRecord> makeNewRevisionForAscc(AccReleaseManifestRecord accReleaseManifestRecord,
+                                                                   AccRecord accRecord,
                                                                    ULong userId, Timestamp timestamp, ULong workingReleaseId) {
         List<AsccReleaseManifestRecord> asccReleaseManifestRecords =
                 dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
@@ -1704,7 +1705,9 @@ public class CcNodeRepository {
             AsccRecord asccRecord =
                     dslContext.selectFrom(ASCC)
                             .where(ASCC.ASCC_ID.eq(asccReleaseManifestRecord.getAsccId())).fetchOne();
+
             asccRecord.set(ASCC.ASCC_ID, null);
+            asccRecord.set(ASCC.FROM_ACC_ID, accRecord.getAccId());
             asccRecord.set(ASCC.LAST_UPDATED_BY, userId);
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
             asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
@@ -1742,6 +1745,7 @@ public class CcNodeRepository {
     }
 
     private List<BccReleaseManifestRecord> makeNewRevisionForBcc(AccReleaseManifestRecord accReleaseManifestRecord,
+                                                                 AccRecord accRecord,
                                                                  ULong userId, Timestamp timestamp, ULong workingReleaseId) {
         List<BccReleaseManifestRecord> bccReleaseManifestRecords =
                 dslContext.selectFrom(BCC_RELEASE_MANIFEST)
@@ -1755,7 +1759,9 @@ public class CcNodeRepository {
             BccRecord bccRecord =
                     dslContext.selectFrom(BCC)
                             .where(BCC.BCC_ID.eq(bccReleaseManifestRecord.getBccId())).fetchOne();
+
             bccRecord.set(BCC.BCC_ID, null);
+            bccRecord.set(BCC.FROM_ACC_ID, accRecord.getAccId());
             bccRecord.set(BCC.LAST_UPDATED_BY, userId);
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
             bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
