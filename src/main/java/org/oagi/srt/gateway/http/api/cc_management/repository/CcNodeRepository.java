@@ -369,6 +369,7 @@ public class CcNodeRepository {
         for (AsccpReleaseManifestRecord asccpReleaseManifestRecord : asccpReleaseManifestRecords) {
             AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                     .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
+
             asccpRecord.setAsccpId(null);
             asccpRecord.setRoleOfAccId(ULong.valueOf(newRoleOfAccId));
             if (accObjectClassTerm != null) {
@@ -380,11 +381,11 @@ public class CcNodeRepository {
             asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
             asccpRecord.insert();
 
+            ULong originAsccpId = asccpReleaseManifestRecord.getAsccpId();
             asccpReleaseManifestRecord.setRoleOfAccId(ULong.valueOf(newRoleOfAccId));
             asccpReleaseManifestRecord.setAsccpId(asccpRecord.getAsccpId());
             asccpReleaseManifestRecord.update();
 
-            ULong originAsccpId = asccpReleaseManifestRecord.getAsccpId();
             List<AsccReleaseManifestRecord> asccReleaseManifestRecordList =
                     manifestRepository.getAsccReleaseManifestByToAsccpId(originAsccpId, ULong.valueOf(releaseId));
 
@@ -423,11 +424,11 @@ public class CcNodeRepository {
             accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
             accRecord.insert();
 
+            long originAccId = accReleaseManifestRecord.getAccId().longValue();
             accReleaseManifestRecord.setBasedAccId(ULong.valueOf(newBasedAccId));
             accReleaseManifestRecord.setAccId(accRecord.getAccId());
             accReleaseManifestRecord.update();
 
-            long originAccId = accReleaseManifestRecord.getAccId().longValue();
             updateAccChain(userId, originAccId, accRecord.getAccId().longValue(),
                     accReleaseManifestRecord.getReleaseId().longValue(), accRecord.getObjectClassTerm(), timestamp);
         }
@@ -1436,6 +1437,7 @@ public class CcNodeRepository {
             throw new IllegalArgumentException("The component in 'Published' state cannot be updated.");
         }
 
+        long originAccId = accRecord.getAccId().longValue();
         accRecord.set(ACC.ACC_ID, null);
         accRecord.set(ACC.LAST_UPDATED_BY, userId);
         accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
@@ -1444,7 +1446,6 @@ public class CcNodeRepository {
         accRecord.set(ACC.STATE, ccState.getValue());
         accRecord.insert();
 
-        long originAccId = accRecord.getAccId().longValue();
         accReleaseManifestRecord.setAccId(accRecord.getAccId());
         accReleaseManifestRecord.update();
 
