@@ -16,6 +16,7 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repository.ReleaseRepository;
+import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,9 @@ public class CcNodeRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private SelectOnConditionStep<Record12<
             ULong, String, String, ULong, Integer,
@@ -772,7 +776,12 @@ public class CcNodeRepository {
                 break;
 
             case Published:
-                accessPrivilege = CanView;
+                AppUser owner = userRepository.findById(ownerUserId);
+                if (!owner.isDeveloper()){
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = CanView;
+                }
                 break;
         }
         return accessPrivilege.name();
@@ -1433,9 +1442,6 @@ public class CcNodeRepository {
         ensureDependenciesOfAcc(accReleaseManifestRecord, ccState);
 
         AccRecord accRecord = getAccRecordById(accReleaseManifestRecord.getAccId().longValue());
-        if (accRecord.getState() == CcState.Published.getValue()) {
-            throw new IllegalArgumentException("The component in 'Published' state cannot be updated.");
-        }
 
         long originAccId = accRecord.getAccId().longValue();
         accRecord.set(ACC.ACC_ID, null);
@@ -1459,7 +1465,8 @@ public class CcNodeRepository {
         updateAccByBasedAcc(userId.longValue(), originAccId, accRecord.getAccId().longValue(),
                 accReleaseManifestRecord.getReleaseId().longValue(), timestamp);
 
-        return getAccNodeByAccId(user, accReleaseManifestRecord);
+        return getAccNodeByAccId(user, accReleaseManifestRecord.getAccId().longValue(),
+                accReleaseManifestRecord.getReleaseId().longValue());
     }
 
     private void ensureDependenciesOfAcc(AccReleaseManifestRecord accReleaseManifestRecord, CcState ccState) {
@@ -1551,9 +1558,6 @@ public class CcNodeRepository {
 
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())).fetchOne();
-        if (asccpRecord.getState() == CcState.Published.getValue()) {
-            throw new IllegalArgumentException("The component in 'Published' state cannot be updated.");
-        }
 
         asccpRecord.set(ASCCP.ASCCP_ID, null);
         asccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
@@ -1604,9 +1608,6 @@ public class CcNodeRepository {
 
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId())).fetchOne();
-        if (bccpRecord.getState() == CcState.Published.getValue()) {
-            throw new IllegalArgumentException("The component in 'Published' state cannot be updated.");
-        }
 
         bccpRecord.set(BCCP.BCCP_ID, null);
         bccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
