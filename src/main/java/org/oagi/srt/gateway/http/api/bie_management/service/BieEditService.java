@@ -10,6 +10,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -150,7 +151,7 @@ public class BieEditService {
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
         if (ueAcc != null) {
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
-            if (!isSameBetweenRequesterAndOwner) {
+            if (!isSameBetweenRequesterAndOwner && ueAcc.getState() == CcState.Editing.getValue()) {
                 String ownerUser = dslContext.select(Tables.APP_USER.LOGIN_ID)
                         .from(Tables.APP_USER)
                         .where(Tables.APP_USER.APP_USER_ID.eq(ULong.valueOf(ueAcc.getOwnerUserId())))
