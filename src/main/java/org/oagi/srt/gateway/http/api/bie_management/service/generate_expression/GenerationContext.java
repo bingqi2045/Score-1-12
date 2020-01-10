@@ -180,6 +180,7 @@ public class GenerationContext implements InitializingBean {
 
         List<Xbt> xbtList = xbtRepository.findAll();
         findXbtMap = xbtList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getXbtId(), Function.identity()));
 
         List<CodeList> codeLists = codeListRepository.findAll();
@@ -193,26 +194,32 @@ public class GenerationContext implements InitializingBean {
 
         List<ACC> accList = accRepository.findAll();
         findACCMap = accList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getAccId(), Function.identity()));
 
         List<BCC> bccList = bccRepository.findAll();
         findBCCMap = bccList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getBccId(), Function.identity()));
 
         List<BCCP> bccpList = bccpRepository.findAll();
         findBCCPMap = bccpList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getBccpId(), Function.identity()));
 
         List<ASCC> asccList = asccRepository.findAll();
         findASCCMap = asccList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getAsccId(), Function.identity()));
 
         List<ASCCP> asccpList = asccpRepository.findAll();
         findASCCPMap = asccpList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getAsccpId(), Function.identity()));
 
         List<DT> dataTypeList = dataTypeRepository.findAll();
         findDTMap = dataTypeList.stream()
+                .filter(e -> e.getReleaseId() == topLevelAbie.getReleaseId())
                 .collect(Collectors.toMap(e -> e.getDtId(), Function.identity()));
 
         List<DTSC> dtScList = dtScRepository.findAll();
