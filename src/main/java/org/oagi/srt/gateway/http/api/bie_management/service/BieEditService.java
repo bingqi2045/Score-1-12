@@ -154,7 +154,7 @@ public class BieEditService {
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
         if (ueAcc != null) {
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
-            if (!isSameBetweenRequesterAndOwner) {
+            if (!isSameBetweenRequesterAndOwner && ueAcc.getState() == CcState.Editing.getValue()) {
                 String ownerUser = dslContext.select(Tables.APP_USER.LOGIN_ID)
                         .from(Tables.APP_USER)
                         .where(Tables.APP_USER.APP_USER_ID.eq(ULong.valueOf(ueAcc.getOwnerUserId())))
