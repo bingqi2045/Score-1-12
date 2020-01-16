@@ -34,6 +34,7 @@ public class CcListController {
             @RequestParam(name = "module", required = false) String module,
             @RequestParam(name = "types", required = false) String types,
             @RequestParam(name = "states", required = false) String states,
+            @RequestParam(name = "deprecated", required = false) boolean deprecated,
             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -51,12 +52,10 @@ public class CcListController {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
             request.setStates(stateStrings.stream().filter(e -> !"Deprecated".equals(e))
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
-            if (stateStrings.contains("Deprecated")) {
-                request.setDeprecated(true);
-            }
         } else {
             request.setStates(Collections.emptyList());
         }
+        request.setDeprecated(deprecated);
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
