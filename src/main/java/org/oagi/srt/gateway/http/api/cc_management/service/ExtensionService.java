@@ -166,6 +166,7 @@ public class ExtensionService {
 
         dslContext.update(Tables.ACC)
                 .set(Tables.ACC.STATE, history.getState())
+                .set(Tables.ACC.OWNER_USER_ID, userId)
                 .set(Tables.ACC.LAST_UPDATED_BY, userId)
                 .set(Tables.ACC.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
