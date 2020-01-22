@@ -178,9 +178,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateExtensionResponse createLocalAbieExtension(@AuthenticationPrincipal User user,
                                                             @RequestBody BieEditAsbiepNode extensionNode) {
-        long extensionId = service.createLocalAbieExtension(user, extensionNode);
-        CreateExtensionResponse response = new CreateExtensionResponse();
-        response.setExtensionId(extensionId);
+        CreateExtensionResponse response = service.createLocalAbieExtension(user, extensionNode);
         return response;
     }
 
@@ -188,9 +186,7 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CreateExtensionResponse createGlobalAbieExtension(@AuthenticationPrincipal User user,
                                                              @RequestBody BieEditAsbiepNode extensionNode) {
-        long extensionId = service.createGlobalAbieExtension(user, extensionNode);
-        CreateExtensionResponse response = new CreateExtensionResponse();
-        response.setExtensionId(extensionId);
+        CreateExtensionResponse response = service.createGlobalAbieExtension(user, extensionNode);
         return response;
     }
 }
