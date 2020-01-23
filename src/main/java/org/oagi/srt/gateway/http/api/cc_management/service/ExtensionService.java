@@ -101,27 +101,19 @@ public class ExtensionService {
 
     public ACC getExistsUserExtension(long accId, long releaseId) {
         ACC ueAcc =
-                dslContext.select(
-                        Tables.ACC.as("ueAcc").ACC_ID,
-                        Tables.ACC.as("ueAcc").OAGIS_COMPONENT_TYPE
-                ).from(Tables.ACC.as("eAcc"))
-                        .join(Tables.ASCC).on(Tables.ACC.as("eAcc").ACC_ID.eq(ASCC.FROM_ACC_ID))
-                        .join(Tables.ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                        .join(Tables.ACC.as("ueAcc")).on(ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.as("ueAcc").ACC_ID))
-                        .where(and(ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
-                                ASCC.REVISION_NUM.eq(0))
-                        ).fetchOneInto(ACC.class);
-
-        if (ueAcc == null) {
-            return null;
-        }
-
-        if (ueAcc.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
-            return dslContext.selectFrom(Tables.ACC)
-                    .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
-                    .fetchOneInto(ACC.class);
-        }
-        return null;
+                dslContext.select(ACC.fields())
+                .from(ACC.as("eAcc"))
+                        .join(ACC_RELEASE_MANIFEST.as("eACCRM")).on(
+                                and(ACC.as("eAcc").ACC_ID.eq(ACC_RELEASE_MANIFEST.as("eACCRM").ACC_ID),
+                                        ACC_RELEASE_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                        .join(ASCC_RELEASE_MANIFEST).on(ACC_RELEASE_MANIFEST.as("eACCRM").ACC_ID.eq(ASCC_RELEASE_MANIFEST.FROM_ACC_ID))
+                        .join(ASCCP_RELEASE_MANIFEST).on(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
+                        .join(ACC_RELEASE_MANIFEST).on(ACC_RELEASE_MANIFEST.ACC_ID.eq(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID))
+                        .join(ACC).on(ACC_RELEASE_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .where(and(ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
+                        ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
+                )).fetchOneInto(ACC.class);
+        return ueAcc;
     }
 
 
@@ -184,6 +176,7 @@ public class ExtensionService {
 
         dslContext.update(Tables.ACC)
                 .set(Tables.ACC.STATE, history.getState())
+                .set(Tables.ACC.OWNER_USER_ID, userId)
                 .set(Tables.ACC.LAST_UPDATED_BY, userId)
                 .set(Tables.ACC.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))

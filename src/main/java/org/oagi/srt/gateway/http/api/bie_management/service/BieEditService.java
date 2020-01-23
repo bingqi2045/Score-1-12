@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -126,16 +127,34 @@ public class BieEditService {
     }
 
     @Transactional
-    public long createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
+    public CreateExtensionResponse createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
         long asccpId = extension.getAsccpId();
         long releaseId = extension.getReleaseId();
-
         long roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
-        return createAbieExtension(user, roleOfAccId, releaseId);
+
+        CreateExtensionResponse response = new CreateExtensionResponse();
+
+        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
+
+        response.setCanEdit(true);
+        response.setCanView(true);
+
+        if (ueAcc != null) {
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
+            boolean isPublished = ueAcc.getState() ==  CcState.Published.getValue();
+            if (!isPublished && !isSameBetweenRequesterAndOwner) {
+                response.setCanEdit(false);
+                if (ueAcc.getState() ==  CcState.Editing.getValue()) {
+                    response.setCanView(false);
+                }
+            }
+        }
+        response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
+        return response;
     }
 
     @Transactional
-    public long createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
+    public CreateExtensionResponse createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
         long releaseId = extension.getReleaseId();
         long roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
                 .from(Tables.ACC)
@@ -146,23 +165,30 @@ public class BieEditService {
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
                         Tables.ACC.STATE.eq(CcState.Published.getValue())))
                 .fetchOneInto(Long.class);
-        return createAbieExtension(user, roleOfAccId, releaseId);
+
+        CreateExtensionResponse response = new CreateExtensionResponse();
+        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
+
+        response.setCanEdit(true);
+        response.setCanView(true);
+
+        if (ueAcc != null) {
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
+            boolean isPublished = ueAcc.getState() ==  CcState.Published.getValue();
+            if (!isPublished && !isSameBetweenRequesterAndOwner) {
+                response.setCanEdit(false);
+                if (ueAcc.getState() ==  CcState.Editing.getValue()) {
+                    response.setCanView(false);
+                }
+            }
+        }
+        response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
+        return response;
     }
 
     private long createAbieExtension(User user, long roleOfAccId, long releaseId) {
         BieEditAcc eAcc = bieRepository.getAccByAccId(roleOfAccId, releaseId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
-        if (ueAcc != null) {
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
-            if (!isSameBetweenRequesterAndOwner && ueAcc.getState() == CcState.Editing.getValue()) {
-                String ownerUser = dslContext.select(Tables.APP_USER.LOGIN_ID)
-                        .from(Tables.APP_USER)
-                        .where(Tables.APP_USER.APP_USER_ID.eq(ULong.valueOf(ueAcc.getOwnerUserId())))
-                        .fetchOptionalInto(String.class).orElse(null);
-
-                throw new IllegalArgumentException("The component is currently owned by '" + ownerUser + "' user.");
-            }
-        }
 
         long manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return manifestId;

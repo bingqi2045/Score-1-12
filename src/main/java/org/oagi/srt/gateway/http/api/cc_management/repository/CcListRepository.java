@@ -152,11 +152,8 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
-        conditions.add(ASCC.DEN.notLike("%User Extension Group"));
+        conditions.add(ASCC.DEN.notContains("User Extension Group"));
 
-        if (release.getReleaseNum().equals("Working")) {
-            conditions.add(ASCC.DEN.notContains("User Extension Group"));
-        }
         if (request.getDeprecated() != null) {
             conditions.add(ASCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
@@ -238,9 +235,8 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
-        if (release.getReleaseNum().equals("Working")) {
-            conditions.add(BCC.DEN.notContains("User Extension Group"));
-        }
+        conditions.add(BCC.DEN.notContains("User Extension Group"));
+
         if (request.getDeprecated() != null) {
             conditions.add(BCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
@@ -322,11 +318,8 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
-        conditions.add(ASCCP.DEN.notLike("%User Extension Group"));
+        conditions.add(ASCCP.DEN.notContains("User Extension Group"));
 
-        if (release.getReleaseNum().equals("Working")) {
-            conditions.add(ASCCP.DEN.notContains("User Extension Group"));
-        }
         if (request.getDeprecated() != null) {
             conditions.add(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
@@ -410,8 +403,10 @@ public class CcListRepository {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
+
         List<Condition> conditions = new ArrayList();
         conditions.add(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(BCCP.DEN.notContains("User Extension Group"));
         if (request.getDeprecated() != null) {
             conditions.add(BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
