@@ -411,7 +411,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             asbiepNode.setName(repository.getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
             asbiepNode.setUsed(asbie.isUsed());
-            asbiepNode.setRequired(asbie.getCardinalityMin() > 0);
+            asbiepNode.setRequired(ascc.getCardinalityMin() > 0);
         }
 
         asbiepNode.setHasChild(hasChild(asbiepNode));
@@ -465,7 +465,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             bbiepNode.setName(repository.getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
             bbiepNode.setUsed(bbie.isUsed());
-            bbiepNode.setRequired(bbie.getCardinalityMin() > 0);
+            bbiepNode.setRequired(bcc.getCardinalityMin() > 0);
         }
 
         bbiepNode.setHasChild(hasChild(bbiepNode, hideUnused));
