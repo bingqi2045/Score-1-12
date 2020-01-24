@@ -410,7 +410,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             asbiepNode.setName(repository.getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
             asbiepNode.setUsed(asbie.isUsed());
-            asbiepNode.setRequired(asbie.getCardinalityMin() > 0);
+            asbiepNode.setRequired(ascc.getCardinalityMin() > 0);
         }
 
         asbiepNode.setHasChild(hasChild(asbiepNode));
@@ -464,7 +464,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             bbiepNode.setName(repository.getBccpPropertyTermByBbiepId(bbie.getToBbiepId()));
             bbiepNode.setUsed(bbie.isUsed());
-            bbiepNode.setRequired(bbie.getCardinalityMin() > 0);
+            bbiepNode.setRequired(bcc.getCardinalityMin() > 0);
         }
 
         bbiepNode.setHasChild(hasChild(bbiepNode, hideUnused));
@@ -1061,7 +1061,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
         Record1<Byte> rs = dslContext.select(ASCCP.IS_NILLABLE).from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsccpId()))).fetchOne();
-        if (rs.getValue(ASCCP.IS_NILLABLE) == 1 && asbiepNodeDetail.getBieNillable() != null) {
+
+        if (rs.getValue(ASCCP.IS_NILLABLE) != 1 && asbiepNodeDetail.getBieNillable() != null) {
             dslContext.update(Tables.ASBIE)
                     .set(Tables.ASBIE.IS_NILLABLE, (byte) (asbiepNodeDetail.getBieNillable() ? 1 : 0))
                     .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
@@ -1126,7 +1127,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BccRecord bccRecord = dslContext.selectFrom(BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccId()))).fetchOne();
 
-        if (bccRecord.getIsNillable() == 1 && bbiepNodeDetail.getBieNillable() != null) {
+        if (bccRecord.getIsNillable() != 1 && bbiepNodeDetail.getBieNillable() != null) {
             dslContext.update(Tables.BBIE)
                     .set(Tables.BBIE.IS_NILLABLE, (byte) (bbiepNodeDetail.getBieNillable() ? 1 : 0))
                     .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();

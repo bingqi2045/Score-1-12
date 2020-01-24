@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
@@ -320,6 +321,8 @@ public class BieRepository {
                 ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
                 ASCC_RELEASE_MANIFEST.TO_ASCCP_ID,
                 ASCC.SEQ_KEY,
+                ASCC.CARDINALITY_MIN,
+                ASCC.CARDINALITY_MAX,
                 ASCC.REVISION_NUM,
                 ASCC.REVISION_TRACKING_NUM,
                 ASCC_RELEASE_MANIFEST.RELEASE_ID)
@@ -354,6 +357,8 @@ public class BieRepository {
                 BCC_RELEASE_MANIFEST.TO_BCCP_ID,
                 BCC.SEQ_KEY,
                 BCC.ENTITY_TYPE,
+                BCC.CARDINALITY_MIN,
+                BCC.CARDINALITY_MAX,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,
                 BCC_RELEASE_MANIFEST.RELEASE_ID)
@@ -440,11 +445,11 @@ public class BieRepository {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Cardinality cardinality = dslContext.select(
+        Record2<Integer, Integer> cardinality = dslContext.select(
                 ASCC.CARDINALITY_MIN,
                 ASCC.CARDINALITY_MAX).from(ASCC)
                 .where(ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId)))
-                .fetchOneInto(Cardinality.class);
+                .fetchOne();
 
         Byte AsccpNillable = dslContext.select(ASCCP.IS_NILLABLE).from(ASCCP)
                 .join(ASCC).on(ASCCP.ASCCP_ID.eq(ASCC.TO_ASCCP_ID))
@@ -455,15 +460,15 @@ public class BieRepository {
                 .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(toAsbiepId))
                 .set(ASBIE.BASED_ASCC_ID, ULong.valueOf(basedAsccId))
-                .set(ASBIE.CARDINALITY_MIN, cardinality.getCardinalityMin())
-                .set(ASBIE.CARDINALITY_MAX, cardinality.getCardinalityMax())
+                .set(ASBIE.CARDINALITY_MIN, cardinality.get(ASCC.CARDINALITY_MIN))
+                .set(ASBIE.CARDINALITY_MAX, cardinality.get(ASCC.CARDINALITY_MAX))
                 .set(ASBIE.IS_NILLABLE, AsccpNillable)
                 .set(ASBIE.CREATED_BY, ULong.valueOf(userId))
                 .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ASBIE.CREATION_TIMESTAMP, timestamp)
                 .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
-                .set(ASBIE.IS_USED, (byte) (cardinality.getCardinalityMin() > 0 ? 1 : 0))
+                .set(ASBIE.IS_USED, (byte) (cardinality.get(ASCC.CARDINALITY_MIN) > 0 ? 1 : 0))
                 .set(ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .returning().fetchOne();
 
