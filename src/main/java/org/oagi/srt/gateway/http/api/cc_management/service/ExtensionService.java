@@ -50,9 +50,6 @@ public class ExtensionService {
     @Autowired
     private CcListService ccListService;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
     private AccReleaseManifestRecord getExtensionAcc(long manifestId) {
         return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
                 .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
@@ -495,92 +492,8 @@ public class ExtensionService {
                         .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                         .fetchOne();
 
-        /*
-         * Issue #710
-         * Duplicated associations cannot be existed.
-         */
-        boolean exists = dslContext.selectCount()
-                .from(ASCC).where(and(
-                        ASCC.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        ASCC.TO_ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId())
-                ))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0;
-        if (exists) {
-            throw new IllegalArgumentException("You cannot associate the same component.");
-        }
-
-        int nextSeqKey = getNextSeqKey(extensionAcc.getAccId().longValue());
-        int revisionNum = dslContext.select(ACC.REVISION_NUM)
-                .from(ACC).where(ACC.ACC_ID.eq(extensionAcc.getAccId()))
-                .fetchOneInto(Integer.class);
-
-        AsccRecord ascc = createASCC(user, extensionAcc, asccpReleaseManifestRecord, nextSeqKey, revisionNum);
-
-        /* Create ascc_release_manifest */
-        dslContext.insertInto(ASCC_RELEASE_MANIFEST,
-                ASCC_RELEASE_MANIFEST.ASCC_ID,
-                ASCC_RELEASE_MANIFEST.RELEASE_ID,
-                ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
-                ASCC_RELEASE_MANIFEST.TO_ASCCP_ID)
-                .values(ascc.getAsccId(),
-                        extensionAcc.getReleaseId(),
-                        ascc.getFromAccId(),
-                        ascc.getToAsccpId())
-                .execute();
-    }
-
-    private AsccRecord createASCC(User user,
-                                  AccReleaseManifestRecord extensionAcc,
-                                  AsccpReleaseManifestRecord asccpReleaseManifestRecord,
-                                  int seqKey,
-                                  int revisionNum) {
-
-        String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
-                .from(ACC).where(ACC.ACC_ID.eq(extensionAcc.getAccId()))
-                .fetchOneInto(String.class);
-        String asccpDen = dslContext.select(ASCCP.DEN)
-                .from(ASCCP).where(ASCCP.ASCCP_ID.eq(asccpReleaseManifestRecord.getAsccpId()))
-                .fetchOneInto(String.class);
-
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        return dslContext.insertInto(Tables.ASCC,
-                Tables.ASCC.GUID,
-                Tables.ASCC.CARDINALITY_MIN,
-                Tables.ASCC.CARDINALITY_MAX,
-                Tables.ASCC.SEQ_KEY,
-                Tables.ASCC.FROM_ACC_ID,
-                Tables.ASCC.TO_ASCCP_ID,
-                Tables.ASCC.DEN,
-                Tables.ASCC.IS_DEPRECATED,
-                Tables.ASCC.CREATED_BY,
-                Tables.ASCC.LAST_UPDATED_BY,
-                Tables.ASCC.OWNER_USER_ID,
-                Tables.ASCC.CREATION_TIMESTAMP,
-                Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION).values(
-                SrtGuid.randomGuid(),
-                0,
-                -1,
-                seqKey,
-                extensionAcc.getAccId(),
-                asccpReleaseManifestRecord.getAsccpId(),
-                accObjectClassTerm + ". " + asccpDen,
-                Byte.valueOf((byte) 0),
-                userId,
-                userId,
-                userId,
-                timestamp,
-                timestamp,
-                CcState.Editing.getValue(),
-                revisionNum,
-                1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
-        ).returning().fetchOne();
+        repository.appendAsccp(user, extensionAcc.getAccReleaseManifestId(),
+                asccpReleaseManifestRecord.getAsccpReleaseManifestId());
     }
 
     @Transactional
@@ -591,333 +504,40 @@ public class ExtensionService {
                         .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                         .fetchOne();
 
-        /*
-         * Issue #710
-         * Duplicated associations cannot be existed.
-         */
-        boolean exists = dslContext.selectCount()
-                .from(BCC).where(and(
-                        BCC.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        BCC.TO_BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId())
-                ))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0;
-        if (exists) {
-            throw new IllegalArgumentException("You cannot associate the same component.");
-        }
+        repository.appendBccp(user, extensionAcc.getAccReleaseManifestId(),
+                bccpReleaseManifestRecord.getBccpReleaseManifestId() );
 
-        int nextSeqKey = getNextSeqKey(extensionAcc.getAccId().longValue());
-        int revisionNum = dslContext.select(ACC.REVISION_NUM)
-                .from(ACC).where(ACC.ACC_ID.eq(extensionAcc.getAccId()))
-                .fetchOneInto(Integer.class);
-
-        BccRecord bcc = createBCC(user, extensionAcc, bccpReleaseManifestRecord, nextSeqKey, revisionNum);
-        /* Create bcc_release_manifest */
-        dslContext.insertInto(BCC_RELEASE_MANIFEST,
-                BCC_RELEASE_MANIFEST.BCC_ID,
-                BCC_RELEASE_MANIFEST.RELEASE_ID,
-                BCC_RELEASE_MANIFEST.FROM_ACC_ID,
-                BCC_RELEASE_MANIFEST.TO_BCCP_ID)
-                .values(bcc.getBccId(),
-                        extensionAcc.getReleaseId(),
-                        bcc.getFromAccId(),
-                        bcc.getToBccpId())
-                .execute();
-    }
-
-    private BccRecord createBCC(User user,
-                                AccReleaseManifestRecord extensionAcc,
-                                BccpReleaseManifestRecord bccpReleaseManifestRecord,
-                                int seqKey,
-                                int revisionNum) {
-
-        String accObjectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
-                .from(ACC).where(ACC.ACC_ID.eq(extensionAcc.getAccId()))
-                .fetchOneInto(String.class);
-        String bccpDen = dslContext.select(BCCP.DEN)
-                .from(BCCP).where(BCCP.BCCP_ID.eq(bccpReleaseManifestRecord.getBccpId()))
-                .fetchOneInto(String.class);
-
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        return dslContext.insertInto(Tables.BCC,
-                Tables.BCC.GUID,
-                Tables.BCC.CARDINALITY_MIN,
-                Tables.BCC.CARDINALITY_MAX,
-                Tables.BCC.SEQ_KEY,
-                Tables.BCC.ENTITY_TYPE,
-                Tables.BCC.FROM_ACC_ID,
-                Tables.BCC.TO_BCCP_ID,
-                Tables.BCC.DEN,
-                Tables.BCC.IS_DEPRECATED,
-                Tables.BCC.CREATED_BY,
-                Tables.BCC.LAST_UPDATED_BY,
-                Tables.BCC.OWNER_USER_ID,
-                Tables.BCC.CREATION_TIMESTAMP,
-                Tables.BCC.LAST_UPDATE_TIMESTAMP,
-                Tables.BCC.STATE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.REVISION_ACTION).values(
-                SrtGuid.randomGuid(),
-                0,
-                -1,
-                seqKey,
-                BCCEntityType.Element.getValue(),
-                extensionAcc.getAccId(),
-                bccpReleaseManifestRecord.getBccpId(),
-                accObjectClassTerm + ". " + bccpDen,
-                Byte.valueOf((byte) 0),
-                userId,
-                userId,
-                userId,
-                timestamp,
-                timestamp,
-                CcState.Editing.getValue(),
-                revisionNum,
-                1,
-                Integer.valueOf(RevisionAction.Insert.getValue()).byteValue()
-        ).returning().fetchOne();
-    }
-
-    private int getNextSeqKey(long accId) {
-        Integer asccMaxSeqKey = dslContext.select(max(ASCC.SEQ_KEY))
-                .from(ASCC)
-                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
-                .fetchOneInto(Integer.class);
-        if (asccMaxSeqKey == null) {
-            asccMaxSeqKey = 0;
-        }
-
-        Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
-                .from(BCC)
-                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
-                .fetchOneInto(Integer.class);
-        if (bccMaxSeqKey == null) {
-            bccMaxSeqKey = 0;
-        }
-
-        return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
     @Transactional
     public void discardAscc(User user, long manifestId, long asccId) {
         AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
-        int seqKey = dslContext.select(ASCC.SEQ_KEY)
-                .from(Tables.ASCC).where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
-                .fetchOneInto(Integer.class);
 
-        dslContext.deleteFrom(ASCC_RELEASE_MANIFEST)
-                .where(and(
+        long asccManifestId = dslContext.select(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID)
+                .from(ASCC_RELEASE_MANIFEST).where(and(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
                         ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                )).execute();
-        dslContext.deleteFrom(Tables.ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
-                .execute();
+                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
+                .fetchOneInto(long.class);
 
-        decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
+        repository.discardAsccById(user, asccManifestId);
     }
 
     @Transactional
     public void discardBcc(User user, long manifestId, long bccId) {
         AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
-        int seqKey = dslContext.select(BCC.SEQ_KEY)
-                .from(Tables.BCC).where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
-                .fetchOneInto(Integer.class);
 
-        dslContext.deleteFrom(BCC_RELEASE_MANIFEST)
-                .where(and(
+        long bccManifestId = dslContext.select(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID)
+                .from(BCC_RELEASE_MANIFEST).where(and(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
                         BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
-                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                )).execute();
-        dslContext.deleteFrom(Tables.BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
-                .execute();
+                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
+                .fetchOneInto(long.class);
 
-        decreaseSeqKeyGreaterThan(extensionAcc, seqKey);
-    }
-
-    private void decreaseSeqKeyGreaterThan(AccReleaseManifestRecord extensionAcc, int seqKey) {
-        dslContext.update(Tables.ASCC)
-                .set(ASCC.SEQ_KEY, ASCC.SEQ_KEY.subtract(1))
-                .where(and(
-                        ASCC.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        ASCC.SEQ_KEY.greaterThan(seqKey)
-                ))
-                .execute();
-
-        dslContext.update(Tables.BCC)
-                .set(BCC.SEQ_KEY, BCC.SEQ_KEY.subtract(1))
-                .where(and(
-                        BCC.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        BCC.SEQ_KEY.greaterThan(seqKey)
-                ))
-                .execute();
+        repository.discardBccById(user, bccManifestId);
     }
 
     @Transactional
     public void updateState(User user, long manifestId, CcState state) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        updateAsccState(extensionAcc, state, userId, timestamp);
-        updateBccState(extensionAcc, state, userId, timestamp);
-        updateAccState(extensionAcc, state, userId, timestamp);
-
-        if (state == CcState.Published) {
-            storeBieUserExtRevisions(extensionAcc);
-        }
-    }
-
-    private void updateAccState(AccReleaseManifestRecord extensionAcc,
-                                CcState state,
-                                ULong userId, Timestamp timestamp) {
-
-        AccRecord history = dslContext.selectFrom(Tables.ACC)
-                .where(ACC.ACC_ID.eq(extensionAcc.getAccId())).fetchOne();
-
-        history.setAccId(null);
-        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-        history.setRevisionAction((byte) RevisionAction.Update.getValue());
-        history.setCreatedBy(userId);
-        history.setLastUpdatedBy(userId);
-        history.setCreationTimestamp(timestamp);
-        history.setLastUpdateTimestamp(timestamp);
-        history.setState(state.getValue());
-
-        history = dslContext.insertInto(ACC).set(history).returning().fetchOne();
-        dslContext.update(ACC_RELEASE_MANIFEST)
-                .set(ACC_RELEASE_MANIFEST.ACC_ID, history.getAccId())
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(extensionAcc.getAccReleaseManifestId()))
-                .execute();
-
-        dslContext.update(ASCC_RELEASE_MANIFEST)
-                .set(ASCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
-                .where(and(
-                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                )).execute();
-
-        dslContext.update(BCC_RELEASE_MANIFEST)
-                .set(BCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
-                .where(and(
-                        BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                )).execute();
-    }
-
-    private void updateAsccState(AccReleaseManifestRecord extensionAcc,
-                                 CcState state,
-                                 ULong userId, Timestamp timestamp) {
-
-        Map<ULong, AsccReleaseManifestRecord> asccReleaseManifestRecordMap =
-                dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
-                        .where(and(
-                                ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                                ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                        ))
-                        .fetch().stream().collect(Collectors.toMap(AsccReleaseManifestRecord::getAsccId, Function.identity()));
-
-        if (asccReleaseManifestRecordMap.isEmpty()) {
-            return;
-        }
-
-        Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccReleaseManifestRecordMap.keySet()))
-                .fetch();
-
-        for (AsccRecord history : asccRecordResult) {
-            AsccReleaseManifestRecord asccReleaseManifestRecord =
-                    asccReleaseManifestRecordMap.get(history.getAsccId());
-
-            history.setAsccId(null);
-            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
-            history.setCreatedBy(userId);
-            history.setLastUpdatedBy(userId);
-            history.setCreationTimestamp(timestamp);
-            history.setLastUpdateTimestamp(timestamp);
-            history.setState(state.getValue());
-
-            history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
-            dslContext.update(ASCC_RELEASE_MANIFEST)
-                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, history.getAsccId())
-                    .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
-                    .execute();
-        }
-    }
-
-    private void updateBccState(AccReleaseManifestRecord extensionAcc,
-                                CcState state,
-                                ULong userId, Timestamp timestamp) {
-
-        Map<ULong, BccReleaseManifestRecord> bccReleaseManifestRecordMap =
-                dslContext.selectFrom(BCC_RELEASE_MANIFEST)
-                        .where(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()))
-                        .fetch().stream().collect(Collectors.toMap(BccReleaseManifestRecord::getBccId, Function.identity()));
-
-        if (bccReleaseManifestRecordMap.isEmpty()) {
-            return;
-        }
-
-        Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.in(bccReleaseManifestRecordMap.keySet()))
-                .fetch();
-
-        for (BccRecord history : bccRecordResult) {
-            BccReleaseManifestRecord bccReleaseManifestRecord =
-                    bccReleaseManifestRecordMap.get(history.getBccId());
-
-            history.setBccId(null);
-            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
-            history.setCreatedBy(userId);
-            history.setLastUpdatedBy(userId);
-            history.setCreationTimestamp(timestamp);
-            history.setLastUpdateTimestamp(timestamp);
-            history.setState(state.getValue());
-
-            history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
-            dslContext.update(BCC_RELEASE_MANIFEST)
-                    .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
-                    .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
-                    .execute();
-        }
-    }
-
-    private void storeBieUserExtRevisions(AccReleaseManifestRecord extensionAcc) {
-        List<TopLevelAbie> topLevelAbies = dslContext.selectFrom(TOP_LEVEL_ABIE)
-                .where(TOP_LEVEL_ABIE.STATE.ne(BieState.Published.getValue()))
-                .fetchInto(TopLevelAbie.class);
-
-        ExtensionPathHandler extensionPathHandler =
-                applicationContext.getBean(ExtensionPathHandler.class, extensionAcc.getReleaseId().longValue());
-
-        for (TopLevelAbie topLevelAbie : topLevelAbies) {
-            Long abieId = topLevelAbie.getAbieId();
-            if (abieId == null) {
-                continue;
-            }
-            long basedAccId = dslContext.select(Tables.ACC.ACC_ID)
-                    .from(Tables.ABIE)
-                    .join(Tables.ACC)
-                    .on(Tables.ABIE.BASED_ACC_ID.eq(Tables.ACC.ACC_ID))
-                    .where(Tables.ABIE.ABIE_ID.eq(ULong.valueOf(topLevelAbie.getAbieId())))
-                    .fetchOneInto(Long.class);
-
-            ULong eAccId =
-                    dslContext.select(Tables.ACC.as("eAcc").ACC_ID)
-                            .from(Tables.ACC.as("eAcc"))
-                            .join(Tables.ASCC).on(Tables.ACC.as("eAcc").ACC_ID.eq(ASCC.FROM_ACC_ID))
-                            .join(Tables.ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                            .join(Tables.ACC.as("ueAcc")).on(ASCCP.ROLE_OF_ACC_ID.eq(Tables.ACC.as("ueAcc").ACC_ID))
-                            .where(and(
-                                    ACC.as("ueAcc").ACC_ID.eq(extensionAcc.getAccId()),
-                                    ASCC.REVISION_NUM.eq(0)
-                            )).fetchOneInto(ULong.class);
-        }
+        repository.updateAccState(user, ULong.valueOf(manifestId), state);
     }
 
     @Transactional
