@@ -118,7 +118,13 @@ public class CcListService {
             pageResponse.setList(Collections.emptyList());
         } else {
             if (list.size() > pageSize) {
-                list = Lists.partition(list, pageSize).get(pageIndex);
+                List<List<CcList>> partition = Lists.partition(list, pageSize);
+                if (partition.size() > pageIndex) {
+                    list = Lists.partition(list, pageSize).get(pageIndex);
+                } else {
+                    list = Lists.partition(list, pageSize).get(0);
+                    pageResponse.setPage(0);
+                }
             }
             pageResponse.setList(list);
         }

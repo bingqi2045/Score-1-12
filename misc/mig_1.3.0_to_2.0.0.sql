@@ -18,6 +18,7 @@ UPDATE `blob_content` SET `release_id` = `release_id` + 1 WHERE `release_id` IS 
 UPDATE `dt` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
 UPDATE `module` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
 UPDATE `top_level_abie` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
+UPDATE `xbt` SET `release_id` = 1;
 UPDATE `xbt` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
 
 -- Update `namespace_id` = NULL for all user extension groups.
