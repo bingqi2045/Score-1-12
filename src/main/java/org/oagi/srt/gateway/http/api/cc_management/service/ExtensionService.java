@@ -556,6 +556,59 @@ public class ExtensionService {
         ).execute();
     }
 
+    public boolean isExistChildren(long extensionId, Long releaseId, Long asccpId, Long bccpId) {
+        if (asccpId != null) {
+            boolean exists = dslContext.selectCount()
+                    .from(ASCC).where(and(
+                            ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                            ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId))
+                    ))
+                    .fetchOptionalInto(Integer.class).orElse(0) > 0;
+            if (exists) {
+                return true;
+            }
+        } else if (bccpId != null) {
+            boolean exists = dslContext.selectCount()
+                    .from(BCC).where(and(
+                            BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
+                            BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId))
+                    ))
+                    .fetchOptionalInto(Integer.class).orElse(0) > 0;
+            if (exists) {
+                return true;
+            }
+        }
+        Long based_acc_id = dslContext.select(ACC.as("extension_acc").BASED_ACC_ID)
+                .from(ASCCP)
+                .join(ASCC).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(ACC.as("base_acc")).on(ACC.as("base_acc").ACC_ID.eq(ASCC.FROM_ACC_ID))
+                .join(ACC.as("extension_acc")).on(ACC.as("extension_acc").ACC_ID.eq(ACC.as("base_acc").BASED_ACC_ID))
+                .where(and(ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(extensionId)),
+                        ASCC.RELEASE_ID.eq(ULong.valueOf(releaseId)))).fetchOptionalInto(Long.class).orElse(null);
+
+        if(based_acc_id != null){
+            boolean baseExist = false;
+            if (asccpId != null) {
+                baseExist = dslContext.selectCount()
+                        .from(ASCC)
+                        .where(and(ASCC.FROM_ACC_ID.eq(ULong.valueOf(based_acc_id)),
+                                ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId))))
+                        .fetchOptionalInto(Integer.class).orElse(0) > 0;
+            } else if (bccpId != null) {
+                baseExist = dslContext.selectCount()
+                        .from(BCC)
+                        .where(and(BCC.FROM_ACC_ID.eq(ULong.valueOf(based_acc_id)),
+                                BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId))))
+                        .fetchOptionalInto(Integer.class).orElse(0) > 0;
+            }
+            if (baseExist) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     @Transactional
     public void appendAsccp(User user, long extensionId, Long releaseId, long asccpId) {
         int nextSeqKey = getNextSeqKey(extensionId);
@@ -568,12 +621,8 @@ public class ExtensionService {
          * Issue #710
          * Duplicated associations cannot be existed.
          */
-        boolean exists = dslContext.selectCount()
-                .from(ASCC).where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId))
-                ))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+
+        boolean exists = isExistChildren(extensionId, releaseId, asccpId, null);
         if (exists) {
             throw new IllegalArgumentException("You cannot associate the same component.");
         }
@@ -692,12 +741,7 @@ public class ExtensionService {
          * Issue #710
          * Duplicated associations cannot be existed.
          */
-        boolean exists = dslContext.selectCount()
-                .from(BCC).where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(extensionId)),
-                        BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId))
-                ))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0;
+        boolean exists = isExistChildren(extensionId, releaseId, null, bccpId);
         if (exists) {
             throw new IllegalArgumentException("You cannot associate the same component.");
         }
