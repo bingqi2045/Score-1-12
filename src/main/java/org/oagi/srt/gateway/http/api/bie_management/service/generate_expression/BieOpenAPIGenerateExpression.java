@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.generate_expression;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -25,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat.JSON;
 import static org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat.YAML;
 import static org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.Helper.*;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -313,7 +311,6 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (!parent.containsKey("properties")) {
             parent.put("properties", new LinkedHashMap<String, Object>());
         }
-        ((Map<String, Object>) parent.get("properties")).put(name, properties);
 
         if (option.isBieDefinition()) {
             String definition = asbie.getDefinition();
@@ -322,26 +319,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             }
         }
 
-        properties.put("type", isArray ? "array" : "object");
-        if (isNillable) {
-            properties.put("nullable", true);
-        }
-
-        if (isArray) {
-            if (minVal > 0) {
-                properties.put("minItems", minVal);
-            }
-            if (maxVal > 0) {
-                properties.put("maxItems", maxVal);
-            }
-
-            Map<String, Object> items = new LinkedHashMap();
-            properties.put("items", items);
-            items.put("type", "object");
-
-            properties = items;
-        }
-
+        properties.put("type", "object");
         properties.put("required", new ArrayList());
         properties.put("additionalProperties", false);
         properties.put("properties", new LinkedHashMap<String, Object>());
@@ -351,6 +329,32 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (((List) properties.get("required")).isEmpty()) {
             properties.remove("required");
         }
+
+        properties = oneOf(allOf(properties), isNillable);
+
+        if (isArray) {
+            Map<String, Object> items = new LinkedHashMap();
+            items.putAll(properties);
+
+            properties = new LinkedHashMap();
+            properties.put("type", "array");
+
+            String description = (String) items.remove("description");
+            if (!StringUtils.isEmpty(description)) {
+                properties.put("description", description);
+            }
+
+            if (minVal > 0) {
+                properties.put("minItems", minVal);
+            }
+            if (maxVal > 0) {
+                properties.put("maxItems", maxVal);
+            }
+
+            properties.put("items", items);
+        }
+
+        ((Map<String, Object>) parent.get("properties")).put(name, properties);
     }
 
     private void fillProperties(Map<String, Object> parent,
@@ -369,7 +373,6 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (!parent.containsKey("properties")) {
             parent.put("properties", new LinkedHashMap<String, Object>());
         }
-        ((Map<String, Object>) parent.get("properties")).put(name, properties);
 
         if (option.isBieDefinition()) {
             String definition = abie.getDefinition();
@@ -381,19 +384,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         /*
          * Issue #550
          */
-        properties.put("type", (isArray) ? "array" : "object");
-
-        /*
-         * Issue #575
-         */
-        if (isArray) {
-            Map<String, Object> items = new LinkedHashMap();
-            properties.put("items", items);
-            items.put("type", "object");
-
-            properties = items;
+        if (!isArray) {
+            properties.put("type", "object");
         }
-
         properties.put("required", new ArrayList());
         properties.put("additionalProperties", false);
 
@@ -402,6 +395,25 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         if (((List) properties.get("required")).isEmpty()) {
             properties.remove("required");
         }
+
+        /*
+         * Issue #575
+         */
+        if (isArray) {
+            Map<String, Object> items = new LinkedHashMap(properties);
+
+            properties = new LinkedHashMap();
+            properties.put("type", "array");
+
+            String description = (String) items.remove("description");
+            if (!StringUtils.isEmpty(description)) {
+                properties.put("description", description);
+            }
+
+            properties.put("items", items);
+        }
+
+        ((Map<String, Object>) parent.get("properties")).put(name, properties);
     }
 
     private Map<String, Object> toProperties(Xbt xbt) {
@@ -560,33 +572,13 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         int maxVal = bbie.getCardinalityMax();
         // Issue #562
         boolean isArray = (maxVal < 0 || maxVal > 1);
-
-        /*
-         * When a bbie is based on a bcc, whose entity type is 'attribute',
-         * XML schema generation shouldn't generate the nillable="true",
-         * even if the user specified the bbie to be nillable.
-         */
-        boolean isNillable;
-        if (bcc.getEntityType() == BCCEntityType.Attribute.getValue()) {
-            isNillable = false;
-        } else {
-            isNillable = bbie.isNillable();
-        }
+        boolean isNillable = bbie.isNillable();
 
         String name = camelCase(bccp.getPropertyTerm());
 
         Map<String, Object> properties = new LinkedHashMap();
         if (!parent.containsKey("properties")) {
             parent.put("properties", new LinkedHashMap<String, Object>());
-        }
-        ((Map<String, Object>) parent.get("properties")).put(name, properties);
-
-        if (minVal > 0) {
-            List<String> parentRequired = (List<String>) parent.get("required");
-            if (parentRequired == null) {
-                throw new IllegalStateException();
-            }
-            parentRequired.add(name);
         }
 
         if (option.isBieDefinition()) {
@@ -596,30 +588,17 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             }
         }
 
-        String type = isArray ? "array" : "object";
-        if (isNillable) {
-            properties.put("nullable", true);
-        }
-
-        if (isArray) {
-            if (minVal > 0) {
-                properties.put("minItems", minVal);
+        if (minVal > 0) {
+            List<String> parentRequired = (List<String>) parent.get("required");
+            if (parentRequired == null) {
+                throw new IllegalStateException();
             }
-            if (maxVal > 0) {
-                properties.put("maxItems", maxVal);
-            }
-
-            Map<String, Object> items = new LinkedHashMap();
-            properties.put("items", items);
-            items.put("type", "object");
-
-            properties = items;
+            parentRequired.add(name);
         }
 
         // Issue #700
         if (!StringUtils.isEmpty(bbie.getFixedValue())) {
-            properties.put("default", bbie.getFixedValue());
-            properties.put("readOnly", true);
+            properties.put("enum", Arrays.asList(bbie.getFixedValue()));
         } else if (!StringUtils.isEmpty(bbie.getDefaultValue())) {
             properties.put("default", bbie.getDefaultValue());
         }
@@ -627,19 +606,17 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         // Issue #692
         String exampleText = bbie.getExample();
         if (!StringUtils.isEmpty(exampleText)) {
-            Map<String, Object> example = new LinkedHashMap();
-            example.put(name, exampleText);
-            properties.put("example", example);
+            properties.put("example", exampleText);
         }
 
         // Issue #564
         String ref = getReference(schemas, bbie, bdt, generationContext);
         List<BBIESC> bbieScList = generationContext.queryBBIESCs(bbie)
                 .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
-        if (bbieScList.isEmpty() && properties.isEmpty()) {
+        if (bbieScList.isEmpty()) {
             properties.put("$ref", ref);
         } else {
-            properties.put("type", type);
+            properties.put("type", "object");
             properties.put("required", new ArrayList());
             properties.put("additionalProperties", false);
             properties.put("properties", new LinkedHashMap<String, Object>());
@@ -654,6 +631,133 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                 fillProperties(properties, schemas, bbieSc, generationContext);
             }
         }
+
+        properties = oneOf(allOf(properties), isNillable);
+
+        if (isArray) {
+            String description = null;
+            if (properties.containsKey("allOf")) {
+                for (Object map : (List) properties.get("allOf")) {
+                    if (((Map<String, Object>) map).containsKey("description")) {
+                        description = (String) ((Map<String, Object>) map).remove("description");
+                        break;
+                    }
+                }
+
+                List allOfRearrangedList = new ArrayList();
+                for (Object map : (List) properties.get("allOf")) {
+                    if (((Map<String, Object>) map).isEmpty()) {
+                        continue;
+                    }
+                    allOfRearrangedList.add(map);
+                }
+                properties.put("allOf", allOfRearrangedList);
+            } else {
+                description = (String) properties.remove("description");
+            }
+
+            Map<String, Object> items = new LinkedHashMap(properties);
+            properties = new LinkedHashMap();
+            if (!StringUtils.isEmpty(description)) {
+                properties.put("description", description);
+            }
+
+            properties.put("type", "array");
+
+            if (minVal > 0) {
+                properties.put("minItems", minVal);
+            }
+            if (maxVal > 0) {
+                properties.put("maxItems", maxVal);
+            }
+
+            if (items.containsKey("oneOf")) {
+                List oneOf = (List) items.get("oneOf");
+                for (Object map : oneOf) {
+                    if (((Map<String, Object>) map).containsKey("allOf")) {
+                        List allOf = (List) ((Map<String, Object>) map).get("allOf");
+                        if (allOf.size() == 1) {
+                            Map<String, Object> innerMap = (Map<String, Object>) allOf.get(0);
+                            if (innerMap.size() == 1 && innerMap.containsKey("$ref")) {
+                                ref = (String) innerMap.get("$ref");
+                                ((Map<String, Object>) map).remove("allOf");
+                                ((Map<String, Object>) map).put("$ref", ref);
+                            }
+                        }
+                    }
+                }
+            } else if (items.size() == 1 && items.containsKey("allOf")) {
+                List allOf = (List) items.get("allOf");
+                if (allOf.size() == 1) {
+                    Map<String, Object> map = (Map<String, Object>) allOf.get(0);
+                    if (map.size() == 1 && map.containsKey("$ref")) {
+                        ref = (String) map.get("$ref");
+                        items.remove("allOf");
+                        items.put("$ref", ref);
+                    }
+                }
+            }
+
+            properties.put("items", items);
+        }
+
+        ((Map<String, Object>) parent.get("properties")).put(name, properties);
+    }
+
+    private Map<String, Object> allOf(Map<String, Object> properties) {
+        if (properties.containsKey("$ref") && properties.size() > 1) {
+            Map<String, Object> prop = new LinkedHashMap();
+            Map<String, Object> refMap = ImmutableMap.<String, Object>builder()
+                    .put("$ref", properties.remove("$ref"))
+                    .build();
+            prop.put("allOf", (properties.isEmpty()) ? Arrays.asList(refMap) : Arrays.asList(refMap, properties));
+
+            return prop;
+        }
+
+        return properties;
+    }
+
+    private Map<String, Object> oneOf(Map<String, Object> properties,
+                                      boolean isNillable) {
+        if (isNillable) {
+            String description = null;
+            if (properties.containsKey("allOf")) {
+                for (Object map : (List) properties.get("allOf")) {
+                    if (((Map<String, Object>) map).containsKey("description")) {
+                        description = (String) ((Map<String, Object>) map).remove("description");
+                        break;
+                    }
+                }
+
+                List allOfRearrangedList = new ArrayList();
+                for (Object map : (List) properties.get("allOf")) {
+                    if (((Map<String, Object>) map).isEmpty()) {
+                        continue;
+                    }
+                    allOfRearrangedList.add(map);
+                }
+                properties.put("allOf", allOfRearrangedList);
+            } else {
+                description = (String) properties.remove("description");
+            }
+
+            Map<String, Object> prop = new LinkedHashMap();
+            if (!StringUtils.isEmpty(description)) {
+                prop.put("description", description);
+            }
+
+            prop.put("oneOf", Arrays.asList(
+                    ImmutableMap.builder()
+                            .put("nullable", true)
+                            .build(),
+                    properties
+            ));
+
+            return prop;
+        }
+
+        return properties;
     }
 
     private String getReference(Map<String, Object> schemas, BBIE bbie, DT bdt,
@@ -698,11 +802,6 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
         String name = camelCase(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
         Map<String, Object> properties = new LinkedHashMap();
-        ((Map<String, Object>) parent.get("properties")).put(name, properties);
-
-        if (minVal > 0) {
-            ((List<String>) parent.get("required")).add(name);
-        }
 
         if (option.isBieDefinition()) {
             String definition = bbieSc.getDefinition();
@@ -711,10 +810,13 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             }
         }
 
+        if (minVal > 0) {
+            ((List<String>) parent.get("required")).add(name);
+        }
+
         // Issue #596
         if (!StringUtils.isEmpty(bbieSc.getFixedValue())) {
-            properties.put("default", bbieSc.getFixedValue());
-            properties.put("readOnly", true);
+            properties.put("enum", Arrays.asList(bbieSc.getFixedValue()));
         } else if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
             properties.put("default", bbieSc.getDefaultValue());
         }
@@ -722,9 +824,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         // Issue #692
         String exampleText = bbieSc.getExample();
         if (!StringUtils.isEmpty(exampleText)) {
-            Map<String, Object> example = new LinkedHashMap();
-            example.put(name, exampleText);
-            properties.put("example", example);
+            properties.put("example", exampleText);
         }
 
         CodeList codeList = generationContext.getCodeList(bbieSc);
@@ -755,23 +855,10 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             }
         }
 
-        /*
-         * Issue #700
-         */
-        if (properties.isEmpty()) {
-            properties.put("$ref", ref);
-        } else {
-            properties.put("type", "object");
-            properties.put("required", new ArrayList());
-            properties.put("additionalProperties", false);
-            properties.put("properties", new LinkedHashMap<String, Object>());
+        properties.put("$ref", ref);
+        properties = allOf(properties);
 
-            ((List<String>) properties.get("required")).add("content");
-            ((Map<String, Object>) properties.get("properties"))
-                    .put("content", ImmutableMap.<String, Object>builder()
-                            .put("$ref", ref)
-                            .build());
-        }
+        ((Map<String, Object>) parent.get("properties")).put(name, properties);
     }
 
     private void ensureRoot() {

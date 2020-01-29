@@ -574,7 +574,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     private Map<String, Object> oneOf(Map<String, Object> properties,
-                       boolean isNillable) {
+                                      boolean isNillable) {
         if (isNillable) {
             String description = null;
             if (properties.containsKey("allOf")) {
