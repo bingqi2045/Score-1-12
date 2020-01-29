@@ -12,6 +12,8 @@ public class CcBccNode extends CcNode {
     private Long currentBccId;
     private long toBccpId;
     private int entityType;
+    private long cardinalityMin;
+    private long cardinalityMax;
 
     @Override
     public long getId() {

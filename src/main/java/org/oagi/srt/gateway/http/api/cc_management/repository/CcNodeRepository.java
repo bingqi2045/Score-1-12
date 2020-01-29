@@ -527,6 +527,24 @@ public class CcNodeRepository {
         return OagisComponentType.valueOf(oagisComponentType);
     }
 
+    private int getLatestRevisionAscc(long asccId) {
+        return dslContext.select(
+                Tables.ASCC.REVISION_NUM
+        ).from(Tables.ASCC).where(ASCC.CURRENT_ASCC_ID.eq(ULong.valueOf(asccId)))
+                .orderBy(ASCC.ASCC_ID.desc())
+                .limit(1)
+                .fetchOptionalInto(int.class).orElse(0);
+    }
+
+    private int getLatestRevisionBcc(long bccId) {
+        return dslContext.select(
+                Tables.BCC.REVISION_NUM
+        ).from(Tables.BCC).where(BCC.CURRENT_BCC_ID.eq(ULong.valueOf(bccId)))
+                .orderBy(BCC.BCC_ID.desc())
+                .limit(1)
+                .fetchOptionalInto(int.class).orElse(0);
+    }
+
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 Tables.ASCC.ASCC_ID,
@@ -561,6 +579,7 @@ public class CcNodeRepository {
 
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
+            asccpNode.setRevisionNum(getLatestRevisionAscc(asccNode.getAsccId()));
             asccpNodes.add(asccpNode);
         }
         return asccpNodes;
@@ -600,6 +619,7 @@ public class CcNodeRepository {
             bccpNode.setSeqKey(bccNode.getSeqKey());
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());
+            bccpNode.setRevisionNum(getLatestRevisionBcc(bccNode.getBccId()));
             return bccpNode;
         }).collect(Collectors.toList());
     }
@@ -666,7 +686,7 @@ public class CcNodeRepository {
                     Tables.ASCC.DEFINITION).from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
-
+            ascc.setRevisionNum(getLatestRevisionAscc(ascc.getAsccId()));
             asccpNodeDetail.setAscc(ascc);
         }
 
@@ -720,7 +740,7 @@ public class CcNodeRepository {
                     Tables.BCC.DEFINITION).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
-
+            bcc.setRevisionNum(getLatestRevisionBcc(bcc.getBccId()));
             bccpNodeDetail.setBcc(bcc);
         }
 

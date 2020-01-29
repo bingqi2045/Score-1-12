@@ -23,6 +23,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String defaultValue;
         private String fixedValue;
         private String definition;
+        private int revisionNum;
     }
 
     @Data

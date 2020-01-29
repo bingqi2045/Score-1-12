@@ -117,6 +117,14 @@ public class ExtensionService {
         return null;
     }
 
+    public ACC getLatestUserExtension(long accId, long releaseId) {
+        return dslContext.selectFrom(Tables.ACC)
+                .where(Tables.ACC.CURRENT_ACC_ID.eq(ULong.valueOf(accId)))
+                .orderBy(Tables.ACC.ACC_ID.desc())
+                .limit(1)
+                .fetchOneInto(ACC.class);
+    }
+
 
     @Transactional
     public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
@@ -722,7 +730,7 @@ public class ExtensionService {
                 ascc.getLastUpdateTimestamp(),
                 ULong.valueOf(releaseId),
                 ascc.getState(),
-                revisionNum,
+                1,
                 1,
                 Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
                 ascc.getAsccId()
@@ -845,7 +853,7 @@ public class ExtensionService {
                 bcc.getLastUpdateTimestamp(),
                 ULong.valueOf(releaseId),
                 bcc.getState(),
-                revisionNum,
+                1,
                 1,
                 Integer.valueOf(RevisionAction.Insert.getValue()).byteValue(),
                 bcc.getBccId()
@@ -1339,6 +1347,44 @@ public class ExtensionService {
             history.setOwnerUserId(targetAppUserId);
 
             dslContext.insertInto(BCC).set(history).execute();
+        }
+    }
+
+    public CcNode getLastRevisionCc(User user, String type, long id) {
+        if (type.equals("ascc")) {
+            return dslContext.select(
+                    ASCC.ASCC_ID,
+                    ASCC.CURRENT_ASCC_ID,
+                    ASCC.GUID,
+                    ASCC.REVISION_NUM,
+                    ASCC.REVISION_TRACKING_NUM,
+                    ASCC.CARDINALITY_MIN,
+                    ASCC.CARDINALITY_MAX,
+                    ASCC.RELEASE_ID)
+                    .from(ASCC)
+                    .where(and(ASCC.CURRENT_ASCC_ID.eq(ULong.valueOf(id)),
+                            ASCC.STATE.eq(CcState.Published.getValue())))
+                    .orderBy(ASCC.ASCC_ID.desc())
+                    .limit(1)
+                    .fetchOneInto(CcAsccNode.class);
+        } else if (type.equals("bcc")) {
+            return dslContext.select(
+                    BCC.BCC_ID,
+                    BCC.CURRENT_BCC_ID,
+                    BCC.GUID,
+                    BCC.REVISION_NUM,
+                    BCC.REVISION_TRACKING_NUM,
+                    BCC.CARDINALITY_MIN,
+                    BCC.CARDINALITY_MAX,
+                    BCC.RELEASE_ID
+            ).from(BCC).where(and(
+                    BCC.CURRENT_BCC_ID.eq(ULong.valueOf(id)),
+                    BCC.STATE.eq(CcState.Published.getValue())))
+                    .orderBy(BCC.BCC_ID.desc())
+                    .limit(1)
+                    .fetchOneInto(CcBccNode.class);
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 }
