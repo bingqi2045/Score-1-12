@@ -741,6 +741,7 @@ public class CcNodeRepository {
                     Tables.BCC.DEFAULT_VALUE,
                     Tables.BCC.FIXED_VALUE,
                     Tables.BCC.DEFINITION,
+                    Tables.BCC.IS_NILLABLE.as("nillable"),
                     Tables.BCC.DEFINITION_SOURCE).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);

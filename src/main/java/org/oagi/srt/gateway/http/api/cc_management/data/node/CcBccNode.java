@@ -14,6 +14,7 @@ public class CcBccNode extends CcNode {
     private int entityType;
     private long cardinalityMin;
     private long cardinalityMax;
+    private long nillable;
 
     @Override
     public long getId() {

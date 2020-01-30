@@ -1372,7 +1372,8 @@ public class ExtensionService {
                     BCC.REVISION_TRACKING_NUM,
                     BCC.CARDINALITY_MIN,
                     BCC.CARDINALITY_MAX,
-                    BCC.RELEASE_ID
+                    BCC.RELEASE_ID,
+                    BCC.IS_NILLABLE.as("nillable")
             ).from(BCC).where(and(
                     BCC.CURRENT_BCC_ID.eq(ULong.valueOf(id)),
                     BCC.STATE.eq(CcState.Published.getValue())))
