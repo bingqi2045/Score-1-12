@@ -18,6 +18,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private int cardinalityMax;
         private boolean deprecated;
         private String definition;
+        private String definitionSource;
         private int revisionNum;
     }
 
@@ -30,5 +31,6 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private boolean reusable;
         private boolean deprecated;
         private String definition;
+        private String definitionSource;
     }
 }

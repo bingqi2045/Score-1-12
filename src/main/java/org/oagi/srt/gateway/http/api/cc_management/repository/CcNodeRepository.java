@@ -666,7 +666,8 @@ public class CcNodeRepository {
                 Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagisComponentType"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
-                Tables.ACC.DEFINITION
+                Tables.ACC.DEFINITION,
+                Tables.ACC.DEFINITION_SOURCE
         ).from(Tables.ACC).where(Tables.ACC.ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOneInto(CcAccNodeDetail.class);
     }
@@ -683,7 +684,8 @@ public class CcNodeRepository {
                     Tables.ASCC.CARDINALITY_MIN,
                     Tables.ASCC.CARDINALITY_MAX,
                     Tables.ASCC.IS_DEPRECATED.as("deprecated"),
-                    Tables.ASCC.DEFINITION).from(Tables.ASCC)
+                    Tables.ASCC.DEFINITION,
+                    Tables.ASCC.DEFINITION_SOURCE).from(Tables.ASCC)
                     .where(Tables.ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
             ascc.setRevisionNum(getLatestRevisionAscc(ascc.getAsccId()));
@@ -698,7 +700,8 @@ public class CcNodeRepository {
                 Tables.ASCCP.DEN,
                 Tables.ASCCP.REUSABLE_INDICATOR.as("reusable"),
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.ASCCP.DEFINITION).from(Tables.ASCCP)
+                Tables.ASCCP.DEFINITION,
+                Tables.ASCCP.DEFINITION_SOURCE).from(Tables.ASCCP)
                 .where(Tables.ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
@@ -737,7 +740,8 @@ public class CcNodeRepository {
                     Tables.BCC.IS_DEPRECATED.as("deprecated"),
                     Tables.BCC.DEFAULT_VALUE,
                     Tables.BCC.FIXED_VALUE,
-                    Tables.BCC.DEFINITION).from(Tables.BCC)
+                    Tables.BCC.DEFINITION,
+                    Tables.BCC.DEFINITION_SOURCE).from(Tables.BCC)
                     .where(Tables.BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
             bcc.setRevisionNum(getLatestRevisionBcc(bcc.getBccId()));
@@ -754,7 +758,8 @@ public class CcNodeRepository {
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.DEFAULT_VALUE,
                 Tables.BCCP.FIXED_VALUE,
-                Tables.BCCP.DEFINITION).from(Tables.BCCP)
+                Tables.BCCP.DEFINITION,
+                Tables.BCCP.DEFINITION_SOURCE).from(Tables.BCCP)
                 .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
@@ -768,7 +773,8 @@ public class CcNodeRepository {
                 Tables.DT.DATA_TYPE_TERM,
                 Tables.DT.QUALIFIER,
                 Tables.DT.DEN,
-                Tables.DT.DEFINITION).from(Tables.DT)
+                Tables.DT.DEFINITION,
+                Tables.DT.DEFINITION_SOURCE).from(Tables.DT)
                 .where(Tables.DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
@@ -785,6 +791,7 @@ public class CcNodeRepository {
                 Tables.DT_SC.CARDINALITY_MIN,
                 Tables.DT_SC.CARDINALITY_MAX,
                 Tables.DT_SC.DEFINITION,
+                Tables.DT_SC.DEFINITION_SOURCE,
                 Tables.DT_SC.DEFAULT_VALUE,
                 Tables.DT_SC.FIXED_VALUE).from(Tables.DT_SC)
                 .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
