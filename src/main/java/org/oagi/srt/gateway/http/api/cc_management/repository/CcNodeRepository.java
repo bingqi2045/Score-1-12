@@ -912,6 +912,24 @@ public class CcNodeRepository {
         return OagisComponentType.valueOf(oagisComponentType);
     }
 
+    private int getLatestRevisionAscc(long asccManifestId) {
+        return dslContext.select(
+                ASCC.REVISION_NUM
+        ).from(ASCC_RELEASE_MANIFEST)
+                .join(ASCC).on(ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
+                .fetchOptionalInto(int.class).orElse(0);
+    }
+
+    private int getLatestRevisionBcc(long bccManifestId) {
+        return dslContext.select(
+                BCC.REVISION_NUM
+        ).from(BCC_RELEASE_MANIFEST)
+                .join(BCC).on(BCC_RELEASE_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .fetchOptionalInto(int.class).orElse(0);
+    }
+
     private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
@@ -952,6 +970,7 @@ public class CcNodeRepository {
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
             asccpNode.setAsccManifestId(asccNode.getManifestId());
+            asccpNode.setRevisionNum(getLatestRevisionAscc(asccNode.getManifestId()));
             return asccpNode;
         }).collect(Collectors.toList());
     }
@@ -993,6 +1012,7 @@ public class CcNodeRepository {
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());
             bccpNode.setBccManifestId(bccNode.getManifestId());
+            bccpNode.setRevisionNum(getLatestRevisionBcc(bccNode.getManifestId()));
             return bccpNode;
         }).collect(Collectors.toList());
     }
@@ -1039,6 +1059,7 @@ public class CcNodeRepository {
                 ACC.IS_ABSTRACT.as("abstracted"),
                 ACC.IS_DEPRECATED.as("deprecated"),
                 ACC.DEFINITION,
+                ACC.DEFINITION_SOURCE,
                 ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.as("manifest_id"))
                 .from(ACC_RELEASE_MANIFEST)
                 .join(ACC)
@@ -1060,13 +1081,14 @@ public class CcNodeRepository {
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX,
                     ASCC.IS_DEPRECATED.as("deprecated"),
-                    ASCC.DEFINITION)
+                    ASCC.DEFINITION,
+                    ASCC.DEFINITION_SOURCE)
                     .from(ASCC_RELEASE_MANIFEST)
                     .join(ASCC)
                     .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
                     .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
-
+            ascc.setRevisionNum(getLatestRevisionAscc(asccManifestId));
             asccpNodeDetail.setAscc(ascc);
         }
 
@@ -1079,7 +1101,8 @@ public class CcNodeRepository {
                 ASCCP.DEN,
                 ASCCP.REUSABLE_INDICATOR.as("reusable"),
                 ASCCP.IS_DEPRECATED.as("deprecated"),
-                ASCCP.DEFINITION)
+                ASCCP.DEFINITION,
+                ASCCP.DEFINITION_SOURCE)
                 .from(ASCCP_RELEASE_MANIFEST)
                 .join(ASCCP)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
@@ -1126,13 +1149,14 @@ public class CcNodeRepository {
                     BCC.DEFAULT_VALUE,
                     BCC.FIXED_VALUE,
                     BCC.DEFINITION,
+                    BCC.DEFINITION_SOURCE,
                     BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.as("manifest_id"))
                     .from(BCC_RELEASE_MANIFEST)
                     .join(BCC)
                     .on(BCC_RELEASE_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                     .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
-
+            bcc.setRevisionNum(getLatestRevisionBcc(bccManifestId));
             bccpNodeDetail.setBcc(bcc);
         }
 
@@ -1147,6 +1171,7 @@ public class CcNodeRepository {
                 BCCP.DEFAULT_VALUE,
                 BCCP.FIXED_VALUE,
                 BCCP.DEFINITION,
+                BCCP.DEFINITION_SOURCE,
                 BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.as("manifest_id"))
                 .from(BCCP_RELEASE_MANIFEST)
                 .join(BCCP)
@@ -1164,7 +1189,8 @@ public class CcNodeRepository {
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
                 DT.DEN,
-                DT.DEFINITION).from(DT)
+                DT.DEFINITION,
+                DT.DEFINITION_SOURCE).from(DT)
                 .where(DT.DT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
@@ -1181,6 +1207,7 @@ public class CcNodeRepository {
                 DT_SC.CARDINALITY_MIN,
                 DT_SC.CARDINALITY_MAX,
                 DT_SC.DEFINITION,
+                DT_SC.DEFINITION_SOURCE,
                 DT_SC.DEFAULT_VALUE,
                 DT_SC.FIXED_VALUE).from(DT_SC)
                 .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
@@ -1192,7 +1219,6 @@ public class CcNodeRepository {
                 .where(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(accId))
                         .and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOne();
-
     }
 
     @Data

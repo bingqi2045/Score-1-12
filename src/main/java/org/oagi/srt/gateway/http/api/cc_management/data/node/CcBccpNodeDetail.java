@@ -24,6 +24,8 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String defaultValue;
         private String fixedValue;
         private String definition;
+        private String definitionSource;
+        private int revisionNum;
     }
 
     @Data
@@ -38,6 +40,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String defaultValue;
         private String fixedValue;
         private String definition;
+        private String definitionSource;
     }
 
     @Data
@@ -48,5 +51,6 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String qualifier;
         private String den;
         private String definition;
+        private String definitionSource;
     }
 }

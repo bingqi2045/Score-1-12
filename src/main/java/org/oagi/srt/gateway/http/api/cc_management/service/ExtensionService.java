@@ -4,7 +4,8 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.*;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
@@ -18,7 +19,6 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
@@ -112,7 +111,6 @@ public class ExtensionService {
                 )).fetchOneInto(ACC.class);
         return ueAcc;
     }
-
 
     @Transactional
     public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
@@ -505,8 +503,7 @@ public class ExtensionService {
                         .fetchOne();
 
         repository.appendBccp(user, extensionAcc.getAccReleaseManifestId(),
-                bccpReleaseManifestRecord.getBccpReleaseManifestId() );
-
+                bccpReleaseManifestRecord.getBccpReleaseManifestId());
     }
 
     @Transactional
@@ -792,6 +789,16 @@ public class ExtensionService {
                     .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
                     .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
                     .execute();
+        }
+    }
+
+    public CcNode getLastRevisionCc(User user, String type, long manifestId) {
+        if (type.equals("ascc")) {
+            return null;
+        } else if (type.equals("bcc")) {
+            return null;
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 }
