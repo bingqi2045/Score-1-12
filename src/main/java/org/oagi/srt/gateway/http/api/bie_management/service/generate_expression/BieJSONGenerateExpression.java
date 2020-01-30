@@ -192,20 +192,18 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             items.putAll(properties);
 
             properties = new LinkedHashMap();
-            properties.put("type", "array");
 
             String description = (String) items.remove("description");
             if (!StringUtils.isEmpty(description)) {
                 properties.put("description", description);
             }
-
+            properties.put("type", "array");
             if (minVal > 0) {
                 properties.put("minItems", minVal);
             }
             if (maxVal > 0) {
                 properties.put("maxItems", maxVal);
             }
-
             properties.put("items", items);
         }
 
@@ -256,15 +254,13 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
          */
         if (isArray) {
             Map<String, Object> items = new LinkedHashMap(properties);
-
             properties = new LinkedHashMap();
-            properties.put("type", "array");
 
             String description = (String) items.remove("description");
             if (!StringUtils.isEmpty(description)) {
                 properties.put("description", description);
             }
-
+            properties.put("type", "array");
             properties.put("items", items);
         }
 
@@ -490,69 +486,19 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         properties = oneOf(allOf(properties), isNillable);
 
         if (isArray) {
-            String description = null;
-            if (properties.containsKey("allOf")) {
-                for (Object map : (List) properties.get("allOf")) {
-                    if (((Map<String, Object>) map).containsKey("description")) {
-                        description = (String) ((Map<String, Object>) map).remove("description");
-                        break;
-                    }
-                }
-
-                List allOfRearrangedList = new ArrayList();
-                for (Object map : (List) properties.get("allOf")) {
-                    if (((Map<String, Object>) map).isEmpty()) {
-                        continue;
-                    }
-                    allOfRearrangedList.add(map);
-                }
-                properties.put("allOf", allOfRearrangedList);
-            } else {
-                description = (String) properties.remove("description");
-            }
-
+            String description = (String) properties.remove("description");
             Map<String, Object> items = new LinkedHashMap(properties);
             properties = new LinkedHashMap();
             if (!StringUtils.isEmpty(description)) {
                 properties.put("description", description);
             }
-
             properties.put("type", "array");
-
             if (minVal > 0) {
                 properties.put("minItems", minVal);
             }
             if (maxVal > 0) {
                 properties.put("maxItems", maxVal);
             }
-
-            if (items.containsKey("oneOf")) {
-                List oneOf = (List) items.get("oneOf");
-                for (Object map : oneOf) {
-                    if (((Map<String, Object>) map).containsKey("allOf")) {
-                        List allOf = (List) ((Map<String, Object>) map).get("allOf");
-                        if (allOf.size() == 1) {
-                            Map<String, Object> innerMap = (Map<String, Object>) allOf.get(0);
-                            if (innerMap.size() == 1 && innerMap.containsKey("$ref")) {
-                                ref = (String) innerMap.get("$ref");
-                                ((Map<String, Object>) map).remove("allOf");
-                                ((Map<String, Object>) map).put("$ref", ref);
-                            }
-                        }
-                    }
-                }
-            } else if (items.size() == 1 && items.containsKey("allOf")) {
-                List allOf = (List) items.get("allOf");
-                if (allOf.size() == 1) {
-                    Map<String, Object> map = (Map<String, Object>) allOf.get(0);
-                    if (map.size() == 1 && map.containsKey("$ref")) {
-                        ref = (String) map.get("$ref");
-                        items.remove("allOf");
-                        items.put("$ref", ref);
-                    }
-                }
-            }
-
             properties.put("items", items);
         }
 
@@ -576,32 +522,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     private Map<String, Object> oneOf(Map<String, Object> properties,
                                       boolean isNillable) {
         if (isNillable) {
-            String description = null;
-            if (properties.containsKey("allOf")) {
-                for (Object map : (List) properties.get("allOf")) {
-                    if (((Map<String, Object>) map).containsKey("description")) {
-                        description = (String) ((Map<String, Object>) map).remove("description");
-                        break;
-                    }
-                }
-
-                List allOfRearrangedList = new ArrayList();
-                for (Object map : (List) properties.get("allOf")) {
-                    if (((Map<String, Object>) map).isEmpty()) {
-                        continue;
-                    }
-                    allOfRearrangedList.add(map);
-                }
-                properties.put("allOf", allOfRearrangedList);
-            } else {
-                description = (String) properties.remove("description");
-            }
-
             Map<String, Object> prop = new LinkedHashMap();
-            if (!StringUtils.isEmpty(description)) {
-                prop.put("description", description);
-            }
-
             prop.put("oneOf", Arrays.asList(
                     ImmutableMap.builder()
                             .put("type", "null")
