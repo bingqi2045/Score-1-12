@@ -936,10 +936,6 @@ public class ExtensionService {
         updateAccState(extensionId, releaseId, state, userId, timestamp);
         updateAsccState(extensionId, releaseId, state, userId, timestamp);
         updateBccState(extensionId, releaseId, state, userId, timestamp);
-
-        if (state == CcState.Published) {
-            storeBieUserExtRevisions(extensionId, releaseId);
-        }
     }
 
     private void updateAccState(long extensionId, Long releaseId, CcState state,

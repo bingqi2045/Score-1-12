@@ -142,10 +142,10 @@ public class BieEditService {
         if (ueAcc != null) {
             ACC latestUeAcc = extensionService.getLatestUserExtension(ueAcc.getAccId(), releaseId);
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
-            if (ueAcc.getState() ==  CcState.Published.getValue()) {
+            if (ueAcc.getState() == CcState.Published.getValue()) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() ==  CcState.Candidate.getValue()){
+            } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
                 response.setCanView(true);
             } else {
                 if (isSameBetweenRequesterAndOwner) {
@@ -154,6 +154,7 @@ public class BieEditService {
                 }
             }
         }
+
         response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
         return response;
     }
