@@ -153,6 +153,9 @@ public class BieEditService {
                     response.setCanView(true);
                 }
             }
+        } else {
+            response.setCanEdit(true);
+            response.setCanView(true);
         }
 
         response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
@@ -173,18 +176,26 @@ public class BieEditService {
 
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
 
-        response.setCanEdit(true);
-        response.setCanView(true);
+        response.setCanEdit(false);
+        response.setCanView(false);
 
         if (ueAcc != null) {
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == ueAcc.getOwnerUserId();
-            boolean isPublished = ueAcc.getState() ==  CcState.Published.getValue();
-            if (!isPublished && !isSameBetweenRequesterAndOwner) {
-                response.setCanEdit(false);
-                if (ueAcc.getState() ==  CcState.Editing.getValue()) {
-                    response.setCanView(false);
+            ACC latestUeAcc = extensionService.getLatestUserExtension(ueAcc.getAccId(), releaseId);
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
+            if (ueAcc.getState() == CcState.Published.getValue()) {
+                response.setCanEdit(true);
+                response.setCanView(true);
+            } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
+                response.setCanView(true);
+            } else {
+                if (isSameBetweenRequesterAndOwner) {
+                    response.setCanEdit(true);
+                    response.setCanView(true);
                 }
             }
+        } else {
+            response.setCanEdit(true);
+            response.setCanView(true);
         }
         response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
         return response;
