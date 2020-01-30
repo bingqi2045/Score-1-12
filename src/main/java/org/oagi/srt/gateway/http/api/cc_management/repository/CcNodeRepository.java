@@ -1150,6 +1150,7 @@ public class CcNodeRepository {
                     BCC.FIXED_VALUE,
                     BCC.DEFINITION,
                     BCC.DEFINITION_SOURCE,
+                    BCC.IS_NILLABLE.as("nillable"),
                     BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.as("manifest_id"))
                     .from(BCC_RELEASE_MANIFEST)
                     .join(BCC)
