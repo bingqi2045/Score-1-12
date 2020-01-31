@@ -121,7 +121,9 @@ public class ExtensionService {
                                     long releaseId, User user) {
         if (ueAcc != null) {
             if (CcState.Published.getValue() == ueAcc.getState()) {
-                return increaseRevisionNum(ueAcc, releaseId, user);
+                AccReleaseManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                CcAccNode acc = repository.updateAccState(user, accManifest.getAccReleaseManifestId(), CcState.Editing);
+                return acc.getManifestId();
             } else {
                 AccReleaseManifestRecord ueAccManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccReleaseManifestId().longValue();
@@ -129,189 +131,6 @@ public class ExtensionService {
         } else {
             return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
         }
-    }
-
-    private long increaseRevisionNum(ACC ueAcc, long releaseId, User user) {
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        int revisionNum = increaseAccRevisionNum(ueAcc, releaseId, userId, timestamp);
-        increaseAsccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
-        increaseBccRevisionNum(ueAcc, revisionNum, releaseId, userId, timestamp);
-
-        AccReleaseManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
-
-        return accManifest.getAccReleaseManifestId().longValue();
-    }
-
-    private int increaseAccRevisionNum(ACC ueAcc, long releaseId,
-                                       ULong userId, Timestamp timestamp) {
-
-        AccRecord history = dslContext.selectFrom(Tables.ACC)
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
-                .orderBy(Tables.ACC.ACC_ID.desc()).limit(1)
-                .fetchOne();
-
-        int newRevisionNum = history.getRevisionNum() + 1;
-        history.setAccId(null);
-        history.setState(CcState.Editing.getValue());
-        history.setRevisionNum(newRevisionNum);
-        history.setRevisionTrackingNum(1);
-        history.setRevisionAction(Integer.valueOf(RevisionAction.Update.getValue()).byteValue());
-        history.setCreatedBy(userId);
-        history.setLastUpdatedBy(userId);
-        history.setOwnerUserId(userId);
-        history.setCreationTimestamp(timestamp);
-        history.setLastUpdateTimestamp(timestamp);
-
-        AccRecord newUeAcc = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne();
-
-        dslContext.update(ACC_RELEASE_MANIFEST)
-                .set(ACC_RELEASE_MANIFEST.ACC_ID, newUeAcc.getAccId())
-                .where(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
-                        .and(ACC_RELEASE_MANIFEST.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))))
-                .execute();
-
-
-        dslContext.update(Tables.ACC)
-                .set(Tables.ACC.STATE, history.getState())
-                .set(Tables.ACC.OWNER_USER_ID, userId)
-                .set(Tables.ACC.LAST_UPDATED_BY, userId)
-                .set(Tables.ACC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
-                .execute();
-
-        dslContext.insertInto(ACC).set(history).execute();
-
-        return newRevisionNum;
-    }
-
-    private void increaseAsccRevisionNum(ACC ueAcc, int revisionNum, long releaseId,
-                                         ULong userId, Timestamp timestamp) {
-        List<CcAsccNode> asccNodes = dslContext.select(
-                ASCC.ASCC_ID,
-                ASCC.GUID,
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
-                ASCC_RELEASE_MANIFEST.RELEASE_ID)
-                .from(ASCC)
-                .join(ASCC_RELEASE_MANIFEST)
-                .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID))
-                .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
-                        ASCC.REVISION_NUM.greaterThan(0)
-                ))
-                .fetchInto(CcAsccNode.class);
-
-        if (asccNodes.isEmpty()) {
-            return;
-        }
-
-        // Update a state of the 'current record'.
-        dslContext.update(ASCC)
-                .set(ASCC.STATE, CcState.Editing.getValue())
-                .set(ASCC.LAST_UPDATED_BY, userId)
-                .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
-                        ASCC.REVISION_NUM.eq(0)))
-                .execute();
-
-        Result<AsccRecord> asccRecordResult = asccRecordResult(asccNodes, releaseId);
-
-        for (AsccRecord history : asccRecordResult) {
-            long historyAsccId = history.getAsccId().longValue();
-            history.setAsccId(null);
-            history.setRevisionNum(revisionNum);
-            history.setRevisionTrackingNum(1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
-            history.setCreatedBy(userId);
-            history.setLastUpdatedBy(userId);
-            history.setOwnerUserId(userId);
-            history.setCreationTimestamp(timestamp);
-            history.setLastUpdateTimestamp(timestamp);
-            history.setState(CcState.Editing.getValue());
-
-            AsccRecord asccRecord = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
-
-            dslContext.update(ASCC_RELEASE_MANIFEST)
-                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, asccRecord.getAsccId())
-                    .where(ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(historyAsccId))
-                            .and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))));
-        }
-    }
-
-    private Result<AsccRecord> asccRecordResult(List<CcAsccNode> asccNodes, long releaseId) {
-        List<ULong> asccIds = asccNodes.stream()
-                .map(asccNode -> ULong.valueOf(asccNode.getAsccId()))
-                .collect(Collectors.toList());
-
-        return dslContext.selectFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccIds))
-                .fetch();
-    }
-
-    private void increaseBccRevisionNum(ACC ueAcc, int revisionNum, long releaseId,
-                                        ULong userId, Timestamp timestamp) {
-        List<CcBccNode> bccNodes = dslContext.select(
-                BCC.BCC_ID,
-                BCC.GUID,
-                BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
-                BCC_RELEASE_MANIFEST.RELEASE_ID)
-                .from(BCC)
-                .join(BCC_RELEASE_MANIFEST)
-                .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID))
-                .where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
-                        BCC.REVISION_NUM.greaterThan(0)))
-                .fetchInto(CcBccNode.class);
-
-        if (bccNodes.isEmpty()) {
-            return;
-        }
-
-        // Update a state of the 'current record'.
-        dslContext.update(BCC)
-                .set(BCC.STATE, CcState.Editing.getValue())
-                .set(BCC.LAST_UPDATED_BY, userId)
-                .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(and(
-                        BCC.FROM_ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())),
-                        BCC.REVISION_NUM.eq(0)))
-                .execute();
-
-        Result<BccRecord> bccRecordResult = bccRecordResult(bccNodes, releaseId);
-
-        for (BccRecord history : bccRecordResult) {
-            long historyBccId = history.getBccId().longValue();
-            history.setBccId(null);
-            history.setRevisionNum(revisionNum);
-            history.setRevisionTrackingNum(1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
-            history.setCreatedBy(userId);
-            history.setLastUpdatedBy(userId);
-            history.setOwnerUserId(userId);
-            history.setCreationTimestamp(timestamp);
-            history.setLastUpdateTimestamp(timestamp);
-            history.setState(CcState.Editing.getValue());
-
-            BccRecord bccRecord = dslContext.insertInto(BCC).set(history).returning().fetchOne();
-            dslContext.update(BCC_RELEASE_MANIFEST)
-                    .set(BCC_RELEASE_MANIFEST.BCC_ID, bccRecord.getBccId())
-                    .where(BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(historyBccId))
-                            .and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))));
-        }
-    }
-
-    private Result<BccRecord> bccRecordResult(List<CcBccNode> bccNodes, long releaseId) {
-        List<ULong> bccIds = bccNodes.stream()
-                .map(bccNode -> ULong.valueOf(bccNode.getBccId()))
-                .collect(Collectors.toList());
-
-        return dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.in(bccIds))
-                .fetch();
     }
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
@@ -812,6 +631,7 @@ public class ExtensionService {
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX).from(ASCC)
                     .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.getValue())))
+                    .orderBy(ASCC.ASCC_ID.desc()).limit(0)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
             String guid = dslContext.select(BCC.GUID).from(BCC)
@@ -825,6 +645,7 @@ public class ExtensionService {
                     BCC.CARDINALITY_MAX,
                     BCC.IS_NILLABLE.as("nillable")).from(BCC)
                     .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.getValue())))
+                    .orderBy(BCC.BCC_ID.desc()).limit(0)
                     .fetchOneInto(CcBccNode.class);
         } else {
             throw new UnsupportedOperationException();

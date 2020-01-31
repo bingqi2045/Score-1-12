@@ -1472,6 +1472,9 @@ public class CcNodeRepository {
 
         long originAccId = accRecord.getAccId().longValue();
         accRecord.set(ACC.ACC_ID, null);
+        if (accRecord.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()){
+            accRecord.set(ACC.OWNER_USER_ID, userId);
+        }
         accRecord.set(ACC.LAST_UPDATED_BY, userId);
         accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
         accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
