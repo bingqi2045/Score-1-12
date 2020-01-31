@@ -14,6 +14,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
+import org.oagi.srt.gateway.http.api.cc_management.repository.ReleaseManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -45,6 +46,9 @@ public class ExtensionService {
 
     @Autowired
     private CcNodeRepository repository;
+
+    @Autowired
+    private ReleaseManifestRepository manifestRepository;
 
     @Autowired
     private CcListService ccListService;
@@ -177,7 +181,7 @@ public class ExtensionService {
                 .where(Tables.ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId())))
                 .execute();
 
-        dslContext.insertInto(ACC_RELEASE_MANIFEST).set(history).execute();
+        dslContext.insertInto(ACC).set(history).execute();
 
         return newRevisionNum;
     }
@@ -589,6 +593,7 @@ public class ExtensionService {
         history.setCardinalityMax(ascc.getCardinalityMax());
         history.setIsDeprecated((byte) ((ascc.isDeprecated()) ? 1 : 0));
         history.setDefinition(ascc.getDefinition());
+        history.setDefinitionSource(ascc.getDefinitionSource());
         history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
         history.setRevisionAction((byte) RevisionAction.Update.getValue());
         history.setCreatedBy(userId);
@@ -631,6 +636,7 @@ public class ExtensionService {
         history.setIsDeprecated((byte) ((bcc.isDeprecated()) ? 1 : 0));
         history.setDefaultValue(bcc.getDefaultValue());
         history.setDefinition(bcc.getDefinition());
+        history.setDefinitionSource(bcc.getDefinitionSource());
         history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
         history.setRevisionAction((byte) RevisionAction.Update.getValue());
         history.setCreatedBy(userId);
@@ -793,10 +799,33 @@ public class ExtensionService {
     }
 
     public CcNode getLastRevisionCc(User user, String type, long manifestId) {
+
         if (type.equals("ascc")) {
-            return null;
+            String guid = dslContext.select(ASCC.GUID).from(ASCC)
+                    .where(ASCC.ASCC_ID.eq(manifestRepository.getAsccReleaseManifestById(manifestId).getAsccId()))
+                    .fetchOneInto(String.class);
+            return dslContext.select(
+                    ASCC.ASCC_ID,
+                    ASCC.GUID,
+                    ASCC.REVISION_NUM,
+                    ASCC.REVISION_TRACKING_NUM,
+                    ASCC.CARDINALITY_MIN,
+                    ASCC.CARDINALITY_MAX).from(ASCC)
+                    .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.getValue())))
+                    .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
-            return null;
+            String guid = dslContext.select(BCC.GUID).from(BCC)
+                    .where(BCC.BCC_ID.eq(manifestRepository.getBccReleaseManifestById(manifestId).getBccId()))
+                    .fetchOneInto(String.class);
+            return dslContext.select(BCC.BCC_ID,
+                    BCC.GUID,
+                    BCC.REVISION_NUM,
+                    BCC.REVISION_TRACKING_NUM,
+                    BCC.CARDINALITY_MIN,
+                    BCC.CARDINALITY_MAX,
+                    BCC.IS_NILLABLE.as("nillable")).from(BCC)
+                    .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.getValue())))
+                    .fetchOneInto(CcBccNode.class);
         } else {
             throw new UnsupportedOperationException();
         }

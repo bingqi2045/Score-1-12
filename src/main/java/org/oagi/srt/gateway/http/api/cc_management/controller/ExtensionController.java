@@ -86,11 +86,10 @@ public class ExtensionController {
         return service.updateDetails(user, request);
     }
 
-    @RequestMapping(value = "/core_component/extension/{releaseId:[\\d]+}/{type}/{id:[\\d]+}/reivision",
+    @RequestMapping(value = "/core_component/extension//{type}/{manifestId:[\\d]+}/reivision",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getLastCcNode(@AuthenticationPrincipal User user,
-                                @PathVariable("releaseId") long releaseId,
                                 @PathVariable("type") String type,
                                 @PathVariable("manifestId") long manifestId) {
         return service.getLastRevisionCc(user, type, manifestId);
