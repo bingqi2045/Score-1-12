@@ -1248,32 +1248,32 @@ public class CcNodeRepository {
 
     public boolean isAccUsed(long accId) {
         int cnt = dslContext.selectCount()
-                .from(ASCCP)
-                .where(ASCCP.ROLE_OF_ACC_ID.eq(ULong.valueOf(accId)))
+                .from(ASCCP_RELEASE_MANIFEST)
+                .where(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
         }
 
         cnt = dslContext.selectCount()
-                .from(ACC)
-                .where(ACC.BASED_ACC_ID.eq(ULong.valueOf(accId)))
+                .from(ACC_RELEASE_MANIFEST)
+                .where(ACC_RELEASE_MANIFEST.BASED_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
         }
 
         cnt = dslContext.selectCount()
-                .from(ASCC)
-                .where(ASCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .from(ASCC_RELEASE_MANIFEST)
+                .where(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
         }
 
         cnt = dslContext.selectCount()
-                .from(BCC)
-                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(accId)))
+                .from(BCC_RELEASE_MANIFEST)
+                .where(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(accId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1292,8 +1292,8 @@ public class CcNodeRepository {
 
     public boolean isAsccpUsed(long asccpId) {
         int cnt = dslContext.selectCount()
-                .from(ASCC)
-                .where(ASCC.TO_ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .from(ASCC_RELEASE_MANIFEST)
+                .where(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(ULong.valueOf(asccpId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1312,8 +1312,8 @@ public class CcNodeRepository {
 
     public boolean isBccpUsed(long bccpId) {
         int cnt = dslContext.selectCount()
-                .from(BCC)
-                .where(BCC.TO_BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .from(BCC_RELEASE_MANIFEST)
+                .where(BCC_RELEASE_MANIFEST.TO_BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
