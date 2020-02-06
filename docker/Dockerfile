@@ -12,6 +12,6 @@ COPY wait-for-it.sh /wait-for-it.sh
 COPY mysql-connector-java-8.0.18.jar /usr/local/tomcat/lib/mysql-connector-java-8.0.18.jar
 
 RUN ["rm", "-rf", "/usr/local/tomcat/webapps/ROOT"]
-COPY srt-http-gateway-1.3.1.war /usr/local/tomcat/webapps/ROOT.war
+COPY score-http-1.3.1.war /usr/local/tomcat/webapps/ROOT.war
 
 CMD ["catalina.sh", "run"]
