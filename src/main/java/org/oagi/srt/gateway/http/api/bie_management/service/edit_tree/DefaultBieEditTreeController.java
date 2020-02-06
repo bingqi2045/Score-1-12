@@ -1225,8 +1225,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .setNull(Tables.BBIE_SC.CODE_LIST_ID)
                     .setNull(Tables.BBIE_SC.AGENCY_ID_LIST_ID)
                     .where(Tables.BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
-        } else {
-            throw new IllegalArgumentException();
         }
 
         DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
