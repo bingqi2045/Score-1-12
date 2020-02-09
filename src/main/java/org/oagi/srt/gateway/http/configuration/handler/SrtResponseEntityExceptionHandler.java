@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,13 @@ public class SrtResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(
+            AuthenticationException ex, WebRequest webRequest) {
+        logger.debug(ex.getMessage(), ex);
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(SerializationException.class)
+    public ResponseEntity handleSerializationException(
             AuthenticationException ex, WebRequest webRequest) {
         logger.debug(ex.getMessage(), ex);
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
