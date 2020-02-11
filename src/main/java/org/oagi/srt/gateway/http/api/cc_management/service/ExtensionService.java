@@ -62,7 +62,7 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(User user, long manifestId) {
         AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
-        CcAccNode ueAcc = repository.getAccNodeByAccId(user, extensionAcc);
+        CcAccNode ueAcc = repository.getAccNodeByAccReleaseManifest(user, extensionAcc);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
         CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
@@ -620,8 +620,12 @@ public class ExtensionService {
     public CcNode getLastRevisionCc(User user, String type, long manifestId) {
 
         if (type.equals("ascc")) {
+            AsccReleaseManifestRecord asccReleaseManifest = manifestRepository.getAsccReleaseManifestById(manifestId);
+            if (asccReleaseManifest == null) {
+                return null;
+            }
             String guid = dslContext.select(ASCC.GUID).from(ASCC)
-                    .where(ASCC.ASCC_ID.eq(manifestRepository.getAsccReleaseManifestById(manifestId).getAsccId()))
+                    .where(ASCC.ASCC_ID.eq(asccReleaseManifest.getAsccId()))
                     .fetchOneInto(String.class);
             return dslContext.select(
                     ASCC.ASCC_ID,
@@ -634,8 +638,12 @@ public class ExtensionService {
                     .orderBy(ASCC.ASCC_ID.desc()).limit(0)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
+            BccReleaseManifestRecord bccReleaseManifest = manifestRepository.getBccReleaseManifestById(manifestId);
+            if (bccReleaseManifest == null) {
+                return null;
+            }
             String guid = dslContext.select(BCC.GUID).from(BCC)
-                    .where(BCC.BCC_ID.eq(manifestRepository.getBccReleaseManifestById(manifestId).getBccId()))
+                    .where(BCC.BCC_ID.eq(bccReleaseManifest.getBccId()))
                     .fetchOneInto(String.class);
             return dslContext.select(BCC.BCC_ID,
                     BCC.GUID,

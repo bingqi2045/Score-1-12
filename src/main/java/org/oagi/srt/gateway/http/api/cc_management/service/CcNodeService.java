@@ -33,7 +33,7 @@ public class CcNodeService {
     public CcAccNode getAccNode(User user, long manifestId) {
         AccReleaseManifestRecord accReleaseManifestRecord =
                 manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
-        return repository.getAccNodeByAccId(user, accReleaseManifestRecord);
+        return repository.getAccNodeByAccReleaseManifest(user, accReleaseManifestRecord);
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
