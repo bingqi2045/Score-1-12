@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
 import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 import org.oagi.srt.gateway.http.api.module_management.data.*;
+import org.oagi.srt.gateway.http.api.module_management.data.Module;
 import org.oagi.srt.gateway.http.api.module_management.data.module_edit.ModuleElement;
 import org.oagi.srt.gateway.http.api.module_management.data.module_edit.ModuleElementDependency;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
