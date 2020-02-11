@@ -2078,9 +2078,8 @@ public class CcNodeRepository {
             return null;
         }
 
-        if (record.get(ACC.OAGIS_COMPONENT_TYPE) == OagisComponentType.UserExtensionGroup.getValue()
-                || (record.get(ACC.OAGIS_COMPONENT_TYPE) == OagisComponentType.Extension.getValue()
-                && record.get(ACC_RELEASE_MANIFEST.BASED_ACC_ID) != null)) {
+        if (record.get(ACC.OAGIS_COMPONENT_TYPE) == OagisComponentType.Extension.getValue()
+                && record.get(ACC_RELEASE_MANIFEST.BASED_ACC_ID) != null) {
             return getEdgeAccReleaseManifestId(record.get(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID));
         }
 
