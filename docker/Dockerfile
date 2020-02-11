@@ -1,4 +1,4 @@
-FROM tomcat:8-jre8-slim
+FROM tomcat:9-jdk11-adoptopenjdk-openj9
 
 ENV DB_HOST localhost
 ENV DB_PORT 3306
