@@ -348,6 +348,9 @@ public class CcListRepository {
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
             conditions.add(DSL.lower(ASCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
+        if (request.getModule() != null && !request.getModule().isEmpty()) {
+            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+        }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
         }
@@ -411,7 +414,6 @@ public class CcListRepository {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
-
         List<Condition> conditions = new ArrayList();
         conditions.add(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         conditions.add(BCCP.DEN.notContains("User Extension Group"));
@@ -436,6 +438,9 @@ public class CcListRepository {
         }
         if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
             conditions.add(DSL.lower(BCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        }
+        if (request.getModule() != null && !request.getModule().isEmpty()) {
+            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
