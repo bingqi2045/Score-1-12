@@ -37,10 +37,16 @@ public class ReleaseService {
     private ReleaseRepository repository;
 
     public List<SimpleRelease> getSimpleReleases() {
-        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM)
+        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.STATE)
                 .from(Tables.RELEASE)
                 .where(Tables.RELEASE.STATE.eq(ReleaseState.Final.getValue()))
-                .fetchInto(SimpleRelease.class);
+                .fetch().map(row -> {
+                    SimpleRelease simpleRelease = new SimpleRelease();
+                    simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).longValue());
+                    simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
+                    simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
+                    return simpleRelease;
+                });
     }
 
     public SimpleRelease getSimpleReleaseByReleaseId(long releaseId) {

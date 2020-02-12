@@ -107,7 +107,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM)
+                ACC.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(ACC)
                 .join(ACC_RELEASE_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_RELEASE_MANIFEST.ACC_ID).and(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -137,6 +138,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ACC.REVISION_NUM) + "." + row.getValue(ACC.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
@@ -195,7 +197,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM)
+                ASCC.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(ASCC)
                 .join(ASCC_RELEASE_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_RELEASE_MANIFEST.ASCC_ID).and(ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -220,6 +223,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ASCC.REVISION_NUM) + "." + row.getValue(ASCC.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
@@ -278,7 +282,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM)
+                BCC.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(BCC)
                 .join(BCC_RELEASE_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_RELEASE_MANIFEST.BCC_ID).and(BCC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -303,6 +308,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(BCC.REVISION_NUM) + "." + row.getValue(BCC.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
@@ -362,7 +368,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM)
+                ASCCP.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(ASCCP)
                 .join(ASCCP_RELEASE_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID).and(ASCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -390,6 +397,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ASCCP.REVISION_NUM) + "." + row.getValue(ASCCP.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
@@ -449,7 +457,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM)
+                BCCP.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(BCCP)
                 .join(BCCP_RELEASE_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_RELEASE_MANIFEST.BCCP_ID).and(BCCP_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -477,6 +486,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(BCCP.REVISION_NUM) + "." + row.getValue(BCCP.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
@@ -536,7 +546,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 DT.REVISION_NUM,
-                DT.REVISION_TRACKING_NUM)
+                DT.REVISION_TRACKING_NUM,
+                RELEASE.RELEASE_NUM)
                 .from(DT)
                 .join(DT_RELEASE_MANIFEST)
                 .on(DT.DT_ID.eq(DT_RELEASE_MANIFEST.DT_ID).and(DT_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
@@ -568,6 +579,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(DT.REVISION_NUM) + "." + row.getValue(DT.REVISION_TRACKING_NUM));
+                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
     }
