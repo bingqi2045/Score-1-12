@@ -141,17 +141,16 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
             if (ueAcc.getState() == CcState.Published.getValue()) {
                 response.setCanEdit(true);
                 response.setCanView(true);
             } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
                 response.setCanView(true);
-            } else {
-                if (isSameBetweenRequesterAndOwner) {
-                    response.setCanEdit(true);
-                    response.setCanView(true);
-                }
+            }
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
+            if (isSameBetweenRequesterAndOwner) {
+                response.setCanEdit(true);
+                response.setCanView(true);
             }
         } else {
             response.setCanEdit(true);
@@ -183,17 +182,16 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
             if (ueAcc.getState() == CcState.Published.getValue()) {
                 response.setCanEdit(true);
                 response.setCanView(true);
             } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
                 response.setCanView(true);
-            } else {
-                if (isSameBetweenRequesterAndOwner) {
-                    response.setCanEdit(true);
-                    response.setCanView(true);
-                }
+            }
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
+            if (isSameBetweenRequesterAndOwner) {
+                response.setCanEdit(true);
+                response.setCanView(true);
             }
         } else {
             response.setCanEdit(true);

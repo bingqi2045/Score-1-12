@@ -635,7 +635,7 @@ public class ExtensionService {
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX).from(ASCC)
                     .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.getValue())))
-                    .orderBy(ASCC.ASCC_ID.desc()).limit(0)
+                    .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
             BccReleaseManifestRecord bccReleaseManifest = manifestRepository.getBccReleaseManifestById(manifestId);
@@ -653,7 +653,7 @@ public class ExtensionService {
                     BCC.CARDINALITY_MAX,
                     BCC.IS_NILLABLE.as("nillable")).from(BCC)
                     .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.getValue())))
-                    .orderBy(BCC.BCC_ID.desc()).limit(0)
+                    .orderBy(BCC.BCC_ID.desc()).limit(1)
                     .fetchOneInto(CcBccNode.class);
         } else {
             throw new UnsupportedOperationException();
