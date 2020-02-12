@@ -39,7 +39,7 @@ public class ReleaseService {
     public List<SimpleRelease> getSimpleReleases() {
         return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.STATE)
                 .from(Tables.RELEASE)
-                .where(Tables.RELEASE.STATE.eq(ReleaseState.Final.getValue()))
+                .where(Tables.RELEASE.STATE.eq(ReleaseState.Published.getValue()))
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).longValue());

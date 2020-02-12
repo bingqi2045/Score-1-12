@@ -54,7 +54,7 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
-        if (release.getReleaseNum().equals("Working")) {
+        if ("Working".equals(release.getReleaseNum())) {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.notEqual(OagisComponentType.UserExtensionGroup.getValue()));
         }
         if (request.getDeprecated() != null) {

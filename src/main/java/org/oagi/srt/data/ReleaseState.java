@@ -3,7 +3,7 @@ package org.oagi.srt.data;
 public enum ReleaseState {
 
     Draft(1),
-    Final(2);
+    Published(2);
 
     private final int value;
 
