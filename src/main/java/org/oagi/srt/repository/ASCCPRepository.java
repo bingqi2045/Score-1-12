@@ -26,7 +26,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.DEFINITION,
                 Tables.ASCCP.DEFINITION_SOURCE,
                 Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP_RELEASE_MANIFEST.MODULE_ID,
+                Tables.ASCCP_MANIFEST.MODULE_ID,
                 Tables.ASCCP.NAMESPACE_ID,
                 Tables.ASCCP.CREATED_BY,
                 Tables.ASCCP.OWNER_USER_ID,
@@ -37,15 +37,15 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.REVISION_NUM,
                 Tables.ASCCP.REVISION_TRACKING_NUM,
                 Tables.ASCCP.REVISION_ACTION,
-                Tables.ASCCP_RELEASE_MANIFEST.RELEASE_ID,
+                Tables.ASCCP_MANIFEST.RELEASE_ID,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCCP.IS_NILLABLE.as("nillable"),
                 Tables.MODULE.MODULE_.as("module"))
                 .from(Tables.ASCCP)
-                .join(Tables.ASCCP_RELEASE_MANIFEST)
-                .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                .leftJoin(Tables.MODULE).on(Tables.ASCCP_RELEASE_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .join(Tables.ASCCP_MANIFEST)
+                .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
+                .leftJoin(Tables.MODULE).on(Tables.ASCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override

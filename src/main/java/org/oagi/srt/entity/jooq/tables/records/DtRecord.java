@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1532947466;
+    private static final long serialVersionUID = -1147656865;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.

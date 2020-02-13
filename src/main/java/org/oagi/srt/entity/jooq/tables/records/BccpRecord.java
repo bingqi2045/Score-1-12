@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Bccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Integer, Byte, String, String> {
 
-    private static final long serialVersionUID = 1826947970;
+    private static final long serialVersionUID = -1378670997;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.

@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -29,7 +29,7 @@ import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record9<ULong, String, String, String, String, ULong, String, ULong, String> {
 
-    private static final long serialVersionUID = -1991715542;
+    private static final long serialVersionUID = -1430964403;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.

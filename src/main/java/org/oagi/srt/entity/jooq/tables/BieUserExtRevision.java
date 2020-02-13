@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -50,7 +50,7 @@ import org.oagi.srt.entity.jooq.tables.records.BieUserExtRevisionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
 
-    private static final long serialVersionUID = 1120245813;
+    private static final long serialVersionUID = -1671367260;
 
     /**
      * The reference instance of <code>oagi.bie_user_ext_revision</code>

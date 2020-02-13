@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
-    private static final long serialVersionUID = -1396196773;
+    private static final long serialVersionUID = 185527306;
 
     /**
      * The reference instance of <code>oagi.module_dep</code>

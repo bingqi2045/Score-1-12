@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = -528612350;
+    private static final long serialVersionUID = -782830295;
 
     /**
      * The reference instance of <code>oagi.bcc</code>

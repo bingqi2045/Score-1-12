@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
-import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
@@ -61,10 +61,10 @@ public class BieService {
         long userId = sessionService.userId(user);
         long asccpManifestId = request.getAsccpManifestId();
 
-        AsccpReleaseManifestRecord asccpReleaseManifest =
-                dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
-                        .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
-                        .fetchOptionalInto(AsccpReleaseManifestRecord.class).orElse(null);
+        AsccpManifestRecord asccpReleaseManifest =
+                dslContext.selectFrom(ASCCP_MANIFEST)
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                        .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
         if (asccpReleaseManifest == null) {
             throw new IllegalArgumentException();
         }

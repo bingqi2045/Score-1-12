@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.CdtScAwdPriRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
 
-    private static final long serialVersionUID = 1128632675;
+    private static final long serialVersionUID = 984769490;
 
     /**
      * The reference instance of <code>oagi.cdt_sc_awd_pri</code>

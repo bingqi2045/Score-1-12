@@ -1,9 +1,9 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.types.ULong;
-import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
@@ -31,9 +31,9 @@ public class CcNodeService {
     private SessionService sessionService;
 
     public CcAccNode getAccNode(User user, long manifestId) {
-        AccReleaseManifestRecord accReleaseManifestRecord =
+        AccManifestRecord accManifestRecord =
                 manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
-        return repository.getAccNodeByAccReleaseManifest(user, accReleaseManifestRecord);
+        return repository.getAccNodeByAccReleaseManifest(user, accManifestRecord);
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
@@ -46,49 +46,49 @@ public class CcNodeService {
 
     @Transactional
     public void deleteAccNode(User user, long manifestId) {
-        AccReleaseManifestRecord accReleaseManifestRecord =
+        AccManifestRecord accManifestRecord =
                 manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
 
-        boolean used = repository.isAccUsed(accReleaseManifestRecord.getAccId().longValue());
+        boolean used = repository.isAccUsed(accManifestRecord.getAccId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target ACC is currently in use by another component.");
         }
 
         manifestRepository.deleteAccReleaseManifestById(manifestId);
-        if (!manifestRepository.isAccUsed(accReleaseManifestRecord.getAccId().longValue())) {
-            repository.deleteAccRecords(accReleaseManifestRecord.getAccId().longValue());
+        if (!manifestRepository.isAccUsed(accManifestRecord.getAccId().longValue())) {
+            repository.deleteAccRecords(accManifestRecord.getAccId().longValue());
         }
     }
 
     @Transactional
     public void deleteAsccpNode(User user, long manifestId) {
-        AsccpReleaseManifestRecord asccpReleaseManifestRecord =
+        AsccpManifestRecord asccpManifestRecord =
                 manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
 
-        boolean used = repository.isAsccpUsed(asccpReleaseManifestRecord.getAsccpId().longValue());
+        boolean used = repository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target ASCCP is currently in use by another component.");
         }
 
         manifestRepository.deleteAsccpReleaseManifestById(manifestId);
-        if (!manifestRepository.isAsccpUsed(asccpReleaseManifestRecord.getAsccpId().longValue())) {
-            repository.deleteAsccpRecords(asccpReleaseManifestRecord.getAsccpId().longValue());
+        if (!manifestRepository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue())) {
+            repository.deleteAsccpRecords(asccpManifestRecord.getAsccpId().longValue());
         }
     }
 
     @Transactional
     public void deleteBccpNode(User user, long manifestId) {
-        BccpReleaseManifestRecord bccpReleaseManifestRecord =
+        BccpManifestRecord bccpManifestRecord =
                 manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
 
-        boolean used = repository.isBccpUsed(bccpReleaseManifestRecord.getBccpId().longValue());
+        boolean used = repository.isBccpUsed(bccpManifestRecord.getBccpId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target BCCP is currently in use by another component.");
         }
 
         manifestRepository.deleteBccpReleaseManifestById(manifestId);
-        if (!manifestRepository.isBccpUsed(bccpReleaseManifestRecord.getBccpId().longValue())) {
-            repository.deleteBccpRecords(bccpReleaseManifestRecord.getBccpId().longValue());
+        if (!manifestRepository.isBccpUsed(bccpManifestRecord.getBccpId().longValue())) {
+            repository.deleteBccpRecords(bccpManifestRecord.getBccpId().longValue());
         }
     }
 

@@ -42,11 +42,11 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 Tables.ASCC.REVISION_NUM,
                 Tables.ASCC.REVISION_TRACKING_NUM,
                 Tables.ASCC.REVISION_ACTION,
-                Tables.ASCC_RELEASE_MANIFEST.RELEASE_ID,
+                Tables.ASCC_MANIFEST.RELEASE_ID,
                 Tables.ASCC.IS_DEPRECATED.as("deprecated"))
                 .from(Tables.ASCC)
-                .join(Tables.ASCC_RELEASE_MANIFEST)
-                .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_RELEASE_MANIFEST.ASCC_ID));
+                .join(Tables.ASCC_MANIFEST)
+                .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_MANIFEST.ASCC_ID));
     }
 
     @Override

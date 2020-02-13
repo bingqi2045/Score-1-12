@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -30,7 +30,7 @@ import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1073464642;
+    private static final long serialVersionUID = 657032255;
 
     /**
      * Setter for <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary, internal database key.

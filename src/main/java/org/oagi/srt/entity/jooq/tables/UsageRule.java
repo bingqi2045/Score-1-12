@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.UsageRuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRule extends TableImpl<UsageRuleRecord> {
 
-    private static final long serialVersionUID = -1268938449;
+    private static final long serialVersionUID = -876843488;
 
     /**
      * The reference instance of <code>oagi.usage_rule</code>

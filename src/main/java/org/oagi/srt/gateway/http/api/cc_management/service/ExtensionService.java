@@ -53,14 +53,14 @@ public class ExtensionService {
     @Autowired
     private CcListService ccListService;
 
-    private AccReleaseManifestRecord getExtensionAcc(long manifestId) {
-        return dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+    private AccManifestRecord getExtensionAcc(long manifestId) {
+        return dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOptional().orElse(null);
     }
 
     public CcAccNode getExtensionNode(User user, long manifestId) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
+        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
         CcAccNode ueAcc = repository.getAccNodeByAccReleaseManifest(user, extensionAcc);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
@@ -102,17 +102,19 @@ public class ExtensionService {
     public ACC getExistsUserExtension(long accId, long releaseId) {
         ACC ueAcc =
                 dslContext.select(ACC.fields())
-                .from(ACC.as("eAcc"))
-                        .join(ACC_RELEASE_MANIFEST.as("eACCRM")).on(
-                                and(ACC.as("eAcc").ACC_ID.eq(ACC_RELEASE_MANIFEST.as("eACCRM").ACC_ID),
-                                        ACC_RELEASE_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                        .join(ASCC_RELEASE_MANIFEST).on(ACC_RELEASE_MANIFEST.as("eACCRM").ACC_ID.eq(ASCC_RELEASE_MANIFEST.FROM_ACC_ID))
-                        .join(ASCCP_RELEASE_MANIFEST).on(ASCC_RELEASE_MANIFEST.TO_ASCCP_ID.eq(ASCCP_RELEASE_MANIFEST.ASCCP_ID))
-                        .join(ACC_RELEASE_MANIFEST).on(ACC_RELEASE_MANIFEST.ACC_ID.eq(ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID))
-                        .join(ACC).on(ACC_RELEASE_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .where(and(ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
-                        ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
-                )).fetchOneInto(ACC.class);
+                        .from(ACC.as("eAcc"))
+                        .join(ACC_MANIFEST.as("eACCRM")).on(and(
+                                ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID),
+                                ACC_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))
+                        ))
+                        .join(ASCC_MANIFEST).on(ACC_MANIFEST.as("eACCRM").ACC_ID.eq(ASCC_MANIFEST.FROM_ACC_ID))
+                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                        .join(ACC_MANIFEST).on(ACC_MANIFEST.ACC_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_ID))
+                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                        .where(and(
+                                ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
+                                ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
+                        )).fetchOneInto(ACC.class);
         return ueAcc;
     }
 
@@ -121,12 +123,12 @@ public class ExtensionService {
                                     long releaseId, User user) {
         if (ueAcc != null) {
             if (CcState.Published.getValue() == ueAcc.getState()) {
-                AccReleaseManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
-                CcAccNode acc = repository.updateAccState(user, accManifest.getAccReleaseManifestId(), CcState.Editing);
+                AccManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                CcAccNode acc = repository.updateAccState(user, accManifest.getAccManifestId(), CcState.Editing);
                 return acc.getManifestId();
             } else {
-                AccReleaseManifestRecord ueAccManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
-                return ueAccManifest.getAccReleaseManifestId().longValue();
+                AccManifestRecord ueAccManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                return ueAccManifest.getAccManifestId().longValue();
             }
         } else {
             return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
@@ -135,15 +137,21 @@ public class ExtensionService {
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
         AccRecord ueAcc = createACCForExtension(eAcc, user);
-        AccReleaseManifestRecord ueAccManifest = createACCReleaseManifestForExtension(ueAcc, releaseId);
+        AccManifestRecord ueAccManifest = createACCReleaseManifestForExtension(ueAcc, releaseId);
 
         AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
-        createASCCPReleaseManifestForExtension(ueAsccp, releaseId);
+        AsccpManifestRecord ueAsccpManifest =
+                createASCCPReleaseManifestForExtension(ueAsccp, ueAccManifest, releaseId);
 
         AsccRecord ueAscc = createASCCForExtension(eAcc, ueAsccp, user);
-        createASCCReleaseManifestForExtension(ueAscc, releaseId);
+        AccManifestRecord eAccManifest = dslContext.selectFrom(ACC_MANIFEST)
+                .where(and(
+                        ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(eAcc.getAccId())),
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                )).fetchOne();
+        createASCCReleaseManifestForExtension(ueAscc, eAccManifest, ueAsccpManifest, releaseId);
 
-        return ueAccManifest.getAccReleaseManifestId().longValue();
+        return ueAccManifest.getAccManifestId().longValue();
     }
 
     private AccRecord createACCForExtension(ACC eAcc, User user) {
@@ -183,14 +191,12 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AccReleaseManifestRecord createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
-        return dslContext.insertInto(ACC_RELEASE_MANIFEST,
-                ACC_RELEASE_MANIFEST.ACC_ID,
-                ACC_RELEASE_MANIFEST.BASED_ACC_ID,
-                ACC_RELEASE_MANIFEST.RELEASE_ID
+    private AccManifestRecord createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
+        return dslContext.insertInto(ACC_MANIFEST,
+                ACC_MANIFEST.ACC_ID,
+                ACC_MANIFEST.RELEASE_ID
         ).values(
                 ueAcc.getAccId(),
-                ueAcc.getBasedAccId(),
                 ULong.valueOf(releaseId)
         ).returning().fetchOne();
     }
@@ -237,16 +243,17 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createASCCPReleaseManifestForExtension(AsccpRecord ueAsccp, long releaseId) {
-        dslContext.insertInto(ASCCP_RELEASE_MANIFEST,
-                ASCCP_RELEASE_MANIFEST.ASCCP_ID,
-                ASCCP_RELEASE_MANIFEST.ROLE_OF_ACC_ID,
-                ASCCP_RELEASE_MANIFEST.RELEASE_ID
+    private AsccpManifestRecord createASCCPReleaseManifestForExtension(
+            AsccpRecord ueAsccp, AccManifestRecord ueAccManifest, long releaseId) {
+        return dslContext.insertInto(ASCCP_MANIFEST,
+                ASCCP_MANIFEST.ASCCP_ID,
+                ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
+                ASCCP_MANIFEST.RELEASE_ID
         ).values(
                 ueAsccp.getAsccpId(),
-                ueAsccp.getRoleOfAccId(),
+                ueAccManifest.getAccManifestId(),
                 ULong.valueOf(releaseId)
-        ).execute();
+        ).returning().fetchOne();
     }
 
     private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, User user) {
@@ -291,52 +298,55 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createASCCReleaseManifestForExtension(AsccRecord ueAscc, long releaseId) {
-        dslContext.insertInto(ASCC_RELEASE_MANIFEST,
-                ASCC_RELEASE_MANIFEST.ASCC_ID,
-                ASCC_RELEASE_MANIFEST.FROM_ACC_ID,
-                ASCC_RELEASE_MANIFEST.TO_ASCCP_ID,
-                ASCC_RELEASE_MANIFEST.RELEASE_ID
+    private void createASCCReleaseManifestForExtension(
+            AsccRecord ueAscc, AccManifestRecord eAccManifest, AsccpManifestRecord ueAsccpManifest, long releaseId) {
+        dslContext.insertInto(ASCC_MANIFEST,
+                ASCC_MANIFEST.ASCC_ID,
+                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
+                ASCC_MANIFEST.RELEASE_ID
         ).values(
                 ueAscc.getAsccId(),
-                ueAscc.getFromAccId(),
-                ueAscc.getToAsccpId(),
+                eAccManifest.getAccManifestId(),
+                ueAsccpManifest.getAsccpManifestId(),
                 ULong.valueOf(releaseId)
         ).execute();
     }
 
     @Transactional
     public void appendAsccp(User user, long manifestId, long asccpManifestId) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
-        AsccpReleaseManifestRecord asccpReleaseManifestRecord =
-                dslContext.selectFrom(ASCCP_RELEASE_MANIFEST)
-                        .where(ASCCP_RELEASE_MANIFEST.ASCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
+        AsccpManifestRecord asccpManifestRecord =
+                dslContext.selectFrom(ASCCP_MANIFEST)
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                         .fetchOne();
 
-        repository.appendAsccp(user, extensionAcc.getAccReleaseManifestId(),
-                asccpReleaseManifestRecord.getAsccpReleaseManifestId());
+        repository.appendAsccp(user, extensionAcc.getAccManifestId(),
+                asccpManifestRecord.getAsccpManifestId());
     }
 
     @Transactional
     public void appendBccp(User user, long manifestId, long bccpManifestId) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
-        BccpReleaseManifestRecord bccpReleaseManifestRecord =
-                dslContext.selectFrom(BCCP_RELEASE_MANIFEST)
-                        .where(BCCP_RELEASE_MANIFEST.BCCP_RELEASE_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
+        BccpManifestRecord bccpManifestRecord =
+                dslContext.selectFrom(BCCP_MANIFEST)
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                         .fetchOne();
 
-        repository.appendBccp(user, extensionAcc.getAccReleaseManifestId(),
-                bccpReleaseManifestRecord.getBccpReleaseManifestId());
+        repository.appendBccp(user, extensionAcc.getAccManifestId(),
+                bccpManifestRecord.getBccpManifestId());
     }
 
     @Transactional
     public void discardAscc(User user, long manifestId, long asccId) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
+        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
-        long asccManifestId = dslContext.select(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID)
-                .from(ASCC_RELEASE_MANIFEST).where(and(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
+        long asccManifestId = dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                .from(ASCC_MANIFEST)
+                .where(and(ASCC_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
+                        ASCC_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
+                        ASCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
+                ))
                 .fetchOneInto(long.class);
 
         repository.discardAsccById(user, asccManifestId);
@@ -344,12 +354,12 @@ public class ExtensionService {
 
     @Transactional
     public void discardBcc(User user, long manifestId, long bccId) {
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(manifestId);
+        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
-        long bccManifestId = dslContext.select(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID)
-                .from(BCC_RELEASE_MANIFEST).where(and(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
-                        BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
-                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
+        long bccManifestId = dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
+                .from(BCC_MANIFEST).where(and(BCC_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
+                        BCC_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
+                        BCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
                 .fetchOneInto(long.class);
 
         repository.discardBccById(user, bccManifestId);
@@ -364,7 +374,7 @@ public class ExtensionService {
     public ExtensionUpdateResponse updateDetails(User user, ExtensionUpdateRequest request) {
         ExtensionUpdateResponse response = new ExtensionUpdateResponse();
 
-        AccReleaseManifestRecord extensionAcc = getExtensionAcc(request.getManifestId());
+        AccManifestRecord extensionAcc = getExtensionAcc(request.getManifestId());
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -391,7 +401,7 @@ public class ExtensionService {
         return response;
     }
 
-    private boolean updateAscc(AccReleaseManifestRecord extensionAcc,
+    private boolean updateAscc(AccManifestRecord extensionAcc,
                                CcAsccpNodeDetail.Ascc ascc,
                                ULong userId, Timestamp timestamp) {
 
@@ -421,17 +431,17 @@ public class ExtensionService {
         history.setLastUpdateTimestamp(timestamp);
 
         history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
-        int result = dslContext.update(ASCC_RELEASE_MANIFEST)
-                .set(ASCC_RELEASE_MANIFEST.ASCC_ID, history.getAsccId())
+        int result = dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.ASCC_ID, history.getAsccId())
                 .where(and(
-                        ASCC_RELEASE_MANIFEST.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
+                        ASCC_MANIFEST.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())),
+                        ASCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
                 )).execute();
 
         return (result == 1);
     }
 
-    private boolean updateBcc(AccReleaseManifestRecord extensionAcc,
+    private boolean updateBcc(AccManifestRecord extensionAcc,
                               CcBccpNodeDetail.Bcc bcc,
                               ULong userId, Timestamp timestamp) {
 
@@ -464,11 +474,11 @@ public class ExtensionService {
         history.setLastUpdateTimestamp(timestamp);
 
         history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
-        int result = dslContext.update(BCC_RELEASE_MANIFEST)
-                .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
+        int result = dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.BCC_ID, history.getBccId())
                 .where(and(
-                        BCC_RELEASE_MANIFEST.BCC_ID.eq(ULong.valueOf(bcc.getBccId())),
-                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
+                        BCC_MANIFEST.BCC_ID.eq(ULong.valueOf(bcc.getBccId())),
+                        BCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
                 )).execute();
 
         return (result == 1);
@@ -484,9 +494,9 @@ public class ExtensionService {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
-        AccReleaseManifestRecord accReleaseManifest =
-                dslContext.selectFrom(ACC_RELEASE_MANIFEST)
-                        .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+        AccManifestRecord accReleaseManifest =
+                dslContext.selectFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                         .fetchOptional().orElse(null);
         if (accReleaseManifest == null) {
             throw new IllegalArgumentException("Not found a target ACC.");
@@ -501,7 +511,7 @@ public class ExtensionService {
         updateAccOwnerUserId(accReleaseManifest, target, userId, timestamp);
     }
 
-    private void updateAccOwnerUserId(AccReleaseManifestRecord accReleaseManifest,
+    private void updateAccOwnerUserId(AccManifestRecord accReleaseManifest,
                                       ULong targetAppUserId,
                                       ULong userId, Timestamp timestamp) {
 
@@ -519,48 +529,48 @@ public class ExtensionService {
         history.setOwnerUserId(targetAppUserId);
 
         history = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne();
-        dslContext.update(ACC_RELEASE_MANIFEST)
-                .set(ACC_RELEASE_MANIFEST.ACC_ID, history.getAccId())
-                .where(ACC_RELEASE_MANIFEST.ACC_RELEASE_MANIFEST_ID.eq(accReleaseManifest.getAccReleaseManifestId()))
+        dslContext.update(ACC_MANIFEST)
+                .set(ACC_MANIFEST.ACC_ID, history.getAccId())
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accReleaseManifest.getAccManifestId()))
                 .execute();
 
-        dslContext.update(ASCC_RELEASE_MANIFEST)
-                .set(ASCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
+        dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.FROM_ACC_ID, history.getAccId())
                 .where(and(
-                        ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
-                        ASCC_RELEASE_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
+                        ASCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
+                        ASCC_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
                 ))
                 .execute();
 
-        dslContext.update(BCC_RELEASE_MANIFEST)
-                .set(BCC_RELEASE_MANIFEST.FROM_ACC_ID, history.getAccId())
+        dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.FROM_ACC_ID, history.getAccId())
                 .where(and(
-                        BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
-                        BCC_RELEASE_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
+                        BCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
+                        BCC_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
                 ))
                 .execute();
     }
 
-    private void updateAsccOwnerUserId(AccReleaseManifestRecord accReleaseManifest,
+    private void updateAsccOwnerUserId(AccManifestRecord accReleaseManifest,
                                        ULong targetAppUserId,
                                        ULong userId, Timestamp timestamp) {
 
-        Map<ULong, AsccReleaseManifestRecord> asccReleaseManifestRecordMap =
-                dslContext.selectFrom(ASCC_RELEASE_MANIFEST)
-                        .where(ASCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
-                        .fetch().stream().collect(Collectors.toMap(AsccReleaseManifestRecord::getAsccId, Function.identity()));
+        Map<ULong, AsccManifestRecord> asccManifestRecordMap =
+                dslContext.selectFrom(ASCC_MANIFEST)
+                        .where(ASCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
+                        .fetch().stream().collect(Collectors.toMap(AsccManifestRecord::getAsccId, Function.identity()));
 
-        if (asccReleaseManifestRecordMap.isEmpty()) {
+        if (asccManifestRecordMap.isEmpty()) {
             return;
         }
 
         Result<AsccRecord> asccRecordResult = dslContext.selectFrom(ASCC)
-                .where(ASCC.ASCC_ID.in(asccReleaseManifestRecordMap.keySet()))
+                .where(ASCC.ASCC_ID.in(asccManifestRecordMap.keySet()))
                 .fetch();
 
         for (AsccRecord history : asccRecordResult) {
-            AsccReleaseManifestRecord asccReleaseManifestRecord =
-                    asccReleaseManifestRecordMap.get(history.getAsccId());
+            AsccManifestRecord asccManifestRecord =
+                    asccManifestRecordMap.get(history.getAsccId());
 
             history.setAsccId(null);
             history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
@@ -572,33 +582,33 @@ public class ExtensionService {
             history.setOwnerUserId(targetAppUserId);
 
             history = dslContext.insertInto(ASCC).set(history).returning().fetchOne();
-            dslContext.update(ASCC_RELEASE_MANIFEST)
-                    .set(ASCC_RELEASE_MANIFEST.ASCC_ID, history.getAsccId())
-                    .where(ASCC_RELEASE_MANIFEST.ASCC_RELEASE_MANIFEST_ID.eq(asccReleaseManifestRecord.getAsccReleaseManifestId()))
+            dslContext.update(ASCC_MANIFEST)
+                    .set(ASCC_MANIFEST.ASCC_ID, history.getAsccId())
+                    .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(asccManifestRecord.getAsccManifestId()))
                     .execute();
         }
     }
 
-    private void updateBccOwnerUserId(AccReleaseManifestRecord accReleaseManifest,
+    private void updateBccOwnerUserId(AccManifestRecord accReleaseManifest,
                                       ULong targetAppUserId,
                                       ULong userId, Timestamp timestamp) {
 
-        Map<ULong, BccReleaseManifestRecord> bccReleaseManifestRecordMap =
-                dslContext.selectFrom(BCC_RELEASE_MANIFEST)
-                        .where(BCC_RELEASE_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
-                        .fetch().stream().collect(Collectors.toMap(BccReleaseManifestRecord::getBccId, Function.identity()));
+        Map<ULong, BccManifestRecord> bccManifestRecordMap =
+                dslContext.selectFrom(BCC_MANIFEST)
+                        .where(BCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
+                        .fetch().stream().collect(Collectors.toMap(BccManifestRecord::getBccId, Function.identity()));
 
-        if (bccReleaseManifestRecordMap.isEmpty()) {
+        if (bccManifestRecordMap.isEmpty()) {
             return;
         }
 
         Result<BccRecord> bccRecordResult = dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.in(bccReleaseManifestRecordMap.keySet()))
+                .where(BCC.BCC_ID.in(bccManifestRecordMap.keySet()))
                 .fetch();
 
         for (BccRecord history : bccRecordResult) {
-            BccReleaseManifestRecord bccReleaseManifestRecord =
-                    bccReleaseManifestRecordMap.get(history.getBccId());
+            BccManifestRecord bccManifestRecord =
+                    bccManifestRecordMap.get(history.getBccId());
 
             history.setBccId(null);
             history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
@@ -610,9 +620,9 @@ public class ExtensionService {
             history.setOwnerUserId(targetAppUserId);
 
             history = dslContext.insertInto(BCC).set(history).returning().fetchOne();
-            dslContext.update(BCC_RELEASE_MANIFEST)
-                    .set(BCC_RELEASE_MANIFEST.BCC_ID, history.getBccId())
-                    .where(BCC_RELEASE_MANIFEST.BCC_RELEASE_MANIFEST_ID.eq(bccReleaseManifestRecord.getBccReleaseManifestId()))
+            dslContext.update(BCC_MANIFEST)
+                    .set(BCC_MANIFEST.BCC_ID, history.getBccId())
+                    .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(bccManifestRecord.getBccManifestId()))
                     .execute();
         }
     }
@@ -620,7 +630,7 @@ public class ExtensionService {
     public CcNode getLastRevisionCc(User user, String type, long manifestId) {
 
         if (type.equals("ascc")) {
-            AsccReleaseManifestRecord asccReleaseManifest = manifestRepository.getAsccReleaseManifestById(manifestId);
+            AsccManifestRecord asccReleaseManifest = manifestRepository.getAsccReleaseManifestById(manifestId);
             if (asccReleaseManifest == null) {
                 return null;
             }
@@ -638,7 +648,7 @@ public class ExtensionService {
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
-            BccReleaseManifestRecord bccReleaseManifest = manifestRepository.getBccReleaseManifestById(manifestId);
+            BccManifestRecord bccReleaseManifest = manifestRepository.getBccReleaseManifestById(manifestId);
             if (bccReleaseManifest == null) {
                 return null;
             }

@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.XBT;
-import static org.oagi.srt.entity.jooq.Tables.XBT_RELEASE_MANIFEST;
+import static org.oagi.srt.entity.jooq.Tables.XBT_MANIFEST;
 
 @Repository
 public class XbtRepository implements SrtRepository<Xbt> {
@@ -24,14 +24,14 @@ public class XbtRepository implements SrtRepository<Xbt> {
             Byte, String, String, Timestamp, Byte,
             String, Integer, Integer, String, Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
-                XBT.LAST_UPDATED_BY, XBT_RELEASE_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
-                XBT_RELEASE_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
+                XBT.LAST_UPDATED_BY, XBT_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
+                XBT_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
                 XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_ACTION, XBT.REVISION_DOC,
                 XBT.REVISION_NUM, XBT.REVISION_TRACKING_NUM, XBT.SCHEMA_DEFINITION,
                 XBT.STATE)
                 .from(XBT)
-                .join(XBT_RELEASE_MANIFEST).on(XBT.XBT_ID.eq(XBT_RELEASE_MANIFEST.XBT_ID));
+                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID));
     }
 
     @Override

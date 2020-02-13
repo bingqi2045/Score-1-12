@@ -52,8 +52,9 @@ CREATE TABLE `acc_manifest` (
 -- Updating `based_acc_id`
 UPDATE `acc`, (
     SELECT `acc`.`acc_id`, `acc`.`guid`, `acc`.`based_acc_id`, current.`acc_id` current_acc_id
-    FROM `acc` as base JOIN `acc` ON base.`acc_id` = `acc`.`based_acc_id`
-                       JOIN `acc` current ON base.`acc_id` = current.`current_acc_id`
+    FROM `acc` as base
+    JOIN `acc` ON base.`acc_id` = `acc`.`based_acc_id`
+    JOIN `acc` current ON base.`acc_id` = current.`current_acc_id`
 ) t
 SET `acc`.`based_acc_id` = t.current_acc_id
 WHERE `acc`.`acc_id` = t.`acc_id`;
@@ -62,7 +63,8 @@ INSERT `acc_manifest` (`release_id`, `acc_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
     `acc`.`acc_id`
-FROM `acc` JOIN (SELECT MAX(`acc_id`) as `acc_id` FROM `acc` GROUP BY `guid`) t ON `acc`.`acc_id` = t.`acc_id`
+FROM `acc`
+JOIN (SELECT MAX(`acc_id`) as `acc_id` FROM `acc` GROUP BY `guid`) t ON `acc`.`acc_id` = t.`acc_id`
 ORDER BY `acc`.`acc_id`;
 
 INSERT `acc_manifest` (`release_id`, `acc_id`)
@@ -110,8 +112,9 @@ CREATE TABLE `asccp_manifest` (
 -- Updating `role_of_acc_id`
 UPDATE `asccp`, (
     SELECT `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`, current.`acc_id` current_acc_id
-    FROM `asccp` JOIN `acc` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id`
-                 JOIN `acc` current ON `asccp`.`role_of_acc_id` = current.`current_acc_id`
+    FROM `asccp`
+    JOIN `acc` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id`
+    JOIN `acc` current ON `asccp`.`role_of_acc_id` = current.`current_acc_id`
 ) t
 SET `asccp`.`role_of_acc_id` = t.current_acc_id
 WHERE `asccp`.`asccp_id` = t.asccp_id;
@@ -120,18 +123,20 @@ INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_man
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `asccp`.`module_id`,
     `asccp`.`asccp_id`, `acc_manifest`.`acc_manifest_id`
-FROM
-	`asccp`
-	JOIN (SELECT MAX(`asccp_id`) as `asccp_id` FROM `asccp` GROUP BY `guid`) t ON `asccp`.`asccp_id` = t.`asccp_id`
-	JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+FROM `asccp`
+JOIN (SELECT MAX(`asccp_id`) as `asccp_id` FROM `asccp` GROUP BY `guid`) t ON `asccp`.`asccp_id` = t.`asccp_id`
+JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
+ AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `asccp`.`asccp_id`;
 
 INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
 SELECT
     `release`.`release_id`, `asccp`.`module_id`,
     `asccp`.`asccp_id`, `acc_manifest`.`acc_manifest_id`
-FROM `asccp` JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
-JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id` AND `acc_manifest`.`release_id` = `release`.`release_id`
+FROM `asccp`
+JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
+JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
+ AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 3;
 
 -- Add deprecated annotations
@@ -208,7 +213,8 @@ SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `bccp`.`module_id`,
     `bccp`.`bccp_id`, `dt_manifest`.`dt_manifest_id`
 FROM `bccp` JOIN (SELECT MAX(`bccp_id`) as `bccp_id` FROM `bccp` GROUP BY `guid`) t ON `bccp`.`bccp_id` = t.`bccp_id`
-JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id` AND `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
+ AND `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `bccp`.`bccp_id`;
 
 INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
@@ -216,7 +222,8 @@ SELECT
     `release`.`release_id`, `bccp`.`module_id`,
     `bccp`.`bccp_id`, `dt_manifest`.`dt_manifest_id`
 FROM `bccp` JOIN `release` ON `bccp`.`release_id` = `release`.`release_id`
-JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id` AND `dt_manifest`.`release_id` = `release`.`release_id`
+JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
+ AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 3;
 
 -- Add deprecated annotations
@@ -250,8 +257,9 @@ CREATE TABLE `ascc_manifest` (
 -- Updating `from_acc_id`
 UPDATE `ascc`, (
     SELECT `ascc`.`ascc_id`, `ascc`.`from_acc_id`, current.`acc_id` current_acc_id
-    FROM `ascc` JOIN `acc` ON `acc`.`acc_id` = `ascc`.`from_acc_id`
-                JOIN `acc` current ON `ascc`.`from_acc_id` = current.`current_acc_id`
+    FROM `ascc`
+    JOIN `acc` ON `acc`.`acc_id` = `ascc`.`from_acc_id`
+    JOIN `acc` current ON `ascc`.`from_acc_id` = current.`current_acc_id`
 ) t
 SET `ascc`.`from_acc_id` = t.current_acc_id
 WHERE `ascc`.`ascc_id` = t.ascc_id;
@@ -259,8 +267,9 @@ WHERE `ascc`.`ascc_id` = t.ascc_id;
 -- Updating `to_asccp_id`
 UPDATE `ascc`, (
     SELECT `ascc`.`ascc_id`, `ascc`.`to_asccp_id`, current.`asccp_id` current_asccp_id
-    FROM `ascc` JOIN `asccp` ON `asccp`.`asccp_id` = `ascc`.`to_asccp_id`
-                JOIN `asccp` current ON `asccp`.`asccp_id` = current.`current_asccp_id`
+    FROM `ascc`
+    JOIN `asccp` ON `asccp`.`asccp_id` = `ascc`.`to_asccp_id`
+    JOIN `asccp` current ON `asccp`.`asccp_id` = current.`current_asccp_id`
 ) t
 SET `ascc`.`to_asccp_id` = t.current_asccp_id
 WHERE `ascc`.`ascc_id` = t.ascc_id;
@@ -269,13 +278,14 @@ INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asc
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
     `ascc`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
-FROM `ascc` JOIN
-     (SELECT
-          MAX(`ascc_id`) as `ascc_id`
+FROM `ascc`
+JOIN (SELECT MAX(`ascc_id`) as `ascc_id`
       FROM `ascc`
       GROUP BY `guid`) t ON `ascc`.`ascc_id` = t.`ascc_id`
-      JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-      JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id` AND `asccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
+ AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
+ AND `asccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `ascc`.`ascc_id`;
 
 INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
@@ -283,8 +293,10 @@ SELECT
     `release`.`release_id`,
     `ascc`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
 FROM `ascc` JOIN `release` ON `ascc`.`release_id` = `release`.`release_id`
-	JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id` AND `acc_manifest`.`release_id` = `release`.`release_id`
-    JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id` AND `asccp_manifest`.`release_id` = `release`.`release_id`
+JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
+ AND `acc_manifest`.`release_id` = `release`.`release_id`
+JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
+ AND `asccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `ascc`.`state` = 3;
 
 -- Add deprecated annotations
@@ -318,8 +330,9 @@ CREATE TABLE `bcc_manifest` (
 -- Updating `from_acc_id`
 UPDATE `bcc`, (
     SELECT `bcc`.`bcc_id`, `bcc`.`from_acc_id`, current.`acc_id` current_acc_id
-    FROM `bcc` JOIN `acc` ON `acc`.`acc_id` = `bcc`.`from_acc_id`
-               JOIN `acc` current ON `bcc`.`from_acc_id` = current.`current_acc_id`
+    FROM `bcc`
+    JOIN `acc` ON `acc`.`acc_id` = `bcc`.`from_acc_id`
+    JOIN `acc` current ON `bcc`.`from_acc_id` = current.`current_acc_id`
 ) t
 SET `bcc`.`from_acc_id` = t.current_acc_id
 WHERE `bcc`.`bcc_id` = t.bcc_id;
@@ -327,8 +340,9 @@ WHERE `bcc`.`bcc_id` = t.bcc_id;
 -- Updating `to_bccp_id`
 UPDATE `bcc`, (
     SELECT `bcc`.`bcc_id`, `bcc`.`to_bccp_id`, current.`bccp_id` current_bccp_id
-    FROM `bcc` JOIN `bccp` ON `bccp`.`bccp_id` = `bcc`.`to_bccp_id`
-               JOIN `bccp` current ON `bccp`.`bccp_id` = current.`current_bccp_id`
+    FROM `bcc`
+    JOIN `bccp` ON `bccp`.`bccp_id` = `bcc`.`to_bccp_id`
+    JOIN `bccp` current ON `bccp`.`bccp_id` = current.`current_bccp_id`
 ) t
 SET `bcc`.`to_bccp_id` = t.current_bccp_id
 WHERE `bcc`.`bcc_id` = t.bcc_id;
@@ -337,13 +351,14 @@ INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
     `bcc`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
-FROM `bcc` JOIN
-     (SELECT
-          MAX(`bcc_id`) as `bcc_id`
+FROM `bcc`
+JOIN (SELECT MAX(`bcc_id`) as `bcc_id`
       FROM `bcc`
       GROUP BY `guid`) t ON `bcc`.`bcc_id` = t.`bcc_id`
-      JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-      JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id` AND `bccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
+ AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
+ AND `bccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `bcc`.`bcc_id`;
 
 INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
@@ -351,8 +366,10 @@ SELECT
     `release`.`release_id`,
     `bcc`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
 FROM `bcc` JOIN `release` ON `bcc`.`release_id` = `release`.`release_id`
-	JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id` AND `acc_manifest`.`release_id` = `release`.`release_id`
-    JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id` AND `bccp_manifest`.`release_id` = `release`.`release_id`
+JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
+ AND `acc_manifest`.`release_id` = `release`.`release_id`
+JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
+ AND `bccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `bcc`.`state` = 3;
 
 -- Add deprecated annotations

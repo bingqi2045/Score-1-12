@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.CodeList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implements Record18<ULong, String, String, String, String, ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, Timestamp, Timestamp, String> {
 
-    private static final long serialVersionUID = -1928662612;
+    private static final long serialVersionUID = -1975473053;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.

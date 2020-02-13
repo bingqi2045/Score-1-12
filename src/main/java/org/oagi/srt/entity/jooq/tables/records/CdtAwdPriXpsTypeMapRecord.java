@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -40,7 +40,7 @@ import org.oagi.srt.entity.jooq.tables.CdtAwdPriXpsTypeMap;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1327713248;
+    private static final long serialVersionUID = -351511357;
 
     /**
      * Setter for <code>oagi.cdt_awd_pri_xps_type_map.cdt_awd_pri_xps_type_map_id</code>. Internal, primary database key.

@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.Asbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record17<ULong, String, ULong, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, Timestamp, Timestamp, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = -1877687501;
+    private static final long serialVersionUID = -1184272410;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.

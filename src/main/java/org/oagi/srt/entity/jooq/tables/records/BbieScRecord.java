@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.BbieSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements Record17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = -509871257;
+    private static final long serialVersionUID = -1095727772;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.

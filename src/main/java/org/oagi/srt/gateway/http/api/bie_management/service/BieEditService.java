@@ -166,10 +166,10 @@ public class BieEditService {
         long releaseId = extension.getReleaseId();
         long roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
                 .from(Tables.ACC)
-                .join(Tables.ACC_RELEASE_MANIFEST)
-                .on(Tables.ACC_RELEASE_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
+                .join(Tables.ACC_MANIFEST)
+                .on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
                 .where(and(
-                        Tables.ACC_RELEASE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
                         Tables.ACC.STATE.eq(CcState.Published.getValue())))
                 .fetchOneInto(Long.class);

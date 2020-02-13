@@ -28,7 +28,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.DEN,
                 Tables.BCCP.DEFINITION,
                 Tables.BCCP.DEFINITION_SOURCE,
-                Tables.BCCP_RELEASE_MANIFEST.MODULE_ID,
+                Tables.BCCP_MANIFEST.MODULE_ID,
                 Tables.BCCP.NAMESPACE_ID,
                 Tables.BCCP.CREATED_BY,
                 Tables.BCCP.OWNER_USER_ID,
@@ -39,14 +39,14 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.REVISION_NUM,
                 Tables.BCCP.REVISION_TRACKING_NUM,
                 Tables.BCCP.REVISION_ACTION,
-                Tables.BCCP_RELEASE_MANIFEST.RELEASE_ID,
+                Tables.BCCP_MANIFEST.RELEASE_ID,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.IS_NILLABLE.as("nillable"),
                 Tables.MODULE.MODULE_.as("module"))
                 .from(Tables.BCCP)
-                .join(Tables.BCCP_RELEASE_MANIFEST)
-                .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_RELEASE_MANIFEST.BCCP_ID))
-                .leftJoin(Tables.MODULE).on(Tables.BCCP_RELEASE_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .join(Tables.BCCP_MANIFEST)
+                .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_MANIFEST.BCCP_ID))
+                .leftJoin(Tables.MODULE).on(Tables.BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override

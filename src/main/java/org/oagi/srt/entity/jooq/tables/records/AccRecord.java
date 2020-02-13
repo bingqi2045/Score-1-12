@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -38,7 +38,7 @@ import org.oagi.srt.entity.jooq.tables.Acc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte, Byte, Byte> {
 
-    private static final long serialVersionUID = -1783683381;
+    private static final long serialVersionUID = -319049356;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.

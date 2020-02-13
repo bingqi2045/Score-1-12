@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 2092822013;
+    private static final long serialVersionUID = -945537484;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.

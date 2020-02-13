@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = 188924897;
+    private static final long serialVersionUID = 57265416;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>

@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
-import org.oagi.srt.entity.jooq.tables.records.AccReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpReleaseManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccpReleaseManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
@@ -154,7 +154,7 @@ public class CcListService {
 
         switch (type) {
             case "ACC":
-                AccReleaseManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
+                AccManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
                 if (accReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
@@ -166,7 +166,7 @@ public class CcListService {
                 break;
 
             case "ASCCP":
-                AsccpReleaseManifestRecord asccpReleaseManifest = manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
+                AsccpManifestRecord asccpReleaseManifest = manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
                 if (asccpReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
@@ -175,7 +175,7 @@ public class CcListService {
                 break;
 
             case "BCCP":
-                BccpReleaseManifestRecord bccpReleaseManifest = manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
+                BccpManifestRecord bccpReleaseManifest = manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
                 if (bccpReleaseManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }

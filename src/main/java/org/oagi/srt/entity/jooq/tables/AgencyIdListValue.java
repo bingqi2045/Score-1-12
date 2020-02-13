@@ -7,7 +7,7 @@ package org.oagi.srt.entity.jooq.tables;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -42,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.AgencyIdListValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
-    private static final long serialVersionUID = -862868754;
+    private static final long serialVersionUID = 26123805;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_value</code>

@@ -40,12 +40,12 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.REVISION_NUM,
                 Tables.BCC.REVISION_TRACKING_NUM,
                 Tables.BCC.REVISION_ACTION,
-                Tables.BCC_RELEASE_MANIFEST.RELEASE_ID,
+                Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
                 Tables.BCC.IS_NILLABLE.as("nillable"))
                 .from(Tables.BCC)
-                .join(Tables.BCC_RELEASE_MANIFEST)
-                .on(Tables.BCC.BCC_ID.eq(Tables.BCC_RELEASE_MANIFEST.BCC_ID));
+                .join(Tables.BCC_MANIFEST)
+                .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID));
     }
 
     @Override

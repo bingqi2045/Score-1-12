@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Module;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = 4205807;
+    private static final long serialVersionUID = -1082557160;
 
     /**
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database key.

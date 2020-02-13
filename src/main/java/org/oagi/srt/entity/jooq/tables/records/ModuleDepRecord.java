@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -28,7 +28,7 @@ import org.oagi.srt.entity.jooq.tables.ModuleDep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implements Record4<ULong, Integer, ULong, ULong> {
 
-    private static final long serialVersionUID = -1194448545;
+    private static final long serialVersionUID = 2109855068;
 
     /**
      * Setter for <code>oagi.module_dep.module_dep_id</code>. Primary, internal database key.

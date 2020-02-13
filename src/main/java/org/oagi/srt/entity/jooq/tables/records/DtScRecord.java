@@ -4,7 +4,7 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.DtSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> {
 
-    private static final long serialVersionUID = -2038047398;
+    private static final long serialVersionUID = -176862313;
 
     /**
      * Setter for <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.

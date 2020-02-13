@@ -6,7 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.sql.Timestamp;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.Record1;
@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Ascc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, Timestamp, Timestamp, Integer, Integer, Integer, Byte> {
 
-    private static final long serialVersionUID = -1207820203;
+    private static final long serialVersionUID = -1257594420;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.
