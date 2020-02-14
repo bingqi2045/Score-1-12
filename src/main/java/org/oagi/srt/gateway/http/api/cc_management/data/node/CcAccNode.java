@@ -12,7 +12,7 @@ public class CcAccNode extends CcNode {
     private String den;
     private String guid;
     private String objectClassTerm;
-    private Long basedAccId;
+    private Long basedAccManifestId;
     private int oagisComponentType;
     private String definition;
     private boolean group;

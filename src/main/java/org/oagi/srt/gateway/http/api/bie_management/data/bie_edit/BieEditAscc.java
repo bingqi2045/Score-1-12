@@ -12,8 +12,8 @@ public class BieEditAscc extends TrackableImpl implements SeqKeySupportable, Car
 
     private long asccId;
     private String guid;
-    private long fromAccId;
-    private long toAsccpId;
+    private long fromAccManifestId;
+    private long toAsccpManifestId;
     private int seqKey;
 
     private int cardinalityMin;

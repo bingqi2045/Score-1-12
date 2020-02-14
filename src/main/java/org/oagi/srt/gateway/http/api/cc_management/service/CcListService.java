@@ -10,7 +10,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
-import org.oagi.srt.gateway.http.api.cc_management.repository.ReleaseManifestRepository;
+import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -42,7 +42,7 @@ public class CcListService {
     private CcListRepository repository;
 
     @Autowired
-    private ReleaseManifestRepository manifestRepository;
+    private ManifestRepository manifestRepository;
 
     @Autowired
     private SessionService sessionService;
@@ -154,33 +154,33 @@ public class CcListService {
 
         switch (type) {
             case "ACC":
-                AccManifestRecord accReleaseManifest = manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
-                if (accReleaseManifest == null) {
+                AccManifestRecord accManifest = manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
+                if (accManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
 
-                ULong originAccId = accReleaseManifest.getAccId();
-                ULong accId = repository.updateAccOwnerUserId(accReleaseManifest, target, userId, timestamp);
-                repository.updateAsccOwnerUserId(originAccId, accId, accReleaseManifest.getReleaseId(), target, userId, timestamp);
-                repository.updateBccOwnerUserId(originAccId, accId, accReleaseManifest.getReleaseId(), target, userId, timestamp);
+                ULong originAccId = accManifest.getAccId();
+                ULong accId = repository.updateAccOwnerUserId(accManifest, target, userId, timestamp);
+                repository.updateAsccOwnerUserId(originAccId, accId, accManifest.getReleaseId(), target, userId, timestamp);
+                repository.updateBccOwnerUserId(originAccId, accId, accManifest.getReleaseId(), target, userId, timestamp);
                 break;
 
             case "ASCCP":
-                AsccpManifestRecord asccpReleaseManifest = manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
-                if (asccpReleaseManifest == null) {
+                AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
+                if (asccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                repository.updateAsccpOwnerUserId(asccpReleaseManifest, target, userId, timestamp);
+                repository.updateAsccpOwnerUserId(asccpManifest, target, userId, timestamp);
                 break;
 
             case "BCCP":
-                BccpManifestRecord bccpReleaseManifest = manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
-                if (bccpReleaseManifest == null) {
+                BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
+                if (bccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                repository.updateBccpOwnerUserId(bccpReleaseManifest, target, userId, timestamp);
+                repository.updateBccpOwnerUserId(bccpManifest, target, userId, timestamp);
                 break;
 
             default:

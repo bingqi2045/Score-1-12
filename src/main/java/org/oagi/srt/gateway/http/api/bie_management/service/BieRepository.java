@@ -46,11 +46,11 @@ public class BieRepository {
                 .fetchOneInto(Long.class);
     }
 
-    public BieEditAcc getAccByAccId(long accId, long releaseId) {
+    public BieEditAcc getAccByAccId(long accManifestId, long releaseId) {
         // BIE only can see the ACCs whose state is in Published.
         return dslContext.select(
                 ACC.ACC_ID,
-                ACC_MANIFEST.BASED_ACC_ID,
+                ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.REVISION_NUM,
                 ACC.REVISION_TRACKING_NUM,
@@ -58,10 +58,12 @@ public class BieRepository {
                 .from(ACC)
                 .join(ACC_MANIFEST)
                 .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .leftJoin(ACC_MANIFEST.as("base"))
+                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(and(
                         ACC.REVISION_NUM.greaterThan(0),
                         ACC.STATE.eq(CcState.Published.getValue()),
-                        ACC.ACC_ID.eq(ULong.valueOf(accId)),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                         ))
                 .fetchOneInto(BieEditAcc.class);
@@ -70,7 +72,7 @@ public class BieRepository {
     public BieEditAcc getAcc(long accId, long releaseId) {
         return dslContext.select(
                 ACC.ACC_ID,
-                ACC_MANIFEST.BASED_ACC_ID,
+                ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.REVISION_NUM,
                 ACC.REVISION_TRACKING_NUM,
@@ -78,6 +80,8 @@ public class BieRepository {
                 .from(ACC)
                 .join(ACC_MANIFEST)
                 .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .leftJoin(ACC_MANIFEST.as("base"))
+                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(ACC.ACC_ID.eq(ULong.valueOf(accId))
                     .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOptionalInto(BieEditAcc.class).orElse(null);
@@ -102,8 +106,8 @@ public class BieRepository {
                 BCC.CARDINALITY_MAX,
                 BCC.DEN,
                 BCC.DEFINITION,
-                BCC_MANIFEST.FROM_ACC_ID,
-                BCC_MANIFEST.TO_BCCP_ID,
+                ACC_MANIFEST.ACC_ID.as("from_acc_id"),
+                BCCP_MANIFEST.BCCP_ID.as("to_bccp_id"),
                 BCC.ENTITY_TYPE,
                 BCC.REVISION_NUM,
                 BCC.REVISION_TRACKING_NUM,
@@ -111,6 +115,10 @@ public class BieRepository {
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .join(ACC_MANIFEST)
+                .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(BCCP_MANIFEST)
+                .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
                 .fetchOptionalInto(BccForBie.class).orElse(null);
     }
@@ -131,11 +139,15 @@ public class BieRepository {
                 .fetchOptionalInto(BieEditBccp.class).orElse(null);
     }
 
-    public int getCountDtScByOwnerDtId(long ownerDtId) {
+    public int getCountDtScByOwnerDtId(long ownerDtManifestId) {
         return dslContext.selectCount()
                 .from(DT_SC)
+                .join(DT)
+                .on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
+                .join(DT_MANIFEST)
+                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .where(and(
-                        DT_SC.OWNER_DT_ID.eq(ULong.valueOf(ownerDtId)),
+                        DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(ownerDtManifestId)),
                         DT_SC.CARDINALITY_MAX.ne(0)
                 )).fetchOptionalInto(Integer.class).orElse(0);
     }
@@ -154,7 +166,7 @@ public class BieRepository {
                 .fetchOptionalInto(Integer.class).orElse(0);
     }
 
-    public List<BieEditBdtSc> getBdtScListByOwnerDtId(long ownerDtId) {
+    public List<BieEditBdtSc> getBdtScListByOwnerDtId(long ownerDtManifestId) {
         return dslContext.select(
                 DT_SC.DT_SC_ID,
                 DT_SC.GUID,
@@ -162,8 +174,12 @@ public class BieRepository {
                 DT_SC.REPRESENTATION_TERM,
                 DT_SC.OWNER_DT_ID)
                 .from(DT_SC)
+                .join(DT)
+                .on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
+                .join(DT_MANIFEST)
+                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .where(and(
-                        DT_SC.OWNER_DT_ID.eq(ULong.valueOf(ownerDtId)),
+                        DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(ownerDtManifestId)),
                         DT_SC.CARDINALITY_MAX.ne(0)
                 )).fetchInto(BieEditBdtSc.class);
     }
@@ -201,12 +217,12 @@ public class BieRepository {
                 .fetchOptionalInto(String.class).orElse(null);
     }
 
-    public BieEditAsccp getAsccpByAsccpId(long asccpId, long releaseId) {
+    public BieEditAsccp getAsccpByAsccpId(long asccpManifestId, long releaseId) {
         return dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
-                ASCCP_MANIFEST.ROLE_OF_ACC_ID,
+                ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID)
@@ -215,17 +231,17 @@ public class BieRepository {
                 .on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .where(and(
                         ASCCP.REVISION_NUM.greaterThan(0),
-                        ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)),
+                        ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccpManifestId)),
                         ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(BieEditAsccp.class);
     }
 
-    public BieEditBccp getBccpByBccpId(long bccpId, long releaseId) {
+    public BieEditBccp getBccpByBccpId(long bccpManifestId, long releaseId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM,
-                BCCP_MANIFEST.BDT_ID,
+                BCCP_MANIFEST.BDT_MANIFEST_ID,
                 BCCP.REVISION_NUM,
                 BCCP.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID)
@@ -234,7 +250,7 @@ public class BieRepository {
                 .on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                 .where(and(
                         BCCP.REVISION_NUM.greaterThan(0),
-                        BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)),
+                        BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)),
                         BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(BieEditBccp.class);
     }
@@ -291,10 +307,12 @@ public class BieRepository {
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
-    public long getRoleOfAccIdByAsccpId(long asccpId) {
-        return dslContext.select(ASCCP.ROLE_OF_ACC_ID)
-                .from(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+    public long getRoleOfAccIdByAsccpId(long asccpManifestId) {
+        return dslContext.select(ACC_MANIFEST.ACC_ID)
+                .from(ACC_MANIFEST)
+                .join(ASCCP_MANIFEST)
+                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
@@ -305,7 +323,7 @@ public class BieRepository {
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
                 ASCC.REVISION_NUM.greaterThan(0),
-                ASCC_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
                 ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
         ));
 
@@ -318,8 +336,8 @@ public class BieRepository {
         return dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC.GUID,
-                ASCC_MANIFEST.FROM_ACC_ID,
-                ASCC_MANIFEST.TO_ASCCP_ID,
+                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                 ASCC.SEQ_KEY,
                 ASCC.CARDINALITY_MIN,
                 ASCC.CARDINALITY_MAX,
@@ -329,6 +347,8 @@ public class BieRepository {
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                .join(ACC_MANIFEST)
+                .on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(and(conditions))
                 .fetchInto(BieEditAscc.class);
     }
@@ -340,7 +360,7 @@ public class BieRepository {
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
                 BCC.REVISION_NUM.greaterThan(0),
-                BCC_MANIFEST.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
+                ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
                 BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
         ));
 
@@ -353,8 +373,8 @@ public class BieRepository {
         return dslContext.select(
                 BCC.BCC_ID,
                 BCC.GUID,
-                BCC_MANIFEST.FROM_ACC_ID,
-                BCC_MANIFEST.TO_BCCP_ID,
+                BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
                 BCC.SEQ_KEY,
                 BCC.ENTITY_TYPE,
                 BCC.CARDINALITY_MIN,
@@ -365,6 +385,8 @@ public class BieRepository {
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .join(ACC_MANIFEST)
+                .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(and(conditions))
                 .fetchInto(BieEditBcc.class);
     }
@@ -490,7 +512,7 @@ public class BieRepository {
     }
 
     public BbieRecord createBbie(User user, long fromAbieId,
-                                 long toBbiepId, long basedBccId, long bdtId,
+                                 long toBbiepId, long basedBccId, long bdtManifestId,
                                  int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
@@ -519,7 +541,7 @@ public class BieRepository {
                 .set(BBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(BBIE.TO_BBIEP_ID, ULong.valueOf(toBbiepId))
                 .set(BBIE.BASED_BCC_ID, ULong.valueOf(basedBccId))
-                .set(BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtId)))
+                .set(BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtManifestId)))
                 .set(BBIE.CARDINALITY_MIN, bccRecord.getCardinalityMin())
                 .set(BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
                 .set(BBIE.IS_NILLABLE, bccRecord.getIsNillable())
@@ -536,12 +558,14 @@ public class BieRepository {
                 .returning().fetchOne();
     }
 
-    public long getDefaultBdtPriRestriIdByBdtId(long bdtId) {
+    public long getDefaultBdtPriRestriIdByBdtId(long bdtManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
                 .from(BDT_PRI_RESTRI)
+                .join(DT_MANIFEST)
+                .on(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID))
                 .where(and(
-                        BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId))),
+                        DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(bdtManifestId))),
                         BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) ((1))))
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
@@ -590,11 +614,12 @@ public class BieRepository {
                 .execute();
     }
 
-    public OagisComponentType getOagisComponentTypeOfAccByAsccpId(long asccpId, long releaseId) {
+    public OagisComponentType getOagisComponentTypeOfAccByAsccpId(long asccpManifestId, long releaseId) {
         int oagisComponentType = dslContext.select(ACC.OAGIS_COMPONENT_TYPE)
                 .from(ACC)
-                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_ID.eq(ACC.ACC_ID))
-                .where(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccpId))
+                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId))
                         .and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(Integer.class);
         return OagisComponentType.valueOf(oagisComponentType);

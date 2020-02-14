@@ -12,8 +12,8 @@ public class BieEditBcc extends TrackableImpl implements SeqKeySupportable, Card
 
     private long bccId;
     private String guid;
-    private long fromAccId;
-    private long toBccpId;
+    private long fromAccManifestId;
+    private long toBccpManifestId;
     private int seqKey;
     private int entityType;
 

@@ -14,7 +14,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
-import org.oagi.srt.gateway.http.api.cc_management.repository.ReleaseManifestRepository;
+import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -48,7 +48,7 @@ public class ExtensionService {
     private CcNodeRepository repository;
 
     @Autowired
-    private ReleaseManifestRepository manifestRepository;
+    private ManifestRepository manifestRepository;
 
     @Autowired
     private CcListService ccListService;
@@ -62,7 +62,7 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(User user, long manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
-        CcAccNode ueAcc = repository.getAccNodeByAccReleaseManifest(user, extensionAcc);
+        CcAccNode ueAcc = repository.getAccNodeByAccManifest(user, extensionAcc);
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
         CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
         eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
@@ -107,9 +107,9 @@ public class ExtensionService {
                                 ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID),
                                 ACC_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))
                         ))
-                        .join(ASCC_MANIFEST).on(ACC_MANIFEST.as("eACCRM").ACC_ID.eq(ASCC_MANIFEST.FROM_ACC_ID))
-                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                        .join(ACC_MANIFEST).on(ACC_MANIFEST.ACC_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_ID))
+                        .join(ASCC_MANIFEST).on(ACC_MANIFEST.as("eACCRM").ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
+                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                        .join(ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .where(and(
                                 ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
@@ -123,11 +123,11 @@ public class ExtensionService {
                                     long releaseId, User user) {
         if (ueAcc != null) {
             if (CcState.Published.getValue() == ueAcc.getState()) {
-                AccManifestRecord accManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 CcAccNode acc = repository.updateAccState(user, accManifest.getAccManifestId(), CcState.Editing);
                 return acc.getManifestId();
             } else {
-                AccManifestRecord ueAccManifest = repository.getAccReleaseManifestByAcc(ueAcc.getAccId(), releaseId);
+                AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().longValue();
             }
         } else {
@@ -137,11 +137,11 @@ public class ExtensionService {
 
     private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
         AccRecord ueAcc = createACCForExtension(eAcc, user);
-        AccManifestRecord ueAccManifest = createACCReleaseManifestForExtension(ueAcc, releaseId);
+        AccManifestRecord ueAccManifest = createACCManifestForExtension(ueAcc, releaseId);
 
         AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
         AsccpManifestRecord ueAsccpManifest =
-                createASCCPReleaseManifestForExtension(ueAsccp, ueAccManifest, releaseId);
+                createASCCPManifestForExtension(ueAsccp, ueAccManifest, releaseId);
 
         AsccRecord ueAscc = createASCCForExtension(eAcc, ueAsccp, user);
         AccManifestRecord eAccManifest = dslContext.selectFrom(ACC_MANIFEST)
@@ -149,7 +149,7 @@ public class ExtensionService {
                         ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(eAcc.getAccId())),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 )).fetchOne();
-        createASCCReleaseManifestForExtension(ueAscc, eAccManifest, ueAsccpManifest, releaseId);
+        createASCCManifestForExtension(ueAscc, eAccManifest, ueAsccpManifest, releaseId);
 
         return ueAccManifest.getAccManifestId().longValue();
     }
@@ -191,7 +191,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AccManifestRecord createACCReleaseManifestForExtension(AccRecord ueAcc, long releaseId) {
+    private AccManifestRecord createACCManifestForExtension(AccRecord ueAcc, long releaseId) {
         return dslContext.insertInto(ACC_MANIFEST,
                 ACC_MANIFEST.ACC_ID,
                 ACC_MANIFEST.RELEASE_ID
@@ -243,7 +243,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AsccpManifestRecord createASCCPReleaseManifestForExtension(
+    private AsccpManifestRecord createASCCPManifestForExtension(
             AsccpRecord ueAsccp, AccManifestRecord ueAccManifest, long releaseId) {
         return dslContext.insertInto(ASCCP_MANIFEST,
                 ASCCP_MANIFEST.ASCCP_ID,
@@ -298,7 +298,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private void createASCCReleaseManifestForExtension(
+    private void createASCCManifestForExtension(
             AsccRecord ueAscc, AccManifestRecord eAccManifest, AsccpManifestRecord ueAsccpManifest, long releaseId) {
         dslContext.insertInto(ASCC_MANIFEST,
                 ASCC_MANIFEST.ASCC_ID,
@@ -343,7 +343,8 @@ public class ExtensionService {
 
         long asccManifestId = dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
                 .from(ASCC_MANIFEST)
-                .where(and(ASCC_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
+                .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .where(and(ACC_MANIFEST.ACC_ID.eq(extensionAcc.getAccId()),
                         ASCC_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
                         ASCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
                 ))
@@ -357,7 +358,9 @@ public class ExtensionService {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
 
         long bccManifestId = dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
-                .from(BCC_MANIFEST).where(and(BCC_MANIFEST.FROM_ACC_ID.eq(extensionAcc.getAccId()),
+                .from(BCC_MANIFEST)
+                .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .where(and(ACC_MANIFEST.ACC_ID.eq(extensionAcc.getAccId()),
                         BCC_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
                         BCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
                 .fetchOneInto(long.class);
@@ -494,11 +497,11 @@ public class ExtensionService {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
-        AccManifestRecord accReleaseManifest =
+        AccManifestRecord accManifest =
                 dslContext.selectFrom(ACC_MANIFEST)
                         .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                         .fetchOptional().orElse(null);
-        if (accReleaseManifest == null) {
+        if (accManifest == null) {
             throw new IllegalArgumentException("Not found a target ACC.");
         }
 
@@ -506,17 +509,17 @@ public class ExtensionService {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        updateAsccOwnerUserId(accReleaseManifest, target, userId, timestamp);
-        updateBccOwnerUserId(accReleaseManifest, target, userId, timestamp);
-        updateAccOwnerUserId(accReleaseManifest, target, userId, timestamp);
+        updateAsccOwnerUserId(accManifest, target, userId, timestamp);
+        updateBccOwnerUserId(accManifest, target, userId, timestamp);
+        updateAccOwnerUserId(accManifest, target, userId, timestamp);
     }
 
-    private void updateAccOwnerUserId(AccManifestRecord accReleaseManifest,
+    private void updateAccOwnerUserId(AccManifestRecord accManifest,
                                       ULong targetAppUserId,
                                       ULong userId, Timestamp timestamp) {
 
         AccRecord history = dslContext.selectFrom(Tables.ACC)
-                .where(ACC.ACC_ID.eq(accReleaseManifest.getAccId()))
+                .where(ACC.ACC_ID.eq(accManifest.getAccId()))
                 .fetchOne();
 
         history.setAccId(null);
@@ -531,34 +534,20 @@ public class ExtensionService {
         history = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne();
         dslContext.update(ACC_MANIFEST)
                 .set(ACC_MANIFEST.ACC_ID, history.getAccId())
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accReleaseManifest.getAccManifestId()))
-                .execute();
-
-        dslContext.update(ASCC_MANIFEST)
-                .set(ASCC_MANIFEST.FROM_ACC_ID, history.getAccId())
-                .where(and(
-                        ASCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
-                        ASCC_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
-                ))
-                .execute();
-
-        dslContext.update(BCC_MANIFEST)
-                .set(BCC_MANIFEST.FROM_ACC_ID, history.getAccId())
-                .where(and(
-                        BCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()),
-                        BCC_MANIFEST.RELEASE_ID.eq(accReleaseManifest.getReleaseId())
-                ))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifest.getAccManifestId()))
                 .execute();
     }
 
-    private void updateAsccOwnerUserId(AccManifestRecord accReleaseManifest,
+    private void updateAsccOwnerUserId(AccManifestRecord accManifest,
                                        ULong targetAppUserId,
                                        ULong userId, Timestamp timestamp) {
 
         Map<ULong, AsccManifestRecord> asccManifestRecordMap =
-                dslContext.selectFrom(ASCC_MANIFEST)
-                        .where(ASCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
-                        .fetch().stream().collect(Collectors.toMap(AsccManifestRecord::getAsccId, Function.identity()));
+                dslContext.select(ASCC_MANIFEST.fields()).from(ASCC_MANIFEST)
+                        .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                        .where(ACC_MANIFEST.ACC_ID.eq(accManifest.getAccId()))
+                        .fetchInto(AsccManifestRecord.class)
+                        .stream().collect(Collectors.toMap(AsccManifestRecord::getAsccId, Function.identity()));
 
         if (asccManifestRecordMap.isEmpty()) {
             return;
@@ -589,14 +578,16 @@ public class ExtensionService {
         }
     }
 
-    private void updateBccOwnerUserId(AccManifestRecord accReleaseManifest,
+    private void updateBccOwnerUserId(AccManifestRecord accManifest,
                                       ULong targetAppUserId,
                                       ULong userId, Timestamp timestamp) {
 
         Map<ULong, BccManifestRecord> bccManifestRecordMap =
-                dslContext.selectFrom(BCC_MANIFEST)
-                        .where(BCC_MANIFEST.FROM_ACC_ID.eq(accReleaseManifest.getAccId()))
-                        .fetch().stream().collect(Collectors.toMap(BccManifestRecord::getBccId, Function.identity()));
+                dslContext.select(BCC_MANIFEST.fields()).from(BCC_MANIFEST)
+                        .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                        .where(ACC_MANIFEST.ACC_ID.eq(accManifest.getAccId()))
+                        .fetchInto(BccManifestRecord.class)
+                        .stream().collect(Collectors.toMap(BccManifestRecord::getBccId, Function.identity()));
 
         if (bccManifestRecordMap.isEmpty()) {
             return;
@@ -630,12 +621,12 @@ public class ExtensionService {
     public CcNode getLastRevisionCc(User user, String type, long manifestId) {
 
         if (type.equals("ascc")) {
-            AsccManifestRecord asccReleaseManifest = manifestRepository.getAsccReleaseManifestById(manifestId);
-            if (asccReleaseManifest == null) {
+            AsccManifestRecord asccManifest = manifestRepository.getAsccManifestById(manifestId);
+            if (asccManifest == null) {
                 return null;
             }
             String guid = dslContext.select(ASCC.GUID).from(ASCC)
-                    .where(ASCC.ASCC_ID.eq(asccReleaseManifest.getAsccId()))
+                    .where(ASCC.ASCC_ID.eq(asccManifest.getAsccId()))
                     .fetchOneInto(String.class);
             return dslContext.select(
                     ASCC.ASCC_ID,
@@ -648,12 +639,12 @@ public class ExtensionService {
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
-            BccManifestRecord bccReleaseManifest = manifestRepository.getBccReleaseManifestById(manifestId);
-            if (bccReleaseManifest == null) {
+            BccManifestRecord bccManifest = manifestRepository.getBccManifestById(manifestId);
+            if (bccManifest == null) {
                 return null;
             }
             String guid = dslContext.select(BCC.GUID).from(BCC)
-                    .where(BCC.BCC_ID.eq(bccReleaseManifest.getBccId()))
+                    .where(BCC.BCC_ID.eq(bccManifest.getBccId()))
                     .fetchOneInto(String.class);
             return dslContext.select(BCC.BCC_ID,
                     BCC.GUID,

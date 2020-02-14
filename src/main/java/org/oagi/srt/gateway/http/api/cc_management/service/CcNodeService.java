@@ -7,7 +7,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
-import org.oagi.srt.gateway.http.api.cc_management.repository.ReleaseManifestRepository;
+import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -25,15 +25,15 @@ public class CcNodeService {
     private CcNodeRepository repository;
 
     @Autowired
-    private ReleaseManifestRepository manifestRepository;
+    private ManifestRepository manifestRepository;
 
     @Autowired
     private SessionService sessionService;
 
     public CcAccNode getAccNode(User user, long manifestId) {
         AccManifestRecord accManifestRecord =
-                manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
-        return repository.getAccNodeByAccReleaseManifest(user, accManifestRecord);
+                manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
+        return repository.getAccNodeByAccManifest(user, accManifestRecord);
     }
 
     public CcAsccpNode getAsccpNode(User user, long manifestId) {
@@ -47,30 +47,30 @@ public class CcNodeService {
     @Transactional
     public void deleteAccNode(User user, long manifestId) {
         AccManifestRecord accManifestRecord =
-                manifestRepository.getAccReleaseManifestById(ULong.valueOf(manifestId));
+                manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isAccUsed(accManifestRecord.getAccId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target ACC is currently in use by another component.");
         }
 
-        manifestRepository.deleteAccReleaseManifestById(manifestId);
+        manifestRepository.deleteAccManifestById(manifestId);
         if (!manifestRepository.isAccUsed(accManifestRecord.getAccId().longValue())) {
-            repository.deleteAccRecords(accManifestRecord.getAccId().longValue());
+            repository.deleteAccRecords(accManifestRecord);
         }
     }
 
     @Transactional
     public void deleteAsccpNode(User user, long manifestId) {
         AsccpManifestRecord asccpManifestRecord =
-                manifestRepository.getAsccpReleaseManifestById(ULong.valueOf(manifestId));
+                manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target ASCCP is currently in use by another component.");
         }
 
-        manifestRepository.deleteAsccpReleaseManifestById(manifestId);
+        manifestRepository.deleteAsccpManifestById(manifestId);
         if (!manifestRepository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue())) {
             repository.deleteAsccpRecords(asccpManifestRecord.getAsccpId().longValue());
         }
@@ -79,14 +79,14 @@ public class CcNodeService {
     @Transactional
     public void deleteBccpNode(User user, long manifestId) {
         BccpManifestRecord bccpManifestRecord =
-                manifestRepository.getBccpReleaseManifestById(ULong.valueOf(manifestId));
+                manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
 
         boolean used = repository.isBccpUsed(bccpManifestRecord.getBccpId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target BCCP is currently in use by another component.");
         }
 
-        manifestRepository.deleteBccpReleaseManifestById(manifestId);
+        manifestRepository.deleteBccpManifestById(manifestId);
         if (!manifestRepository.isBccpUsed(bccpManifestRecord.getBccpId().longValue())) {
             repository.deleteBccpRecords(bccpManifestRecord.getBccpId().longValue());
         }

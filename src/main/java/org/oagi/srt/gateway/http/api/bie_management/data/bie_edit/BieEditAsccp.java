@@ -11,7 +11,7 @@ public class BieEditAsccp extends TrackableImpl {
     private long asccpId;
     private String guid;
     private String propertyTerm;
-    private long roleOfAccId;
+    private long roleOfAccManifestId;
 
     @Override
     public long getId() {

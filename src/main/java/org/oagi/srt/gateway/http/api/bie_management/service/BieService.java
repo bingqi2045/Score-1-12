@@ -61,19 +61,22 @@ public class BieService {
         long userId = sessionService.userId(user);
         long asccpManifestId = request.getAsccpManifestId();
 
-        AsccpManifestRecord asccpReleaseManifest =
+        AsccpManifestRecord asccpManifest =
                 dslContext.selectFrom(ASCCP_MANIFEST)
                         .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                         .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
-        if (asccpReleaseManifest == null) {
+        if (asccpManifest == null) {
             throw new IllegalArgumentException();
         }
 
-        long releaseId = asccpReleaseManifest.getReleaseId().longValue();
+        long releaseId = asccpManifest.getReleaseId().longValue();
         long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId, Editing);
 
-        long asccpId = asccpReleaseManifest.getAsccpId().longValue();
-        long roleOfAccId = asccpReleaseManifest.getRoleOfAccId().longValue();
+        long asccpId = asccpManifest.getAsccpId().longValue();
+        long roleOfAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
+                .from(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccpManifest.getRoleOfAccManifestId()))
+                .fetchOneInto(Long.class);
 
         List<Long> bizCtxIds = request.getBizCtxIds();
 

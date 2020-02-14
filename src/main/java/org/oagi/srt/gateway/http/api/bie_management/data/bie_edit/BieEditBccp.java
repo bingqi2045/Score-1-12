@@ -11,7 +11,7 @@ public class BieEditBccp extends TrackableImpl {
     private long bccpId;
     private String guid;
     private String propertyTerm;
-    private long bdtId;
+    private long bdtManifestId;
 
     @Override
     public long getId() {
