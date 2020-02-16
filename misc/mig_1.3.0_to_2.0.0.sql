@@ -189,6 +189,33 @@ CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
 CREATE INDEX `dt_revision_idx` ON `dt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `dt_last_update_timestamp_desc_idx` ON `dt` (`last_update_timestamp` DESC);
 
+-- Making relations between `dt_sc` and `release` tables.
+
+CREATE TABLE `dt_sc_manifest` (
+    `dt_sc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `release_id` bigint(20) unsigned NOT NULL,
+    `dt_sc_id` bigint(20) unsigned NOT NULL,
+    `owner_dt_manifest_id` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`dt_sc_manifest_id`),
+    KEY `dt_sc_manifest_dt_sc_id_fk` (`dt_sc_id`),
+    KEY `dt_sc_manifest_release_id_fk` (`release_id`),
+    KEY `dt_sc_manifest_owner_dt_manifest_id_fk` (`owner_dt_manifest_id`),
+    CONSTRAINT `dt_sc_manifest_dt_sc_id_fk` FOREIGN KEY (`dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
+    CONSTRAINT `dt_sc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `dt_sc_manifest_owner_dt_manifest_id_fk` FOREIGN KEY (`owner_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT `dt_sc_manifest` (`release_id`, `dt_sc_id`, `owner_dt_manifest_id`)
+SELECT
+    `release`.`release_id`,
+    `dt_sc`.`dt_sc_id`, `dt_manifest`.`dt_manifest_id`
+FROM `dt_sc` JOIN `dt_manifest` ON `dt_sc`.`owner_dt_id` = `dt_manifest`.`dt_id`
+             JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+ORDER BY `release`.`release_id`;
+
+-- Add indices
+CREATE INDEX `dt_sc_guid_idx` ON `dt_sc` (`guid`);
+
 -- Making relations between `bccp` and `release` tables.
 
 CREATE TABLE `bccp_manifest` (
@@ -380,6 +407,85 @@ ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
 CREATE INDEX `bcc_guid_idx` ON `bcc` (`guid`);
 CREATE INDEX `bcc_revision_idx` ON `bcc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timestamp` DESC);
+
+-- BIEs
+-- ABIE
+ALTER TABLE `abie` ADD COLUMN `based_acc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.' AFTER `guid`,
+                   ADD CONSTRAINT `abie_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+
+UPDATE `abie`, `acc_manifest`, `release`
+SET `abie`.`based_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`
+WHERE `abie`.`based_acc_id` = `acc_manifest`.`acc_id`
+  AND `acc_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `abie` DROP FOREIGN KEY `abie_based_acc_id_fk`,
+                   DROP COLUMN `based_acc_id`;
+
+-- ASBIE
+ALTER TABLE `asbie` ADD COLUMN `based_ascc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.' AFTER `guid`,
+                    ADD CONSTRAINT `asbie_based_ascc_manifest_id_fk` FOREIGN KEY (`based_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+
+UPDATE `asbie`, `ascc_manifest`, `release`
+SET `asbie`.`based_ascc_manifest_id` = `ascc_manifest`.`ascc_manifest_id`
+WHERE `asbie`.`based_ascc_id` = `ascc_manifest`.`ascc_id`
+  AND `ascc_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `asbie` DROP FOREIGN KEY `asbie_based_ascc_id_fk`,
+                    DROP COLUMN `based_ascc_id`;
+
+-- BBIE
+ALTER TABLE `bbie` ADD COLUMN `based_bcc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.' AFTER `guid`,
+                   ADD CONSTRAINT `bbie_based_bcc_manifest_id_fk` FOREIGN KEY (`based_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+
+UPDATE `bbie`, `bcc_manifest`, `release`
+SET `bbie`.`based_bcc_manifest_id` = `bcc_manifest`.`bcc_manifest_id`
+WHERE `bbie`.`based_bcc_id` = `bcc_manifest`.`bcc_id`
+  AND `bcc_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_based_bcc_id_fk`,
+                   DROP COLUMN `based_bcc_id`;
+
+-- ASBIEP
+ALTER TABLE `asbiep` ADD COLUMN `based_asccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.' AFTER `guid`,
+                     ADD CONSTRAINT `asbiep_based_asccp_manifest_id_fk` FOREIGN KEY (`based_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+
+UPDATE `asbiep`, `asccp_manifest`, `release`
+SET `asbiep`.`based_asccp_manifest_id` = `asccp_manifest`.`asccp_manifest_id`
+WHERE `asbiep`.`based_asccp_id` = `asccp_manifest`.`asccp_id`
+  AND `asccp_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `asbiep` DROP FOREIGN KEY `asbiep_based_asccp_id_fk`,
+                     DROP COLUMN `based_asccp_id`;
+
+-- BBIEP
+ALTER TABLE `bbiep` ADD COLUMN `based_bccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.' AFTER `guid`,
+                    ADD CONSTRAINT `bbiep_based_bccp_manifest_id_fk` FOREIGN KEY (`based_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+
+UPDATE `bbiep`, `bccp_manifest`, `release`
+SET `bbiep`.`based_bccp_manifest_id` = `bccp_manifest`.`bccp_manifest_id`
+WHERE `bbiep`.`based_bccp_id` = `bccp_manifest`.`bccp_id`
+  AND `bccp_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_based_bccp_id_fk`,
+                    DROP COLUMN `based_bccp_id`;
+
+-- BBIE_SC
+ALTER TABLE `bbie_sc` ADD COLUMN `based_dt_sc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.' AFTER `guid`,
+                      ADD CONSTRAINT `bbie_sc_based_dt_sc_manifest_id_fk` FOREIGN KEY (`based_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+
+UPDATE `bbie_sc`, `dt_sc_manifest`, `release`
+SET `bbie_sc`.`based_dt_sc_manifest_id` = `dt_sc_manifest`.`dt_sc_manifest_id`
+WHERE `bbie_sc`.`dt_sc_id` = `dt_sc_manifest`.`dt_sc_id`
+  AND `dt_sc_manifest`.`release_id` = `release`.`release_id`
+  AND `release`.`release_num` != 'Working';
+
+ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_dt_sc_id_fk`,
+                      DROP COLUMN `dt_sc_id`;
 
 -- Making relations between `xbt` and `release` tables.
 
