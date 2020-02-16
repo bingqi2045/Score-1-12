@@ -125,7 +125,7 @@ public class CcNodeControllerTest {
             fail("Acc ManifestId changed");
         }
         checkCcIdStack(lastAccId, accNode.getAccId());
-        if (accNode.getBasedAccId().equals(currentAccNode.getBasedAccId())) {
+        if (accNode.getBasedAccManifestId().equals(currentAccNode.getBasedAccManifestId())) {
             fail("BasedAccId not changed");
         }
         lastAccId = accNode.getAccId();
