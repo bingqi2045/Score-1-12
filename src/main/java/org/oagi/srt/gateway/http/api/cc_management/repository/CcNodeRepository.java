@@ -337,6 +337,7 @@ public class CcNodeRepository {
         baseAccRecord.set(ACC.OBJECT_CLASS_TERM, accNodeDetail.getObjectClassTerm());
         baseAccRecord.set(ACC.OAGIS_COMPONENT_TYPE, (int) accNodeDetail.getOagisComponentType());
         baseAccRecord.set(ACC.DEFINITION, accNodeDetail.getDefinition());
+        baseAccRecord.set(ACC.DEFINITION_SOURCE, accNodeDetail.getDefinitionSource());
         baseAccRecord.set(ACC.DEN, accNodeDetail.getObjectClassTerm() + ". Details");
         baseAccRecord.set(ACC.IS_DEPRECATED, (byte) (accNodeDetail.isDeprecated() ? 1 : 0));
         baseAccRecord.set(ACC.IS_ABSTRACT, (byte) (accNodeDetail.isAbstracted() ? 1 : 0));
@@ -478,6 +479,11 @@ public class CcNodeRepository {
             isChanged = true;
         }
 
+        if (!Objects.equals(baseAsccRecord.getDefinitionSource(), asccNodeDetail.getDefinitionSource())) {
+            baseAsccRecord.setDefinitionSource(asccNodeDetail.getDefinitionSource());
+            isChanged = true;
+        }
+
         if (isChanged) {
             baseAsccRecord.setAsccId(null);
             baseAsccRecord.setLastUpdatedBy(ULong.valueOf(userId));
@@ -529,6 +535,11 @@ public class CcNodeRepository {
 
         if (!Objects.equals(baseAsccpRecord.getDefinition(), asccpNodeDetail.getDefinition())) {
             baseAsccpRecord.setDefinition(asccpNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseAsccpRecord.getDefinitionSource(), asccpNodeDetail.getDefinitionSource())) {
+            baseAsccpRecord.setDefinitionSource(asccpNodeDetail.getDefinitionSource());
             isChanged = true;
         }
 
@@ -598,6 +609,11 @@ public class CcNodeRepository {
 
         if (!Objects.equals(baseBccRecord.getDefinition(), bccNodeDetail.getDefinition())) {
             baseBccRecord.setDefinition(bccNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccRecord.getDefinitionSource(), bccNodeDetail.getDefinitionSource())) {
+            baseBccRecord.setDefinitionSource(bccNodeDetail.getDefinitionSource());
             isChanged = true;
         }
 
@@ -671,6 +687,11 @@ public class CcNodeRepository {
 
         if (!Objects.equals(baseBccpRecord.getDefinition(), bccpNodeDetail.getDefinition())) {
             baseBccpRecord.setDefinition(bccpNodeDetail.getDefinition());
+            isChanged = true;
+        }
+
+        if (!Objects.equals(baseBccpRecord.getDefinitionSource(), bccpNodeDetail.getDefinitionSource())) {
+            baseBccpRecord.setDefinitionSource(bccpNodeDetail.getDefinitionSource());
             isChanged = true;
         }
 
