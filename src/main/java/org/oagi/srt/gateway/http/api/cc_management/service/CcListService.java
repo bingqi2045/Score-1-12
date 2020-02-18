@@ -159,10 +159,9 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
 
-                ULong originAccId = accManifest.getAccId();
                 ULong accId = repository.updateAccOwnerUserId(accManifest, target, userId, timestamp);
-                repository.updateAsccOwnerUserId(originAccId, accId, accManifest.getReleaseId(), target, userId, timestamp);
-                repository.updateBccOwnerUserId(originAccId, accId, accManifest.getReleaseId(), target, userId, timestamp);
+                repository.updateAsccOwnerUserId(accManifest.getAccManifestId(), accId, target, userId, timestamp);
+                repository.updateBccOwnerUserId(accManifest.getAccManifestId(), accId, target, userId, timestamp);
                 break;
 
             case "ASCCP":

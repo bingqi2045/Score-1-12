@@ -625,23 +625,15 @@ public class CcListRepository {
         return acc.getAccId();
     }
 
-    public void updateAsccOwnerUserId(ULong originAccId, ULong newAccId, ULong releaseId,
-                                      ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
+    public void updateAsccOwnerUserId(ULong accManifestId, ULong accId, ULong ownerUserId, ULong requesterUserId,
+                                      Timestamp timestamp) {
         List<AsccManifestRecord> asccManifestRecords =
-                manifestRepository.getAsccManifestByFromAccId(originAccId, releaseId);
-
-        ULong fromAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
-                .from(ACC_MANIFEST)
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(newAccId),
-                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
-                .fetchOneInto(ULong.class);
+                manifestRepository.getAsccManifestByFromAccManifestId(accManifestId);
 
         for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
             AsccRecord asccRecord = nodeRepository.getAsccRecordById(asccManifestRecord.getAsccId().longValue());
             asccRecord.setAsccId(null);
-            asccRecord.setFromAccId(newAccId);
+            asccRecord.setFromAccId(accId);
             asccRecord.setOwnerUserId(ownerUserId);
             asccRecord.setLastUpdatedBy(requesterUserId);
             asccRecord.setLastUpdateTimestamp(timestamp);
@@ -650,31 +642,23 @@ public class CcListRepository {
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
-            asccManifestRecord.setFromAccManifestId(fromAccManifestId);
             asccManifestRecord.update();
         }
 
-        nodeRepository.updateAsccpByRoleOfAcc(requesterUserId.longValue(), originAccId.longValue(), newAccId, releaseId, null, timestamp);
-        nodeRepository.updateAccByBasedAcc(requesterUserId.longValue(), originAccId.longValue(), newAccId, releaseId, timestamp);
+        nodeRepository.updateAsccpByRoleOfAcc(requesterUserId.longValue(), accManifestId, accId, null,
+                timestamp);
+        nodeRepository.updateAccByBasedAcc(requesterUserId.longValue(), accManifestId, accId, timestamp);
     }
 
-    public void updateBccOwnerUserId(ULong originAccId, ULong newAccId, ULong releaseId,
-                                     ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
+    public void updateBccOwnerUserId(ULong accManifestId, ULong accId, ULong ownerUserId, ULong requesterUserId,
+                                     Timestamp timestamp) {
         List<BccManifestRecord> bccManifestRecords =
-                manifestRepository.getBccManifestByFromAccId(originAccId, releaseId);
-
-        ULong fromAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
-                .from(ACC_MANIFEST)
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(newAccId),
-                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
-                .fetchOneInto(ULong.class);
+                manifestRepository.getBccManifestByFromAccManifestId(accManifestId);
 
         for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
             BccRecord bccRecord = nodeRepository.getBccRecordById(bccManifestRecord.getBccId().longValue());
             bccRecord.setBccId(null);
-            bccRecord.setFromAccId(newAccId);
+            bccRecord.setFromAccId(accId);
             bccRecord.setOwnerUserId(ownerUserId);
             bccRecord.setLastUpdatedBy(requesterUserId);
             bccRecord.setLastUpdateTimestamp(timestamp);
@@ -683,18 +667,18 @@ public class CcListRepository {
             bccRecord.insert();
 
             bccManifestRecord.setBccId(bccRecord.getBccId());
-            bccManifestRecord.setFromAccManifestId(fromAccManifestId);
             bccManifestRecord.update();
         }
 
-        nodeRepository.updateAsccpByRoleOfAcc(requesterUserId.longValue(), originAccId.longValue(), newAccId, releaseId, null, timestamp);
-        nodeRepository.updateAccByBasedAcc(requesterUserId.longValue(), originAccId.longValue(), newAccId, releaseId, timestamp);
+        nodeRepository.updateAsccpByRoleOfAcc(requesterUserId.longValue(), accManifestId, accId, null,
+                timestamp);
+        nodeRepository.updateAccByBasedAcc(requesterUserId.longValue(), accManifestId, accId, timestamp);
     }
 
     public void updateAsccpOwnerUserId(AsccpManifestRecord asccpManifest,
                                        ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
-        List<AsccManifestRecord> asccManifestRecords = manifestRepository.getAsccManifestByToAsccpId(
-                asccpManifest.getAsccpId(), asccpManifest.getReleaseId());
+        List<AsccManifestRecord> asccManifestRecords = manifestRepository.getAsccManifestByToAsccpManifestId(
+                asccpManifest.getAsccpManifestId());
 
         AsccpRecord asccp = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifest.getAsccpId()))
@@ -722,7 +706,6 @@ public class CcListRepository {
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
-            asccManifestRecord.setToAsccpManifestId(asccpManifest.getAsccpManifestId());
             asccManifestRecord.update();
         }
     }

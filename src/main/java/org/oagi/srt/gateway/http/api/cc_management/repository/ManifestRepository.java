@@ -35,27 +35,17 @@ public class ManifestRepository {
                 .fetchOne();
     }
 
-    public List<AsccpManifestRecord> getAsccpManifestByRoleOfAccId(long roleOfAccId, ULong releaseId) {
+    public List<AsccpManifestRecord> getAsccpManifestByRoleOfAccManifestId(ULong roleOfAccManifestId) {
         return dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCCP_MANIFEST)
-                .join(ACC_MANIFEST)
-                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(roleOfAccId)),
-                        ASCCP_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(roleOfAccManifestId))
                 .fetchInto(AsccpManifestRecord.class);
     }
 
-    public List<AccManifestRecord> getAccManifestByBasedAccId(long basedAccId, ULong releaseId) {
+    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(ULong basedAccManifestId) {
         return dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
-                .join(ACC_MANIFEST.as("base"))
-                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
-                .where(and(
-                        ACC_MANIFEST.as("base").ACC_ID.eq(ULong.valueOf(basedAccId)),
-                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(basedAccManifestId))
                 .fetchInto(AccManifestRecord.class);
     }
 
@@ -77,15 +67,10 @@ public class ManifestRepository {
                 .fetchOne();
     }
 
-    public List<AsccManifestRecord> getAsccManifestByToAsccpId(ULong toAsccpId, ULong releaseId) {
+    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(ULong toAsccpManifestId) {
         return dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
-                .join(ASCCP_MANIFEST)
-                .on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .where(and(
-                        ASCCP_MANIFEST.ASCCP_ID.eq(toAsccpId),
-                        ASCC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(toAsccpManifestId))
                 .fetchInto(AsccManifestRecord.class);
     }
 
@@ -101,27 +86,17 @@ public class ManifestRepository {
                 .fetchInto(BccManifestRecord.class);
     }
 
-    public List<AsccManifestRecord> getAsccManifestByFromAccId(ULong fromAccId, ULong releaseId) {
+    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(ULong fromAccManifestId) {
         return dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
-                .join(ACC_MANIFEST)
-                .on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(fromAccId),
-                        ASCC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .fetchInto(AsccManifestRecord.class);
     }
 
-    public List<BccManifestRecord> getBccManifestByFromAccId(ULong fromAccId, ULong releaseId) {
+    public List<BccManifestRecord> getBccManifestByFromAccManifestId(ULong fromAccManifestId) {
         return dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
-                .join(ACC_MANIFEST)
-                .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(fromAccId),
-                        BCC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .fetchInto(BccManifestRecord.class);
     }
 
