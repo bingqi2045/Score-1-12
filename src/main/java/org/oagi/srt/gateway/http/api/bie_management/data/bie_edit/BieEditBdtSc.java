@@ -6,7 +6,7 @@ import org.oagi.srt.gateway.http.helper.Utility;
 @Data
 public class BieEditBdtSc {
 
-    private long dtScId;
+    private long dtScManifestId;
     private String guid;
     private String propertyTerm;
     private String representationTerm;

@@ -28,7 +28,7 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
                 Tables.BBIE_SC.BBIE_SC_ID,
                 Tables.BBIE_SC.GUID,
                 Tables.BBIE_SC.BBIE_ID,
-                Tables.BBIE_SC.DT_SC_ID,
+                Tables.BBIE_SC.BASED_DT_SC_MANIFEST_ID,
                 Tables.BBIE_SC.DT_SC_PRI_RESTRI_ID,
                 Tables.BBIE_SC.CODE_LIST_ID,
                 Tables.BBIE_SC.AGENCY_ID_LIST_ID,

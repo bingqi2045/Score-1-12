@@ -1277,12 +1277,12 @@ public class CcNodeRepository {
         }
     }
 
-    public boolean isAccUsed(long accId) {
+    public boolean isAccUsed(long accManifestId) {
         int cnt = dslContext.selectCount()
                 .from(ASCCP_MANIFEST)
                 .join(ACC_MANIFEST)
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1292,7 +1292,7 @@ public class CcNodeRepository {
                 .from(ACC_MANIFEST)
                 .join(ACC_MANIFEST.as("base"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
-                .where(ACC_MANIFEST.as("base").ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC_MANIFEST.as("base").ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1302,7 +1302,7 @@ public class CcNodeRepository {
                 .from(ASCC_MANIFEST)
                 .join(ACC_MANIFEST)
                 .on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1312,7 +1312,7 @@ public class CcNodeRepository {
                 .from(BCC_MANIFEST)
                 .join(ACC_MANIFEST)
                 .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1320,7 +1320,7 @@ public class CcNodeRepository {
 
         cnt = dslContext.selectCount()
                 .from(ABIE)
-                .where(ABIE.BASED_ACC_ID.eq(ULong.valueOf(accId)))
+                .where(ABIE.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1329,12 +1329,12 @@ public class CcNodeRepository {
         return false;
     }
 
-    public boolean isAsccpUsed(long asccpId) {
+    public boolean isAsccpUsed(long asccpManifestId) {
         int cnt = dslContext.selectCount()
                 .from(ASCC_MANIFEST)
                 .join(ASCCP_MANIFEST)
                 .on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .where(ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1342,7 +1342,7 @@ public class CcNodeRepository {
 
         cnt = dslContext.selectCount()
                 .from(ASBIEP)
-                .where(ASBIEP.BASED_ASCCP_ID.eq(ULong.valueOf(asccpId)))
+                .where(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1351,12 +1351,12 @@ public class CcNodeRepository {
         return false;
     }
 
-    public boolean isBccpUsed(long bccpId) {
+    public boolean isBccpUsed(long bccpManifestId) {
         int cnt = dslContext.selectCount()
                 .from(BCC_MANIFEST)
                 .join(BCCP_MANIFEST)
                 .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
-                .where(BCCP_MANIFEST.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;
@@ -1364,7 +1364,7 @@ public class CcNodeRepository {
 
         cnt = dslContext.selectCount()
                 .from(BBIEP)
-                .where(BBIEP.BASED_BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .where(BBIEP.BASED_BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
         if (cnt > 0) {
             return true;

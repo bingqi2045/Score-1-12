@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbiep extends TableImpl<BbiepRecord> {
 
-    private static final long serialVersionUID = -1822483203;
+    private static final long serialVersionUID = -172014440;
 
     /**
      * The reference instance of <code>oagi.bbiep</code>
@@ -70,9 +70,9 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     public final TableField<BbiepRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an BBIEP. GUID of an BBIEP is different from its based BCCP. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.bbiep.based_bccp_id</code>. A foreign key pointing to the BCCP record. It is the BCCP, which the BBIEP contextualizes.
+     * The column <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.
      */
-    public final TableField<BbiepRecord, ULong> BASED_BCCP_ID = createField(DSL.name("based_bccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the BCCP record. It is the BCCP, which the BBIEP contextualizes.");
+    public final TableField<BbiepRecord, ULong> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.");
 
     /**
      * The column <code>oagi.bbiep.definition</code>. Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.
@@ -154,7 +154,7 @@ public class Bbiep extends TableImpl<BbiepRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIEP_BBIEP_BASED_BCCP_ID_FK, Indexes.BBIEP_BBIEP_CREATED_BY_FK, Indexes.BBIEP_BBIEP_LAST_UPDATED_BY_FK, Indexes.BBIEP_BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIEP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BBIEP_BBIEP_BASED_BCCP_MANIFEST_ID_FK, Indexes.BBIEP_BBIEP_CREATED_BY_FK, Indexes.BBIEP_BBIEP_LAST_UPDATED_BY_FK, Indexes.BBIEP_BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIEP_PRIMARY);
     }
 
     @Override
@@ -174,11 +174,11 @@ public class Bbiep extends TableImpl<BbiepRecord> {
 
     @Override
     public List<ForeignKey<BbiepRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbiepRecord, ?>>asList(Keys.BBIEP_BASED_BCCP_ID_FK, Keys.BBIEP_CREATED_BY_FK, Keys.BBIEP_LAST_UPDATED_BY_FK, Keys.BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbiepRecord, ?>>asList(Keys.BBIEP_BASED_BCCP_MANIFEST_ID_FK, Keys.BBIEP_CREATED_BY_FK, Keys.BBIEP_LAST_UPDATED_BY_FK, Keys.BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
-    public Bccp bccp() {
-        return new Bccp(this, Keys.BBIEP_BASED_BCCP_ID_FK);
+    public BccpManifest bccpManifest() {
+        return new BccpManifest(this, Keys.BBIEP_BASED_BCCP_MANIFEST_ID_FK);
     }
 
     public AppUser bbiepCreatedByFk() {

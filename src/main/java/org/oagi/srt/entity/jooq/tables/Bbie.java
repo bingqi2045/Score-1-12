@@ -49,7 +49,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 1740193962;
+    private static final long serialVersionUID = 59365853;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -75,9 +75,9 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an SC. GUID of a BBIE's SC  is different from the one in the DT_SC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.bbie.based_bcc_id</code>. The BASED_BCC_ID column refers to the BCC record, which this BBIE contextualizes.
+     * The column <code>oagi.bbie.based_bcc_manifest_id</code>. The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.
      */
-    public final TableField<BbieRecord, ULong> BASED_BCC_ID = createField(DSL.name("based_bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_ID column refers to the BCC record, which this BBIE contextualizes.");
+    public final TableField<BbieRecord, ULong> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
 
     /**
      * The column <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.
@@ -224,7 +224,7 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIE_BBIE_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_BBIE_BASED_BCC_ID_FK, Indexes.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK, Indexes.BBIE_BBIE_CODE_LIST_ID_FK, Indexes.BBIE_BBIE_CREATED_BY_FK, Indexes.BBIE_BBIE_FROM_ABIE_ID_FK, Indexes.BBIE_BBIE_LAST_UPDATED_BY_FK, Indexes.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_BBIE_TO_BBIEP_ID_FK, Indexes.BBIE_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BBIE_BBIE_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_BBIE_BASED_BCC_MANIFEST_ID_FK, Indexes.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK, Indexes.BBIE_BBIE_CODE_LIST_ID_FK, Indexes.BBIE_BBIE_CREATED_BY_FK, Indexes.BBIE_BBIE_FROM_ABIE_ID_FK, Indexes.BBIE_BBIE_LAST_UPDATED_BY_FK, Indexes.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_BBIE_TO_BBIEP_ID_FK, Indexes.BBIE_PRIMARY);
     }
 
     @Override
@@ -244,11 +244,11 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     @Override
     public List<ForeignKey<BbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_MANIFEST_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
-    public Bcc bcc() {
-        return new Bcc(this, Keys.BBIE_BASED_BCC_ID_FK);
+    public BccManifest bccManifest() {
+        return new BccManifest(this, Keys.BBIE_BASED_BCC_MANIFEST_ID_FK);
     }
 
     public Abie abie() {

@@ -7,7 +7,7 @@ public class BBIESC implements BIE {
     private long bbieScId;
     private String guid;
     private long bbieId;
-    private long dtScId;
+    private long basedDtScManifestId;
     private Long dtScPriRestriId;
     private Long codeListId;
     private Long agencyIdListId;

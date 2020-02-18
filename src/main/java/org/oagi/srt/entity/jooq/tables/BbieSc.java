@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = -1737266680;
+    private static final long serialVersionUID = 1364782601;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -71,14 +71,14 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     public final TableField<BbieScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID). It is different from the GUID fo the SC on the CC side. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
+     * The column <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
+     */
+    public final TableField<BbieScRecord, ULong> BASED_DT_SC_MANIFEST_ID = createField(DSL.name("based_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.");
+
+    /**
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
      */
     public final TableField<BbieScRecord, ULong> BBIE_ID = createField(DSL.name("bbie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BBIE this BBIE_SC applies to.");
-
-    /**
-     * The column <code>oagi.bbie_sc.dt_sc_id</code>. Foreign key to the DT_SC table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
-     */
-    public final TableField<BbieScRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT_SC table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.");
 
     /**
      * The column <code>oagi.bbie_sc.dt_sc_pri_restri_id</code>. This must be one of the allowed primitive/code list as specified in the corresponding SC of the based BCC of the BBIE (referred to by the BBIE_ID column).
@@ -193,7 +193,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_BBIE_ID_FK, Indexes.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Indexes.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_SC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Indexes.BBIE_SC_BBIE_SC_BBIE_ID_FK, Indexes.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK, Indexes.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Indexes.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.BBIE_SC_PRIMARY);
     }
 
     @Override
@@ -213,15 +213,15 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<ForeignKey<BbieScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+    }
+
+    public DtScManifest dtScManifest() {
+        return new DtScManifest(this, Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK);
     }
 
     public Bbie bbie() {
         return new Bbie(this, Keys.BBIE_SC_BBIE_ID_FK);
-    }
-
-    public DtSc dtSc() {
-        return new DtSc(this, Keys.BBIE_SC_DT_SC_ID_FK);
     }
 
     public BdtScPriRestri bdtScPriRestri() {

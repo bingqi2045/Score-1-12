@@ -25,7 +25,7 @@ public class ABIERepository implements SrtRepository<ABIE> {
             ULong, ULong, String, String, String,
             Timestamp>> getSelectJoinStep() {
         return dslContext.select(Tables.ABIE.ABIE_ID,
-                Tables.ABIE.BASED_ACC_ID,
+                Tables.ABIE.BASED_ACC_MANIFEST_ID,
                 Tables.ABIE.BIZ_CTX_ID,
                 Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID,
                 Tables.ABIE.LAST_UPDATE_TIMESTAMP,

@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.BbieSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements Record17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = -1095727772;
+    private static final long serialVersionUID = 1249590868;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.
@@ -62,30 +62,30 @@ public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements R
     }
 
     /**
+     * Setter for <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
+     */
+    public void setBasedDtScManifestId(ULong value) {
+        set(2, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
+     */
+    public ULong getBasedDtScManifestId() {
+        return (ULong) get(2);
+    }
+
+    /**
      * Setter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
      */
     public void setBbieId(ULong value) {
-        set(2, value);
+        set(3, value);
     }
 
     /**
      * Getter for <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
      */
     public ULong getBbieId() {
-        return (ULong) get(2);
-    }
-
-    /**
-     * Setter for <code>oagi.bbie_sc.dt_sc_id</code>. Foreign key to the DT_SC table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
-     */
-    public void setDtScId(ULong value) {
-        set(3, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bbie_sc.dt_sc_id</code>. Foreign key to the DT_SC table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
-     */
-    public ULong getDtScId() {
         return (ULong) get(3);
     }
 
@@ -322,12 +322,12 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public Field<ULong> field3() {
-        return BbieSc.BBIE_SC.BBIE_ID;
+        return BbieSc.BBIE_SC.BASED_DT_SC_MANIFEST_ID;
     }
 
     @Override
     public Field<ULong> field4() {
-        return BbieSc.BBIE_SC.DT_SC_ID;
+        return BbieSc.BBIE_SC.BBIE_ID;
     }
 
     @Override
@@ -407,12 +407,12 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public ULong component3() {
-        return getBbieId();
+        return getBasedDtScManifestId();
     }
 
     @Override
     public ULong component4() {
-        return getDtScId();
+        return getBbieId();
     }
 
     @Override
@@ -492,12 +492,12 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public ULong value3() {
-        return getBbieId();
+        return getBasedDtScManifestId();
     }
 
     @Override
     public ULong value4() {
-        return getDtScId();
+        return getBbieId();
     }
 
     @Override
@@ -579,13 +579,13 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public BbieScRecord value3(ULong value) {
-        setBbieId(value);
+        setBasedDtScManifestId(value);
         return this;
     }
 
     @Override
     public BbieScRecord value4(ULong value) {
-        setDtScId(value);
+        setBbieId(value);
         return this;
     }
 
@@ -703,13 +703,13 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong bbieId, ULong dtScId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(BbieSc.BBIE_SC);
 
         set(0, bbieScId);
         set(1, guid);
-        set(2, bbieId);
-        set(3, dtScId);
+        set(2, basedDtScManifestId);
+        set(3, bbieId);
         set(4, dtScPriRestriId);
         set(5, codeListId);
         set(6, agencyIdListId);

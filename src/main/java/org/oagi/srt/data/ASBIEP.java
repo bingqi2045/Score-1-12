@@ -8,7 +8,7 @@ import java.util.Date;
 public class ASBIEP implements BIE {
     private long asbiepId;
     private String guid;
-    private long basedAsccpId;
+    private long basedAsccpManifestId;
     private long roleOfAbieId;
     private String definition;
     private String remark;

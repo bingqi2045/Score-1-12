@@ -50,6 +50,7 @@ import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 import org.oagi.srt.entity.jooq.tables.Dt;
 import org.oagi.srt.entity.jooq.tables.DtManifest;
 import org.oagi.srt.entity.jooq.tables.DtSc;
+import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
@@ -79,7 +80,7 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
-    public static final Index ABIE_ABIE_BASED_ACC_ID_FK = Indexes0.ABIE_ABIE_BASED_ACC_ID_FK;
+    public static final Index ABIE_ABIE_BASED_ACC_MANIFEST_ID_FK = Indexes0.ABIE_ABIE_BASED_ACC_MANIFEST_ID_FK;
     public static final Index ABIE_ABIE_BIZ_CTX_ID_FK = Indexes0.ABIE_ABIE_BIZ_CTX_ID_FK;
     public static final Index ABIE_ABIE_CLIENT_ID_FK = Indexes0.ABIE_ABIE_CLIENT_ID_FK;
     public static final Index ABIE_ABIE_CREATED_BY_FK = Indexes0.ABIE_ABIE_CREATED_BY_FK;
@@ -109,14 +110,14 @@ public class Indexes {
     public static final Index AGENCY_ID_LIST_VALUE_PRIMARY = Indexes0.AGENCY_ID_LIST_VALUE_PRIMARY;
     public static final Index APP_USER_APP_USER_UK1 = Indexes0.APP_USER_APP_USER_UK1;
     public static final Index APP_USER_PRIMARY = Indexes0.APP_USER_PRIMARY;
-    public static final Index ASBIE_ASBIE_BASED_ASCC_ID_FK = Indexes0.ASBIE_ASBIE_BASED_ASCC_ID_FK;
+    public static final Index ASBIE_ASBIE_BASED_ASCC_MANIFEST_ID_FK = Indexes0.ASBIE_ASBIE_BASED_ASCC_MANIFEST_ID_FK;
     public static final Index ASBIE_ASBIE_CREATED_BY_FK = Indexes0.ASBIE_ASBIE_CREATED_BY_FK;
     public static final Index ASBIE_ASBIE_FROM_ABIE_ID_FK = Indexes0.ASBIE_ASBIE_FROM_ABIE_ID_FK;
     public static final Index ASBIE_ASBIE_LAST_UPDATED_BY_FK = Indexes0.ASBIE_ASBIE_LAST_UPDATED_BY_FK;
     public static final Index ASBIE_ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.ASBIE_ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final Index ASBIE_ASBIE_TO_ASBIEP_ID_FK = Indexes0.ASBIE_ASBIE_TO_ASBIEP_ID_FK;
     public static final Index ASBIE_PRIMARY = Indexes0.ASBIE_PRIMARY;
-    public static final Index ASBIEP_ASBIEP_BASED_ASCCP_ID_FK = Indexes0.ASBIEP_ASBIEP_BASED_ASCCP_ID_FK;
+    public static final Index ASBIEP_ASBIEP_BASED_ASCCP_MANIFEST_ID_FK = Indexes0.ASBIEP_ASBIEP_BASED_ASCCP_MANIFEST_ID_FK;
     public static final Index ASBIEP_ASBIEP_CREATED_BY_FK = Indexes0.ASBIEP_ASBIEP_CREATED_BY_FK;
     public static final Index ASBIEP_ASBIEP_LAST_UPDATED_BY_FK = Indexes0.ASBIEP_ASBIEP_LAST_UPDATED_BY_FK;
     public static final Index ASBIEP_ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.ASBIEP_ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK;
@@ -151,7 +152,7 @@ public class Indexes {
     public static final Index ASCC_MANIFEST_ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = Indexes0.ASCC_MANIFEST_ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK;
     public static final Index ASCC_MANIFEST_PRIMARY = Indexes0.ASCC_MANIFEST_PRIMARY;
     public static final Index BBIE_BBIE_AGENCY_ID_LIST_ID_FK = Indexes0.BBIE_BBIE_AGENCY_ID_LIST_ID_FK;
-    public static final Index BBIE_BBIE_BASED_BCC_ID_FK = Indexes0.BBIE_BBIE_BASED_BCC_ID_FK;
+    public static final Index BBIE_BBIE_BASED_BCC_MANIFEST_ID_FK = Indexes0.BBIE_BBIE_BASED_BCC_MANIFEST_ID_FK;
     public static final Index BBIE_BBIE_BDT_PRI_RESTRI_ID_FK = Indexes0.BBIE_BBIE_BDT_PRI_RESTRI_ID_FK;
     public static final Index BBIE_BBIE_CODE_LIST_ID_FK = Indexes0.BBIE_BBIE_CODE_LIST_ID_FK;
     public static final Index BBIE_BBIE_CREATED_BY_FK = Indexes0.BBIE_BBIE_CREATED_BY_FK;
@@ -160,15 +161,15 @@ public class Indexes {
     public static final Index BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final Index BBIE_BBIE_TO_BBIEP_ID_FK = Indexes0.BBIE_BBIE_TO_BBIEP_ID_FK;
     public static final Index BBIE_PRIMARY = Indexes0.BBIE_PRIMARY;
-    public static final Index BBIEP_BBIEP_BASED_BCCP_ID_FK = Indexes0.BBIEP_BBIEP_BASED_BCCP_ID_FK;
+    public static final Index BBIEP_BBIEP_BASED_BCCP_MANIFEST_ID_FK = Indexes0.BBIEP_BBIEP_BASED_BCCP_MANIFEST_ID_FK;
     public static final Index BBIEP_BBIEP_CREATED_BY_FK = Indexes0.BBIEP_BBIEP_CREATED_BY_FK;
     public static final Index BBIEP_BBIEP_LAST_UPDATED_BY_FK = Indexes0.BBIEP_BBIEP_LAST_UPDATED_BY_FK;
     public static final Index BBIEP_BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.BBIEP_BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final Index BBIEP_PRIMARY = Indexes0.BBIEP_PRIMARY;
     public static final Index BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK = Indexes0.BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK;
+    public static final Index BBIE_SC_BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK = Indexes0.BBIE_SC_BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_BBIE_ID_FK = Indexes0.BBIE_SC_BBIE_SC_BBIE_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_CODE_LIST_ID_FK = Indexes0.BBIE_SC_BBIE_SC_CODE_LIST_ID_FK;
-    public static final Index BBIE_SC_BBIE_SC_DT_SC_ID_FK = Indexes0.BBIE_SC_BBIE_SC_DT_SC_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Indexes0.BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK;
     public static final Index BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Indexes0.BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final Index BBIE_SC_PRIMARY = Indexes0.BBIE_SC_PRIMARY;
@@ -287,9 +288,14 @@ public class Indexes {
     public static final Index DT_MANIFEST_DT_MANIFEST_RELEASE_ID_FK = Indexes0.DT_MANIFEST_DT_MANIFEST_RELEASE_ID_FK;
     public static final Index DT_MANIFEST_PRIMARY = Indexes0.DT_MANIFEST_PRIMARY;
     public static final Index DT_SC_DT_SC_BASED_DT_SC_ID_FK = Indexes0.DT_SC_DT_SC_BASED_DT_SC_ID_FK;
+    public static final Index DT_SC_DT_SC_GUID_IDX = Indexes0.DT_SC_DT_SC_GUID_IDX;
     public static final Index DT_SC_DT_SC_OWNER_DT_ID_FK = Indexes0.DT_SC_DT_SC_OWNER_DT_ID_FK;
     public static final Index DT_SC_DT_SC_UK1 = Indexes0.DT_SC_DT_SC_UK1;
     public static final Index DT_SC_PRIMARY = Indexes0.DT_SC_PRIMARY;
+    public static final Index DT_SC_MANIFEST_DT_SC_MANIFEST_DT_SC_ID_FK = Indexes0.DT_SC_MANIFEST_DT_SC_MANIFEST_DT_SC_ID_FK;
+    public static final Index DT_SC_MANIFEST_DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK = Indexes0.DT_SC_MANIFEST_DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK;
+    public static final Index DT_SC_MANIFEST_DT_SC_MANIFEST_RELEASE_ID_FK = Indexes0.DT_SC_MANIFEST_DT_SC_MANIFEST_RELEASE_ID_FK;
+    public static final Index DT_SC_MANIFEST_PRIMARY = Indexes0.DT_SC_MANIFEST_PRIMARY;
     public static final Index DT_USAGE_RULE_DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = Indexes0.DT_USAGE_RULE_DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK;
     public static final Index DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_ID_FK = Indexes0.DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_ID_FK;
     public static final Index DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_SC_ID_FK = Indexes0.DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_SC_ID_FK;
@@ -337,7 +343,7 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
-        public static Index ABIE_ABIE_BASED_ACC_ID_FK = Internal.createIndex("abie_based_acc_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.BASED_ACC_ID }, false);
+        public static Index ABIE_ABIE_BASED_ACC_MANIFEST_ID_FK = Internal.createIndex("abie_based_acc_manifest_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.BASED_ACC_MANIFEST_ID }, false);
         public static Index ABIE_ABIE_BIZ_CTX_ID_FK = Internal.createIndex("abie_biz_ctx_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.BIZ_CTX_ID }, false);
         public static Index ABIE_ABIE_CLIENT_ID_FK = Internal.createIndex("abie_client_id_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.CLIENT_ID }, false);
         public static Index ABIE_ABIE_CREATED_BY_FK = Internal.createIndex("abie_created_by_fk", Abie.ABIE, new OrderField[] { Abie.ABIE.CREATED_BY }, false);
@@ -367,14 +373,14 @@ public class Indexes {
         public static Index AGENCY_ID_LIST_VALUE_PRIMARY = Internal.createIndex("PRIMARY", AgencyIdListValue.AGENCY_ID_LIST_VALUE, new OrderField[] { AgencyIdListValue.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID }, true);
         public static Index APP_USER_APP_USER_UK1 = Internal.createIndex("app_user_uk1", AppUser.APP_USER, new OrderField[] { AppUser.APP_USER.LOGIN_ID }, true);
         public static Index APP_USER_PRIMARY = Internal.createIndex("PRIMARY", AppUser.APP_USER, new OrderField[] { AppUser.APP_USER.APP_USER_ID }, true);
-        public static Index ASBIE_ASBIE_BASED_ASCC_ID_FK = Internal.createIndex("asbie_based_ascc_id_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.BASED_ASCC_ID }, false);
+        public static Index ASBIE_ASBIE_BASED_ASCC_MANIFEST_ID_FK = Internal.createIndex("asbie_based_ascc_manifest_id_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.BASED_ASCC_MANIFEST_ID }, false);
         public static Index ASBIE_ASBIE_CREATED_BY_FK = Internal.createIndex("asbie_created_by_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.CREATED_BY }, false);
         public static Index ASBIE_ASBIE_FROM_ABIE_ID_FK = Internal.createIndex("asbie_from_abie_id_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.FROM_ABIE_ID }, false);
         public static Index ASBIE_ASBIE_LAST_UPDATED_BY_FK = Internal.createIndex("asbie_last_updated_by_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.LAST_UPDATED_BY }, false);
         public static Index ASBIE_ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("asbie_owner_top_level_abie_id_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.OWNER_TOP_LEVEL_ABIE_ID }, false);
         public static Index ASBIE_ASBIE_TO_ASBIEP_ID_FK = Internal.createIndex("asbie_to_asbiep_id_fk", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.TO_ASBIEP_ID }, false);
         public static Index ASBIE_PRIMARY = Internal.createIndex("PRIMARY", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.ASBIE_ID }, true);
-        public static Index ASBIEP_ASBIEP_BASED_ASCCP_ID_FK = Internal.createIndex("asbiep_based_asccp_id_fk", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.BASED_ASCCP_ID }, false);
+        public static Index ASBIEP_ASBIEP_BASED_ASCCP_MANIFEST_ID_FK = Internal.createIndex("asbiep_based_asccp_manifest_id_fk", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.BASED_ASCCP_MANIFEST_ID }, false);
         public static Index ASBIEP_ASBIEP_CREATED_BY_FK = Internal.createIndex("asbiep_created_by_fk", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.CREATED_BY }, false);
         public static Index ASBIEP_ASBIEP_LAST_UPDATED_BY_FK = Internal.createIndex("asbiep_last_updated_by_fk", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.LAST_UPDATED_BY }, false);
         public static Index ASBIEP_ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("asbiep_owner_top_level_abie_id_fk", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID }, false);
@@ -409,7 +415,7 @@ public class Indexes {
         public static Index ASCC_MANIFEST_ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = Internal.createIndex("ascc_manifest_to_asccp_manifest_id_fk", AsccManifest.ASCC_MANIFEST, new OrderField[] { AsccManifest.ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID }, false);
         public static Index ASCC_MANIFEST_PRIMARY = Internal.createIndex("PRIMARY", AsccManifest.ASCC_MANIFEST, new OrderField[] { AsccManifest.ASCC_MANIFEST.ASCC_MANIFEST_ID }, true);
         public static Index BBIE_BBIE_AGENCY_ID_LIST_ID_FK = Internal.createIndex("bbie_agency_id_list_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.AGENCY_ID_LIST_ID }, false);
-        public static Index BBIE_BBIE_BASED_BCC_ID_FK = Internal.createIndex("bbie_based_bcc_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.BASED_BCC_ID }, false);
+        public static Index BBIE_BBIE_BASED_BCC_MANIFEST_ID_FK = Internal.createIndex("bbie_based_bcc_manifest_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.BASED_BCC_MANIFEST_ID }, false);
         public static Index BBIE_BBIE_BDT_PRI_RESTRI_ID_FK = Internal.createIndex("bbie_bdt_pri_restri_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.BDT_PRI_RESTRI_ID }, false);
         public static Index BBIE_BBIE_CODE_LIST_ID_FK = Internal.createIndex("bbie_code_list_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.CODE_LIST_ID }, false);
         public static Index BBIE_BBIE_CREATED_BY_FK = Internal.createIndex("bbie_created_by_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.CREATED_BY }, false);
@@ -418,15 +424,15 @@ public class Indexes {
         public static Index BBIE_BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("bbie_owner_top_level_abie_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.OWNER_TOP_LEVEL_ABIE_ID }, false);
         public static Index BBIE_BBIE_TO_BBIEP_ID_FK = Internal.createIndex("bbie_to_bbiep_id_fk", Bbie.BBIE, new OrderField[] { Bbie.BBIE.TO_BBIEP_ID }, false);
         public static Index BBIE_PRIMARY = Internal.createIndex("PRIMARY", Bbie.BBIE, new OrderField[] { Bbie.BBIE.BBIE_ID }, true);
-        public static Index BBIEP_BBIEP_BASED_BCCP_ID_FK = Internal.createIndex("bbiep_based_bccp_id_fk", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.BASED_BCCP_ID }, false);
+        public static Index BBIEP_BBIEP_BASED_BCCP_MANIFEST_ID_FK = Internal.createIndex("bbiep_based_bccp_manifest_id_fk", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.BASED_BCCP_MANIFEST_ID }, false);
         public static Index BBIEP_BBIEP_CREATED_BY_FK = Internal.createIndex("bbiep_created_by_fk", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.CREATED_BY }, false);
         public static Index BBIEP_BBIEP_LAST_UPDATED_BY_FK = Internal.createIndex("bbiep_last_updated_by_fk", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.LAST_UPDATED_BY }, false);
         public static Index BBIEP_BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("bbiep_owner_top_level_abie_id_fk", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.OWNER_TOP_LEVEL_ABIE_ID }, false);
         public static Index BBIEP_PRIMARY = Internal.createIndex("PRIMARY", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.BBIEP_ID }, true);
         public static Index BBIE_SC_BBIE_SC_AGENCY_ID_LIST_ID_FK = Internal.createIndex("bbie_sc_agency_id_list_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.AGENCY_ID_LIST_ID }, false);
+        public static Index BBIE_SC_BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK = Internal.createIndex("bbie_sc_based_dt_sc_manifest_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.BASED_DT_SC_MANIFEST_ID }, false);
         public static Index BBIE_SC_BBIE_SC_BBIE_ID_FK = Internal.createIndex("bbie_sc_bbie_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.BBIE_ID }, false);
         public static Index BBIE_SC_BBIE_SC_CODE_LIST_ID_FK = Internal.createIndex("bbie_sc_code_list_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.CODE_LIST_ID }, false);
-        public static Index BBIE_SC_BBIE_SC_DT_SC_ID_FK = Internal.createIndex("bbie_sc_dt_sc_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.DT_SC_ID }, false);
         public static Index BBIE_SC_BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Internal.createIndex("bbie_sc_dt_sc_pri_restri_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.DT_SC_PRI_RESTRI_ID }, false);
         public static Index BBIE_SC_BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createIndex("bbie_sc_owner_top_level_abie_id_fk", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID }, false);
         public static Index BBIE_SC_PRIMARY = Internal.createIndex("PRIMARY", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.BBIE_SC_ID }, true);
@@ -545,9 +551,14 @@ public class Indexes {
         public static Index DT_MANIFEST_DT_MANIFEST_RELEASE_ID_FK = Internal.createIndex("dt_manifest_release_id_fk", DtManifest.DT_MANIFEST, new OrderField[] { DtManifest.DT_MANIFEST.RELEASE_ID }, false);
         public static Index DT_MANIFEST_PRIMARY = Internal.createIndex("PRIMARY", DtManifest.DT_MANIFEST, new OrderField[] { DtManifest.DT_MANIFEST.DT_MANIFEST_ID }, true);
         public static Index DT_SC_DT_SC_BASED_DT_SC_ID_FK = Internal.createIndex("dt_sc_based_dt_sc_id_fk", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.BASED_DT_SC_ID }, false);
+        public static Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex("dt_sc_guid_idx", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
         public static Index DT_SC_DT_SC_OWNER_DT_ID_FK = Internal.createIndex("dt_sc_owner_dt_id_fk", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.OWNER_DT_ID }, false);
         public static Index DT_SC_DT_SC_UK1 = Internal.createIndex("dt_sc_uk1", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, true);
         public static Index DT_SC_PRIMARY = Internal.createIndex("PRIMARY", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.DT_SC_ID }, true);
+        public static Index DT_SC_MANIFEST_DT_SC_MANIFEST_DT_SC_ID_FK = Internal.createIndex("dt_sc_manifest_dt_sc_id_fk", DtScManifest.DT_SC_MANIFEST, new OrderField[] { DtScManifest.DT_SC_MANIFEST.DT_SC_ID }, false);
+        public static Index DT_SC_MANIFEST_DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK = Internal.createIndex("dt_sc_manifest_owner_dt_manifest_id_fk", DtScManifest.DT_SC_MANIFEST, new OrderField[] { DtScManifest.DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID }, false);
+        public static Index DT_SC_MANIFEST_DT_SC_MANIFEST_RELEASE_ID_FK = Internal.createIndex("dt_sc_manifest_release_id_fk", DtScManifest.DT_SC_MANIFEST, new OrderField[] { DtScManifest.DT_SC_MANIFEST.RELEASE_ID }, false);
+        public static Index DT_SC_MANIFEST_PRIMARY = Internal.createIndex("PRIMARY", DtScManifest.DT_SC_MANIFEST, new OrderField[] { DtScManifest.DT_SC_MANIFEST.DT_SC_MANIFEST_ID }, true);
         public static Index DT_USAGE_RULE_DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = Internal.createIndex("dt_usage_rule_assigned_usage_rule_id_fk", DtUsageRule.DT_USAGE_RULE, new OrderField[] { DtUsageRule.DT_USAGE_RULE.ASSIGNED_USAGE_RULE_ID }, false);
         public static Index DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_ID_FK = Internal.createIndex("dt_usage_rule_target_dt_id_fk", DtUsageRule.DT_USAGE_RULE, new OrderField[] { DtUsageRule.DT_USAGE_RULE.TARGET_DT_ID }, false);
         public static Index DT_USAGE_RULE_DT_USAGE_RULE_TARGET_DT_SC_ID_FK = Internal.createIndex("dt_usage_rule_target_dt_sc_id_fk", DtUsageRule.DT_USAGE_RULE, new OrderField[] { DtUsageRule.DT_USAGE_RULE.TARGET_DT_SC_ID }, false);

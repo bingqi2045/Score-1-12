@@ -47,6 +47,7 @@ import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 import org.oagi.srt.entity.jooq.tables.Dt;
 import org.oagi.srt.entity.jooq.tables.DtManifest;
 import org.oagi.srt.entity.jooq.tables.DtSc;
+import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
@@ -288,6 +289,11 @@ If we use a separate table for each expression, then we need binding all the way
      * This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it. 
      */
     public static final DtSc DT_SC = DtSc.DT_SC;
+
+    /**
+     * The table <code>oagi.dt_sc_manifest</code>.
+     */
+    public static final DtScManifest DT_SC_MANIFEST = DtScManifest.DT_SC_MANIFEST;
 
     /**
      * This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and the DT content component and usage rules and DT supplementary component. In a particular record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not both.

@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.Asbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record17<ULong, String, ULong, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, Timestamp, Timestamp, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = -1184272410;
+    private static final long serialVersionUID = 950956949;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.
@@ -63,44 +63,44 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     /**
+     * Setter for <code>oagi.asbie.based_ascc_manifest_id</code>. The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.
+     */
+    public void setBasedAsccManifestId(ULong value) {
+        set(2, value);
+    }
+
+    /**
+     * Getter for <code>oagi.asbie.based_ascc_manifest_id</code>. The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.
+     */
+    public ULong getBasedAsccManifestId() {
+        return (ULong) get(2);
+    }
+
+    /**
      * Setter for <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
     public void setFromAbieId(ULong value) {
-        set(2, value);
+        set(3, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
     public ULong getFromAbieId() {
-        return (ULong) get(2);
+        return (ULong) get(3);
     }
 
     /**
      * Setter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
      */
     public void setToAsbiepId(ULong value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
      */
     public ULong getToAsbiepId() {
-        return (ULong) get(3);
-    }
-
-    /**
-     * Setter for <code>oagi.asbie.based_ascc_id</code>. The BASED_ASCC_ID column refers to the ASCC record, which this ASBIE contextualizes.
-     */
-    public void setBasedAsccId(ULong value) {
-        set(4, value);
-    }
-
-    /**
-     * Getter for <code>oagi.asbie.based_ascc_id</code>. The BASED_ASCC_ID column refers to the ASCC record, which this ASBIE contextualizes.
-     */
-    public ULong getBasedAsccId() {
         return (ULong) get(4);
     }
 
@@ -307,17 +307,17 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public Field<ULong> field3() {
-        return Asbie.ASBIE.FROM_ABIE_ID;
+        return Asbie.ASBIE.BASED_ASCC_MANIFEST_ID;
     }
 
     @Override
     public Field<ULong> field4() {
-        return Asbie.ASBIE.TO_ASBIEP_ID;
+        return Asbie.ASBIE.FROM_ABIE_ID;
     }
 
     @Override
     public Field<ULong> field5() {
-        return Asbie.ASBIE.BASED_ASCC_ID;
+        return Asbie.ASBIE.TO_ASBIEP_ID;
     }
 
     @Override
@@ -392,17 +392,17 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public ULong component3() {
-        return getFromAbieId();
+        return getBasedAsccManifestId();
     }
 
     @Override
     public ULong component4() {
-        return getToAsbiepId();
+        return getFromAbieId();
     }
 
     @Override
     public ULong component5() {
-        return getBasedAsccId();
+        return getToAsbiepId();
     }
 
     @Override
@@ -477,17 +477,17 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public ULong value3() {
-        return getFromAbieId();
+        return getBasedAsccManifestId();
     }
 
     @Override
     public ULong value4() {
-        return getToAsbiepId();
+        return getFromAbieId();
     }
 
     @Override
     public ULong value5() {
-        return getBasedAsccId();
+        return getToAsbiepId();
     }
 
     @Override
@@ -564,19 +564,19 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public AsbieRecord value3(ULong value) {
-        setFromAbieId(value);
+        setBasedAsccManifestId(value);
         return this;
     }
 
     @Override
     public AsbieRecord value4(ULong value) {
-        setToAsbiepId(value);
+        setFromAbieId(value);
         return this;
     }
 
     @Override
     public AsbieRecord value5(ULong value) {
-        setBasedAsccId(value);
+        setToAsbiepId(value);
         return this;
     }
 
@@ -688,14 +688,14 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(ULong asbieId, String guid, ULong fromAbieId, ULong toAsbiepId, ULong basedAsccId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Asbie.ASBIE);
 
         set(0, asbieId);
         set(1, guid);
-        set(2, fromAbieId);
-        set(3, toAsbiepId);
-        set(4, basedAsccId);
+        set(2, basedAsccManifestId);
+        set(3, fromAbieId);
+        set(4, toAsbiepId);
         set(5, definition);
         set(6, cardinalityMin);
         set(7, cardinalityMax);

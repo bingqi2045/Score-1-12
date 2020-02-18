@@ -151,8 +151,9 @@ public class BieGenerateService {
          * Issue 566
          */
         long rootAbieId = topLevelAbie.getAbieId();
-        long asccpId = dslContext.select(ASBIEP.BASED_ASCCP_ID)
+        long asccpId = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                 .from(ASBIEP)
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .where(and(ASBIEP.ROLE_OF_ABIE_ID
                                 .eq(ULong.valueOf(rootAbieId)),
                         ASBIEP.OWNER_TOP_LEVEL_ABIE_ID

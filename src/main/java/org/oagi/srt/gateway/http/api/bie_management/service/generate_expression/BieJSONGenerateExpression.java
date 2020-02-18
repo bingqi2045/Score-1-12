@@ -312,7 +312,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
 
     private String fillDefinitions(Map<String, Object> definitions,
                                    BBIESC bbieSc, CodeList codeList) {
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         BdtScPriRestri bdtScPriRestri =
                 generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
 
@@ -575,7 +575,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
             return;
         }
 
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         String name = camelCase(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
         Map<String, Object> properties = new LinkedHashMap();
 

@@ -8,7 +8,7 @@ import java.util.Date;
 public class BBIEP implements BIE {
     private long bbiepId;
     private String guid;
-    private long basedBccpId;
+    private long basedBccpManifestId;
     private String definition;
     private String remark;
     private String bizTerm;

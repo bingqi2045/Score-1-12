@@ -38,7 +38,7 @@ import org.oagi.srt.entity.jooq.tables.Abie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record16<ULong, String, ULong, ULong, String, ULong, ULong, Timestamp, Timestamp, Integer, ULong, String, String, String, String, ULong> {
 
-    private static final long serialVersionUID = 97292926;
+    private static final long serialVersionUID = -1004938701;
 
     /**
      * Setter for <code>oagi.abie.abie_id</code>. A internal, primary database key of an ABIE.
@@ -69,16 +69,16 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.abie.based_acc_id</code>. A foreign key to the ACC table refering to the ACC, on which the business context has been applied to derive this ABIE.
+     * Setter for <code>oagi.abie.based_acc_manifest_id</code>. A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.
      */
-    public void setBasedAccId(ULong value) {
+    public void setBasedAccManifestId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.abie.based_acc_id</code>. A foreign key to the ACC table refering to the ACC, on which the business context has been applied to derive this ABIE.
+     * Getter for <code>oagi.abie.based_acc_manifest_id</code>. A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.
      */
-    public ULong getBasedAccId() {
+    public ULong getBasedAccManifestId() {
         return (ULong) get(2);
     }
 
@@ -299,7 +299,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
 
     @Override
     public Field<ULong> field3() {
-        return Abie.ABIE.BASED_ACC_ID;
+        return Abie.ABIE.BASED_ACC_MANIFEST_ID;
     }
 
     @Override
@@ -379,7 +379,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
 
     @Override
     public ULong component3() {
-        return getBasedAccId();
+        return getBasedAccManifestId();
     }
 
     @Override
@@ -459,7 +459,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
 
     @Override
     public ULong value3() {
-        return getBasedAccId();
+        return getBasedAccManifestId();
     }
 
     @Override
@@ -541,7 +541,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
 
     @Override
     public AbieRecord value3(ULong value) {
-        setBasedAccId(value);
+        setBasedAccManifestId(value);
         return this;
     }
 
@@ -658,12 +658,12 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     /**
      * Create a detached, initialised AbieRecord
      */
-    public AbieRecord(ULong abieId, String guid, ULong basedAccId, ULong bizCtxId, String definition, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer state, ULong clientId, String version, String status, String remark, String bizTerm, ULong ownerTopLevelAbieId) {
+    public AbieRecord(ULong abieId, String guid, ULong basedAccManifestId, ULong bizCtxId, String definition, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, Integer state, ULong clientId, String version, String status, String remark, String bizTerm, ULong ownerTopLevelAbieId) {
         super(Abie.ABIE);
 
         set(0, abieId);
         set(1, guid);
-        set(2, basedAccId);
+        set(2, basedAccManifestId);
         set(3, bizCtxId);
         set(4, definition);
         set(5, createdBy);

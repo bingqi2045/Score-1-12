@@ -40,7 +40,7 @@ public class BieRepository {
                 .join(TOP_LEVEL_ABIE)
                 .on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
                 .join(ACC_MANIFEST)
-                .on(ABIE.BASED_ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .on(ABIE.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
                         .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOneInto(Long.class);
@@ -90,8 +90,9 @@ public class BieRepository {
     public BieEditBbiep getBbiep(long bbiepId, long topLevelAbieId) {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
-                BBIEP.BASED_BCCP_ID)
+                BCCP_MANIFEST.BCCP_ID.as("based_bccp_id"))
                 .from(BBIEP)
+                .join(BCCP_MANIFEST).on(BBIEP.BASED_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .where(and(
                         BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
                         BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId))))
@@ -176,24 +177,23 @@ public class BieRepository {
                 .from(DT_SC)
                 .join(DT)
                 .on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
-                .join(DT_MANIFEST)
-                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
                 .where(and(
-                        DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(ownerDtManifestId)),
+                        DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(ULong.valueOf(ownerDtManifestId)),
                         DT_SC.CARDINALITY_MAX.ne(0)
                 )).fetchInto(BieEditBdtSc.class);
     }
 
-    public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(long bbieId, long dtScId, long topLevelAbieId) {
+    public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(long bbieId, long dtScManifestId, long topLevelAbieId) {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.BBIE_ID,
-                BBIE_SC.DT_SC_ID,
+                DT_SC_MANIFEST.DT_SC_ID,
                 BBIE_SC.IS_USED.as("used"))
                 .from(BBIE_SC)
+                .join(DT_SC_MANIFEST).on(BBIE_SC.BASED_DT_SC_MANIFEST_ID.eq(DT_SC_MANIFEST.DT_SC_MANIFEST_ID))
                 .where(and(
                         BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieId)),
-                        BBIE_SC.DT_SC_ID.eq(ULong.valueOf(dtScId)),
+                        DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(dtScManifestId)),
                         BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
                 )).fetchOptionalInto(BieEditBbieSc.class).orElse(null);
     }
@@ -202,8 +202,9 @@ public class BieRepository {
     public String getAsccpPropertyTermByAsbiepId(long asbiepId) {
         return dslContext.select(
                 ASCCP.PROPERTY_TERM)
-                .from(ASCCP)
-                .join(ASBIEP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
+                .from(ASBIEP)
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
                 .fetchOptionalInto(String.class).orElse(null);
     }
@@ -211,8 +212,9 @@ public class BieRepository {
     public String getBccpPropertyTermByBbiepId(long bbiepId) {
         return dslContext.select(
                 BCCP.PROPERTY_TERM)
-                .from(BCCP)
-                .join(BBIEP).on(BCCP.BCCP_ID.eq(BBIEP.BASED_BCCP_ID))
+                .from(BBIEP)
+                .join(BCCP_MANIFEST).on(BBIEP.BASED_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                 .where(BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId)))
                 .fetchOptionalInto(String.class).orElse(null);
     }
@@ -258,8 +260,9 @@ public class BieRepository {
     public BieEditAbie getAbieByAsbiepId(long asbiepId) {
         return dslContext.select(
                 ABIE.ABIE_ID,
-                ABIE.BASED_ACC_ID)
+                ACC_MANIFEST.ACC_ID.as("based_acc_id"))
                 .from(ABIE)
+                .join(ACC_MANIFEST).on(ABIE.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
                 .fetchOptionalInto(BieEditAbie.class).orElse(null);
@@ -270,11 +273,12 @@ public class BieRepository {
                 ASBIE.ASBIE_ID,
                 ASBIE.FROM_ABIE_ID,
                 ASBIE.TO_ASBIEP_ID,
-                ASBIE.BASED_ASCC_ID,
+                ASCC_MANIFEST.ASCC_ID.as("based_ascc_id"),
                 ASBIE.IS_USED.as("used"),
                 ASBIE.CARDINALITY_MIN,
                 ASBIE.CARDINALITY_MAX)
                 .from(ASBIE)
+                .join(ASCC_MANIFEST).on(ASBIE.BASED_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.ASCC_MANIFEST_ID))
                 .where(and(
                         ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
                         ASBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
@@ -287,11 +291,12 @@ public class BieRepository {
                 BBIE.BBIE_ID,
                 BBIE.FROM_ABIE_ID,
                 BBIE.TO_BBIEP_ID,
-                BBIE.BASED_BCC_ID,
+                BCC_MANIFEST.BCC_ID.as("based_bcc_id"),
                 BBIE.IS_USED.as("used"),
                 BBIE.CARDINALITY_MIN,
                 BBIE.CARDINALITY_MAX)
                 .from(BBIE)
+                .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
                 .where(and(
                         BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
                         BBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
@@ -300,9 +305,10 @@ public class BieRepository {
     }
 
     public long getRoleOfAccIdByAsbiepId(long asbiepId) {
-        return dslContext.select(ASCCP.ROLE_OF_ACC_ID)
-                .from(ASCCP)
-                .join(ASBIEP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
+        return dslContext.select(ACC_MANIFEST.ACC_ID)
+                .from(ASBIEP)
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ACC_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepId)))
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
@@ -429,13 +435,13 @@ public class BieRepository {
         });
     }
 
-    public AbieRecord createAbie(User user, long basedAccId, long topLevelAbieId) {
+    public AbieRecord createAbie(User user, long basedAccManifestId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         return dslContext.insertInto(ABIE)
                 .set(ABIE.GUID, SrtGuid.randomGuid())
-                .set(ABIE.BASED_ACC_ID, ULong.valueOf(basedAccId))
+                .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(basedAccManifestId))
                 .set(ABIE.CREATED_BY, ULong.valueOf(userId))
                 .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ABIE.CREATION_TIMESTAMP, timestamp)
@@ -445,13 +451,13 @@ public class BieRepository {
                 .returning().fetchOne();
     }
 
-    public AsbiepRecord createAsbiep(User user, long asccpId, long abieId, long topLevelAbieId) {
+    public AsbiepRecord createAsbiep(User user, long asccpManifestId, long abieId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         return dslContext.insertInto(ASBIEP)
                 .set(ASBIEP.GUID, SrtGuid.randomGuid())
-                .set(ASBIEP.BASED_ASCCP_ID, ULong.valueOf(asccpId))
+                .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asccpManifestId))
                 .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(abieId))
                 .set(ASBIEP.CREATED_BY, ULong.valueOf(userId))
                 .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
@@ -461,7 +467,8 @@ public class BieRepository {
                 .returning().fetchOne();
     }
 
-    public AsbieRecord createAsbie(User user, long fromAbieId, long toAsbiepId, long basedAsccId,
+    public AsbieRecord createAsbie(User user, long fromAbieId, long toAsbiepId,
+                                   long basedAsccManifestId,
                                    int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
@@ -469,19 +476,24 @@ public class BieRepository {
 
         Record2<Integer, Integer> cardinality = dslContext.select(
                 ASCC.CARDINALITY_MIN,
-                ASCC.CARDINALITY_MAX).from(ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId)))
+                ASCC.CARDINALITY_MAX)
+                .from(ASCC)
+                .join(ASCC_MANIFEST).on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(basedAsccManifestId)))
                 .fetchOne();
 
-        Byte AsccpNillable = dslContext.select(ASCCP.IS_NILLABLE).from(ASCCP)
-                .join(ASCC).on(ASCCP.ASCCP_ID.eq(ASCC.TO_ASCCP_ID))
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(basedAsccId))).fetchOne().getValue(ASCCP.IS_NILLABLE);
+        Byte AsccpNillable = dslContext.select(ASCCP.IS_NILLABLE)
+                .from(ASCC_MANIFEST)
+                .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(basedAsccManifestId)))
+                .fetchOne().getValue(ASCCP.IS_NILLABLE);
 
         return dslContext.insertInto(ASBIE)
                 .set(ASBIE.GUID, SrtGuid.randomGuid())
                 .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(toAsbiepId))
-                .set(ASBIE.BASED_ASCC_ID, ULong.valueOf(basedAsccId))
+                .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(basedAsccManifestId))
                 .set(ASBIE.CARDINALITY_MIN, cardinality.get(ASCC.CARDINALITY_MIN))
                 .set(ASBIE.CARDINALITY_MAX, cardinality.get(ASCC.CARDINALITY_MAX))
                 .set(ASBIE.IS_NILLABLE, AsccpNillable)
@@ -496,13 +508,13 @@ public class BieRepository {
 
     }
 
-    public BbiepRecord createBbiep(User user, long basedBccpId, long topLevelAbieId) {
+    public BbiepRecord createBbiep(User user, long basedBccpManifestId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         return dslContext.insertInto(BBIEP)
                 .set(BBIEP.GUID, SrtGuid.randomGuid())
-                .set(BBIEP.BASED_BCCP_ID, ULong.valueOf(basedBccpId))
+                .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(basedBccpManifestId))
                 .set(BBIEP.CREATED_BY, ULong.valueOf(userId))
                 .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(BBIEP.CREATION_TIMESTAMP, timestamp)
@@ -511,8 +523,9 @@ public class BieRepository {
                 .returning().fetchOne();
     }
 
-    public BbieRecord createBbie(User user, long fromAbieId,
-                                 long toBbiepId, long basedBccId, long bdtManifestId,
+    public BbieRecord createBbie(User user, long fromAbieId, long toBbiepId,
+                                 long basedBccManifestId,
+                                 long bdtManifestId,
                                  int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
@@ -526,7 +539,8 @@ public class BieRepository {
                 BCC.FIXED_VALUE,
                 BCC.IS_NILLABLE)
                 .from(BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(basedBccId)))
+                .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(basedBccManifestId)))
                 .fetchOneInto(BccRecord.class);
 
         BccpRecord bccpRecord = dslContext.select(
@@ -540,7 +554,7 @@ public class BieRepository {
                 .set(BBIE.GUID, SrtGuid.randomGuid())
                 .set(BBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(BBIE.TO_BBIEP_ID, ULong.valueOf(toBbiepId))
-                .set(BBIE.BASED_BCC_ID, ULong.valueOf(basedBccId))
+                .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(basedBccManifestId))
                 .set(BBIE.BDT_PRI_RESTRI_ID, ULong.valueOf(getDefaultBdtPriRestriIdByBdtId(bdtManifestId)))
                 .set(BBIE.CARDINALITY_MIN, bccRecord.getCardinalityMin())
                 .set(BBIE.CARDINALITY_MAX, bccRecord.getCardinalityMax())
@@ -570,18 +584,20 @@ public class BieRepository {
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
-    public long createBbieSc(User user, long bbieId, long dtScId,
+    public long createBbieSc(User user, long bbieId, long dtScManifestId,
                              long topLevelAbieId) {
 
-        DtScRecord dtScRecord = dslContext.selectFrom(DT_SC)
-                .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(dtScId)))
-                .fetchOne();
+        DtScRecord dtScRecord = dslContext.select(DT_SC.fields())
+                .from(DT_SC)
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(dtScManifestId)))
+                .fetchOneInto(DtScRecord.class);
 
         return dslContext.insertInto(BBIE_SC)
                 .set(BBIE_SC.GUID, SrtGuid.randomGuid())
                 .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieId))
-                .set(BBIE_SC.DT_SC_ID, ULong.valueOf(dtScId))
-                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScId)))
+                .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(dtScManifestId))
+                .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScRecord.getDtScId().longValue())))
                 .set(BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
                 .set(BBIE_SC.IS_USED, (byte)(dtScRecord.getCardinalityMin() > 0 ? 1 : 0))

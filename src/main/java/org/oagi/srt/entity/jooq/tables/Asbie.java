@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbie extends TableImpl<AsbieRecord> {
 
-    private static final long serialVersionUID = 1919277461;
+    private static final long serialVersionUID = 2069215360;
 
     /**
      * The reference instance of <code>oagi.asbie</code>
@@ -71,6 +71,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
     public final TableField<AsbieRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ASBIE. GUID of an ASBIE is different from its based ASCC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
+     * The column <code>oagi.asbie.based_ascc_manifest_id</code>. The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.
+     */
+    public final TableField<AsbieRecord, ULong> BASED_ASCC_MANIFEST_ID = createField(DSL.name("based_ascc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.");
+
+    /**
      * The column <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
     public final TableField<AsbieRecord, ULong> FROM_ABIE_ID = createField(DSL.name("from_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.");
@@ -79,11 +84,6 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * The column <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
      */
     public final TableField<AsbieRecord, ULong> TO_ASBIEP_ID = createField(DSL.name("to_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.");
-
-    /**
-     * The column <code>oagi.asbie.based_ascc_id</code>. The BASED_ASCC_ID column refers to the ASCC record, which this ASBIE contextualizes.
-     */
-    public final TableField<AsbieRecord, ULong> BASED_ASCC_ID = createField(DSL.name("based_ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_ASCC_ID column refers to the ASCC record, which this ASBIE contextualizes.");
 
     /**
      * The column <code>oagi.asbie.definition</code>. Definition to override the ASCC definition. If NULL, it means that the definition should be derived from the based CC on the UI, expression generation, and any API.
@@ -185,7 +185,7 @@ public class Asbie extends TableImpl<AsbieRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ASBIE_ASBIE_BASED_ASCC_ID_FK, Indexes.ASBIE_ASBIE_CREATED_BY_FK, Indexes.ASBIE_ASBIE_FROM_ABIE_ID_FK, Indexes.ASBIE_ASBIE_LAST_UPDATED_BY_FK, Indexes.ASBIE_ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ASBIE_ASBIE_TO_ASBIEP_ID_FK, Indexes.ASBIE_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ASBIE_ASBIE_BASED_ASCC_MANIFEST_ID_FK, Indexes.ASBIE_ASBIE_CREATED_BY_FK, Indexes.ASBIE_ASBIE_FROM_ABIE_ID_FK, Indexes.ASBIE_ASBIE_LAST_UPDATED_BY_FK, Indexes.ASBIE_ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ASBIE_ASBIE_TO_ASBIEP_ID_FK, Indexes.ASBIE_PRIMARY);
     }
 
     @Override
@@ -205,7 +205,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
 
     @Override
     public List<ForeignKey<AsbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsbieRecord, ?>>asList(Keys.ASBIE_FROM_ABIE_ID_FK, Keys.ASBIE_TO_ASBIEP_ID_FK, Keys.ASBIE_BASED_ASCC_ID_FK, Keys.ASBIE_CREATED_BY_FK, Keys.ASBIE_LAST_UPDATED_BY_FK, Keys.ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<AsbieRecord, ?>>asList(Keys.ASBIE_BASED_ASCC_MANIFEST_ID_FK, Keys.ASBIE_FROM_ABIE_ID_FK, Keys.ASBIE_TO_ASBIEP_ID_FK, Keys.ASBIE_CREATED_BY_FK, Keys.ASBIE_LAST_UPDATED_BY_FK, Keys.ASBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+    }
+
+    public AsccManifest asccManifest() {
+        return new AsccManifest(this, Keys.ASBIE_BASED_ASCC_MANIFEST_ID_FK);
     }
 
     public Abie abie() {
@@ -214,10 +218,6 @@ public class Asbie extends TableImpl<AsbieRecord> {
 
     public Asbiep asbiep() {
         return new Asbiep(this, Keys.ASBIE_TO_ASBIEP_ID_FK);
-    }
-
-    public Ascc ascc() {
-        return new Ascc(this, Keys.ASBIE_BASED_ASCC_ID_FK);
     }
 
     public AppUser asbieCreatedByFk() {

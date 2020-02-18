@@ -8,7 +8,7 @@ import java.util.Date;
 public class BBIE implements BIE {
     private long bbieId;
     private String guid;
-    private long basedBccId;
+    private long basedBccManifestId;
     private long fromAbieId;
     private long toBbiepId;
     private Long bdtPriRestriId;

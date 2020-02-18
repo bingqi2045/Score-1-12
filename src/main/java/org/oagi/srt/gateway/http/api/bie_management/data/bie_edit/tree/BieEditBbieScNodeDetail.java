@@ -48,7 +48,7 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
         this.setHasChild(bbieScNode.isHasChild());
 
         this.setBbieScId(bbieScNode.getBbieScId());
-        this.setDtScId(bbieScNode.getDtScId());
+        this.setDtScManifestId(bbieScNode.getDtScManifestId());
 
         return this;
     }

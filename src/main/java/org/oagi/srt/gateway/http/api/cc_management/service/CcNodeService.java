@@ -65,7 +65,7 @@ public class CcNodeService {
         AsccpManifestRecord asccpManifestRecord =
                 manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
 
-        boolean used = repository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue());
+        boolean used = repository.isAsccpUsed(asccpManifestRecord.getAsccpManifestId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target ASCCP is currently in use by another component.");
         }
@@ -81,7 +81,7 @@ public class CcNodeService {
         BccpManifestRecord bccpManifestRecord =
                 manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
 
-        boolean used = repository.isBccpUsed(bccpManifestRecord.getBccpId().longValue());
+        boolean used = repository.isBccpUsed(bccpManifestRecord.getBccpManifestId().longValue());
         if (used) {
             throw new IllegalArgumentException("The target BCCP is currently in use by another component.");
         }

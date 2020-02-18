@@ -23,7 +23,7 @@ public class BBIERepository implements SrtRepository<BBIE> {
     private SelectJoinStep<Record> getSelectOnConditionStep() {
         return dslContext.select(Tables.BBIE.BBIE_ID,
                 Tables.BBIE.GUID,
-                Tables.BBIE.BASED_BCC_ID,
+                Tables.BBIE.BASED_BCC_MANIFEST_ID,
                 Tables.BBIE.FROM_ABIE_ID,
                 Tables.BBIE.TO_BBIEP_ID,
                 Tables.BBIE.BDT_PRI_RESTRI_ID,

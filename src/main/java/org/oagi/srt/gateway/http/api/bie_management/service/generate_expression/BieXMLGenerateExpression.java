@@ -726,7 +726,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     public Element generateASBIEP(ASBIEP asbiep, Element parent) {
-        ASCCP asccp = generationContext.findASCCP(asbiep.getBasedAsccpId());
+        ASCCP asccp = generationContext.findASCCP(asbiep.getBasedAsccpManifestId());
         parent.setAttribute("name", Utility.first(asccp.getDen(), true));
 
         setDefinition(parent, asbiep.getDefinition());
@@ -804,7 +804,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         setOptionalDocumentation(node, bbie, bcc);
 
         BBIEP bbiep = generationContext.findBBIEP(bbie.getToBbiepId());
-        BCCP bccp = generationContext.findBCCP(bbiep.getBasedBccpId());
+        BCCP bccp = generationContext.findBCCP(bbiep.getBasedBccpManifestId());
 
         setDefinition(node, bbiep.getDefinition());
         setOptionalDocumentation(node, bbiep, bccp);
@@ -1095,7 +1095,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         /*
          * Section 3.8.1.22 GenerateSCs #2
          */
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         String representationTerm = dtSc.getRepresentationTerm();
         String propertyTerm = dtSc.getPropertyTerm();
         if ("Text".equals(representationTerm) ||
@@ -1119,7 +1119,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
         setDefinition(aNode, bbieSc.getDefinition());
 
-        DTSC bdtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC bdtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         BBIESCDocumentation bieDocumentation =
                 new BBIESCDocumentation(bbieSc, bdtSc);
         setOptionalDocumentation(aNode, bieDocumentation);
@@ -1128,7 +1128,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     public Element setBBIESCType(BBIESC bbieSc, Element gNode) {
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         if (dtSc != null) {
             BdtScPriRestri bdtScPriRestri =
                     generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
@@ -1214,7 +1214,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     aNode.setAttribute("id", SrtGuid.randomGuid());
                 }
 
-                DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+                DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
                 generateCodeList(codeList, dtSc);
 
                 if (getCodeListTypeName(codeList) != null) {

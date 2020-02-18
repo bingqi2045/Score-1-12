@@ -71,20 +71,15 @@ public class BieService {
 
         long releaseId = asccpManifest.getReleaseId().longValue();
         long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId, Editing);
-
-        long asccpId = asccpManifest.getAsccpId().longValue();
-        long roleOfAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
-                .from(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccpManifest.getRoleOfAccManifestId()))
-                .fetchOneInto(Long.class);
+        long roleOfAccManifestId = asccpManifest.getRoleOfAccManifestId().longValue();
 
         List<Long> bizCtxIds = request.getBizCtxIds();
 
-        AbieRecord abieRecord = repository.createAbie(user, roleOfAccId, topLevelAbieId);
+        AbieRecord abieRecord = repository.createAbie(user, roleOfAccManifestId, topLevelAbieId);
         long abieId = abieRecord.getAbieId().longValue();
 
         repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
-        repository.createAsbiep(user, asccpId, abieId, topLevelAbieId);
+        repository.createAsbiep(user, asccpManifestId, abieId, topLevelAbieId);
         repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
 
         BieCreateResponse response = new BieCreateResponse();
@@ -112,7 +107,8 @@ public class BieService {
                 .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
                 .and(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
                 .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ABIE.LAST_UPDATED_BY))
                 .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
@@ -326,7 +322,8 @@ public class BieService {
                         TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID),
                         TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
                 .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP).on(ASCCP.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_ID))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
                 .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
 

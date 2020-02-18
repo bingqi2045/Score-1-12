@@ -54,6 +54,7 @@ import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 import org.oagi.srt.entity.jooq.tables.Dt;
 import org.oagi.srt.entity.jooq.tables.DtManifest;
 import org.oagi.srt.entity.jooq.tables.DtSc;
+import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
@@ -79,7 +80,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1782788065;
+    private static final long serialVersionUID = 945604810;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -304,6 +305,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final DtSc DT_SC = org.oagi.srt.entity.jooq.tables.DtSc.DT_SC;
 
     /**
+     * The table <code>oagi.dt_sc_manifest</code>.
+     */
+    public final DtScManifest DT_SC_MANIFEST = org.oagi.srt.entity.jooq.tables.DtScManifest.DT_SC_MANIFEST;
+
+    /**
      * This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and the DT content component and usage rules and DT supplementary component. In a particular record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not both.
      */
     public final DtUsageRule DT_USAGE_RULE = org.oagi.srt.entity.jooq.tables.DtUsageRule.DT_USAGE_RULE;
@@ -416,6 +422,7 @@ If we use a separate table for each expression, then we need binding all the way
             Dt.DT,
             DtManifest.DT_MANIFEST,
             DtSc.DT_SC,
+            DtScManifest.DT_SC_MANIFEST,
             DtUsageRule.DT_USAGE_RULE,
             Module.MODULE,
             ModuleDep.MODULE_DEP,

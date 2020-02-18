@@ -8,7 +8,7 @@ import java.util.Date;
 public class ABIE implements BIE {
     private long abieId;
     private String guid;
-    private long basedAccId;
+    private long basedAccManifestId;
     private String definition;
     private long createdBy;
     private long lastUpdatedBy;

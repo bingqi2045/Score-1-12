@@ -113,7 +113,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         Map<String, Object> path = new LinkedHashMap();
-        ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpId());
+        ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpManifestId());
         String bieName = camelCase(basedAsccp.getPropertyTerm());
         String pathName = "/" + bieName + "/" + abie.getGuid();
         paths.put(pathName, path);
@@ -457,7 +457,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
     private String fillSchemas(Map<String, Object> schemas,
                                    BBIESC bbieSc, CodeList codeList) {
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         BdtScPriRestri bdtScPriRestri =
                 generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
 
@@ -720,7 +720,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
             return;
         }
 
-        DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
+        DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         String name = camelCase(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
         Map<String, Object> properties = new LinkedHashMap();
 

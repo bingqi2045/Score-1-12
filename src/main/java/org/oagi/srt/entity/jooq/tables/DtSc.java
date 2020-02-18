@@ -45,7 +45,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = 629998207;
+    private static final long serialVersionUID = -1760610136;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>
@@ -160,7 +160,7 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.DT_SC_DT_SC_BASED_DT_SC_ID_FK, Indexes.DT_SC_DT_SC_OWNER_DT_ID_FK, Indexes.DT_SC_DT_SC_UK1, Indexes.DT_SC_PRIMARY);
+        return Arrays.<Index>asList(Indexes.DT_SC_DT_SC_BASED_DT_SC_ID_FK, Indexes.DT_SC_DT_SC_GUID_IDX, Indexes.DT_SC_DT_SC_OWNER_DT_ID_FK, Indexes.DT_SC_DT_SC_UK1, Indexes.DT_SC_PRIMARY);
     }
 
     @Override

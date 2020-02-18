@@ -408,7 +408,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public ACC queryBasedACC(ABIE abie) {
-        return (abie != null) ? findACC(abie.getBasedAccId()) : null;
+        return (abie != null) ? findACC(abie.getBasedAccManifestId()) : null;
     }
 
     private double getSeqkey(BIE bie) {
@@ -448,7 +448,7 @@ public class GenerationContext implements InitializingBean {
                 ASBIE asbie = (ASBIE) bie;
                 ASBIEP toAsbiep = findASBIEP(asbie.getToAsbiepId());
                 ABIE roleOfAbie = findAbie(toAsbiep.getRoleOfAbieId());
-                ACC roleOfAcc = findACC(roleOfAbie.getBasedAccId());
+                ACC roleOfAcc = findACC(roleOfAbie.getBasedAccManifestId());
 
                 OagisComponentType oagisComponentType = OagisComponentType.valueOf(roleOfAcc.getOagisComponentType());
                 if (oagisComponentType.isGroup()) {
@@ -472,7 +472,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public DT queryBDT(BBIE bbie) {
-        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
+        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccManifestId()) : null;
         BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
         return (bccp != null) ? queryBDT(bccp) : null;
     }
@@ -482,11 +482,11 @@ public class GenerationContext implements InitializingBean {
     }
 
     public ASCCP queryBasedASCCP(ASBIEP asbiep) {
-        return (asbiep != null) ? findASCCP(asbiep.getBasedAsccpId()) : null;
+        return (asbiep != null) ? findASCCP(asbiep.getBasedAsccpManifestId()) : null;
     }
 
     public ASCC queryBasedASCC(ASBIE asbie) {
-        return (asbie != null) ? findASCC(asbie.getBasedAsccId()) : null;
+        return (asbie != null) ? findASCC(asbie.getBasedAsccManifestId()) : null;
     }
 
     public ABIE queryTargetABIE(ASBIEP asbiep) {
@@ -495,7 +495,7 @@ public class GenerationContext implements InitializingBean {
 
     public ACC queryTargetACC(ASBIEP asbiep) {
         ABIE abie = (asbiep != null) ? findAbie(asbiep.getRoleOfAbieId()) : null;
-        return (abie != null) ? findACC(abie.getBasedAccId()) : null;
+        return (abie != null) ? findACC(abie.getBasedAccManifestId()) : null;
     }
 
     public ABIE queryTargetABIE2(ASBIEP asbiep) {
@@ -503,7 +503,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public BCC queryBasedBCC(BBIE bbie) {
-        return (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
+        return (bbie != null) ? findBCC(bbie.getBasedBccManifestId()) : null;
     }
 
     public BCCP queryToBCCP(BCC bcc) {
@@ -524,7 +524,7 @@ public class GenerationContext implements InitializingBean {
         if (bdtScPriRestri != null) {
             return findCodeList(bdtScPriRestri.getCodeListId());
         } else {
-            DTSC gDTSC = findDtSc(bbieSc.getDtScId());
+            DTSC gDTSC = findDtSc(bbieSc.getBasedDtScManifestId());
             BdtScPriRestri bBDTSCPrimitiveRestriction =
                     (gDTSC != null) ? findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId()) : null;
             if (bBDTSCPrimitiveRestriction != null) {
@@ -576,7 +576,7 @@ public class GenerationContext implements InitializingBean {
         }
 
         if (agencyIdList == null) {
-            DTSC gDTSC = findDtSc(bbieSc.getDtScId());
+            DTSC gDTSC = findDtSc(bbieSc.getBasedDtScManifestId());
             bdtScPriRestri = (gDTSC != null) ? findBdtScPriRestriByBdtScIdAndDefaultIsTrue(gDTSC.getDtScId()) : null;
             if (bdtScPriRestri != null) {
                 agencyIdList = findAgencyIdList(bdtScPriRestri.getAgencyIdListId());
@@ -596,7 +596,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public DT queryAssocBDT(BBIE bbie) {
-        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccId()) : null;
+        BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccManifestId()) : null;
         BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
         return queryBDT(bccp);
     }

@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Asbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record12<ULong, String, ULong, ULong, String, String, String, ULong, ULong, Timestamp, Timestamp, ULong> {
 
-    private static final long serialVersionUID = 1301021822;
+    private static final long serialVersionUID = -1910433841;
 
     /**
      * Setter for <code>oagi.asbiep.asbiep_id</code>. A internal, primary database key of an ASBIEP.
@@ -62,16 +62,16 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.asbiep.based_asccp_id</code>. A foreign key pointing to the ASCCP record. It is the ASCCP, on which the ASBIEP contextualizes.
+     * Setter for <code>oagi.asbiep.based_asccp_manifest_id</code>. A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.
      */
-    public void setBasedAsccpId(ULong value) {
+    public void setBasedAsccpManifestId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.asbiep.based_asccp_id</code>. A foreign key pointing to the ASCCP record. It is the ASCCP, on which the ASBIEP contextualizes.
+     * Getter for <code>oagi.asbiep.based_asccp_manifest_id</code>. A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.
      */
-    public ULong getBasedAsccpId() {
+    public ULong getBasedAsccpManifestId() {
         return (ULong) get(2);
     }
 
@@ -236,7 +236,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public Field<ULong> field3() {
-        return Asbiep.ASBIEP.BASED_ASCCP_ID;
+        return Asbiep.ASBIEP.BASED_ASCCP_MANIFEST_ID;
     }
 
     @Override
@@ -296,7 +296,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public ULong component3() {
-        return getBasedAsccpId();
+        return getBasedAsccpManifestId();
     }
 
     @Override
@@ -356,7 +356,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public ULong value3() {
-        return getBasedAsccpId();
+        return getBasedAsccpManifestId();
     }
 
     @Override
@@ -418,7 +418,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public AsbiepRecord value3(ULong value) {
-        setBasedAsccpId(value);
+        setBasedAsccpManifestId(value);
         return this;
     }
 
@@ -507,12 +507,12 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     /**
      * Create a detached, initialised AsbiepRecord
      */
-    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpId, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
+    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
         super(Asbiep.ASBIEP);
 
         set(0, asbiepId);
         set(1, guid);
-        set(2, basedAsccpId);
+        set(2, basedAsccpManifestId);
         set(3, roleOfAbieId);
         set(4, definition);
         set(5, remark);

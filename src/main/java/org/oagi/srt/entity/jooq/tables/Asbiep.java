@@ -44,7 +44,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbiep extends TableImpl<AsbiepRecord> {
 
-    private static final long serialVersionUID = 363893336;
+    private static final long serialVersionUID = -1270469323;
 
     /**
      * The reference instance of <code>oagi.asbiep</code>
@@ -70,9 +70,9 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     public final TableField<AsbiepRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ASBIEP. GUID of an ASBIEP is different from its based ASCCP. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.asbiep.based_asccp_id</code>. A foreign key pointing to the ASCCP record. It is the ASCCP, on which the ASBIEP contextualizes.
+     * The column <code>oagi.asbiep.based_asccp_manifest_id</code>. A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.
      */
-    public final TableField<AsbiepRecord, ULong> BASED_ASCCP_ID = createField(DSL.name("based_asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ASCCP record. It is the ASCCP, on which the ASBIEP contextualizes.");
+    public final TableField<AsbiepRecord, ULong> BASED_ASCCP_MANIFEST_ID = createField(DSL.name("based_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.");
 
     /**
      * The column <code>oagi.asbiep.role_of_abie_id</code>. A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.
@@ -159,7 +159,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ASBIEP_ASBIEP_BASED_ASCCP_ID_FK, Indexes.ASBIEP_ASBIEP_CREATED_BY_FK, Indexes.ASBIEP_ASBIEP_LAST_UPDATED_BY_FK, Indexes.ASBIEP_ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ASBIEP_ASBIEP_ROLE_OF_ABIE_ID_FK, Indexes.ASBIEP_PRIMARY);
+        return Arrays.<Index>asList(Indexes.ASBIEP_ASBIEP_BASED_ASCCP_MANIFEST_ID_FK, Indexes.ASBIEP_ASBIEP_CREATED_BY_FK, Indexes.ASBIEP_ASBIEP_LAST_UPDATED_BY_FK, Indexes.ASBIEP_ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK, Indexes.ASBIEP_ASBIEP_ROLE_OF_ABIE_ID_FK, Indexes.ASBIEP_PRIMARY);
     }
 
     @Override
@@ -179,11 +179,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
 
     @Override
     public List<ForeignKey<AsbiepRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsbiepRecord, ?>>asList(Keys.ASBIEP_BASED_ASCCP_ID_FK, Keys.ASBIEP_ROLE_OF_ABIE_ID_FK, Keys.ASBIEP_CREATED_BY_FK, Keys.ASBIEP_LAST_UPDATED_BY_FK, Keys.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<AsbiepRecord, ?>>asList(Keys.ASBIEP_BASED_ASCCP_MANIFEST_ID_FK, Keys.ASBIEP_ROLE_OF_ABIE_ID_FK, Keys.ASBIEP_CREATED_BY_FK, Keys.ASBIEP_LAST_UPDATED_BY_FK, Keys.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
-    public Asccp asccp() {
-        return new Asccp(this, Keys.ASBIEP_BASED_ASCCP_ID_FK);
+    public AsccpManifest asccpManifest() {
+        return new AsccpManifest(this, Keys.ASBIEP_BASED_ASCCP_MANIFEST_ID_FK);
     }
 
     public Abie abie() {

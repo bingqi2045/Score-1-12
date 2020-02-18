@@ -19,7 +19,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
     public List<BBIEP> findAll() {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
-                Tables.BBIEP.BASED_BCCP_ID,
+                Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
                 Tables.BBIEP.DEFINITION,
                 Tables.BBIEP.REMARK,
                 Tables.BBIEP.BIZ_TERM,
@@ -28,14 +28,15 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
-                .from(Tables.BBIEP).fetchInto(BBIEP.class);
+                .from(Tables.BBIEP)
+                .fetchInto(BBIEP.class);
     }
 
     @Override
     public BBIEP findById(long id) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
-                Tables.BBIEP.BASED_BCCP_ID,
+                Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
                 Tables.BBIEP.DEFINITION,
                 Tables.BBIEP.REMARK,
                 Tables.BBIEP.BIZ_TERM,
@@ -44,13 +45,15 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
-                .from(Tables.BBIEP).where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(id))).fetchOneInto(BBIEP.class);
+                .from(Tables.BBIEP)
+                .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(id)))
+                .fetchOneInto(BBIEP.class);
     }
 
     public List<BBIEP> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
-                Tables.BBIEP.BASED_BCCP_ID,
+                Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
                 Tables.BBIEP.DEFINITION,
                 Tables.BBIEP.REMARK,
                 Tables.BBIEP.BIZ_TERM,
@@ -59,7 +62,8 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
-                .from(Tables.BBIEP).where(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .from(Tables.BBIEP)
+                .where(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
                 .fetchInto(BBIEP.class);
     }
 

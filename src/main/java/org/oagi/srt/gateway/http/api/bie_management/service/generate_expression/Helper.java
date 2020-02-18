@@ -16,7 +16,8 @@ class Helper {
     static boolean isAnyProperty(ASBIE asbie,
                                  GenerationContext generationContext) {
         ASBIEP asbiep = generationContext.queryAssocToASBIEP(asbie);
-        ASCCP asccp = generationContext.findASCCP(asbiep.getBasedAsccpId());
+        long asccpManifestId = asbiep.getBasedAsccpManifestId();
+        ASCCP asccp = generationContext.findASCCP(asccpManifestId);
         if (!"AnyProperty".equals(Utility.first(asccp.getDen(), true))) {
             return false;
         }

@@ -9,6 +9,6 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 public class BieEditBbieScNode extends BieEditNode {
 
     private long bbieScId;
-    private long dtScId;
+    private long dtScManifestId;
 
 }

@@ -10,7 +10,7 @@ public class ASBIE implements BIE {
     private String guid;
     private long fromAbieId;
     private long toAsbiepId;
-    private long basedAsccId;
+    private long basedAsccManifestId;
     private String definition;
     private int cardinalityMin;
     private int cardinalityMax;

@@ -31,7 +31,7 @@ import org.oagi.srt.entity.jooq.tables.Bbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record11<ULong, String, ULong, String, String, String, ULong, ULong, Timestamp, Timestamp, ULong> {
 
-    private static final long serialVersionUID = -1428382126;
+    private static final long serialVersionUID = -767515589;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.
@@ -62,16 +62,16 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.bbiep.based_bccp_id</code>. A foreign key pointing to the BCCP record. It is the BCCP, which the BBIEP contextualizes.
+     * Setter for <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.
      */
-    public void setBasedBccpId(ULong value) {
+    public void setBasedBccpManifestId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.bbiep.based_bccp_id</code>. A foreign key pointing to the BCCP record. It is the BCCP, which the BBIEP contextualizes.
+     * Getter for <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.
      */
-    public ULong getBasedBccpId() {
+    public ULong getBasedBccpManifestId() {
         return (ULong) get(2);
     }
 
@@ -222,7 +222,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public Field<ULong> field3() {
-        return Bbiep.BBIEP.BASED_BCCP_ID;
+        return Bbiep.BBIEP.BASED_BCCP_MANIFEST_ID;
     }
 
     @Override
@@ -277,7 +277,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public ULong component3() {
-        return getBasedBccpId();
+        return getBasedBccpManifestId();
     }
 
     @Override
@@ -332,7 +332,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public ULong value3() {
-        return getBasedBccpId();
+        return getBasedBccpManifestId();
     }
 
     @Override
@@ -389,7 +389,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public BbiepRecord value3(ULong value) {
-        setBasedBccpId(value);
+        setBasedBccpManifestId(value);
         return this;
     }
 
@@ -471,12 +471,12 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     /**
      * Create a detached, initialised BbiepRecord
      */
-    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
+    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
         super(Bbiep.BBIEP);
 
         set(0, bbiepId);
         set(1, guid);
-        set(2, basedBccpId);
+        set(2, basedBccpManifestId);
         set(3, definition);
         set(4, remark);
         set(5, bizTerm);

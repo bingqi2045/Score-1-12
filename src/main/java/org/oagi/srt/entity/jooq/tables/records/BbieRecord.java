@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 1116743177;
+    private static final long serialVersionUID = -89595899;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -65,16 +65,16 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.based_bcc_id</code>. The BASED_BCC_ID column refers to the BCC record, which this BBIE contextualizes.
+     * Setter for <code>oagi.bbie.based_bcc_manifest_id</code>. The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.
      */
-    public void setBasedBccId(ULong value) {
+    public void setBasedBccManifestId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.based_bcc_id</code>. The BASED_BCC_ID column refers to the BCC record, which this BBIE contextualizes.
+     * Getter for <code>oagi.bbie.based_bcc_manifest_id</code>. The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.
      */
-    public ULong getBasedBccId() {
+    public ULong getBasedBccManifestId() {
         return (ULong) get(2);
     }
 
@@ -395,12 +395,12 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieRecord(ULong bbieId, String guid, ULong basedBccManifestId, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, Timestamp creationTimestamp, Timestamp lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Bbie.BBIE);
 
         set(0, bbieId);
         set(1, guid);
-        set(2, basedBccId);
+        set(2, basedBccManifestId);
         set(3, fromAbieId);
         set(4, toBbiepId);
         set(5, bdtPriRestriId);
