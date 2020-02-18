@@ -720,18 +720,21 @@ public class CcNodeRepository {
         accNode.setGroup(oagisComponentType.isGroup());
         accNode.setState(CcState.valueOf(accNode.getRawState()));
         accNode.setAccess(getAccess(accNode, user));
-        accNode.setHasChild(hasChild(accNode.getManifestId()));
+        accNode.setHasChild(hasChild(accNode));
 
         return accNode;
     }
 
-    private boolean hasChild(long fromAccManifestId) {
-        if (fromAccManifestId != 0) {
+    private boolean hasChild(CcAccNode ccAccNode) {
+        if (ccAccNode.getBasedAccManifestId() != null) {
             return true;
+        }
+        if (ccAccNode.getManifestId() == 0) {
+            return false;
         }
         long asccCount = dslContext.selectCount()
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
                 .fetchOneInto(long.class);
         if (asccCount > 0) {
             return true;
@@ -739,7 +742,8 @@ public class CcNodeRepository {
 
         long bccCount = dslContext.selectCount()
                 .from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))).fetchOneInto(long.class);
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
+                .fetchOneInto(long.class);
         return bccCount > 0;
     }
 
