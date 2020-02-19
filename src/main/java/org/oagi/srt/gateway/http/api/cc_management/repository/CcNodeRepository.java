@@ -810,6 +810,9 @@ public class CcNodeRepository {
                         ASCCP_MANIFEST.RELEASE_ID.eq(releaseId)
                 ))
                 .fetchOneInto(CcAsccpNode.class);
+        if (asccpNode == null) {
+            return null;
+        }
         asccpNode.setState(CcState.valueOf(asccpNode.getRawState()));
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
@@ -2058,6 +2061,9 @@ public class CcNodeRepository {
         OagisComponentType oagisComponentType = getOagisComponentTypeByAccId(accNode.getAccId());
         if (oagisComponentType.isGroup()) {
             CcAsccpNode roleByAsccpNode = getAsccpNodeByRoleOfAccId(accNode.getAccId(), accManifest.getReleaseId());
+            if (roleByAsccpNode == null) {
+                return;
+            }
             ULong baseAccManifestId = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                     .from(ASCC_MANIFEST)
                     .join(ACC_MANIFEST)
