@@ -5,9 +5,8 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
-import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -15,6 +14,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.BusinessInformationEntityRepository;
+import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repository.ABIERepository;
 import org.oagi.srt.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,46 +45,64 @@ public class BieService {
     private SessionService sessionService;
 
     @Autowired
-    private BieRepository repository;
-
-    @Autowired
     private ABIERepository abieRepository;
 
     @Autowired
     private BizCtxRepository bizCtxRepository;
 
     @Autowired
+    private CoreComponentRepository ccRepository;
+
+    @Autowired
+    private BusinessInformationEntityRepository bieRepository;
+
+    @Autowired
     private DSLContext dslContext;
 
     @Transactional
     public BieCreateResponse createBie(User user, BieCreateRequest request) {
-
-        long userId = sessionService.userId(user);
-        long asccpManifestId = request.getAsccpManifestId();
-
         AsccpManifestRecord asccpManifest =
-                dslContext.selectFrom(ASCCP_MANIFEST)
-                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
-                        .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
+                ccRepository.getAsccpManifestByManifestId(request.asccpManifestId());
         if (asccpManifest == null) {
             throw new IllegalArgumentException();
         }
 
-        long releaseId = asccpManifest.getReleaseId().longValue();
-        long topLevelAbieId = repository.createTopLevelAbie(userId, releaseId, Editing);
-        long roleOfAccManifestId = asccpManifest.getRoleOfAccManifestId().longValue();
+        long userId = sessionService.userId(user);
+        long millis = System.currentTimeMillis();
 
-        List<Long> bizCtxIds = request.getBizCtxIds();
+        ULong topLevelAbieId = bieRepository.insertTopLevelAbie()
+                .setUserId(userId)
+                .setReleaseId(asccpManifest.getReleaseId())
+                .setTimestamp(millis)
+                .execute();
 
-        AbieRecord abieRecord = repository.createAbie(user, roleOfAccManifestId, topLevelAbieId);
-        long abieId = abieRecord.getAbieId().longValue();
+        ULong abieId = bieRepository.insertAbie()
+                .setUserId(userId)
+                .setTopLevelAbieId(topLevelAbieId)
+                .setAccManifestId(asccpManifest.getRoleOfAccManifestId())
+                .setTimestamp(millis)
+                .execute();
 
-        repository.createBizCtxAssignments(topLevelAbieId, bizCtxIds);
-        repository.createAsbiep(user, asccpManifestId, abieId, topLevelAbieId);
-        repository.updateAbieIdOnTopLevelAbie(abieId, topLevelAbieId);
+        bieRepository.insertBizCtxAssignments()
+                .setTopLevelAbieId(topLevelAbieId)
+                .setBizCtxIds(request.getBizCtxIds())
+                .execute();
+
+        bieRepository.insertAsbiep()
+                .setAsccpManifestId(asccpManifest.getAsccpManifestId())
+                .setRoleOfAbieId(abieId)
+                .setTopLevelAbieId(topLevelAbieId)
+                .setUserId(userId)
+                .setTimestamp(millis)
+                .execute();
+
+        bieRepository.updateTopLevelAbie()
+                .setAbieId(abieId)
+                .setTopLevelAbieId(topLevelAbieId)
+                .execute();
 
         BieCreateResponse response = new BieCreateResponse();
-        response.setTopLevelAbieId(topLevelAbieId);
+        response.setTopLevelAbieId(topLevelAbieId.longValue());
         return response;
     }
 

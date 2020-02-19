@@ -1,0 +1,384 @@
+package org.oagi.srt.repo;
+
+import org.jooq.DSLContext;
+import org.jooq.types.ULong;
+import org.oagi.srt.data.BieState;
+import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.oagi.srt.data.BieState.Editing;
+import static org.oagi.srt.entity.jooq.Tables.*;
+
+@Repository
+public class BusinessInformationEntityRepository {
+
+    @Autowired
+    private DSLContext dslContext;
+
+    public class InsertTopLevelAbieArguments {
+        private ULong releaseId;
+        private ULong userId;
+        private BieState bieState = Editing;
+        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        public InsertTopLevelAbieArguments setReleaseId(long releaseId) {
+            return setReleaseId(ULong.valueOf(releaseId));
+        }
+
+        public InsertTopLevelAbieArguments setReleaseId(ULong releaseId) {
+            this.releaseId = releaseId;
+            return this;
+        }
+
+        public InsertTopLevelAbieArguments setBieState(BieState bieState) {
+            this.bieState = bieState;
+            return this;
+        }
+
+        public InsertTopLevelAbieArguments setUserId(long userId) {
+            return setUserId(ULong.valueOf(userId));
+        }
+
+        public InsertTopLevelAbieArguments setUserId(ULong userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public InsertTopLevelAbieArguments setTimestamp(long millis) {
+            return setTimestamp(new Timestamp(millis));
+        }
+
+        public InsertTopLevelAbieArguments setTimestamp(Date date) {
+            return setTimestamp(new Timestamp(date.getTime()));
+        }
+
+        public InsertTopLevelAbieArguments setTimestamp(Timestamp timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public ULong getReleaseId() {
+            return releaseId;
+        }
+
+        public BieState getBieState() {
+            return bieState;
+        }
+
+        public ULong getUserId() {
+            return userId;
+        }
+
+        public Timestamp getTimestamp() {
+            return timestamp;
+        }
+
+        public ULong execute() {
+            return insertTopLevelAbie(this);
+        }
+    }
+
+    public InsertTopLevelAbieArguments insertTopLevelAbie() {
+        return new InsertTopLevelAbieArguments();
+    }
+
+    private ULong insertTopLevelAbie(InsertTopLevelAbieArguments arguments) {
+        TopLevelAbieRecord record = new TopLevelAbieRecord();
+        record.setOwnerUserId(arguments.getUserId());
+        record.setReleaseId(arguments.getReleaseId());
+        record.setState(arguments.getBieState().getValue());
+        record.setLastUpdatedBy(arguments.getUserId());
+        record.setLastUpdateTimestamp(arguments.getTimestamp());
+
+        return dslContext.insertInto(TOP_LEVEL_ABIE)
+                .set(record)
+                .returningResult(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                .fetchOne().value1();
+    }
+
+    public class InsertAbieArguments {
+        private ULong userId;
+        private ULong accManifestId;
+        private ULong topLevelAbieId;
+        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        public InsertAbieArguments setUserId(long userId) {
+            return setUserId(ULong.valueOf(userId));
+        }
+
+        public InsertAbieArguments setUserId(ULong userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public InsertAbieArguments setAccManifestId(long accManifestId) {
+            return setAccManifestId(ULong.valueOf(accManifestId));
+        }
+
+        public InsertAbieArguments setAccManifestId(ULong accManifestId) {
+            this.accManifestId = accManifestId;
+            return this;
+        }
+
+        public InsertAbieArguments setTopLevelAbieId(long topLevelAbieId) {
+            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        }
+
+        public InsertAbieArguments setTopLevelAbieId(ULong topLevelAbieId) {
+            this.topLevelAbieId = topLevelAbieId;
+            return this;
+        }
+
+        public InsertAbieArguments setTimestamp(long millis) {
+            return setTimestamp(new Timestamp(millis));
+        }
+
+        public InsertAbieArguments setTimestamp(Date date) {
+            return setTimestamp(new Timestamp(date.getTime()));
+        }
+
+        public InsertAbieArguments setTimestamp(Timestamp timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public ULong getUserId() {
+            return userId;
+        }
+
+        public ULong getAccManifestId() {
+            return accManifestId;
+        }
+
+        public ULong getTopLevelAbieId() {
+            return topLevelAbieId;
+        }
+
+        public Timestamp getTimestamp() {
+            return timestamp;
+        }
+
+        public ULong execute() {
+            return insertAbie(this);
+        }
+    }
+
+    public InsertAbieArguments insertAbie() {
+        return new InsertAbieArguments();
+    }
+
+    private ULong insertAbie(InsertAbieArguments arguments) {
+        return dslContext.insertInto(ABIE)
+                .set(ABIE.GUID, SrtGuid.randomGuid())
+                .set(ABIE.BASED_ACC_MANIFEST_ID, arguments.getAccManifestId())
+                .set(ABIE.CREATED_BY, arguments.getUserId())
+                .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
+                .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
+                .set(ABIE.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
+                .set(ABIE.STATE, Editing.getValue())
+                .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
+                .returningResult(ABIE.ABIE_ID)
+                .fetchOne().value1();
+    }
+
+    public class InsertBizCtxAssignmentArguments {
+        private ULong topLevelAbieId;
+        private List<ULong> bizCtxIds = Collections.emptyList();
+
+        public InsertBizCtxAssignmentArguments setTopLevelAbieId(long topLevelAbieId) {
+            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        }
+
+        public InsertBizCtxAssignmentArguments setTopLevelAbieId(ULong topLevelAbieId) {
+            this.topLevelAbieId = topLevelAbieId;
+            return this;
+        }
+
+        public InsertBizCtxAssignmentArguments setBizCtxIds(List<Long> bizCtxIds) {
+            if (bizCtxIds != null && !bizCtxIds.isEmpty()) {
+                this.bizCtxIds = bizCtxIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList());
+            }
+            return this;
+        }
+
+        public ULong getTopLevelAbieId() {
+            return topLevelAbieId;
+        }
+
+        public List<ULong> getBizCtxIds() {
+            return bizCtxIds;
+        }
+
+        public void execute() {
+            insertBizCtxAssignments(this);
+        }
+    }
+
+    public InsertBizCtxAssignmentArguments insertBizCtxAssignments() {
+        return new InsertBizCtxAssignmentArguments();
+    }
+
+    private void insertBizCtxAssignments(InsertBizCtxAssignmentArguments arguments) {
+        dslContext.batch(
+                arguments.getBizCtxIds().stream().map(bizCtxId -> {
+                    return dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                            .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, arguments.topLevelAbieId)
+                            .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId);
+                }).collect(Collectors.toList())
+        ).execute();
+    }
+
+    public class InsertAsbiepArguments {
+        private ULong asccpManifestId;
+        private ULong roleOfAbieId;
+        private ULong topLevelAbieId;
+        private ULong userId;
+        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        public InsertAsbiepArguments setAsccpManifestId(long asccpManifestId) {
+            return setAsccpManifestId(ULong.valueOf(asccpManifestId));
+        }
+
+        public InsertAsbiepArguments setAsccpManifestId(ULong asccpManifestId) {
+            this.asccpManifestId = asccpManifestId;
+            return this;
+        }
+
+        public InsertAsbiepArguments setRoleOfAbieId(long roleOfAbieId) {
+            return setRoleOfAbieId(ULong.valueOf(roleOfAbieId));
+        }
+
+        public InsertAsbiepArguments setRoleOfAbieId(ULong roleOfAbieId) {
+            this.roleOfAbieId = roleOfAbieId;
+            return this;
+        }
+
+        public InsertAsbiepArguments setTopLevelAbieId(long topLevelAbieId) {
+            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        }
+
+        public InsertAsbiepArguments setTopLevelAbieId(ULong topLevelAbieId) {
+            this.topLevelAbieId = topLevelAbieId;
+            return this;
+        }
+
+        public InsertAsbiepArguments setUserId(long userId) {
+            return setUserId(ULong.valueOf(userId));
+        }
+
+        public InsertAsbiepArguments setUserId(ULong userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public InsertAsbiepArguments setTimestamp(long millis) {
+            return setTimestamp(new Timestamp(millis));
+        }
+
+        public InsertAsbiepArguments setTimestamp(Date date) {
+            return setTimestamp(new Timestamp(date.getTime()));
+        }
+
+        public InsertAsbiepArguments setTimestamp(Timestamp timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public ULong getAsccpManifestId() {
+            return asccpManifestId;
+        }
+
+        public ULong getRoleOfAbieId() {
+            return roleOfAbieId;
+        }
+
+        public ULong getTopLevelAbieId() {
+            return topLevelAbieId;
+        }
+
+        public ULong getUserId() {
+            return userId;
+        }
+
+        public Timestamp getTimestamp() {
+            return timestamp;
+        }
+
+        public ULong execute() {
+            return insertAsbiep(this);
+        }
+    }
+
+    public InsertAsbiepArguments insertAsbiep() {
+        return new InsertAsbiepArguments();
+    }
+
+    private ULong insertAsbiep(InsertAsbiepArguments arguments) {
+        return dslContext.insertInto(ASBIEP)
+                .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
+                .set(ASBIEP.ROLE_OF_ABIE_ID, arguments.getRoleOfAbieId())
+                .set(ASBIEP.CREATED_BY, arguments.getUserId())
+                .set(ASBIEP.LAST_UPDATED_BY, arguments.getUserId())
+                .set(ASBIEP.CREATION_TIMESTAMP, arguments.getTimestamp())
+                .set(ASBIEP.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
+                .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
+                .returningResult(ASBIEP.ASBIEP_ID)
+                .fetchOne().value1();
+    }
+
+    public class UpdateTopLevelAbieArguments {
+        private ULong abieId;
+        private ULong topLevelAbieId;
+
+        public UpdateTopLevelAbieArguments setAbieId(long abieId) {
+            return setAbieId(ULong.valueOf(abieId));
+        }
+
+        public UpdateTopLevelAbieArguments setAbieId(ULong abieId) {
+            this.abieId = abieId;
+            return this;
+        }
+
+        public UpdateTopLevelAbieArguments setTopLevelAbieId(long topLevelAbieId) {
+            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        }
+
+        public UpdateTopLevelAbieArguments setTopLevelAbieId(ULong topLevelAbieId) {
+            this.topLevelAbieId = topLevelAbieId;
+            return this;
+        }
+
+        public ULong getAbieId() {
+            return abieId;
+        }
+
+        public ULong getTopLevelAbieId() {
+            return topLevelAbieId;
+        }
+
+        public void execute() {
+            updateTopLevelAbie(this);
+        }
+    }
+
+    public UpdateTopLevelAbieArguments updateTopLevelAbie() {
+        return new UpdateTopLevelAbieArguments();
+    }
+
+    private void updateTopLevelAbie(UpdateTopLevelAbieArguments arguments) {
+        dslContext.update(TOP_LEVEL_ABIE)
+                .set(TOP_LEVEL_ABIE.ABIE_ID, arguments.getAbieId())
+                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(arguments.getTopLevelAbieId()))
+                .execute();
+    }
+
+}

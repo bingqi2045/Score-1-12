@@ -10,6 +10,7 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.redis.event.EventListenerContainer;
+import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -53,6 +54,9 @@ public class BieCopyService implements InitializingBean {
     private TopLevelAbieRepository topLevelAbieRepository;
 
     @Autowired
+    private BusinessInformationEntityRepository bieRepository;
+
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
@@ -77,13 +81,18 @@ public class BieCopyService implements InitializingBean {
         long sourceTopLevelAbieId = request.getTopLevelAbieId();
         List<Long> bizCtxIds = request.getBizCtxIds();
         long userId = sessionService.userId(user);
+        long millis = System.currentTimeMillis();
 
         TopLevelAbie sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
-        long copiedTopLevelAbieId =
-                repository.createTopLevelAbie(userId, sourceTopLevelAbie.getReleaseId(), Initiating);
+        ULong copiedTopLevelAbieId = bieRepository.insertTopLevelAbie()
+                .setReleaseId(sourceTopLevelAbie.getReleaseId())
+                .setBieState(Initiating)
+                .setUserId(userId)
+                .setTimestamp(millis)
+                .execute();
 
         BieCopyRequestEvent bieCopyRequestEvent = new BieCopyRequestEvent(
-                sourceTopLevelAbieId, copiedTopLevelAbieId, bizCtxIds, userId
+                sourceTopLevelAbieId, copiedTopLevelAbieId.longValue(), bizCtxIds, userId
         );
 
         /*
@@ -388,9 +397,10 @@ public class BieCopyService implements InitializingBean {
             logger.debug("Begin copying from " + sourceTopLevelAbie.getTopLevelAbieId() +
                     " to " + copiedTopLevelAbie.getTopLevelAbieId());
 
-            repository.createBizCtxAssignments(
-                    copiedTopLevelAbie.getTopLevelAbieId(),
-                    bizCtxIds);
+            bieRepository.insertBizCtxAssignments()
+                    .setTopLevelAbieId(copiedTopLevelAbie.getTopLevelAbieId())
+                    .setBizCtxIds(bizCtxIds)
+                    .execute();
 
             for (BieCopyAbie abie : abieList) {
                 long previousAbieId = abie.getAbieId();
@@ -399,9 +409,10 @@ public class BieCopyService implements InitializingBean {
                 fireChangeEvent("abie", previousAbieId, nextAbieId);
             }
 
-            repository.updateAbieIdOnTopLevelAbie(
-                    copiedTopLevelAbie.getAbieId(),
-                    copiedTopLevelAbie.getTopLevelAbieId());
+            bieRepository.updateTopLevelAbie()
+                    .setAbieId(copiedTopLevelAbie.getAbieId())
+                    .setTopLevelAbieId(copiedTopLevelAbie.getTopLevelAbieId())
+                    .execute();
 
             for (BieCopyAsbiep asbiep : asbiepList) {
                 long previousAsbiepId = asbiep.getAsbiepId();

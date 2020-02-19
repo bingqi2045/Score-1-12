@@ -397,58 +397,12 @@ public class BieRepository {
                 .fetchInto(BieEditBcc.class);
     }
 
-    public long createTopLevelAbie(long userId, long releaseId, BieState state) {
-        TopLevelAbieRecord record = new TopLevelAbieRecord();
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        record.setOwnerUserId(ULong.valueOf(userId));
-        record.setReleaseId(ULong.valueOf(releaseId));
-        record.setState(state.getValue());
-        record.setLastUpdatedBy(ULong.valueOf(userId));
-        record.setLastUpdateTimestamp(timestamp);
-
-        return dslContext.insertInto(TOP_LEVEL_ABIE)
-                .set(record)
-                .returning().fetchOne().getTopLevelAbieId().longValue();
-    }
-
-    public void updateAbieIdOnTopLevelAbie(long abieId, long topLevelAbieId) {
-        dslContext.update(TOP_LEVEL_ABIE)
-                .set(TOP_LEVEL_ABIE.ABIE_ID, ULong.valueOf(abieId))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .execute();
-    }
-
     public List<Long> getBizCtxIdByTopLevelAbieId(long topLevelAbieId) {
         return dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(BIZ_CTX_ASSIGNMENT)
                 .join(TOP_LEVEL_ABIE).on(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchInto(Long.class);
-    }
-
-    public void createBizCtxAssignments(long topLevelAbieId, List<Long> bizCtxIds) {
-        bizCtxIds.stream().forEach(bizCtxId -> {
-            dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
-                    .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
-                    .execute();
-        });
-    }
-
-    public AbieRecord createAbie(User user, long basedAccManifestId, long topLevelAbieId) {
-        long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        return dslContext.insertInto(ABIE)
-                .set(ABIE.GUID, SrtGuid.randomGuid())
-                .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(basedAccManifestId))
-                .set(ABIE.CREATED_BY, ULong.valueOf(userId))
-                .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .set(ABIE.CREATION_TIMESTAMP, timestamp)
-                .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .set(ABIE.STATE, BieState.Editing.getValue())
-                .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
-                .returning().fetchOne();
     }
 
     public AsbiepRecord createAsbiep(User user, long asccpManifestId, long abieId, long topLevelAbieId) {

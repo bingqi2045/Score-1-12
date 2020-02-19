@@ -17,6 +17,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private BusinessInformationEntityRepository bieRepository;
 
     @Autowired
     private RedissonClient redissonClient;
@@ -219,8 +223,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         if (abieId == 0L && isForceBieUpdate()) {
             BieEditAcc acc = repository.getAcc(asbiepNode.getAccId(), asbiepNode.getReleaseId());
-            AbieRecord abieRecord = repository.createAbie(user, acc.getAccId(), asbiepNode.getTopLevelAbieId());
-            abieId = abieRecord.getAbieId().longValue();
+
+            abieId = bieRepository.insertAbie()
+                    .setUserId(sessionService.userId(user))
+                    .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
+                    .setAccManifestId(acc.getAccId())
+                    .execute().longValue();
         }
 
         if (abieId > 0L) {
@@ -384,8 +392,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (asbie == null && isForceBieUpdate()) {
-            AbieRecord abieRecord = repository.createAbie(user, acc.getAccId(), topLevelAbieId);
-            long abieId = abieRecord.getAbieId().longValue();
+            long abieId = bieRepository.insertAbie()
+                    .setUserId(sessionService.userId(user))
+                    .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
+                    .setAccManifestId(acc.getAccId())
+                    .execute().longValue();
+            
             AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
             long asbiepId = asbiepRecord.getAsbiepId().longValue();
             AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccId(),
