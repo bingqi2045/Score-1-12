@@ -8,6 +8,7 @@ import org.jooq.Record4;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.*;
+import org.oagi.srt.entity.jooq.tables.AccManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -1705,6 +1706,12 @@ public class CcNodeRepository {
             throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
         }
 
+        Release workingRelease = releaseRepository.getWorkingRelease();
+
+        if (accManifestRecord.getReleaseId().longValue() != workingRelease.getReleaseId()) {
+            throw new IllegalArgumentException("Creating new revision is not allow for this release");
+        }
+
         accRecord.set(ACC.ACC_ID, null);
         accRecord.set(ACC.LAST_UPDATED_BY, userId);
         accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
@@ -1714,33 +1721,13 @@ public class CcNodeRepository {
         accRecord.set(ACC.STATE, CcState.Editing.getValue());
         accRecord.insert();
 
-        Release workingRelease = releaseRepository.getWorkingRelease();
-        ULong workingReleaseId = ULong.valueOf(workingRelease.getReleaseId());
-        AccManifestRecord accManifestRecordInWorkingRelease =
-                dslContext.selectFrom(ACC_MANIFEST)
-                        .where(and(
-                                ACC_MANIFEST.ACC_ID.eq(accManifestRecord.getAccId()),
-                                ACC_MANIFEST.RELEASE_ID.eq(workingReleaseId)
-                        ))
-                        .fetchOptional().orElse(null);
+        accManifestRecord.setAccId(accRecord.getAccId());
+        accManifestRecord.update();
 
-        if (accManifestRecordInWorkingRelease != null) {
-            accManifestRecordInWorkingRelease.setAccId(accRecord.getAccId());
-            accManifestRecordInWorkingRelease.setBasedAccManifestId(accManifestId);
-            accManifestRecordInWorkingRelease.update();
-        } else {
-            accManifestRecordInWorkingRelease = dslContext.insertInto(ACC_MANIFEST)
-                    .set(ACC_MANIFEST.ACC_ID, accRecord.getAccId())
-                    .set(ACC_MANIFEST.RELEASE_ID, workingReleaseId)
-                    .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, accManifestId)
-                    .set(ACC_MANIFEST.MODULE_ID, accManifestRecord.getModuleId())
-                    .returning().fetchOne();
-        }
+        makeNewRevisionForAscc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
+        makeNewRevisionForBcc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
 
-        makeNewRevisionForAscc(accManifestRecord, accRecord, userId, timestamp, workingReleaseId);
-        makeNewRevisionForBcc(accManifestRecord, accRecord, userId, timestamp, workingReleaseId);
-
-        return getAccNodeByAccManifestId(user, accManifestRecordInWorkingRelease.getAccManifestId());
+        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
     }
 
     private List<AsccManifestRecord> makeNewRevisionForAscc(AccManifestRecord accManifestRecord,
