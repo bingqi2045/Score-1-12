@@ -1,6 +1,9 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record10;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
@@ -16,6 +19,7 @@ import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.oagi.srt.repo.CoreComponentRepository;
+import org.oagi.srt.repo.PaginationResponse;
 import org.oagi.srt.repository.ABIERepository;
 import org.oagi.srt.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +36,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.or;
-import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
@@ -106,155 +108,39 @@ public class BieService {
         return response;
     }
 
-    private SelectOnConditionStep<Record11<
-            ULong, String, String, String,
-            ULong, String, String, String,
-            Timestamp, String, Integer>> getSelectOnConditionStep() {
-        return dslContext.select(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                ABIE.GUID,
-                ASCCP.PROPERTY_TERM,
-                RELEASE.RELEASE_NUM,
-                TOP_LEVEL_ABIE.OWNER_USER_ID,
-                APP_USER.LOGIN_ID.as("owner"),
-                ABIE.VERSION,
-                ABIE.STATUS,
-                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
-                APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
-                ABIE.STATE.as("raw_state"))
-                .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .and(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID))
-                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP.ASCCP_ID))
-                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ABIE.LAST_UPDATED_BY))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
-    }
-
     public PageResponse<BieList> getBieList(User user, BieListRequest request) {
-        SelectOnConditionStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
-                Timestamp, String, Integer>> step = getSelectOnConditionStep();
-
-        List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getPropertyTerm())) {
-            conditions.add(ASCCP.PROPERTY_TERM.containsIgnoreCase(request.getPropertyTerm().trim()));
-        }
-        if (!request.getExcludes().isEmpty()) {
-            conditions.add(ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
-        }
-        if (!request.getStates().isEmpty()) {
-            conditions.add(ABIE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
-        }
-        if (!request.getOwnerLoginIds().isEmpty()) {
-            conditions.add(APP_USER.LOGIN_ID.in(request.getOwnerLoginIds()));
-        }
-        if (!request.getUpdaterLoginIds().isEmpty()) {
-            conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
-        }
-        if (request.getUpdateStartDate() != null) {
-            conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
-        }
-        if (request.getUpdateEndDate() != null) {
-            conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
-        }
-        if (request.getAccess() != null) {
-            switch (request.getAccess()) {
-                case CanEdit:
-                    conditions.add(
-                            and(
-                                    ABIE.STATE.notEqual(Initiating.getValue()),
-                                    TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(sessionService.userId(user)))
-                            )
-                    );
-                    break;
-
-                case CanView:
-                    conditions.add(
-                            or(
-                                    ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
-                                    and(
-                                            ABIE.STATE.notEqual(Initiating.getValue()),
-                                            TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(sessionService.userId(user)))
-                                    )
-                            )
-                    );
-                    break;
-            }
-        }
-
-        SelectConnectByStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
-                Timestamp, String, Integer>> conditionStep = step.where(conditions);
         PageRequest pageRequest = request.getPageRequest();
-        String sortDirection = pageRequest.getSortDirection();
-        SortField sortField = null;
-        switch (pageRequest.getSortActive()) {
-            case "propertyTerm":
-                if ("asc".equals(sortDirection)) {
-                    sortField = ASCCP.PROPERTY_TERM.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = ASCCP.PROPERTY_TERM.desc();
-                }
 
-                break;
+        PaginationResponse<BieList> result = bieRepository.selectBieLists()
+                .setPropertyTerm(request.getPropertyTerm())
+                .setExcludes(request.getExcludes())
+                .setStates(request.getStates())
+                .setOwnerIds(request.getOwnerLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
+                .setAccess(ULong.valueOf(sessionService.userId(user)), request.getAccess())
+                .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
+                .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
+                .fetchInto(BieList.class);
 
-            case "releaseNum":
-                if ("asc".equals(sortDirection)) {
-                    sortField = RELEASE.RELEASE_NUM.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = RELEASE.RELEASE_NUM.desc();
-                }
-
-                break;
-
-            case "lastUpdateTimestamp":
-                if ("asc".equals(sortDirection)) {
-                    sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.desc();
-                }
-
-                break;
-        }
-        int pageCount = dslContext.fetchCount(conditionStep);
-        SelectWithTiesAfterOffsetStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
-                Timestamp, String, Integer>> offsetStep = null;
-        if (sortField != null) {
-            offsetStep = conditionStep.orderBy(sortField)
-                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
-        } else {
-            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
-                offsetStep = conditionStep
-                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
-            }
-        }
-
-        List<BieList> result = (offsetStep != null) ?
-                offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
-        result.forEach(bieList -> setBusinessContexts(bieList));
+        List<BieList> bieLists = result.getResult();
+        bieLists.forEach(bieList -> setBusinessContexts(bieList));
 
         if (!StringUtils.isEmpty(request.getBusinessContext())) {
             String nameFiltered = request.getBusinessContext();
-            result = result.stream().
+            bieLists = bieLists.stream().
                     filter(bieList ->
                             bieList.getBusinessContexts().stream().anyMatch(businessContext ->
                                     businessContext.getName().toLowerCase().contains(nameFiltered.toLowerCase())))
                     .collect(Collectors.toList());
         }
-        result = appendAccessPrivilege(result, user);
+        bieLists = appendAccessPrivilege(bieLists, user);
 
         PageResponse<BieList> response = new PageResponse();
-        response.setList(result);
+        response.setList(bieLists);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(pageCount);
+        response.setLength(result.getPageCount());
         return response;
     }
 

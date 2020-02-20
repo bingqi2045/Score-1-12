@@ -1,20 +1,25 @@
 package org.oagi.srt.repo;
 
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.srt.data.BieState.Editing;
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
+import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -380,5 +385,220 @@ public class BusinessInformationEntityRepository {
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(arguments.getTopLevelAbieId()))
                 .execute();
     }
+
+    public class SelectBieListArguments {
+
+        private List<Condition> conditions = new ArrayList();
+        private SortField sortField;
+        private int offset;
+        private int numberofRows;
+
+        private int count;
+
+        public SelectBieListArguments setPropertyTerm(String propertyTerm) {
+            if (!StringUtils.isEmpty(propertyTerm)) {
+                conditions.add(ASCCP.PROPERTY_TERM.containsIgnoreCase(propertyTerm.trim()));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setExcludes(List<String> excludes) {
+            if (!excludes.isEmpty()) {
+                conditions.add(ASCCP.PROPERTY_TERM.notIn(excludes));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setStates(List<BieState> states) {
+            if (!states.isEmpty()) {
+                conditions.add(ABIE.STATE.in(states.stream().map(e -> e.getValue()).collect(Collectors.toList())));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setOwnerIds(List<ULong> ownerIds) {
+            if (!ownerIds.isEmpty()) {
+                conditions.add(APP_USER.LOGIN_ID.in(ownerIds));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setUpdaterIds(List<ULong> updaterIds) {
+            if (!updaterIds.isEmpty()) {
+                conditions.add(APP_USER.as("updater").LOGIN_ID.in(updaterIds));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setUpdateDate(Date from, Date to) {
+            return setUpdateDate(
+                    (from != null) ? new Timestamp(from.getTime()) : null,
+                    (to != null) ? new Timestamp(to.getTime()) : null
+            );
+        }
+
+        public SelectBieListArguments setUpdateDate(Timestamp from, Timestamp to) {
+            if (from != null) {
+                conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(from));
+            }
+            if (to != null) {
+                conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.lessThan(to));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setAccess(ULong userId, AccessPrivilege access) {
+            if (access != null) {
+                switch (access) {
+                    case CanEdit:
+                        conditions.add(
+                                and(
+                                        ABIE.STATE.notEqual(Initiating.getValue()),
+                                        TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
+                                )
+                        );
+                        break;
+
+                    case CanView:
+                        conditions.add(
+                                or(
+                                        ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
+                                        and(
+                                                ABIE.STATE.notEqual(Initiating.getValue()),
+                                                TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
+                                        )
+                                )
+                        );
+                        break;
+                }
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setSort(String field, String direction) {
+            if (!StringUtils.isEmpty(field)) {
+                switch (field) {
+                    case "propertyTerm":
+                        if ("asc".equals(direction)) {
+                            this.sortField = ASCCP.PROPERTY_TERM.asc();
+                        } else if ("desc".equals(direction)) {
+                            this.sortField = ASCCP.PROPERTY_TERM.desc();
+                        }
+
+                        break;
+
+                    case "releaseNum":
+                        if ("asc".equals(direction)) {
+                            this.sortField = RELEASE.RELEASE_NUM.asc();
+                        } else if ("desc".equals(direction)) {
+                            this.sortField = RELEASE.RELEASE_NUM.desc();
+                        }
+
+                        break;
+
+                    case "lastUpdateTimestamp":
+                        if ("asc".equals(direction)) {
+                            this.sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.asc();
+                        } else if ("desc".equals(direction)) {
+                            this.sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.desc();
+                        }
+
+                        break;
+                }
+            }
+
+            return this;
+        }
+
+        public SelectBieListArguments setOffset(int offset, int numberofRows) {
+            this.offset = offset;
+            this.numberofRows = numberofRows;
+            return this;
+        }
+
+        public List<Condition> getConditions() {
+            return conditions;
+        }
+
+        public SortField getSortField() {
+            return sortField;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getNumberofRows() {
+            return numberofRows;
+        }
+
+        public <E> PaginationResponse<E> fetchInto(Class<? extends E> type) {
+            return selectBieList(this, type);
+        }
+    }
+
+    public SelectBieListArguments selectBieLists() {
+        return new SelectBieListArguments();
+    }
+
+    private SelectOnConditionStep<Record11<
+            ULong, String, String, String,
+            ULong, String, String, String,
+            Timestamp, String, Integer>> getSelectOnConditionStep() {
+        return dslContext.select(
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                ABIE.GUID,
+                ASCCP.PROPERTY_TERM,
+                RELEASE.RELEASE_NUM,
+                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                APP_USER.LOGIN_ID.as("owner"),
+                ABIE.VERSION,
+                ABIE.STATUS,
+                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
+                APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
+                ABIE.STATE.as("raw_state"))
+                .from(TOP_LEVEL_ABIE)
+                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
+                .and(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID))
+                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
+                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ABIE.LAST_UPDATED_BY))
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
+    }
+
+    private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
+        SelectOnConditionStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
+                Timestamp, String, Integer>> step = getSelectOnConditionStep();
+
+        SelectConnectByStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
+                Timestamp, String, Integer>> conditionStep = step.where(arguments.getConditions());
+
+        int pageCount = dslContext.fetchCount(conditionStep);
+
+        SortField sortField = arguments.getSortField();
+        SelectWithTiesAfterOffsetStep<Record11<
+                ULong, String, String, String,
+                ULong, String, String, String,
+                Timestamp, String, Integer>> offsetStep;
+        if (sortField != null) {
+            offsetStep = conditionStep.orderBy(sortField)
+                    .limit(arguments.getOffset(), arguments.getNumberofRows());
+        } else {
+            offsetStep = conditionStep
+                    .limit(arguments.getOffset(), arguments.getNumberofRows());
+        }
+
+        return new PaginationResponse<>(pageCount,
+                (offsetStep != null) ?
+                        offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
+    }
+
+
 
 }
