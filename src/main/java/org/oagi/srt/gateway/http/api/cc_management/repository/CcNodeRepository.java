@@ -1523,7 +1523,7 @@ public class CcNodeRepository {
     }
 
     private void ensureDependenciesOfAcc(AccManifestRecord accManifestRecord, CcState ccState) {
-        int minChildState = CcState.Candidate.getValue();
+        int minChildState = CcState.Published.getValue();
         int childState;
 
         List<AsccManifestRecord> asccManifestRecords =
@@ -1704,7 +1704,7 @@ public class CcNodeRepository {
 
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
-        if (accRecord.getState() != CcState.Candidate.getValue()) {
+        if (accRecord.getState() != CcState.Published.getValue()) {
             throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
         }
 
@@ -1847,7 +1847,7 @@ public class CcNodeRepository {
         AsccpManifestRecord asccpManifestRecord = manifestRepository.getAsccpManifestById(asccpManifestId);
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
-        if (asccpRecord.getState() != CcState.Candidate.getValue()) {
+        if (asccpRecord.getState() != CcState.Published.getValue()) {
             throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
         }
 
@@ -1894,7 +1894,7 @@ public class CcNodeRepository {
                 manifestRepository.getBccpManifestById(bccpManifestId);
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
-        if (bccpRecord.getState() != CcState.Candidate.getValue()) {
+        if (bccpRecord.getState() != CcState.Published.getValue()) {
             throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
         }
 
@@ -1962,7 +1962,7 @@ public class CcNodeRepository {
         asccRecord.setLastUpdatedBy(ULong.valueOf(userId));
         asccRecord.setLastUpdateTimestamp(timestamp);
         asccRecord.setOwnerUserId(ULong.valueOf(userId));
-        asccRecord.setState(CcState.WIP.getValue());
+        asccRecord.setState(accRecord.getState());
         asccRecord.setRevisionNum(1);
         asccRecord.setRevisionTrackingNum(1);
         asccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
@@ -2009,7 +2009,6 @@ public class CcNodeRepository {
         bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
         bccRecord.setLastUpdateTimestamp(timestamp);
         bccRecord.setOwnerUserId(ULong.valueOf(userId));
-        bccRecord.setState(CcState.WIP.getValue());
         bccRecord.setState(accRecord.getState());
         bccRecord.setEntityType(Element.getValue());
         bccRecord.setRevisionNum(1);
@@ -2322,12 +2321,7 @@ public class CcNodeRepository {
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
             asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            if (asccRecord.getState() == CcState.Candidate.getValue() && state == CcState.WIP) {
-                asccRecord.set(ASCC.REVISION_NUM, asccRecord.getRevisionNum() + 1);
-                asccRecord.set(ASCC.REVISION_TRACKING_NUM, 1);
-            } else {
-                asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
-            }
+            asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.set(ASCC.STATE, state.getValue());
             asccRecord.insert();
 
@@ -2349,12 +2343,7 @@ public class CcNodeRepository {
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
             bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            if (bccRecord.getState() == CcState.Candidate.getValue() && state == CcState.WIP) {
-                bccRecord.set(BCC.REVISION_NUM, bccRecord.getRevisionNum() + 1);
-                bccRecord.set(BCC.REVISION_TRACKING_NUM, 1);
-            } else {
-                bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
-            }
+            bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.set(BCC.STATE, state.getValue());
             bccRecord.insert();
 

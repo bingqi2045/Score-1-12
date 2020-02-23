@@ -280,6 +280,14 @@ public class CcNodeService {
             return CcState.Draft;
         } else if (CcState.Candidate.name().equals(state)) {
             return CcState.Candidate;
+        } else if (CcState.QA.name().equals(state)) {
+            return CcState.QA;
+        } else if (CcState.Production.name().equals(state)) {
+            return CcState.Production;
+        } else if (CcState.ReleaseDraft.name().equals(state)) {
+            return CcState.ReleaseDraft;
+        } else if (CcState.Published.name().equals(state)) {
+            return CcState.Published;
         }
         return null;
     }
