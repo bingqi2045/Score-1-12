@@ -184,11 +184,15 @@ SELECT
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
 WHERE `dt`.`state` = 3;
 
-UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1, `state` = 3;
+UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
+
+UPDATE `dt` SET `state` = 7 where `state` = 3;
 
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.';
+                 MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+
 
 -- Add indices
 CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
