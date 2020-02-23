@@ -17,6 +17,7 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.BusinessContextRepository;
 import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.PaginationResponse;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -57,6 +57,9 @@ public class BieService {
 
     @Autowired
     private BusinessInformationEntityRepository bieRepository;
+
+    @Autowired
+    private BusinessContextRepository businessContextRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -110,6 +113,7 @@ public class BieService {
 
     public PageResponse<BieList> getBieList(User user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
+        long userId = sessionService.userId(user);
 
         PaginationResponse<BieList> result = bieRepository.selectBieLists()
                 .setPropertyTerm(request.getPropertyTerm())
@@ -118,23 +122,20 @@ public class BieService {
                 .setOwnerIds(request.getOwnerLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
-                .setAccess(ULong.valueOf(sessionService.userId(user)), request.getAccess())
+                .setAccess(ULong.valueOf(userId), request.getAccess())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
                 .fetchInto(BieList.class);
 
         List<BieList> bieLists = result.getResult();
-        bieLists.forEach(bieList -> setBusinessContexts(bieList));
+        bieLists.forEach(bieList -> {
+            bieList.setBusinessContexts(businessContextRepository.selectBusinessContexts()
+                    .setTopLevelAbieId(bieList.getTopLevelAbieId())
+                    .setName(request.getBusinessContext())
+                    .fetchInto(BusinessContext.class).getResult());
 
-        if (!StringUtils.isEmpty(request.getBusinessContext())) {
-            String nameFiltered = request.getBusinessContext();
-            bieLists = bieLists.stream().
-                    filter(bieList ->
-                            bieList.getBusinessContexts().stream().anyMatch(businessContext ->
-                                    businessContext.getName().toLowerCase().contains(nameFiltered.toLowerCase())))
-                    .collect(Collectors.toList());
-        }
-        bieLists = appendAccessPrivilege(bieLists, user);
+            bieList.setAccess(getAccessPrivilege(bieList, userId).name());
+        });
 
         PageResponse<BieList> response = new PageResponse();
         response.setList(bieLists);
@@ -144,70 +145,44 @@ public class BieService {
         return response;
     }
 
-    private void setBusinessContexts(BieList bieList) {
-        List<ULong> bizCtxIds = dslContext.selectDistinct(
-                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
-                .from(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
-                .fetchInto(ULong.class);
+    private AccessPrivilege getAccessPrivilege(BieList bieList, long userId) {
+        BieState state = BieState.valueOf(bieList.getRawState());
+        bieList.setState(state);
 
-        bieList.setBusinessContexts(
-                dslContext.select(
-                        BIZ_CTX.BIZ_CTX_ID,
-                        BIZ_CTX.NAME,
-                        BIZ_CTX.GUID,
-                        BIZ_CTX.CREATION_TIMESTAMP,
-                        BIZ_CTX.LAST_UPDATED_BY,
-                        BIZ_CTX.LAST_UPDATE_TIMESTAMP)
-                        .from(BIZ_CTX)
-                        .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxIds))
-                        .fetchInto(BusinessContext.class)
-        );
-    }
+        AccessPrivilege accessPrivilege = Prohibited;
+        switch (state) {
+            case Initiating:
+                accessPrivilege = Unprepared;
+                break;
 
-    private List<BieList> appendAccessPrivilege(List<BieList> bieLists, User user) {
-        long userId = sessionService.userId(user);
+            case Editing:
+                if (userId == bieList.getOwnerUserId()) {
+                    accessPrivilege = CanEdit;
+                } else {
+                    accessPrivilege = Prohibited;
+                }
+                break;
 
-        bieLists.stream().forEach(e -> {
-            BieState state = BieState.valueOf(e.getRawState());
-            e.setState(state);
-
-            AccessPrivilege accessPrivilege = Prohibited;
-            switch (state) {
-                case Initiating:
-                    accessPrivilege = Unprepared;
-                    break;
-
-                case Editing:
-                    if (userId == e.getOwnerUserId()) {
-                        accessPrivilege = CanEdit;
-                    } else {
-                        accessPrivilege = Prohibited;
-                    }
-                    break;
-
-                case Candidate:
-                    if (userId == e.getOwnerUserId()) {
-                        accessPrivilege = CanEdit;
-                    } else {
-                        accessPrivilege = CanView;
-                    }
-
-                    break;
-
-                case Published:
+            case Candidate:
+                if (userId == bieList.getOwnerUserId()) {
+                    accessPrivilege = CanEdit;
+                } else {
                     accessPrivilege = CanView;
-                    break;
+                }
 
-            }
+                break;
 
-            e.setAccess(accessPrivilege.name());
-        });
+            case Published:
+                accessPrivilege = CanView;
+                break;
+        };
 
-        return bieLists;
+        return accessPrivilege;
     }
 
     private List<BieList> getBieList(User user, Condition condition) {
+        long userId = sessionService.userId(user);
+
         SelectOnConditionStep<Record10<
                 ULong, String, String, String,
                 ULong, String, String, String,
@@ -239,8 +214,15 @@ public class BieService {
             bieLists = selectOnConditionStep.fetchInto(BieList.class);
         }
 
-        bieLists.forEach(bieList -> setBusinessContexts(bieList));
-        return appendAccessPrivilege(bieLists, user);
+        bieLists.forEach(bieList -> {
+            bieList.setBusinessContexts(businessContextRepository.selectBusinessContexts()
+                    .setTopLevelAbieId(bieList.getTopLevelAbieId())
+                    .fetchInto(BusinessContext.class).getResult());
+
+            bieList.setAccess(getAccessPrivilege(bieList, userId).name());
+        });
+
+        return bieLists;
     }
 
     public List<BieList> getBieList(GetBieListRequest request) {

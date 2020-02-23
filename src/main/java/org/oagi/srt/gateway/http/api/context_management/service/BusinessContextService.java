@@ -2,15 +2,16 @@ package org.oagi.srt.gateway.http.api.context_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextListRequest;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextSchemeValue;
-import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.BusinessContextRepository;
+import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,11 +40,30 @@ public class BusinessContextService {
     @Autowired
     private BusinessContextRepository repository;
 
-    @Autowired
-    private BieRepository bieRepository;
-
     public PageResponse<BusinessContext> getBusinessContextList(BusinessContextListRequest request) {
-        return repository.findBusinessContexts(request);
+        PageRequest pageRequest = request.getPageRequest();
+
+        PaginationResponse<BusinessContext> result = repository.selectBusinessContexts()
+                .setTopLevelAbieId(request.getTopLevelAbieId())
+                .setName(request.getName())
+                .setBizCtxIds(request.getBizCtxIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
+                .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
+                .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
+                .fetchInto(BusinessContext.class);
+
+        List<BusinessContext> bizCtxs = result.getResult();
+        bizCtxs.stream().forEach(bizCtx -> {
+            bizCtx.setUsed(repository.used(bizCtx.getBizCtxId()));
+        });
+
+        PageResponse<BusinessContext> response = new PageResponse();
+        response.setList(bizCtxs);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(result.getPageCount());
+        return response;
     }
 
     public BusinessContext getBusinessContext(long bizCtxId) {
@@ -53,14 +72,6 @@ public class BusinessContextService {
 
     public List<BusinessContext> getBusinessContexts(List<Long> bizCtxIds) {
         return repository.findBusinessContextsByBizCtxIdIn(bizCtxIds);
-    }
-
-    public List<BusinessContext> getBusinessContextsByTopLevelAbieId(long topLevelAbieId) {
-        List<Long> bizCtxIds = bieRepository.getBizCtxIdByTopLevelAbieId(topLevelAbieId);
-        if (bizCtxIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return getBusinessContexts(bizCtxIds);
     }
 
     public List<BusinessContextValue> getBusinessContextValues() {
