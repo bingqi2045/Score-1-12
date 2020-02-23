@@ -81,6 +81,7 @@ UPDATE
 SET
 	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`;
 
+UPDATE `acc` SET `acc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `acc` SET `acc`.`state` = 7 WHERE `acc`.`state` = 3;
 
 -- Add deprecated annotations
@@ -142,6 +143,7 @@ JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 3;
 
+UPDATE `asccp` SET `asccp`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `asccp` SET `asccp`.`state` = 7 WHERE `asccp`.`state` = 3;
 
 -- Add deprecated annotations
@@ -186,11 +188,12 @@ WHERE `dt`.`state` = 3;
 
 UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
+UPDATE `dt` SET `dt`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `dt` SET `state` = 7 where `state` = 3;
 
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
-                 MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.';
+                 MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
                  MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
 
 
@@ -263,6 +266,7 @@ JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 3;
 
+UPDATE `bccp` SET `bccp`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `bccp` SET `bccp`.`state` = 7 WHERE `bccp`.`state` = 3;
 
 -- Add deprecated annotations
@@ -339,6 +343,7 @@ JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `ascc`.`state` = 3;
 
+UPDATE `ascc` SET `ascc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `ascc` SET `ascc`.`state` = 7 WHERE `ascc`.`state` = 3;
 
 -- Add deprecated annotations
@@ -415,6 +420,7 @@ JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `bcc`.`state` = 3;
 
+UPDATE `bcc` SET `bcc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 UPDATE `bcc` SET `bcc`.`state` = 7 WHERE `bcc`.`state` = 3;
 
 -- Add deprecated annotations
