@@ -79,7 +79,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         this.state = BieState.valueOf(topLevelAbie.getState());
         this.forceBieUpdate = true;
         switch (this.state) {
-            case Editing:
+            case WIP:
                 if (sessionService.userId(user) != topLevelAbie.getOwnerUserId()) {
                     throw new DataAccessForbiddenException("'" + user.getUsername() +
                             "' doesn't have an access privilege.");

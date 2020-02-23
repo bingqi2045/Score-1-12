@@ -155,7 +155,7 @@ public class BieService {
                 accessPrivilege = Unprepared;
                 break;
 
-            case Editing:
+            case WIP:
                 if (userId == bieList.getOwnerUserId()) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -163,7 +163,7 @@ public class BieService {
                 }
                 break;
 
-            case Candidate:
+            case QA:
                 if (userId == bieList.getOwnerUserId()) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -172,7 +172,7 @@ public class BieService {
 
                 break;
 
-            case Published:
+            case Production:
                 accessPrivilege = CanView;
                 break;
         };

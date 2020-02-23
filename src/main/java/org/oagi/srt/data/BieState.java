@@ -3,9 +3,9 @@ package org.oagi.srt.data;
 public enum BieState {
 
     Initiating(1),
-    Editing(2),
-    Candidate(3),
-    Published(4);
+    WIP(2),
+    QA(3),
+    Production(4);
 
     private final int value;
 

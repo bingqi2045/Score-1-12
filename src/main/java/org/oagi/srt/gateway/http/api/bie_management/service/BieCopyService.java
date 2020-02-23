@@ -449,7 +449,7 @@ public class BieCopyService implements InitializingBean {
                 fireChangeEvent("bbie_sc", previousBbieScId, nextBbieScId);
             }
 
-            repository.updateState(copiedTopLevelAbie.getTopLevelAbieId(), BieState.Editing);
+            repository.updateState(copiedTopLevelAbie.getTopLevelAbieId(), BieState.WIP);
 
             logger.debug("End copying from " + sourceTopLevelAbie.getTopLevelAbieId() +
                     " to " + copiedTopLevelAbie.getTopLevelAbieId());

@@ -48,7 +48,7 @@ public class BieEditController {
                 accessPrivilege = Unprepared;
                 break;
 
-            case Editing:
+            case WIP:
                 if (userId == rootNode.getOwnerUserId()) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -56,7 +56,7 @@ public class BieEditController {
                 }
                 break;
 
-            case Candidate:
+            case QA:
                 if (userId == rootNode.getOwnerUserId()) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -65,7 +65,7 @@ public class BieEditController {
 
                 break;
 
-            case Published:
+            case Production:
                 accessPrivilege = CanView;
                 break;
 

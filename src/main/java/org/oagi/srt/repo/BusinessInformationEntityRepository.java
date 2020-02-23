@@ -31,7 +31,7 @@ public class BusinessInformationEntityRepository {
     public class InsertTopLevelAbieArguments {
         private ULong releaseId;
         private ULong userId;
-        private BieState bieState = Editing;
+        private BieState bieState = WIP;
         private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         public InsertTopLevelAbieArguments setReleaseId(long releaseId) {
@@ -188,7 +188,7 @@ public class BusinessInformationEntityRepository {
                 .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
                 .set(ABIE.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
-                .set(ABIE.STATE, Editing.getValue())
+                .set(ABIE.STATE, WIP.getValue())
                 .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
                 .returningResult(ABIE.ABIE_ID)
                 .fetchOne().value1();
@@ -460,7 +460,7 @@ public class BusinessInformationEntityRepository {
                     case CanView:
                         conditions.add(
                                 or(
-                                        ABIE.STATE.in(Candidate.getValue(), Published.getValue()),
+                                        ABIE.STATE.in(QA.getValue(), Production.getValue()),
                                         and(
                                                 ABIE.STATE.notEqual(Initiating.getValue()),
                                                 TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
