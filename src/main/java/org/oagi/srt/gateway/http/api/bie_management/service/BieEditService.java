@@ -21,7 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -141,10 +140,10 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Published.getValue()) {
+            if (ueAcc.getState() == CcState.Candidate.getValue()) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
+            } else if (ueAcc.getState() == CcState.Draft.getValue()) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
@@ -171,7 +170,7 @@ public class BieEditService {
                 .where(and(
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
-                        Tables.ACC.STATE.eq(CcState.Published.getValue())))
+                        Tables.ACC.STATE.eq(CcState.Candidate.getValue())))
                 .fetchOneInto(Long.class);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
@@ -182,10 +181,10 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Published.getValue()) {
+            if (ueAcc.getState() == CcState.Candidate.getValue()) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Candidate.getValue()) {
+            } else if (ueAcc.getState() == CcState.Draft.getValue()) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();

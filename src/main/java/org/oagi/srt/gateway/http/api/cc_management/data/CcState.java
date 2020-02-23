@@ -2,9 +2,13 @@ package org.oagi.srt.gateway.http.api.cc_management.data;
 
 public enum CcState {
 
-    Editing(1),
-    Candidate(2),
-    Published(3);
+    WIP(1),
+    Draft(2),
+    QA(3),
+    Candidate(4),
+    Production(5),
+    ReleaseDraft(6),
+    Published(7);
 
     private final int value;
 

@@ -274,12 +274,12 @@ public class CcNodeService {
 
 
     private CcState getStateCode(String state) {
-        if (CcState.Editing.name().equals(state)) {
-            return CcState.Editing;
+        if (CcState.WIP.name().equals(state)) {
+            return CcState.WIP;
+        } else if (CcState.Draft.name().equals(state)) {
+            return CcState.Draft;
         } else if (CcState.Candidate.name().equals(state)) {
             return CcState.Candidate;
-        } else if (CcState.Published.name().equals(state)) {
-            return CcState.Published;
         }
         return null;
     }

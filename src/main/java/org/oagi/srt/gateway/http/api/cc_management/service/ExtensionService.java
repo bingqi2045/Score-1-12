@@ -76,7 +76,7 @@ public class ExtensionService {
 
         AccessPrivilege accessPrivilege = Prohibited;
         switch (eAcc.getState()) {
-            case Editing:
+            case WIP:
                 if (userId == ownerUserId) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -84,7 +84,7 @@ public class ExtensionService {
                 }
                 break;
 
-            case Candidate:
+            case Draft:
                 if (userId == ownerUserId) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -93,7 +93,7 @@ public class ExtensionService {
 
                 break;
 
-            case Published:
+            case Candidate:
                 accessPrivilege = CanView;
                 break;
         }
@@ -125,9 +125,9 @@ public class ExtensionService {
     public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
                                     long releaseId, User user) {
         if (ueAcc != null) {
-            if (CcState.Published.getValue() == ueAcc.getState()) {
+            if (CcState.Candidate.getValue() == ueAcc.getState()) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-                CcAccNode acc = repository.updateAccState(user, accManifest.getAccManifestId(), CcState.Editing);
+                CcAccNode acc = repository.updateAccState(user, accManifest.getAccManifestId(), CcState.WIP);
                 return acc.getManifestId();
             } else {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
@@ -187,7 +187,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Editing.getValue(),
+                CcState.WIP.getValue(),
                 1,
                 1,
                 (byte) 1
@@ -239,7 +239,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Published.getValue(),
+                CcState.Candidate.getValue(),
                 1,
                 1,
                 (byte) 1
@@ -294,7 +294,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Published.getValue(),
+                CcState.Candidate.getValue(),
                 1,
                 1,
                 (byte) 1
@@ -638,7 +638,7 @@ public class ExtensionService {
                     ASCC.REVISION_TRACKING_NUM,
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX).from(ASCC)
-                    .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.getValue())))
+                    .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Candidate.getValue())))
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
@@ -656,7 +656,7 @@ public class ExtensionService {
                     BCC.CARDINALITY_MIN,
                     BCC.CARDINALITY_MAX,
                     BCC.IS_NILLABLE.as("nillable")).from(BCC)
-                    .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.getValue())))
+                    .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Candidate.getValue())))
                     .orderBy(BCC.BCC_ID.desc()).limit(1)
                     .fetchOneInto(CcBccNode.class);
         } else {

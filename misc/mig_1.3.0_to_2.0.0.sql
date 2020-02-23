@@ -81,6 +81,8 @@ UPDATE
 SET
 	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`;
 
+UPDATE `acc` SET `acc`.`state` = 7;
+
 -- Add deprecated annotations
 ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\\n\\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\\n\\nUnpublished components cannot be released.\\n\\nThis column is NULL for the current record.',
                   MODIFY COLUMN `current_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\\n\\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\\n\\nThe value of this column for the current record should be left NULL.';
@@ -139,6 +141,8 @@ JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 3;
 
+UPDATE `asccp` SET `asccp`.`state` = 7;
+
 -- Add deprecated annotations
 ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
                     MODIFY COLUMN `current_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.';
@@ -178,7 +182,7 @@ SELECT
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
 WHERE `dt`.`state` = 3;
 
-UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
+UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1, `state` = 3;
 
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
@@ -253,6 +257,8 @@ JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 3;
 
+UPDATE `bccp` SET `state` = 7;
+
 -- Add deprecated annotations
 ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
                    MODIFY COLUMN `current_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.';
@@ -326,6 +332,8 @@ JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `ascc`.`state` = 3;
 
+UPDATE `ascc` SET `state` = 7;
+
 -- Add deprecated annotations
 ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
                    MODIFY COLUMN `current_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.';
@@ -398,6 +406,8 @@ JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
 JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `bcc`.`state` = 3;
+
+UPDATE `bcc` SET `state` = 7;
 
 -- Add deprecated annotations
 ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 1.2.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
