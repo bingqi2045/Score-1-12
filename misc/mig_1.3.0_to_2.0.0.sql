@@ -81,8 +81,20 @@ UPDATE
 SET
 	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`;
 
-UPDATE `acc` SET `acc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `acc` SET `acc`.`state` = 7 WHERE `acc`.`state` = 3;
+UPDATE `acc`
+	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 4)
+WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+
+UPDATE `acc`
+	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `acc`.`state` = 3
+WHERE `acc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `acc`
+	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
 ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\\n\\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\\n\\nUnpublished components cannot be released.\\n\\nThis column is NULL for the current record.',
@@ -143,8 +155,20 @@ JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 3;
 
-UPDATE `asccp` SET `asccp`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `asccp` SET `asccp`.`state` = 7 WHERE `asccp`.`state` = 3;
+UPDATE `asccp`
+	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 4)
+WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` = 1;
+
+UPDATE `asccp`
+	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `asccp`.`state` = 3
+WHERE `asccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `asccp`
+	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 5)
+WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
 ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
@@ -186,10 +210,22 @@ SELECT
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
 WHERE `dt`.`state` = 3;
 
-UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
+UPDATE `dt`
+	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
+SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 4)
+WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` = 1;
 
-UPDATE `dt` SET `dt`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `dt` SET `state` = 7 where `state` = 3;
+UPDATE `dt`
+	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
+SET `dt`.`state` = 3
+WHERE `dt`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `dt`
+	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
+SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 5)
+WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` != 1;
+
+UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
@@ -266,8 +302,20 @@ JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 3;
 
-UPDATE `bccp` SET `bccp`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `bccp` SET `bccp`.`state` = 7 WHERE `bccp`.`state` = 3;
+UPDATE `bccp`
+	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 4)
+WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` = 1;
+
+UPDATE `bccp`
+	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bccp`.`state` = 3
+WHERE `bccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `bccp`
+	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 5)
+WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
 ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
@@ -343,8 +391,20 @@ JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `ascc`.`state` = 3;
 
-UPDATE `ascc` SET `ascc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `ascc` SET `ascc`.`state` = 7 WHERE `ascc`.`state` = 3;
+UPDATE `ascc`
+	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 4)
+WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+
+UPDATE `ascc`
+	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `ascc`.`state` = 3
+WHERE `ascc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `ascc`
+	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
 ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
@@ -420,8 +480,20 @@ JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `bcc`.`state` = 3;
 
-UPDATE `bcc` SET `bcc`.`state` = 3 WHERE `state` = 2 and `release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-UPDATE `bcc` SET `bcc`.`state` = 7 WHERE `bcc`.`state` = 3;
+UPDATE `bcc`
+	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 4)
+WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+
+UPDATE `bcc`
+	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bcc`.`state` = 3
+WHERE `bcc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+
+UPDATE `bcc`
+	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
+SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
 ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
