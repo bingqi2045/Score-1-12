@@ -93,7 +93,7 @@ WHERE `acc`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 5)
+SET `acc`.`state` = 5
 WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
@@ -167,7 +167,7 @@ WHERE `asccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 5)
+SET `asccp`.`state` = 5
 WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
@@ -222,7 +222,7 @@ WHERE `dt`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 5)
+SET `dt`.`state` = 5
 WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
@@ -314,7 +314,7 @@ WHERE `bccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 5)
+SET `bccp`.`state` = 5
 WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
@@ -403,7 +403,7 @@ WHERE `ascc`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 5)
+SET `ascc`.`state` = 5
 WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
@@ -492,7 +492,7 @@ WHERE `bcc`.`state` = 2 AND `app_user`.`is_developer` != 1;
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 5)
+SET `bcc`.`state` = 5
 WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` != 1;
 
 -- Add deprecated annotations
