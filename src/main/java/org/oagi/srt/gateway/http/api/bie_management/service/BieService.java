@@ -1,16 +1,16 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Record10;
-import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
-import org.oagi.srt.gateway.http.api.bie_management.data.*;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateRequest;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -28,10 +28,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,72 +178,6 @@ public class BieService {
         return accessPrivilege;
     }
 
-    private List<BieList> getBieList(User user, Condition condition) {
-        long userId = sessionService.userId(user);
-
-        SelectOnConditionStep<Record10<
-                ULong, String, String, String,
-                ULong, String, String, String,
-                Timestamp, Integer>> selectOnConditionStep = dslContext.select(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                ASCCP.GUID,
-                ASCCP.PROPERTY_TERM,
-                RELEASE.RELEASE_NUM,
-                TOP_LEVEL_ABIE.OWNER_USER_ID,
-                APP_USER.LOGIN_ID.as("owner"),
-                ABIE.VERSION,
-                ABIE.STATUS,
-                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
-                TOP_LEVEL_ABIE.STATE.as("raw_state"))
-                .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(and(
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID),
-                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID)))
-                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP.ASCCP_ID))
-                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
-
-        List<BieList> bieLists;
-        if (condition != null) {
-            bieLists = selectOnConditionStep.where(condition).fetchInto(BieList.class);
-        } else {
-            bieLists = selectOnConditionStep.fetchInto(BieList.class);
-        }
-
-        bieLists.forEach(bieList -> {
-            bieList.setBusinessContexts(businessContextRepository.selectBusinessContexts()
-                    .setTopLevelAbieId(bieList.getTopLevelAbieId())
-                    .fetchInto(BusinessContext.class).getResult());
-
-            bieList.setAccess(getAccessPrivilege(bieList, userId).name());
-        });
-
-        return bieLists;
-    }
-
-    public List<BieList> getBieList(GetBieListRequest request) {
-        Long bizCtxId = request.getBizCtxId();
-        Boolean excludeJsonRelated = request.getExcludeJsonRelated();
-        Condition condition = null;
-        if (bizCtxId != null && bizCtxId > 0L) {
-            List<ULong> topLevelAbieIds =
-                    dslContext.select(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
-                    .from(BIZ_CTX_ASSIGNMENT)
-                    .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                    .fetchInto(ULong.class);
-            if (topLevelAbieIds.isEmpty()) {
-                return Collections.emptyList();
-            }
-
-            condition = TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds);
-        } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
-            condition = ASCCP.PROPERTY_TERM.notIn("Meta Header", "Pagination Response");
-        }
-
-        return getBieList(request.getUser(), condition);
-    }
 
     public BizCtx findBizCtxByAbieId(long abieId) {
         long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
@@ -253,14 +185,6 @@ public class BieService {
         TopLevelAbie top = new TopLevelAbie();
         top.setTopLevelAbieId(topLevelAbieId);
         return bizCtxRepository.findByTopLevelAbie(top).get(0);
-    }
-
-    public List<BieList> getMetaHeaderBieList(User user) {
-        return getBieList(user, ASCCP.PROPERTY_TERM.eq("Meta Header"));
-    }
-
-    public List<BieList> getPaginationResponseBieList(User user) {
-        return getBieList(user, ASCCP.PROPERTY_TERM.eq("Pagination Response"));
     }
 
     @Transactional
