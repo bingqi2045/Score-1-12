@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class ContextSchemeService {
     private SelectOnConditionStep<Record13<
             ULong, String, String, ULong, String,
             ULong, String, String, String, String,
-            String, Timestamp, String>> getSelectOnConditionStep() {
+            String, LocalDateTime, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
@@ -62,7 +63,7 @@ public class ContextSchemeService {
         SelectOnConditionStep<Record13<
                 ULong, String, String, ULong, String,
                 ULong, String, String, String, String,
-                String, Timestamp, String>> step = getSelectOnConditionStep();
+                String, LocalDateTime, String>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
@@ -72,16 +73,16 @@ public class ContextSchemeService {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(CTX_SCHEME.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         SelectConnectByStep<Record13<
                 ULong, String, String, ULong, String,
                 ULong, String, String, String, String,
-                String, Timestamp, String>> conditionStep = step.where(conditions);
+                String, LocalDateTime, String>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -118,7 +119,7 @@ public class ContextSchemeService {
         SelectWithTiesAfterOffsetStep<Record13<
                 ULong, String, String, ULong, String,
                 ULong, String, String, String, String,
-                String, Timestamp, String>> offsetStep = null;
+                String, LocalDateTime, String>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -267,7 +268,7 @@ public class ContextSchemeService {
         }
 
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         ULong ctxSchemeId = dslContext.insertInto(CTX_SCHEME,
                 CTX_SCHEME.GUID,
@@ -326,7 +327,7 @@ public class ContextSchemeService {
                 .set(CTX_SCHEME.SCHEME_VERSION_ID, contextScheme.getSchemeVersionId())
                 .set(CTX_SCHEME.DESCRIPTION, contextScheme.getDescription())
                 .set(CTX_SCHEME.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
-                .set(CTX_SCHEME.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .set(CTX_SCHEME.LAST_UPDATE_TIMESTAMP, LocalDateTime.now())
                 .where(CTX_SCHEME.CTX_SCHEME_ID.eq(ULong.valueOf(contextScheme.getCtxSchemeId())))
                 .execute();
 

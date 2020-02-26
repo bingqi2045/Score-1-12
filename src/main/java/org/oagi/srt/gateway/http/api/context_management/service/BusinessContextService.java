@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -105,7 +105,7 @@ public class BusinessContextService {
         }
 
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         long bizCtxId = dslContext.insertInto(BIZ_CTX,
                 BIZ_CTX.GUID,
                 BIZ_CTX.NAME,
@@ -116,7 +116,8 @@ public class BusinessContextService {
                 .values(
                         bizCtx.getGuid(),
                         bizCtx.getName(),
-                        userId, userId, timestamp, timestamp)
+                        userId, userId,
+                        timestamp, timestamp)
                 .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId().longValue();
 
         for (BusinessContextValue bizCtxValue : bizCtx.getBizCtxValues()) {
@@ -140,7 +141,7 @@ public class BusinessContextService {
         dslContext.update(BIZ_CTX)
                 .set(BIZ_CTX.NAME, bizCtx.getName())
                 .set(BIZ_CTX.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
-                .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, LocalDateTime.now())
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtx.getBizCtxId())))
                 .execute();
 

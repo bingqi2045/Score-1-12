@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -19,7 +20,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     private SelectOnConditionStep<Record21<
             ULong, String, Integer, Integer, Integer,
             ULong, ULong, String, String, String,
-            ULong, ULong, ULong, Timestamp, Timestamp,
+            ULong, ULong, ULong, LocalDateTime, LocalDateTime,
             Integer, Integer, Integer, Byte, ULong,
             Byte>> getSelectJoinStep() {
         return dslContext.select(

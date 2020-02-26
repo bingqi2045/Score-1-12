@@ -24,7 +24,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -162,7 +162,7 @@ public class ExtensionService {
     private AccRecord createACCForExtension(ACC eAcc, User user) {
         String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(Tables.ACC,
                 Tables.ACC.GUID,
@@ -208,7 +208,7 @@ public class ExtensionService {
 
     private AsccpRecord createASCCPForExtension(ACC eAcc, User user, AccRecord ueAcc) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(Tables.ASCCP,
                 Tables.ASCCP.GUID,
@@ -263,7 +263,7 @@ public class ExtensionService {
 
     private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, User user) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(Tables.ASCC,
                 Tables.ASCC.GUID,
@@ -384,7 +384,7 @@ public class ExtensionService {
 
         AccManifestRecord extensionAcc = getExtensionAcc(request.getManifestId());
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         List<CcAsccpNodeDetail.Ascc> asccList = request.getAsccpDetails().stream()
                 .map(asccpDetail -> asccpDetail.getAscc())
@@ -411,7 +411,7 @@ public class ExtensionService {
 
     private boolean updateAscc(AccManifestRecord extensionAcc,
                                CcAsccpNodeDetail.Ascc ascc,
-                               ULong userId, Timestamp timestamp) {
+                               ULong userId, LocalDateTime timestamp) {
 
         String guid = dslContext.select(ASCC.GUID).from(ASCC)
                 .where(ASCC.ASCC_ID.eq(ULong.valueOf(ascc.getAsccId())))
@@ -451,7 +451,7 @@ public class ExtensionService {
 
     private boolean updateBcc(AccManifestRecord extensionAcc,
                               CcBccpNodeDetail.Bcc bcc,
-                              ULong userId, Timestamp timestamp) {
+                              ULong userId, LocalDateTime timestamp) {
 
         String guid = dslContext.select(BCC.GUID).from(BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(bcc.getBccId())))
@@ -512,7 +512,7 @@ public class ExtensionService {
 
         ULong target = ULong.valueOf(targetAppUserId);
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         updateAsccOwnerUserId(accManifest, target, userId, timestamp);
         updateBccOwnerUserId(accManifest, target, userId, timestamp);
@@ -521,7 +521,7 @@ public class ExtensionService {
 
     private void updateAccOwnerUserId(AccManifestRecord accManifest,
                                       ULong targetAppUserId,
-                                      ULong userId, Timestamp timestamp) {
+                                      ULong userId, LocalDateTime timestamp) {
 
         AccRecord history = dslContext.selectFrom(Tables.ACC)
                 .where(ACC.ACC_ID.eq(accManifest.getAccId()))
@@ -545,7 +545,7 @@ public class ExtensionService {
 
     private void updateAsccOwnerUserId(AccManifestRecord accManifest,
                                        ULong targetAppUserId,
-                                       ULong userId, Timestamp timestamp) {
+                                       ULong userId, LocalDateTime timestamp) {
 
         Map<ULong, AsccManifestRecord> asccManifestRecordMap =
                 dslContext.select(ASCC_MANIFEST.fields()).from(ASCC_MANIFEST)
@@ -585,7 +585,7 @@ public class ExtensionService {
 
     private void updateBccOwnerUserId(AccManifestRecord accManifest,
                                       ULong targetAppUserId,
-                                      ULong userId, Timestamp timestamp) {
+                                      ULong userId, LocalDateTime timestamp) {
 
         Map<ULong, BccManifestRecord> bccManifestRecordMap =
                 dslContext.select(BCC_MANIFEST.fields()).from(BCC_MANIFEST)

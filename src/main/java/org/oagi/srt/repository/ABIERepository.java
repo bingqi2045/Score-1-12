@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,10 +21,10 @@ public class ABIERepository implements SrtRepository<ABIE> {
     private DSLContext dslContext;
 
     private SelectJoinStep<Record16<
-            ULong, ULong, ULong, ULong, Timestamp,
+            ULong, ULong, ULong, ULong, LocalDateTime,
             Integer, ULong, String, String, String,
             ULong, ULong, String, String, String,
-            Timestamp>> getSelectJoinStep() {
+            LocalDateTime>> getSelectJoinStep() {
         return dslContext.select(Tables.ABIE.ABIE_ID,
                 Tables.ABIE.BASED_ACC_MANIFEST_ID,
                 Tables.ABIE.BIZ_CTX_ID,

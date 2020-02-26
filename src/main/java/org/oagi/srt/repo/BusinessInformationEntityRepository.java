@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +33,7 @@ public class BusinessInformationEntityRepository {
         private ULong releaseId;
         private ULong userId;
         private BieState bieState = WIP;
-        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
         public InsertTopLevelAbieArguments setReleaseId(long releaseId) {
             return setReleaseId(ULong.valueOf(releaseId));
@@ -66,7 +67,7 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertTopLevelAbieArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp;
+            this.timestamp = timestamp.toLocalDateTime();
             return this;
         }
 
@@ -82,7 +83,7 @@ public class BusinessInformationEntityRepository {
             return userId;
         }
 
-        public Timestamp getTimestamp() {
+        public LocalDateTime getTimestamp() {
             return timestamp;
         }
 
@@ -113,7 +114,7 @@ public class BusinessInformationEntityRepository {
         private ULong userId;
         private ULong accManifestId;
         private ULong topLevelAbieId;
-        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
         public InsertAbieArguments setUserId(long userId) {
             return setUserId(ULong.valueOf(userId));
@@ -151,7 +152,7 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertAbieArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp;
+            this.timestamp = timestamp.toLocalDateTime();
             return this;
         }
 
@@ -167,7 +168,7 @@ public class BusinessInformationEntityRepository {
             return topLevelAbieId;
         }
 
-        public Timestamp getTimestamp() {
+        public LocalDateTime getTimestamp() {
             return timestamp;
         }
 
@@ -246,7 +247,7 @@ public class BusinessInformationEntityRepository {
         private ULong roleOfAbieId;
         private ULong topLevelAbieId;
         private ULong userId;
-        private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
         public InsertAsbiepArguments setAsccpManifestId(long asccpManifestId) {
             return setAsccpManifestId(ULong.valueOf(asccpManifestId));
@@ -293,7 +294,7 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertAsbiepArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp;
+            this.timestamp = timestamp.toLocalDateTime();
             return this;
         }
 
@@ -313,7 +314,7 @@ public class BusinessInformationEntityRepository {
             return userId;
         }
 
-        public Timestamp getTimestamp() {
+        public LocalDateTime getTimestamp() {
             return timestamp;
         }
 
@@ -430,12 +431,12 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setUpdateDate(Date from, Date to) {
             return setUpdateDate(
-                    (from != null) ? new Timestamp(from.getTime()) : null,
-                    (to != null) ? new Timestamp(to.getTime()) : null
+                    (from != null) ? new Timestamp(from.getTime()).toLocalDateTime() : null,
+                    (to != null) ? new Timestamp(to.getTime()).toLocalDateTime() : null
             );
         }
 
-        public SelectBieListArguments setUpdateDate(Timestamp from, Timestamp to) {
+        public SelectBieListArguments setUpdateDate(LocalDateTime from, LocalDateTime to) {
             if (from != null) {
                 conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(from));
             }
@@ -542,7 +543,7 @@ public class BusinessInformationEntityRepository {
     private SelectOnConditionStep<Record11<
             ULong, String, String, String,
             ULong, String, String, String,
-            Timestamp, String, Integer>> getSelectOnConditionStep() {
+            LocalDateTime, String, Integer>> getSelectOnConditionStep() {
         return dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 ABIE.GUID,
@@ -570,12 +571,12 @@ public class BusinessInformationEntityRepository {
         SelectOnConditionStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                Timestamp, String, Integer>> step = getSelectOnConditionStep();
+                LocalDateTime, String, Integer>> step = getSelectOnConditionStep();
 
         SelectConnectByStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                Timestamp, String, Integer>> conditionStep = step.where(arguments.getConditions());
+                LocalDateTime, String, Integer>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
@@ -583,7 +584,7 @@ public class BusinessInformationEntityRepository {
         SelectWithTiesAfterOffsetStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                Timestamp, String, Integer>> offsetStep = null;
+                LocalDateTime, String, Integer>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)

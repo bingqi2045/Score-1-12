@@ -1,6 +1,9 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
-import org.oagi.srt.gateway.http.api.cc_management.data.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcActionRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcNode;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.springframework.beans.factory.annotation.Autowired;

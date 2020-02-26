@@ -35,8 +35,8 @@
         <commons-io.version>2.6</commons-io.version>
         <commons-lang.version>3.9</commons-lang.version>
         <grpc.version>1.27.1</grpc.version>
-        <grpc.configuration.skip>false</grpc.configuration.skip>
-        <jOOQ.version>3.12.4</jOOQ.version>
+        <grpc.configuration.skip>true</grpc.configuration.skip>
+        <jOOQ.version>3.13.1</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 

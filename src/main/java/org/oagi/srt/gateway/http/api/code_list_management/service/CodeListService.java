@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class CodeListService {
 
     private SelectOnConditionStep<Record13<
             ULong, String, String, ULong, String,
-            String, ULong, String, String, Timestamp,
+            String, ULong, String, String, LocalDateTime,
             String, Byte, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.CODE_LIST.CODE_LIST_ID,
@@ -65,10 +66,9 @@ public class CodeListService {
     }
 
     public PageResponse<CodeListForList> getCodeLists(CodeListForListRequest request) {
-
         SelectOnConditionStep<Record13<
                 ULong, String, String, ULong, String,
-                String, ULong, String, String, Timestamp,
+                String, ULong, String, String, LocalDateTime,
                 String, Byte, String>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
@@ -85,15 +85,15 @@ public class CodeListService {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(Tables.CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         SelectConnectByStep<Record13<
                 ULong, String, String, ULong, String,
-                String, ULong, String, String, Timestamp,
+                String, ULong, String, String, LocalDateTime,
                 String, Byte, String>> conditionStep = step;
         if (!conditions.isEmpty()) {
             conditionStep = step.where(conditions);
@@ -124,7 +124,7 @@ public class CodeListService {
 
         SelectWithTiesAfterOffsetStep<Record13<
                 ULong, String, String, ULong, String,
-                String, ULong, String, String, Timestamp,
+                String, ULong, String, String, LocalDateTime,
                 String, Byte, String>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
@@ -204,7 +204,7 @@ public class CodeListService {
     @Transactional
     public void insert(User user, CodeList codeList) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         ULong codeListId = dslContext.insertInto(CODE_LIST,
                 CODE_LIST.GUID,
@@ -290,7 +290,7 @@ public class CodeListService {
                 .set(CODE_LIST.DEFINITION_SOURCE, codeList.getDefinitionSource())
                 .set(CODE_LIST.EXTENSIBLE_INDICATOR, (byte) ((codeList.isExtensible()) ? 1 : 0))
                 .set(CODE_LIST.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
-                .set(CODE_LIST.LAST_UPDATE_TIMESTAMP, new Timestamp(System.currentTimeMillis()))
+                .set(CODE_LIST.LAST_UPDATE_TIMESTAMP, LocalDateTime.now())
                 .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(codeList.getCodeListId())))
                 .execute();
 

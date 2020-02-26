@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -407,7 +407,7 @@ public class BieRepository {
 
     public AsbiepRecord createAsbiep(User user, long asccpManifestId, long abieId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(ASBIEP)
                 .set(ASBIEP.GUID, SrtGuid.randomGuid())
@@ -426,7 +426,7 @@ public class BieRepository {
                                    int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         Record2<Integer, Integer> cardinality = dslContext.select(
                 ASCC.CARDINALITY_MIN,
@@ -464,7 +464,7 @@ public class BieRepository {
 
     public BbiepRecord createBbiep(User user, long basedBccpManifestId, long topLevelAbieId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(BBIEP)
                 .set(BBIEP.GUID, SrtGuid.randomGuid())
@@ -483,7 +483,7 @@ public class BieRepository {
                                  int seqKey, long topLevelAbieId) {
 
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         BccRecord bccRecord = dslContext.select(
                 BCC.TO_BCCP_ID,

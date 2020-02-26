@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.ACC;
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 
 @Service
 @Transactional(readOnly = true)
@@ -150,7 +151,7 @@ public class CcListService {
 
         ULong target = ULong.valueOf(targetAppUserId);
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         switch (type) {
             case "ACC":

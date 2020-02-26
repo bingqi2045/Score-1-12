@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -68,12 +69,12 @@ public class BusinessContextRepository {
 
         public SelectBusinessContextArguments setUpdateDate(Date from, Date to) {
             return setUpdateDate(
-                    (from != null) ? new Timestamp(from.getTime()) : null,
-                    (to != null) ? new Timestamp(to.getTime()) : null
+                    (from != null) ? new Timestamp(from.getTime()).toLocalDateTime() : null,
+                    (to != null) ? new Timestamp(to.getTime()).toLocalDateTime() : null
             );
         }
 
-        public SelectBusinessContextArguments setUpdateDate(Timestamp from, Timestamp to) {
+        public SelectBusinessContextArguments setUpdateDate(LocalDateTime from, LocalDateTime to) {
             if (from != null) {
                 conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.greaterOrEqual(from));
             }
@@ -155,7 +156,7 @@ public class BusinessContextRepository {
     }
 
     private SelectOnConditionStep
-            <Record6<ULong, String, String, Timestamp, String, Timestamp>>
+            <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>>
     getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
@@ -170,16 +171,16 @@ public class BusinessContextRepository {
 
     private <E> PaginationResponse<E> selectBusinessContexts(SelectBusinessContextArguments arguments, Class<? extends E> type) {
         SelectOnConditionStep
-                <Record6<ULong, String, String, Timestamp, String, Timestamp>> step = getSelectOnConditionStepForBusinessContext();
+                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStepForBusinessContext();
 
         SelectConnectByStep
-                <Record6<ULong, String, String, Timestamp, String, Timestamp>> conditionStep = step.where(arguments.getConditions());
+                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
         SortField sortField = arguments.getSortField();
         SelectWithTiesAfterOffsetStep
-                <Record6<ULong, String, String, Timestamp, String, Timestamp>> offsetStep = null;
+                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
 
     private SelectJoinStep<Record7<
             ULong, String, String, ULong,
-            ULong, Timestamp, Timestamp>> getSelectBizCtx() {
+            ULong, LocalDateTime, LocalDateTime>> getSelectBizCtx() {
         return dslContext.select(
                 Tables.BIZ_CTX.BIZ_CTX_ID,
                 Tables.BIZ_CTX.GUID,

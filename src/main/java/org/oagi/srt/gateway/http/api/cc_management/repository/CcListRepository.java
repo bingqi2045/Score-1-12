@@ -19,13 +19,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.DTType.BDT;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
@@ -84,10 +82,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
         if (request.getComponentTypes() != null && !request.getComponentTypes().isEmpty()) {
             conditions.add(ACC.OAGIS_COMPONENT_TYPE.in(Arrays.asList(request.getComponentTypes().split(","))));
@@ -135,7 +133,7 @@ public class CcListRepository {
                     ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
                     ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
                     ccList.setDeprecated(row.getValue(ACC.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(ACC.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ACC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ACC.REVISION_NUM) + "." + row.getValue(ACC.REVISION_TRACKING_NUM));
@@ -180,10 +178,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(ASCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         return dslContext.select(
@@ -220,7 +218,7 @@ public class CcListRepository {
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION_SOURCE)));
                     ccList.setState(CcState.valueOf(row.getValue(ASCC.STATE)));
                     ccList.setDeprecated(row.getValue(ASCC.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ASCC.REVISION_NUM) + "." + row.getValue(ASCC.REVISION_TRACKING_NUM));
@@ -265,10 +263,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(BCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(BCC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         return dslContext.select(
@@ -305,7 +303,7 @@ public class CcListRepository {
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION_SOURCE)));
                     ccList.setState(CcState.valueOf(row.getValue(BCC.STATE)));
                     ccList.setDeprecated(row.getValue(BCC.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(BCC.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(BCC.REVISION_NUM) + "." + row.getValue(BCC.REVISION_TRACKING_NUM));
@@ -353,10 +351,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         return dslContext.select(
@@ -397,7 +395,7 @@ public class CcListRepository {
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(ASCCP.REVISION_NUM) + "." + row.getValue(ASCCP.REVISION_TRACKING_NUM));
@@ -444,10 +442,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         return dslContext.select(
@@ -488,7 +486,7 @@ public class CcListRepository {
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
                     ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(BCCP.REVISION_NUM) + "." + row.getValue(BCCP.REVISION_TRACKING_NUM));
@@ -532,10 +530,10 @@ public class CcListRepository {
             conditions.add(DSL.lower(DT.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(DT.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         return dslContext.select(
@@ -581,7 +579,7 @@ public class CcListRepository {
                     ccList.setModule(row.getValue(MODULE.MODULE_));
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(row.getValue(DT.LAST_UPDATE_TIMESTAMP));
+                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(DT.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     ccList.setRevision(row.getValue(DT.REVISION_NUM) + "." + row.getValue(DT.REVISION_TRACKING_NUM));
@@ -606,7 +604,7 @@ public class CcListRepository {
     }
 
     public ULong updateAccOwnerUserId(AccManifestRecord accManifest,
-                                      ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
+                                      ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
         AccRecord acc = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifest.getAccId()))
                 .fetchOne();
@@ -626,7 +624,7 @@ public class CcListRepository {
     }
 
     public void updateAsccOwnerUserId(ULong accManifestId, ULong accId, ULong ownerUserId, ULong requesterUserId,
-                                      Timestamp timestamp) {
+                                      LocalDateTime timestamp) {
         List<AsccManifestRecord> asccManifestRecords =
                 manifestRepository.getAsccManifestByFromAccManifestId(accManifestId);
 
@@ -651,7 +649,7 @@ public class CcListRepository {
     }
 
     public void updateBccOwnerUserId(ULong accManifestId, ULong accId, ULong ownerUserId, ULong requesterUserId,
-                                     Timestamp timestamp) {
+                                     LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords =
                 manifestRepository.getBccManifestByFromAccManifestId(accManifestId);
 
@@ -676,7 +674,7 @@ public class CcListRepository {
     }
 
     public void updateAsccpOwnerUserId(AsccpManifestRecord asccpManifest,
-                                       ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
+                                       ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
         List<AsccManifestRecord> asccManifestRecords = manifestRepository.getAsccManifestByToAsccpManifestId(
                 asccpManifest.getAsccpManifestId());
 
@@ -711,7 +709,7 @@ public class CcListRepository {
     }
 
     public void updateBccpOwnerUserId(BccpManifestRecord bccpManifest,
-                                      ULong ownerUserId, ULong requesterUserId, Timestamp timestamp) {
+                                      ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords = manifestRepository.getBccManifestByToBccpId(
                 bccpManifest.getBccpId(), bccpManifest.getReleaseId());
 

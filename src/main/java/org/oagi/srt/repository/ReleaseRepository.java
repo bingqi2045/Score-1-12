@@ -57,9 +57,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .set(Tables.RELEASE.RELEASE_NUM, releaseNum)
                 .set(Tables.RELEASE.RELEASE_NOTE, releaseNote)
                 .set(Tables.RELEASE.CREATED_BY, ULong.valueOf(userId))
-                .set(Tables.RELEASE.CREATION_TIMESTAMP, timestamp)
+                .set(Tables.RELEASE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                 .set(Tables.RELEASE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .set(Tables.RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .set(Tables.RELEASE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                 .set(Tables.RELEASE.STATE, ReleaseState.Draft.getValue())
                 .set(Tables.RELEASE.NAMESPACE_ID, ULong.valueOf(namespaceId)).returning().fetchOne();
     }

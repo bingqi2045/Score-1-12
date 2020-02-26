@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -69,7 +69,7 @@ public class NamespaceService {
     @Transactional
     public void create(User user, Namespace namespace) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.insertInto(Tables.NAMESPACE,
                 Tables.NAMESPACE.URI,
@@ -88,7 +88,7 @@ public class NamespaceService {
     @Transactional
     public void update(User user, Namespace namespace) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         int res = dslContext.update(Tables.NAMESPACE)
                 .set(Tables.NAMESPACE.URI, namespace.getUri())

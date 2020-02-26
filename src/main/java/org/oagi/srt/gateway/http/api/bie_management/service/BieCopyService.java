@@ -507,8 +507,8 @@ public class BieCopyService implements InitializingBean {
                     .set(ABIE.DEFINITION, abie.getDefinition())
                     .set(ABIE.CREATED_BY, ULong.valueOf(userId))
                     .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(ABIE.CREATION_TIMESTAMP, timestamp)
-                    .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .set(ABIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ABIE.STATE, BieState.Initiating.getValue())
                     .set(ABIE.CLIENT_ID, (abie.getClientId() != null) ? ULong.valueOf(abie.getClientId()) : null)
                     .set(ABIE.VERSION, abie.getVersion())
@@ -530,8 +530,8 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIEP.BIZ_TERM, asbiep.getBizTerm())
                     .set(ASBIEP.CREATED_BY, ULong.valueOf(userId))
                     .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
-                    .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .set(ASBIEP.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).longValue();
         }
@@ -546,8 +546,8 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIEP.BIZ_TERM, bbiep.getBizTerm())
                     .set(BBIEP.CREATED_BY, ULong.valueOf(userId))
                     .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(BBIEP.CREATION_TIMESTAMP, timestamp)
-                    .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .set(BBIEP.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning(BBIEP.BBIEP_ID).fetchOne().getValue(BBIEP.BBIEP_ID).longValue();
         }
@@ -568,8 +568,8 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(asbie.getSeqKey()))
                     .set(ASBIE.CREATED_BY, ULong.valueOf(userId))
                     .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(ASBIE.CREATION_TIMESTAMP, timestamp)
-                    .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .set(ASBIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning(ASBIE.ASBIE_ID).fetchOne().getValue(ASBIE.ASBIE_ID).longValue();
         }
@@ -596,8 +596,8 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE.IS_USED, (byte) ((bbie.isUsed()) ? 1 : 0))
                     .set(BBIE.CREATED_BY, ULong.valueOf(userId))
                     .set(BBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                    .set(BBIE.CREATION_TIMESTAMP, timestamp)
-                    .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .set(BBIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
                     .returning(BBIE.BBIE_ID).fetchOne().getValue(BBIE.BBIE_ID).longValue();
         }

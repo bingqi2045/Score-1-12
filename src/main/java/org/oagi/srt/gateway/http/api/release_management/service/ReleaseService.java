@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,7 +79,7 @@ public class ReleaseService {
 
     private SelectOnConditionStep<Record6<
             ULong, String, Integer, String, String,
-            Timestamp>> getSelectOnConditionStep() {
+            LocalDateTime>> getSelectOnConditionStep() {
         return dslContext.select(
                 RELEASE.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
@@ -94,7 +95,7 @@ public class ReleaseService {
     public PageResponse<ReleaseList> getReleases(User user, ReleaseListRequest request) {
         SelectOnConditionStep<Record6<
                 ULong, String, Integer, String, String,
-                Timestamp>> step = getSelectOnConditionStep();
+                LocalDateTime>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getReleaseNum())) {
@@ -113,15 +114,15 @@ public class ReleaseService {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         SelectConnectByStep<Record6<
                 ULong, String, Integer, String, String,
-                Timestamp>> conditionStep = step.where(conditions);
+                LocalDateTime>> conditionStep = step.where(conditions);
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
@@ -147,7 +148,7 @@ public class ReleaseService {
         int pageCount = dslContext.fetchCount(conditionStep);
         SelectWithTiesAfterOffsetStep<Record6<
                 ULong, String, Integer, String, String,
-                Timestamp>> offsetStep = null;
+                LocalDateTime>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());

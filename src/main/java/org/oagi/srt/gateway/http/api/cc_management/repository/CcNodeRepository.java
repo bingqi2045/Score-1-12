@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,7 +140,7 @@ public class CcNodeRepository {
 
         // ULong releaseID = ULong.valueOf(releaseId);
         ULong userId = ULong.valueOf(sessionService.userId(user));
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.insertInto(ASCC,
                 ASCC.GUID,
@@ -190,7 +190,7 @@ public class CcNodeRepository {
      */
     public long createAcc(long requesterId, long releaseId) {
         ULong userId = ULong.valueOf(requesterId);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         AccRecord accRecord = new AccRecord();
         accRecord.setGuid(SrtGuid.randomGuid());
@@ -235,7 +235,7 @@ public class CcNodeRepository {
                 .fetchOneInto(String.class);
 
         ULong userId = ULong.valueOf(requesterId);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         AsccpRecord asccpRecord = new AsccpRecord();
         asccpRecord.setGuid(SrtGuid.randomGuid());
@@ -284,7 +284,7 @@ public class CcNodeRepository {
                 .fetchOneInto(String.class);
 
         ULong userId = ULong.valueOf(requesterId);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         BccpRecord bccpRecord = new BccpRecord();
         bccpRecord.setGuid(SrtGuid.randomGuid());
@@ -323,7 +323,7 @@ public class CcNodeRepository {
 
     public CcAccNodeDetail updateAcc(User user, CcAccNodeDetail accNodeDetail) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accNodeDetail.getManifestId()))).fetchOne();
@@ -356,7 +356,7 @@ public class CcNodeRepository {
     }
 
     private void updateAccChain(long userId, ULong accManifestId, ULong accId, String objectClassTerm,
-                                Timestamp timestamp) {
+                                LocalDateTime timestamp) {
         updateAsccByFromAcc(userId, accManifestId, accId, objectClassTerm, timestamp);
         updateBccByFromAcc(userId, accManifestId, accId, objectClassTerm, timestamp);
         updateAsccpByRoleOfAcc(userId, accManifestId, accId, objectClassTerm, timestamp);
@@ -364,7 +364,7 @@ public class CcNodeRepository {
     }
 
     public void updateAsccpByRoleOfAcc(long userId, ULong roleOfAccManifestId, ULong roleOfAccId,
-                                       String accObjectClassTerm, Timestamp timestamp) {
+                                       String accObjectClassTerm, LocalDateTime timestamp) {
         List<AsccpManifestRecord> asccpManifestRecords =
                 manifestRepository.getAsccpManifestByRoleOfAccManifestId(roleOfAccManifestId);
 
@@ -408,7 +408,7 @@ public class CcNodeRepository {
         }
     }
 
-    public void updateAccByBasedAcc(long userId, ULong basedAccManifestId, ULong basedAccId, Timestamp timestamp) {
+    public void updateAccByBasedAcc(long userId, ULong basedAccManifestId, ULong basedAccId, LocalDateTime timestamp) {
         List<AccManifestRecord> accManifestRecords =
                 manifestRepository.getAccManifestByBasedAccManifestId(basedAccManifestId);
 
@@ -433,7 +433,7 @@ public class CcNodeRepository {
 
     public long updateAscc(User user, CcAsccpNodeDetail.Ascc asccNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         boolean isChanged = false;
 
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -484,7 +484,7 @@ public class CcNodeRepository {
 
     public CcAsccpNode updateAsccp(User user, CcAsccpNodeDetail.Asccp asccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         boolean isChanged = false;
 
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -548,7 +548,7 @@ public class CcNodeRepository {
 
     public long updateBcc(User user, CcBccpNodeDetail.Bcc bccNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         boolean isChanged = false;
 
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -623,7 +623,7 @@ public class CcNodeRepository {
 
     public CcBccpNode updateBccp(User user, CcBccpNodeDetail.Bccp bccpNodeDetail, long manifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         boolean isChanged = false;
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
@@ -1420,7 +1420,7 @@ public class CcNodeRepository {
     }
 
     public CcNode updateAsccpRoleOfAcc(User user, ULong asccpManifestId, ULong accManifestId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         long userId = sessionService.userId(user);
 
         AsccpManifestRecord asccpManifestRecord = manifestRepository.getAsccpManifestById(asccpManifestId);
@@ -1450,7 +1450,7 @@ public class CcNodeRepository {
     }
 
     public CcNode updateBccpBdt(User user, long bccpManifestId, long bdtManifestId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         long bdtId = dslContext.select(DT_MANIFEST.DT_ID).from(DT_MANIFEST)
@@ -1489,7 +1489,7 @@ public class CcNodeRepository {
     }
 
     public CcAccNode updateAccState(User user, ULong accManifestId, CcState ccState) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
@@ -1593,7 +1593,7 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode updateAsccpState(User user, long asccpManifestId, CcState ccState) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AsccpManifestRecord asccpManifestRecord =
@@ -1648,7 +1648,7 @@ public class CcNodeRepository {
     }
 
     public CcBccpNode updateBccpState(User user, long bccpManifestId, CcState ccState) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         BccpManifestRecord bccpManifestRecord =
@@ -1699,7 +1699,7 @@ public class CcNodeRepository {
     }
 
     public CcAccNode makeNewRevisionForAcc(User user, ULong accManifestId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
@@ -1734,7 +1734,7 @@ public class CcNodeRepository {
 
     private List<AsccManifestRecord> makeNewRevisionForAscc(AccManifestRecord accManifestRecord,
                                                             AccRecord accRecord,
-                                                            ULong userId, Timestamp timestamp, ULong workingReleaseId) {
+                                                            ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
         List<AsccManifestRecord> asccManifestRecords =
                 dslContext.selectFrom(ASCC_MANIFEST)
                         .where(and(
@@ -1787,8 +1787,8 @@ public class CcNodeRepository {
     }
 
     private List<BccManifestRecord> makeNewRevisionForBcc(AccManifestRecord accManifestRecord,
-                                                                 AccRecord accRecord,
-                                                                 ULong userId, Timestamp timestamp, ULong workingReleaseId) {
+                                                          AccRecord accRecord,
+                                                          ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
         List<BccManifestRecord> bccManifestRecords =
                 dslContext.selectFrom(BCC_MANIFEST)
                         .where(and(
@@ -1841,7 +1841,7 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode makeNewRevisionForAsccp(User user, ULong asccpManifestId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AsccpManifestRecord asccpManifestRecord = manifestRepository.getAsccpManifestById(asccpManifestId);
@@ -1887,7 +1887,7 @@ public class CcNodeRepository {
     }
 
     public CcBccpNode makeNewRevisionForBccp(User user, ULong bccpManifestId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         BccpManifestRecord bccpManifestRecord =
@@ -1935,7 +1935,7 @@ public class CcNodeRepository {
 
     public void appendAsccp(User user, ULong accManifestId, ULong asccpManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         AccManifestRecord accManifest = manifestRepository.getAccManifestById(accManifestId);
         AsccpManifestRecord asccpManifestRecord =
@@ -1981,7 +1981,7 @@ public class CcNodeRepository {
 
     public void appendBccp(User user, ULong accManifestId, ULong bccpManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         AccManifestRecord accManifest = manifestRepository.getAccManifestById(accManifestId);
 
@@ -2119,7 +2119,7 @@ public class CcNodeRepository {
 
     public CcAccNode discardAccBasedId(User user, ULong accManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifest = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifest.getAccManifestId());
 
@@ -2143,7 +2143,7 @@ public class CcNodeRepository {
 
     public CcAccNode updateAccBasedId(User user, ULong accManifestId, ULong basedAccManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord basedAccManifestRecord = manifestRepository.getAccManifestById(basedAccManifestId);
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
@@ -2202,7 +2202,7 @@ public class CcNodeRepository {
     }
 
     private void updateAsccByFromAcc(long userId, ULong accManifestId, ULong accId, String accObjectClassTerm,
-                                     Timestamp timestamp) {
+                                     LocalDateTime timestamp) {
         List<AsccManifestRecord> asccManifestRecords = dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
                 .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
@@ -2227,7 +2227,7 @@ public class CcNodeRepository {
     }
 
     private void updateBccByFromAcc(long userId, ULong accManifestId, ULong accId, String accObjectClassTerm,
-                                    Timestamp timestamp) {
+                                    LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords = dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
@@ -2252,7 +2252,7 @@ public class CcNodeRepository {
 
     public void updateAsccByToAsccp(long userId, long originAsccpId,
                                     long newAsccpId, ULong releaseId,
-                                     String propertyTerm, Timestamp timestamp) {
+                                    String propertyTerm, LocalDateTime timestamp) {
         List<AsccManifestRecord> asccManifestRecords = dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
                 .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
@@ -2281,7 +2281,7 @@ public class CcNodeRepository {
 
     private void updateBccByToBccp(long userId, long originBccpId,
                                    long newBccpId, ULong releaseId,
-                                   String propertyTerm, Timestamp timestamp) {
+                                   String propertyTerm, LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords = dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
                 .join(BCCP_MANIFEST).on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
@@ -2308,7 +2308,7 @@ public class CcNodeRepository {
         }
     }
 
-    private void updateAsccState(long userId, ULong accManifestId, ULong accId, CcState state, Timestamp timestamp) {
+    private void updateAsccState(long userId, ULong accManifestId, ULong accId, CcState state, LocalDateTime timestamp) {
         List<AsccManifestRecord> asccManifestRecords = dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
@@ -2330,7 +2330,7 @@ public class CcNodeRepository {
         }
     }
 
-    private void updateBccState(long userId, ULong accManifestId, ULong accId, CcState state, Timestamp timestamp) {
+    private void updateBccState(long userId, ULong accManifestId, ULong accId, CcState state, LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords = dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
@@ -2354,7 +2354,7 @@ public class CcNodeRepository {
 
     public void discardAsccById(User user, long asccManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         AsccManifestRecord asccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST).where(
                 ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId))).fetchOne();
 
@@ -2375,7 +2375,7 @@ public class CcNodeRepository {
 
     public void discardBccById(User user, long bccManifestId) {
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         BccManifestRecord bccManifestRecord = dslContext.selectFrom(BCC_MANIFEST).where(
                 BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId))).fetchOne();
 
@@ -2421,7 +2421,7 @@ public class CcNodeRepository {
         return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
-    private void decreaseSeqKeyGreaterThan(long userId, ULong accManifestId, int seqKey, Timestamp timestamp) {
+    private void decreaseSeqKeyGreaterThan(long userId, ULong accManifestId, int seqKey, LocalDateTime timestamp) {
         if (seqKey == 0) {
             return;
         }

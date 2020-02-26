@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.XBT;
@@ -20,8 +21,8 @@ public class XbtRepository implements SrtRepository<Xbt> {
 
     private SelectOnConditionStep<Record20<
             ULong, ULong, ULong, ULong, String,
-            ULong, ULong, ULong, String, Timestamp,
-            Byte, String, String, Timestamp, Byte,
+            ULong, ULong, ULong, String, LocalDateTime,
+            Byte, String, String, LocalDateTime, Byte,
             String, Integer, Integer, String, Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
                 XBT.LAST_UPDATED_BY, XBT_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,

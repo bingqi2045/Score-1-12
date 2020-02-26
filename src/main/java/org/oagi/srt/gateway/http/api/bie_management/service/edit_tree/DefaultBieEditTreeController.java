@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -1076,7 +1076,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private void updateDetail(BieEditAbieNodeDetail abieNodeDetail) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
         dslContext.update(Tables.ABIE)
                 .set(Tables.ABIE.VERSION, emptyToNull(abieNodeDetail.getVersion()))
                 .set(Tables.ABIE.STATUS, emptyToNull(abieNodeDetail.getStatus()))
@@ -1113,7 +1113,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.update(Tables.ASBIE)
                 .set(Tables.ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed() ? 1 : 0))
@@ -1198,7 +1198,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .where(Tables.BBIE.BBIE_ID.eq(ULong.valueOf(bbiepNodeDetail.getBbieId()))).execute();
 
         long userId = sessionService.userId(user);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.update(Tables.BBIEP)
                 .set(Tables.BBIEP.BIZ_TERM, emptyToNull(bbiepNodeDetail.getBizTerm()))
