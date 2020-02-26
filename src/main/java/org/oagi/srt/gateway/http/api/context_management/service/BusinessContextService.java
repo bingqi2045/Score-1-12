@@ -70,31 +70,19 @@ public class BusinessContextService {
         return repository.findBusinessContextByBizCtxId(bizCtxId);
     }
 
-    public List<BusinessContext> getBusinessContexts(List<Long> bizCtxIds) {
-        return repository.findBusinessContextsByBizCtxIdIn(bizCtxIds);
-    }
-
     public List<BusinessContextValue> getBusinessContextValues() {
         return repository.findBusinessContextValues();
     }
 
     public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
-        return dslContext.select(
-                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
-                CTX_SCHEME_VALUE.VALUE,
-                CTX_SCHEME_VALUE.MEANING
-        ).from(CTX_SCHEME_VALUE)
-                .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
+        return repository.selectContextSchemeValues()
+                .setContextSchemeId(ctxSchemeId)
                 .fetchInto(SimpleContextSchemeValue.class);
     }
 
-    public List<BusinessContextValue> getBusinessContextValuesByBusinessCtxId(long businessCtxID) {
-        return dslContext.select(
-                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
-                BIZ_CTX_VALUE.BIZ_CTX_ID,
-                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID
-        ).from(BIZ_CTX_VALUE)
-                .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(businessCtxID)))
+    public List<BusinessContextValue> getBusinessContextValuesByBusinessCtxId(long businessContextId) {
+        return repository.selectBusinessContextValues()
+                .setBusinessContextId(businessContextId)
                 .fetchInto(BusinessContextValue.class);
     }
 
@@ -106,34 +94,19 @@ public class BusinessContextService {
 
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
-        long bizCtxId = dslContext.insertInto(BIZ_CTX,
-                BIZ_CTX.GUID,
-                BIZ_CTX.NAME,
-                BIZ_CTX.CREATED_BY,
-                BIZ_CTX.LAST_UPDATED_BY,
-                BIZ_CTX.CREATION_TIMESTAMP,
-                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
-                .values(
-                        bizCtx.getGuid(),
-                        bizCtx.getName(),
-                        userId, userId,
-                        timestamp, timestamp)
-                .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId().longValue();
+
+        ULong businessContextId = repository.insertBusinessContext()
+                .setName(bizCtx.getName())
+                .setUserId(userId)
+                .setTimestamp(timestamp)
+                .execute();
 
         for (BusinessContextValue bizCtxValue : bizCtx.getBizCtxValues()) {
-            insert(bizCtxId, bizCtxValue);
+            repository.insertBusinessContextValue()
+                    .setBusinessContextId(businessContextId)
+                    .setContextSchemeValueId(bizCtxValue.getCtxSchemeValueId())
+                    .execute();
         }
-    }
-
-    @Transactional
-    public void insert(long bizCtxId, BusinessContextValue bizCtxValue) {
-        dslContext.insertInto(BIZ_CTX_VALUE,
-                BIZ_CTX_VALUE.BIZ_CTX_ID,
-                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID)
-                .values(
-                        ULong.valueOf(bizCtxId),
-                        ULong.valueOf(bizCtxValue.getCtxSchemeValueId()))
-                .execute();
     }
 
     @Transactional
@@ -171,7 +144,11 @@ public class BusinessContextService {
         for (BusinessContextValue bizCtxValue : bizCtxValues.stream()
                 .filter(e -> e.getBizCtxValueId() == 0L)
                 .collect(Collectors.toList())) {
-            insert(bizCtxId, bizCtxValue);
+
+            repository.insertBusinessContextValue()
+                    .setBusinessContextId(bizCtxId)
+                    .setContextSchemeValueId(bizCtxValue.getCtxSchemeValueId())
+                    .execute();
         }
     }
 

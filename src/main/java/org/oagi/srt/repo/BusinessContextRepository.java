@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class BusinessContextRepository {
     public BusinessContextRepository(@Autowired DSLContext dslContext) {
         this.dslContext = dslContext;
     }
-    
+
     public class SelectBusinessContextArguments {
 
         private ULong topLevelAbieId;
@@ -156,8 +157,7 @@ public class BusinessContextRepository {
     }
 
     private SelectOnConditionStep
-            <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>>
-    getSelectOnConditionStepForBusinessContext() {
+            <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
@@ -195,7 +195,7 @@ public class BusinessContextRepository {
 
         return new PaginationResponse<>(pageCount,
                 (offsetStep != null) ?
-                        offsetStep.fetchInto(type) : conditionStep.fetchInto(type));        
+                        offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
     }
 
     public BusinessContext findBusinessContextByBizCtxId(long bizCtxId) {
@@ -237,8 +237,7 @@ public class BusinessContextRepository {
     }
 
     private SelectOnConditionStep
-            <Record8<ULong, ULong, ULong, String, ULong, String, ULong, String>>
-    getSelectOnConditionStepForBusinessContextValue() {
+            <Record8<ULong, ULong, ULong, String, ULong, String, ULong, String>> getSelectOnConditionStepForBusinessContextValue() {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
                 BIZ_CTX_VALUE.BIZ_CTX_ID,
@@ -254,17 +253,6 @@ public class BusinessContextRepository {
                 .join(CTX_CATEGORY).on(CTX_SCHEME.CTX_CATEGORY_ID.equal(CTX_CATEGORY.CTX_CATEGORY_ID));
     }
 
-    public List<Long> findBizCtxIdsByTopLevelAbieId(Long topLevelAbieId) {
-        if (topLevelAbieId == null || topLevelAbieId <= 0L) {
-            return Collections.emptyList();
-        }
-
-        return dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
-                .from(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .fetchInto(Long.class);
-    }
-
     public List<BusinessContextValue> findBusinessContextValues() {
         return getSelectOnConditionStepForBusinessContextValue()
                 .fetchInto(BusinessContextValue.class);
@@ -277,5 +265,212 @@ public class BusinessContextRepository {
         return getSelectOnConditionStepForBusinessContextValue()
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchInto(BusinessContextValue.class);
+    }
+
+    public class SelectContextSchemeValueArguments {
+
+        private List<Condition> conditions = new ArrayList();
+
+        public SelectContextSchemeValueArguments setContextSchemeId(long contextSchemeId) {
+            return setContextSchemeId(ULong.valueOf(contextSchemeId));
+        }
+
+        public SelectContextSchemeValueArguments setContextSchemeId(ULong contextSchemeId) {
+            conditions.add(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(contextSchemeId));
+            return this;
+        }
+
+        public List<Condition> getConditions() {
+            return conditions;
+        }
+
+        public <E> List<E> fetchInto(Class<E> type) {
+            return selectContextSchemeValues(this, type);
+        }
+    }
+
+    public SelectContextSchemeValueArguments selectContextSchemeValues() {
+        return new SelectContextSchemeValueArguments();
+    }
+
+    private <E> List<E> selectContextSchemeValues(SelectContextSchemeValueArguments arguments, Class<E> type) {
+        return dslContext.select(
+                CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
+                CTX_SCHEME_VALUE.VALUE,
+                CTX_SCHEME_VALUE.MEANING)
+                .from(CTX_SCHEME_VALUE)
+                .where(arguments.getConditions())
+                .fetchInto(type);
+    }
+
+    public class SelectBusinessContextValueArguments {
+
+        private List<Condition> conditions = new ArrayList();
+
+        public SelectBusinessContextValueArguments setBusinessContextId(long businessContextId) {
+            return setBusinessContextId(ULong.valueOf(businessContextId));
+        }
+
+        public SelectBusinessContextValueArguments setBusinessContextId(ULong businessContextId) {
+            conditions.add(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(businessContextId));
+            return this;
+        }
+
+        public List<Condition> getConditions() {
+            return conditions;
+        }
+
+        public <E> List<E> fetchInto(Class<E> type) {
+            return selectContextSchemeValues(this, type);
+        }
+    }
+
+    public SelectBusinessContextValueArguments selectBusinessContextValues() {
+        return new SelectBusinessContextValueArguments();
+    }
+
+    private <E> List<E> selectContextSchemeValues(SelectBusinessContextValueArguments arguments, Class<E> type) {
+        return dslContext.select(
+                BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID)
+                .from(BIZ_CTX_VALUE)
+                .where(arguments.getConditions())
+                .fetchInto(type);
+    }
+
+    public class InsertBusinessContextArguments {
+
+        private String guid;
+
+        private String name;
+
+        private ULong userId;
+
+        private LocalDateTime timestamp = LocalDateTime.now();
+
+        public InsertBusinessContextArguments setGuid(String guid) {
+            this.guid = guid;
+            return this;
+        }
+
+        public InsertBusinessContextArguments setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public InsertBusinessContextArguments setUserId(long userId) {
+            return setUserId(ULong.valueOf(userId));
+        }
+
+        public InsertBusinessContextArguments setUserId(ULong userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public InsertBusinessContextArguments setTimestamp(long millis) {
+            return setTimestamp(new Date(millis));
+        }
+
+        public InsertBusinessContextArguments setTimestamp(Date date) {
+            return setTimestamp(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        }
+
+        public InsertBusinessContextArguments setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public String getGuid() {
+            return guid;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ULong getUserId() {
+            return userId;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        public ULong execute() {
+            return insertBusinessContext(this);
+        }
+    }
+
+    public InsertBusinessContextArguments insertBusinessContext() {
+        return new InsertBusinessContextArguments();
+    }
+
+    private ULong insertBusinessContext(InsertBusinessContextArguments arguments) {
+        return dslContext.insertInto(BIZ_CTX,
+                BIZ_CTX.GUID,
+                BIZ_CTX.NAME,
+                BIZ_CTX.CREATED_BY,
+                BIZ_CTX.LAST_UPDATED_BY,
+                BIZ_CTX.CREATION_TIMESTAMP,
+                BIZ_CTX.LAST_UPDATE_TIMESTAMP)
+                .values(
+                        arguments.getGuid(),
+                        arguments.getName(),
+                        arguments.getUserId(), arguments.getUserId(),
+                        arguments.getTimestamp(), arguments.getTimestamp())
+                .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId();
+    }
+
+    public class InsertBusinessContextValueArguments {
+
+        private ULong businessContextId;
+
+        private ULong contextSchemeValueId;
+
+        public InsertBusinessContextValueArguments setBusinessContextId(long businessContextId) {
+            return setBusinessContextId(ULong.valueOf(businessContextId));
+        }
+
+        public InsertBusinessContextValueArguments setBusinessContextId(ULong businessContextId) {
+            this.businessContextId = businessContextId;
+            return this;
+        }
+
+        public InsertBusinessContextValueArguments setContextSchemeValueId(long contextSchemeValueId) {
+            return setContextSchemeValueId(ULong.valueOf(contextSchemeValueId));
+        }
+
+        public InsertBusinessContextValueArguments setContextSchemeValueId(ULong contextSchemeValueId) {
+            this.contextSchemeValueId = contextSchemeValueId;
+            return this;
+        }
+
+        public ULong getBusinessContextId() {
+            return businessContextId;
+        }
+
+        public ULong getContextSchemeValueId() {
+            return contextSchemeValueId;
+        }
+
+        public void execute() {
+            insertBusinessContextValue(this);
+        }
+    }
+
+    public InsertBusinessContextValueArguments insertBusinessContextValue() {
+        return new InsertBusinessContextValueArguments();
+    }
+
+    private void insertBusinessContextValue(InsertBusinessContextValueArguments arguments) {
+        dslContext.insertInto(BIZ_CTX_VALUE,
+                BIZ_CTX_VALUE.BIZ_CTX_ID,
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID)
+                .values(
+                        arguments.getBusinessContextId(),
+                        arguments.getContextSchemeValueId()
+                )
+                .execute();
     }
 }
