@@ -232,11 +232,13 @@ ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COM
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
                  MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
 
-
 -- Add indices
 CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
 CREATE INDEX `dt_revision_idx` ON `dt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `dt_last_update_timestamp_desc_idx` ON `dt` (`last_update_timestamp` DESC);
+
+-- Drop unique index
+ALTER TABLE `dt` DROP INDEX `dt_uk1`;
 
 -- Making relations between `dt_sc` and `release` tables.
 
@@ -264,6 +266,9 @@ ORDER BY `release`.`release_id`;
 
 -- Add indices
 CREATE INDEX `dt_sc_guid_idx` ON `dt_sc` (`guid`);
+
+-- Drop unique index
+ALTER TABLE `dt_sc` DROP INDEX `dt_sc_uk1`;
 
 -- Making relations between `bccp` and `release` tables.
 
