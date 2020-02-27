@@ -88,14 +88,11 @@ public class BusinessContextService {
 
     @Transactional
     public void insert(User user, BusinessContext bizCtx) {
-        if (StringUtils.isEmpty(bizCtx.getGuid())) {
-            bizCtx.setGuid(SrtGuid.randomGuid());
-        }
-
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
         ULong businessContextId = repository.insertBusinessContext()
+                .setGuid(StringUtils.isEmpty(bizCtx.getGuid()) ? SrtGuid.randomGuid() : bizCtx.getGuid())
                 .setName(bizCtx.getName())
                 .setUserId(userId)
                 .setTimestamp(timestamp)
@@ -111,11 +108,14 @@ public class BusinessContextService {
 
     @Transactional
     public void update(User user, BusinessContext bizCtx) {
-        dslContext.update(BIZ_CTX)
-                .set(BIZ_CTX.NAME, bizCtx.getName())
-                .set(BIZ_CTX.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
-                .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, LocalDateTime.now())
-                .where(BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(bizCtx.getBizCtxId())))
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        repository.updateBusinessContext()
+                .setUserId(userId)
+                .setTimestamp(timestamp)
+                .setName(bizCtx.getName())
+                .setBusinessContextId(bizCtx.getBizCtxId())
                 .execute();
 
         update(bizCtx.getBizCtxId(), bizCtx.getBizCtxValues());

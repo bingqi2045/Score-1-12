@@ -10,7 +10,6 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +34,7 @@ public class BusinessContextRepository {
         private List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
-        private int numberofRows = -1;
+        private int numberOfRows = -1;
 
         public SelectBusinessContextArguments setTopLevelAbieId(Long topLevelAbieId) {
             if (topLevelAbieId != null) {
@@ -111,9 +110,9 @@ public class BusinessContextRepository {
             return this;
         }
 
-        public SelectBusinessContextArguments setOffset(int offset, int numberofRows) {
+        public SelectBusinessContextArguments setOffset(int offset, int numberOfRows) {
             this.offset = offset;
-            this.numberofRows = numberofRows;
+            this.numberOfRows = numberOfRows;
             return this;
         }
 
@@ -143,8 +142,8 @@ public class BusinessContextRepository {
             return offset;
         }
 
-        public int getNumberofRows() {
-            return numberofRows;
+        public int getNumberOfRows() {
+            return numberOfRows;
         }
 
         public <E> PaginationResponse<E> fetchInto(Class<? extends E> type) {
@@ -171,10 +170,12 @@ public class BusinessContextRepository {
 
     private <E> PaginationResponse<E> selectBusinessContexts(SelectBusinessContextArguments arguments, Class<? extends E> type) {
         SelectOnConditionStep
-                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStepForBusinessContext();
+                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> step =
+                getSelectOnConditionStepForBusinessContext();
 
         SelectConnectByStep
-                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> conditionStep = step.where(arguments.getConditions());
+                <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> conditionStep =
+                step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
@@ -182,14 +183,14 @@ public class BusinessContextRepository {
         SelectWithTiesAfterOffsetStep
                 <Record6<ULong, String, String, LocalDateTime, String, LocalDateTime>> offsetStep = null;
         if (sortField != null) {
-            if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
+            if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)
-                        .limit(arguments.getOffset(), arguments.getNumberofRows());
+                        .limit(arguments.getOffset(), arguments.getNumberOfRows());
             }
         } else {
-            if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
+            if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep
-                        .limit(arguments.getOffset(), arguments.getNumberofRows());
+                        .limit(arguments.getOffset(), arguments.getNumberOfRows());
             }
         }
 
@@ -369,11 +370,11 @@ public class BusinessContextRepository {
         }
 
         public InsertBusinessContextArguments setTimestamp(long millis) {
-            return setTimestamp(new Date(millis));
+            return setTimestamp(new Timestamp(millis).toLocalDateTime());
         }
 
         public InsertBusinessContextArguments setTimestamp(Date date) {
-            return setTimestamp(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
         }
 
         public InsertBusinessContextArguments setTimestamp(LocalDateTime timestamp) {
@@ -418,7 +419,8 @@ public class BusinessContextRepository {
                         arguments.getGuid(),
                         arguments.getName(),
                         arguments.getUserId(), arguments.getUserId(),
-                        arguments.getTimestamp(), arguments.getTimestamp())
+                        arguments.getTimestamp(), arguments.getTimestamp()
+                )
                 .returning(BIZ_CTX.BIZ_CTX_ID).fetchOne().getBizCtxId();
     }
 
@@ -472,5 +474,89 @@ public class BusinessContextRepository {
                         arguments.getContextSchemeValueId()
                 )
                 .execute();
+    }
+
+    public class UpdateBusinessContextArguments {
+
+        private ULong userId;
+
+        private LocalDateTime timestamp;
+
+        private String name;
+
+        private ULong businessContextId;
+
+        public UpdateBusinessContextArguments setUserId(long userId) {
+            return setUserId(ULong.valueOf(userId));
+        }
+
+        public UpdateBusinessContextArguments setUserId(ULong userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public UpdateBusinessContextArguments setTimestamp(long millis) {
+            return setTimestamp(new Timestamp(millis).toLocalDateTime());
+        }
+
+        public UpdateBusinessContextArguments setTimestamp(Date date) {
+            return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
+        }
+
+        public UpdateBusinessContextArguments setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public UpdateBusinessContextArguments setName(String name) {
+            if (!StringUtils.isEmpty(name)) {
+                this.name = name;
+            }
+            return this;
+        }
+
+        public UpdateBusinessContextArguments setBusinessContextId(long businessContextId) {
+            return setBusinessContextId(ULong.valueOf(businessContextId));
+        }
+
+        public UpdateBusinessContextArguments setBusinessContextId(ULong businessContextId) {
+            this.businessContextId = businessContextId;
+            return this;
+        }
+
+        public ULong getUserId() {
+            return userId;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ULong getBusinessContextId() {
+            return businessContextId;
+        }
+
+        public void execute() {
+            updateBusinessContext(this);
+        }
+    }
+
+    public UpdateBusinessContextArguments updateBusinessContext() {
+        return new UpdateBusinessContextArguments();
+    }
+
+    private void updateBusinessContext(UpdateBusinessContextArguments arguments) {
+        if (!StringUtils.isEmpty(arguments.getName())) {
+            dslContext.update(BIZ_CTX)
+                    .set(BIZ_CTX.NAME, arguments.getName())
+                    .set(BIZ_CTX.LAST_UPDATED_BY, arguments.getUserId())
+                    .set(BIZ_CTX.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
+                    .where(BIZ_CTX.BIZ_CTX_ID.eq(arguments.getBusinessContextId()))
+                    .execute();
+        }
     }
 }

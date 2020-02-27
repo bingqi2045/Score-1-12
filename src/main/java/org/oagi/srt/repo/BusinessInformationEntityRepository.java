@@ -392,7 +392,7 @@ public class BusinessInformationEntityRepository {
         private List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
-        private int numberofRows = -1;
+        private int numberOfRows = -1;
 
         public SelectBieListArguments setPropertyTerm(String propertyTerm) {
             if (!StringUtils.isEmpty(propertyTerm)) {
@@ -509,9 +509,9 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setOffset(int offset, int numberofRows) {
+        public SelectBieListArguments setOffset(int offset, int numberOfRows) {
             this.offset = offset;
-            this.numberofRows = numberofRows;
+            this.numberOfRows = numberOfRows;
             return this;
         }
 
@@ -527,8 +527,8 @@ public class BusinessInformationEntityRepository {
             return offset;
         }
 
-        public int getNumberofRows() {
-            return numberofRows;
+        public int getNumberOfRows() {
+            return numberOfRows;
         }
 
         public <E> PaginationResponse<E> fetchInto(Class<? extends E> type) {
@@ -586,14 +586,14 @@ public class BusinessInformationEntityRepository {
                 ULong, String, String, String,
                 LocalDateTime, String, Integer>> offsetStep = null;
         if (sortField != null) {
-            if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
+            if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)
-                        .limit(arguments.getOffset(), arguments.getNumberofRows());
+                        .limit(arguments.getOffset(), arguments.getNumberOfRows());
             }
         } else {
-            if (arguments.getOffset() >= 0 && arguments.getNumberofRows() >= 0) {
+            if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep
-                        .limit(arguments.getOffset(), arguments.getNumberofRows());
+                        .limit(arguments.getOffset(), arguments.getNumberOfRows());
             }
         }
 
