@@ -4,10 +4,12 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record9;
-import org.jooq.Row9;
+import org.jooq.Record14;
+import org.jooq.Row14;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
@@ -18,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.AgencyIdList;
  * lists. The list's values are however kept in the AGENCY_ID_LIST_VALUE.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record9<ULong, String, String, String, String, ULong, String, ULong, String> {
+public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record14<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String> {
 
-    private static final long serialVersionUID = -983056643;
+    private static final long serialVersionUID = 80512330;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.
@@ -148,6 +150,76 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
         return (String) get(8);
     }
 
+    /**
+     * Setter for <code>oagi.agency_id_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the agency ID list.
+     */
+    public void setCreatedBy(ULong value) {
+        set(9, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the agency ID list.
+     */
+    public ULong getCreatedBy() {
+        return (ULong) get(9);
+    }
+
+    /**
+     * Setter for <code>oagi.agency_id_list.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.
+     */
+    public void setLastUpdatedBy(ULong value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.
+     */
+    public ULong getLastUpdatedBy() {
+        return (ULong) get(10);
+    }
+
+    /**
+     * Setter for <code>oagi.agency_id_list.creation_timestamp</code>. Timestamp when the agency ID list was created.
+     */
+    public void setCreationTimestamp(LocalDateTime value) {
+        set(11, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.creation_timestamp</code>. Timestamp when the agency ID list was created.
+     */
+    public LocalDateTime getCreationTimestamp() {
+        return (LocalDateTime) get(11);
+    }
+
+    /**
+     * Setter for <code>oagi.agency_id_list.last_update_timestamp</code>. Timestamp when the agency ID list was last updated.
+     */
+    public void setLastUpdateTimestamp(LocalDateTime value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.last_update_timestamp</code>. Timestamp when the agency ID list was last updated.
+     */
+    public LocalDateTime getLastUpdateTimestamp() {
+        return (LocalDateTime) get(12);
+    }
+
+    /**
+     * Setter for <code>oagi.agency_id_list.state</code>. Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.
+     */
+    public void setState(String value) {
+        set(13, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.state</code>. Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.
+     */
+    public String getState() {
+        return (String) get(13);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -158,17 +230,17 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     // -------------------------------------------------------------------------
-    // Record9 type implementation
+    // Record14 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, String, String, ULong, String, ULong, String> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row14<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, String, String, String, String, ULong, String, ULong, String> valuesRow() {
-        return (Row9) super.valuesRow();
+    public Row14<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String> valuesRow() {
+        return (Row14) super.valuesRow();
     }
 
     @Override
@@ -217,6 +289,31 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     @Override
+    public Field<ULong> field10() {
+        return AgencyIdList.AGENCY_ID_LIST.CREATED_BY;
+    }
+
+    @Override
+    public Field<ULong> field11() {
+        return AgencyIdList.AGENCY_ID_LIST.LAST_UPDATED_BY;
+    }
+
+    @Override
+    public Field<LocalDateTime> field12() {
+        return AgencyIdList.AGENCY_ID_LIST.CREATION_TIMESTAMP;
+    }
+
+    @Override
+    public Field<LocalDateTime> field13() {
+        return AgencyIdList.AGENCY_ID_LIST.LAST_UPDATE_TIMESTAMP;
+    }
+
+    @Override
+    public Field<String> field14() {
+        return AgencyIdList.AGENCY_ID_LIST.STATE;
+    }
+
+    @Override
     public ULong component1() {
         return getAgencyIdListId();
     }
@@ -262,6 +359,31 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     @Override
+    public ULong component10() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong component11() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime component12() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime component13() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public String component14() {
+        return getState();
+    }
+
+    @Override
     public ULong value1() {
         return getAgencyIdListId();
     }
@@ -304,6 +426,31 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     @Override
     public String value9() {
         return getDefinition();
+    }
+
+    @Override
+    public ULong value10() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong value11() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime value12() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime value13() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public String value14() {
+        return getState();
     }
 
     @Override
@@ -361,7 +508,37 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     @Override
-    public AgencyIdListRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, String value9) {
+    public AgencyIdListRecord value10(ULong value) {
+        setCreatedBy(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord value11(ULong value) {
+        setLastUpdatedBy(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord value12(LocalDateTime value) {
+        setCreationTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord value13(LocalDateTime value) {
+        setLastUpdateTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord value14(String value) {
+        setState(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, String value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, String value14) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -371,6 +548,11 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
         value7(value7);
         value8(value8);
         value9(value9);
+        value10(value10);
+        value11(value11);
+        value12(value12);
+        value13(value13);
+        value14(value14);
         return this;
     }
 
@@ -388,7 +570,7 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     /**
      * Create a detached, initialised AgencyIdListRecord
      */
-    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong moduleId, String definition) {
+    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong moduleId, String definition, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state) {
         super(AgencyIdList.AGENCY_ID_LIST);
 
         set(0, agencyIdListId);
@@ -400,5 +582,10 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
         set(6, versionId);
         set(7, moduleId);
         set(8, definition);
+        set(9, createdBy);
+        set(10, lastUpdatedBy);
+        set(11, creationTimestamp);
+        set(12, lastUpdateTimestamp);
+        set(13, state);
     }
 }

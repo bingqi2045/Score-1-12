@@ -4,6 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategory extends TableImpl<CtxCategoryRecord> {
 
-    private static final long serialVersionUID = -1327013301;
+    private static final long serialVersionUID = 1797407018;
 
     /**
      * The reference instance of <code>oagi.ctx_category</code>
@@ -67,6 +68,26 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
      * The column <code>oagi.ctx_category.description</code>. Explanation of what the context category is.
      */
     public final TableField<CtxCategoryRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.CLOB, this, "Explanation of what the context category is.");
+
+    /**
+     * The column <code>oagi.ctx_category.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the context category.
+     */
+    public final TableField<CtxCategoryRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the context category.");
+
+    /**
+     * The column <code>oagi.ctx_category.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the context category.
+     */
+    public final TableField<CtxCategoryRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context category.");
+
+    /**
+     * The column <code>oagi.ctx_category.creation_timestamp</code>. Timestamp when the context category was created.
+     */
+    public final TableField<CtxCategoryRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was created.");
+
+    /**
+     * The column <code>oagi.ctx_category.last_update_timestamp</code>. Timestamp when the context category was last updated.
+     */
+    public final TableField<CtxCategoryRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was last updated.");
 
     /**
      * Create a <code>oagi.ctx_category</code> table reference
@@ -122,6 +143,19 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
     }
 
     @Override
+    public List<ForeignKey<CtxCategoryRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<CtxCategoryRecord, ?>>asList(Keys.CTX_CATEGORY_CREATED_BY_FK, Keys.CTX_CATEGORY_LAST_UPDATED_BY_FK);
+    }
+
+    public AppUser ctxCategoryCreatedByFk() {
+        return new AppUser(this, Keys.CTX_CATEGORY_CREATED_BY_FK);
+    }
+
+    public AppUser ctxCategoryLastUpdatedByFk() {
+        return new AppUser(this, Keys.CTX_CATEGORY_LAST_UPDATED_BY_FK);
+    }
+
+    @Override
     public CtxCategory as(String alias) {
         return new CtxCategory(DSL.name(alias), this);
     }
@@ -148,11 +182,11 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, String, String, String> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

@@ -269,6 +269,8 @@ public class Keys {
     public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK = ForeignKeys0.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, ModuleRecord> AGENCY_ID_LIST_MODULE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MODULE_ID_FK;
+    public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_CREATED_BY_FK = ForeignKeys0.AGENCY_ID_LIST_CREATED_BY_FK;
+    public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.AGENCY_ID_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK;
     public static final ForeignKey<AsbieRecord, AsccManifestRecord> ASBIE_BASED_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASBIE_BASED_ASCC_MANIFEST_ID_FK;
     public static final ForeignKey<AsbieRecord, AbieRecord> ASBIE_FROM_ABIE_ID_FK = ForeignKeys0.ASBIE_FROM_ABIE_ID_FK;
@@ -376,6 +378,8 @@ public class Keys {
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = ForeignKeys0.CODE_LIST_CREATED_BY_FK;
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.CODE_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
+    public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_CREATED_BY_FK = ForeignKeys0.CTX_CATEGORY_CREATED_BY_FK;
+    public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_LAST_UPDATED_BY_FK = ForeignKeys0.CTX_CATEGORY_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = ForeignKeys0.CTX_SCHEME_CTX_CATEGORY_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = ForeignKeys0.CTX_SCHEME_CODE_LIST_ID_FK;
     public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = ForeignKeys0.CTX_SCHEME_CREATED_BY_FK;
@@ -566,6 +570,8 @@ public class Keys {
         public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_based_acc_manifest_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.BASED_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_agency_id_list_value_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, ModuleRecord> AGENCY_ID_LIST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_module_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.MODULE_ID }, true);
+        public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_created_by_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.CREATED_BY }, true);
+        public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_last_updated_by_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_PRIMARY, AgencyIdListValue.AGENCY_ID_LIST_VALUE, "agency_id_list_value_owner_list_id_fk", new TableField[] { AgencyIdListValue.AGENCY_ID_LIST_VALUE.OWNER_LIST_ID }, true);
         public static final ForeignKey<AsbieRecord, AsccManifestRecord> ASBIE_BASED_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, Asbie.ASBIE, "asbie_based_ascc_manifest_id_fk", new TableField[] { Asbie.ASBIE.BASED_ASCC_MANIFEST_ID }, true);
         public static final ForeignKey<AsbieRecord, AbieRecord> ASBIE_FROM_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_ABIE_PRIMARY, Asbie.ASBIE, "asbie_from_abie_id_fk", new TableField[] { Asbie.ASBIE.FROM_ABIE_ID }, true);
@@ -673,6 +679,8 @@ public class Keys {
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_created_by_fk", new TableField[] { CodeList.CODE_LIST.CREATED_BY }, true);
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_last_updated_by_fk", new TableField[] { CodeList.CODE_LIST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", new TableField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID }, true);
+        public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CtxCategory.CTX_CATEGORY, "ctx_category_created_by_fk", new TableField[] { CtxCategory.CTX_CATEGORY.CREATED_BY }, true);
+        public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CtxCategory.CTX_CATEGORY, "ctx_category_last_updated_by_fk", new TableField[] { CtxCategory.CTX_CATEGORY.LAST_UPDATED_BY }, true);
         public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createForeignKey(Keys.KEY_CTX_CATEGORY_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ctx_category_id_fk", new TableField[] { CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID }, true);
         public static final ForeignKey<CtxSchemeRecord, CodeListRecord> CTX_SCHEME_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_code_list_id_fk", new TableField[] { CtxScheme.CTX_SCHEME.CODE_LIST_ID }, true);
         public static final ForeignKey<CtxSchemeRecord, AppUserRecord> CTX_SCHEME_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_created_by_fk", new TableField[] { CtxScheme.CTX_SCHEME.CREATED_BY }, true);

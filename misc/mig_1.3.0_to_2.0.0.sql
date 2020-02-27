@@ -771,6 +771,38 @@ CREATE INDEX `xbt_guid_idx` ON `xbt` (`guid`);
 CREATE INDEX `xbt_revision_idx` ON `xbt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `xbt_last_update_timestamp_desc_idx` ON `xbt` (`last_update_timestamp` DESC);
 
+-- Add columns and constraints on `agency_id_list` table.
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `created_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
+    ADD COLUMN `last_updated_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.',
+    ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was created.',
+    ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was last updated.',
+    ADD COLUMN `state` varchar(10) DEFAULT NULL COMMENT 'Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.',
+    ADD CONSTRAINT `agency_id_list_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+UPDATE `agency_id_list` SET `created_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `last_updated_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `state` = 'Published';
+
+ALTER TABLE `agency_id_list`
+    MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
+    MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
+
+-- Add columns and constraints on `ctx_category` table.
+ALTER TABLE `ctx_category`
+    ADD COLUMN `created_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.',
+    ADD COLUMN `last_updated_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context category.',
+    ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the context category was created.',
+    ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the context category was last updated.',
+    ADD CONSTRAINT `ctx_category_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `ctx_category_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+UPDATE `ctx_category`, `ctx_scheme` SET `ctx_category`.`created_by` = `ctx_scheme`.`created_by`, `ctx_category`.`last_updated_by` = `ctx_scheme`.`last_updated_by` WHERE `ctx_category`.`ctx_category_id` = `ctx_scheme`.`ctx_category_id`;
+UPDATE `ctx_category` SET `ctx_category`.`created_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `ctx_category`.`last_updated_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis') WHERE `ctx_category`.`created_by` IS NULL;
+
+ALTER TABLE `ctx_category`
+    MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.',
+    MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context category.';
+
 -- DROP `current_acc_id` column on `acc` table.
 ALTER TABLE `acc` DROP FOREIGN KEY `acc_current_acc_id_fk`;
 DROP INDEX `acc_current_acc_id_fk` ON `acc`;
