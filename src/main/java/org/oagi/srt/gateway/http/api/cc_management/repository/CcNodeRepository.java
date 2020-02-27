@@ -757,6 +757,7 @@ public class CcNodeRepository {
         AccessPrivilege accessPrivilege = Prohibited;
         long userId = sessionService.userId(user);
         long ownerUserId = ccNode.getOwnerUserId();
+        AppUser owner = userRepository.findById(ownerUserId);
         switch (ccNode.getState()) {
             case WIP:
                 if (userId == ownerUserId) {
@@ -767,6 +768,7 @@ public class CcNodeRepository {
                 break;
 
             case Draft:
+            case QA:
                 if (userId == ownerUserId) {
                     accessPrivilege = CanEdit;
                 } else {
@@ -774,8 +776,8 @@ public class CcNodeRepository {
                 }
                 break;
 
+            case Production:
             case Candidate:
-                AppUser owner = userRepository.findById(ownerUserId);
                 if (!owner.isDeveloper()){
                     accessPrivilege = CanEdit;
                 } else {
