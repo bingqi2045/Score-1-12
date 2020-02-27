@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -34,7 +37,7 @@ public class BusinessInformationEntityRepositoryTest {
      */
     private ULong userId = ULong.valueOf(1L);
     private ULong releaseId = ULong.valueOf(1L);
-    private long millis = System.currentTimeMillis();
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @Test
     public void insertTopLevelAbieTest() {
@@ -46,7 +49,7 @@ public class BusinessInformationEntityRepositoryTest {
 
         assertNotNull(topLevelAbie);
         assertEquals(userId, topLevelAbie.getOwnerUserId());
-        assertEquals(millis, topLevelAbie.getLastUpdateTimestamp().getTime());
+        assertEquals(timestamp, topLevelAbie.getLastUpdateTimestamp());
         assertEquals(releaseId, topLevelAbie.getReleaseId());
     }
 
@@ -54,7 +57,7 @@ public class BusinessInformationEntityRepositoryTest {
         return bieRepository.insertTopLevelAbie()
                 .setUserId(userId)
                 .setReleaseId(releaseId)
-                .setTimestamp(millis)
+                .setTimestamp(timestamp)
                 .execute();
     }
 
@@ -72,7 +75,7 @@ public class BusinessInformationEntityRepositoryTest {
 
         assertNotNull(abie);
         assertEquals(userId, abie.getCreatedBy());
-        assertEquals(millis, abie.getCreationTimestamp().getTime());
+        assertEquals(timestamp, abie.getCreationTimestamp());
         assertEquals(topLevelAbieId, abie.getOwnerTopLevelAbieId());
         assertEquals(roleOfAccManifestId, abie.getBasedAccManifestId());
     }
@@ -82,7 +85,7 @@ public class BusinessInformationEntityRepositoryTest {
                 .setUserId(userId)
                 .setTopLevelAbieId(topLevelAbieId)
                 .setAccManifestId(roleOfAccManifestId)
-                .setTimestamp(millis)
+                .setTimestamp(timestamp)
                 .execute();
     }
 
@@ -103,7 +106,7 @@ public class BusinessInformationEntityRepositoryTest {
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAbieId(topLevelAbieId)
                 .setUserId(userId)
-                .setTimestamp(millis)
+                .setTimestamp(timestamp)
                 .execute();
 
         AsbiepRecord asbiep = dslContext.selectFrom(ASBIEP)
@@ -112,7 +115,7 @@ public class BusinessInformationEntityRepositoryTest {
 
         assertNotNull(asbiep);
         assertEquals(userId, asbiep.getCreatedBy());
-        assertEquals(millis, asbiep.getCreationTimestamp().getTime());
+        assertEquals(timestamp, asbiep.getCreationTimestamp());
         assertEquals(topLevelAbieId, asbiep.getOwnerTopLevelAbieId());
         assertEquals(abieId, asbiep.getRoleOfAbieId());
         assertEquals(asccpManifestId, asbiep.getBasedAsccpManifestId());

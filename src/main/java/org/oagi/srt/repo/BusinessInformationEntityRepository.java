@@ -59,15 +59,15 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertTopLevelAbieArguments setTimestamp(long millis) {
-            return setTimestamp(new Timestamp(millis));
+            return setTimestamp(new Timestamp(millis).toLocalDateTime());
         }
 
         public InsertTopLevelAbieArguments setTimestamp(Date date) {
-            return setTimestamp(new Timestamp(date.getTime()));
+            return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
         }
 
-        public InsertTopLevelAbieArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp.toLocalDateTime();
+        public InsertTopLevelAbieArguments setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
             return this;
         }
 
@@ -144,15 +144,15 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertAbieArguments setTimestamp(long millis) {
-            return setTimestamp(new Timestamp(millis));
+            return setTimestamp(new Timestamp(millis).toLocalDateTime());
         }
 
         public InsertAbieArguments setTimestamp(Date date) {
-            return setTimestamp(new Timestamp(date.getTime()));
+            return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
         }
 
-        public InsertAbieArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp.toLocalDateTime();
+        public InsertAbieArguments setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
             return this;
         }
 
@@ -286,15 +286,15 @@ public class BusinessInformationEntityRepository {
         }
 
         public InsertAsbiepArguments setTimestamp(long millis) {
-            return setTimestamp(new Timestamp(millis));
+            return setTimestamp(new Timestamp(millis).toLocalDateTime());
         }
 
         public InsertAsbiepArguments setTimestamp(Date date) {
-            return setTimestamp(new Timestamp(date.getTime()));
+            return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
         }
 
-        public InsertAsbiepArguments setTimestamp(Timestamp timestamp) {
-            this.timestamp = timestamp.toLocalDateTime();
+        public InsertAsbiepArguments setTimestamp(LocalDateTime timestamp) {
+            this.timestamp = timestamp;
             return this;
         }
 
