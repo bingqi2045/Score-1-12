@@ -110,11 +110,7 @@ public class CcNodeRepository {
 
         AccManifestRecord accManifestRecord = dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
-                .join(ASCC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
-                .where(and(
-                        ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccNode.getFromAccManifestId())),
-                        ACC_MANIFEST.RELEASE_ID.eq(releaseId)
-                ))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(asccNode.getFromAccManifestId())))
                 .fetchOneInto(AccManifestRecord.class);
 
         return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());

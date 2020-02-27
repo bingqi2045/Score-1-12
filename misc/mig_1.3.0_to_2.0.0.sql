@@ -84,17 +84,17 @@ SET
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `acc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `acc`.`state` = 3
-WHERE `acc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `acc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `acc`.`state` = 5
-WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `acc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\\n\\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\\n\\nUnpublished components cannot be released.\\n\\nThis column is NULL for the current record.',
@@ -127,10 +127,12 @@ CREATE TABLE `asccp_manifest` (
 
 -- Updating `role_of_acc_id`
 UPDATE `asccp`, (
-    SELECT `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`, current.`acc_id` current_acc_id
+    SELECT `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`, max(current.`acc_id`) current_acc_id
     FROM `asccp`
     JOIN `acc` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id`
     JOIN `acc` current ON `asccp`.`role_of_acc_id` = current.`current_acc_id`
+    GROUP BY
+        `asccp`.`asccp_id`
 ) t
 SET `asccp`.`role_of_acc_id` = t.current_acc_id
 WHERE `asccp`.`asccp_id` = t.asccp_id;
@@ -158,17 +160,17 @@ WHERE `asccp`.`state` = 3;
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 4)
-WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `asccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `asccp`.`state` = 3
-WHERE `asccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `asccp`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `asccp`.`state` = 5
-WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 5)
+WHERE `asccp`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
@@ -213,17 +215,17 @@ WHERE `dt`.`state` = 3;
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
 SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 4)
-WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `dt`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
 SET `dt`.`state` = 3
-WHERE `dt`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `dt`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = 5
-WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 5)
+WHERE `dt`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
@@ -310,17 +312,17 @@ WHERE `bccp`.`state` = 3;
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 4)
-WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `bccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bccp`.`state` = 3
-WHERE `bccp`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `bccp`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bccp`.`state` = 5
-WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 5)
+WHERE `bccp`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
@@ -353,20 +355,22 @@ CREATE TABLE `ascc_manifest` (
 
 -- Updating `from_acc_id`
 UPDATE `ascc`, (
-    SELECT `ascc`.`ascc_id`, `ascc`.`from_acc_id`, current.`acc_id` current_acc_id
+    SELECT `ascc`.`ascc_id`, `ascc`.`from_acc_id`, MAX(current.`acc_id`) current_acc_id
     FROM `ascc`
     JOIN `acc` ON `acc`.`acc_id` = `ascc`.`from_acc_id`
     JOIN `acc` current ON `ascc`.`from_acc_id` = current.`current_acc_id`
+    GROUP BY `ascc`.`ascc_id`
 ) t
 SET `ascc`.`from_acc_id` = t.current_acc_id
 WHERE `ascc`.`ascc_id` = t.ascc_id;
 
 -- Updating `to_asccp_id`
 UPDATE `ascc`, (
-    SELECT `ascc`.`ascc_id`, `ascc`.`to_asccp_id`, current.`asccp_id` current_asccp_id
+    SELECT `ascc`.`ascc_id`, `ascc`.`to_asccp_id`, MAX(current.`asccp_id`) current_asccp_id
     FROM `ascc`
     JOIN `asccp` ON `asccp`.`asccp_id` = `ascc`.`to_asccp_id`
     JOIN `asccp` current ON `asccp`.`asccp_id` = current.`current_asccp_id`
+    GROUP BY `ascc`.`ascc_id`
 ) t
 SET `ascc`.`to_asccp_id` = t.current_asccp_id
 WHERE `ascc`.`ascc_id` = t.ascc_id;
@@ -388,28 +392,29 @@ ORDER BY `ascc`.`ascc_id`;
 INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
 SELECT
     `release`.`release_id`,
-    `ascc`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
+    MAX(`ascc`.`ascc_id`) `ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
 FROM `ascc` JOIN `release` ON `ascc`.`release_id` = `release`.`release_id`
 JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `ascc`.`state` = 3;
+WHERE `ascc`.`state` = 3
+GROUP BY `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`;
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `ascc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `ascc`.`state` = 3
-WHERE `ascc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `ascc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `ascc`.`state` = 5
-WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `ascc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
@@ -442,20 +447,22 @@ CREATE TABLE `bcc_manifest` (
 
 -- Updating `from_acc_id`
 UPDATE `bcc`, (
-    SELECT `bcc`.`bcc_id`, `bcc`.`from_acc_id`, current.`acc_id` current_acc_id
+    SELECT `bcc`.`bcc_id`, `bcc`.`from_acc_id`, MAX(current.`acc_id`) current_acc_id
     FROM `bcc`
     JOIN `acc` ON `acc`.`acc_id` = `bcc`.`from_acc_id`
     JOIN `acc` current ON `bcc`.`from_acc_id` = current.`current_acc_id`
+    GROUP BY `bcc`.`bcc_id`
 ) t
 SET `bcc`.`from_acc_id` = t.current_acc_id
 WHERE `bcc`.`bcc_id` = t.bcc_id;
 
 -- Updating `to_bccp_id`
 UPDATE `bcc`, (
-    SELECT `bcc`.`bcc_id`, `bcc`.`to_bccp_id`, current.`bccp_id` current_bccp_id
+    SELECT `bcc`.`bcc_id`, `bcc`.`to_bccp_id`, MAX(current.`bccp_id`) current_bccp_id
     FROM `bcc`
     JOIN `bccp` ON `bccp`.`bccp_id` = `bcc`.`to_bccp_id`
     JOIN `bccp` current ON `bccp`.`bccp_id` = current.`current_bccp_id`
+    GROUP BY `bcc`.`bcc_id`
 ) t
 SET `bcc`.`to_bccp_id` = t.current_bccp_id
 WHERE `bcc`.`bcc_id` = t.bcc_id;
@@ -477,28 +484,29 @@ ORDER BY `bcc`.`bcc_id`;
 INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
 SELECT
     `release`.`release_id`,
-    `bcc`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
+    MAX(`bcc`.`bcc_id`) as `bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
 FROM `bcc` JOIN `release` ON `bcc`.`release_id` = `release`.`release_id`
 JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `bcc`.`state` = 3;
+WHERE `bcc`.`state` = 3
+GROUP BY `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`;
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` = 1;
+WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `bcc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bcc`.`state` = 3
-WHERE `bcc`.`state` = 2 AND `app_user`.`is_developer` != 1;
+WHERE `bcc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bcc`.`state` = 5
-WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` != 1;
+SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 5)
+WHERE `bcc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
