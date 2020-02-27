@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.context_management.service;
 
-import com.google.common.base.Functions;
-import org.jooq.*;
+import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -10,18 +9,18 @@ import org.oagi.srt.gateway.http.api.context_management.data.ContextCategoryList
 import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.ContextCategoryRepository;
+import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.count;
 import static org.oagi.srt.entity.jooq.Tables.CTX_CATEGORY;
 import static org.oagi.srt.entity.jooq.Tables.CTX_SCHEME;
 
@@ -30,109 +29,45 @@ import static org.oagi.srt.entity.jooq.Tables.CTX_SCHEME;
 public class ContextCategoryService {
 
     @Autowired
+    private ContextCategoryRepository repository;
+
+    @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record4<ULong, String, String, String>> getSelectJoinStep() {
-        return dslContext.select(
-                CTX_CATEGORY.CTX_CATEGORY_ID,
-                CTX_CATEGORY.GUID,
-                CTX_CATEGORY.NAME,
-                CTX_CATEGORY.DESCRIPTION
-        ).from(CTX_CATEGORY);
-    }
-
     public PageResponse<ContextCategory> getContextCategoryList(ContextCategoryListRequest request) {
-        SelectJoinStep<Record4<ULong, String, String, String>> step = getSelectJoinStep();
-
-        List<Condition> conditions = new ArrayList();
-        if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(CTX_CATEGORY.NAME.containsIgnoreCase(request.getName().trim()));
-        }
-        if (!StringUtils.isEmpty(request.getDescription())) {
-            conditions.add(CTX_CATEGORY.DESCRIPTION.containsIgnoreCase(request.getDescription().trim()));
-        }
-
-        SelectConnectByStep<Record4<ULong, String, String, String>> conditionStep = step.where(conditions);
-
         PageRequest pageRequest = request.getPageRequest();
-        String sortDirection = pageRequest.getSortDirection();
-        SortField sortField = null;
-        switch (pageRequest.getSortActive()) {
-            case "name":
-                if ("asc".equals(sortDirection)) {
-                    sortField = CTX_CATEGORY.NAME.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = CTX_CATEGORY.NAME.desc();
-                }
 
-                break;
-            case "description":
-                if ("asc".equals(sortDirection)) {
-                    sortField = CTX_CATEGORY.DESCRIPTION.asc();
-                } else if ("desc".equals(sortDirection)) {
-                    sortField = CTX_CATEGORY.DESCRIPTION.desc();
-                }
+        PaginationResponse<ContextCategory> result = repository.selectContextCategories()
+                .setContextCategoryIds(request.getContextCategoryIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setName(request.getName())
+                .setDescription(request.getDescription())
+                .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
+                .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
+                .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
+                .fetchInto(ContextCategory.class);
 
-                break;
-        }
-
-        SelectWithTiesAfterOffsetStep<Record4<ULong, String, String, String>> offsetStep = null;
-        if (sortField != null) {
-            offsetStep = conditionStep.orderBy(sortField)
-                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
-        } else {
-            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
-                offsetStep = conditionStep
-                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
-            }
-        }
-
-        List<ContextCategory> result = (offsetStep != null) ?
-                offsetStep.fetchInto(ContextCategory.class) : conditionStep.fetchInto(ContextCategory.class);
-        if (!result.isEmpty()) {
-            Map<Long, ContextCategory> ctxCategoryMap =
-                    result.stream().collect(Collectors.toMap(ContextCategory::getCtxCategoryId, Functions.identity()));
-
-            dslContext.select(CTX_SCHEME.CTX_CATEGORY_ID,
-                    coalesce(count(CTX_SCHEME.CTX_SCHEME_ID), 0))
-                    .from(CTX_SCHEME)
-                    .where(CTX_SCHEME.CTX_CATEGORY_ID.in(
-                            ctxCategoryMap.keySet().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                    .groupBy(CTX_SCHEME.CTX_CATEGORY_ID)
-                    .fetch().stream().forEach(record -> {
-                long ctxCategoryId = record.value1().longValue();
-                int cnt = record.value2();
-                ctxCategoryMap.get(ctxCategoryId).setUsed(cnt > 0);
-            });
-        }
+        List<ContextCategory> contextCategories = result.getResult();
+        Map<Long, Boolean> usedMap = repository.used(
+                contextCategories.stream().map(e -> e.getCtxCategoryId()
+                ).collect(Collectors.toList()));
+        contextCategories.forEach(e -> {
+            e.setUsed(usedMap.getOrDefault(e.getCtxCategoryId(), false));
+        });
 
         PageResponse<ContextCategory> response = new PageResponse();
-        response.setList(result);
+        response.setList(contextCategories);
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
-        response.setLength(dslContext.selectCount()
-                .from(CTX_CATEGORY)
-                .where(conditions)
-                .fetchOptionalInto(Integer.class).orElse(0));
-
+        response.setLength(result.getPageCount());
         return response;
     }
 
     public ContextCategory getContextCategory(long ctxCategoryId) {
-        ContextCategory ctxCategory = getSelectJoinStep()
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
-                .fetchOptionalInto(ContextCategory.class).orElse(null);
-
-        if (ctxCategory != null) {
-            int cnt = dslContext.select(coalesce(count(CTX_SCHEME.CTX_SCHEME_ID), 0))
-                    .from(CTX_SCHEME)
-                    .where(CTX_SCHEME.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
-                    .groupBy(CTX_SCHEME.CTX_CATEGORY_ID)
-                    .fetchOptionalInto(Integer.class).orElse(0);
-            ctxCategory.setUsed(cnt > 0);
-        }
-
-        return ctxCategory;
+        ContextCategoryListRequest request = new ContextCategoryListRequest();
+        request.setContextCategoryIds(Arrays.asList(ctxCategoryId));
+        List<ContextCategory> contextCategories = getContextCategoryList(request).getList();
+        return (contextCategories.isEmpty()) ? null : contextCategories.get(0);
     }
 
     public List<SimpleContextCategory> getSimpleContextCategoryList() {
