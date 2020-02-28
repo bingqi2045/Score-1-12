@@ -7,6 +7,56 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DELETE FROM `app_user` WHERE `app_user_id` = 0;
+INSERT INTO `app_user` (`login_id`, `password`, `name`, `organization`, `is_developer`)
+VALUES
+	('sysadm', '$2a$10$N6lPv6XNewi0eryQqlow5.dSEgOnFlxYGyGVIGZxXY1dimEPRmhOu', 'System Administrator', 'System', 1);
+
+UPDATE `app_user` SET `app_user_id` = 0 WHERE `login_id` = 'sysadm';
+
+SET @max_user_id = (SELECT MAX(`app_user_id`) + 1 FROM `app_user`);
+SET @sql = CONCAT('ALTER TABLE `app_user` AUTO_INCREMENT = ', @max_user_id);
+PREPARE st FROM @sql;
+EXECUTE st;
+
+DROP TABLE IF EXISTS `app_group`;
+CREATE TABLE `app_group` (
+  `app_group_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `authority` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`app_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `app_group` (`app_group_id`, `name`, `authority`)
+VALUES
+	(1, 'Administrator', 0),
+	(2, 'Developer', 10),
+	(3, 'User', 99);
+
+DROP TABLE IF EXISTS `app_group_user`;
+CREATE TABLE `app_group_user` (
+  `app_group_id` bigint(20) unsigned NOT NULL,
+  `app_user_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`app_group_id`,`app_user_id`),
+  KEY `app_user_id` (`app_user_id`),
+  CONSTRAINT `app_group_user_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
+  CONSTRAINT `app_group_user_fk_2` FOREIGN KEY (`app_user_id`) REFERENCES `app_user` (`app_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
+VALUES
+	(1, 0);
+
+INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
+SELECT (SELECT `app_group_id` FROM `app_group` WHERE `name` = 'Developer'), `app_user_id`
+FROM `app_user`
+WHERE `app_user`.`is_developer` = 1 AND `app_user`.`app_user_id` != 0;
+
+INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
+SELECT (SELECT `app_group_id` FROM `app_group` WHERE `name` = 'User'), `app_user_id`
+FROM `app_user`
+WHERE `app_user`.`is_developer` = 0;
+
 -- Increase `release_id` to put 'Working' release at first on.
 UPDATE `release` SET `release_id` = `release_id` + 1;
 UPDATE `acc` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
