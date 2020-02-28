@@ -77,7 +77,7 @@ WHERE `acc`.`state` = 3;
 UPDATE
 	`acc`
 	JOIN `acc_manifest` AS `target` ON `target`.`acc_id` = `acc`.`acc_id`
-	JOIN `acc_manifest` AS `base` ON `base`.`acc_id` = `acc`.`based_acc_id`
+	JOIN `acc_manifest` AS `base` ON `base`.`acc_id` = `acc`.`based_acc_id` AND `target`.`release_id` = `base`.`release_id`
 SET
 	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`;
 
