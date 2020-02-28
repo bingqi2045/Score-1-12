@@ -79,7 +79,9 @@ UPDATE
 	JOIN `acc_manifest` AS `target` ON `target`.`acc_id` = `acc`.`acc_id`
 	JOIN `acc_manifest` AS `base` ON `base`.`acc_id` = `acc`.`based_acc_id` AND `target`.`release_id` = `base`.`release_id`
 SET
-	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`;
+	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`
+WHERE
+	`acc`.`based_acc_id` != null;
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
