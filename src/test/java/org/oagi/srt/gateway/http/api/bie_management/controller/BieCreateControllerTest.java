@@ -14,18 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.jooq.impl.DSL.and;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.oagi.srt.entity.jooq.Tables.BIZ_CTX;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,18 +44,24 @@ public class BieCreateControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private MockHttpSession session;
+    private ULong testAsccpManifestId;
     private ULong testBizCtxId = ULong.valueOf(1L);
 
     @Before
     public void prepareRequirements() {
-        session = new MockHttpSession();
+        testAsccpManifestId = dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                .from(ASCCP_MANIFEST)
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        ASCCP.PROPERTY_TERM.eq("Sync Purchase Order"),
+                        RELEASE.RELEASE_NUM.eq("10.6")
+                ))
+                .fetchOneInto(ULong.class);
 
-        User user = new User("oagis", null,
-                Arrays.asList(new SimpleGrantedAuthority("developer")));
-        session.setAttribute("user", user);
 
         boolean exists = dslContext.selectCount()
+                .from(BIZ_CTX)
                 .where(BIZ_CTX.BIZ_CTX_ID.eq(testBizCtxId))
                 .fetchOptionalInto(Integer.class).orElse(0) == 1;
         if (!exists) {
@@ -75,16 +80,16 @@ public class BieCreateControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "oagis")
     public void shouldCreateBie() throws Exception {
         BieCreateRequest request = new BieCreateRequest();
-        request.setAsccpManifestId(1L);
+        request.setAsccpManifestId(testAsccpManifestId.longValue());
         request.setBizCtxIds(Arrays.asList(testBizCtxId.longValue()));
 
         BieCreateResponse response =
                 mapper.readValue(
                         this.mockMvc.perform(
                                 put("/profile_bie/create")
-                                        .session(session)
                                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                                         .content(mapper.writeValueAsString(request)))
                                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString(),
