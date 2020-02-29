@@ -124,13 +124,26 @@ SELECT
 FROM `acc` JOIN `release` ON `acc`.`release_id` = `release`.`release_id`
 WHERE `acc`.`state` = 3;
 
-UPDATE
-	`acc`
-	 JOIN `acc_manifest` `target` FORCE INDEX(`acc_manifest_acc_id_fk`, `acc_manifest_release_id_fk`)  ON `acc`.`acc_id` = `target`.`acc_id`
-	 JOIN `acc_manifest` `base` FORCE INDEX(`acc_manifest_acc_id_fk`, `acc_manifest_release_id_fk`)   ON `target`.`release_id` = `base`.`release_id` AND `acc`.`based_acc_id` = `base`.`acc_id`
-SET `target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`
-WHERE
-    `acc`.`based_acc_id` is not null AND `acc`.`release_id` IS NOT NULL;
+-- Updating `based_acc_manifest_id`
+UPDATE `acc_manifest`, (
+    SELECT
+        `acc_manifest`.`acc_manifest_id`, b.`acc_manifest_id` as `based_acc_manifest_id`
+    FROM `acc_manifest`
+    JOIN `acc` ON `acc_manifest`.`acc_id` = `acc`.`acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+    JOIN `acc_manifest` AS b ON `acc`.`based_acc_id` = b.`acc_id` AND  b.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+) t
+SET `acc_manifest`.`based_acc_manifest_id` = t.`based_acc_manifest_id`
+WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
+
+UPDATE `acc_manifest`, (
+    SELECT
+        `acc_manifest`.`acc_manifest_id`, b.`acc_manifest_id` as `based_acc_manifest_id`
+    FROM `acc_manifest`
+    JOIN `acc` ON `acc_manifest`.`acc_id` = `acc`.`acc_id` AND `acc_manifest`.`release_id` = `acc`.`release_id`
+    JOIN `acc_manifest` AS b ON `acc`.`based_acc_id` = b.`acc_id` AND  b.`release_id` = `acc`.`release_id`
+) t
+SET `acc_manifest`.`based_acc_manifest_id` = t.`based_acc_manifest_id`
+WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
