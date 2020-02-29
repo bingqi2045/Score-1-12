@@ -126,12 +126,11 @@ WHERE `acc`.`state` = 3;
 
 UPDATE
 	`acc`
-	JOIN `acc_manifest` AS `target` ON `target`.`acc_id` = `acc`.`acc_id`
-	JOIN `acc_manifest` AS `base` ON `base`.`acc_id` = `acc`.`based_acc_id` AND `target`.`release_id` = `base`.`release_id`
-SET
-	`target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`
+	 JOIN `acc_manifest` `target` FORCE INDEX(`acc_manifest_acc_id_fk`, `acc_manifest_release_id_fk`)  ON `acc`.`acc_id` = `target`.`acc_id`
+	 JOIN `acc_manifest` `base` FORCE INDEX(`acc_manifest_acc_id_fk`, `acc_manifest_release_id_fk`)   ON `target`.`release_id` = `base`.`release_id` AND `acc`.`based_acc_id` = `base`.`acc_id`
+SET `target`.`based_acc_manifest_id` = `base`.`acc_manifest_id`
 WHERE
-	`acc`.`based_acc_id` != null;
+    `acc`.`based_acc_id` is not null AND `acc`.`release_id` IS NOT NULL;
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
