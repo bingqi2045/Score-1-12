@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 public class GraphController {
 
@@ -18,15 +21,30 @@ public class GraphController {
     @RequestMapping(value = "/graphs/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Graph getGraph(@AuthenticationPrincipal User user,
-                          @PathVariable("type") String type,
-                          @PathVariable("manifestId") long manifestId) {
+    public Map<String, Graph> getGraph(@AuthenticationPrincipal User user,
+                                       @PathVariable("type") String type,
+                                       @PathVariable("manifestId") long manifestId) {
+        Graph graph;
+
         switch (type) {
+            case "acc":
+                graph = graphService.getAccGraph(manifestId);
+                break;
+
+            case "asccp":
+                graph = graphService.getAsccpGraph(manifestId);
+                break;
+
             case "bccp":
-                return graphService.getBccpGraph(manifestId);
+                graph = graphService.getBccpGraph(manifestId);
+                break;
 
             default:
                 throw new UnsupportedOperationException();
         }
+
+        Map<String, Graph> response = new HashMap();
+        response.put("graph", graph);
+        return response;
     }
 }

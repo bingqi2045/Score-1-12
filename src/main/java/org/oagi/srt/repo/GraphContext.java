@@ -5,10 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,10 +60,31 @@ public class GraphContext {
 
     public List<?> findChildren(Object node) {
         if (node instanceof AccManifestRecord) {
-            throw new UnsupportedOperationException();
+            AccManifestRecord accManifest = (AccManifestRecord) node;
+            List children = new ArrayList();
+
+            if (accManifest.getBasedAccManifestId() != null) {
+                AccManifestRecord base = accManifestMap.get(accManifest.getBasedAccManifestId());
+                children.add(base);
+            }
+
+            children.addAll(
+                    asccManifestMap.getOrDefault(accManifest.getAccManifestId(), Collections.emptyList()).stream()
+                            .map(e -> asccpManifestMap.get(e.getToAsccpManifestId()))
+                            .collect(Collectors.toList())
+            );
+            children.addAll(
+                    bccManifestMap.getOrDefault(accManifest.getAccManifestId(), Collections.emptyList()).stream()
+                            .map(e -> bccpManifestMap.get(e.getToBccpManifestId()))
+                            .collect(Collectors.toList())
+            );
+
+            return children;
         }
         else if (node instanceof AsccpManifestRecord) {
-            throw new UnsupportedOperationException();
+            AsccpManifestRecord asccpManifest = (AsccpManifestRecord) node;
+            AccManifestRecord accManifest = accManifestMap.get(asccpManifest.getRoleOfAccManifestId());
+            return (accManifest != null) ? Arrays.asList(accManifest) : Collections.emptyList();
         }
         else if (node instanceof BccpManifestRecord) {
             BccpManifestRecord bccpManifest = (BccpManifestRecord) node;

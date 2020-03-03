@@ -1,7 +1,6 @@
 package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
-import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
@@ -15,11 +14,11 @@ public class GraphContextRepository {
     private DSLContext dslContext;
 
     public GraphContext buildGraphContext(AccManifestRecord accManifest) {
-        throw new UnsupportedOperationException();
+        return new GraphContext(dslContext, accManifest.getReleaseId());
     }
 
     public GraphContext buildGraphContext(AsccpManifestRecord asccpManifest) {
-        throw new UnsupportedOperationException();
+        return new GraphContext(dslContext, asccpManifest.getReleaseId());
     }
 
     public GraphContext buildGraphContext(BccpManifestRecord bccpManifest) {
