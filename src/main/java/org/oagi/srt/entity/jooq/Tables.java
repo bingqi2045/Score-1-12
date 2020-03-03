@@ -9,6 +9,10 @@ import org.oagi.srt.entity.jooq.tables.Acc;
 import org.oagi.srt.entity.jooq.tables.AccManifest;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
+import org.oagi.srt.entity.jooq.tables.AppGroup;
+import org.oagi.srt.entity.jooq.tables.AppGroupUser;
+import org.oagi.srt.entity.jooq.tables.AppPermission;
+import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.Asbie;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
@@ -94,6 +98,26 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      * This table captures the values within an agency identification list.
      */
     public static final AgencyIdListValue AGENCY_ID_LIST_VALUE = AgencyIdListValue.AGENCY_ID_LIST_VALUE;
+
+    /**
+     * The table <code>oagi.app_group</code>.
+     */
+    public static final AppGroup APP_GROUP = AppGroup.APP_GROUP;
+
+    /**
+     * The table <code>oagi.app_group_user</code>.
+     */
+    public static final AppGroupUser APP_GROUP_USER = AppGroupUser.APP_GROUP_USER;
+
+    /**
+     * The table <code>oagi.app_permission</code>.
+     */
+    public static final AppPermission APP_PERMISSION = AppPermission.APP_PERMISSION;
+
+    /**
+     * The table <code>oagi.app_permission_group</code>.
+     */
+    public static final AppPermissionGroup APP_PERMISSION_GROUP = AppPermissionGroup.APP_PERMISSION_GROUP;
 
     /**
      * This table captures the user information for authentication and authorization purposes.

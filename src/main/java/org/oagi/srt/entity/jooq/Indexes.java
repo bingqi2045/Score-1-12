@@ -8,6 +8,8 @@ import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.Internal;
 import org.oagi.srt.entity.jooq.tables.Acc;
+import org.oagi.srt.entity.jooq.tables.AppGroupUser;
+import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
 import org.oagi.srt.entity.jooq.tables.Ascc;
 import org.oagi.srt.entity.jooq.tables.Asccp;
 import org.oagi.srt.entity.jooq.tables.Bcc;
@@ -31,6 +33,8 @@ public class Indexes {
     public static final Index ACC_ACC_GUID_IDX = Indexes0.ACC_ACC_GUID_IDX;
     public static final Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index ACC_ACC_REVISION_IDX = Indexes0.ACC_ACC_REVISION_IDX;
+    public static final Index APP_GROUP_USER_APP_USER_ID = Indexes0.APP_GROUP_USER_APP_USER_ID;
+    public static final Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Indexes0.APP_PERMISSION_GROUP_APP_PERMISSION_ID;
     public static final Index ASCC_ASCC_GUID_IDX = Indexes0.ASCC_ASCC_GUID_IDX;
     public static final Index ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index ASCC_ASCC_REVISION_IDX = Indexes0.ASCC_ASCC_REVISION_IDX;
@@ -61,6 +65,8 @@ public class Indexes {
         public static Index ACC_ACC_GUID_IDX = Internal.createIndex("acc_guid_idx", Acc.ACC, new OrderField[] { Acc.ACC.GUID }, false);
         public static Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("acc_last_update_timestamp_desc_idx", Acc.ACC, new OrderField[] { Acc.ACC.LAST_UPDATE_TIMESTAMP }, false);
         public static Index ACC_ACC_REVISION_IDX = Internal.createIndex("acc_revision_idx", Acc.ACC, new OrderField[] { Acc.ACC.REVISION_NUM, Acc.ACC.REVISION_TRACKING_NUM }, false);
+        public static Index APP_GROUP_USER_APP_USER_ID = Internal.createIndex("app_user_id", AppGroupUser.APP_GROUP_USER, new OrderField[] { AppGroupUser.APP_GROUP_USER.APP_USER_ID }, false);
+        public static Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Internal.createIndex("app_permission_id", AppPermissionGroup.APP_PERMISSION_GROUP, new OrderField[] { AppPermissionGroup.APP_PERMISSION_GROUP.APP_PERMISSION_ID }, false);
         public static Index ASCC_ASCC_GUID_IDX = Internal.createIndex("ascc_guid_idx", Ascc.ASCC, new OrderField[] { Ascc.ASCC.GUID }, false);
         public static Index ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("ascc_last_update_timestamp_desc_idx", Ascc.ASCC, new OrderField[] { Ascc.ASCC.LAST_UPDATE_TIMESTAMP }, false);
         public static Index ASCC_ASCC_REVISION_IDX = Internal.createIndex("ascc_revision_idx", Ascc.ASCC, new OrderField[] { Ascc.ASCC.REVISION_NUM, Ascc.ASCC.REVISION_TRACKING_NUM }, false);

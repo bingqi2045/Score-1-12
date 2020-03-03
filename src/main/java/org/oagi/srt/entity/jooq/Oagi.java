@@ -15,6 +15,10 @@ import org.oagi.srt.entity.jooq.tables.Acc;
 import org.oagi.srt.entity.jooq.tables.AccManifest;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
+import org.oagi.srt.entity.jooq.tables.AppGroup;
+import org.oagi.srt.entity.jooq.tables.AppGroupUser;
+import org.oagi.srt.entity.jooq.tables.AppPermission;
+import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.Asbie;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
@@ -70,7 +74,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 684771125;
+    private static final long serialVersionUID = 435662209;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -107,6 +111,26 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      * This table captures the values within an agency identification list.
      */
     public final AgencyIdListValue AGENCY_ID_LIST_VALUE = AgencyIdListValue.AGENCY_ID_LIST_VALUE;
+
+    /**
+     * The table <code>oagi.app_group</code>.
+     */
+    public final AppGroup APP_GROUP = AppGroup.APP_GROUP;
+
+    /**
+     * The table <code>oagi.app_group_user</code>.
+     */
+    public final AppGroupUser APP_GROUP_USER = AppGroupUser.APP_GROUP_USER;
+
+    /**
+     * The table <code>oagi.app_permission</code>.
+     */
+    public final AppPermission APP_PERMISSION = AppPermission.APP_PERMISSION;
+
+    /**
+     * The table <code>oagi.app_permission_group</code>.
+     */
+    public final AppPermissionGroup APP_PERMISSION_GROUP = AppPermissionGroup.APP_PERMISSION_GROUP;
 
     /**
      * This table captures the user information for authentication and authorization purposes.
@@ -370,6 +394,10 @@ If we use a separate table for each expression, then we need binding all the way
             AccManifest.ACC_MANIFEST,
             AgencyIdList.AGENCY_ID_LIST,
             AgencyIdListValue.AGENCY_ID_LIST_VALUE,
+            AppGroup.APP_GROUP,
+            AppGroupUser.APP_GROUP_USER,
+            AppPermission.APP_PERMISSION,
+            AppPermissionGroup.APP_PERMISSION_GROUP,
             AppUser.APP_USER,
             Asbie.ASBIE,
             Asbiep.ASBIEP,
