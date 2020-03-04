@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.graph;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.jooq.DSLContext;
+import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.*;
 
@@ -20,75 +21,72 @@ public class Graph {
 
     @XmlTransient
     @JsonIgnore
-    private transient Map<String, Set<ULong>> nodeManifestIds = new HashMap();
+    private transient Map<String, List<ULong>> nodeManifestIds = new HashMap();
 
     private Map<String, Map<String, Object>> nodes = new LinkedHashMap();
     private Map<String, Edge> edges = new LinkedHashMap();
 
     public Graph(DSLContext dslContext) {
         this.dslContext = dslContext;
+
+        Arrays.asList("acc", "asccp", "bccp", "bdt", "bdtsc").stream().forEach(e -> {
+            nodeManifestIds.put(e, new ArrayList());
+        });
     }
 
-    public void addNode(Object node) {
+    public boolean addNode(Object node) {
         String key = getKey(node);
+        if (nodes.containsKey(key)) {
+            return false;
+        }
+
+        Map<String, Object> metadata = new LinkedHashMap();
+        nodes.put(key, metadata);
+
         String type;
         ULong manifestId;
 
-        if (!nodes.containsKey(key)) {
-            Map<String, Object> metadata = new LinkedHashMap();
-            nodes.put(key, metadata);
-
-            if (node instanceof AccManifestRecord) {
-                AccManifestRecord accManifest = (AccManifestRecord) node;
-                type = "acc";
-                manifestId = accManifest.getAccManifestId();
-            } else if (node instanceof AsccpManifestRecord) {
-                AsccpManifestRecord asccpManifest = (AsccpManifestRecord) node;
-                type = "asccp";
-                manifestId = asccpManifest.getAsccpManifestId();
-            } else if (node instanceof BccpManifestRecord) {
-                BccpManifestRecord bccpManifest = (BccpManifestRecord) node;
-                type = "bccp";
-                manifestId = bccpManifest.getBccpManifestId();
-            } else if (node instanceof DtManifestRecord) {
-                DtManifestRecord dtManifest = (DtManifestRecord) node;
-                type = "bdt";
-                manifestId = dtManifest.getDtManifestId();
-            } else if (node instanceof DtScManifestRecord) {
-                DtScManifestRecord dtScManifest = (DtScManifestRecord) node;
-                type = "bdtsc";
-                manifestId = dtScManifest.getDtScManifestId();
-            } else {
-                throw new IllegalArgumentException();
-            }
-
-            metadata.put("type", type);
-            metadata.put("manifestId", manifestId);
-
-            Set<ULong> manifestIds;
-            if (nodeManifestIds.containsKey(type)) {
-                manifestIds = nodeManifestIds.get(type);
-            } else {
-                manifestIds = new HashSet();
-                nodeManifestIds.put(type, manifestIds);
-            }
-
-            manifestIds.add(manifestId);
-
+        if (node instanceof AccManifestRecord) {
+            AccManifestRecord accManifest = (AccManifestRecord) node;
+            type = "acc";
+            manifestId = accManifest.getAccManifestId();
+        } else if (node instanceof AsccpManifestRecord) {
+            AsccpManifestRecord asccpManifest = (AsccpManifestRecord) node;
+            type = "asccp";
+            manifestId = asccpManifest.getAsccpManifestId();
+        } else if (node instanceof BccpManifestRecord) {
+            BccpManifestRecord bccpManifest = (BccpManifestRecord) node;
+            type = "bccp";
+            manifestId = bccpManifest.getBccpManifestId();
+        } else if (node instanceof DtManifestRecord) {
+            DtManifestRecord dtManifest = (DtManifestRecord) node;
+            type = "bdt";
+            manifestId = dtManifest.getDtManifestId();
+        } else if (node instanceof DtScManifestRecord) {
+            DtScManifestRecord dtScManifest = (DtScManifestRecord) node;
+            type = "bdtsc";
+            manifestId = dtScManifest.getDtScManifestId();
+        } else {
+            throw new IllegalArgumentException();
         }
+
+        metadata.put("type", type);
+        metadata.put("manifestId", manifestId);
+
+        nodeManifestIds.get(type).add(manifestId);
+        return true;
     }
 
-    public void addEdge(Object source, Object target) {
+    public void addEdges(Object source, List children) {
         String sourceKey = getKey(source);
-        Edge edge;
         if (edges.containsKey(sourceKey)) {
-            edge = edges.get(sourceKey);
-        } else {
-            edge = new Edge();
-            edges.put(sourceKey, edge);
+            return;
         }
-
-        edge.addTarget(getKey(target));
+        Edge edge = new Edge();
+        children.stream().forEach(e -> {
+            edge.addTarget(getKey(e));
+        });
+        edges.put(sourceKey, edge);
     }
 
     private String getKey(Object node) {
@@ -157,7 +155,10 @@ public class Graph {
                             .fetchStream().forEach(record -> {
                         Map<String, Object> metadata = nodes.get("bdt" + record.value1());
                         metadata.put("dataTypeTerm", record.value2());
-                        metadata.put("qualifier", record.value3());
+                        String qualifier = record.value3();
+                        if (!StringUtils.isEmpty(qualifier)) {
+                            metadata.put("qualifier", qualifier);
+                        }
                     });
                     break;
 

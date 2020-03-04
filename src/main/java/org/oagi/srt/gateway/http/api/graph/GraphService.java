@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.DtManifestRecord;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.GraphContext;
 import org.oagi.srt.repo.GraphContextRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 @Service
@@ -72,12 +74,21 @@ public class GraphService {
 
         while (!manifestQueue.isEmpty()) {
             Object node = manifestQueue.poll();
-            graph.addNode(node);
+            if (!graph.addNode(node)) {
+                continue;
+            }
 
-            graphContext.findChildren(node).stream().forEach(child -> {
-                graph.addEdge(node, child);
-                manifestQueue.offer(child);
-            });
+            List children = graphContext.findChildren(node);
+            if (children.isEmpty()) {
+                continue;
+            }
+
+            graph.addEdges(node, children);
+            if (node instanceof DtManifestRecord) {
+                children.stream().forEach(e -> graph.addNode(e));
+            } else {
+                manifestQueue.addAll(children);
+            }
         }
 
         graph.build();
