@@ -65,7 +65,7 @@ public class BieRepository {
                         ACC.STATE.eq(CcState.Published.getValue()),
                         ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
-                        ))
+                ))
                 .fetchOneInto(BieEditAcc.class);
     }
 
@@ -83,7 +83,7 @@ public class BieRepository {
                 .leftJoin(ACC_MANIFEST.as("base"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(ACC.ACC_ID.eq(ULong.valueOf(accId))
-                    .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                        .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOptionalInto(BieEditAcc.class).orElse(null);
     }
 
@@ -554,7 +554,7 @@ public class BieRepository {
                 .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScRecord.getDtScId().longValue())))
                 .set(BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
-                .set(BBIE_SC.IS_USED, (byte)(dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
+                .set(BBIE_SC.IS_USED, (byte) (dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
                 .set(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .set(BBIE_SC.DEFAULT_VALUE, dtScRecord.getDefaultValue())
                 .set(BBIE_SC.FIXED_VALUE, dtScRecord.getFixedValue())

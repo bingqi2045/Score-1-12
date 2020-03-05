@@ -26,9 +26,11 @@ public class AppPermissionRepository {
     private void updateAppPermission(UpdateAppPermissionArguments arguments) {
         dslContext.update(APP_PERMISSION)
                 .set(APP_PERMISSION.SEGMENT, arguments.getSegment())
+                .set(APP_PERMISSION.OBJECT, arguments.getObject())
+                .set(APP_PERMISSION.OPERATION, arguments.getOperation())
+                .set(APP_PERMISSION.DESCRIPTION, arguments.getDescription())
                 .where(APP_PERMISSION.APP_PERMISSION_ID.eq(arguments.getAppPermissionId()))
                 .execute();
-
     }
 
     public class SelectAppPermissionArguments {

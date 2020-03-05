@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class PermissionService {
 
-    @Autowired AppPermissionRepository repository;
+    @Autowired
+    AppPermissionRepository repository;
 
     public PaginationResponse<AppPermission> getPermissionList(PermissionListRequest request) {
 

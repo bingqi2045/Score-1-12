@@ -209,7 +209,7 @@ public class BieEditService {
     }
 
     @Transactional
-    public void updateTopLevelAbieLastUpdated(User user, long topLevelAbieId){
+    public void updateTopLevelAbieLastUpdated(User user, long topLevelAbieId) {
         topLevelAbieRepository.updateTopLevelAbieLastUpdated(sessionService.userId(user), topLevelAbieId);
     }
 }

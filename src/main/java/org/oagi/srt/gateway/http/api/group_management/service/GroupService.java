@@ -15,7 +15,8 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class GroupService {
 
-    @Autowired AppGroupRepository repository;
+    @Autowired
+    AppGroupRepository repository;
 
     public PaginationResponse<AppGroup> getGroupList(GroupListRequest request) {
 
@@ -48,15 +49,14 @@ public class GroupService {
                 .setAppGroupId(ULong.valueOf(appGroupId))
                 .execute();
 
-        for (String userId : groupUsers){
+        for (String userId : groupUsers) {
             try {
                 ULong user = ULong.valueOf(userId);
                 repository.insertAppGroupUserArguments()
                         .setAppGroupId(ULong.valueOf(appGroupId))
                         .setAppUserId(user)
                         .execute();
-            }
-            catch (NumberFormatException ignored) {
+            } catch (NumberFormatException ignored) {
             }
         }
 
@@ -64,15 +64,14 @@ public class GroupService {
                 .setAppGroupId(ULong.valueOf(appGroupId))
                 .execute();
 
-        for (String permissionId : groupPermissions){
+        for (String permissionId : groupPermissions) {
             try {
                 ULong permission = ULong.valueOf(permissionId);
                 repository.insertAppPermissionGroupArguments()
                         .setAppGroupId(ULong.valueOf(appGroupId))
                         .setAppPermissionId(permission)
                         .execute();
-            }
-            catch (NumberFormatException ignored) {
+            } catch (NumberFormatException ignored) {
             }
         }
 

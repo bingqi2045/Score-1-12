@@ -778,7 +778,7 @@ public class CcNodeRepository {
 
             case Production:
             case Candidate:
-                if (!owner.isDeveloper()){
+                if (!owner.isDeveloper()) {
                     accessPrivilege = CanEdit;
                 } else {
                     accessPrivilege = CanView;
@@ -1495,7 +1495,7 @@ public class CcNodeRepository {
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
 
         accRecord.set(ACC.ACC_ID, null);
-        if (accRecord.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()){
+        if (accRecord.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
             accRecord.set(ACC.OWNER_USER_ID, userId);
         }
         accRecord.set(ACC.LAST_UPDATED_BY, userId);

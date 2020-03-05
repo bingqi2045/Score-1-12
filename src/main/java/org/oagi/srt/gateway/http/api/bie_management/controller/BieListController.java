@@ -89,7 +89,7 @@ public class BieListController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value="/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/profile_bie/business_ctx_from_abie/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BizCtx findBizCtxFromAbieId(@PathVariable("id") long abieId) {
         return service.findBizCtxByAbieId(abieId);

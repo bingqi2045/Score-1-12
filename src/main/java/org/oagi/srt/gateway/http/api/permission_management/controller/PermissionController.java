@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
@@ -21,12 +22,12 @@ public class PermissionController {
     @RequestMapping(value = "/permission/list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PaginationResponse<AppPermission> getPermissions(@AuthenticationPrincipal User user,
-                                                  @RequestParam(name = "segment", required = false) String segment,
-                                                  @RequestParam(name = "object", required = false) String object,
-                                                  @RequestParam(name = "sortActive") String sortActive,
-                                                  @RequestParam(name = "sortDirection") String sortDirection,
-                                                  @RequestParam(name = "pageIndex") int pageIndex,
-                                                  @RequestParam(name = "pageSize") int pageSize) {
+                                                            @RequestParam(name = "segment", required = false) String segment,
+                                                            @RequestParam(name = "object", required = false) String object,
+                                                            @RequestParam(name = "sortActive") String sortActive,
+                                                            @RequestParam(name = "sortDirection") String sortDirection,
+                                                            @RequestParam(name = "pageIndex") int pageIndex,
+                                                            @RequestParam(name = "pageSize") int pageSize) {
 
         PermissionListRequest request = new PermissionListRequest();
         request.setObject(object);
@@ -43,7 +44,7 @@ public class PermissionController {
     @RequestMapping(value = "/permission/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AppPermission getPermissions(@AuthenticationPrincipal User user,
-                                                  @PathVariable(name = "id", required = true) int appPermissionId) {
+                                        @PathVariable(name = "id", required = true) int appPermissionId) {
 
         return service.getPermission(appPermissionId);
     }
@@ -51,8 +52,8 @@ public class PermissionController {
     @RequestMapping(value = "/permission/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AppPermission updatePermissions(@AuthenticationPrincipal User user,
-                                 @PathVariable(name = "id", required = true) int appPermissionId,
-                                 @RequestBody Map<String, String> body) {
+                                           @PathVariable(name = "id", required = true) int appPermissionId,
+                                           @RequestBody Map<String, String> body) {
 
         String segment = body.getOrDefault("segment", "");
         String object = body.getOrDefault("object", "");

@@ -11,7 +11,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GroupController {
@@ -42,7 +44,7 @@ public class GroupController {
     @RequestMapping(value = "/group/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AppGroup getGroups(@AuthenticationPrincipal User user,
-                                                  @PathVariable(name = "id", required = true) int appGroupId) {
+                              @PathVariable(name = "id", required = true) int appGroupId) {
 
         return service.getGroup(appGroupId);
     }

@@ -160,7 +160,7 @@ public class ModuleService {
                     new ModuleElementDependency(type, dependingModule)
             );
         }
-        
+
         return root;
     }
 

@@ -422,7 +422,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> schemas,
-                                   Xbt xbt) {
+                               Xbt xbt) {
         String builtInType = xbt.getBuiltinType();
         if (builtInType.startsWith("xsd:")) {
             builtInType = builtInType.substring(4);
@@ -436,7 +436,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> schemas,
-                                   BBIE bbie, CodeList codeList) {
+                               BBIE bbie, CodeList codeList) {
         DT bdt = generationContext.queryAssocBDT(bbie);
         BdtPriRestri bdtPriRestri =
                 generationContext.findBdtPriRestriByBdtIdAndDefaultIsTrue(bdt.getDtId());
@@ -456,7 +456,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> schemas,
-                                   BBIESC bbieSc, CodeList codeList) {
+                               BBIESC bbieSc, CodeList codeList) {
         DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());
         BdtScPriRestri bdtScPriRestri =
                 generationContext.findBdtScPriRestriByBdtScIdAndDefaultIsTrue(dtSc.getDtScId());
@@ -476,8 +476,8 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> properties,
-                                   Map<String, Object> schemas,
-                                   CodeList codeList) {
+                               Map<String, Object> schemas,
+                               CodeList codeList) {
 
         String codeListName = getCodeListTypeName(codeList);
         /*
@@ -500,7 +500,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private String fillSchemas(Map<String, Object> schemas,
-                                   AgencyIdList agencyIdList) {
+                               AgencyIdList agencyIdList) {
         AgencyIdListValue agencyIdListValue =
                 generationContext.findAgencyIdListValue(agencyIdList.getAgencyIdListValueId());
         String agencyListTypeName = getAgencyListTypeName(agencyIdList, agencyIdListValue);

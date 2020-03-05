@@ -107,9 +107,9 @@ public class ExtensionService {
                 dslContext.select(ACC.fields())
                         .from(ACC.as("eAcc"))
                         .join(ACC_MANIFEST.as("eACCRM")).on(and(
-                                ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID),
-                                ACC_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))
-                        ))
+                        ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID),
+                        ACC_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))
+                ))
                         .join(ASCC_MANIFEST).on(ACC_MANIFEST.as("eACCRM").ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
                         .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                         .join(ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))

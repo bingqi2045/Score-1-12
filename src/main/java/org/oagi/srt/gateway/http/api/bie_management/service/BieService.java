@@ -173,7 +173,8 @@ public class BieService {
             case Production:
                 accessPrivilege = CanView;
                 break;
-        };
+        }
+        ;
 
         return accessPrivilege;
     }
@@ -247,24 +248,24 @@ public class BieService {
                 .fetchInto(BizCtxAssignment.class);
     }
 
-     @Transactional
-     public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
-         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
-         //remove all records of previous assignment if not in the current assignment
-         dslContext.delete(BIZ_CTX_ASSIGNMENT)
-                 .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                 .execute();
+    @Transactional
+    public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
+        ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
+        //remove all records of previous assignment if not in the current assignment
+        dslContext.delete(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
 
-        for (int i=0; i < newList.size() ; i++) {
+        for (int i = 0; i < newList.size(); i++) {
             dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
                     .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                     .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
                     .onDuplicateKeyIgnore()
                     .execute();
             //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
-         }
+        }
 
-     }
+    }
 
 
 }

@@ -57,6 +57,29 @@ SELECT (SELECT `app_group_id` FROM `app_group` WHERE `name` = 'User'), `app_user
 FROM `app_user`
 WHERE `app_user`.`is_developer` = 0;
 
+-- Create syntax for TABLE 'app_permission'
+DROP TABLE IF EXISTS `app_permission`;
+CREATE TABLE `app_permission` (
+  `app_permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `segment` varchar(64) NOT NULL DEFAULT '',
+  `object` varchar(256) NOT NULL DEFAULT '',
+  `operation` varchar(64) NOT NULL DEFAULT 'Unprepared',
+  `description` tinytext,
+  PRIMARY KEY (`app_permission_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- Create syntax for TABLE 'app_permission_group'
+DROP TABLE IF EXISTS `app_permission_group`;
+CREATE TABLE `app_permission_group` (
+  `app_permission_id` bigint(20) unsigned NOT NULL,
+  `app_group_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`app_permission_id`,`app_group_id`),
+  KEY `app_permission_id` (`app_permission_id`),
+  KEY `app_permission_group_fk_1` (`app_group_id`),
+  CONSTRAINT `app_permission_group_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
+  CONSTRAINT `app_permission_group_fk_2` FOREIGN KEY (`app_permission_id`) REFERENCES `app_permission` (`app_permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Increase `release_id` to put 'Working' release at first on.
 UPDATE `release` SET `release_id` = `release_id` + 1;
 UPDATE `acc` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;

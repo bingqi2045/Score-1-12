@@ -397,7 +397,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
                     .setAccManifestId(acc.getAccId())
                     .execute().longValue();
-            
+
             AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
             long asbiepId = asbiepRecord.getAsbiepId().longValue();
             AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccId(),
@@ -879,7 +879,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     Tables.DT_SC.CARDINALITY_MAX.as("bie_cardinality_max"),
                     Tables.DT_SC.DEFAULT_VALUE.as("bie_default_value"),
                     Tables.DT_SC.FIXED_VALUE.as("bie_fixed_value")
-                    )
+            )
                     .from(Tables.DT_SC)
                     .where(Tables.DT_SC.DT_SC_ID.eq(ULong.valueOf(bbieScNode.getDtScManifestId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
