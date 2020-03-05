@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.api.graph.Node;
 
 import java.util.*;
 import java.util.function.Function;
@@ -112,43 +113,46 @@ public class GraphContext {
                         .collect(groupingBy(DtScManifestRecord::getOwnerDtManifestId));
     }
 
-    public List<?> findChildren(Object node) {
-        if (node instanceof AccManifestRecord) {
-            AccManifestRecord accManifest = (AccManifestRecord) node;
-            List children = new ArrayList();
+    public List<Node> findChildren(Node node) {
+        switch (node.getType()) {
+            case ACC:
+                List<Node> children = new ArrayList();
+                if (node.getBasedManifestId() != null) {
+                    AccManifestRecord base = accManifestMap.get(node.getBasedManifestId());
+                    children.add(Node.toNode(base));
+                }
 
-            if (accManifest.getBasedAccManifestId() != null) {
-                AccManifestRecord base = accManifestMap.get(accManifest.getBasedAccManifestId());
-                children.add(base);
-            }
+                List<Assoc> assocs = new ArrayList();
+                assocs.addAll(asccManifestMap.getOrDefault(node.getManifestId(), Collections.emptyList()));
+                assocs.addAll(bccManifestMap.getOrDefault(node.getManifestId(), Collections.emptyList()));
+                Collections.sort(assocs, Comparator.comparing(Assoc::getSeqKey));
+                children.addAll(
+                        assocs.stream().map(e -> {
+                            if (e instanceof AsccManifest) {
+                                return Node.toNode(asccpManifestMap.get(((AsccManifest) e).getToAsccpManifestId()));
+                            } else {
+                                return Node.toNode(bccpManifestMap.get(((BccManifest) e).getToBccpManifestId()));
+                            }
+                        }).collect(Collectors.toList())
+                );
 
-            List<Assoc> assocs = new ArrayList();
-            assocs.addAll(asccManifestMap.getOrDefault(accManifest.getAccManifestId(), Collections.emptyList()));
-            assocs.addAll(bccManifestMap.getOrDefault(accManifest.getAccManifestId(), Collections.emptyList()));
-            Collections.sort(assocs, Comparator.comparing(Assoc::getSeqKey));
-            children.addAll(
-                    assocs.stream().map(e -> {
-                        if (e instanceof AsccManifest) {
-                            return asccpManifestMap.get(((AsccManifest) e).getToAsccpManifestId());
-                        } else {
-                            return bccpManifestMap.get(((BccManifest) e).getToBccpManifestId());
-                        }
-                    }).collect(Collectors.toList())
-            );
+                return children;
 
-            return children;
-        } else if (node instanceof AsccpManifestRecord) {
-            AsccpManifestRecord asccpManifest = (AsccpManifestRecord) node;
-            AccManifestRecord accManifest = accManifestMap.get(asccpManifest.getRoleOfAccManifestId());
-            return (accManifest != null) ? Arrays.asList(accManifest) : Collections.emptyList();
-        } else if (node instanceof BccpManifestRecord) {
-            BccpManifestRecord bccpManifest = (BccpManifestRecord) node;
-            DtManifestRecord dtManifest = dtManifestMap.get(bccpManifest.getBdtManifestId());
-            return (dtManifest != null) ? Arrays.asList(dtManifest) : Collections.emptyList();
-        } else if (node instanceof DtManifestRecord) {
-            DtManifestRecord dtManifest = (DtManifestRecord) node;
-            return dtScManifestMap.getOrDefault(dtManifest.getDtManifestId(), Collections.emptyList());
+            case ASCCP:
+                AccManifestRecord accManifest = accManifestMap.get(node.getLinkedManifestId());
+                return (accManifest != null) ? Arrays.asList(Node.toNode(accManifest)) : Collections.emptyList();
+
+            case BCCP:
+                DtManifestRecord dtManifest = dtManifestMap.get(node.getLinkedManifestId());
+                return (dtManifest != null) ? Arrays.asList(Node.toNode(dtManifest)) : Collections.emptyList();
+
+            case BDT:
+                return dtScManifestMap.getOrDefault(node.getManifestId(), Collections.emptyList()).stream()
+                        .map(e -> Node.toNode(e)).collect(Collectors.toList());
+
+            case BDTSC:
+            default:
+                return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 }

@@ -5,7 +5,6 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.DtManifestRecord;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.GraphContext;
 import org.oagi.srt.repo.GraphContextRepository;
@@ -39,7 +38,7 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(accManifest);
-        return buildGraph(graphContext, accManifest);
+        return buildGraph(graphContext, Node.toNode(accManifest));
     }
 
     public Graph getAsccpGraph(long asccpManifestId) {
@@ -51,7 +50,7 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(asccpManifest);
-        return buildGraph(graphContext, asccpManifest);
+        return buildGraph(graphContext, Node.toNode(asccpManifest));
     }
 
     public Graph getBccpGraph(long bccpManifestId) {
@@ -63,28 +62,28 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
-        return buildGraph(graphContext, bccpManifest);
+        return buildGraph(graphContext, Node.toNode(bccpManifest));
     }
 
-    private Graph buildGraph(GraphContext graphContext, Object root) {
-        Queue manifestQueue = new LinkedList<>();
+    private Graph buildGraph(GraphContext graphContext, Node root) {
+        Queue<Node> manifestQueue = new LinkedList<>();
         manifestQueue.add(root);
 
         Graph graph = new Graph(dslContext);
 
         while (!manifestQueue.isEmpty()) {
-            Object node = manifestQueue.poll();
+            Node node = manifestQueue.poll();
             if (!graph.addNode(node)) {
                 continue;
             }
 
-            List children = graphContext.findChildren(node);
+            List<Node> children = graphContext.findChildren(node);
             if (children.isEmpty()) {
                 continue;
             }
 
             graph.addEdges(node, children);
-            if (node instanceof DtManifestRecord) {
+            if (Node.NodeType.BDT == node.getType()) {
                 children.stream().forEach(e -> graph.addNode(e));
             } else {
                 manifestQueue.addAll(children);

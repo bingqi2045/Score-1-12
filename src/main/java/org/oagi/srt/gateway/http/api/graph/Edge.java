@@ -8,6 +8,8 @@ import java.util.List;
 @Data
 public class Edge {
 
+    public static final transient Edge EMPTY_EDGE = new Edge();
+
     private List<String> targets = new ArrayList();
 
     public void addTarget(String target) {

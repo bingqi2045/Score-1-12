@@ -1,16 +1,16 @@
 package org.oagi.srt.gateway.http.api.graph;
 
+import org.jooq.tools.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class GraphController {
@@ -21,11 +21,11 @@ public class GraphController {
     @RequestMapping(value = "/graphs/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Graph> getGraph(@AuthenticationPrincipal User user,
-                                       @PathVariable("type") String type,
-                                       @PathVariable("manifestId") long manifestId) {
+    public Map<String, Object> getGraph(@AuthenticationPrincipal User user,
+                                        @PathVariable("type") String type,
+                                        @PathVariable("manifestId") long manifestId,
+                                        @RequestParam(value = "q", required = false) String query) {
         Graph graph;
-
         switch (type) {
             case "acc":
                 graph = graphService.getAccGraph(manifestId);
@@ -43,8 +43,16 @@ public class GraphController {
                 throw new UnsupportedOperationException();
         }
 
-        Map<String, Graph> response = new HashMap();
-        response.put("graph", graph);
+        Map<String, Object> response = new HashMap();
+
+        if (!StringUtils.isEmpty(query)) {
+            Collection<Path> paths = graph.findPaths(type + manifestId, query);
+            response.put("query", query);
+            response.put("paths", paths.stream().map(e -> e.getNodeKeys()).collect(Collectors.toList()));
+        } else {
+            response.put("graph", graph);
+        }
+
         return response;
     }
 }
