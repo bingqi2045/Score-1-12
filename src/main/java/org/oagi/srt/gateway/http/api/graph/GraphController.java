@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -46,9 +47,11 @@ public class GraphController {
         Map<String, Object> response = new HashMap();
 
         if (!StringUtils.isEmpty(query)) {
-            Collection<Path> paths = graph.findPaths(type + manifestId, query);
+            Collection<List<String>> paths = graph.findPaths(type + manifestId, query);
             response.put("query", query);
-            response.put("paths", paths.stream().map(e -> e.getNodeKeys()).collect(Collectors.toList()));
+            response.put("paths", paths.stream()
+                    .map(e -> String.join(">", e))
+                    .collect(Collectors.toList()));
         } else {
             response.put("graph", graph);
         }

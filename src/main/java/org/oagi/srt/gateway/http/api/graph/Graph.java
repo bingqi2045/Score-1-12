@@ -2,12 +2,15 @@ package org.oagi.srt.gateway.http.api.graph;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.oagi.srt.entity.jooq.Tables.*;
 
@@ -124,39 +127,36 @@ public class Graph {
         });
     }
 
-    public Collection<Path> findPaths(String from, String query) {
+    public Collection<List<String>> findPaths(String from, String query) {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();
         }
 
-        Set<Path> paths = new LinkedHashSet();
-        String qlc = query.toLowerCase().trim();
-
-        Queue<List<String>> queue = new LinkedList();
-        {
-            List<String> list = new ArrayList();
-            Node node = nodes.get(from);
-            list.add(node.getKey());
-            queue.offer(list);
+        Node root = nodes.get(from);
+        if (root == null) {
+            return Collections.emptyList();
         }
 
-        while (!queue.isEmpty()) {
-            List<String> list = queue.poll();
-            Node node = nodes.get(list.get(list.size() - 1));
+        String qlc = query.toLowerCase().trim();
+        Stack<List<Node>> stack = new Stack();
+        stack.push(Arrays.asList(root));
 
-            if (node.hasTerm(qlc)) {
-                paths.add(new Path(list));
+        Set<List<String>> paths = new LinkedHashSet();
+
+        while (!stack.isEmpty()) {
+            List<Node> cur = stack.pop();
+            Node lastNode = cur.get(cur.size() - 1);
+            if (lastNode.hasTerm(qlc)) {
+                paths.add(cur.stream().map(e -> e.getKey()).collect(Collectors.toList()));
             }
 
-            List<String> targets = edges.getOrDefault(node.getKey(), Edge.EMPTY_EDGE).getTargets();
-            if (targets.isEmpty()) {
-                continue;
-            }
-
-            for (String target : targets) {
-                List<String> other = new ArrayList(list);
-                other.add(nodes.get(target).getKey());
-                queue.offer(other);
+            List<String> targets = edges.getOrDefault(lastNode.getKey(), Edge.EMPTY_EDGE).getTargets();
+            if (!targets.isEmpty()) {
+                stack.addAll(targets.stream().map(e -> {
+                    List<Node> n = new ArrayList(cur);
+                    n.add(nodes.get(e));
+                    return n;
+                }).collect(Collectors.toList()));
             }
         }
 
