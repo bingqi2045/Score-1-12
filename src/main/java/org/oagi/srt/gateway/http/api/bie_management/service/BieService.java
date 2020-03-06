@@ -7,6 +7,7 @@ import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
+import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.helper.CcUtility;
@@ -437,10 +438,15 @@ public class BieService {
     }
 
     @Transactional
-    public void deleteBieList(List<Long> topLevelAbieIds) {
+    public void deleteBieList(User requester, List<Long> topLevelAbieIds) {
         if (topLevelAbieIds == null || topLevelAbieIds.isEmpty()) {
             return;
         }
+
+        /*
+         * Issue #772
+         */
+        ensureProperDeleteBieRequest(requester, topLevelAbieIds);
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
 
@@ -456,6 +462,28 @@ public class BieService {
         dslContext.deleteFrom(Tables.BIZ_CTX_ASSIGNMENT).where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
+    }
+
+    private void ensureProperDeleteBieRequest(User requester, List<Long> topLevelAbieIds) {
+        Result<Record2<Integer, ULong>> result =
+                dslContext.select(TOP_LEVEL_ABIE.STATE, TOP_LEVEL_ABIE.OWNER_USER_ID)
+                        .from(TOP_LEVEL_ABIE)
+                        .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(
+                                topLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                        ))
+                        .fetch();
+
+        long requesterUserId = sessionService.userId(requester);
+        for (Record2<Integer, ULong> record : result) {
+            BieState bieState = BieState.valueOf(record.value1());
+            if (bieState != Editing) {
+                throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
+            }
+
+            if (requesterUserId != record.value2().longValue()) {
+                throw new DataAccessForbiddenException("Only allowed to delete the BIE by the owner.");
+            }
+        }
     }
 
     @Transactional
