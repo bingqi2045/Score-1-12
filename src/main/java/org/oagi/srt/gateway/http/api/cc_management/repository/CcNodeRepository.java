@@ -1196,8 +1196,9 @@ public class CcNodeRepository {
     }
 
     public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
-        long bdtScId = bdtScNode.getBdtScId();
+        long manifestId = bdtScNode.getManifestId();
         return dslContext.select(
+                DT_SC_MANIFEST.DT_SC_MANIFEST_ID.as("manifestId"),
                 DT_SC.DT_SC_ID.as("bdt_sc_id"),
                 DT_SC.GUID,
                 concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.PROPERTY_TERM).as("den"),
@@ -1206,8 +1207,9 @@ public class CcNodeRepository {
                 DT_SC.DEFINITION,
                 DT_SC.DEFINITION_SOURCE,
                 DT_SC.DEFAULT_VALUE,
-                DT_SC.FIXED_VALUE).from(DT_SC)
-                .where(DT_SC.DT_SC_ID.eq(ULong.valueOf(bdtScId)))
+                DT_SC.FIXED_VALUE).from(DT_SC_MANIFEST)
+                .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }
 

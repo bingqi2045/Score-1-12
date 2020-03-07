@@ -10,6 +10,7 @@ public class CcBdtScNode extends CcNode {
     private String type = "bdt_sc";
 
     private long bdtScId;
+    private long manifestId;
 
     @Override
     public long getId() {

@@ -150,7 +150,7 @@ public class GraphContext {
                 return dtScManifestMap.getOrDefault(node.getManifestId(), Collections.emptyList()).stream()
                         .map(e -> Node.toNode(e)).collect(Collectors.toList());
 
-            case BDTSC:
+            case BDT_SC:
             default:
                 return Collections.emptyList();
         }

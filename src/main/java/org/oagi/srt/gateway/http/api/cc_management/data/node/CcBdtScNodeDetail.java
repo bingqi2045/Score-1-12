@@ -6,7 +6,7 @@ import lombok.Data;
 public class CcBdtScNodeDetail implements CcNodeDetail {
 
     private String type = "bdt_sc";
-
+    private long manifestId;
     private long bdtScId;
     private String guid;
     private String den;

@@ -15,7 +15,7 @@ public class Node {
         ASCCP,
         BCCP,
         BDT,
-        BDTSC;
+        BDT_SC;
 
         public String toString() {
             return this.name().toLowerCase();
@@ -105,7 +105,7 @@ public class Node {
     }
 
     public static Node toNode(DtScManifestRecord dtScManifest) {
-        return new Node(NodeType.BDTSC, dtScManifest.getDtScManifestId());
+        return new Node(NodeType.BDT_SC, dtScManifest.getDtScManifestId());
     }
 
     public boolean hasTerm(String query) {

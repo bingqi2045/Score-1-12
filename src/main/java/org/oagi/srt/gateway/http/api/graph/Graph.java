@@ -2,8 +2,6 @@ package org.oagi.srt.gateway.http.api.graph;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
@@ -112,13 +110,13 @@ public class Graph {
                     });
                     break;
 
-                case BDTSC:
+                case BDT_SC:
                     dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM)
                             .from(DT_SC)
                             .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
                             .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(entry.getValue()))
                             .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.BDTSC.toString() + record.value1());
+                        Node node = nodes.get(Node.NodeType.BDT_SC.toString() + record.value1());
                         node.put("propertyTerm", record.value2());
                         node.put("representationTerm", record.value3());
                     });
