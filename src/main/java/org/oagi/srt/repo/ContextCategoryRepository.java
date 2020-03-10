@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.count;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
 public class ContextCategoryRepository {
@@ -39,14 +40,14 @@ public class ContextCategoryRepository {
 
         public SelectContextCategoryArguments setName(String name) {
             if (!StringUtils.isEmpty(name)) {
-                conditions.add(CTX_CATEGORY.NAME.containsIgnoreCase(name.trim()));
+                conditions.addAll(contains(name, CTX_CATEGORY.NAME));
             }
             return this;
         }
 
         public SelectContextCategoryArguments setDescription(String description) {
             if (!StringUtils.isEmpty(description)) {
-                conditions.add(CTX_CATEGORY.DESCRIPTION.containsIgnoreCase(description.trim()));
+                conditions.addAll(contains(description, CTX_CATEGORY.DESCRIPTION));
             }
             return this;
         }

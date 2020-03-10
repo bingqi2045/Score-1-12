@@ -1,12 +1,15 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
@@ -174,7 +177,6 @@ public class BieService {
                 accessPrivilege = CanView;
                 break;
         }
-        ;
 
         return accessPrivilege;
     }
@@ -189,10 +191,15 @@ public class BieService {
     }
 
     @Transactional
-    public void deleteBieList(List<Long> topLevelAbieIds) {
+    public void deleteBieList(User requester, List<Long> topLevelAbieIds) {
         if (topLevelAbieIds == null || topLevelAbieIds.isEmpty()) {
             return;
         }
+
+        /*
+         * Issue #772
+         */
+        ensureProperDeleteBieRequest(requester, topLevelAbieIds);
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
 
@@ -208,6 +215,28 @@ public class BieService {
         dslContext.deleteFrom(Tables.BIZ_CTX_ASSIGNMENT).where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
+    }
+
+    private void ensureProperDeleteBieRequest(User requester, List<Long> topLevelAbieIds) {
+        Result<Record2<Integer, ULong>> result =
+                dslContext.select(TOP_LEVEL_ABIE.STATE, TOP_LEVEL_ABIE.OWNER_USER_ID)
+                        .from(TOP_LEVEL_ABIE)
+                        .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(
+                                topLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                        ))
+                        .fetch();
+
+        long requesterUserId = sessionService.userId(requester);
+        for (Record2<Integer, ULong> record : result) {
+            BieState bieState = BieState.valueOf(record.value1());
+            if (bieState != BieState.WIP) {
+                throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
+            }
+
+            if (requesterUserId != record.value2().longValue()) {
+                throw new DataAccessForbiddenException("Only allowed to delete the BIE by the owner.");
+            }
+        }
     }
 
     @Transactional

@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.oagi.srt.data.DTType.BDT;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
 
 @Repository
 public class CcListRepository {
@@ -72,14 +73,14 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(ACC.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), ACC.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(ACC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), ACC.DEFINITION));
         }
-        if (request.getModule() != null && !request.getModule().isEmpty()) {
-            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -171,11 +172,11 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ASCC_MANIFEST.ASCC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(ASCC.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), ASCC.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(ASCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), ASCC.DEFINITION));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -256,11 +257,11 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(BCC_MANIFEST.BCC_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(BCC.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), BCC.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(BCC.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), BCC.DEFINITION));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -341,14 +342,14 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(ASCCP.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), ASCCP.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(ASCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), ASCCP.DEFINITION));
         }
-        if (request.getModule() != null && !request.getModule().isEmpty()) {
-            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -432,14 +433,14 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(BCCP_MANIFEST.BCCP_MANIFEST_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(BCCP.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), BCCP.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(BCCP.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), BCCP.DEFINITION));
         }
-        if (request.getModule() != null && !request.getModule().isEmpty()) {
-            conditions.add(DSL.lower(MODULE.MODULE_).contains(request.getModule().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -523,11 +524,11 @@ public class CcListRepository {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(DT.DT_ID.notIn(request.getExcludes()));
         }
-        if (request.getDen() != null && !request.getDen().isEmpty()) {
-            conditions.add(getDenFilter(DT.DEN, request.getDen()));
+        if (!StringUtils.isEmpty(request.getDen())) {
+            conditions.addAll(contains(request.getDen(), DT.DEN));
         }
-        if (request.getDefinition() != null && !request.getDefinition().isEmpty()) {
-            conditions.add(DSL.lower(DT.DEFINITION).contains(request.getDefinition().trim().toLowerCase()));
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), DT.DEFINITION));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));

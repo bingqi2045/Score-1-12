@@ -81,11 +81,10 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie_list/delete", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteBieList(@RequestBody DeleteBieListRequest request) {
+    public ResponseEntity deleteBieList(@AuthenticationPrincipal User user,
+                                        @RequestBody DeleteBieListRequest request) {
         List<Long> topLevelAbieIds = request.getTopLevelAbieIds();
-        if (!topLevelAbieIds.isEmpty()) {
-            service.deleteBieList(topLevelAbieIds);
-        }
+        service.deleteBieList(user, topLevelAbieIds);
         return ResponseEntity.noContent().build();
     }
 

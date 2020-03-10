@@ -22,6 +22,7 @@ import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
 public class BusinessInformationEntityRepository {
@@ -396,7 +397,7 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setPropertyTerm(String propertyTerm) {
             if (!StringUtils.isEmpty(propertyTerm)) {
-                conditions.add(ASCCP.PROPERTY_TERM.containsIgnoreCase(propertyTerm.trim()));
+                conditions.addAll(contains(propertyTerm, ASCCP.PROPERTY_TERM));
             }
             return this;
         }
