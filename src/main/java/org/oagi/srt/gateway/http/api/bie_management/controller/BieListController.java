@@ -49,7 +49,6 @@ public class BieListController {
         BieListRequest request = new BieListRequest();
 
         request.setPropertyTerm(propertyTerm);
-        // todo make it a list for all the business context
         request.setBusinessContext(businessContext);
         request.setAccess(!StringUtils.isEmpty(access) ? AccessPrivilege.valueOf(access) : null);
         request.setStates(!StringUtils.isEmpty(states) ?

@@ -35,6 +35,7 @@ import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -184,7 +185,16 @@ public class BieService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getPropertyTerm())) {
-            conditions.add(Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(request.getPropertyTerm().trim()));
+            String q = request.getPropertyTerm().trim();
+            if (isQuoted(q)) {
+                conditions.add(Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(unquote(q)));
+            } else {
+                conditions.addAll(
+                        split(q).stream()
+                                .map(s -> Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(s))
+                                .collect(Collectors.toList())
+                );
+            }
         }
         if (!request.getExcludes().isEmpty()) {
             conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
@@ -406,13 +416,13 @@ public class BieService {
         if (bizCtxId != null && bizCtxId > 0L) {
             List<ULong> topLevelAbieIds =
                     dslContext.select(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
-                    .from(BIZ_CTX_ASSIGNMENT)
-                    .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                    .fetchInto(ULong.class);
+                            .from(BIZ_CTX_ASSIGNMENT)
+                            .where(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
+                            .fetchInto(ULong.class);
             if (topLevelAbieIds.isEmpty()) {
                 return Collections.emptyList();
             }
-            
+
             condition = TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds);
         } else if (excludeJsonRelated != null && excludeJsonRelated == true) {
             condition = ASCCP.PROPERTY_TERM.notIn("Meta Header", "Pagination Response");
@@ -524,24 +534,24 @@ public class BieService {
                 .fetchInto(BizCtxAssignment.class);
     }
 
-     @Transactional
-     public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
-         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
-         //remove all records of previous assignment if not in the current assignment
-         dslContext.delete(BIZ_CTX_ASSIGNMENT)
-                 .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                 .execute();
+    @Transactional
+    public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
+        ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
+        //remove all records of previous assignment if not in the current assignment
+        dslContext.delete(BIZ_CTX_ASSIGNMENT)
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .execute();
 
-        for (int i=0; i < newList.size() ; i++) {
+        for (int i = 0; i < newList.size(); i++) {
             dslContext.insertInto(Tables.BIZ_CTX_ASSIGNMENT)
                     .set(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                     .set(Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
                     .onDuplicateKeyIgnore()
                     .execute();
             //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
-         }
+        }
 
-     }
+    }
 
 
 }

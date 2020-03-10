@@ -27,6 +27,7 @@ import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.code_list_management.data.CodeListState.Editing;
 import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -75,7 +76,16 @@ public class CodeListService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            conditions.add(Tables.CODE_LIST.NAME.containsIgnoreCase(request.getName().trim()));
+            String q = request.getName().trim();
+            if (isQuoted(q)) {
+                conditions.add(Tables.CODE_LIST.NAME.containsIgnoreCase(unquote(q)));
+            } else {
+                conditions.addAll(
+                        split(q).stream()
+                                .map(s -> Tables.CODE_LIST.NAME.containsIgnoreCase(s))
+                                .collect(Collectors.toList())
+                );
+            }
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.CODE_LIST.STATE.in(request.getStates()));
