@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
 public class BusinessContextRepository {
@@ -48,16 +48,7 @@ public class BusinessContextRepository {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            String q = request.getName().trim();
-            if (isQuoted(q)) {
-                conditions.add(BIZ_CTX.NAME.containsIgnoreCase(unquote(q)));
-            } else {
-                conditions.addAll(
-                        split(q).stream()
-                                .map(s -> BIZ_CTX.NAME.containsIgnoreCase(s))
-                                .collect(Collectors.toList())
-                );
-            }
+            conditions.addAll(contains(request.getName(), BIZ_CTX.NAME));
         }
         if (!request.getBizCtxIds().isEmpty()) {
             conditions.add(BIZ_CTX.BIZ_CTX_ID.in(request.getBizCtxIds()));

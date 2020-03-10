@@ -35,7 +35,7 @@ import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
-import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Service
 @Transactional(readOnly = true)
@@ -185,16 +185,7 @@ public class BieService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getPropertyTerm())) {
-            String q = request.getPropertyTerm().trim();
-            if (isQuoted(q)) {
-                conditions.add(Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(unquote(q)));
-            } else {
-                conditions.addAll(
-                        split(q).stream()
-                                .map(s -> Tables.ASCCP.PROPERTY_TERM.containsIgnoreCase(s))
-                                .collect(Collectors.toList())
-                );
-            }
+            conditions.addAll(contains(request.getPropertyTerm(), ASCCP.PROPERTY_TERM));
         }
         if (!request.getExcludes().isEmpty()) {
             conditions.add(Tables.ASCCP.PROPERTY_TERM.notIn(request.getExcludes()));
@@ -486,7 +477,7 @@ public class BieService {
         long requesterUserId = sessionService.userId(requester);
         for (Record2<Integer, ULong> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
-            if (bieState != Editing) {
+            if (bieState == Published) {
                 throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
             }
 
