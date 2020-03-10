@@ -229,7 +229,7 @@ public class BieService {
         long requesterUserId = sessionService.userId(requester);
         for (Record2<Integer, ULong> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
-            if (bieState != BieState.WIP) {
+            if (bieState == BieState.Production) {
                 throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
             }
 

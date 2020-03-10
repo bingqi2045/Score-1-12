@@ -76,16 +76,7 @@ public class CodeListService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            String q = request.getName().trim();
-            if (isQuoted(q)) {
-                conditions.add(Tables.CODE_LIST.NAME.containsIgnoreCase(unquote(q)));
-            } else {
-                conditions.addAll(
-                        split(q).stream()
-                                .map(s -> Tables.CODE_LIST.NAME.containsIgnoreCase(s))
-                                .collect(Collectors.toList())
-                );
-            }
+            conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(Tables.CODE_LIST.STATE.in(request.getStates()));

@@ -68,16 +68,7 @@ public class ContextSchemeService {
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
-            String q = request.getName().trim();
-            if (isQuoted(q)) {
-                conditions.add(CTX_SCHEME.SCHEME_NAME.containsIgnoreCase(unquote(q)));
-            } else {
-                conditions.addAll(
-                        split(q).stream()
-                                .map(s -> CTX_SCHEME.SCHEME_NAME.containsIgnoreCase(s))
-                                .collect(Collectors.toList())
-                );
-            }
+            conditions.addAll(contains(request.getName(), CTX_SCHEME.SCHEME_NAME));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
