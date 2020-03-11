@@ -302,13 +302,13 @@ WHERE `dt`.`state` = 3;
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 4)
+SET `dt`.`state` = IF(`dt`.`revision_num` = 0 AND `dt`.`revision_tracking_num` = 0, 7, 4)
 WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `dt`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 7, 5)
+SET `dt`.`state` = IF(`dt`.`revision_num` = 0 AND `dt`.`revision_tracking_num` = 0, 7, 5)
 WHERE `dt`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `dt`
