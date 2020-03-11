@@ -79,7 +79,7 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getDefinition())) {
             conditions.addAll(contains(request.getDefinition(), ACC.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (!StringUtils.isEmpty(request.getModule())) {
             conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
@@ -348,7 +348,7 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getDefinition())) {
             conditions.addAll(contains(request.getDefinition(), ASCCP.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (!StringUtils.isEmpty(request.getModule())) {
             conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
@@ -439,7 +439,7 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getDefinition())) {
             conditions.addAll(contains(request.getDefinition(), BCCP.DEFINITION));
         }
-        if (!StringUtils.isEmpty(request.getDefinition())) {
+        if (!StringUtils.isEmpty(request.getModule())) {
             conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
         }
         if (request.getUpdateStartDate() != null) {
@@ -587,21 +587,6 @@ public class CcListRepository {
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
-    }
-
-    private Condition getDenFilter(TableField<?, String> field, String keyword) {
-        Condition denCondition = null;
-        List<String> filters = Arrays.asList(keyword.toLowerCase().split(" ")).stream()
-                .map(e -> e.replaceAll("[^a-z0-9]", "").trim()).collect(Collectors.toList());
-        for (String token : filters) {
-            if (denCondition == null) {
-                denCondition = field.contains(token);
-            } else {
-                denCondition = denCondition.and(field.contains(token));
-            }
-
-        }
-        return denCondition;
     }
 
     public ULong updateAccOwnerUserId(AccManifestRecord accManifest,
