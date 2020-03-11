@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public class BusinessContextRepository {
     private DSLContext dslContext;
 
     private SelectOnConditionStep
-            <Record5<ULong, String, String, Timestamp, String>> getSelectOnConditionStepForBusinessContext() {
+            <Record5<ULong, String, String, LocalDateTime, String>> getSelectOnConditionStepForBusinessContext() {
         return dslContext.select(
                 BIZ_CTX.BIZ_CTX_ID,
                 BIZ_CTX.GUID,
@@ -44,7 +45,7 @@ public class BusinessContextRepository {
         }
 
         SelectOnConditionStep
-                <Record5<ULong, String, String, Timestamp, String>> step = getSelectOnConditionStepForBusinessContext();
+                <Record5<ULong, String, String, LocalDateTime, String>> step = getSelectOnConditionStepForBusinessContext();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getName())) {
@@ -57,14 +58,14 @@ public class BusinessContextRepository {
             conditions.add(APP_USER.LOGIN_ID.in(request.getUpdaterLoginIds()));
         }
         if (request.getUpdateStartDate() != null) {
-            conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime())));
+            conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.greaterOrEqual(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
         if (request.getUpdateEndDate() != null) {
-            conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime())));
+            conditions.add(BIZ_CTX.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
         SelectConnectByStep
-                <Record5<ULong, String, String, Timestamp, String>> conditionStep = step.where(conditions);
+                <Record5<ULong, String, String, LocalDateTime, String>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
@@ -92,7 +93,7 @@ public class BusinessContextRepository {
         }
 
         SelectWithTiesAfterOffsetStep
-                <Record5<ULong, String, String, Timestamp, String>> offsetStep = null;
+                <Record5<ULong, String, String, LocalDateTime, String>> offsetStep = null;
         if (sortField != null && pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
