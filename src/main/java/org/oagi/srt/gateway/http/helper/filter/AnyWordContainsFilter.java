@@ -44,6 +44,13 @@ public class AnyWordContainsFilter<T> implements Predicate<T> {
             return false;
         }
 
-        return split(s).containsAll(queries);
+        return split(s).stream().filter(e -> {
+            for (String query : queries) {
+                if (!e.contains(query)) {
+                    return false;
+                }
+            }
+            return true;
+        }).count() > 0L;
     }
 }
