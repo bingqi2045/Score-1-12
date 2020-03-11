@@ -51,7 +51,7 @@ public class ContainsFilterBuilder {
 
     public static List<String> split(String q, String sep) {
         return Arrays.asList(q.split(sep)).stream()
-                .map(e -> e.replaceAll("[^a-zA-Z0-9]", "").trim()).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     public static Collection<Condition> contains(String s, TableField field) {
