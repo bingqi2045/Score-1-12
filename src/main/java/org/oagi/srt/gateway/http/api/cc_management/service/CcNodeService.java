@@ -220,14 +220,20 @@ public class CcNodeService {
     public void updateCcStateDelete(User user, List<Long> accManifestIdList, List<Long> asccpManifestIdList,
                                     List<Long> bccpManifestIdList) {
         CcState ccState = CcState.Deleted;
-        for (Long accManifestId: accManifestIdList) {
-            repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
+        if (accManifestIdList != null) {
+            for (Long accManifestId: accManifestIdList) {
+                repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
+            }
         }
-        for (Long asccpManifestId: asccpManifestIdList) {
-            repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
+        if (asccpManifestIdList != null) {
+            for (Long asccpManifestId: asccpManifestIdList) {
+                repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
+            }
         }
-        for (Long bccpManifestId: bccpManifestIdList) {
-            repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
+        if (bccpManifestIdList != null) {
+            for (Long bccpManifestId: bccpManifestIdList) {
+                repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
+            }
         }
     }
 
