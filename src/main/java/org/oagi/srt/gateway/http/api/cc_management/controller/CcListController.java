@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Deleted;
 
 @RestController
 public class CcListController {
@@ -55,7 +58,7 @@ public class CcListController {
             request.setStates(stateStrings.stream().filter(e -> !"Deprecated".equals(e))
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
         } else {
-            request.setStates(Collections.emptyList());
+            request.setStates(Stream.of(CcState.values()).filter(e -> e != Deleted).collect(Collectors.toList()));
         }
         request.setDeprecated(deprecated);
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
