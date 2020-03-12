@@ -1654,7 +1654,8 @@ public class CcNodeRepository {
         BccpManifestRecord bccpManifestRecord =
                 manifestRepository.getBccpManifestById(ULong.valueOf(bccpManifestId));
 
-        ensureDependenciesOfBccp(bccpManifestRecord, ccState);
+        // TODO Define rule for state dependencies
+        // ensureDependenciesOfBccp(bccpManifestRecord, ccState);
 
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
