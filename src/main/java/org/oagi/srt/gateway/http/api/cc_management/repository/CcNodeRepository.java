@@ -698,7 +698,6 @@ public class CcNodeRepository {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
         accNode.setGroup(oagisComponentType.isGroup());
-        accNode.setState(accNode.getState());
         accNode.setAccess(getAccess(accNode, user));
         accNode.setHasChild(hasChild(accNode));
 
@@ -733,7 +732,7 @@ public class CcNodeRepository {
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
                 ACC_MANIFEST.ACC_ID.as("role_of_acc_id"),
-                ASCCP.STATE.as("raw_state"),
+                ASCCP.STATE,
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
@@ -747,7 +746,6 @@ public class CcNodeRepository {
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcAsccpNode.class);
 
-        asccpNode.setState(asccpNode.getState());
         asccpNode.setAccess(getAccess(asccpNode, user));
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
@@ -784,6 +782,9 @@ public class CcNodeRepository {
                 } else {
                     accessPrivilege = CanView;
                 }
+                break;
+            case Deleted:
+                accessPrivilege = Prohibited;
                 break;
         }
         return accessPrivilege.name();
@@ -823,7 +824,7 @@ public class CcNodeRepository {
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
                 DT_MANIFEST.DT_ID.as("bdt_id"),
-                BCCP.STATE.as("raw_state"),
+                BCCP.STATE,
                 BCCP.REVISION_NUM,
                 BCCP.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID,
@@ -836,7 +837,6 @@ public class CcNodeRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBccpNode.class);
-        bccpNode.setState(bccpNode.getState());
         bccpNode.setAccess(getAccess(bccpNode, user));
         bccpNode.setHasChild(hasChild(bccpNode));
 
