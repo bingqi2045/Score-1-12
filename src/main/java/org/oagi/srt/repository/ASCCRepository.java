@@ -7,7 +7,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
             ULong, String, Integer, Integer, Integer,
             ULong, ULong, String, String, String,
             ULong, ULong, ULong, LocalDateTime, LocalDateTime,
-            Integer, Integer, Integer, Byte, ULong,
+            String, Integer, Integer, Byte, ULong,
             Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,

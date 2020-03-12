@@ -2,6 +2,7 @@ package org.oagi.srt.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class DT implements CoreComponent {
     private String definitionSource;
     private String contentComponentDefinition;
     private String revisionDoc;
-    private int state;
+    private CcState state;
     private Long moduleId;
     private String module;
     private long createdBy;

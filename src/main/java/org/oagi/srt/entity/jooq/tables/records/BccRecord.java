@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = -1519203645;
+    private static final long serialVersionUID = 1874197594;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -274,21 +274,21 @@ The value of this column in the latest history record should be the same as that
     }
 
     /**
-     * Setter for <code>oagi.bcc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCC.
+     * Setter for <code>oagi.bcc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public void setState(Integer value) {
+    public void setState(String value) {
         set(16, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCC.
+     * Getter for <code>oagi.bcc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public Integer getState() {
-        return (Integer) get(16);
+    public String getState() {
+        return (String) get(16);
     }
 
     /**
@@ -389,6 +389,34 @@ State change can't be undone. But the history record can still keep the records 
         return (String) get(23);
     }
 
+    /**
+     * Setter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public void setPrevBccId(ULong value) {
+        set(24, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public ULong getPrevBccId() {
+        return (ULong) get(24);
+    }
+
+    /**
+     * Setter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public void setNextBccId(ULong value) {
+        set(25, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public ULong getNextBccId() {
+        return (ULong) get(25);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -412,7 +440,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -439,5 +467,7 @@ State change can't be undone. But the history record can still keep the records 
         set(21, isNillable);
         set(22, defaultValue);
         set(23, fixedValue);
+        set(24, prevBccId);
+        set(25, nextBccId);
     }
 }

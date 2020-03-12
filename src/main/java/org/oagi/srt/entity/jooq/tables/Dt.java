@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1829909325;
+    private static final long serialVersionUID = -1577007840;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -121,11 +121,11 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, String> REVISION_DOC = createField(DSL.name("revision_doc"), org.jooq.impl.SQLDataType.CLOB, this, "This is for documenting about the revision, e.g., how the newer version of the DT is different from the previous version.");
 
     /**
-     * The column <code>oagi.dt.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.
+     * The column <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public final TableField<DtRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
+    public final TableField<DtRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
      * The column <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
@@ -177,6 +177,16 @@ The value of this column in the latest history record should be the same as that
      * The column <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public final TableField<DtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
+
+    /**
+     * The column <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<DtRecord, ULong> PREV_DT_ID = createField(DSL.name("prev_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<DtRecord, ULong> NEXT_DT_ID = createField(DSL.name("next_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
 
     /**
      * Create a <code>oagi.dt</code> table reference
@@ -238,7 +248,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
     public Dt dtPreviousVersionDtIdFk() {
@@ -259,6 +269,14 @@ The value of this column in the latest history record should be the same as that
 
     public AppUser dtOwnerUserIdFk() {
         return new AppUser(this, Keys.DT_OWNER_USER_ID_FK);
+    }
+
+    public Dt dtPrevDtIdFk() {
+        return new Dt(this, Keys.DT_PREV_DT_ID_FK);
+    }
+
+    public Dt dtNextDtIdFk() {
+        return new Dt(this, Keys.DT_NEXT_DT_ID_FK);
     }
 
     @Override

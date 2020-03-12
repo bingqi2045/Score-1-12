@@ -104,6 +104,10 @@ VALUES
 (1, 'Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 2);
 
 -- Making relations between `acc` and `release` tables.
+ALTER TABLE `acc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `acc` SET `state` = 'Editing' where `state` = '1';
+UPDATE `acc` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `acc` SET `state` = 'Published' where `state` = '3';
 
 CREATE TABLE `acc_manifest` (
     `acc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -145,7 +149,7 @@ SELECT
     `release`.`release_id`,
     `acc`.`acc_id`
 FROM `acc` JOIN `release` ON `acc`.`release_id` = `release`.`release_id`
-WHERE `acc`.`state` = 3;
+WHERE `acc`.`state` = 'Published';
 
 -- Updating `based_acc_manifest_id`
 UPDATE `acc_manifest`, (
@@ -170,31 +174,38 @@ WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `acc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `acc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `acc`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `acc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 7, 5)
-WHERE `acc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `acc`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `acc`.`state` = 3
-WHERE `acc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
-
+SET `acc`.`state` = 'QA'
+WHERE `acc`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `acc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\\n\\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\\n\\nUnpublished components cannot be released.\\n\\nThis column is NULL for the current record.',
                   MODIFY COLUMN `current_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\\n\\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\\n\\nThe value of this column for the current record should be left NULL.',
-                  MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ACC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                  ADD COLUMN `prev_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                  ADD COLUMN `next_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                  ADD CONSTRAINT `acc_prev_acc_id_fk` FOREIGN KEY (`prev_acc_id`) REFERENCES `acc` (`acc_id`),
+                  ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`);
 
 -- Add indices
 CREATE INDEX `acc_guid_idx` ON `acc` (`guid`);
 CREATE INDEX `acc_revision_idx` ON `acc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `acc_last_update_timestamp_desc_idx` ON `acc` (`last_update_timestamp` DESC);
 
+
 -- Making relations between `asccp` and `release` tables.
+ALTER TABLE `asccp` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCCP.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `asccp` SET `state` = 'Editing' where `state` = '1';
+UPDATE `asccp` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `asccp` SET `state` = 'Published' where `state` = '3';
 
 CREATE TABLE `asccp_manifest` (
     `asccp_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -243,34 +254,44 @@ FROM `asccp`
 JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
 JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
-WHERE `asccp`.`state` = 3;
+WHERE `asccp`.`state` = 'Published';
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 4)
-WHERE `asccp`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `asccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `asccp`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `asccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 7, 5)
-WHERE `asccp`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `asccp`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `asccp`.`state` = 3
-WHERE `asccp`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `asccp`.`state` = 'QA'
+WHERE `asccp`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `asccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
                     MODIFY COLUMN `current_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
-                    MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCCP.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                    ADD COLUMN `prev_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                    ADD COLUMN `next_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                    ADD CONSTRAINT `asccp_prev_asccp_id_fk` FOREIGN KEY (`prev_asccp_id`) REFERENCES `asccp` (`asccp_id`),
+                    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`);
 
 -- Add indices
 CREATE INDEX `asccp_guid_idx` ON `asccp` (`guid`);
 CREATE INDEX `asccp_revision_idx` ON `asccp` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `asccp_last_update_timestamp_desc_idx` ON `asccp` (`last_update_timestamp` DESC);
 
+
 -- Making relations between `dt` and `release` tables.
+ALTER TABLE `dt` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `dt` SET `state` = 'Editing' where `state` = '1';
+UPDATE `dt` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `dt` SET `state` = 'Published' where `state` = '3';
+
+UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
 CREATE TABLE `dt_manifest` (
     `dt_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -298,30 +319,30 @@ SELECT
     `release`.`release_id`, `dt`.`module_id`,
     `dt`.`dt_id`
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
-WHERE `dt`.`state` = 3;
+WHERE `dt`.`state` = 'Published';
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = IF(`dt`.`revision_num` = 0 AND `dt`.`revision_tracking_num` = 0, 7, 4)
-WHERE `dt`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `dt`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
-
-
-UPDATE `dt`
-	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = IF(`dt`.`revision_num` = 0 AND `dt`.`revision_tracking_num` = 0, 7, 5)
-WHERE `dt`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `dt`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `dt`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
-SET `dt`.`state` = 3
-WHERE `dt`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `dt`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
-UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
+UPDATE `dt`
+	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
+SET `dt`.`state` = 'QA'
+WHERE `dt`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
-                 MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the DT.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                 ADD COLUMN `prev_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                 ADD COLUMN `next_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                 ADD CONSTRAINT `dt_prev_dt_id_fk` FOREIGN KEY (`prev_dt_id`) REFERENCES `dt` (`dt_id`),
+                 ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`);
 
 -- Add indices
 CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
@@ -331,8 +352,8 @@ CREATE INDEX `dt_last_update_timestamp_desc_idx` ON `dt` (`last_update_timestamp
 -- Drop unique index
 ALTER TABLE `dt` DROP INDEX `dt_uk1`;
 
--- Making relations between `dt_sc` and `release` tables.
 
+-- Making relations between `dt_sc` and `release` tables.
 CREATE TABLE `dt_sc_manifest` (
     `dt_sc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
@@ -362,6 +383,10 @@ CREATE INDEX `dt_sc_guid_idx` ON `dt_sc` (`guid`);
 ALTER TABLE `dt_sc` DROP INDEX `dt_sc_uk1`;
 
 -- Making relations between `bccp` and `release` tables.
+ALTER TABLE `bccp` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `bccp` SET `state` = 'Editing' where `state` = '1';
+UPDATE `bccp` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `bccp` SET `state` = 'Published' where `state` = '3';
 
 CREATE TABLE `bccp_manifest` (
     `bccp_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -396,34 +421,42 @@ SELECT
 FROM `bccp` JOIN `release` ON `bccp`.`release_id` = `release`.`release_id`
 JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = `release`.`release_id`
-WHERE `bccp`.`state` = 3;
+WHERE `bccp`.`state` = 'Published';
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 4)
-WHERE `bccp`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `bccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `bccp`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `bccp`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 7, 5)
-WHERE `bccp`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `bccp`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bccp`.`state` = 3
-WHERE `bccp`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `bccp`.`state` = 'QA'
+WHERE `bccp`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `bccp`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
                    MODIFY COLUMN `current_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
-                   MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCCP.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                   ADD COLUMN `prev_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                   ADD COLUMN `next_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                   ADD CONSTRAINT `bccp_prev_bccp_id_fk` FOREIGN KEY (`prev_bccp_id`) REFERENCES `bccp` (`bccp_id`),
+                   ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`);
 
 -- Add indices
 CREATE INDEX `bccp_guid_idx` ON `bccp` (`guid`);
 CREATE INDEX `bccp_revision_idx` ON `bccp` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `bccp_last_update_timestamp_desc_idx` ON `bccp` (`last_update_timestamp` DESC);
 
+
 -- Making relations between `ascc` and `release` tables.
+ALTER TABLE `ascc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `ascc` SET `state` = 'Editing' where `state` = '1';
+UPDATE `ascc` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `ascc` SET `state` = 'Published' where `state` = '3';
 
 CREATE TABLE `ascc_manifest` (
     `ascc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -487,35 +520,43 @@ JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `ascc`.`state` = 3
+WHERE `ascc`.`state` = 'Published'
 GROUP BY `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`;
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `ascc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `ascc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `ascc`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `ascc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 7, 5)
-WHERE `ascc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `ascc`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `ascc`.`state` = 3
-WHERE `ascc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `ascc`.`state` = 'QA'
+WHERE `ascc`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `ascc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
                    MODIFY COLUMN `current_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
-                   MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                   ADD COLUMN `prev_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                   ADD COLUMN `next_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                   ADD CONSTRAINT `ascc_prev_ascc_id_fk` FOREIGN KEY (`prev_ascc_id`) REFERENCES `ascc` (`ascc_id`),
+                   ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`);
 
 -- Add indices
 CREATE INDEX `ascc_guid_idx` ON `ascc` (`guid`);
 CREATE INDEX `ascc_revision_idx` ON `ascc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `ascc_last_update_timestamp_desc_idx` ON `ascc` (`last_update_timestamp` DESC);
 
+
 -- Making relations between `bcc` and `release` tables.
+ALTER TABLE `bcc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+UPDATE `bcc` SET `state` = 'Editing' where `state` = '1';
+UPDATE `bcc` SET `state` = 'Candidate' where `state` = '2';
+UPDATE `bcc` SET `state` = 'Published' where `state` = '3';
 
 CREATE TABLE `bcc_manifest` (
     `bcc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -579,33 +620,37 @@ JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `bcc`.`state` = 3
+WHERE `bcc`.`state` = 'Published'
 GROUP BY `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`;
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 4)
-WHERE `bcc`.`state` = 3 AND `app_user`.`is_developer` = 1 AND `bcc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
+WHERE `bcc`.`state` = 'Published' AND `app_user`.`is_developer` = 1 AND `bcc`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 7, 5)
-WHERE `bcc`.`state` = 3 AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 'Published', 'Production')
+WHERE `bcc`.`state` = 'Published' AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
-SET `bcc`.`state` = 3
-WHERE `bcc`.`state` = 2 AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
+SET `bcc`.`state` = 'QA'
+WHERE `bcc`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `bcc`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
 -- Add deprecated annotations
 ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. RELEASE_ID is an incremental integer. It is an unformatted counterpart of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. RELEASE_ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released.\n\nUnpublished components cannot be released.\n\nThis column is NULLl for the current record.',
                   MODIFY COLUMN `current_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0. This is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
-                  MODIFY COLUMN `state` int(11) COMMENT '1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+                  ADD COLUMN `prev_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+                  ADD COLUMN `next_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                  ADD CONSTRAINT `bcc_prev_bcc_id_fk` FOREIGN KEY (`prev_bcc_id`) REFERENCES `bcc` (`bcc_id`),
+                  ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`);
 
 -- Add indices
 CREATE INDEX `bcc_guid_idx` ON `bcc` (`guid`);
 CREATE INDEX `bcc_revision_idx` ON `bcc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timestamp` DESC);
+
 
 -- BIEs
 -- ABIE

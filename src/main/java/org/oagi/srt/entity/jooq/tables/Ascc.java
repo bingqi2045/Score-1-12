@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = 1118982013;
+    private static final long serialVersionUID = -767226319;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
@@ -142,11 +142,11 @@ The value of this column in the latest history record should be the same as that
     public final TableField<AsccRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.");
 
     /**
-     * The column <code>oagi.ascc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCC.
+     * The column <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public final TableField<AsccRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
+    public final TableField<AsccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
      * The column <code>oagi.ascc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
@@ -162,6 +162,16 @@ State change can't be undone. But the history record can still keep the records 
      * The column <code>oagi.ascc.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
      */
     public final TableField<AsccRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+
+    /**
+     * The column <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<AsccRecord, ULong> PREV_ASCC_ID = createField(DSL.name("prev_ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<AsccRecord, ULong> NEXT_ASCC_ID = createField(DSL.name("next_ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
 
     /**
      * Create a <code>oagi.ascc</code> table reference
@@ -223,7 +233,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AsccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
     }
 
     public Acc acc() {
@@ -244,6 +254,14 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser asccLastUpdatedByFk() {
         return new AppUser(this, Keys.ASCC_LAST_UPDATED_BY_FK);
+    }
+
+    public Ascc asccPrevAsccIdFk() {
+        return new Ascc(this, Keys.ASCC_PREV_ASCC_ID_FK);
+    }
+
+    public Ascc asccNextAsccIdFk() {
+        return new Ascc(this, Keys.ASCC_NEXT_ASCC_ID_FK);
     }
 
     @Override
@@ -273,11 +291,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row22<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Integer, Integer, Byte, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }

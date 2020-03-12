@@ -62,7 +62,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(ACC.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -161,7 +161,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(ASCC.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -246,7 +246,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(BCC.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -331,7 +331,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(ASCCP.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -422,7 +422,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(BCCP.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));
@@ -513,7 +513,7 @@ public class CcListRepository {
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(DT.STATE.in(
-                    request.getStates().stream().map(CcState::getValue).collect(Collectors.toList())));
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (!request.getOwnerLoginIds().isEmpty()) {
             conditions.add(appUserOwner.LOGIN_ID.in(request.getOwnerLoginIds()));

@@ -140,10 +140,10 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Candidate.getValue()) {
+            if (ueAcc.getState() == CcState.Candidate) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Draft.getValue()) {
+            } else if (ueAcc.getState() == CcState.Draft) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
@@ -170,7 +170,7 @@ public class BieEditService {
                 .where(and(
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
-                        Tables.ACC.STATE.eq(CcState.Candidate.getValue())))
+                        Tables.ACC.STATE.eq(CcState.Candidate.name())))
                 .fetchOneInto(Long.class);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
@@ -181,10 +181,10 @@ public class BieEditService {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Candidate.getValue()) {
+            if (ueAcc.getState() == CcState.Candidate) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Draft.getValue()) {
+            } else if (ueAcc.getState() == CcState.Draft) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();

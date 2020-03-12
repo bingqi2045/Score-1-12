@@ -2,6 +2,7 @@ package org.oagi.srt.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
 import java.util.Date;
 
@@ -30,7 +31,7 @@ public class ACC implements CoreComponent {
     private int revisionTrackingNum;
     private Integer revisionAction;
     private Long releaseId;
-    private int state;
+    private CcState state;
     private boolean deprecated;
     private boolean abstracted;
 

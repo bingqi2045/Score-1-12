@@ -62,7 +62,7 @@ public class BieRepository {
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(and(
                         ACC.REVISION_NUM.greaterThan(0),
-                        ACC.STATE.eq(CcState.Published.getValue()),
+                        ACC.STATE.eq(CcState.Published.name()),
                         ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 ))
@@ -335,7 +335,7 @@ public class BieRepository {
 
         if (isPublished) {
             conditions.add(
-                    ASCC.STATE.eq(CcState.Published.getValue())
+                    ASCC.STATE.eq(CcState.Published.name())
             );
         }
 
@@ -372,7 +372,7 @@ public class BieRepository {
 
         if (isPublished) {
             conditions.add(
-                    BCC.STATE.eq(CcState.Published.getValue())
+                    BCC.STATE.eq(CcState.Published.name())
             );
         }
 

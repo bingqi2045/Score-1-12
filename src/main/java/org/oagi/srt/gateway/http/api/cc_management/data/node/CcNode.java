@@ -11,7 +11,6 @@ public abstract class CcNode extends TrackableImpl {
 
     private String guid;
     private String name;
-    private int rawState;
     private CcState state;
     private boolean hasChild;
     private String access;

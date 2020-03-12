@@ -14,7 +14,6 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +42,7 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = -453279500;
+    private static final long serialVersionUID = 794007736;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -134,11 +133,11 @@ public class Acc extends TableImpl<AccRecord> {
     public final TableField<AccRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\\n\\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.");
 
     /**
-     * The column <code>oagi.acc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ACC.
+     * The column <code>oagi.acc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public final TableField<AccRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ACC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
+    public final TableField<AccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
      * The column <code>oagi.acc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
@@ -164,6 +163,16 @@ State change can't be undone. But the history record can still keep the records 
      * The column <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
      */
     public final TableField<AccRecord, Byte> IS_ABSTRACT = createField(DSL.name("is_abstract"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.");
+
+    /**
+     * The column <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<AccRecord, ULong> PREV_ACC_ID = createField(DSL.name("prev_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<AccRecord, ULong> NEXT_ACC_ID = createField(DSL.name("next_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
 
     /**
      * Create a <code>oagi.acc</code> table reference
@@ -225,10 +234,10 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
     }
 
-    public Acc acc() {
+    public Acc accBasedAccIdFk() {
         return new Acc(this, Keys.ACC_BASED_ACC_ID_FK);
     }
 
@@ -246,6 +255,14 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser accLastUpdatedByFk() {
         return new AppUser(this, Keys.ACC_LAST_UPDATED_BY_FK);
+    }
+
+    public Acc accPrevAccIdFk() {
+        return new Acc(this, Keys.ACC_PREV_ACC_ID_FK);
+    }
+
+    public Acc accNextAccIdFk() {
+        return new Acc(this, Keys.ACC_NEXT_ACC_ID_FK);
     }
 
     @Override
@@ -272,14 +289,5 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Acc rename(Name name) {
         return new Acc(name, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Row21 type methods
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, Byte, Byte> fieldsRow() {
-        return (Row21) super.fieldsRow();
     }
 }

@@ -6,10 +6,7 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.time.LocalDateTime;
 
-import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record21;
-import org.jooq.Row21;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Acc;
@@ -27,9 +24,9 @@ import org.oagi.srt.entity.jooq.tables.Acc;
  * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, Byte, Byte> {
+public class AccRecord extends UpdatableRecordImpl<AccRecord> {
 
-    private static final long serialVersionUID = -1045424591;
+    private static final long serialVersionUID = 419227019;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -242,21 +239,21 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     /**
-     * Setter for <code>oagi.acc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ACC.
+     * Setter for <code>oagi.acc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public void setState(Integer value) {
+    public void setState(String value) {
         set(15, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ACC.
+     * Getter for <code>oagi.acc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public Integer getState() {
-        return (Integer) get(15);
+    public String getState() {
+        return (String) get(15);
     }
 
     /**
@@ -329,6 +326,34 @@ State change can't be undone. But the history record can still keep the records 
         return (Byte) get(20);
     }
 
+    /**
+     * Setter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public void setPrevAccId(ULong value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public ULong getPrevAccId() {
+        return (ULong) get(21);
+    }
+
+    /**
+     * Setter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public void setNextAccId(ULong value) {
+        set(22, value);
+    }
+
+    /**
+     * Getter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public ULong getNextAccId() {
+        return (ULong) get(22);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -336,487 +361,6 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Record1<ULong> key() {
         return (Record1) super.key();
-    }
-
-    // -------------------------------------------------------------------------
-    // Record21 type implementation
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, Byte, Byte> fieldsRow() {
-        return (Row21) super.fieldsRow();
-    }
-
-    @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, Byte, Byte> valuesRow() {
-        return (Row21) super.valuesRow();
-    }
-
-    @Override
-    public Field<ULong> field1() {
-        return Acc.ACC.ACC_ID;
-    }
-
-    @Override
-    public Field<String> field2() {
-        return Acc.ACC.GUID;
-    }
-
-    @Override
-    public Field<String> field3() {
-        return Acc.ACC.OBJECT_CLASS_TERM;
-    }
-
-    @Override
-    public Field<String> field4() {
-        return Acc.ACC.DEN;
-    }
-
-    @Override
-    public Field<String> field5() {
-        return Acc.ACC.DEFINITION;
-    }
-
-    @Override
-    public Field<String> field6() {
-        return Acc.ACC.DEFINITION_SOURCE;
-    }
-
-    @Override
-    public Field<ULong> field7() {
-        return Acc.ACC.BASED_ACC_ID;
-    }
-
-    @Override
-    public Field<String> field8() {
-        return Acc.ACC.OBJECT_CLASS_QUALIFIER;
-    }
-
-    @Override
-    public Field<Integer> field9() {
-        return Acc.ACC.OAGIS_COMPONENT_TYPE;
-    }
-
-    @Override
-    public Field<ULong> field10() {
-        return Acc.ACC.NAMESPACE_ID;
-    }
-
-    @Override
-    public Field<ULong> field11() {
-        return Acc.ACC.CREATED_BY;
-    }
-
-    @Override
-    public Field<ULong> field12() {
-        return Acc.ACC.OWNER_USER_ID;
-    }
-
-    @Override
-    public Field<ULong> field13() {
-        return Acc.ACC.LAST_UPDATED_BY;
-    }
-
-    @Override
-    public Field<LocalDateTime> field14() {
-        return Acc.ACC.CREATION_TIMESTAMP;
-    }
-
-    @Override
-    public Field<LocalDateTime> field15() {
-        return Acc.ACC.LAST_UPDATE_TIMESTAMP;
-    }
-
-    @Override
-    public Field<Integer> field16() {
-        return Acc.ACC.STATE;
-    }
-
-    @Override
-    public Field<Integer> field17() {
-        return Acc.ACC.REVISION_NUM;
-    }
-
-    @Override
-    public Field<Integer> field18() {
-        return Acc.ACC.REVISION_TRACKING_NUM;
-    }
-
-    @Override
-    public Field<Byte> field19() {
-        return Acc.ACC.REVISION_ACTION;
-    }
-
-    @Override
-    public Field<Byte> field20() {
-        return Acc.ACC.IS_DEPRECATED;
-    }
-
-    @Override
-    public Field<Byte> field21() {
-        return Acc.ACC.IS_ABSTRACT;
-    }
-
-    @Override
-    public ULong component1() {
-        return getAccId();
-    }
-
-    @Override
-    public String component2() {
-        return getGuid();
-    }
-
-    @Override
-    public String component3() {
-        return getObjectClassTerm();
-    }
-
-    @Override
-    public String component4() {
-        return getDen();
-    }
-
-    @Override
-    public String component5() {
-        return getDefinition();
-    }
-
-    @Override
-    public String component6() {
-        return getDefinitionSource();
-    }
-
-    @Override
-    public ULong component7() {
-        return getBasedAccId();
-    }
-
-    @Override
-    public String component8() {
-        return getObjectClassQualifier();
-    }
-
-    @Override
-    public Integer component9() {
-        return getOagisComponentType();
-    }
-
-    @Override
-    public ULong component10() {
-        return getNamespaceId();
-    }
-
-    @Override
-    public ULong component11() {
-        return getCreatedBy();
-    }
-
-    @Override
-    public ULong component12() {
-        return getOwnerUserId();
-    }
-
-    @Override
-    public ULong component13() {
-        return getLastUpdatedBy();
-    }
-
-    @Override
-    public LocalDateTime component14() {
-        return getCreationTimestamp();
-    }
-
-    @Override
-    public LocalDateTime component15() {
-        return getLastUpdateTimestamp();
-    }
-
-    @Override
-    public Integer component16() {
-        return getState();
-    }
-
-    @Override
-    public Integer component17() {
-        return getRevisionNum();
-    }
-
-    @Override
-    public Integer component18() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Byte component19() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public Byte component20() {
-        return getIsDeprecated();
-    }
-
-    @Override
-    public Byte component21() {
-        return getIsAbstract();
-    }
-
-    @Override
-    public ULong value1() {
-        return getAccId();
-    }
-
-    @Override
-    public String value2() {
-        return getGuid();
-    }
-
-    @Override
-    public String value3() {
-        return getObjectClassTerm();
-    }
-
-    @Override
-    public String value4() {
-        return getDen();
-    }
-
-    @Override
-    public String value5() {
-        return getDefinition();
-    }
-
-    @Override
-    public String value6() {
-        return getDefinitionSource();
-    }
-
-    @Override
-    public ULong value7() {
-        return getBasedAccId();
-    }
-
-    @Override
-    public String value8() {
-        return getObjectClassQualifier();
-    }
-
-    @Override
-    public Integer value9() {
-        return getOagisComponentType();
-    }
-
-    @Override
-    public ULong value10() {
-        return getNamespaceId();
-    }
-
-    @Override
-    public ULong value11() {
-        return getCreatedBy();
-    }
-
-    @Override
-    public ULong value12() {
-        return getOwnerUserId();
-    }
-
-    @Override
-    public ULong value13() {
-        return getLastUpdatedBy();
-    }
-
-    @Override
-    public LocalDateTime value14() {
-        return getCreationTimestamp();
-    }
-
-    @Override
-    public LocalDateTime value15() {
-        return getLastUpdateTimestamp();
-    }
-
-    @Override
-    public Integer value16() {
-        return getState();
-    }
-
-    @Override
-    public Integer value17() {
-        return getRevisionNum();
-    }
-
-    @Override
-    public Integer value18() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Byte value19() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public Byte value20() {
-        return getIsDeprecated();
-    }
-
-    @Override
-    public Byte value21() {
-        return getIsAbstract();
-    }
-
-    @Override
-    public AccRecord value1(ULong value) {
-        setAccId(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value2(String value) {
-        setGuid(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value3(String value) {
-        setObjectClassTerm(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value4(String value) {
-        setDen(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value5(String value) {
-        setDefinition(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value6(String value) {
-        setDefinitionSource(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value7(ULong value) {
-        setBasedAccId(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value8(String value) {
-        setObjectClassQualifier(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value9(Integer value) {
-        setOagisComponentType(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value10(ULong value) {
-        setNamespaceId(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value11(ULong value) {
-        setCreatedBy(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value12(ULong value) {
-        setOwnerUserId(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value13(ULong value) {
-        setLastUpdatedBy(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value14(LocalDateTime value) {
-        setCreationTimestamp(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value15(LocalDateTime value) {
-        setLastUpdateTimestamp(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value16(Integer value) {
-        setState(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value17(Integer value) {
-        setRevisionNum(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value18(Integer value) {
-        setRevisionTrackingNum(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value19(Byte value) {
-        setRevisionAction(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value20(Byte value) {
-        setIsDeprecated(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value21(Byte value) {
-        setIsAbstract(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, Integer value9, ULong value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, Integer value16, Integer value17, Integer value18, Byte value19, Byte value20, Byte value21) {
-        value1(value1);
-        value2(value2);
-        value3(value3);
-        value4(value4);
-        value5(value5);
-        value6(value6);
-        value7(value7);
-        value8(value8);
-        value9(value9);
-        value10(value10);
-        value11(value11);
-        value12(value12);
-        value13(value13);
-        value14(value14);
-        value15(value15);
-        value16(value16);
-        value17(value17);
-        value18(value18);
-        value19(value19);
-        value20(value20);
-        value21(value21);
-        return this;
     }
 
     // -------------------------------------------------------------------------
@@ -833,7 +377,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isAbstract) {
+    public AccRecord(ULong accId, String guid, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
         super(Acc.ACC);
 
         set(0, accId);
@@ -857,5 +401,7 @@ State change can't be undone. But the history record can still keep the records 
         set(18, revisionAction);
         set(19, isDeprecated);
         set(20, isAbstract);
+        set(21, prevAccId);
+        set(22, nextAccId);
     }
 }

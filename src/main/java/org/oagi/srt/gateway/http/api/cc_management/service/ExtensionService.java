@@ -68,7 +68,7 @@ public class ExtensionService {
             return null;
         }
         CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
-        eAcc.setState(CcState.valueOf(ueAcc.getRawState()));
+        eAcc.setState(ueAcc.getState());
 
         long userId = sessionService.userId(user);
         long ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
@@ -125,11 +125,11 @@ public class ExtensionService {
     public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
                                     long releaseId, User user) {
         if (ueAcc != null) {
-            if (ueAcc.getState() == CcState.Production.getValue()) {
+            if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 CcAccNode acc = repository.updateAccState(user, accManifest.getAccManifestId(), CcState.WIP);
                 return acc.getManifestId();
-            } else if (ueAcc.getState() == CcState.WIP.getValue() || ueAcc.getState() == CcState.QA.getValue()) {
+            } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().longValue();
             } else {
@@ -189,7 +189,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.WIP.getValue(),
+                CcState.WIP.name(),
                 1,
                 1,
                 (byte) 1
@@ -241,7 +241,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Production.getValue(),
+                CcState.Production.name(),
                 1,
                 1,
                 (byte) 1
@@ -296,7 +296,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Production.getValue(),
+                CcState.Production.name(),
                 1,
                 1,
                 (byte) 1
@@ -640,7 +640,7 @@ public class ExtensionService {
                     ASCC.REVISION_TRACKING_NUM,
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX).from(ASCC)
-                    .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.getValue())))
+                    .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.name())))
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
         } else if (type.equals("bcc")) {
@@ -658,7 +658,7 @@ public class ExtensionService {
                     BCC.CARDINALITY_MIN,
                     BCC.CARDINALITY_MAX,
                     BCC.IS_NILLABLE.as("nillable")).from(BCC)
-                    .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.getValue())))
+                    .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.name())))
                     .orderBy(BCC.BCC_ID.desc()).limit(1)
                     .fetchOneInto(CcBccNode.class);
         } else {

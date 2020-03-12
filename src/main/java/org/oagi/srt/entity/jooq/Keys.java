@@ -277,6 +277,8 @@ public class Keys {
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_CREATED_BY_FK = ForeignKeys0.ACC_CREATED_BY_FK;
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_OWNER_USER_ID_FK = ForeignKeys0.ACC_OWNER_USER_ID_FK;
     public static final ForeignKey<AccRecord, AppUserRecord> ACC_LAST_UPDATED_BY_FK = ForeignKeys0.ACC_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<AccRecord, AccRecord> ACC_PREV_ACC_ID_FK = ForeignKeys0.ACC_PREV_ACC_ID_FK;
+    public static final ForeignKey<AccRecord, AccRecord> ACC_NEXT_ACC_ID_FK = ForeignKeys0.ACC_NEXT_ACC_ID_FK;
     public static final ForeignKey<AccManifestRecord, ReleaseRecord> ACC_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ACC_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<AccManifestRecord, ModuleRecord> ACC_MANIFEST_MODULE_ID_FK = ForeignKeys0.ACC_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<AccManifestRecord, AccRecord> ACC_MANIFEST_ACC_ID_FK = ForeignKeys0.ACC_MANIFEST_ACC_ID_FK;
@@ -306,6 +308,8 @@ public class Keys {
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = ForeignKeys0.ASCC_CREATED_BY_FK;
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_OWNER_USER_ID_FK = ForeignKeys0.ASCC_OWNER_USER_ID_FK;
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_LAST_UPDATED_BY_FK = ForeignKeys0.ASCC_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<AsccRecord, AsccRecord> ASCC_PREV_ASCC_ID_FK = ForeignKeys0.ASCC_PREV_ASCC_ID_FK;
+    public static final ForeignKey<AsccRecord, AsccRecord> ASCC_NEXT_ASCC_ID_FK = ForeignKeys0.ASCC_NEXT_ASCC_ID_FK;
     public static final ForeignKey<AsccManifestRecord, ReleaseRecord> ASCC_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ASCC_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = ForeignKeys0.ASCC_MANIFEST_ASCC_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
@@ -315,6 +319,8 @@ public class Keys {
     public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_OWNER_USER_ID_FK = ForeignKeys0.ASCCP_OWNER_USER_ID_FK;
     public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_LAST_UPDATED_BY_FK = ForeignKeys0.ASCCP_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AsccpRecord, NamespaceRecord> ASCCP_NAMESPACE_ID_FK = ForeignKeys0.ASCCP_NAMESPACE_ID_FK;
+    public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_PREV_ASCCP_ID_FK = ForeignKeys0.ASCCP_PREV_ASCCP_ID_FK;
+    public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_NEXT_ASCCP_ID_FK = ForeignKeys0.ASCCP_NEXT_ASCCP_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, ReleaseRecord> ASCCP_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ASCCP_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, ModuleRecord> ASCCP_MANIFEST_MODULE_ID_FK = ForeignKeys0.ASCCP_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, AsccpRecord> ASCCP_MANIFEST_ASCCP_ID_FK = ForeignKeys0.ASCCP_MANIFEST_ASCCP_ID_FK;
@@ -343,6 +349,8 @@ public class Keys {
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = ForeignKeys0.BCC_CREATED_BY_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = ForeignKeys0.BCC_OWNER_USER_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = ForeignKeys0.BCC_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<BccRecord, BccRecord> BCC_PREV_BCC_ID_FK = ForeignKeys0.BCC_PREV_BCC_ID_FK;
+    public static final ForeignKey<BccRecord, BccRecord> BCC_NEXT_BCC_ID_FK = ForeignKeys0.BCC_NEXT_BCC_ID_FK;
     public static final ForeignKey<BccManifestRecord, ReleaseRecord> BCC_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BCC_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = ForeignKeys0.BCC_MANIFEST_BCC_ID_FK;
     public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
@@ -352,6 +360,8 @@ public class Keys {
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_CREATED_BY_FK = ForeignKeys0.BCCP_CREATED_BY_FK;
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_OWNER_USER_ID_FK = ForeignKeys0.BCCP_OWNER_USER_ID_FK;
     public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_LAST_UPDATED_BY_FK = ForeignKeys0.BCCP_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<BccpRecord, BccpRecord> BCCP_PREV_BCCP_ID_FK = ForeignKeys0.BCCP_PREV_BCCP_ID_FK;
+    public static final ForeignKey<BccpRecord, BccpRecord> BCCP_NEXT_BCCP_ID_FK = ForeignKeys0.BCCP_NEXT_BCCP_ID_FK;
     public static final ForeignKey<BccpManifestRecord, ReleaseRecord> BCCP_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BCCP_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<BccpManifestRecord, ModuleRecord> BCCP_MANIFEST_MODULE_ID_FK = ForeignKeys0.BCCP_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<BccpManifestRecord, BccpRecord> BCCP_MANIFEST_BCCP_ID_FK = ForeignKeys0.BCCP_MANIFEST_BCCP_ID_FK;
@@ -408,6 +418,8 @@ public class Keys {
     public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = ForeignKeys0.DT_CREATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = ForeignKeys0.DT_LAST_UPDATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = ForeignKeys0.DT_OWNER_USER_ID_FK;
+    public static final ForeignKey<DtRecord, DtRecord> DT_PREV_DT_ID_FK = ForeignKeys0.DT_PREV_DT_ID_FK;
+    public static final ForeignKey<DtRecord, DtRecord> DT_NEXT_DT_ID_FK = ForeignKeys0.DT_NEXT_DT_ID_FK;
     public static final ForeignKey<DtManifestRecord, ReleaseRecord> DT_MANIFEST_RELEASE_ID_FK = ForeignKeys0.DT_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<DtManifestRecord, ModuleRecord> DT_MANIFEST_MODULE_ID_FK = ForeignKeys0.DT_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<DtManifestRecord, DtRecord> DT_MANIFEST_DT_ID_FK = ForeignKeys0.DT_MANIFEST_DT_ID_FK;
@@ -588,6 +600,8 @@ public class Keys {
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_created_by_fk", new TableField[] { Acc.ACC.CREATED_BY }, true);
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_owner_user_id_fk", new TableField[] { Acc.ACC.OWNER_USER_ID }, true);
         public static final ForeignKey<AccRecord, AppUserRecord> ACC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Acc.ACC, "acc_last_updated_by_fk", new TableField[] { Acc.ACC.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<AccRecord, AccRecord> ACC_PREV_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Acc.ACC, "acc_prev_acc_id_fk", new TableField[] { Acc.ACC.PREV_ACC_ID }, true);
+        public static final ForeignKey<AccRecord, AccRecord> ACC_NEXT_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Acc.ACC, "acc_next_acc_id_fk", new TableField[] { Acc.ACC.NEXT_ACC_ID }, true);
         public static final ForeignKey<AccManifestRecord, ReleaseRecord> ACC_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_release_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<AccManifestRecord, ModuleRecord> ACC_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_module_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<AccManifestRecord, AccRecord> ACC_MANIFEST_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_acc_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.ACC_ID }, true);
@@ -617,6 +631,8 @@ public class Keys {
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_created_by_fk", new TableField[] { Ascc.ASCC.CREATED_BY }, true);
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_owner_user_id_fk", new TableField[] { Ascc.ASCC.OWNER_USER_ID }, true);
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_last_updated_by_fk", new TableField[] { Ascc.ASCC.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<AsccRecord, AsccRecord> ASCC_PREV_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, Ascc.ASCC, "ascc_prev_ascc_id_fk", new TableField[] { Ascc.ASCC.PREV_ASCC_ID }, true);
+        public static final ForeignKey<AsccRecord, AsccRecord> ASCC_NEXT_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, Ascc.ASCC, "ascc_next_ascc_id_fk", new TableField[] { Ascc.ASCC.NEXT_ASCC_ID }, true);
         public static final ForeignKey<AsccManifestRecord, ReleaseRecord> ASCC_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_release_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_ascc_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.ASCC_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_from_acc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
@@ -626,6 +642,8 @@ public class Keys {
         public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asccp.ASCCP, "asccp_owner_user_id_fk", new TableField[] { Asccp.ASCCP.OWNER_USER_ID }, true);
         public static final ForeignKey<AsccpRecord, AppUserRecord> ASCCP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asccp.ASCCP, "asccp_last_updated_by_fk", new TableField[] { Asccp.ASCCP.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AsccpRecord, NamespaceRecord> ASCCP_NAMESPACE_ID_FK = Internal.createForeignKey(Keys.KEY_NAMESPACE_PRIMARY, Asccp.ASCCP, "asccp_namespace_id_fk", new TableField[] { Asccp.ASCCP.NAMESPACE_ID }, true);
+        public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_PREV_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, Asccp.ASCCP, "asccp_prev_asccp_id_fk", new TableField[] { Asccp.ASCCP.PREV_ASCCP_ID }, true);
+        public static final ForeignKey<AsccpRecord, AsccpRecord> ASCCP_NEXT_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, Asccp.ASCCP, "asccp_next_asccp_id_fk", new TableField[] { Asccp.ASCCP.NEXT_ASCCP_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, ReleaseRecord> ASCCP_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_release_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, ModuleRecord> ASCCP_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_module_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, AsccpRecord> ASCCP_MANIFEST_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_asccp_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.ASCCP_ID }, true);
@@ -654,6 +672,8 @@ public class Keys {
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_created_by_fk", new TableField[] { Bcc.BCC.CREATED_BY }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_owner_user_id_fk", new TableField[] { Bcc.BCC.OWNER_USER_ID }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_last_updated_by_fk", new TableField[] { Bcc.BCC.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<BccRecord, BccRecord> BCC_PREV_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, Bcc.BCC, "bcc_prev_bcc_id_fk", new TableField[] { Bcc.BCC.PREV_BCC_ID }, true);
+        public static final ForeignKey<BccRecord, BccRecord> BCC_NEXT_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, Bcc.BCC, "bcc_next_bcc_id_fk", new TableField[] { Bcc.BCC.NEXT_BCC_ID }, true);
         public static final ForeignKey<BccManifestRecord, ReleaseRecord> BCC_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_release_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_bcc_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.BCC_ID }, true);
         public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_from_acc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
@@ -663,6 +683,8 @@ public class Keys {
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_created_by_fk", new TableField[] { Bccp.BCCP.CREATED_BY }, true);
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_owner_user_id_fk", new TableField[] { Bccp.BCCP.OWNER_USER_ID }, true);
         public static final ForeignKey<BccpRecord, AppUserRecord> BCCP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bccp.BCCP, "bccp_last_updated_by_fk", new TableField[] { Bccp.BCCP.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<BccpRecord, BccpRecord> BCCP_PREV_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, Bccp.BCCP, "bccp_prev_bccp_id_fk", new TableField[] { Bccp.BCCP.PREV_BCCP_ID }, true);
+        public static final ForeignKey<BccpRecord, BccpRecord> BCCP_NEXT_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, Bccp.BCCP, "bccp_next_bccp_id_fk", new TableField[] { Bccp.BCCP.NEXT_BCCP_ID }, true);
         public static final ForeignKey<BccpManifestRecord, ReleaseRecord> BCCP_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_release_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<BccpManifestRecord, ModuleRecord> BCCP_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_module_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<BccpManifestRecord, BccpRecord> BCCP_MANIFEST_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_bccp_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.BCCP_ID }, true);
@@ -719,6 +741,8 @@ public class Keys {
         public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_created_by_fk", new TableField[] { Dt.DT.CREATED_BY }, true);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_last_updated_by_fk", new TableField[] { Dt.DT.LAST_UPDATED_BY }, true);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_owner_user_id_fk", new TableField[] { Dt.DT.OWNER_USER_ID }, true);
+        public static final ForeignKey<DtRecord, DtRecord> DT_PREV_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Dt.DT, "dt_prev_dt_id_fk", new TableField[] { Dt.DT.PREV_DT_ID }, true);
+        public static final ForeignKey<DtRecord, DtRecord> DT_NEXT_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Dt.DT, "dt_next_dt_id_fk", new TableField[] { Dt.DT.NEXT_DT_ID }, true);
         public static final ForeignKey<DtManifestRecord, ReleaseRecord> DT_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_release_id_fk", new TableField[] { DtManifest.DT_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<DtManifestRecord, ModuleRecord> DT_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_module_id_fk", new TableField[] { DtManifest.DT_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<DtManifestRecord, DtRecord> DT_MANIFEST_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_dt_id_fk", new TableField[] { DtManifest.DT_MANIFEST.DT_ID }, true);

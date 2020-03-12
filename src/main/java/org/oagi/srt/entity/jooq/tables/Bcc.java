@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = -1203295521;
+    private static final long serialVersionUID = -1393340092;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -145,11 +145,11 @@ The value of this column in the latest history record should be the same as that
     public final TableField<BccRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.");
 
     /**
-     * The column <code>oagi.bcc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCC.
+     * The column <code>oagi.bcc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public final TableField<BccRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the BCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
+    public final TableField<BccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
      * The column <code>oagi.bcc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
@@ -185,6 +185,16 @@ State change can't be undone. But the history record can still keep the records 
      * The column <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public final TableField<BccRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
+
+    /**
+     * The column <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<BccRecord, ULong> PREV_BCC_ID = createField(DSL.name("prev_bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<BccRecord, ULong> NEXT_BCC_ID = createField(DSL.name("next_bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
 
     /**
      * Create a <code>oagi.bcc</code> table reference
@@ -246,7 +256,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
     }
 
     public Bccp bccp() {
@@ -267,6 +277,14 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser bccLastUpdatedByFk() {
         return new AppUser(this, Keys.BCC_LAST_UPDATED_BY_FK);
+    }
+
+    public Bcc bccPrevBccIdFk() {
+        return new Bcc(this, Keys.BCC_PREV_BCC_ID_FK);
+    }
+
+    public Bcc bccNextBccIdFk() {
+        return new Bcc(this, Keys.BCC_NEXT_BCC_ID_FK);
     }
 
     @Override

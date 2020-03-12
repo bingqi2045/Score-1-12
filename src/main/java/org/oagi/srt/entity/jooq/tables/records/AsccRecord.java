@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record20;
-import org.jooq.Row20;
+import org.jooq.Record22;
+import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Ascc;
@@ -20,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Ascc;
  * an ASCCP. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte> {
+public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record22<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Integer, Integer, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1725505781;
+    private static final long serialVersionUID = -1151834277;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.
@@ -269,21 +269,21 @@ The value of this column in the latest history record should be the same as that
     }
 
     /**
-     * Setter for <code>oagi.ascc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCC.
+     * Setter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public void setState(Integer value) {
+    public void setState(String value) {
         set(16, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.state</code>. 1 = WIP, 2 = Draft, 3 = QA, 4 = Candidate, 5 = Production, 6 = Release Draft, 7 = Published. This the revision life cycle state of the ASCC.
+     * Getter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
-    public Integer getState() {
-        return (Integer) get(16);
+    public String getState() {
+        return (String) get(16);
     }
 
     /**
@@ -328,6 +328,34 @@ State change can't be undone. But the history record can still keep the records 
         return (Byte) get(19);
     }
 
+    /**
+     * Setter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public void setPrevAsccId(ULong value) {
+        set(20, value);
+    }
+
+    /**
+     * Getter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public ULong getPrevAsccId() {
+        return (ULong) get(20);
+    }
+
+    /**
+     * Setter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public void setNextAsccId(ULong value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public ULong getNextAsccId() {
+        return (ULong) get(21);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -338,17 +366,17 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Record20 type implementation
+    // Record22 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row22<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Integer, Integer, Byte, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte> valuesRow() {
-        return (Row20) super.valuesRow();
+    public Row22<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Integer, Integer, Byte, ULong, ULong> valuesRow() {
+        return (Row22) super.valuesRow();
     }
 
     @Override
@@ -432,7 +460,7 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Field<Integer> field17() {
+    public Field<String> field17() {
         return Ascc.ASCC.STATE;
     }
 
@@ -449,6 +477,16 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Field<Byte> field20() {
         return Ascc.ASCC.REVISION_ACTION;
+    }
+
+    @Override
+    public Field<ULong> field21() {
+        return Ascc.ASCC.PREV_ASCC_ID;
+    }
+
+    @Override
+    public Field<ULong> field22() {
+        return Ascc.ASCC.NEXT_ASCC_ID;
     }
 
     @Override
@@ -532,7 +570,7 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Integer component17() {
+    public String component17() {
         return getState();
     }
 
@@ -549,6 +587,16 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Byte component20() {
         return getRevisionAction();
+    }
+
+    @Override
+    public ULong component21() {
+        return getPrevAsccId();
+    }
+
+    @Override
+    public ULong component22() {
+        return getNextAsccId();
     }
 
     @Override
@@ -632,7 +680,7 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Integer value17() {
+    public String value17() {
         return getState();
     }
 
@@ -649,6 +697,16 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Byte value20() {
         return getRevisionAction();
+    }
+
+    @Override
+    public ULong value21() {
+        return getPrevAsccId();
+    }
+
+    @Override
+    public ULong value22() {
+        return getNextAsccId();
     }
 
     @Override
@@ -748,7 +806,7 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public AsccRecord value17(Integer value) {
+    public AsccRecord value17(String value) {
         setState(value);
         return this;
     }
@@ -772,7 +830,19 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, Integer value17, Integer value18, Integer value19, Byte value20) {
+    public AsccRecord value21(ULong value) {
+        setPrevAsccId(value);
+        return this;
+    }
+
+    @Override
+    public AsccRecord value22(ULong value) {
+        setNextAsccId(value);
+        return this;
+    }
+
+    @Override
+    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, Integer value18, Integer value19, Byte value20, ULong value21, ULong value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -793,6 +863,8 @@ State change can't be undone. But the history record can still keep the records 
         value18(value18);
         value19(value19);
         value20(value20);
+        value21(value21);
+        value22(value22);
         return this;
     }
 
@@ -810,7 +882,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction) {
+    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, ULong prevAsccId, ULong nextAsccId) {
         super(Ascc.ASCC);
 
         set(0, asccId);
@@ -833,5 +905,7 @@ State change can't be undone. But the history record can still keep the records 
         set(17, revisionNum);
         set(18, revisionTrackingNum);
         set(19, revisionAction);
+        set(20, prevAsccId);
+        set(21, nextAsccId);
     }
 }
