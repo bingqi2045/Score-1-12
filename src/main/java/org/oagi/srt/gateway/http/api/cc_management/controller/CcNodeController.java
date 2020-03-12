@@ -144,21 +144,8 @@ public class CcNodeController {
                                         @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
                                         @RequestParam(value = "bccp", required = false) List<Long> bccpManifestIdList) {
 
-        if (accManifestIdList != null && !accManifestIdList.isEmpty()) {
-            for (Long accManifestId : accManifestIdList) {
-                deleteCcNode(user, "acc", accManifestId);
-            }
-        }
-        if (asccpManifestIdList != null && !asccpManifestIdList.isEmpty()) {
-            for (Long asccpManifestId : asccpManifestIdList) {
-                deleteCcNode(user, "asccp", asccpManifestId);
-            }
-        }
-        if (bccpManifestIdList != null && !bccpManifestIdList.isEmpty()) {
-            for (Long bccpManifestId : bccpManifestIdList) {
-                deleteCcNode(user, "bccp", bccpManifestId);
-            }
-        }
+
+        service.updateCcStateDelete(user, accManifestIdList, asccpManifestIdList, bccpManifestIdList);
 
         return ResponseEntity.accepted().build();
     }

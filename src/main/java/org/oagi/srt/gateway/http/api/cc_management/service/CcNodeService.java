@@ -217,6 +217,21 @@ public class CcNodeService {
     }
 
     @Transactional
+    public void updateCcStateDelete(User user, List<Long> accManifestIdList, List<Long> asccpManifestIdList,
+                                    List<Long> bccpManifestIdList) {
+        CcState ccState = CcState.Deleted;
+        for (Long accManifestId: accManifestIdList) {
+            repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
+        }
+        for (Long asccpManifestId: asccpManifestIdList) {
+            repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
+        }
+        for (Long bccpManifestId: bccpManifestIdList) {
+            repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
+        }
+    }
+
+    @Transactional
     public CcAccNode updateAccState(User user, long accManifestId, String state) {
         CcState ccState = getStateCode(state);
         return repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
@@ -225,13 +240,13 @@ public class CcNodeService {
     @Transactional
     public CcAsccpNode updateAsccpState(User user, long asccpManifestId, String state) {
         CcState ccState = getStateCode(state);
-        return repository.updateAsccpState(user, asccpManifestId, ccState);
+        return repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
     }
 
     @Transactional
     public CcBccpNode updateBccpState(User user, long bccpManifestId, String state) {
         CcState ccState = getStateCode(state);
-        return repository.updateBccpState(user, bccpManifestId, ccState);
+        return repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
     }
 
     @Transactional

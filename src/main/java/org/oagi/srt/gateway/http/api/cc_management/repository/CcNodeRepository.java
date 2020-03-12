@@ -1494,7 +1494,9 @@ public class CcNodeRepository {
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
-        ensureDependenciesOfAcc(accManifestRecord, ccState);
+
+        //ensureDependenciesOfAcc(accManifestRecord, ccState);
+
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
 
         accRecord.set(ACC.ACC_ID, null);
@@ -1593,15 +1595,15 @@ public class CcNodeRepository {
         }
     }
 
-    public CcAsccpNode updateAsccpState(User user, long asccpManifestId, CcState ccState) {
+    public CcAsccpNode updateAsccpState(User user, ULong asccpManifestId, CcState ccState) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AsccpManifestRecord asccpManifestRecord =
-                manifestRepository.getAsccpManifestById(ULong.valueOf(asccpManifestId));
+                manifestRepository.getAsccpManifestById(asccpManifestId);
         AccRecord roleOfAccRecord = getAccRecordByManifestId(asccpManifestRecord.getRoleOfAccManifestId());
 
-        ensureDependenciesOfAsccp(asccpManifestRecord, roleOfAccRecord, ccState);
+        // ensureDependenciesOfAsccp(asccpManifestRecord, roleOfAccRecord, ccState);
 
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
@@ -1648,12 +1650,12 @@ public class CcNodeRepository {
         }
     }
 
-    public CcBccpNode updateBccpState(User user, long bccpManifestId, CcState ccState) {
+    public CcBccpNode updateBccpState(User user, ULong bccpManifestId, CcState ccState) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         BccpManifestRecord bccpManifestRecord =
-                manifestRepository.getBccpManifestById(ULong.valueOf(bccpManifestId));
+                manifestRepository.getBccpManifestById(bccpManifestId);
 
         // TODO Define rule for state dependencies
         // ensureDependenciesOfBccp(bccpManifestRecord, ccState);

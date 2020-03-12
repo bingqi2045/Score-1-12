@@ -25,9 +25,6 @@ public class CcListController {
     @Autowired
     private CcListService service;
 
-    @Autowired
-    private ExtensionService extensionService;
-
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CcList> getCcList(
