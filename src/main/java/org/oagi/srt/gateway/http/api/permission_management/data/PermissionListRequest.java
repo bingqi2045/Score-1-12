@@ -8,5 +8,5 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 public class PermissionListRequest {
     private String segment;
     private String object;
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 }

@@ -8,14 +8,17 @@ import org.oagi.srt.gateway.http.api.context_management.data.ContextCategory;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextCategoryListRequest;
 import org.oagi.srt.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.srt.gateway.http.api.context_management.data.SimpleContextCategory;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.ContextCategoryRepository;
 import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,9 @@ import static org.oagi.srt.entity.jooq.Tables.CTX_SCHEME;
 @Service
 @Transactional(readOnly = true)
 public class ContextCategoryService {
+
+    @Autowired
+    private SessionService sessionService;
 
     @Autowired
     private ContextCategoryRepository repository;
@@ -97,28 +103,30 @@ public class ContextCategoryService {
     }
 
     @Transactional
-    public void insert(ContextCategory contextCategory) {
-        if (StringUtils.isEmpty(contextCategory.getGuid())) {
-            contextCategory.setGuid(SrtGuid.randomGuid());
-        }
+    public void insert(User requester, ContextCategory contextCategory) {
+        ULong userId = ULong.valueOf(sessionService.userId(requester));
+        LocalDateTime timestamp = LocalDateTime.now();
 
-        dslContext.insertInto(CTX_CATEGORY,
-                CTX_CATEGORY.GUID,
-                CTX_CATEGORY.NAME,
-                CTX_CATEGORY.DESCRIPTION)
-                .values(
-                        contextCategory.getGuid(),
-                        contextCategory.getName(),
-                        contextCategory.getDescription()
-                ).execute();
+        repository.insertContextCategory()
+                .setGuid(StringUtils.isEmpty(contextCategory.getGuid()) ? SrtGuid.randomGuid() : contextCategory.getGuid())
+                .setName(contextCategory.getName())
+                .setDescription(contextCategory.getDescription())
+                .setUserId(userId)
+                .setTimestamp(timestamp)
+                .execute();
     }
 
     @Transactional
-    public void update(ContextCategory contextCategory) {
-        dslContext.update(CTX_CATEGORY)
-                .set(CTX_CATEGORY.NAME, contextCategory.getName())
-                .set(CTX_CATEGORY.DESCRIPTION, contextCategory.getDescription())
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategory.getCtxCategoryId())))
+    public void update(User requester, ContextCategory contextCategory) {
+        ULong userId = ULong.valueOf(sessionService.userId(requester));
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        repository.updateContextCategory()
+                .setContextCategoryId(contextCategory.getCtxCategoryId())
+                .setName(contextCategory.getName())
+                .setDescription(contextCategory.getDescription())
+                .setUserId(userId)
+                .setTimestamp(timestamp)
                 .execute();
     }
 

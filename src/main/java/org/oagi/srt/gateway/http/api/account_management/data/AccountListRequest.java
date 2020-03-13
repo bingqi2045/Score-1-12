@@ -12,6 +12,6 @@ public class AccountListRequest {
     private String role;
     private Boolean excludeRequester;
 
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
 }

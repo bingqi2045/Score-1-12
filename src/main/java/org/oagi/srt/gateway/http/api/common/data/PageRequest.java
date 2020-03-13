@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class PageRequest {
 
+    public static final PageRequest EMPTY_INSTANCE = new PageRequest();
+
     private String sortActive;
     private String sortDirection;
     private int pageIndex = -1;

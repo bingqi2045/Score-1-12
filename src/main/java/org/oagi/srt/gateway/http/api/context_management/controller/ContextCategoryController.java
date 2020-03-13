@@ -7,6 +7,8 @@ import org.oagi.srt.gateway.http.api.context_management.service.ContextCategoryS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,17 +65,19 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
     public ResponseEntity create(
+            @AuthenticationPrincipal User requester,
             @RequestBody ContextCategory contextCategory) {
-        service.insert(contextCategory);
+        service.insert(requester, contextCategory);
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
+            @AuthenticationPrincipal User requester,
             @PathVariable("id") long id,
             @RequestBody ContextCategory contextCategory) {
         contextCategory.setCtxCategoryId(id);
-        service.update(contextCategory);
+        service.update(requester, contextCategory);
         return ResponseEntity.noContent().build();
     }
 

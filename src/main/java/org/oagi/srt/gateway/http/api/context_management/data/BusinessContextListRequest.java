@@ -16,6 +16,6 @@ public class BusinessContextListRequest {
     private List<String> updaterLoginIds = Collections.emptyList();
     private Date updateStartDate;
     private Date updateEndDate;
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
 }

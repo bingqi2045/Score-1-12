@@ -24,7 +24,7 @@ public class CcListRequest {
 
     private Date updateStartDate;
     private Date updateEndDate;
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
     private Map<Long, String> usernameMap;
 }

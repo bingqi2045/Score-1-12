@@ -7,5 +7,5 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 @Data
 public class GroupListRequest {
     private String name;
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 }
