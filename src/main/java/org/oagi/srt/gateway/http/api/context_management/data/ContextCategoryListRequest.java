@@ -17,6 +17,6 @@ public class ContextCategoryListRequest {
     private Date updateStartDate;
     private Date updateEndDate;
 
-    private PageRequest pageRequest;
+    private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
 }

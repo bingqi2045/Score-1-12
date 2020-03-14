@@ -2,12 +2,15 @@ package org.oagi.srt.repo;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,13 +21,13 @@ import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.cont
 
 @Repository
 public class ContextCategoryRepository {
-    
+
     private DSLContext dslContext;
-    
+
     public ContextCategoryRepository(@Autowired DSLContext dslContext) {
         this.dslContext = dslContext;
     }
-    
+
     public class SelectContextCategoryArguments {
 
         private List<ULong> contextCategoryIds = new ArrayList();
@@ -87,7 +90,7 @@ public class ContextCategoryRepository {
                         }
 
                         break;
-                        
+
                     case "description":
                         if ("asc".equals(direction)) {
                             sortField = CTX_CATEGORY.DESCRIPTION.asc();
@@ -139,11 +142,11 @@ public class ContextCategoryRepository {
             return selectContextCategories(this, type);
         }
     }
-    
+
     public SelectContextCategoryArguments selectContextCategories() {
-        return new SelectContextCategoryArguments(); 
+        return new SelectContextCategoryArguments();
     }
-    
+
     private <E> PaginationResponse<E> selectContextCategories(SelectContextCategoryArguments arguments, Class<? extends E> type) {
         SelectOnConditionStep
                 <Record6<ULong, String, String, String, String, LocalDateTime>> step =
@@ -176,7 +179,7 @@ public class ContextCategoryRepository {
     }
 
     private SelectOnConditionStep
-            <Record6<ULong, String, String, String, String, LocalDateTime>> 
+            <Record6<ULong, String, String, String, String, LocalDateTime>>
     getSelectOnConditionStepForContextCategory() {
         return dslContext.select(
                 CTX_CATEGORY.CTX_CATEGORY_ID,
@@ -201,5 +204,127 @@ public class ContextCategoryRepository {
                         contextCategoryIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
                 .groupBy(CTX_SCHEME.CTX_CATEGORY_ID)
                 .fetch().stream().collect(Collectors.toMap(e -> e.value1().longValue(), e -> e.value2() > 0));
+    }
+
+    public class InsertContextCategoryArguments {
+        private CtxCategoryRecord record;
+
+        public InsertContextCategoryArguments() {
+            this.record = new CtxCategoryRecord();
+        }
+
+        public InsertContextCategoryArguments setGuid(String guid) {
+            if (!StringUtils.isEmpty(guid)) {
+                this.record.setGuid(guid.trim());
+            }
+            return this;
+        }
+
+        public InsertContextCategoryArguments setName(String name) {
+            if (!StringUtils.isEmpty(name)) {
+                this.record.setName(name.trim());
+            }
+            return this;
+        }
+
+        public InsertContextCategoryArguments setDescription(String description) {
+            if (!StringUtils.isEmpty(description)) {
+                this.record.setDescription(description.trim());
+            }
+            return this;
+        }
+
+        public InsertContextCategoryArguments setUserId(ULong userId) {
+            this.record.setCreatedBy(userId);
+            this.record.setLastUpdatedBy(userId);
+            return this;
+        }
+
+        public InsertContextCategoryArguments setUserId(long userId) {
+            return this.setUserId(ULong.valueOf(userId));
+        }
+
+        public InsertContextCategoryArguments setTimestamp(LocalDateTime timestamp) {
+            this.record.setCreationTimestamp(timestamp);
+            this.record.setLastUpdateTimestamp(timestamp);
+            return this;
+        }
+
+        public InsertContextCategoryArguments setTimestamp(long timestamp) {
+            return this.setTimestamp(
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+            );
+        }
+
+        public int execute() {
+            return dslContext.insertInto(CTX_CATEGORY)
+                    .set(this.record)
+                    .execute();
+        }
+    }
+
+    public InsertContextCategoryArguments insertContextCategory() {
+        return new InsertContextCategoryArguments();
+    }
+
+    public class UpdateContextCategoryArguments {
+        private CtxCategoryRecord record;
+
+        public UpdateContextCategoryArguments() {
+            this.record = new CtxCategoryRecord();
+        }
+
+        public UpdateContextCategoryArguments setContextCategoryId(ULong ctxCategoryId) {
+            this.record.setCtxCategoryId(ctxCategoryId);
+            return this;
+        }
+
+        public UpdateContextCategoryArguments setContextCategoryId(long ctxCategoryId) {
+            return this.setContextCategoryId(ULong.valueOf(ctxCategoryId));
+        }
+
+        public UpdateContextCategoryArguments setName(String name) {
+            if (!StringUtils.isEmpty(name)) {
+                this.record.setName(name.trim());
+            }
+            return this;
+        }
+
+        public UpdateContextCategoryArguments setDescription(String description) {
+            if (!StringUtils.isEmpty(description)) {
+                this.record.setDescription(description.trim());
+            }
+            return this;
+        }
+
+        public UpdateContextCategoryArguments setUserId(ULong userId) {
+            this.record.setLastUpdatedBy(userId);
+            return this;
+        }
+
+        public UpdateContextCategoryArguments setUserId(long userId) {
+            return this.setUserId(ULong.valueOf(userId));
+        }
+
+        public UpdateContextCategoryArguments setTimestamp(LocalDateTime timestamp) {
+            this.record.setLastUpdateTimestamp(timestamp);
+            return this;
+        }
+
+        public UpdateContextCategoryArguments setTimestamp(long timestamp) {
+            return this.setTimestamp(
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
+            );
+        }
+
+        public int execute() {
+            return dslContext.update(CTX_CATEGORY)
+                    .set(this.record)
+                    .execute();
+        }
+    }
+
+    public UpdateContextCategoryArguments updateContextCategory() {
+        return new UpdateContextCategoryArguments();
     }
 }
