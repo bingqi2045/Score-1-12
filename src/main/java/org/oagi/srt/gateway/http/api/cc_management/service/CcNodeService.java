@@ -1,7 +1,10 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.types.ULong;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
@@ -9,13 +12,21 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.CoreComponentRepository;
+import org.oagi.srt.repo.cc_arguments.InsertAccArguments;
+import org.oagi.srt.repo.cc_arguments.InsertAccManifestArguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.oagi.srt.entity.jooq.Tables.ACC;
+import static org.oagi.srt.entity.jooq.Tables.ACC_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,6 +34,9 @@ public class CcNodeService {
 
     @Autowired
     private CcNodeRepository repository;
+
+    @Autowired
+    private CoreComponentRepository ccRepository;
 
     @Autowired
     private ManifestRepository manifestRepository;
@@ -126,8 +140,30 @@ public class CcNodeService {
 
     @Transactional
     public long createAcc(User user, CcAccCreateRequest request) {
-        long userId = sessionService.userId(user);
-        return repository.createAcc(userId, request.getReleaseId());
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        LocalDateTime timestamp = LocalDateTime.now();
+        String defaultObjectClassTerm = "Object Class Term";
+
+        InsertAccArguments accArguments = ccRepository.insertAccArguments()
+                .setGuid(SrtGuid.randomGuid())
+                .setObjectClassTerm(defaultObjectClassTerm)
+                .setDen(defaultObjectClassTerm + ". Details")
+                .setOagisComponentType(OagisComponentType.Semantics)
+                .setState(CcState.WIP)
+                .setRevisionNum(1)
+                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Insert)
+                .setCreatedBy(userId)
+                .setLastUpdatedBy(userId)
+                .setOwnerUserId(userId)
+                .setCreationTimestamp(timestamp)
+                .setLastUpdateTimestamp(timestamp);
+        ULong accId = ccRepository.execute(accArguments);
+
+        InsertAccManifestArguments accManifestArguments = ccRepository.insertAccManifestArguments()
+                .setAccId(accId)
+                .setReleaseId(ULong.valueOf(request.getReleaseId()));
+        return ccRepository.execute(accManifestArguments).longValue();
     }
 
     @Transactional
