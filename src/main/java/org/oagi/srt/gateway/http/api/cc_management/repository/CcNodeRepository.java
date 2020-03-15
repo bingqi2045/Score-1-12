@@ -285,7 +285,7 @@ public class CcNodeRepository {
 
         BccpRecord bccpRecord = new BccpRecord();
         bccpRecord.setGuid(SrtGuid.randomGuid());
-        bccpRecord.setPropertyTerm("Property Term");
+        bccpRecord.setPropertyTerm("A new BCCP property");
         bccpRecord.setRepresentationTerm(dtDataTypeTerm);
         bccpRecord.setBdtId(dtManifestRecord.getDtId());
         bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + dtDataTypeTerm);
