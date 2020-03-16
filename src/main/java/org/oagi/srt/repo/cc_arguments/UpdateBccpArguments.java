@@ -2,14 +2,14 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 
-@Repository
 public class UpdateBccpArguments {
 
     private ULong bccpId;
@@ -30,13 +30,41 @@ public class UpdateBccpArguments {
     private CcState state;
     private Integer revisionNum;
     private Integer revisionTrackingNum;
-    private Integer revisionAction;
+    private RevisionAction revisionAction;
     private Boolean isNillable;
     private String defaultValue;
     private String fixedValue;
     private ULong prevBccpId;
     private ULong nextBccpId;
 
+    public UpdateBccpArguments(BccpRecord bccp) {
+        if (bccp != null) {
+            this.bccpId = bccp.getBccpId();
+            this.guid = bccp.getGuid();
+            this.propertyTerm = bccp.getPropertyTerm();
+            this.representationTerm = bccp.getRepresentationTerm();
+            this.bdtId = bccp.getBdtId();
+            this.den = bccp.getDen();
+            this.definition = bccp.getDefinition();
+            this.definitionSource = bccp.getDefinitionSource();
+            this.namespaceId = bccp.getNamespaceId();
+            this.isDeprecated = bccp.getIsDeprecated() == 1;
+            this.createdBy = bccp.getCreatedBy();
+            this.ownerUserId = bccp.getOwnerUserId();
+            this.lastUpdatedBy = bccp.getLastUpdatedBy();
+            this.creationTimestamp = bccp.getCreationTimestamp();
+            this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
+            this.state = CcState.valueOf(bccp.getState());
+            this.revisionNum = bccp.getRevisionNum();
+            this.revisionTrackingNum = bccp.getRevisionTrackingNum();
+            this.revisionAction = RevisionAction.valueOf(bccp.getRevisionAction());
+            this.isNillable = bccp.getIsNillable() == 1;
+            this.defaultValue = bccp.getDefaultValue();
+            this.fixedValue = bccp.getFixedValue();
+            this.prevBccpId = bccp.getPrevBccpId();
+            this.nextBccpId = bccp.getNextBccpId();
+        }
+    }
 
     public String getPropertyTerm() {
         return propertyTerm;
@@ -218,11 +246,11 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public Integer getRevisionAction() {
+    public RevisionAction getRevisionAction() {
         return revisionAction;
     }
 
-    public UpdateBccpArguments setRevisionAction(Integer revisionAction) {
+    public UpdateBccpArguments setRevisionAction(RevisionAction revisionAction) {
         this.revisionAction = revisionAction;
         return this;
     }
@@ -268,8 +296,9 @@ public class UpdateBccpArguments {
     }
 
     private ULong updateBccp(DSLContext dslContext, UpdateBccpArguments arguments) {
-        return dslContext.update(BCCP)
+        ULong bccpId = dslContext.insertInto(BCCP)
                 .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
+                .set(BCCP.GUID, arguments.getGuid())
                 .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
                 .set(BCCP.BDT_ID, arguments.getBdtId())
                 .set(BCCP.DEN, arguments.getDen())
@@ -277,18 +306,26 @@ public class UpdateBccpArguments {
                 .set(BCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
                 .set(BCCP.NAMESPACE_ID, arguments.getNamespaceId())
                 .set(BCCP.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(BCCP.CREATED_BY, arguments.getCreatedBy())
+                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCCP.STATE, arguments.getState().name())
                 .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
                 .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction())
+                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
                 .set(BCCP.FIXED_VALUE, arguments.getFixedValue())
                 .set(BCCP.PREV_BCCP_ID, arguments.getPrevBccpId())
                 .set(BCCP.NEXT_BCCP_ID, arguments.getNextBccpId())
-                .where(BCCP.BCCP_ID.eq(arguments.getBccpId())).returning(BCCP.BCCP_ID).fetchOne().getBccpId();
+                .returning(BCCP.BCCP_ID).fetchOne().getBccpId();
+
+        dslContext.update(BCCP).set(BCCP.NEXT_BCCP_ID, bccpId)
+                .where(BCCP.BCCP_ID.eq(arguments.getBccpId()))
+                .execute();
+
+        return bccpId;
     }
 }

@@ -2283,7 +2283,7 @@ public class CcNodeRepository {
         }
     }
 
-    private void updateBccByToBccp(long userId, long originBccpId,
+    public void updateBccByToBccp(long userId, long originBccpId,
                                    long newBccpId, ULong releaseId,
                                    String propertyTerm, LocalDateTime timestamp) {
         List<BccManifestRecord> bccManifestRecords = dslContext.select(BCC_MANIFEST.fields())

@@ -2,14 +2,13 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 
-@Repository
 public class InsertBccpArguments {
 
     private ULong bccpId;
@@ -30,13 +29,12 @@ public class InsertBccpArguments {
     private CcState state;
     private Integer revisionNum;
     private Integer revisionTrackingNum;
-    private Integer revisionAction;
+    private RevisionAction revisionAction;
     private Boolean isNillable;
     private String defaultValue;
     private String fixedValue;
     private ULong prevBccpId;
     private ULong nextBccpId;
-
 
     public String getPropertyTerm() {
         return propertyTerm;
@@ -218,11 +216,11 @@ public class InsertBccpArguments {
         return this;
     }
 
-    public Integer getRevisionAction() {
+    public RevisionAction getRevisionAction() {
         return revisionAction;
     }
 
-    public InsertBccpArguments setRevisionAction(Integer revisionAction) {
+    public InsertBccpArguments setRevisionAction(RevisionAction revisionAction) {
         this.revisionAction = revisionAction;
         return this;
     }
@@ -286,7 +284,7 @@ public class InsertBccpArguments {
                 .set(BCCP.STATE, arguments.getState().name())
                 .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
                 .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction())
+                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())

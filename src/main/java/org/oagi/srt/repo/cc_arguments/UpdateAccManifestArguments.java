@@ -2,11 +2,9 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.springframework.stereotype.Repository;
 
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 
-@Repository
 public class UpdateAccManifestArguments {
 
     private ULong accManifestId;

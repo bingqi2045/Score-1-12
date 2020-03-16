@@ -5,13 +5,11 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 
-@Repository
 public class InsertAccArguments {
 
     private ULong accId;

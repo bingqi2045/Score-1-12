@@ -75,6 +75,33 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public DtManifestRecord getBdtManifestByManifestId(ULong manifestId) {
+        if (manifestId == null || manifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(manifestId))
+                .fetchOptional().orElse(null);
+    }
+
+    public BccpRecord getBccpById(ULong bccpId) {
+        if (bccpId == null || bccpId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpId))
+                .fetchOptional().orElse(null);
+    }
+
+    public DtRecord getBdtById(ULong bdtId) {
+        if (bdtId == null || bdtId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(DT)
+                .where(DT.DT_ID.eq(bdtId))
+                .fetchOptional().orElse(null);
+    }
+
     public InsertAccArguments insertAccArguments() {
         return new InsertAccArguments();
     }
@@ -82,7 +109,6 @@ public class CoreComponentRepository {
     public InsertBccpArguments insertBccpArguments() {
         return new InsertBccpArguments();
     }
-
 
     public InsertAccManifestArguments insertAccManifestArguments() {
         return new InsertAccManifestArguments();
@@ -96,16 +122,16 @@ public class CoreComponentRepository {
         return new UpdateAccArguments();
     }
 
-    public UpdateBccpArguments updateBccpArguments() {
-        return new UpdateBccpArguments();
+    public UpdateBccpArguments updateBccpArguments(BccpRecord bccp) {
+        return new UpdateBccpArguments(bccp);
     }
 
     public UpdateAccManifestArguments updateAccManifestArguments() {
         return new UpdateAccManifestArguments();
     }
 
-    public UpdateBccpManifestArguments updateBccpManifestArguments() {
-        return new UpdateBccpManifestArguments();
+    public UpdateBccpManifestArguments updateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
+        return new UpdateBccpManifestArguments(bccpManifestRecord);
     }
 
     public ULong execute(InsertAccArguments arguments) {
@@ -136,7 +162,7 @@ public class CoreComponentRepository {
         return arguments.execute(dslContext);
     }
 
-    public ULong execute(UpdateBccpManifestArguments arguments) {
-        return arguments.execute(dslContext);
+    public void execute(UpdateBccpManifestArguments arguments) {
+        arguments.execute(dslContext);
     }
 }

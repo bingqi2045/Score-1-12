@@ -2,11 +2,10 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.springframework.stereotype.Repository;
+import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
-@Repository
 public class UpdateBccpManifestArguments {
 
     private ULong bccpManifestId;
@@ -14,6 +13,16 @@ public class UpdateBccpManifestArguments {
     private ULong releaseId;
     private ULong moduleId;
     private ULong bdtManifestId;
+
+    public UpdateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
+        if (bccpManifestRecord != null) {
+            this.bccpManifestId = bccpManifestRecord.getBccpManifestId();
+            this.bccpId = bccpManifestRecord.getBccpId();
+            this.releaseId = bccpManifestRecord.getReleaseId();
+            this.moduleId = bccpManifestRecord.getModuleId();
+            this.bdtManifestId = bccpManifestRecord.getBdtManifestId();
+        }
+    }
 
     public ULong getBccpManifestId() {
         return bccpManifestId;
@@ -60,17 +69,17 @@ public class UpdateBccpManifestArguments {
         return this;
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return updateBccpManifest(dslContext, this);
+    public void execute(DSLContext dslContext) {
+        updateBccpManifest(dslContext, this);
     }
 
-    private ULong updateBccpManifest(DSLContext dslContext, UpdateBccpManifestArguments arguments) {
-        return dslContext.update(BCCP_MANIFEST)
+    private void updateBccpManifest(DSLContext dslContext, UpdateBccpManifestArguments arguments) {
+        dslContext.update(BCCP_MANIFEST)
                 .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
                 .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
                 .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(arguments.getBccpManifestId()))
-                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
+                .execute();
     }
 }
