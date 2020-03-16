@@ -61,6 +61,7 @@ public class CcNodeController {
 
             case "bccp":
                 return service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
+                
             default:
                 throw new UnsupportedOperationException();
         }

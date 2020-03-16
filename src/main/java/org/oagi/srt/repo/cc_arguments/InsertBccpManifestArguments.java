@@ -1,17 +1,21 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-
-import static org.oagi.srt.entity.jooq.Tables.BCCP_MANIFEST;
+import org.oagi.srt.repo.CoreComponentRepository;
 
 public class InsertBccpManifestArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong bccpManifestId;
     private ULong bccpId;
     private ULong releaseId;
     private ULong moduleId;
     private ULong bdtManifestId;
+
+    public InsertBccpManifestArguments(CoreComponentRepository repository) {
+        this.repository = repository;
+    }
 
     public ULong getBccpManifestId() {
         return bccpManifestId;
@@ -58,17 +62,7 @@ public class InsertBccpManifestArguments {
         return this;
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return insertBccpManifest(dslContext, this);
-    }
-
-    private ULong insertBccpManifest(DSLContext dslContext, InsertBccpManifestArguments arguments) {
-        return dslContext.insertInto(BCCP_MANIFEST)
-                .set(BCCP_MANIFEST.BCCP_MANIFEST_ID, arguments.getBccpManifestId())
-                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
-                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
-                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
-                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
+    public ULong execute() {
+        return repository.insertBccpManifest(this);
     }
 }

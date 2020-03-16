@@ -1,31 +1,27 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.repo.CoreComponentRepository;
 
 import java.time.LocalDateTime;
-
-import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
+import java.util.Objects;
 
 public class UpdateBccpArguments {
 
-    private ULong bccpId;
-    private String guid;
+    private final CoreComponentRepository repository;
+
     private String propertyTerm;
     private String representationTerm;
     private ULong bdtId;
-    private String den;
     private String definition;
     private String definitionSource;
     private ULong namespaceId;
     private Boolean isDeprecated;
-    private ULong createdBy;
     private ULong ownerUserId;
     private ULong lastUpdatedBy;
-    private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
     private Integer revisionNum;
@@ -35,35 +31,32 @@ public class UpdateBccpArguments {
     private String defaultValue;
     private String fixedValue;
     private ULong prevBccpId;
-    private ULong nextBccpId;
 
-    public UpdateBccpArguments(BccpRecord bccp) {
-        if (bccp != null) {
-            this.bccpId = bccp.getBccpId();
-            this.guid = bccp.getGuid();
-            this.propertyTerm = bccp.getPropertyTerm();
-            this.representationTerm = bccp.getRepresentationTerm();
-            this.bdtId = bccp.getBdtId();
-            this.den = bccp.getDen();
-            this.definition = bccp.getDefinition();
-            this.definitionSource = bccp.getDefinitionSource();
-            this.namespaceId = bccp.getNamespaceId();
-            this.isDeprecated = bccp.getIsDeprecated() == 1;
-            this.createdBy = bccp.getCreatedBy();
-            this.ownerUserId = bccp.getOwnerUserId();
-            this.lastUpdatedBy = bccp.getLastUpdatedBy();
-            this.creationTimestamp = bccp.getCreationTimestamp();
-            this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
-            this.state = CcState.valueOf(bccp.getState());
-            this.revisionNum = bccp.getRevisionNum();
-            this.revisionTrackingNum = bccp.getRevisionTrackingNum();
-            this.revisionAction = RevisionAction.valueOf(bccp.getRevisionAction());
-            this.isNillable = bccp.getIsNillable() == 1;
-            this.defaultValue = bccp.getDefaultValue();
-            this.fixedValue = bccp.getFixedValue();
-            this.prevBccpId = bccp.getPrevBccpId();
-            this.nextBccpId = bccp.getNextBccpId();
-        }
+    private int _hashCode;
+
+    public UpdateBccpArguments(CoreComponentRepository repository, BccpRecord bccp) {
+        this.repository = repository;
+
+        this.propertyTerm = bccp.getPropertyTerm();
+        this.representationTerm = bccp.getRepresentationTerm();
+        this.bdtId = bccp.getBdtId();
+        this.definition = bccp.getDefinition();
+        this.definitionSource = bccp.getDefinitionSource();
+        this.namespaceId = bccp.getNamespaceId();
+        this.isDeprecated = bccp.getIsDeprecated() == 1;
+        this.ownerUserId = bccp.getOwnerUserId();
+        this.lastUpdatedBy = bccp.getLastUpdatedBy();
+        this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
+        this.state = CcState.valueOf(bccp.getState());
+        this.revisionNum = bccp.getRevisionNum();
+        this.revisionTrackingNum = bccp.getRevisionTrackingNum();
+        this.revisionAction = RevisionAction.valueOf(bccp.getRevisionAction());
+        this.isNillable = bccp.getIsNillable() == 1;
+        this.defaultValue = bccp.getDefaultValue();
+        this.fixedValue = bccp.getFixedValue();
+        this.prevBccpId = bccp.getBccpId();
+
+        this._hashCode = this.hashCode();
     }
 
     public String getPropertyTerm() {
@@ -120,33 +113,6 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public ULong getBccpId() {
-        return bccpId;
-    }
-
-    public UpdateBccpArguments setBccpId(ULong bccpId) {
-        this.bccpId = bccpId;
-        return this;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public UpdateBccpArguments setGuid(String guid) {
-        this.guid = guid;
-        return this;
-    }
-
-    public String getDen() {
-        return den;
-    }
-
-    public UpdateBccpArguments setDen(String den) {
-        this.den = den;
-        return this;
-    }
-
     public String getDefinition() {
         return definition;
     }
@@ -174,15 +140,6 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public ULong getCreatedBy() {
-        return createdBy;
-    }
-
-    public UpdateBccpArguments setCreatedBy(ULong createdBy) {
-        this.createdBy = createdBy;
-        return this;
-    }
-
     public ULong getOwnerUserId() {
         return ownerUserId;
     }
@@ -198,15 +155,6 @@ public class UpdateBccpArguments {
 
     public UpdateBccpArguments setLastUpdatedBy(ULong lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
-        return this;
-    }
-
-    public LocalDateTime getCreationTimestamp() {
-        return creationTimestamp;
-    }
-
-    public UpdateBccpArguments setCreationTimestamp(LocalDateTime creationTimestamp) {
-        this.creationTimestamp = creationTimestamp;
         return this;
     }
 
@@ -282,50 +230,47 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public ULong getNextBccpId() {
-        return nextBccpId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateBccpArguments that = (UpdateBccpArguments) o;
+        return Objects.equals(propertyTerm, that.propertyTerm) &&
+                Objects.equals(representationTerm, that.representationTerm) &&
+                Objects.equals(bdtId, that.bdtId) &&
+                Objects.equals(definition, that.definition) &&
+                Objects.equals(definitionSource, that.definitionSource) &&
+                Objects.equals(namespaceId, that.namespaceId) &&
+                Objects.equals(isDeprecated, that.isDeprecated) &&
+                Objects.equals(ownerUserId, that.ownerUserId) &&
+                Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
+                Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
+                state == that.state &&
+                Objects.equals(revisionNum, that.revisionNum) &&
+                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
+                revisionAction == that.revisionAction &&
+                Objects.equals(isNillable, that.isNillable) &&
+                Objects.equals(defaultValue, that.defaultValue) &&
+                Objects.equals(fixedValue, that.fixedValue) &&
+                Objects.equals(prevBccpId, that.prevBccpId);
     }
 
-    public UpdateBccpArguments setNextBccpId(ULong nextBccpId) {
-        this.nextBccpId = nextBccpId;
-        return this;
+    @Override
+    public int hashCode() {
+        return Objects.hash(propertyTerm, representationTerm, bdtId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, isNillable, defaultValue, fixedValue, prevBccpId);
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return updateBccp(dslContext, this);
+    private boolean isDirty() {
+        return !Objects.equals(this._hashCode, this.hashCode());
     }
 
-    private ULong updateBccp(DSLContext dslContext, UpdateBccpArguments arguments) {
-        ULong bccpId = dslContext.insertInto(BCCP)
-                .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
-                .set(BCCP.GUID, arguments.getGuid())
-                .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
-                .set(BCCP.BDT_ID, arguments.getBdtId())
-                .set(BCCP.DEN, arguments.getDen())
-                .set(BCCP.DEFINITION, arguments.getDefinition())
-                .set(BCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
-                .set(BCCP.NAMESPACE_ID, arguments.getNamespaceId())
-                .set(BCCP.OWNER_USER_ID, arguments.getOwnerUserId())
-                .set(BCCP.CREATED_BY, arguments.getCreatedBy())
-                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
-                .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
-                .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
-                .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
-                .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
-                .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
-                .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
-                .set(BCCP.FIXED_VALUE, arguments.getFixedValue())
-                .set(BCCP.PREV_BCCP_ID, arguments.getPrevBccpId())
-                .set(BCCP.NEXT_BCCP_ID, arguments.getNextBccpId())
-                .returning(BCCP.BCCP_ID).fetchOne().getBccpId();
+    public ULong execute() {
+        if (!isDirty()) {
+            return getPrevBccpId();
+        }
 
-        dslContext.update(BCCP).set(BCCP.NEXT_BCCP_ID, bccpId)
-                .where(BCCP.BCCP_ID.eq(arguments.getBccpId()))
-                .execute();
-
-        return bccpId;
+        return repository.execute(this);
     }
+
+
 }

@@ -11,7 +11,10 @@ import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.CoreComponentRepository;
-import org.oagi.srt.repo.cc_arguments.*;
+import org.oagi.srt.repo.cc_arguments.InsertAccArguments;
+import org.oagi.srt.repo.cc_arguments.InsertAccManifestArguments;
+import org.oagi.srt.repo.cc_arguments.UpdateBccpArguments;
+import org.oagi.srt.repo.cc_arguments.UpdateBccpManifestArguments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -21,9 +24,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static org.oagi.srt.entity.jooq.Tables.ACC;
-import static org.oagi.srt.entity.jooq.Tables.ACC_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -179,7 +179,7 @@ public class CcNodeService {
                 ULong.valueOf(request.getBdtManifestId()));
         DtRecord bdt = ccRepository.getBdtById(bdtManifest.getDtId());
 
-        InsertBccpArguments bccpArguments = ccRepository.insertBccpArguments()
+        ULong bccpId = ccRepository.insertBccp()
                 .setGuid(SrtGuid.randomGuid())
                 .setPropertyTerm(defaultPropertyTerm)
                 .setRepresentationTerm(bdt.getDataTypeTerm())
@@ -195,19 +195,22 @@ public class CcNodeService {
                 .setLastUpdatedBy(userId)
                 .setOwnerUserId(userId)
                 .setCreationTimestamp(timestamp)
-                .setLastUpdateTimestamp(timestamp);
-        ULong bccpId = ccRepository.execute(bccpArguments);
+                .setLastUpdateTimestamp(timestamp)
+                .execute();
 
-        InsertBccpManifestArguments bccpManifestArguments = ccRepository.insertBccpManifestArguments()
+        ULong bccpManifestId = ccRepository.insertBccpManifest()
                 .setBccpId(bccpId)
                 .setBdtManifestId(bdtManifest.getDtManifestId())
-                .setReleaseId(ULong.valueOf(request.getReleaseId()));
-        return ccRepository.execute(bccpManifestArguments).longValue();
+                .setReleaseId(ULong.valueOf(request.getReleaseId()))
+                .execute();
+
+        return bccpManifestId.longValue();
     }
 
     @Transactional
     public CcUpdateResponse updateCcDetails(User user, CcUpdateRequest ccUpdateRequest) {
         CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
+
         ccUpdateResponse.setAccNodeResults(
                 updateAcc(user, ccUpdateRequest.getAccNodeDetails()));
         ccUpdateResponse.setAsccpNodeResults(
@@ -257,79 +260,73 @@ public class CcNodeService {
                 ccBccpNode.setBccId(bccId);
                 ccBccpNode.setBccManifestId(detail.getBcc().getManifestId());
             }
+
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
         return updatedBccpNodeDetails;
     }
 
     private CcBccpNode updateBccp(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
-        boolean isChanged = false;
         ULong userId = ULong.valueOf(sessionService.userId(user));
+
         BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(
                 ULong.valueOf(detail.getManifestId()));
         BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+
         UpdateBccpArguments updateBccpArguments = ccRepository.updateBccpArguments(bccpRecord);
 
         if (!bccpRecord.getPropertyTerm().equals(detail.getPropertyTerm())) {
             DtManifestRecord bdtManifest = ccRepository.getBdtManifestByManifestId(
                     bccpManifestRecord.getBdtManifestId());
             DtRecord bdt = ccRepository.getBdtById(bdtManifest.getDtId());
-            updateBccpArguments.setPropertyTerm(detail.getPropertyTerm())
-                    .setDen(detail.getPropertyTerm() + ". " + bdt.getDataTypeTerm());
-            isChanged = true;
+
+            updateBccpArguments.setPropertyTerm(detail.getPropertyTerm());
+            updateBccpArguments.setRepresentationTerm(bdt.getDataTypeTerm());
         }
 
         byte nillable = (byte) (detail.isNillable() ? 1 : 0);
         if (!bccpRecord.getIsNillable().equals(nillable)) {
             updateBccpArguments.setNillable(detail.isNillable());
-            isChanged = true;
         }
 
         byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
         if (!bccpRecord.getIsDeprecated().equals(deprecated)) {
             updateBccpArguments.setDeprecated(detail.isDeprecated());
-            isChanged = true;
         }
 
         if (!Objects.equals(bccpRecord.getDefaultValue(), detail.getDefaultValue())) {
             updateBccpArguments.setDefaultValue(detail.getDefaultValue());
             updateBccpArguments.setFixedValue(null);
-            isChanged = true;
         }
 
         if (!Objects.equals(bccpRecord.getFixedValue(), detail.getFixedValue())) {
             updateBccpArguments.setFixedValue(detail.getFixedValue());
             updateBccpArguments.setDefaultValue(null);
-            isChanged = true;
         }
 
         if (!Objects.equals(bccpRecord.getDefinition(), detail.getDefinition())) {
             updateBccpArguments.setDefinition(detail.getDefinition());
-            isChanged = true;
         }
 
         if (!Objects.equals(bccpRecord.getDefinitionSource(), detail.getDefinitionSource())) {
             updateBccpArguments.setDefinitionSource(detail.getDefinitionSource());
-            isChanged = true;
         }
 
-        if (isChanged) {
-            updateBccpArguments.setLastUpdatedBy(userId)
-                    .setLastUpdateTimestamp(timestamp)
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1)
-                    .setPrevBccpId(bccpRecord.getBccpId());
-            ULong bccpId = ccRepository.execute(updateBccpArguments);
+        updateBccpArguments.setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Update)
+                .setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1)
+                .setPrevBccpId(bccpRecord.getBccpId());
+        ULong bccpId = ccRepository.execute(updateBccpArguments);
 
-            repository.updateBccByToBccp(userId.longValue(), bccpManifestRecord.getBccpId().longValue(),
-                    bccpId.longValue(), bccpManifestRecord.getReleaseId(),
-                    bccpRecord.getPropertyTerm(), timestamp);
+        repository.updateBccByToBccp(userId.longValue(), bccpManifestRecord.getBccpId().longValue(),
+                bccpId.longValue(), bccpManifestRecord.getReleaseId(),
+                bccpRecord.getPropertyTerm(), timestamp);
 
-            UpdateBccpManifestArguments updateBccpManifestArguments =
-                    ccRepository.updateBccpManifestArguments(bccpManifestRecord);
-            updateBccpManifestArguments.setBccpId(bccpId);
-            ccRepository.execute(updateBccpManifestArguments);
-        }
+        UpdateBccpManifestArguments updateBccpManifestArguments =
+                ccRepository.updateBccpManifestArguments(bccpManifestRecord);
+        updateBccpManifestArguments.setBccpId(bccpId);
+        ccRepository.execute(updateBccpManifestArguments);
 
         return repository.getBccpNodeByBccpManifestId(user, detail.getManifestId());
     }

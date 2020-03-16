@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
+import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 
 @Repository
 public class CoreComponentRepository {
@@ -106,16 +106,26 @@ public class CoreComponentRepository {
         return new InsertAccArguments();
     }
 
-    public InsertBccpArguments insertBccpArguments() {
-        return new InsertBccpArguments();
+    public InsertBccpArguments insertBccp() {
+        return new InsertBccpArguments(this);
     }
 
     public InsertAccManifestArguments insertAccManifestArguments() {
         return new InsertAccManifestArguments();
     }
 
-    public InsertBccpManifestArguments insertBccpManifestArguments() {
-        return new InsertBccpManifestArguments();
+    public InsertBccpManifestArguments insertBccpManifest() {
+        return new InsertBccpManifestArguments(this);
+    }
+
+    public ULong insertBccpManifest(InsertBccpManifestArguments arguments) {
+        return dslContext.insertInto(BCCP_MANIFEST)
+                .set(BCCP_MANIFEST.BCCP_MANIFEST_ID, arguments.getBccpManifestId())
+                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
+                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
+                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
     }
 
     public UpdateAccArguments updateAccArguments() {
@@ -123,7 +133,7 @@ public class CoreComponentRepository {
     }
 
     public UpdateBccpArguments updateBccpArguments(BccpRecord bccp) {
-        return new UpdateBccpArguments(bccp);
+        return new UpdateBccpArguments(this, bccp);
     }
 
     public UpdateAccManifestArguments updateAccManifestArguments() {
@@ -143,11 +153,32 @@ public class CoreComponentRepository {
     }
 
     public ULong execute(InsertBccpArguments arguments) {
-        return arguments.execute(dslContext);
-    }
-
-    public ULong execute(InsertBccpManifestArguments arguments) {
-        return arguments.execute(dslContext);
+        return dslContext.insertInto(BCCP)
+                .set(BCCP.BCCP_ID, arguments.getBccpId())
+                .set(BCCP.GUID, arguments.getGuid())
+                .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
+                .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
+                .set(BCCP.BDT_ID, arguments.getBdtId())
+                .set(BCCP.DEN, arguments.getDen())
+                .set(BCCP.DEFINITION, arguments.getDefinition())
+                .set(BCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(BCCP.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(BCCP.CREATED_BY, arguments.getCreatedBy())
+                .set(BCCP.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(BCCP.STATE, arguments.getState().name())
+                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
+                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
+                .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
+                .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
+                .set(BCCP.FIXED_VALUE, arguments.getFixedValue())
+                .set(BCCP.PREV_BCCP_ID, arguments.getPrevBccpId())
+                .set(BCCP.NEXT_BCCP_ID, arguments.getNextBccpId())
+                .returning(BCCP.BCCP_ID).fetchOne().getBccpId();
     }
 
     public ULong execute(UpdateAccArguments arguments) {
@@ -159,7 +190,34 @@ public class CoreComponentRepository {
     }
 
     public ULong execute(UpdateBccpArguments arguments) {
-        return arguments.execute(dslContext);
+        ULong nextBccpId = dslContext.insertInto(BCCP)
+                .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
+                .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
+                .set(BCCP.BDT_ID, arguments.getBdtId())
+                .set(BCCP.DEN, arguments.getPropertyTerm() + ". " + arguments.getRepresentationTerm())
+                .set(BCCP.DEFINITION, arguments.getDefinition())
+                .set(BCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(BCCP.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(BCCP.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(BCCP.STATE, arguments.getState().name())
+                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
+                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
+                .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
+                .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
+                .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
+                .set(BCCP.FIXED_VALUE, arguments.getFixedValue())
+                .set(BCCP.PREV_BCCP_ID, arguments.getPrevBccpId())
+                .returning(BCCP.BCCP_ID).fetchOne().getBccpId();
+
+        dslContext.update(BCCP)
+                .set(BCCP.NEXT_BCCP_ID, nextBccpId)
+                .where(BCCP.BCCP_ID.eq(arguments.getPrevBccpId()))
+                .execute();
+
+        return nextBccpId;
     }
 
     public void execute(UpdateBccpManifestArguments arguments) {

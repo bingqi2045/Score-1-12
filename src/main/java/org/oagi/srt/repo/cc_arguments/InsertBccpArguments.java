@@ -1,15 +1,15 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.repo.CoreComponentRepository;
 
 import java.time.LocalDateTime;
 
-import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
-
 public class InsertBccpArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong bccpId;
     private String guid;
@@ -35,6 +35,10 @@ public class InsertBccpArguments {
     private String fixedValue;
     private ULong prevBccpId;
     private ULong nextBccpId;
+
+    public InsertBccpArguments(CoreComponentRepository repository) {
+        this.repository = repository;
+    }
 
     public String getPropertyTerm() {
         return propertyTerm;
@@ -261,35 +265,7 @@ public class InsertBccpArguments {
         return this;
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return insertBccp(dslContext, this);
-    }
-
-    private ULong insertBccp(DSLContext dslContext, InsertBccpArguments arguments) {
-        return dslContext.insertInto(BCCP)
-                .set(BCCP.BCCP_ID, arguments.getBccpId())
-                .set(BCCP.GUID, arguments.getGuid())
-                .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
-                .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
-                .set(BCCP.BDT_ID, arguments.getBdtId())
-                .set(BCCP.DEN, arguments.getDen())
-                .set(BCCP.DEFINITION, arguments.getDefinition())
-                .set(BCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
-                .set(BCCP.NAMESPACE_ID, arguments.getNamespaceId())
-                .set(BCCP.CREATED_BY, arguments.getCreatedBy())
-                .set(BCCP.OWNER_USER_ID, arguments.getOwnerUserId())
-                .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
-                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
-                .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
-                .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
-                .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
-                .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
-                .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
-                .set(BCCP.FIXED_VALUE, arguments.getFixedValue())
-                .set(BCCP.PREV_BCCP_ID, arguments.getPrevBccpId())
-                .set(BCCP.NEXT_BCCP_ID, arguments.getNextBccpId()).returning(BCCP.BCCP_ID).fetchOne().getBccpId();
+    public ULong execute() {
+        return repository.execute(this);
     }
 }
