@@ -489,33 +489,59 @@ public class CcNodeService {
         }
         return null;
     }
+    public CcRevisionResponse getAccNoddRevision(User user, long manifestId) {
+        String type = "acc";
+        CcAccNode accNode = getAccNode(user, manifestId);
+        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), type);
+        CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
+        if (lastPublishedCcId != null) {
+            AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(lastPublishedCcId));
+            ccRevisionResponse.setCcId(accRecord.getAccId().longValue());
+            ccRevisionResponse.setType(type);
+            ccRevisionResponse.setIsDeprecated(accRecord.getIsDeprecated() == 1);
+            ccRevisionResponse.setName(accRecord.getObjectClassTerm());
+        }
+        return ccRevisionResponse;
+    }
 
     public CcRevisionResponse getBccpNoddRevision(User user, long manifestId) {
+        String type = "bccp";
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), "bccp", bccpNode.getState().name());
+        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), type);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(lastPublishedCcId));
             ccRevisionResponse.setCcId(bccpRecord.getBccpId().longValue());
-            ccRevisionResponse.setType("bccp");
+            ccRevisionResponse.setType(type);
             ccRevisionResponse.setIsDeprecated(bccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(bccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(bccpRecord.getPropertyTerm());
         }
-
         return ccRevisionResponse;
     };
 
-    private Long getLastPublishedCcId(Long ccId, String type, String state) {
+    private Long getLastPublishedCcId(Long ccId, String type) {
         if (ccId == null) {
             return null;
         }
         switch (type) {
             case "acc" :
+                AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(ccId));
+                if (accRecord.getState().equals(CcState.Published.name())) {
+                    return ccId;
+                }
+                if (accRecord.getPrevAccId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), "acc");
             case "ascc" :
+                return null;
             case "bcc" :
+                return null;
             case "asccp" :
+                return null;
             case "dt" :
+                return null;
             case "bccp" :
                 BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
                 if (bccpRecord.getState().equals(CcState.Published.name())) {
@@ -524,8 +550,7 @@ public class CcNodeService {
                 if (bccpRecord.getPrevBccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(),
-                        "bccp", bccpRecord.getState());
+                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(), "bccp");
             default:
                 return null;
 

@@ -97,6 +97,15 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public AccRecord getAccById(ULong accId) {
+        if (accId == null || accId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accId))
+                .fetchOptional().orElse(null);
+    }
+
     public BccpRecord getBccpById(ULong bccpId) {
         if (bccpId == null || bccpId.longValue() <= 0L) {
             return null;

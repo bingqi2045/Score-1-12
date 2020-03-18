@@ -318,6 +318,8 @@ public class CcNodeController {
                             @PathVariable("type") String type,
                             @PathVariable("manifestId") long manifestId) {
         switch (type) {
+            case "acc":
+                return service.getAccNoddRevision(user, manifestId);
             case "bccp":
                 return service.getBccpNoddRevision(user, manifestId);
             default:
