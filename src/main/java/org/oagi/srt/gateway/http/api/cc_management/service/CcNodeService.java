@@ -495,8 +495,12 @@ public class CcNodeService {
         Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), "bccp", bccpNode.getState().name());
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
-            CcBccpNode lastPublshedNode = ccRepository.getBccpNodeByBccpId(user, lastPublishedCcId);
-            ccRevisionResponse.setCcNode(lastPublshedNode);
+            BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(lastPublishedCcId));
+            ccRevisionResponse.setCcId(bccpRecord.getBccpId().longValue());
+            ccRevisionResponse.setType("bccp");
+            ccRevisionResponse.setIsDeprecated(bccpRecord.getIsDeprecated() == 1);
+            ccRevisionResponse.setIsNillable(bccpRecord.getIsNillable() == 1);
+            ccRevisionResponse.setName(bccpRecord.getPropertyTerm());
         }
 
         return ccRevisionResponse;
