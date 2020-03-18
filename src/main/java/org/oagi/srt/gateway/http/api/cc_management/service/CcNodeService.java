@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.Release;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
@@ -15,6 +16,7 @@ import org.oagi.srt.repo.cc_arguments.InsertAccArguments;
 import org.oagi.srt.repo.cc_arguments.InsertAccManifestArguments;
 import org.oagi.srt.repo.cc_arguments.UpdateBccpArguments;
 import org.oagi.srt.repo.cc_arguments.UpdateBccpManifestArguments;
+import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,9 @@ public class CcNodeService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private ReleaseRepository releaseRepository;
 
     public CcAccNode getAccNode(User user, long manifestId) {
         AccManifestRecord accManifestRecord =
@@ -402,7 +407,44 @@ public class CcNodeService {
 
     @Transactional
     public CcBccpNode makeNewRevisionForBccp(User user, long bccpManifestId) {
-        return repository.makeNewRevisionForBccp(user, ULong.valueOf(bccpManifestId));
+        LocalDateTime timestamp = LocalDateTime.now();
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        BccpManifestRecord bccpManifestRecord =
+                ccRepository.getBccpManifestByManifestId(ULong.valueOf(bccpManifestId));
+        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+        if (CcState.valueOf(bccpRecord.getState()) != CcState.Published) {
+            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
+        }
+
+        ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
+                .setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionNum(bccpRecord.getRevisionNum() + 1)
+                .setRevisionTrackingNum(1)
+                .setState(CcState.WIP)
+                .setPrevBccpId(bccpRecord.getBccpId())
+                .execute();
+
+        Release workingRelease = releaseRepository.getWorkingRelease();
+        ULong workingReleaseId = ULong.valueOf(workingRelease.getReleaseId());
+
+        if (bccpManifestRecord.getReleaseId().equals(workingReleaseId)) {
+            ccRepository.updateBccpManifestArguments(bccpManifestRecord)
+                    .setBccpId(bccpId)
+                    .execute();
+        } else {
+            DtManifestRecord dtManifestRecord = ccRepository.getBdtManifestByManifestId(bccpManifestRecord.getBdtManifestId());
+            DtManifestRecord dtWorkingManifestRecord = ccRepository.getBdtManifestByBdtId(dtManifestRecord.getDtId(), workingReleaseId);
+            bccpManifestId = ccRepository.insertBccpManifest()
+                    .setBdtManifestId(dtWorkingManifestRecord.getDtManifestId())
+                    .setBccpId(bccpId)
+                    .setReleaseId(workingReleaseId)
+                    .execute().longValue();
+
+        }
+        return getBccpNode(user, bccpManifestId);
     }
 
     @Transactional
@@ -446,6 +488,44 @@ public class CcNodeService {
             return CcState.Published;
         }
         return null;
+    }
+
+    public CcRevisionResponse getBccpNoddRevision(User user, long manifestId) {
+        CcBccpNode bccpNode = getBccpNode(user, manifestId);
+        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), "bccp", bccpNode.getState().name());
+        CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
+        if (lastPublishedCcId != null) {
+            CcBccpNode lastPublshedNode = ccRepository.getBccpNodeByBccpId(user, lastPublishedCcId);
+            ccRevisionResponse.setCcNode(lastPublshedNode);
+        }
+
+        return ccRevisionResponse;
+    };
+
+    private Long getLastPublishedCcId(Long ccId, String type, String state) {
+        if (ccId == null) {
+            return null;
+        }
+        switch (type) {
+            case "acc" :
+            case "ascc" :
+            case "bcc" :
+            case "asccp" :
+            case "dt" :
+            case "bccp" :
+                BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
+                if (bccpRecord.getState().equals(CcState.Published.name())) {
+                    return ccId;
+                }
+                if (bccpRecord.getPrevBccpId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(),
+                        "bccp", bccpRecord.getState());
+            default:
+                return null;
+
+        }
     }
 }
 

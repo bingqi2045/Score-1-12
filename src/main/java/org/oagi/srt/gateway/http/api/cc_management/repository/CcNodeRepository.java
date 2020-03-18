@@ -737,7 +737,9 @@ public class CcNodeRepository {
                 ASCCP.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
-                ASCCP.OWNER_USER_ID)
+                ASCCP.OWNER_USER_ID,
+                ASCCP.PREV_ASCCP_ID,
+                ASCCP.NEXT_ASCCP_ID)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
@@ -798,7 +800,9 @@ public class CcNodeRepository {
                 ASCCP.STATE.as("raw_state"),
                 ASCCP.REVISION_NUM,
                 ASCCP.REVISION_TRACKING_NUM,
-                ASCCP_MANIFEST.RELEASE_ID)
+                ASCCP_MANIFEST.RELEASE_ID,
+                ASCCP.PREV_ASCCP_ID,
+                ASCCP.NEXT_ASCCP_ID)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
@@ -829,7 +833,9 @@ public class CcNodeRepository {
                 BCCP.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID,
                 BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
-                BCCP.OWNER_USER_ID)
+                BCCP.OWNER_USER_ID,
+                BCCP.PREV_BCCP_ID,
+                BCCP.NEXT_BCCP_ID)
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))

@@ -311,4 +311,17 @@ public class CcNodeController {
         resp.setManifestId(manifestId);
         return resp;
     }
+
+    @RequestMapping(value = "/core_component/node/{type}/{manifestId}/revision", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
+                            @PathVariable("type") String type,
+                            @PathVariable("manifestId") long manifestId) {
+        switch (type) {
+            case "bccp":
+                return service.getBccpNoddRevision(user, manifestId);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
 }

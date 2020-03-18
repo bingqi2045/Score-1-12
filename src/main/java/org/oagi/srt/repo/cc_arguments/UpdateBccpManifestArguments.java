@@ -1,12 +1,14 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.repo.CoreComponentRepository;
 
-import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
+import java.util.Objects;
 
 public class UpdateBccpManifestArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong bccpManifestId;
     private ULong bccpId;
@@ -14,7 +16,10 @@ public class UpdateBccpManifestArguments {
     private ULong moduleId;
     private ULong bdtManifestId;
 
-    public UpdateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
+    private int _hashCode;
+
+    public UpdateBccpManifestArguments(CoreComponentRepository repository, BccpManifestRecord bccpManifestRecord) {
+        this.repository = repository;
         if (bccpManifestRecord != null) {
             this.bccpManifestId = bccpManifestRecord.getBccpManifestId();
             this.bccpId = bccpManifestRecord.getBccpId();
@@ -22,6 +27,7 @@ public class UpdateBccpManifestArguments {
             this.moduleId = bccpManifestRecord.getModuleId();
             this.bdtManifestId = bccpManifestRecord.getBdtManifestId();
         }
+        this._hashCode = this.hashCode();
     }
 
     public ULong getBccpManifestId() {
@@ -69,17 +75,31 @@ public class UpdateBccpManifestArguments {
         return this;
     }
 
-    public void execute(DSLContext dslContext) {
-        updateBccpManifest(dslContext, this);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateBccpManifestArguments that = (UpdateBccpManifestArguments) o;
+        return Objects.equals(bccpId, that.bccpId) &&
+                Objects.equals(bdtManifestId, that.bdtManifestId) &&
+                Objects.equals(moduleId, that.moduleId) &&
+                Objects.equals(releaseId, that.releaseId);
     }
 
-    private void updateBccpManifest(DSLContext dslContext, UpdateBccpManifestArguments arguments) {
-        dslContext.update(BCCP_MANIFEST)
-                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
-                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
-                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(arguments.getBccpManifestId()))
-                .execute();
+    @Override
+    public int hashCode() {
+        return Objects.hash(bccpId, bdtManifestId, moduleId, releaseId);
+    }
+
+    private boolean isDirty() {
+        return !Objects.equals(this._hashCode, this.hashCode());
+    }
+
+    public void execute() {
+        if (!isDirty()) {
+            return;
+        }
+
+        repository.execute(this);
     }
 }

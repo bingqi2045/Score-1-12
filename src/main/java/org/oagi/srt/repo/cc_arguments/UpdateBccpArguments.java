@@ -13,6 +13,9 @@ public class UpdateBccpArguments {
 
     private final CoreComponentRepository repository;
 
+    private final String guid;
+    private final ULong createdBy;
+    private final LocalDateTime createdTimestamp;
     private String propertyTerm;
     private String representationTerm;
     private ULong bdtId;
@@ -37,6 +40,9 @@ public class UpdateBccpArguments {
     public UpdateBccpArguments(CoreComponentRepository repository, BccpRecord bccp) {
         this.repository = repository;
 
+        this.guid = bccp.getGuid();
+        this.createdBy = bccp.getCreatedBy();
+        this.createdTimestamp = bccp.getCreationTimestamp();
         this.propertyTerm = bccp.getPropertyTerm();
         this.representationTerm = bccp.getRepresentationTerm();
         this.bdtId = bccp.getBdtId();
@@ -57,6 +63,18 @@ public class UpdateBccpArguments {
         this.prevBccpId = bccp.getBccpId();
 
         this._hashCode = this.hashCode();
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public ULong getCreatedBy() {
+        return createdBy;
+    }
+
+    public LocalDateTime getCreatedTimestamp() {
+        return createdTimestamp;
     }
 
     public String getPropertyTerm() {

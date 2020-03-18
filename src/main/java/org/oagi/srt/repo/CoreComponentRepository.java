@@ -3,12 +3,16 @@ package org.oagi.srt.repo;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.repo.cc_arguments.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
+import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
 public class CoreComponentRepository {
@@ -84,6 +88,15 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public DtManifestRecord getBdtManifestByBdtId(ULong bdtId, ULong releaseId) {
+        if (bdtId == null || bdtId.longValue() <= 0L || releaseId == null || releaseId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(DT_MANIFEST)
+                .where(and(DT_MANIFEST.DT_ID.eq(bdtId), DT_MANIFEST.RELEASE_ID.eq(releaseId)))
+                .fetchOptional().orElse(null);
+    }
+
     public BccpRecord getBccpById(ULong bccpId) {
         if (bccpId == null || bccpId.longValue() <= 0L) {
             return null;
@@ -100,6 +113,23 @@ public class CoreComponentRepository {
         return dslContext.selectFrom(DT)
                 .where(DT.DT_ID.eq(bdtId))
                 .fetchOptional().orElse(null);
+    }
+
+    public CcBccpNode getBccpNodeByBccpId(User user, long bccpId) {
+        return dslContext.select(
+                BCCP.BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM.as("name"),
+                BCCP.STATE,
+                BCCP.REVISION_NUM,
+                BCCP.REVISION_TRACKING_NUM,
+                BCCP.BDT_ID,
+                BCCP.OWNER_USER_ID,
+                BCCP.PREV_BCCP_ID,
+                BCCP.NEXT_BCCP_ID)
+                .from(BCCP)
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
+                .fetchOneInto(CcBccpNode.class);
     }
 
     public InsertAccArguments insertAccArguments() {
@@ -141,7 +171,7 @@ public class CoreComponentRepository {
     }
 
     public UpdateBccpManifestArguments updateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
-        return new UpdateBccpManifestArguments(bccpManifestRecord);
+        return new UpdateBccpManifestArguments(this, bccpManifestRecord);
     }
 
     public ULong execute(InsertAccArguments arguments) {
@@ -191,6 +221,9 @@ public class CoreComponentRepository {
 
     public ULong execute(UpdateBccpArguments arguments) {
         ULong nextBccpId = dslContext.insertInto(BCCP)
+                .set(BCCP.GUID, arguments.getGuid())
+                .set(BCCP.CREATED_BY, arguments.getCreatedBy())
+                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreatedTimestamp())
                 .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
                 .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
                 .set(BCCP.BDT_ID, arguments.getBdtId())
@@ -221,6 +254,12 @@ public class CoreComponentRepository {
     }
 
     public void execute(UpdateBccpManifestArguments arguments) {
-        arguments.execute(dslContext);
+        dslContext.update(BCCP_MANIFEST)
+                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
+                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(arguments.getBccpManifestId()))
+                .execute();
     }
 }
