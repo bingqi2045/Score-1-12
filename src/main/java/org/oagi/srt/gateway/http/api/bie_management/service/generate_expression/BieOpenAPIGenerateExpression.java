@@ -115,7 +115,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         Map<String, Object> path = new LinkedHashMap();
         ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpId());
         String bieName = camelCase(basedAsccp.getPropertyTerm());
-        String pathName = "/" + bieName + "/" + abie.getGuid();
+        String pathName = "/" + bieName;
         paths.put(pathName, path);
 
         path.put("summary", "");
