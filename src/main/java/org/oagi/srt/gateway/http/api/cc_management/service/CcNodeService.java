@@ -516,6 +516,7 @@ public class CcNodeService {
             ccRevisionResponse.setIsDeprecated(bccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(bccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(bccpRecord.getPropertyTerm());
+            ccRevisionResponse.setFixedValue(bccpRecord.getFixedValue());
         }
         return ccRevisionResponse;
     };

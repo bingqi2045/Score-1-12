@@ -9,4 +9,5 @@ public class CcRevisionResponse {
     Boolean isDeprecated;
     Boolean isNillable;
     String name;
+    String fixedValue;
 }
