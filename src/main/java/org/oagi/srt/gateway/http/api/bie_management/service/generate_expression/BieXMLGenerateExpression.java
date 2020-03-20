@@ -1098,15 +1098,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
         String representationTerm = dtSc.getRepresentationTerm();
         String propertyTerm = dtSc.getPropertyTerm();
-        if ("Text".equals(representationTerm) ||
-                "Indicator".equals(representationTerm) && "Preferred".equals(propertyTerm) ||
-                propertyTerm.contains(representationTerm)) {
-            aNode.setAttribute("name", Utility.toLowerCamelCase(propertyTerm));
-        } else if ("Identifier".equals(representationTerm)) {
-            aNode.setAttribute("name", Utility.toLowerCamelCase(propertyTerm).concat("ID"));
-        } else {
-            aNode.setAttribute("name", Utility.toLowerCamelCase(propertyTerm) + Utility.toCamelCase(representationTerm));
-        }
+        aNode.setAttribute("name", toName(propertyTerm, representationTerm));
 
         if (bbieSc.getCardinalityMin() >= 1) {
             aNode.setAttribute("use", "required");

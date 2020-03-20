@@ -576,7 +576,7 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         }
 
         DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
-        String name = camelCase(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
+        String name = toName(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
         Map<String, Object> properties = new LinkedHashMap();
 
         if (option.isBieDefinition()) {
