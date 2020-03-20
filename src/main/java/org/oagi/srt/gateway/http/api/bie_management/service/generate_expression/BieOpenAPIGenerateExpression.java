@@ -611,24 +611,29 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
                 .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
         if (bbieScList.isEmpty()) {
             properties.put("$ref", ref);
+            properties = oneOf(allOf(properties), isNillable);
         } else {
             properties.put("type", "object");
             properties.put("required", new ArrayList());
             properties.put("additionalProperties", false);
             properties.put("properties", new LinkedHashMap<String, Object>());
 
+            Map<String, Object> contentProperties = new LinkedHashMap();
+            contentProperties.put("$ref", ref);
+            for (String key : Arrays.asList("enum", "default", "example")) {
+                if (properties.containsKey(key)) {
+                    contentProperties.put(key, properties.remove(key));
+                }
+            }
+
             ((List<String>) properties.get("required")).add("content");
             ((Map<String, Object>) properties.get("properties"))
-                    .put("content", ImmutableMap.<String, Object>builder()
-                            .put("$ref", ref)
-                            .build());
+                    .put("content", oneOf(allOf(contentProperties), isNillable));
 
             for (BBIESC bbieSc : bbieScList) {
                 fillProperties(properties, schemas, bbieSc, generationContext);
             }
         }
-
-        properties = oneOf(allOf(properties), isNillable);
 
         if (isArray) {
             String description = (String) properties.remove("description");
