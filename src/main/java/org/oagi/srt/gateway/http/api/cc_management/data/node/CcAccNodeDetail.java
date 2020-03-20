@@ -17,4 +17,5 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private String definitionSource;
     private CcState state;
     private long manifestId;
+    private long namespaceId;
 }

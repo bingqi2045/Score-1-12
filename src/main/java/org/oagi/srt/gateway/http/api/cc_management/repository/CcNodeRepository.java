@@ -333,6 +333,7 @@ public class CcNodeRepository {
         baseAccRecord.set(ACC.OAGIS_COMPONENT_TYPE, (int) accNodeDetail.getOagisComponentType());
         baseAccRecord.set(ACC.DEFINITION, accNodeDetail.getDefinition());
         baseAccRecord.set(ACC.DEFINITION_SOURCE, accNodeDetail.getDefinitionSource());
+        baseAccRecord.set(ACC.NAMESPACE_ID, accNodeDetail.getNamespaceId() == 0 ? null : ULong.valueOf(accNodeDetail.getNamespaceId()));
         baseAccRecord.set(ACC.DEN, accNodeDetail.getObjectClassTerm() + ". Details");
         baseAccRecord.set(ACC.IS_DEPRECATED, (byte) (accNodeDetail.isDeprecated() ? 1 : 0));
         baseAccRecord.set(ACC.IS_ABSTRACT, (byte) (accNodeDetail.isAbstracted() ? 1 : 0));
@@ -1059,6 +1060,7 @@ public class CcNodeRepository {
                 ACC.IS_DEPRECATED.as("deprecated"),
                 ACC.DEFINITION,
                 ACC.DEFINITION_SOURCE,
+                ACC.NAMESPACE_ID,
                 ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"))
                 .from(ACC_MANIFEST)
                 .join(ACC)
