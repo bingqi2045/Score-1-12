@@ -726,7 +726,12 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
-        String name = toName(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
+        String name = toName(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm(), rt -> {
+            if ("Text".equals(rt)) {
+                return "";
+            }
+            return rt;
+        }, true);
         Map<String, Object> properties = new LinkedHashMap();
 
         if (option.isBieDefinition()) {

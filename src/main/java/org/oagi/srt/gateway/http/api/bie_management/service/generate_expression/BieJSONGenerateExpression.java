@@ -466,8 +466,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
         if (bbieScList.isEmpty()) {
             properties.put("$ref", ref);
-            properties = oneOf(allOf(properties), isNillable);
         } else {
+            properties = oneOf(allOf(properties), isNillable);
             properties.put("type", "object");
             properties.put("required", new ArrayList());
             properties.put("additionalProperties", false);
@@ -581,7 +581,12 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         }
 
         DTSC dtSc = generationContext.findDtSc(bbieSc.getDtScId());
-        String name = toName(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm());
+        String name = toName(dtSc.getPropertyTerm(), dtSc.getRepresentationTerm(), rt -> {
+            if ("Text".equals(rt)) {
+                return "";
+            }
+            return rt;
+        }, true);
         Map<String, Object> properties = new LinkedHashMap();
 
         if (option.isBieDefinition()) {
