@@ -17,15 +17,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.oagi.srt.gateway.http.api.bie_management.service.generate_expression.Helper.*;
 import static org.oagi.srt.gateway.http.helper.Utility.toZuluTimeString;
@@ -1977,100 +1973,6 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         @Override
         public Collection<Definition> getCoreComponentDefinitions() {
             return Arrays.asList(new Definition(bdt.getDefinition(), bdt.getDefinitionSource()));
-        }
-    }
-
-    public static String name(String propertyTerm, String representationTerm,
-                              Function<String, String> representationTermMapper,
-                              boolean includedAbbr) {
-        if (StringUtils.isEmpty(propertyTerm) || StringUtils.isEmpty(representationTerm)) {
-            throw new IllegalArgumentException();
-        }
-
-        representationTerm = representationTermMapper.apply(representationTerm);
-
-        List<String> s = Stream.concat(
-                Stream.of(propertyTerm.split(" ")),
-                Stream.of(representationTerm.split(" "))
-        ).distinct().collect(Collectors.toList());
-        s.set(0, s.get(0).toLowerCase());
-        if (s.size() > 1) {
-            for (int i = 1, len = s.size(); i < len; ++i) {
-                s.set(i, Utility.camelCase(s.get(i), includedAbbr));
-            }
-        }
-        return String.join("", s);
-    }
-
-    public static void main(String[] args) {
-        for (Pair<String, String> pair : Arrays.asList(Pair.of("Currency", "Code"),
-                Pair.of("MIME", "Code"),
-                Pair.of("Character Set", "Code"),
-                Pair.of("Filename", "Name"),
-                Pair.of("List", "Identifier"),
-                Pair.of("List Agency", "Identifier"),
-                Pair.of("List Version", "Identifier"),
-                Pair.of("Time Zone", "Code"),
-                Pair.of("Daylight Saving", "Indicator"),
-                Pair.of("Scheme", "Identifier"),
-                Pair.of("Scheme Version", "Identifier"),
-                Pair.of("Scheme Agency", "Identifier"),
-                Pair.of("Unit", "Code"),
-                Pair.of("Language", "Code"),
-                Pair.of("Multiplier", "Value"),
-                Pair.of("Base Multiplier", "Value"),
-                Pair.of("Base Unit", "Code"),
-                Pair.of("Base Currency", "Code"),
-                Pair.of("Format", "Text"),
-                Pair.of("Encoding", "Code"),
-                Pair.of("URI", "Text"),
-                Pair.of("List Agency", "Name"),
-                Pair.of("List", "Name"),
-                Pair.of("Name", "Text"),
-                Pair.of("Language", "Identifier"),
-                Pair.of("List URI", "Text"),
-                Pair.of("List Scheme URI", "Text"),
-                Pair.of("Format", "Code"),
-                Pair.of("Scheme", "Name"),
-                Pair.of("Scheme Agency", "Name"),
-                Pair.of("Scheme Data URI", "Text"),
-                Pair.of("Scheme URI", "Text"),
-                Pair.of("Sequence", "Number"),
-                Pair.of("Expression Language", "Text"),
-                Pair.of("Action", "Code"),
-                Pair.of("Type", "Code"),
-                Pair.of("Country", "Code"),
-                Pair.of("Sequence Number", "Number"),
-                Pair.of("Name", "Name"),
-                Pair.of("Author", "Text"),
-                Pair.of("Entry Date Time", "Date Time"),
-                Pair.of("Status", "Text"),
-                Pair.of("Unit Code List Version", "Identifier"),
-                Pair.of("Preferred Indicator", "Indicator"),
-                Pair.of("Type", "Text"),
-                Pair.of("Code", "Code"),
-                Pair.of("Interval", "Text"),
-                Pair.of("Minimum", "Text"),
-                Pair.of("Maximum", "Text"),
-                Pair.of("Number Format", "Value"),
-                Pair.of("Access", "Code"),
-                Pair.of("Area", "Code"),
-                Pair.of("Exchange", "Value"),
-                Pair.of("Extension", "Value"))) {
-            System.out.println( "| " + pair.getFirst() + " | " + pair.getSecond() + " |   | " + name(pair.getFirst(), pair.getSecond(), rt -> {
-                if ("Text".equals(rt)) {
-                    return "";
-                }
-                if ("Identifier".equals(rt)) {
-                    return "ID";
-                }
-                return rt;
-            }, false) + " | " + name(pair.getFirst(), pair.getSecond(), rt -> {
-                if ("Text".equals(rt)) {
-                    return "";
-                }
-                return rt;
-            }, true) + " |");
         }
     }
 }
