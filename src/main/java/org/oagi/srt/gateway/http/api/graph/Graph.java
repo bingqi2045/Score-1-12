@@ -61,20 +61,6 @@ public class Graph {
     public void build() {
         nodeManifestIds.entrySet().stream().forEach(entry -> {
             switch (entry.getKey()) {
-                case BCCP:
-                    dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM)
-                            .from(BCCP)
-                            .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
-                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.BCCP.toString() + record.value1());
-                        node.put("propertyTerm", record.value2());
-                        String representationTerm = record.value3();
-                        if (!StringUtils.isEmpty(representationTerm)) {
-                            node.put("representationTerm", representationTerm);
-                        }
-                    });
-                    break;
                 case BDT:
                     dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER)
                             .from(DT)
