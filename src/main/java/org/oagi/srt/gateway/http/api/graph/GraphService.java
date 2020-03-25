@@ -38,7 +38,7 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(accManifest);
-        return buildGraph(graphContext, Node.toNode(accManifest));
+        return buildGraph(graphContext, graphContext.toNode(accManifest));
     }
 
     public Graph getAsccpGraph(long asccpManifestId) {
@@ -50,7 +50,7 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(asccpManifest);
-        return buildGraph(graphContext, Node.toNode(asccpManifest));
+        return buildGraph(graphContext, graphContext.toNode(asccpManifest));
     }
 
     public Graph getBccpGraph(long bccpManifestId) {
@@ -62,7 +62,7 @@ public class GraphService {
 
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
-        return buildGraph(graphContext, Node.toNode(bccpManifest));
+        return buildGraph(graphContext, graphContext.toNode(bccpManifest));
     }
 
     private Graph buildGraph(GraphContext graphContext, Node root) {
@@ -90,7 +90,6 @@ public class GraphService {
             }
         }
 
-        graph.build();
         return graph;
     }
 

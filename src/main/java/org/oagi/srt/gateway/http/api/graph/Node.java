@@ -2,7 +2,6 @@ package org.oagi.srt.gateway.http.api.graph;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jooq.types.ULong;
-import org.oagi.srt.entity.jooq.tables.records.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,32 +81,6 @@ public class Node {
 
     public Map<String, Object> getProperties() {
         return this.properties;
-    }
-
-    public static Node toNode(AccManifestRecord accManifest) {
-        Node node = new Node(NodeType.ACC, accManifest.getAccManifestId());
-        node.setBasedManifestId(accManifest.getBasedAccManifestId());
-        return node;
-    }
-
-    public static Node toNode(AsccpManifestRecord asccpManifest) {
-        Node node = new Node(NodeType.ASCCP, asccpManifest.getAsccpManifestId());
-        node.setLinkedManifestId(asccpManifest.getRoleOfAccManifestId());
-        return node;
-    }
-
-    public static Node toNode(BccpManifestRecord bccpManifest) {
-        Node node = new Node(NodeType.BCCP, bccpManifest.getBccpManifestId());
-        node.setLinkedManifestId(bccpManifest.getBdtManifestId());
-        return node;
-    }
-
-    public static Node toNode(DtManifestRecord dtManifest) {
-        return new Node(NodeType.BDT, dtManifest.getDtManifestId());
-    }
-
-    public static Node toNode(DtScManifestRecord dtScManifest) {
-        return new Node(NodeType.BDT_SC, dtScManifest.getDtScManifestId());
     }
 
     public static Node toNode(NodeType type, ULong manifestId) {

@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.oagi.srt.entity.jooq.Tables.*;
-
 @Data
 public class Graph {
 
@@ -56,39 +54,6 @@ public class Graph {
             edge.addTarget(e.getKey());
         });
         edges.put(sourceKey, edge);
-    }
-
-    public void build() {
-        nodeManifestIds.entrySet().stream().forEach(entry -> {
-            switch (entry.getKey()) {
-                case BDT:
-                    dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER)
-                            .from(DT)
-                            .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
-                            .where(DT_MANIFEST.DT_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.BDT.toString() + record.value1());
-                        node.put("dataTypeTerm", record.value2());
-                        String qualifier = record.value3();
-                        if (!StringUtils.isEmpty(qualifier)) {
-                            node.put("qualifier", qualifier);
-                        }
-                    });
-                    break;
-
-                case BDT_SC:
-                    dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID, DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM)
-                            .from(DT_SC)
-                            .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                            .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.BDT_SC.toString() + record.value1());
-                        node.put("propertyTerm", record.value2());
-                        node.put("representationTerm", record.value3());
-                    });
-                    break;
-            }
-        });
     }
 
     public Collection<List<String>> findPaths(String from, String query) {
