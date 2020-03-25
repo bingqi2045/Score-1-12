@@ -12,7 +12,9 @@ public class Node {
 
     public enum NodeType {
         ACC,
+        ASCC,
         ASCCP,
+        BCC,
         BCCP,
         BDT,
         BDT_SC;
@@ -27,7 +29,7 @@ public class Node {
     private ULong basedManifestId;
     private ULong linkedManifestId;
 
-    private Map<String, String> properties = new HashMap();
+    private Map<String, Object> properties = new HashMap();
 
     public Node(NodeType type, ULong manifestId) {
         setType(type);
@@ -74,11 +76,11 @@ public class Node {
         return getTypeAsString() + getManifestId();
     }
 
-    public void put(String key, String value) {
+    public void put(String key, Object value) {
         this.properties.put(key, value);
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, Object> getProperties() {
         return this.properties;
     }
 
@@ -108,10 +110,17 @@ public class Node {
         return new Node(NodeType.BDT_SC, dtScManifest.getDtScManifestId());
     }
 
+    public static Node toNode(NodeType type, ULong manifestId) {
+        return new Node(type, manifestId);
+    }
+
     public boolean hasTerm(String query) {
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            String value = entry.getValue();
-            if (value.toLowerCase().contains(query)) {
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            Object value = entry.getValue();
+            if (!(value instanceof String)) {
+                continue;
+            }
+            if (((String) value).toLowerCase().contains(query)) {
                 return true;
             }
         }

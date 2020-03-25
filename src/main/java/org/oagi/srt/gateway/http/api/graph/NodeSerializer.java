@@ -18,8 +18,8 @@ public class NodeSerializer extends StdSerializer<Node> {
         gen.writeStartObject();
         gen.writeStringField("type", node.getTypeAsString());
         gen.writeNumberField("manifestId", node.getManifestId().longValue());
-        for (Map.Entry<String, String> entry : node.getProperties().entrySet()) {
-            gen.writeStringField(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Object> entry : node.getProperties().entrySet()) {
+            gen.writeObjectField(entry.getKey(), entry.getValue());
         }
         gen.writeEndObject();
     }

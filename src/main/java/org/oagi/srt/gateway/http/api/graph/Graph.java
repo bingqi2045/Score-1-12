@@ -61,40 +61,6 @@ public class Graph {
     public void build() {
         nodeManifestIds.entrySet().stream().forEach(entry -> {
             switch (entry.getKey()) {
-                case ACC:
-                    dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.OBJECT_CLASS_TERM)
-                            .from(ACC)
-                            .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                            .where(ACC_MANIFEST.ACC_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.ACC.toString() + record.value1());
-                        node.put("objectClassTerm", record.value2());
-                    });
-                    break;
-
-                case ASCCP:
-                    dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.PROPERTY_TERM)
-                            .from(ASCCP)
-                            .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.ASCCP.toString() + record.value1());
-                        node.put("propertyTerm", record.value2());
-                    });
-                    break;
-
-                case BCCP:
-                    dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM)
-                            .from(BCCP)
-                            .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
-                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.in(entry.getValue()))
-                            .fetchStream().forEach(record -> {
-                        Node node = nodes.get(Node.NodeType.BCCP.toString() + record.value1());
-                        node.put("propertyTerm", record.value2());
-                        node.put("representationTerm", record.value3());
-                    });
-                    break;
-
                 case BDT:
                     dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER)
                             .from(DT)
