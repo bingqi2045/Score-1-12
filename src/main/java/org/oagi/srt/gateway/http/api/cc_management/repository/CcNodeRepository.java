@@ -353,7 +353,7 @@ public class CcNodeRepository {
         return getAccNodeDetail(user, updateAccNode);
     }
 
-    private void updateAccChain(long userId, ULong accManifestId, ULong accId, String objectClassTerm,
+    public void updateAccChain(long userId, ULong accManifestId, ULong accId, String objectClassTerm,
                                 LocalDateTime timestamp) {
         updateAsccByFromAcc(userId, accManifestId, accId, objectClassTerm, timestamp);
         updateBccByFromAcc(userId, accManifestId, accId, objectClassTerm, timestamp);
@@ -1744,7 +1744,7 @@ public class CcNodeRepository {
         return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
     }
 
-    private List<AsccManifestRecord> makeNewRevisionForAscc(AccManifestRecord accManifestRecord,
+    public List<AsccManifestRecord> makeNewRevisionForAscc(AccManifestRecord accManifestRecord,
                                                             AccRecord accRecord,
                                                             ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
         List<AsccManifestRecord> asccManifestRecords =
@@ -1798,7 +1798,7 @@ public class CcNodeRepository {
         return asccManifestRecordsInWorkingRelease;
     }
 
-    private List<BccManifestRecord> makeNewRevisionForBcc(AccManifestRecord accManifestRecord,
+    public List<BccManifestRecord> makeNewRevisionForBcc(AccManifestRecord accManifestRecord,
                                                           AccRecord accRecord,
                                                           ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
         List<BccManifestRecord> bccManifestRecords =

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
@@ -167,16 +168,16 @@ public class CoreComponentRepository {
                 .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
     }
 
-    public UpdateAccArguments updateAccArguments() {
-        return new UpdateAccArguments();
+    public UpdateAccArguments updateAccArguments(AccRecord acc) {
+        return new UpdateAccArguments(this, acc);
     }
 
     public UpdateBccpArguments updateBccpArguments(BccpRecord bccp) {
         return new UpdateBccpArguments(this, bccp);
     }
 
-    public UpdateAccManifestArguments updateAccManifestArguments() {
-        return new UpdateAccManifestArguments();
+    public UpdateAccManifestArguments updateAccManifestArguments(AccManifestRecord accManifestRecord) {
+        return new UpdateAccManifestArguments(this, accManifestRecord);
     }
 
     public UpdateBccpManifestArguments updateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
@@ -184,11 +185,37 @@ public class CoreComponentRepository {
     }
 
     public ULong execute(InsertAccArguments arguments) {
-        return arguments.execute(dslContext);
+        return dslContext.insertInto(ACC)
+                .set(ACC.GUID, arguments.getGuid())
+                .set(ACC.OBJECT_CLASS_TERM, arguments.getObjectClassTerm())
+                .set(ACC.DEN, arguments.getDen())
+                .set(ACC.DEFINITION, arguments.getDefinition())
+                .set(ACC.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(ACC.OBJECT_CLASS_QUALIFIER, arguments.getObjectClassQualifier())
+                .set(ACC.OAGIS_COMPONENT_TYPE, arguments.getOagisComponentType().getValue())
+                .set(ACC.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(ACC.CREATED_BY, arguments.getCreatedBy())
+                .set(ACC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(ACC.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(ACC.STATE, arguments.getState().name())
+                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
+                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
+                .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
+                .returning(ACC.ACC_ID).fetchOne().getAccId();
     }
 
     public ULong execute(InsertAccManifestArguments arguments) {
-        return arguments.execute(dslContext);
+        return dslContext.insertInto(ACC_MANIFEST)
+                .set(ACC_MANIFEST.ACC_ID, arguments.getAccId())
+                .set(ACC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
+                .returning(ACC_MANIFEST.ACC_MANIFEST_ID).fetchOne().getAccManifestId();
     }
 
     public ULong execute(InsertBccpArguments arguments) {
@@ -221,11 +248,44 @@ public class CoreComponentRepository {
     }
 
     public ULong execute(UpdateAccArguments arguments) {
-        return arguments.execute(dslContext);
+        ULong nextAccId = dslContext.insertInto(ACC)
+                .set(ACC.GUID, arguments.getGuid())
+                .set(ACC.OBJECT_CLASS_TERM, arguments.getObjectClassTerm())
+                .set(ACC.DEN, arguments.getDen())
+                .set(ACC.DEFINITION, arguments.getDefinition())
+                .set(ACC.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(ACC.OBJECT_CLASS_QUALIFIER, arguments.getObjectClassQualifier())
+                .set(ACC.OAGIS_COMPONENT_TYPE, arguments.getOagisComponentType().getValue())
+                .set(ACC.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(ACC.CREATED_BY, arguments.getCreatedBy())
+                .set(ACC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(ACC.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(ACC.STATE, arguments.getState().name())
+                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
+                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
+                .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
+                .returning(ACC.ACC_ID).fetchOne().getAccId();
+
+        dslContext.update(ACC)
+                .set(ACC.NEXT_ACC_ID, nextAccId)
+                .where(ACC.ACC_ID.eq(arguments.getPrevAccId()))
+                .execute();
+        return nextAccId;
     }
 
-    public ULong execute(UpdateAccManifestArguments arguments) {
-        return arguments.execute(dslContext);
+    public void execute(UpdateAccManifestArguments arguments) {
+        dslContext.update(ACC_MANIFEST)
+                .set(ACC_MANIFEST.ACC_ID, arguments.getAccId())
+                .set(ACC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(arguments.getAccManifestId()))
+                .execute();
     }
 
     public ULong execute(UpdateBccpArguments arguments) {

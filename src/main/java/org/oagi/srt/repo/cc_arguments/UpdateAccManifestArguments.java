@@ -2,16 +2,36 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
+import org.oagi.srt.repo.CoreComponentRepository;
+
+import java.util.Objects;
 
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 
 public class UpdateAccManifestArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong accManifestId;
     private ULong accId;
     private ULong releaseId;
     private ULong moduleId;
     private ULong basedAccManifestId;
+
+    private int _hashCode;
+
+    public UpdateAccManifestArguments(CoreComponentRepository repository, AccManifestRecord accManifestRecord) {
+        this.repository = repository;
+        if(accManifestRecord != null) {
+            this.accManifestId = accManifestRecord.getAccManifestId();
+            this.accId = accManifestRecord.getAccId();
+            this.releaseId = accManifestRecord.getReleaseId();
+            this.moduleId = accManifestRecord.getModuleId();
+            this.basedAccManifestId = accManifestRecord.getBasedAccManifestId();
+        }
+        this._hashCode = this.hashCode();
+    }
 
     public ULong getAccManifestId() {
         return accManifestId;
@@ -58,17 +78,31 @@ public class UpdateAccManifestArguments {
         return this;
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return updateAccManifest(dslContext,this);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateAccManifestArguments that = (UpdateAccManifestArguments) o;
+        return Objects.equals(accId, that.accId) &&
+                Objects.equals(basedAccManifestId, that.basedAccManifestId) &&
+                Objects.equals(moduleId, that.moduleId) &&
+                Objects.equals(releaseId, that.releaseId);
     }
 
-    private ULong updateAccManifest(DSLContext dslContext, UpdateAccManifestArguments arguments) {
-        return dslContext.update(ACC_MANIFEST)
-                .set(ACC_MANIFEST.ACC_ID, arguments.getAccId())
-                .set(ACC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
-                .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(arguments.getAccManifestId()))
-                .returning(ACC_MANIFEST.ACC_MANIFEST_ID).fetchOne().getAccManifestId();
+    @Override
+    public int hashCode() {
+        return Objects.hash(accId, basedAccManifestId, moduleId, releaseId);
+    }
+
+    private boolean isDirty() {
+        return !Objects.equals(this._hashCode, this.hashCode());
+    }
+
+    public void execute() {
+        if (!isDirty()) {
+            return;
+        }
+
+        repository.execute(this);
     }
 }

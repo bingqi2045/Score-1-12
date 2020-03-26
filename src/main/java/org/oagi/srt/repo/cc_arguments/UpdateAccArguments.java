@@ -3,13 +3,19 @@ package org.oagi.srt.repo.cc_arguments;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.repo.CoreComponentRepository;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 
 public class UpdateAccArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong accId;
     private String guid;
@@ -29,11 +35,40 @@ public class UpdateAccArguments {
     private CcState state;
     private Integer revisionNum;
     private Integer revisionTrackingNum;
-    private Integer revisionAction;
+    private RevisionAction revisionAction;
     private Boolean isDeprecated;
     private Boolean isAbstract;
     private ULong prevAccId;
-    private ULong nextAccId;
+
+    private int _hashCode;
+
+    public UpdateAccArguments(CoreComponentRepository repository, AccRecord acc) {
+        this.repository = repository;
+        this.accId = acc.getAccId();
+        this.guid = acc.getGuid();
+        this.objectClassTerm = acc.getObjectClassTerm();
+        this.den = acc.getDen();
+        this.definition = acc.getDefinition();
+        this.definitionSource = acc.getDefinitionSource();
+        this.basedAccId = acc.getBasedAccId();
+        this.objectClassQualifier = acc.getObjectClassQualifier();
+        this.oagisComponentType = OagisComponentType.valueOf(acc.getOagisComponentType());
+        this.namespaceId = acc.getNamespaceId();
+        this.createdBy = acc.getCreatedBy();
+        this.ownerUserId = acc.getOwnerUserId();
+        this.lastUpdatedBy = acc.getLastUpdatedBy();
+        this.creationTimestamp = acc.getCreationTimestamp();
+        this.lastUpdateTimestamp = acc.getLastUpdateTimestamp();
+        this.state = CcState.valueOf(acc.getState());
+        this.revisionNum = acc.getRevisionNum();
+        this.revisionTrackingNum = acc.getRevisionTrackingNum();
+        this.revisionAction = RevisionAction.valueOf(acc.getRevisionAction());
+        this.isDeprecated = acc.getIsDeprecated() == 1;
+        this.isAbstract = acc.getIsAbstract() == 1;
+        this.prevAccId = acc.getPrevAccId();
+
+        this._hashCode = this.hashCode();
+    }
 
     public ULong getAccId() {
         return accId;
@@ -197,11 +232,11 @@ public class UpdateAccArguments {
         return this;
     }
 
-    public Integer getRevisionAction() {
+    public RevisionAction getRevisionAction() {
         return revisionAction;
     }
 
-    public UpdateAccArguments setRevisionAction(Integer revisionAction) {
+    public UpdateAccArguments setRevisionAction(RevisionAction revisionAction) {
         this.revisionAction = revisionAction;
         return this;
     }
@@ -233,40 +268,45 @@ public class UpdateAccArguments {
         return this;
     }
 
-    public ULong getNextAccId() {
-        return nextAccId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateAccArguments that = (UpdateAccArguments) o;
+        return Objects.equals(objectClassTerm, that.objectClassTerm) &&
+                Objects.equals(objectClassQualifier, that.objectClassQualifier) &&
+                Objects.equals(oagisComponentType, that.oagisComponentType) &&
+                Objects.equals(namespaceId, that.namespaceId) &&
+                Objects.equals(basedAccId, that.basedAccId) &&
+                Objects.equals(definition, that.definition) &&
+                Objects.equals(definitionSource, that.definitionSource) &&
+                Objects.equals(namespaceId, that.namespaceId) &&
+                Objects.equals(isDeprecated, that.isDeprecated) &&
+                Objects.equals(isAbstract, that.isAbstract) &&
+                Objects.equals(ownerUserId, that.ownerUserId) &&
+                Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
+                Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
+                state == that.state &&
+                Objects.equals(revisionNum, that.revisionNum) &&
+                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
+                revisionAction.equals(that.revisionAction) &&
+                Objects.equals(prevAccId, that.prevAccId);
     }
 
-    public UpdateAccArguments setNextAccId(ULong nextAccId) {
-        this.nextAccId = nextAccId;
-        return this;
+    @Override
+    public int hashCode() {
+        return Objects.hash(objectClassTerm, basedAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, isAbstract, prevAccId);
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return updateAcc(dslContext, this);
+    private boolean isDirty() {
+        return !Objects.equals(this._hashCode, this.hashCode());
     }
 
-    private ULong updateAcc(DSLContext dslContext, UpdateAccArguments arguments) {
-        return dslContext.update(ACC)
-                .set(ACC.OBJECT_CLASS_TERM, arguments.getObjectClassTerm())
-                .set(ACC.DEN, arguments.getDen())
-                .set(ACC.DEFINITION, arguments.getDefinition())
-                .set(ACC.DEFINITION_SOURCE, arguments.getDefinitionSource())
-                .set(ACC.OBJECT_CLASS_QUALIFIER, arguments.getObjectClassQualifier())
-                .set(ACC.OAGIS_COMPONENT_TYPE, arguments.getOagisComponentType().getValue())
-                .set(ACC.NAMESPACE_ID, arguments.getNamespaceId())
-                .set(ACC.OWNER_USER_ID, arguments.getOwnerUserId())
-                .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
-                .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
-                .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ACC.REVISION_ACTION, arguments.getRevisionAction().byteValue())
-                .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
-                .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
-                .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
-                .set(ACC.NEXT_ACC_ID, arguments.getNextAccId())
-                .where(ACC.ACC_ID.eq(arguments.getAccId()))
-                .returning(ACC.ACC_ID).fetchOne().getAccId();
+    public ULong execute() {
+        if (!isDirty()) {
+            return getPrevAccId();
+        }
+
+        return repository.execute(this);
     }
 }

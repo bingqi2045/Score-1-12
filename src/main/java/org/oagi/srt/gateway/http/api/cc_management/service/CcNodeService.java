@@ -12,10 +12,7 @@ import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.CoreComponentRepository;
-import org.oagi.srt.repo.cc_arguments.InsertAccArguments;
-import org.oagi.srt.repo.cc_arguments.InsertAccManifestArguments;
-import org.oagi.srt.repo.cc_arguments.UpdateBccpArguments;
-import org.oagi.srt.repo.cc_arguments.UpdateBccpManifestArguments;
+import org.oagi.srt.repo.cc_arguments.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -228,10 +225,10 @@ public class CcNodeService {
 
     @Transactional
     public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
+        LocalDateTime timestamp = LocalDateTime.now();
         List<CcAccNodeDetail> updatedAccNodeDetails = new ArrayList<>();
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
-            CcAccNodeDetail updatedAccNodeDetail =
-                    repository.updateAcc(user, detail);
+            CcAccNodeDetail updatedAccNodeDetail = updateAcc(user, timestamp, detail);
             updatedAccNodeDetails.add(updatedAccNodeDetail);
         }
         return updatedAccNodeDetails;
@@ -269,6 +266,60 @@ public class CcNodeService {
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
         return updatedBccpNodeDetails;
+    }
+
+    private CcAccNodeDetail updateAcc(User user, LocalDateTime timestamp, CcAccNodeDetail detail) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(
+                ULong.valueOf(detail.getManifestId()));
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+
+        UpdateAccArguments updateAccArguments = ccRepository.updateAccArguments(accRecord);
+
+        if (!accRecord.getObjectClassTerm().equals(detail.getObjectClassTerm())) {
+            updateAccArguments.setObjectClassTerm(detail.getObjectClassTerm());
+            updateAccArguments.setDen(detail.getObjectClassTerm() + ". Details");
+        }
+
+        byte abstracted = (byte) (detail.isAbstracted() ? 1 : 0);
+        if (!accRecord.getIsAbstract().equals(abstracted)) {
+            updateAccArguments.setAbstract(detail.isAbstracted());
+        }
+
+        byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
+        if (!accRecord.getIsDeprecated().equals(deprecated)) {
+            updateAccArguments.setDeprecated(detail.isDeprecated());
+        }
+
+        if (!Objects.equals(accRecord.getDefinition(), detail.getDefinition())) {
+            updateAccArguments.setDefinition(detail.getDefinition());
+        }
+
+        if (!Objects.equals(accRecord.getDefinitionSource(), detail.getDefinitionSource())) {
+            updateAccArguments.setDefinitionSource(detail.getDefinitionSource());
+        }
+        if (!Objects.equals(accRecord.getNamespaceId(), detail.getNamespaceId())) {
+            updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+        }
+
+        updateAccArguments.setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Update)
+                .setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1)
+                .setPrevAccId(accRecord.getAccId());
+        ULong accId = ccRepository.execute(updateAccArguments);
+
+        UpdateAccManifestArguments updateAccManifestArguments =
+                ccRepository.updateAccManifestArguments(accManifestRecord);
+        updateAccManifestArguments.setAccId(accId);
+        ccRepository.execute(updateAccManifestArguments);
+
+        repository.updateAccChain(userId.longValue(), accManifestRecord.getAccManifestId(), accId,
+                updateAccArguments.getObjectClassTerm(), timestamp);
+
+        CcAccNode updateAccNode = repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
+        return repository.getAccNodeDetail(user, updateAccNode);
     }
 
     private CcBccpNode updateBccp(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
@@ -399,7 +450,41 @@ public class CcNodeService {
 
     @Transactional
     public CcAccNode makeNewRevisionForAcc(User user, long accManifestId) {
-        return repository.makeNewRevisionForAcc(user, ULong.valueOf(accManifestId));
+        LocalDateTime timestamp = LocalDateTime.now();
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        if (CcState.valueOf(accRecord.getState()) != CcState.Published) {
+            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
+        }
+
+        Release workingRelease = releaseRepository.getWorkingRelease();
+
+        if (accManifestRecord.getReleaseId().longValue() != workingRelease.getReleaseId()) {
+            throw new IllegalArgumentException("Creating new revision is not allow for this release");
+        }
+
+        UpdateAccArguments updateAccArguments = ccRepository.updateAccArguments(accRecord)
+                .setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionNum(accRecord.getRevisionNum() + 1)
+                .setRevisionTrackingNum(1)
+                .setPrevAccId(accRecord.getAccId())
+                .setState(CcState.WIP);
+
+        ULong accId = ccRepository.execute(updateAccArguments);
+
+        UpdateAccManifestArguments updateAccManifestArguments = ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId);
+
+        ccRepository.execute(updateAccManifestArguments);
+
+        repository.makeNewRevisionForAscc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
+        repository.makeNewRevisionForBcc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
+
+        return repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
     }
 
     @Transactional
