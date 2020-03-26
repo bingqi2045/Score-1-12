@@ -299,13 +299,15 @@ public class CcNodeService {
             updateBccpArguments.setDeprecated(detail.isDeprecated());
         }
 
-        if (!Objects.equals(bccpRecord.getDefaultValue(), detail.getDefaultValue())) {
+        if (detail.getDefaultValue() != null && detail.getDefaultValue().length() > 0) {
             updateBccpArguments.setDefaultValue(detail.getDefaultValue());
             updateBccpArguments.setFixedValue(null);
         }
-
-        if (!Objects.equals(bccpRecord.getFixedValue(), detail.getFixedValue())) {
+        else if (detail.getFixedValue() != null && detail.getFixedValue().length() > 0) {
             updateBccpArguments.setFixedValue(detail.getFixedValue());
+            updateBccpArguments.setDefaultValue(null);
+        } else {
+            updateBccpArguments.setFixedValue(null);
             updateBccpArguments.setDefaultValue(null);
         }
 
