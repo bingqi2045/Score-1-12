@@ -152,6 +152,8 @@ public class CcNodeService {
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
                 .setRevisionAction(RevisionAction.Insert)
+                .setDeprecated(false)
+                .setAbstract(false)
                 .setCreatedBy(userId)
                 .setLastUpdatedBy(userId)
                 .setOwnerUserId(userId)
@@ -606,7 +608,23 @@ public class CcNodeService {
             ccRevisionResponse.setFixedValue(bccpRecord.getFixedValue());
         }
         return ccRevisionResponse;
-    };
+    }
+
+    public CcRevisionResponse getAsccpNoddRevision(User user, long manifestId) {
+        String type = "asccp";
+        CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
+        Long lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), type);
+        CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
+        if (lastPublishedCcId != null) {
+            AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(lastPublishedCcId));
+            ccRevisionResponse.setCcId(asccpRecord.getAsccpId().longValue());
+            ccRevisionResponse.setType(type);
+            ccRevisionResponse.setIsDeprecated(asccpRecord.getIsDeprecated() == 1);
+            ccRevisionResponse.setIsNillable(asccpRecord.getIsNillable() == 1);
+            ccRevisionResponse.setName(asccpRecord.getPropertyTerm());
+        }
+        return ccRevisionResponse;
+    }
 
     private Long getLastPublishedCcId(Long ccId, String type) {
         if (ccId == null) {

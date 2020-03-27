@@ -107,6 +107,15 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public AsccpRecord getAsccpById(ULong asccpId) {
+        if (asccpId == null || asccpId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpId))
+                .fetchOptional().orElse(null);
+    }
+
     public BccpRecord getBccpById(ULong bccpId) {
         if (bccpId == null || bccpId.longValue() <= 0L) {
             return null;

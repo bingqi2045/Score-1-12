@@ -322,6 +322,8 @@ public class CcNodeController {
                 return service.getAccNoddRevision(user, manifestId);
             case "bccp":
                 return service.getBccpNoddRevision(user, manifestId);
+            case "asccp":
+                return service.getAsccpNoddRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
         }
