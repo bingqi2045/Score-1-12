@@ -15,7 +15,7 @@ public class UpdateBccpArguments {
 
     private final String guid;
     private final ULong createdBy;
-    private final LocalDateTime createdTimestamp;
+    private final LocalDateTime creationTimestamp;
     private String propertyTerm;
     private String representationTerm;
     private ULong bdtId;
@@ -42,7 +42,7 @@ public class UpdateBccpArguments {
 
         this.guid = bccp.getGuid();
         this.createdBy = bccp.getCreatedBy();
-        this.createdTimestamp = bccp.getCreationTimestamp();
+        this.creationTimestamp = bccp.getCreationTimestamp();
         this.propertyTerm = bccp.getPropertyTerm();
         this.representationTerm = bccp.getRepresentationTerm();
         this.bdtId = bccp.getBdtId();
@@ -73,8 +73,8 @@ public class UpdateBccpArguments {
         return createdBy;
     }
 
-    public LocalDateTime getCreatedTimestamp() {
-        return createdTimestamp;
+    public LocalDateTime getCreationTimestamp() {
+        return creationTimestamp;
     }
 
     public String getPropertyTerm() {

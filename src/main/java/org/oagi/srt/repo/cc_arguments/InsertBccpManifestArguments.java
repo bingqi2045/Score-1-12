@@ -63,6 +63,6 @@ public class InsertBccpManifestArguments {
     }
 
     public ULong execute() {
-        return repository.insertBccpManifest(this);
+        return repository.execute(this);
     }
 }

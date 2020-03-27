@@ -170,7 +170,39 @@ public class CcNodeService {
     @Transactional
     public long createAsccp(User user, CcAsccpCreateRequest request) {
         long userId = sessionService.userId(user);
-        return repository.createAsccp(userId, request.getRoleOfAccManifestId());
+        LocalDateTime timestamp = LocalDateTime.now();
+        String defaultPropertyTerm = "A new ASCCP property";
+
+        AccManifestRecord accManifestRecord =
+                ccRepository.getAccManifestByManifestId(ULong.valueOf(request.getRoleOfAccManifestId()));
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+
+        InsertAsccpArguments insertAsccpArguments = ccRepository.insertAsccpArguments()
+                .setGuid(SrtGuid.randomGuid())
+                .setPropertyTerm(defaultPropertyTerm)
+                .setRoleOfAccId(accManifestRecord.getAccId())
+                .setDen(defaultPropertyTerm + ". " + accRecord.getObjectClassTerm())
+                .setState(CcState.WIP)
+                .setReuseableIndicator(false)
+                .setDeprecated(false)
+                .setNillable(false)
+                .setRevisionNum(1)
+                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Insert)
+                .setCreatedBy(ULong.valueOf(userId))
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setOwnerUserId(ULong.valueOf(userId))
+                .setCreationTimestamp(timestamp)
+                .setLastUpdateTimestamp(timestamp);
+
+        ULong asccpId = ccRepository.execute(insertAsccpArguments);
+
+        InsertAsccpManifestArguments insertAsccpManifestArguments = ccRepository.insertAsccpManifest()
+                .setAsccpId(asccpId)
+                .setRoleOfAccManifestId(accManifestRecord.getAccManifestId())
+                .setReleaseId(accManifestRecord.getReleaseId());
+
+        return ccRepository.execute(insertAsccpManifestArguments).longValue();
     }
 
     @Transactional
@@ -183,7 +215,7 @@ public class CcNodeService {
                 ULong.valueOf(request.getBdtManifestId()));
         DtRecord bdt = ccRepository.getBdtById(bdtManifest.getDtId());
 
-        ULong bccpId = ccRepository.insertBccp()
+        ULong bccpId = ccRepository.insertBccpArguments()
                 .setGuid(SrtGuid.randomGuid())
                 .setPropertyTerm(defaultPropertyTerm)
                 .setRepresentationTerm(bdt.getDataTypeTerm())

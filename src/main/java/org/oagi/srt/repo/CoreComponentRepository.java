@@ -155,8 +155,12 @@ public class CoreComponentRepository {
         return new InsertAccArguments();
     }
 
-    public InsertBccpArguments insertBccp() {
+    public InsertBccpArguments insertBccpArguments() {
         return new InsertBccpArguments(this);
+    }
+
+    public InsertAsccpArguments insertAsccpArguments() {
+        return new InsertAsccpArguments(this);
     }
 
     public InsertAccManifestArguments insertAccManifestArguments() {
@@ -167,14 +171,8 @@ public class CoreComponentRepository {
         return new InsertBccpManifestArguments(this);
     }
 
-    public ULong insertBccpManifest(InsertBccpManifestArguments arguments) {
-        return dslContext.insertInto(BCCP_MANIFEST)
-                .set(BCCP_MANIFEST.BCCP_MANIFEST_ID, arguments.getBccpManifestId())
-                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
-                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
-                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
-                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
+    public InsertAsccpManifestArguments insertAsccpManifest() {
+        return new InsertAsccpManifestArguments(this);
     }
 
     public UpdateAccArguments updateAccArguments(AccRecord acc) {
@@ -256,6 +254,52 @@ public class CoreComponentRepository {
                 .returning(BCCP.BCCP_ID).fetchOne().getBccpId();
     }
 
+    public ULong execute(InsertBccpManifestArguments arguments) {
+        return dslContext.insertInto(BCCP_MANIFEST)
+                .set(BCCP_MANIFEST.BCCP_MANIFEST_ID, arguments.getBccpManifestId())
+                .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
+                .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
+                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
+    }
+
+    public ULong execute(InsertAsccpArguments arguments) {
+        return dslContext.insertInto(ASCCP)
+                .set(ASCCP.GUID, arguments.getGuid())
+                .set(ASCCP.PROPERTY_TERM, arguments.getPropertyTerm())
+                .set(ASCCP.ROLE_OF_ACC_ID, arguments.getRoleOfAccId())
+                .set(ASCCP.DEN, arguments.getDen())
+                .set(ASCCP.DEFINITION, arguments.getDefinition())
+                .set(ASCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(ASCCP.REUSABLE_INDICATOR, arguments.getReuseableIndicator()? (byte) 1: 0)
+                .set(ASCCP.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(ASCCP.CREATED_BY, arguments.getCreatedBy())
+                .set(ASCCP.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(ASCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(ASCCP.STATE, arguments.getState().name())
+                .set(ASCCP.REVISION_NUM, arguments.getRevisionNum())
+                .set(ASCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(ASCCP.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
+                .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())
+                .set(ASCCP.NEXT_ASCCP_ID, arguments.getNextAsccpId())
+                .returning(ASCCP.ASCCP_ID).fetchOne().getAsccpId();
+    }
+
+    public ULong execute(InsertAsccpManifestArguments arguments) {
+        return dslContext.insertInto(ASCCP_MANIFEST)
+                .set(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
+                .set(ASCCP_MANIFEST.ASCCP_ID, arguments.getAsccpId())
+                .set(ASCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ASCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
+                .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne().getAsccpManifestId();
+    }
+
     public ULong execute(UpdateAccArguments arguments) {
         ULong nextAccId = dslContext.insertInto(ACC)
                 .set(ACC.GUID, arguments.getGuid())
@@ -301,7 +345,7 @@ public class CoreComponentRepository {
         ULong nextBccpId = dslContext.insertInto(BCCP)
                 .set(BCCP.GUID, arguments.getGuid())
                 .set(BCCP.CREATED_BY, arguments.getCreatedBy())
-                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreatedTimestamp())
+                .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCCP.PROPERTY_TERM, arguments.getPropertyTerm())
                 .set(BCCP.REPRESENTATION_TERM, arguments.getRepresentationTerm())
                 .set(BCCP.BDT_ID, arguments.getBdtId())
@@ -331,6 +375,39 @@ public class CoreComponentRepository {
         return nextBccpId;
     }
 
+    public ULong execute(UpdateAsccpArguments arguments) {
+        ULong nextAsccpId = dslContext.insertInto(ASCCP)
+                .set(ASCCP.GUID, arguments.getGuid())
+                .set(ASCCP.PROPERTY_TERM, arguments.getPropertyTerm())
+                .set(ASCCP.ROLE_OF_ACC_ID, arguments.getRoleOfAccId())
+                .set(ASCCP.DEN, arguments.getDen())
+                .set(ASCCP.DEFINITION, arguments.getDefinition())
+                .set(ASCCP.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(ASCCP.REUSABLE_INDICATOR, arguments.getReuseableIndicator()? (byte) 1: 0)
+                .set(ASCCP.NAMESPACE_ID, arguments.getNamespaceId())
+                .set(ASCCP.CREATED_BY, arguments.getCreatedBy())
+                .set(ASCCP.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(ASCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(ASCCP.STATE, arguments.getState().name())
+                .set(ASCCP.REVISION_NUM, arguments.getRevisionNum())
+                .set(ASCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(ASCCP.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
+                .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())
+                .set(ASCCP.NEXT_ASCCP_ID, arguments.getNextAsccpId())
+                .returning(ASCCP.ASCCP_ID).fetchOne().getAsccpId();
+
+        dslContext.update(ASCCP)
+                .set(ASCCP.NEXT_ASCCP_ID, nextAsccpId)
+                .where(ASCCP.ASCCP_ID.eq(arguments.getPrevAsccpId()))
+                .execute();
+
+        return nextAsccpId;
+    }
+
     public void execute(UpdateBccpManifestArguments arguments) {
         dslContext.update(BCCP_MANIFEST)
                 .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
@@ -338,6 +415,16 @@ public class CoreComponentRepository {
                 .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(arguments.getBccpManifestId()))
+                .execute();
+    }
+
+    public void execute(UpdateAsccpManifestArguments arguments) {
+        dslContext.update(ASCCP_MANIFEST)
+                .set(ASCCP_MANIFEST.ASCCP_ID, arguments.getAsccpId())
+                .set(ASCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ASCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
+                .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(arguments.getAsccpManifestId()))
                 .execute();
     }
 }
