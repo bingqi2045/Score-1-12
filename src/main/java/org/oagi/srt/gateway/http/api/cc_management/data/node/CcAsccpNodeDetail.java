@@ -32,6 +32,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private String den;
         private boolean reusable;
         private boolean deprecated;
+        private boolean nillable;
         private String definition;
         private String definitionSource;
     }

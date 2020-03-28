@@ -171,7 +171,7 @@ public class CcNodeService {
     public long createAsccp(User user, CcAsccpCreateRequest request) {
         long userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
-        String defaultPropertyTerm = "A new ASCCP property";
+        String defaultPropertyTerm = "Property Term";
 
         AccManifestRecord accManifestRecord =
                 ccRepository.getAccManifestByManifestId(ULong.valueOf(request.getRoleOfAccManifestId()));
@@ -183,7 +183,7 @@ public class CcNodeService {
                 .setRoleOfAccId(accManifestRecord.getAccId())
                 .setDen(defaultPropertyTerm + ". " + accRecord.getObjectClassTerm())
                 .setState(CcState.WIP)
-                .setReuseableIndicator(false)
+                .setReuseableIndicator(true)
                 .setDeprecated(false)
                 .setNillable(false)
                 .setRevisionNum(1)
@@ -248,21 +248,21 @@ public class CcNodeService {
         CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
 
         ccUpdateResponse.setAccNodeResults(
-                updateAcc(user, ccUpdateRequest.getAccNodeDetails()));
+                updateAccDetail(user, ccUpdateRequest.getAccNodeDetails()));
         ccUpdateResponse.setAsccpNodeResults(
                 updateAsccp(user, ccUpdateRequest.getAsccpNodeDetails()));
         ccUpdateResponse.setBccpNodeResults(
-                updateBccp(user, ccUpdateRequest.getBccpNodeDetails()));
+                updateBccpDetail(user, ccUpdateRequest.getBccpNodeDetails()));
 
         return ccUpdateResponse;
     }
 
     @Transactional
-    public List<CcAccNodeDetail> updateAcc(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
+    public List<CcAccNodeDetail> updateAccDetail(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcAccNodeDetail> updatedAccNodeDetails = new ArrayList<>();
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
-            CcAccNodeDetail updatedAccNodeDetail = updateAcc(user, timestamp, detail);
+            CcAccNodeDetail updatedAccNodeDetail = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(updatedAccNodeDetail);
         }
         return updatedAccNodeDetails;
@@ -270,9 +270,10 @@ public class CcNodeService {
 
     @Transactional
     public List<CcAsccpNodeDetail> updateAsccp(User user, List<CcAsccpNodeDetail> asccpNodeDetails) {
+        LocalDateTime timestamp = LocalDateTime.now();
         List<CcAsccpNodeDetail> updatedAsccpNodeDetails = new ArrayList<>();
         for (CcAsccpNodeDetail detail : asccpNodeDetails) {
-            CcAsccpNode ccAsccpNode = repository.updateAsccp(user, detail.getAsccp(), detail.getAsccp().getManifestId());
+            CcAsccpNode ccAsccpNode = updateAsccpDetail(user, timestamp, detail.getAsccp());
             if (detail.getAscc() != null) {
                 long accId = repository.updateAscc(user, detail.getAscc(), detail.getAscc().getManifestId());
                 ccAsccpNode.setAsccId(accId);
@@ -284,12 +285,12 @@ public class CcNodeService {
     }
 
     @Transactional
-    public List<CcBccpNodeDetail> updateBccp(User user, List<CcBccpNodeDetail> bccpNodeDetails) {
+    public List<CcBccpNodeDetail> updateBccpDetail(User user, List<CcBccpNodeDetail> bccpNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
 
         List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
         for (CcBccpNodeDetail detail : bccpNodeDetails) {
-            CcBccpNode ccBccpNode = updateBccp(user, timestamp, detail.getBccp());
+            CcBccpNode ccBccpNode = updateBccpDetail(user, timestamp, detail.getBccp());
 
             if (detail.getBcc() != null) {
                 long bccId = repository.updateBcc(user, detail.getBcc(), detail.getBcc().getManifestId());
@@ -302,7 +303,7 @@ public class CcNodeService {
         return updatedBccpNodeDetails;
     }
 
-    private CcAccNodeDetail updateAcc(User user, LocalDateTime timestamp, CcAccNodeDetail detail) {
+    private CcAccNodeDetail updateAccDetail(User user, LocalDateTime timestamp, CcAccNodeDetail detail) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(
@@ -356,7 +357,7 @@ public class CcNodeService {
         return repository.getAccNodeDetail(user, updateAccNode);
     }
 
-    private CcBccpNode updateBccp(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
+    private CcBccpNode updateBccpDetail(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(
@@ -422,6 +423,43 @@ public class CcNodeService {
 
         return repository.getBccpNodeByBccpManifestId(user, detail.getManifestId());
     }
+
+    public CcAsccpNode updateAsccpDetail(User user, LocalDateTime timestamp, CcAsccpNodeDetail.Asccp detail) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AsccpManifestRecord asccpManifestRecord =
+                ccRepository.getAsccpManifestByManifestId(ULong.valueOf(detail.getManifestId()));
+        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+        AccRecord accRecord = ccRepository.getAccById(asccpRecord.getRoleOfAccId());
+
+        UpdateAsccpArguments updateAsccpArguments = ccRepository.updateAsccpArguments(asccpRecord)
+                .setPropertyTerm(detail.getPropertyTerm())
+                .setDen(detail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
+                .setReuseableIndicator(detail.isReusable())
+                .setDeprecated(detail.isDeprecated())
+                .setDefinition(detail.getDefinition())
+                .setDefinitionSource(detail.getDefinitionSource())
+                .setNillable(detail.isNillable())
+                .setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Update)
+                .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
+                .setPrevAsccpId(asccpRecord.getAsccpId());
+
+        ULong asccpId = ccRepository.execute(updateAsccpArguments);
+
+        if (!asccpId.equals(asccpRecord.getAsccpId())) {
+            UpdateAsccpManifestArguments updateAsccpManifestArguments
+                    = ccRepository.updateAsccpManifestArguments(asccpManifestRecord)
+                    .setAsccpId(asccpId);
+            ccRepository.execute(updateAsccpManifestArguments);
+            repository.updateAsccByToAsccp(userId.longValue(), asccpRecord.getAsccpId().longValue(),
+                    asccpId.longValue(), asccpManifestRecord.getReleaseId(), detail.getPropertyTerm(), timestamp);
+        }
+
+        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
+    }
+
 
     @Transactional
     public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
@@ -523,7 +561,38 @@ public class CcNodeService {
 
     @Transactional
     public CcAsccpNode makeNewRevisionForAsccp(User user, long asccpManifestId) {
-        return repository.makeNewRevisionForAsccp(user, ULong.valueOf(asccpManifestId));
+        LocalDateTime timestamp = LocalDateTime.now();
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        AsccpManifestRecord asccpManifestRecord =
+                ccRepository.getAsccpManifestByManifestId(ULong.valueOf(asccpManifestId));
+        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+
+        if (CcState.valueOf(asccpRecord.getState()) != CcState.Published) {
+            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
+        }
+
+        Release workingRelease = releaseRepository.getWorkingRelease();
+
+        if (asccpManifestRecord.getReleaseId().longValue() != workingRelease.getReleaseId()) {
+            throw new IllegalArgumentException("Creating new revision is not allow for this release");
+        }
+
+        ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
+                .setLastUpdatedBy(userId)
+                .setLastUpdateTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionNum(asccpRecord.getRevisionNum() + 1)
+                .setRevisionTrackingNum(1)
+                .setState(CcState.WIP)
+                .setPrevAsccpId(asccpRecord.getAsccpId())
+                .execute();
+
+        ccRepository.updateAsccpManifestArguments(asccpManifestRecord)
+                .setAsccpId(asccpId)
+                .execute();
+
+        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
     }
 
     @Transactional
@@ -677,7 +746,14 @@ public class CcNodeService {
             case "bcc" :
                 return null;
             case "asccp" :
-                return null;
+                AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(ccId));
+                if (asccpRecord.getState().equals(CcState.Published.name())) {
+                    return ccId;
+                }
+                if (asccpRecord.getPrevAsccpId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), "asccp");
             case "dt" :
                 return null;
             case "bccp" :

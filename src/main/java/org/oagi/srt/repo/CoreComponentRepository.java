@@ -183,12 +183,20 @@ public class CoreComponentRepository {
         return new UpdateBccpArguments(this, bccp);
     }
 
+    public UpdateAsccpArguments updateAsccpArguments(AsccpRecord asccp) {
+        return new UpdateAsccpArguments(this, asccp);
+    }
+
     public UpdateAccManifestArguments updateAccManifestArguments(AccManifestRecord accManifestRecord) {
         return new UpdateAccManifestArguments(this, accManifestRecord);
     }
 
     public UpdateBccpManifestArguments updateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
         return new UpdateBccpManifestArguments(this, bccpManifestRecord);
+    }
+
+    public UpdateAsccpManifestArguments updateAsccpManifestArguments(AsccpManifestRecord asccpManifestRecord) {
+        return new UpdateAsccpManifestArguments(this, asccpManifestRecord);
     }
 
     public ULong execute(InsertAccArguments arguments) {

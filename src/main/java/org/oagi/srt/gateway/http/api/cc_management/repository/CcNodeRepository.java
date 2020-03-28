@@ -1102,6 +1102,7 @@ public class CcNodeRepository {
                 ASCCP.DEN,
                 ASCCP.REUSABLE_INDICATOR.as("reusable"),
                 ASCCP.IS_DEPRECATED.as("deprecated"),
+                ASCCP.IS_NILLABLE.as("nillable"),
                 ASCCP.DEFINITION,
                 ASCCP.DEFINITION_SOURCE)
                 .from(ASCCP_MANIFEST)
