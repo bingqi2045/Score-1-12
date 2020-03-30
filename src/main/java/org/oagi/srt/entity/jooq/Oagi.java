@@ -49,6 +49,7 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
 import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
+import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
 import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
@@ -74,7 +75,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 435662209;
+    private static final long serialVersionUID = -1047731046;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -289,6 +290,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final CodeListValue CODE_LIST_VALUE = CodeListValue.CODE_LIST_VALUE;
 
     /**
+     * The table <code>oagi.comment</code>.
+     */
+    public final Comment COMMENT = Comment.COMMENT;
+
+    /**
      * This table captures the context category. Examples of context categories as described in the CCTS are business process, industry, etc.
      */
     public final CtxCategory CTX_CATEGORY = CtxCategory.CTX_CATEGORY;
@@ -428,6 +434,7 @@ If we use a separate table for each expression, then we need binding all the way
             Client.CLIENT,
             CodeList.CODE_LIST,
             CodeListValue.CODE_LIST_VALUE,
+            Comment.COMMENT,
             CtxCategory.CTX_CATEGORY,
             CtxScheme.CTX_SCHEME,
             CtxSchemeValue.CTX_SCHEME_VALUE,

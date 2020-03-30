@@ -49,6 +49,7 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
 import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
+import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
 import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
@@ -105,6 +106,7 @@ import org.oagi.srt.entity.jooq.tables.records.CdtScAwdPriXpsTypeMapRecord;
 import org.oagi.srt.entity.jooq.tables.records.ClientRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
+import org.oagi.srt.entity.jooq.tables.records.CommentRecord;
 import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 import org.oagi.srt.entity.jooq.tables.records.CtxSchemeRecord;
 import org.oagi.srt.entity.jooq.tables.records.CtxSchemeValueRecord;
@@ -172,6 +174,7 @@ public class Keys {
     public static final Identity<ClientRecord, ULong> IDENTITY_CLIENT = Identities0.IDENTITY_CLIENT;
     public static final Identity<CodeListRecord, ULong> IDENTITY_CODE_LIST = Identities0.IDENTITY_CODE_LIST;
     public static final Identity<CodeListValueRecord, ULong> IDENTITY_CODE_LIST_VALUE = Identities0.IDENTITY_CODE_LIST_VALUE;
+    public static final Identity<CommentRecord, ULong> IDENTITY_COMMENT = Identities0.IDENTITY_COMMENT;
     public static final Identity<CtxCategoryRecord, ULong> IDENTITY_CTX_CATEGORY = Identities0.IDENTITY_CTX_CATEGORY;
     public static final Identity<CtxSchemeRecord, ULong> IDENTITY_CTX_SCHEME = Identities0.IDENTITY_CTX_SCHEME;
     public static final Identity<CtxSchemeValueRecord, ULong> IDENTITY_CTX_SCHEME_VALUE = Identities0.IDENTITY_CTX_SCHEME_VALUE;
@@ -241,6 +244,7 @@ public class Keys {
     public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_CODE_LIST_UK1 = UniqueKeys0.KEY_CODE_LIST_CODE_LIST_UK1;
     public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_CODE_LIST_UK2 = UniqueKeys0.KEY_CODE_LIST_CODE_LIST_UK2;
     public static final UniqueKey<CodeListValueRecord> KEY_CODE_LIST_VALUE_PRIMARY = UniqueKeys0.KEY_CODE_LIST_VALUE_PRIMARY;
+    public static final UniqueKey<CommentRecord> KEY_COMMENT_PRIMARY = UniqueKeys0.KEY_COMMENT_PRIMARY;
     public static final UniqueKey<CtxCategoryRecord> KEY_CTX_CATEGORY_PRIMARY = UniqueKeys0.KEY_CTX_CATEGORY_PRIMARY;
     public static final UniqueKey<CtxCategoryRecord> KEY_CTX_CATEGORY_CTX_CATEGORY_UK1 = UniqueKeys0.KEY_CTX_CATEGORY_CTX_CATEGORY_UK1;
     public static final UniqueKey<CtxSchemeRecord> KEY_CTX_SCHEME_PRIMARY = UniqueKeys0.KEY_CTX_SCHEME_PRIMARY;
@@ -406,6 +410,8 @@ public class Keys {
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = ForeignKeys0.CODE_LIST_CREATED_BY_FK;
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.CODE_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
+    public static final ForeignKey<CommentRecord, CommentRecord> COMMENT_PREV_COMMENT_ID_FK = ForeignKeys0.COMMENT_PREV_COMMENT_ID_FK;
+    public static final ForeignKey<CommentRecord, AppUserRecord> COMMENT_CREATED_BY_FK = ForeignKeys0.COMMENT_CREATED_BY_FK;
     public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_CREATED_BY_FK = ForeignKeys0.CTX_CATEGORY_CREATED_BY_FK;
     public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_LAST_UPDATED_BY_FK = ForeignKeys0.CTX_CATEGORY_LAST_UPDATED_BY_FK;
     public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = ForeignKeys0.CTX_SCHEME_CTX_CATEGORY_ID_FK;
@@ -499,6 +505,7 @@ public class Keys {
         public static Identity<ClientRecord, ULong> IDENTITY_CLIENT = Internal.createIdentity(Client.CLIENT, Client.CLIENT.CLIENT_ID);
         public static Identity<CodeListRecord, ULong> IDENTITY_CODE_LIST = Internal.createIdentity(CodeList.CODE_LIST, CodeList.CODE_LIST.CODE_LIST_ID);
         public static Identity<CodeListValueRecord, ULong> IDENTITY_CODE_LIST_VALUE = Internal.createIdentity(CodeListValue.CODE_LIST_VALUE, CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID);
+        public static Identity<CommentRecord, ULong> IDENTITY_COMMENT = Internal.createIdentity(Comment.COMMENT, Comment.COMMENT.COMMENT_ID);
         public static Identity<CtxCategoryRecord, ULong> IDENTITY_CTX_CATEGORY = Internal.createIdentity(CtxCategory.CTX_CATEGORY, CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID);
         public static Identity<CtxSchemeRecord, ULong> IDENTITY_CTX_SCHEME = Internal.createIdentity(CtxScheme.CTX_SCHEME, CtxScheme.CTX_SCHEME.CTX_SCHEME_ID);
         public static Identity<CtxSchemeValueRecord, ULong> IDENTITY_CTX_SCHEME_VALUE = Internal.createIdentity(CtxSchemeValue.CTX_SCHEME_VALUE, CtxSchemeValue.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID);
@@ -566,6 +573,7 @@ public class Keys {
         public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_CODE_LIST_UK1 = Internal.createUniqueKey(CodeList.CODE_LIST, "KEY_code_list_code_list_uk1", new TableField[] { CodeList.CODE_LIST.GUID }, true);
         public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_CODE_LIST_UK2 = Internal.createUniqueKey(CodeList.CODE_LIST, "KEY_code_list_code_list_uk2", new TableField[] { CodeList.CODE_LIST.ENUM_TYPE_GUID }, true);
         public static final UniqueKey<CodeListValueRecord> KEY_CODE_LIST_VALUE_PRIMARY = Internal.createUniqueKey(CodeListValue.CODE_LIST_VALUE, "KEY_code_list_value_PRIMARY", new TableField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID }, true);
+        public static final UniqueKey<CommentRecord> KEY_COMMENT_PRIMARY = Internal.createUniqueKey(Comment.COMMENT, "KEY_comment_PRIMARY", new TableField[] { Comment.COMMENT.COMMENT_ID }, true);
         public static final UniqueKey<CtxCategoryRecord> KEY_CTX_CATEGORY_PRIMARY = Internal.createUniqueKey(CtxCategory.CTX_CATEGORY, "KEY_ctx_category_PRIMARY", new TableField[] { CtxCategory.CTX_CATEGORY.CTX_CATEGORY_ID }, true);
         public static final UniqueKey<CtxCategoryRecord> KEY_CTX_CATEGORY_CTX_CATEGORY_UK1 = Internal.createUniqueKey(CtxCategory.CTX_CATEGORY, "KEY_ctx_category_ctx_category_uk1", new TableField[] { CtxCategory.CTX_CATEGORY.GUID }, true);
         public static final UniqueKey<CtxSchemeRecord> KEY_CTX_SCHEME_PRIMARY = Internal.createUniqueKey(CtxScheme.CTX_SCHEME, "KEY_ctx_scheme_PRIMARY", new TableField[] { CtxScheme.CTX_SCHEME.CTX_SCHEME_ID }, true);
@@ -729,6 +737,8 @@ public class Keys {
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_created_by_fk", new TableField[] { CodeList.CODE_LIST.CREATED_BY }, true);
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_last_updated_by_fk", new TableField[] { CodeList.CODE_LIST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", new TableField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID }, true);
+        public static final ForeignKey<CommentRecord, CommentRecord> COMMENT_PREV_COMMENT_ID_FK = Internal.createForeignKey(Keys.KEY_COMMENT_PRIMARY, Comment.COMMENT, "comment_prev_comment_id_fk", new TableField[] { Comment.COMMENT.PREV_COMMENT_ID }, true);
+        public static final ForeignKey<CommentRecord, AppUserRecord> COMMENT_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Comment.COMMENT, "comment_created_by_fk", new TableField[] { Comment.COMMENT.CREATED_BY }, true);
         public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CtxCategory.CTX_CATEGORY, "ctx_category_created_by_fk", new TableField[] { CtxCategory.CTX_CATEGORY.CREATED_BY }, true);
         public static final ForeignKey<CtxCategoryRecord, AppUserRecord> CTX_CATEGORY_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CtxCategory.CTX_CATEGORY, "ctx_category_last_updated_by_fk", new TableField[] { CtxCategory.CTX_CATEGORY.LAST_UPDATED_BY }, true);
         public static final ForeignKey<CtxSchemeRecord, CtxCategoryRecord> CTX_SCHEME_CTX_CATEGORY_ID_FK = Internal.createForeignKey(Keys.KEY_CTX_CATEGORY_PRIMARY, CtxScheme.CTX_SCHEME, "ctx_scheme_ctx_category_id_fk", new TableField[] { CtxScheme.CTX_SCHEME.CTX_CATEGORY_ID }, true);
