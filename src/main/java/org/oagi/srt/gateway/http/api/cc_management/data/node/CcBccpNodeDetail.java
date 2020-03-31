@@ -19,7 +19,6 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private int entityType;
         private int cardinalityMin;
         private int cardinalityMax;
-        private boolean nillable;
         private boolean deprecated;
         private String defaultValue;
         private String fixedValue;

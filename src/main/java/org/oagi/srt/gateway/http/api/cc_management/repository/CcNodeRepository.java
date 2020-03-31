@@ -564,12 +564,6 @@ public class CcNodeRepository {
             isChanged = true;
         }
 
-        byte nillable = (byte) (bccNodeDetail.isNillable() ? 1 : 0);
-        if (!baseBccRecord.getIsNillable().equals(nillable)) {
-            baseBccRecord.setIsNillable(nillable);
-            isChanged = true;
-        }
-
         byte deprecated = (byte) (bccNodeDetail.isDeprecated() ? 1 : 0);
         if (!baseBccRecord.getIsDeprecated().equals(deprecated)) {
             baseBccRecord.setIsDeprecated(deprecated);
@@ -1152,7 +1146,6 @@ public class CcNodeRepository {
                     BCC.FIXED_VALUE,
                     BCC.DEFINITION,
                     BCC.DEFINITION_SOURCE,
-                    BCC.IS_NILLABLE.as("nillable"),
                     BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"))
                     .from(BCC_MANIFEST)
                     .join(BCC)

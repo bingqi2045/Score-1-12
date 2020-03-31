@@ -469,7 +469,6 @@ public class ExtensionService {
         history.setEntityType(bcc.getEntityType());
         history.setCardinalityMin(bcc.getCardinalityMin());
         history.setCardinalityMax(bcc.getCardinalityMax());
-        history.setIsNillable((byte) ((bcc.isNillable()) ? 1 : 0));
         history.setIsDeprecated((byte) ((bcc.isDeprecated()) ? 1 : 0));
         history.setDefaultValue(bcc.getDefaultValue());
         history.setDefinition(bcc.getDefinition());
