@@ -30,6 +30,11 @@ public class CommentService {
         return comments;
     }
 
+    public List<Comment> getComments(User user, long commentId) {
+        List<Comment> comments = repository.getCommentsByCommentId(commentId);
+        return comments;
+    }
+
     @Transactional
     public void postComments(User user, PostCommentRequest request) {
         long userId = sessionService.userId(user);

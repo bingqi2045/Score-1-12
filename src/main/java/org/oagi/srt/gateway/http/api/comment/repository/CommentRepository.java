@@ -49,6 +49,32 @@ public class CommentRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<Comment> getCommentsByCommentId(long commentId) {
+        return dslContext.select(
+                COMMENT.COMMENT_ID, APP_USER.LOGIN_ID, COMMENT.COMMENT_,
+                COMMENT.LAST_UPDATE_TIMESTAMP,
+                COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
+                .from(COMMENT)
+                .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
+                .where(COMMENT.PREV_COMMENT_ID.eq(ULong.valueOf(commentId)))
+                .orderBy(COMMENT.LAST_UPDATE_TIMESTAMP.asc())
+                .fetchStream()
+                .map(e -> {
+                    Comment comment = new Comment();
+                    comment.setCommentId(e.get(COMMENT.COMMENT_ID).longValue());
+                    comment.setLoginId(e.get(APP_USER.LOGIN_ID));
+                    comment.setText(e.get(COMMENT.COMMENT_));
+                    comment.setTimestamp(e.get(COMMENT.LAST_UPDATE_TIMESTAMP));
+                    comment.setHidden(e.get(COMMENT.IS_HIDDEN) == (byte) 1);
+                    ULong prevCommentId = e.get(COMMENT.PREV_COMMENT_ID);
+                    if (prevCommentId != null) {
+                        comment.setPrevCommentId(prevCommentId.longValue());
+                    }
+                    return comment;
+                })
+                .collect(Collectors.toList());
+    }
+
     @Data
     public class InsertCommentArguments {
 
