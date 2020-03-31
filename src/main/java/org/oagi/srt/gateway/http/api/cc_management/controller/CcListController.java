@@ -5,7 +5,6 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
-import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class CcListController {
             @RequestParam(name = "module", required = false) String module,
             @RequestParam(name = "types", required = false) String types,
             @RequestParam(name = "states", required = false) String states,
-            @RequestParam(name = "deprecated", required = false) boolean deprecated,
+            @RequestParam(name = "deprecated", required = false) String deprecated,
             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -60,7 +59,13 @@ public class CcListController {
         } else {
             request.setStates(Stream.of(CcState.values()).filter(e -> e != Deleted).collect(Collectors.toList()));
         }
-        request.setDeprecated(deprecated);
+        if (!StringUtils.isEmpty(deprecated)) {
+            if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
+                request.setDeprecated(true);
+            } else if ("false".equalsIgnoreCase(deprecated.toLowerCase())) {
+                request.setDeprecated(false);
+            }
+        }
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
