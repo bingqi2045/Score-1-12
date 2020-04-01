@@ -34,17 +34,6 @@ public class CommentController {
         return service.getComments(user, request);
     }
 
-    @RequestMapping(value = "/comment/replies/{commentId}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Comment> getReplies(@AuthenticationPrincipal User user,
-                                     @PathVariable("commentId") long commentId) {
-        if (commentId == 0) {
-            throw new IllegalArgumentException("'commentId' parameter must not be empty.");
-        }
-
-        return service.getComments(user, commentId);
-    }
-
     @RequestMapping(value = "/comment/{reference}", method = RequestMethod.PUT)
     public void postComment(@AuthenticationPrincipal User user,
                             @PathVariable("reference") String reference,

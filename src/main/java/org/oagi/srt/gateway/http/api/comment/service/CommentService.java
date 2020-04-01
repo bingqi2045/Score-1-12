@@ -30,11 +30,6 @@ public class CommentService {
         return comments;
     }
 
-    public List<Comment> getComments(User user, long commentId) {
-        List<Comment> comments = repository.getCommentsByCommentId(commentId);
-        return comments;
-    }
-
     @Transactional
     public void postComments(User user, PostCommentRequest request) {
         long userId = sessionService.userId(user);
@@ -65,12 +60,12 @@ public class CommentService {
             updateCommentArguments.setText(request.getText());
         }
 
-        if (request.getHide() != null) {
-            updateCommentArguments.setHide(request.getHide());
-        }
-
         if (request.getDelete() != null) {
-            updateCommentArguments.setDelete(request.getDelete());
+            if (repository.getCommentsByPrevCommentId(request.getCommentId()).size() > 0) {
+                updateCommentArguments.setHide(request.getDelete());
+            } else {
+                updateCommentArguments.setDelete(request.getDelete());
+            }
         }
         updateCommentArguments.execute();
     }

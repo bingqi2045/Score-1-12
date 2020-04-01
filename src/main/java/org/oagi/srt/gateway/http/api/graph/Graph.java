@@ -8,6 +8,7 @@ import org.jooq.types.ULong;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 @Data
@@ -67,13 +68,13 @@ public class Graph {
         }
 
         String qlc = query.toLowerCase().trim();
-        Stack<List<Node>> stack = new Stack();
-        stack.push(Arrays.asList(root));
+        LinkedBlockingQueue<List<Node>> queue = new LinkedBlockingQueue<>();
+        queue.add(Arrays.asList(root));
 
         Set<List<String>> paths = new LinkedHashSet();
 
-        while (!stack.isEmpty()) {
-            List<Node> cur = stack.pop();
+        while (!queue.isEmpty()) {
+            List<Node> cur = queue.poll();
             Node lastNode = cur.get(cur.size() - 1);
             if (lastNode.hasTerm(qlc)) {
                 paths.add(cur.stream().map(e -> e.getKey()).collect(Collectors.toList()));
@@ -81,7 +82,7 @@ public class Graph {
 
             List<String> targets = edges.getOrDefault(lastNode.getKey(), Edge.EMPTY_EDGE).getTargets();
             if (!targets.isEmpty()) {
-                stack.addAll(targets.stream().map(e -> {
+                queue.addAll(targets.stream().map(e -> {
                     List<Node> n = new ArrayList(cur);
                     n.add(nodes.get(e));
                     return n;

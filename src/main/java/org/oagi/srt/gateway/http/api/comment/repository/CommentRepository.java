@@ -51,7 +51,7 @@ public class CommentRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<Comment> getCommentsByCommentId(long commentId) {
+    public List<Comment> getCommentsByPrevCommentId(long commentId) {
         return dslContext.select(
                 COMMENT.COMMENT_ID, APP_USER.LOGIN_ID, COMMENT.COMMENT_,
                 COMMENT.LAST_UPDATE_TIMESTAMP,
