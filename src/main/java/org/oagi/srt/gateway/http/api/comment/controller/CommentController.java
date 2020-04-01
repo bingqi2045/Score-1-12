@@ -45,7 +45,7 @@ public class CommentController {
         return service.getComments(user, commentId);
     }
 
-    @RequestMapping(value = "/comment/{reference}", method = RequestMethod.POST)
+    @RequestMapping(value = "/comment/{reference}", method = RequestMethod.PUT)
     public void postComment(@AuthenticationPrincipal User user,
                             @PathVariable("reference") String reference,
                             @RequestBody PostCommentRequest request) {
@@ -58,8 +58,8 @@ public class CommentController {
         service.postComments(user, request);
     }
 
-    @RequestMapping(value = "/comment/reply/{commentId}", method = RequestMethod.POST)
-    public void postComment(@AuthenticationPrincipal User user,
+    @RequestMapping(value = "/comment/{commentId}", method = RequestMethod.POST)
+    public void updateComment(@AuthenticationPrincipal User user,
                             @PathVariable("commentId") long commentId,
                             @RequestBody UpdateCommentRequest request) {
         request.setCommentId(commentId);

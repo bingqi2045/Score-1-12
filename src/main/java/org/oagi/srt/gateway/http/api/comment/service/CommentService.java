@@ -59,11 +59,19 @@ public class CommentService {
             throw new DataAccessForbiddenException("Only allowed to modify the comment by the owner.");
         }
 
-        repository.updateComment(userId)
-                .setCommentId(request.getCommentId())
-                .setText(request.getText())
-                .setHide((request.getHide() != null) ? request.getHide() : null)
-                .setDelete((request.getDelete() != null) ? request.getDelete() : null)
-                .execute();
+        CommentRepository.UpdateCommentArguments updateCommentArguments = repository.updateComment(userId);
+        updateCommentArguments.setCommentId(request.getCommentId());
+        if (request.getText() != null) {
+            updateCommentArguments.setText(request.getText());
+        }
+
+        if (request.getHide() != null) {
+            updateCommentArguments.setHide(request.getHide());
+        }
+
+        if (request.getDelete() != null) {
+            updateCommentArguments.setDelete(request.getDelete());
+        }
+        updateCommentArguments.execute();
     }
 }

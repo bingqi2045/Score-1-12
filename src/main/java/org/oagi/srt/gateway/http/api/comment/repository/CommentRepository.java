@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.comment.repository;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetMoreStep;
+import org.jooq.impl.DSL;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.CommentRecord;
@@ -30,8 +31,9 @@ public class CommentRepository {
                 COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
                 .from(COMMENT)
                 .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(COMMENT.REFERENCE.eq(reference))
-                .orderBy(COMMENT.LAST_UPDATE_TIMESTAMP.asc())
+                .where(COMMENT.REFERENCE.eq(reference), COMMENT.IS_DELETED.eq((byte) 0))
+                .orderBy(DSL.when(COMMENT.PREV_COMMENT_ID.isNotNull(), COMMENT.PREV_COMMENT_ID)
+                        .else_(COMMENT.COMMENT_ID), COMMENT.CREATION_TIMESTAMP.asc())
                 .fetchStream()
                 .map(e -> {
                     Comment comment = new Comment();
@@ -56,7 +58,7 @@ public class CommentRepository {
                 COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
                 .from(COMMENT)
                 .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(COMMENT.PREV_COMMENT_ID.eq(ULong.valueOf(commentId)))
+                .where(COMMENT.PREV_COMMENT_ID.eq(ULong.valueOf(commentId)), COMMENT.IS_DELETED.eq((byte) 0))
                 .orderBy(COMMENT.LAST_UPDATE_TIMESTAMP.asc())
                 .fetchStream()
                 .map(e -> {
@@ -236,7 +238,7 @@ public class CommentRepository {
             step = step.set(COMMENT.IS_DELETED, (byte) (arguments.getDelete() ? 1 : 0));
         }
 
-        step.execute();
+        step.where(COMMENT.COMMENT_ID.eq(arguments.getCommentId())).execute();
     }
 
 }
