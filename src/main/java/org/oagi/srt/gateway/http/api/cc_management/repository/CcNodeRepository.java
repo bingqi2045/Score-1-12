@@ -762,20 +762,18 @@ public class CcNodeRepository {
                     accessPrivilege = Prohibited;
                 }
                 break;
-
             case Draft:
             case QA:
                 if (userId == ownerUserId) {
-                    accessPrivilege = CanEdit;
+                    accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = CanView;
                 }
                 break;
-
             case Production:
             case Candidate:
-                if (!owner.isDeveloper()) {
-                    accessPrivilege = CanEdit;
+                if (userId == ownerUserId) {
+                    accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = CanView;
                 }

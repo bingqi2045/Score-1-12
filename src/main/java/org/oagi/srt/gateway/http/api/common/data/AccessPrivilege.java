@@ -4,6 +4,7 @@ public enum AccessPrivilege {
 
     CanEdit,
     CanView,
+    CanMove,
     Prohibited,
     Unprepared
 
