@@ -334,8 +334,17 @@ public class CcNodeService {
         if (!Objects.equals(accRecord.getDefinitionSource(), detail.getDefinitionSource())) {
             updateAccArguments.setDefinitionSource(detail.getDefinitionSource());
         }
+
+        if (!Objects.equals(accRecord.getOagisComponentType(), detail.getOagisComponentType())) {
+            updateAccArguments.setOagisComponentType(OagisComponentType.valueOf((int) detail.getOagisComponentType()));
+        }
+
         if (!Objects.equals(accRecord.getNamespaceId(), detail.getNamespaceId())) {
-            updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+            if (detail.getNamespaceId() == 0) {
+                updateAccArguments.setNamespaceId(null);
+            } else {
+                updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+            }
         }
 
         updateAccArguments.setLastUpdatedBy(userId)
