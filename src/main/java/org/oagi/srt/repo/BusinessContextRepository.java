@@ -238,7 +238,9 @@ public class BusinessContextRepository {
     }
 
     private SelectOnConditionStep
-            <Record8<ULong, ULong, ULong, String, ULong, String, ULong, String>> getSelectOnConditionStepForBusinessContextValue() {
+            <Record9<ULong, ULong, ULong, String, ULong,
+                    String, ULong, String, String>>
+    getSelectOnConditionStepForBusinessContextValue() {
         return dslContext.select(
                 BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID,
                 BIZ_CTX_VALUE.BIZ_CTX_ID,
@@ -247,7 +249,8 @@ public class BusinessContextRepository {
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.SCHEME_NAME.as("ctx_scheme_name"),
                 CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID,
-                CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value")
+                CTX_SCHEME_VALUE.VALUE.as("ctx_scheme_value"),
+                CTX_SCHEME_VALUE.MEANING.as("ctx_scheme_value_meaning")
         ).from(BIZ_CTX_VALUE)
                 .join(CTX_SCHEME_VALUE).on(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.equal(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID))
                 .join(CTX_SCHEME).on(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.equal(CTX_SCHEME.CTX_SCHEME_ID))

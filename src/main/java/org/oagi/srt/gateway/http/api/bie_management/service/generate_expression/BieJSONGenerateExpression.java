@@ -466,8 +466,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                 .stream().filter(e -> e.getCardinalityMax() != 0).collect(Collectors.toList());
         if (bbieScList.isEmpty()) {
             properties.put("$ref", ref);
-        } else {
             properties = oneOf(allOf(properties), isNillable);
+        } else {
             properties.put("type", "object");
             properties.put("required", new ArrayList());
             properties.put("additionalProperties", false);
