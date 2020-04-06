@@ -1,13 +1,9 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.repo.CoreComponentRepository;
-
 import java.util.Objects;
-
-import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 
 public class UpdateAccManifestArguments {
 

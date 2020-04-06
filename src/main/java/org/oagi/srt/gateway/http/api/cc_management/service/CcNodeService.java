@@ -143,7 +143,7 @@ public class CcNodeService {
         LocalDateTime timestamp = LocalDateTime.now();
         String defaultObjectClassTerm = "Object Class Term";
 
-        InsertAccArguments accArguments = ccRepository.insertAccArguments()
+        ULong accId = ccRepository.insertAccArguments()
                 .setGuid(SrtGuid.randomGuid())
                 .setObjectClassTerm(defaultObjectClassTerm)
                 .setDen(defaultObjectClassTerm + ". Details")
@@ -158,8 +158,8 @@ public class CcNodeService {
                 .setLastUpdatedBy(userId)
                 .setOwnerUserId(userId)
                 .setCreationTimestamp(timestamp)
-                .setLastUpdateTimestamp(timestamp);
-        ULong accId = ccRepository.execute(accArguments);
+                .setLastUpdateTimestamp(timestamp)
+                .execute();
 
         InsertAccManifestArguments accManifestArguments = ccRepository.insertAccManifestArguments()
                 .setAccId(accId)

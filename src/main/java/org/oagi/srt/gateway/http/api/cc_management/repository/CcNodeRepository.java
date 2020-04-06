@@ -764,14 +764,9 @@ public class CcNodeRepository {
                 break;
             case Draft:
             case QA:
-                if (userId == ownerUserId) {
-                    accessPrivilege = CanMove;
-                } else {
-                    accessPrivilege = CanView;
-                }
-                break;
             case Production:
             case Candidate:
+            case Published:
                 if (userId == ownerUserId) {
                     accessPrivilege = CanMove;
                 } else {

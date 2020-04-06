@@ -1,16 +1,16 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.repo.CoreComponentRepository;
 
 import java.time.LocalDateTime;
 
-import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
-
 public class InsertAccArguments {
+
+    private final CoreComponentRepository repository;
 
     private ULong accId;
     private String guid;
@@ -35,6 +35,10 @@ public class InsertAccArguments {
     private Boolean isAbstract;
     private ULong prevAccId;
     private ULong nextAccId;
+
+    public InsertAccArguments(CoreComponentRepository repository) {
+        this.repository = repository;
+    }
 
     public ULong getAccId() {
         return accId;
@@ -243,40 +247,7 @@ public class InsertAccArguments {
         return this;
     }
 
-    public ULong execute(DSLContext dslContext) {
-        return insertAcc(dslContext, this);
-    }
-
-    private ULong insertAcc(DSLContext dslContext, InsertAccArguments arguments) {
-        if (arguments.getDeprecated() == null) {
-            arguments.setDeprecated(false);
-        }
-        if (arguments.getAbstract() == null) {
-            arguments.setAbstract(false);
-        }
-
-        return dslContext.insertInto(ACC)
-                .set(ACC.ACC_ID, arguments.getAccId())
-                .set(ACC.GUID, arguments.getGuid())
-                .set(ACC.OBJECT_CLASS_TERM, arguments.getObjectClassTerm())
-                .set(ACC.DEN, arguments.getDen())
-                .set(ACC.DEFINITION, arguments.getDefinition())
-                .set(ACC.DEFINITION_SOURCE, arguments.getDefinitionSource())
-                .set(ACC.OBJECT_CLASS_QUALIFIER, arguments.getObjectClassQualifier())
-                .set(ACC.OAGIS_COMPONENT_TYPE, arguments.getOagisComponentType().getValue())
-                .set(ACC.NAMESPACE_ID, arguments.getNamespaceId())
-                .set(ACC.CREATED_BY, arguments.getCreatedBy())
-                .set(ACC.OWNER_USER_ID, arguments.getOwnerUserId())
-                .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
-                .set(ACC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
-                .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
-                .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
-                .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
-                .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
-                .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
-                .set(ACC.NEXT_ACC_ID, arguments.getNextAccId()).returning(ACC.ACC_ID).fetchOne().getAccId();
+    public ULong execute() {
+        return repository.execute(this);
     }
 }

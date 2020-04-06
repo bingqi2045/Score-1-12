@@ -1,6 +1,5 @@
 package org.oagi.srt.repo.cc_arguments;
 
-import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
@@ -10,8 +9,6 @@ import org.oagi.srt.repo.CoreComponentRepository;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 
 public class UpdateAccArguments {
 
