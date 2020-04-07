@@ -439,6 +439,93 @@ public class CoreComponentRepository {
                 .execute();
     }
 
+    public ULong execute(UpdateAsccArguments arguments) {
+        ULong nextAsccId = dslContext.insertInto(ASCC)
+                .set(ASCC.ASCC_ID, arguments.getAsccId())
+                .set(ASCC.GUID, arguments.getGuid())
+                .set(ASCC.DEN, arguments.getDen())
+                .set(ASCC.FROM_ACC_ID, arguments.getFromAccId())
+                .set(ASCC.TO_ASCCP_ID, arguments.getToAsccpId())
+                .set(ASCC.SEQ_KEY, arguments.getSeqKey())
+                .set(ASCC.DEFINITION, arguments.getDefinition())
+                .set(ASCC.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(ASCC.CARDINALITY_MIN, arguments.getCardinalityMin())
+                .set(ASCC.CARDINALITY_MAX, arguments.getCardinalityMax())
+                .set(ASCC.CREATED_BY, arguments.getCreatedBy())
+                .set(ASCC.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(ASCC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(ASCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(ASCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(ASCC.STATE, arguments.getState().name())
+                .set(ASCC.REVISION_NUM, arguments.getRevisionNum())
+                .set(ASCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(ASCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(ASCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(ASCC.PREV_ASCC_ID, arguments.getPrevAsccId())
+                .set(ASCC.NEXT_ASCC_ID, arguments.getNextAsccId()).returning(ASCC.ASCC_ID).fetchOne().getAsccId();
+
+        dslContext.update(ASCC)
+                .set(ASCC.NEXT_ASCC_ID, nextAsccId)
+                .where(ASCC.ASCC_ID.eq(arguments.getPrevAsccId()))
+                .execute();
+        return nextAsccId;
+    }
+
+    public void execute(UpdateAsccManifestArguments arguments) {
+        dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.ASCC_ID, arguments.getAsccId())
+                .set(ASCC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, arguments.getFromAccManifestId())
+                .set(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID, arguments.getToAsccpManifestId())
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(arguments.getAsccManifestId()))
+                .execute();
+    }
+
+    public ULong execute(UpdateBccArguments arguments) {
+        ULong nextBccId = dslContext.insertInto(BCC)
+                .set(BCC.BCC_ID, arguments.getBccId())
+                .set(BCC.GUID, arguments.getGuid())
+                .set(BCC.DEN, arguments.getDen())
+                .set(BCC.FROM_ACC_ID, arguments.getFromAccId())
+                .set(BCC.TO_BCCP_ID, arguments.getToBccpId())
+                .set(BCC.SEQ_KEY, arguments.getSeqKey())
+                .set(BCC.ENTITY_TYPE, arguments.getEntitiyType())
+                .set(BCC.DEFAULT_VALUE, arguments.getDefaultValue())
+                .set(BCC.FIXED_VALUE, arguments.getFixedValue())
+                .set(BCC.DEFINITION, arguments.getDefinition())
+                .set(BCC.DEFINITION_SOURCE, arguments.getDefinitionSource())
+                .set(BCC.CARDINALITY_MIN, arguments.getCardinalityMin())
+                .set(BCC.CARDINALITY_MAX, arguments.getCardinalityMax())
+                .set(BCC.CREATED_BY, arguments.getCreatedBy())
+                .set(BCC.OWNER_USER_ID, arguments.getOwnerUserId())
+                .set(BCC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
+                .set(BCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
+                .set(BCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
+                .set(BCC.STATE, arguments.getState().name())
+                .set(BCC.REVISION_NUM, arguments.getRevisionNum())
+                .set(BCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
+                .set(BCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
+                .set(BCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
+                .set(BCC.PREV_BCC_ID, arguments.getPrevBccId())
+                .set(BCC.NEXT_BCC_ID, arguments.getNextBccId()).returning(BCC.BCC_ID).fetchOne().getBccId();
+
+        dslContext.update(BCC)
+                .set(BCC.NEXT_BCC_ID, nextBccId)
+                .where(BCC.BCC_ID.eq(arguments.getPrevBccId()))
+                .execute();
+        return nextBccId;
+    }
+
+    public void execute(UpdateBccManifestArguments arguments) {
+        dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.BCC_ID, arguments.getBccId())
+                .set(BCC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(BCC_MANIFEST.FROM_ACC_MANIFEST_ID, arguments.getFromAccManifestId())
+                .set(BCC_MANIFEST.TO_BCCP_MANIFEST_ID, arguments.getToBccpManifestId())
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(arguments.getBccManifestId()))
+                .execute();
+    }
+
     public ULong execute(UpdateBccpArguments arguments) {
         ULong nextBccpId = dslContext.insertInto(BCCP)
                 .set(BCCP.GUID, arguments.getGuid())
