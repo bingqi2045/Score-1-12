@@ -2,6 +2,7 @@ package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.repo.cc_arguments.*;
@@ -177,6 +178,10 @@ public class CoreComponentRepository {
         return new InsertAccManifestArguments(this);
     }
 
+    public InsertAsccManifestArguments insertAsccManifestArguments() { return new InsertAsccManifestArguments(this); }
+
+    public InsertBccManifestArguments insertBccManifestArguments() { return new InsertBccManifestArguments(this); }
+
     public InsertBccpManifestArguments insertBccpManifest() {
         return new InsertBccpManifestArguments(this);
     }
@@ -239,6 +244,9 @@ public class CoreComponentRepository {
                 .set(ASCC.ASCC_ID, arguments.getAsccId())
                 .set(ASCC.GUID, arguments.getGuid())
                 .set(ASCC.DEN, arguments.getDen())
+                .set(ASCC.FROM_ACC_ID, arguments.getFromAccId())
+                .set(ASCC.TO_ASCCP_ID, arguments.getToAsccpId())
+                .set(ASCC.SEQ_KEY, arguments.getSeqKey())
                 .set(ASCC.DEFINITION, arguments.getDefinition())
                 .set(ASCC.DEFINITION_SOURCE, arguments.getDefinitionSource())
                 .set(ASCC.CARDINALITY_MIN, arguments.getCardinalityMin())
@@ -262,6 +270,10 @@ public class CoreComponentRepository {
                 .set(BCC.BCC_ID, arguments.getBccId())
                 .set(BCC.GUID, arguments.getGuid())
                 .set(BCC.DEN, arguments.getDen())
+                .set(BCC.SEQ_KEY, arguments.getSeqKey())
+                .set(BCC.FROM_ACC_ID, arguments.getFromAccId())
+                .set(BCC.TO_BCCP_ID, arguments.getToBccpId())
+                .set(BCC.ENTITY_TYPE, arguments.getEntityType().getValue())
                 .set(BCC.DEFINITION, arguments.getDefinition())
                 .set(BCC.DEFINITION_SOURCE, arguments.getDefinitionSource())
                 .set(BCC.CARDINALITY_MIN, arguments.getCardinalityMin())
@@ -291,6 +303,24 @@ public class CoreComponentRepository {
                 .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
                 .returning(ACC_MANIFEST.ACC_MANIFEST_ID).fetchOne().getAccManifestId();
+    }
+
+    public ULong execute(InsertAsccManifestArguments arguments) {
+        return dslContext.insertInto(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.ASCC_ID, arguments.getAsccId())
+                .set(ASCC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, arguments.getFromAccManifestId())
+                .set(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID, arguments.getToAsccpManifestId())
+                .returning(ASCC_MANIFEST.ASCC_MANIFEST_ID).fetchOne().getAsccManifestId();
+    }
+
+    public ULong execute(InsertBccManifestArguments arguments) {
+        return dslContext.insertInto(BCC_MANIFEST)
+                .set(BCC_MANIFEST.BCC_ID, arguments.getBccId())
+                .set(BCC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
+                .set(BCC_MANIFEST.FROM_ACC_MANIFEST_ID, arguments.getFromAccManifestId())
+                .set(BCC_MANIFEST.TO_BCCP_MANIFEST_ID, arguments.getToBccManifestId())
+                .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId();
     }
 
     public ULong execute(InsertBccpArguments arguments) {

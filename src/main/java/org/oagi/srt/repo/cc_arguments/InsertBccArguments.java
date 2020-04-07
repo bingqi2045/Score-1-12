@@ -1,6 +1,7 @@
 package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.types.ULong;
+import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.CoreComponentRepository;
@@ -16,6 +17,7 @@ public class InsertBccArguments {
     private Integer cardinalityMin;
     private Integer cardinalityMax;
     private Integer seqKey;
+    private BCCEntityType entityType;
     private ULong fromAccId;
     private ULong toBccpId;
     private String definition;
@@ -91,6 +93,15 @@ public class InsertBccArguments {
 
     public InsertBccArguments setSeqKey(Integer seqKey) {
         this.seqKey = seqKey;
+        return this;
+    }
+
+    public BCCEntityType getEntityType() {
+        return entityType;
+    }
+
+    public InsertBccArguments setEntityType(BCCEntityType entityType) {
+        this.entityType = entityType;
         return this;
     }
 

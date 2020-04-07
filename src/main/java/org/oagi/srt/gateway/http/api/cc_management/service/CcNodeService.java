@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.oagi.srt.data.BCCEntityType.Element;
+
 @Service
 @Transactional(readOnly = true)
 public class CcNodeService {
@@ -472,12 +474,94 @@ public class CcNodeService {
 
     @Transactional
     public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
-        repository.appendAsccp(user, ULong.valueOf(accManifestId), ULong.valueOf(asccpManifestId));
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        AccManifestRecord accManifest = ccRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
+        AsccpManifestRecord asccpManifestRecord
+                = ccRepository.getAsccpManifestByManifestId(ULong.valueOf(asccpManifestId));
+
+        repository.duplicateAssociationValidate(user, accManifest.getAccManifestId(),
+                asccpManifestRecord.getAsccpManifestId(), null);
+
+        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+        AccRecord accRecord = ccRepository.getAccById(accManifest.getAccId());
+
+        int seqKey = repository.getNextSeqKey(accManifest.getAccId().longValue(), accManifest.getReleaseId().longValue());
+
+        ULong asccId = ccRepository.insertAsccArguments()
+                .setGuid(SrtGuid.randomGuid())
+                .setCardinalityMin(0)
+                .setCardinalityMax(-1)
+                .setSeqKey(seqKey)
+                .setDeprecated(false)
+                .setFromAccId(accRecord.getAccId())
+                .setToAsccpId(asccpManifestRecord.getAsccpId())
+                .setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getPropertyTerm())
+                .setCreatedBy(ULong.valueOf(userId))
+                .setCreationTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setLastUpdateTimestamp(timestamp)
+                .setOwnerUserId(ULong.valueOf(userId))
+                .setState(CcState.valueOf(accRecord.getState()))
+                .setRevisionNum(1)
+                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Insert)
+                .execute();
+
+        ccRepository.insertAsccManifestArguments()
+                .setReleaseId(accManifest.getReleaseId())
+                .setAsccId(asccId)
+                .setFromAccManifestId(accManifest.getAccManifestId())
+                .setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId())
+                .execute();
     }
 
     @Transactional
     public void appendBccp(User user, long accManifestId, long bccpManifestId) {
-        repository.appendBccp(user, ULong.valueOf(accManifestId), ULong.valueOf(bccpManifestId));
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        AccManifestRecord accManifest = ccRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
+        BccpManifestRecord bccpManifestRecord
+                = ccRepository.getBccpManifestByManifestId(ULong.valueOf(bccpManifestId));
+
+        repository.duplicateAssociationValidate(user, accManifest.getAccManifestId(),
+                null, bccpManifestRecord.getBccpManifestId());
+
+        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+        AccRecord accRecord = ccRepository.getAccById(accManifest.getAccId());
+
+        int seqKey = repository.getNextSeqKey(accManifest.getAccId().longValue(), accManifest.getReleaseId().longValue());
+
+        ULong bccId = ccRepository.insertBccArguments()
+                .setGuid(SrtGuid.randomGuid())
+                .setCardinalityMin(0)
+                .setCardinalityMax(-1)
+                .setSeqKey(seqKey)
+                .setDeprecated(false)
+                .setNillable(false)
+                .setEntityType(Element)
+                .setFromAccId(accRecord.getAccId())
+                .setToBccpId(bccpManifestRecord.getBccpId())
+                .setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm())
+                .setCreatedBy(ULong.valueOf(userId))
+                .setCreationTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setLastUpdateTimestamp(timestamp)
+                .setOwnerUserId(ULong.valueOf(userId))
+                .setState(CcState.valueOf(accRecord.getState()))
+                .setRevisionNum(1)
+                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Insert)
+                .execute();
+
+        ccRepository.insertBccManifestArguments()
+                .setReleaseId(accManifest.getReleaseId())
+                .setBccId(bccId)
+                .setFromAccManifestId(accManifest.getAccManifestId())
+                .setToBccpManifestId(bccpManifestRecord.getBccpManifestId())
+                .execute();
     }
 
     @Transactional

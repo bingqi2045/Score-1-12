@@ -2393,7 +2393,7 @@ public class CcNodeRepository {
                 .execute();
     }
 
-    private int getNextSeqKey(long accId, long releaseId) {
+    public int getNextSeqKey(long accId, long releaseId) {
         Integer asccMaxSeqKey = dslContext.select(max(ASCC.SEQ_KEY))
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
