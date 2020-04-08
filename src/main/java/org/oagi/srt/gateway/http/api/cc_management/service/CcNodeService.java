@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.oagi.srt.data.BCCEntityType.Element;
+import static org.oagi.srt.gateway.http.api.cc_management.data.CcType.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -349,17 +350,16 @@ public class CcNodeService {
             }
         }
 
-        updateAccArguments.setLastUpdatedBy(userId)
+        ULong accId = updateAccArguments.setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
                 .setRevisionAction(RevisionAction.Update)
                 .setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1)
-                .setPrevAccId(accRecord.getAccId());
-        ULong accId = ccRepository.execute(updateAccArguments);
+                .setPrevAccId(accRecord.getAccId())
+                .execute();
 
-        UpdateAccManifestArguments updateAccManifestArguments =
-                ccRepository.updateAccManifestArguments(accManifestRecord);
-        updateAccManifestArguments.setAccId(accId);
-        ccRepository.execute(updateAccManifestArguments);
+        ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId)
+                .execute();
 
         updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp);
 
@@ -629,24 +629,25 @@ public class CcNodeService {
             throw new IllegalArgumentException("Creating new revision is not allow for this release");
         }
 
-        UpdateAccArguments updateAccArguments = ccRepository.updateAccArguments(accRecord)
+        ULong accId = ccRepository.updateAccArguments(accRecord)
                 .setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
                 .setRevisionAction(RevisionAction.Insert)
                 .setRevisionNum(accRecord.getRevisionNum() + 1)
                 .setRevisionTrackingNum(1)
                 .setPrevAccId(accRecord.getAccId())
-                .setState(CcState.WIP);
+                .setState(CcState.WIP)
+                .execute();
 
-        ULong accId = ccRepository.execute(updateAccArguments);
+        ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId)
+                .execute();
 
-        UpdateAccManifestArguments updateAccManifestArguments = ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId);
+        AccRecord updatedAccRecord = ccRepository.getAccById(accId);
+        accManifestRecord.setAccId(accId);
 
-        ccRepository.execute(updateAccManifestArguments);
-
-        repository.makeNewRevisionForAscc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
-        repository.makeNewRevisionForBcc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
+        updateAsccByFromAcc(userId, accManifestRecord, updatedAccRecord, timestamp);
+        updateBccByFromAcc(userId, accManifestRecord, updatedAccRecord, timestamp);
 
         return repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
     }
@@ -772,29 +773,45 @@ public class CcNodeService {
         return null;
     }
     public CcRevisionResponse getAccNoddRevision(User user, long manifestId) {
-        String type = "acc";
         CcAccNode accNode = getAccNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), type);
+        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(lastPublishedCcId));
             ccRevisionResponse.setCcId(accRecord.getAccId().longValue());
-            ccRevisionResponse.setType(type);
+            ccRevisionResponse.setType(ACC.toString());
             ccRevisionResponse.setIsDeprecated(accRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setName(accRecord.getObjectClassTerm());
+            List<AsccManifestRecord> asccManifestRecordList
+                    = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
+            List<String> associationKeys = new ArrayList<>();
+            for (AsccManifestRecord asccManifestRecord: asccManifestRecordList) {
+                Long lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().longValue(), ASCC);
+                if (lastAsccId != null) {
+                    associationKeys.add(CcType.ASCCP.toString().toLowerCase() + asccManifestRecord.getToAsccpManifestId());
+                }
+            }
+            List<BccManifestRecord> bccManifestRecordList
+                    = ccRepository.getBccManifestByFromAccManifestId(ULong.valueOf(manifestId));
+            for (BccManifestRecord bccManifestRecord: bccManifestRecordList) {
+                Long lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().longValue(), BCC);
+                if (lastBccId != null) {
+                    associationKeys.add(CcType.BCCP.toString().toLowerCase() + bccManifestRecord.getToBccpManifestId());
+                }
+            }
+            ccRevisionResponse.setAssociationKeys(associationKeys);
         }
         return ccRevisionResponse;
     }
 
     public CcRevisionResponse getBccpNoddRevision(User user, long manifestId) {
-        String type = "bccp";
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), type);
+        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), BCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(lastPublishedCcId));
             ccRevisionResponse.setCcId(bccpRecord.getBccpId().longValue());
-            ccRevisionResponse.setType(type);
+            ccRevisionResponse.setType(BCCP.toString());
             ccRevisionResponse.setIsDeprecated(bccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(bccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(bccpRecord.getPropertyTerm());
@@ -804,14 +821,13 @@ public class CcNodeService {
     }
 
     public CcRevisionResponse getAsccpNoddRevision(User user, long manifestId) {
-        String type = "asccp";
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), type);
+        Long lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), ASCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(lastPublishedCcId));
             ccRevisionResponse.setCcId(asccpRecord.getAsccpId().longValue());
-            ccRevisionResponse.setType(type);
+            ccRevisionResponse.setType(ASCCP.toString());
             ccRevisionResponse.setIsDeprecated(asccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(asccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(asccpRecord.getPropertyTerm());
@@ -819,12 +835,12 @@ public class CcNodeService {
         return ccRevisionResponse;
     }
 
-    private Long getLastPublishedCcId(Long ccId, String type) {
+    private Long getLastPublishedCcId(Long ccId, CcType type) {
         if (ccId == null) {
             return null;
         }
         switch (type) {
-            case "acc" :
+            case ACC:
                 AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(ccId));
                 if (accRecord.getState().equals(CcState.Published.name())) {
                     return ccId;
@@ -832,12 +848,26 @@ public class CcNodeService {
                 if (accRecord.getPrevAccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), "acc");
-            case "ascc" :
-                return null;
-            case "bcc" :
-                return null;
-            case "asccp" :
+                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), ACC);
+            case ASCC:
+                AsccRecord asccRecord = ccRepository.getAsccById(ULong.valueOf(ccId));
+                if (asccRecord.getState().equals(CcState.Published.name())) {
+                    return ccId;
+                }
+                if (asccRecord.getPrevAsccId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(asccRecord.getPrevAsccId().longValue(), ASCC);
+            case BCC:
+                BccRecord bccRecord = ccRepository.getBccById(ULong.valueOf(ccId));
+                if (bccRecord.getState().equals(CcState.Published.name())) {
+                    return ccId;
+                }
+                if (bccRecord.getPrevBccId() == null) {
+                    return null;
+                }
+                return getLastPublishedCcId(bccRecord.getPrevBccId().longValue(), BCC);
+            case ASCCP:
                 AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(ccId));
                 if (asccpRecord.getState().equals(CcState.Published.name())) {
                     return ccId;
@@ -845,10 +875,8 @@ public class CcNodeService {
                 if (asccpRecord.getPrevAsccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), "asccp");
-            case "dt" :
-                return null;
-            case "bccp" :
+                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), ASCCP);
+            case BCCP:
                 BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
                 if (bccpRecord.getState().equals(CcState.Published.name())) {
                     return ccId;
@@ -856,7 +884,17 @@ public class CcNodeService {
                 if (bccpRecord.getPrevBccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(), "bccp");
+                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(), BCCP);
+
+            case BDT:
+                return null;
+
+            case BDT_SC:
+                return null;
+
+            case XBT:
+                return null;
+
             default:
                 return null;
 
@@ -883,6 +921,7 @@ public class CcNodeService {
                     .setFromAccId(acc.getAccId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
+                    .setState(CcState.valueOf(acc.getState()))
                     .setRevisionAction(RevisionAction.Update)
                     .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
                     .setPrevAsccId(asccRecord.getAsccId())
@@ -904,6 +943,7 @@ public class CcNodeService {
                     .setToAsccpId(asccp.getAsccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
+                    .setState(CcState.valueOf(asccp.getState()))
                     .setRevisionAction(RevisionAction.Update)
                     .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
                     .setPrevAsccId(asccRecord.getAsccId())
@@ -925,6 +965,7 @@ public class CcNodeService {
                     .setFromAccId(acc.getAccId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
+                    .setState(CcState.valueOf(acc.getState()))
                     .setRevisionAction(RevisionAction.Update)
                     .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
                     .setPrevBccId(bccRecord.getBccId())
@@ -946,6 +987,7 @@ public class CcNodeService {
                     .setToBccpId(bccp.getBccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
+                    .setState(CcState.valueOf(bccp.getState()))
                     .setRevisionAction(RevisionAction.Update)
                     .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
                     .setPrevBccId(bccRecord.getBccId())

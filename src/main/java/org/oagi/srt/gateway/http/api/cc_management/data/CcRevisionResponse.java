@@ -2,6 +2,8 @@ package org.oagi.srt.gateway.http.api.cc_management.data;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CcRevisionResponse {
     String type;
@@ -10,4 +12,5 @@ public class CcRevisionResponse {
     Boolean isNillable;
     String name;
     String fixedValue;
+    List<String> associationKeys;
 }
