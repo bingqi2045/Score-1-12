@@ -2,13 +2,14 @@ package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.repo.cc_arguments.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -33,6 +34,15 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public List<AccManifestRecord> getAccManifestByBasedAccManifestId(ULong manifestId) {
+        if (manifestId == null || manifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(manifestId))
+                .fetch();
+    }
+
     public AsccpManifestRecord getAsccpManifestByManifestId(ULong manifestId) {
         if (manifestId == null || manifestId.longValue() <= 0L) {
             return null;
@@ -42,18 +52,13 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public ULong getRoleOfAccManifestIdFromAsccpManifestByManifestId(long manifestId) {
-        if (manifestId <= 0L) {
+    public List<AsccpManifestRecord> getAsccpManifestByRolOfAccManifestId(ULong roleOfAccManifestId) {
+        if (roleOfAccManifestId == null || roleOfAccManifestId.longValue() <= 0L) {
             return null;
         }
-        return getRoleOfAccManifestIdFromAsccpManifestByManifestId(ULong.valueOf(manifestId));
-    }
-
-    public ULong getRoleOfAccManifestIdFromAsccpManifestByManifestId(ULong manifestId) {
-        return dslContext.select(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID)
-                .from(ASCCP_MANIFEST)
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(manifestId))
-                .fetchOptionalInto(ULong.class).orElse(null);
+        return dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(roleOfAccManifestId))
+                .fetch();
     }
 
     public BccpManifestRecord getBccpManifestByManifestId(ULong manifestId) {
@@ -74,6 +79,24 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
+    public List<AsccManifestRecord> getAsccManifestByFromAccManifestId(ULong accManifestId) {
+        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
+                .fetch();
+    }
+
+    public List<AsccManifestRecord> getAsccManifestByToAsccpManifestId(ULong asccpManifestId) {
+        if (asccpManifestId == null || asccpManifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestId))
+                .fetch();
+    }
+
     public BccManifestRecord getBccManifestByManifestId(ULong manifestId) {
         if (manifestId == null || manifestId.longValue() <= 0L) {
             return null;
@@ -81,6 +104,24 @@ public class CoreComponentRepository {
         return dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(manifestId))
                 .fetchOptional().orElse(null);
+    }
+
+    public List<BccManifestRecord> getBccManifestByFromAccManifestId(ULong accManifestId) {
+        if (accManifestId == null || accManifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
+                .fetch();
+    }
+
+    public List<BccManifestRecord> getBccManifestByToBccpManifestId(ULong bccpManifestId) {
+        if (bccpManifestId == null || bccpManifestId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(bccpManifestId))
+                .fetch();
     }
 
     public DtManifestRecord getBdtManifestByManifestId(ULong manifestId) {
@@ -107,6 +148,24 @@ public class CoreComponentRepository {
         }
         return dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accId))
+                .fetchOptional().orElse(null);
+    }
+
+    public AsccRecord getAsccById(ULong asccId) {
+        if (asccId == null || asccId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(ASCC)
+                .where(ASCC.ASCC_ID.eq(asccId))
+                .fetchOptional().orElse(null);
+    }
+
+    public BccRecord getBccById(ULong bccId) {
+        if (bccId == null || bccId.longValue() <= 0L) {
+            return null;
+        }
+        return dslContext.selectFrom(BCC)
+                .where(BCC.BCC_ID.eq(bccId))
                 .fetchOptional().orElse(null);
     }
 
@@ -194,6 +253,14 @@ public class CoreComponentRepository {
         return new UpdateAccArguments(this, acc);
     }
 
+    public UpdateAsccArguments updateAsccArguments(AsccRecord ascc) {
+        return new UpdateAsccArguments(this, ascc);
+    }
+
+    public UpdateBccArguments updateBccArguments(BccRecord bcc) {
+        return new UpdateBccArguments(this, bcc);
+    }
+
     public UpdateBccpArguments updateBccpArguments(BccpRecord bccp) {
         return new UpdateBccpArguments(this, bccp);
     }
@@ -204,6 +271,14 @@ public class CoreComponentRepository {
 
     public UpdateAccManifestArguments updateAccManifestArguments(AccManifestRecord accManifestRecord) {
         return new UpdateAccManifestArguments(this, accManifestRecord);
+    }
+
+    public UpdateAsccManifestArguments updateAsccManifestArguments(AsccManifestRecord asccManifest) {
+        return new UpdateAsccManifestArguments(this, asccManifest);
+    }
+
+    public UpdateBccManifestArguments updateBccManifestArguments(BccManifestRecord bccManifest) {
+        return new UpdateBccManifestArguments(this, bccManifest);
     }
 
     public UpdateBccpManifestArguments updateBccpManifestArguments(BccpManifestRecord bccpManifestRecord) {
@@ -402,6 +477,7 @@ public class CoreComponentRepository {
         ULong nextAccId = dslContext.insertInto(ACC)
                 .set(ACC.GUID, arguments.getGuid())
                 .set(ACC.OBJECT_CLASS_TERM, arguments.getObjectClassTerm())
+                .set(ACC.BASED_ACC_ID, arguments.getBasedAccId())
                 .set(ACC.DEN, arguments.getDen())
                 .set(ACC.DEFINITION, arguments.getDefinition())
                 .set(ACC.DEFINITION_SOURCE, arguments.getDefinitionSource())
@@ -441,7 +517,6 @@ public class CoreComponentRepository {
 
     public ULong execute(UpdateAsccArguments arguments) {
         ULong nextAsccId = dslContext.insertInto(ASCC)
-                .set(ASCC.ASCC_ID, arguments.getAsccId())
                 .set(ASCC.GUID, arguments.getGuid())
                 .set(ASCC.DEN, arguments.getDen())
                 .set(ASCC.FROM_ACC_ID, arguments.getFromAccId())
@@ -483,7 +558,6 @@ public class CoreComponentRepository {
 
     public ULong execute(UpdateBccArguments arguments) {
         ULong nextBccId = dslContext.insertInto(BCC)
-                .set(BCC.BCC_ID, arguments.getBccId())
                 .set(BCC.GUID, arguments.getGuid())
                 .set(BCC.DEN, arguments.getDen())
                 .set(BCC.FROM_ACC_ID, arguments.getFromAccId())

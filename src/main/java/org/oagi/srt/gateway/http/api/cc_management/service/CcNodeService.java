@@ -361,8 +361,7 @@ public class CcNodeService {
         updateAccManifestArguments.setAccId(accId);
         ccRepository.execute(updateAccManifestArguments);
 
-        repository.updateAccChain(userId.longValue(), accManifestRecord.getAccManifestId(), accId,
-                updateAccArguments.getObjectClassTerm(), timestamp);
+        updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp);
 
         CcAccNode updateAccNode = repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
         return repository.getAccNodeDetail(user, updateAccNode);
@@ -863,5 +862,144 @@ public class CcNodeService {
 
         }
     }
+
+    private void updateAccChain(ULong userId, ULong accManifestId, LocalDateTime timestamp) {
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(accManifestId);
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        updateAsccByFromAcc(userId, accManifestRecord, accRecord, timestamp);
+        updateBccByFromAcc(userId, accManifestRecord, accRecord, timestamp);
+        updateAsccpByRoleOfAcc(userId, accManifestRecord, accRecord, timestamp);
+        updateAccByBasedAcc(userId, accManifestRecord, accRecord, timestamp);
+    }
+
+    private void updateAsccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp) {
+        List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByFromAccManifestId(accManifest.getAccManifestId());
+        for (AsccManifestRecord asccManifest: asccManifestRecordList) {
+            AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
+            AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(asccManifest.getToAsccpManifestId());
+            AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+            ULong asccId = ccRepository.updateAsccArguments(asccRecord)
+                    .setDen(acc.getObjectClassTerm() + ". " + asccpRecord.getPropertyTerm())
+                    .setFromAccId(acc.getAccId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setPrevAsccId(asccRecord.getAsccId())
+                    .execute();
+            ccRepository.updateAsccManifestArguments(asccManifest)
+                    .setAsccId(asccId)
+                    .execute();
+        }
+    }
+
+    private void updateAsccByToAsccp(ULong userId, AsccpManifestRecord asccpManifest, AsccpRecord asccp, LocalDateTime timestamp) {
+        List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifest.getAsccpManifestId());
+        for (AsccManifestRecord asccManifest: asccManifestRecordList) {
+            AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
+            AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(asccManifest.getFromAccManifestId());
+            AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
+            ULong asccId = ccRepository.updateAsccArguments(asccRecord)
+                    .setDen(accRecord.getObjectClassTerm() + ". " + asccp.getPropertyTerm())
+                    .setToAsccpId(asccp.getAsccpId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setPrevAsccId(asccRecord.getAsccId())
+                    .execute();
+            ccRepository.updateAsccManifestArguments(asccManifest)
+                    .setAsccId(asccId)
+                    .execute();
+        }
+    }
+
+    private void updateBccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp) {
+        List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByFromAccManifestId(accManifest.getAccManifestId());
+        for (BccManifestRecord bccManifest: bccManifestRecordList) {
+            BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
+            BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(bccManifest.getToBccpManifestId());
+            BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+            ULong bccId = ccRepository.updateBccArguments(bccRecord)
+                    .setDen(acc.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm())
+                    .setFromAccId(acc.getAccId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setPrevBccId(bccRecord.getBccId())
+                    .execute();
+            ccRepository.updateBccManifestArguments(bccManifest)
+                    .setBccId(bccId)
+                    .execute();
+        }
+    }
+
+    private void updateBccByToBccp(ULong userId, BccpManifestRecord bccpManifest, BccpRecord bccp, LocalDateTime timestamp) {
+        List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifest.getBccpManifestId());
+        for (BccManifestRecord bccManifest: bccManifestRecordList) {
+            BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
+            AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(bccManifest.getFromAccManifestId());
+            AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
+            ULong bccId = ccRepository.updateBccArguments(bccRecord)
+                    .setDen(accRecord.getObjectClassTerm() + ". " + bccp.getPropertyTerm())
+                    .setToBccpId(bccp.getBccpId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setPrevBccId(bccRecord.getBccId())
+                    .execute();
+            ccRepository.updateBccManifestArguments(bccManifest)
+                    .setBccId(bccId)
+                    .execute();
+        }
+    }
+
+    private void updateAsccpByRoleOfAcc(ULong userId, AccManifestRecord accManifestRecord, AccRecord accRecord, LocalDateTime timestamp) {
+        List<AsccpManifestRecord> asccpManifestRecordList = ccRepository.getAsccpManifestByRolOfAccManifestId(accManifestRecord.getAccManifestId());
+        for (AsccpManifestRecord asccpManifest: asccpManifestRecordList) {
+            AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifest.getAsccpId());
+            ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
+                    .setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
+                    .setRoleOfAccId(accRecord.getAccId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
+                    .setPrevAsccpId(asccpRecord.getAsccpId())
+                    .execute();
+            ccRepository.updateAsccpManifestArguments(asccpManifest)
+                    .setAsccpId(asccpId)
+                    .execute();
+            asccpManifest.setAsccpId(asccpId);
+            AsccpRecord updatedAsccp = ccRepository.getAsccpById(asccpId);
+
+            updateAsccByToAsccp(userId, asccpManifest, updatedAsccp, timestamp);
+        }
+    }
+
+    private void updateAccByBasedAcc(ULong userId, AccManifestRecord basedAccManifestRecord, AccRecord basedAccRecord, LocalDateTime timestamp) {
+        List<AccManifestRecord> accManifestRecordList = ccRepository.getAccManifestByBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
+        for (AccManifestRecord accManifestRecord: accManifestRecordList) {
+            AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+            ULong accId = ccRepository.updateAccArguments(accRecord)
+                    .setBasedAccId(basedAccRecord.getAccId())
+                    .setLastUpdatedBy(userId)
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1)
+                    .setPrevAccId(accRecord.getAccId())
+                    .execute();
+            ccRepository.updateAccManifestArguments(accManifestRecord)
+                    .setAccId(accId)
+                    .execute();
+            AccRecord updatedAcc = ccRepository.getAccById(accId);
+            accManifestRecord.setAccId(accId);
+
+            updateAsccByFromAcc(userId, accManifestRecord, updatedAcc, timestamp);
+        }
+    }
+
 }
 
