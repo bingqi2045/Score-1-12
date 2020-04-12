@@ -30,6 +30,7 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
         private String guid;
         private String propertyTerm;
         private String den;
+        private long namespaceId;
         private boolean reusable;
         private boolean deprecated;
         private boolean nillable;

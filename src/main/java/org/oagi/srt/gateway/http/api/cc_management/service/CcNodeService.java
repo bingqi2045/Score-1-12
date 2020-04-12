@@ -193,6 +193,7 @@ public class CcNodeService {
                 .setReuseableIndicator(true)
                 .setDeprecated(false)
                 .setNillable(false)
+                .setNamespaceId(null)
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
                 .setRevisionAction(RevisionAction.Insert)
@@ -231,6 +232,7 @@ public class CcNodeService {
                 .setState(CcState.WIP)
                 .setDeprecated(false)
                 .setNillable(false)
+                .setNamespaceId(null)
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
                 .setRevisionAction(RevisionAction.Insert)
@@ -419,6 +421,12 @@ public class CcNodeService {
             updateBccpArguments.setDefinitionSource(detail.getDefinitionSource());
         }
 
+        if (detail.getNamespaceId() > 0L) {
+            updateBccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+        } else {
+            updateBccpArguments.setNamespaceId(null);
+        }
+
         updateBccpArguments.setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
                 .setRevisionAction(RevisionAction.Update)
@@ -446,19 +454,40 @@ public class CcNodeService {
         AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
         AccRecord accRecord = ccRepository.getAccById(asccpRecord.getRoleOfAccId());
 
-        UpdateAsccpArguments updateAsccpArguments = ccRepository.updateAsccpArguments(asccpRecord)
-                .setPropertyTerm(detail.getPropertyTerm())
-                .setDen(detail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
-                .setReuseableIndicator(detail.isReusable())
-                .setDeprecated(detail.isDeprecated())
-                .setDefinition(detail.getDefinition())
-                .setDefinitionSource(detail.getDefinitionSource())
-                .setNillable(detail.isNillable())
-                .setLastUpdatedBy(userId)
-                .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Update)
-                .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
-                .setPrevAsccpId(asccpRecord.getAsccpId());
+        UpdateAsccpArguments updateAsccpArguments = ccRepository.updateAsccpArguments(asccpRecord);
+
+        byte nillable = (byte) (detail.isNillable() ? 1 : 0);
+        if (!asccpRecord.getIsNillable().equals(nillable)) {
+            updateAsccpArguments.setNillable(detail.isNillable());
+        }
+
+        byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
+        if (!asccpRecord.getIsDeprecated().equals(deprecated)) {
+            updateAsccpArguments.setDeprecated(detail.isDeprecated());
+        }
+
+        if (!Objects.equals(asccpRecord.getDefinition(), detail.getDefinition())) {
+            updateAsccpArguments.setDefinition(detail.getDefinition());
+        }
+
+        if (!Objects.equals(asccpRecord.getDefinitionSource(), detail.getDefinitionSource())) {
+            updateAsccpArguments.setDefinitionSource(detail.getDefinitionSource());
+        }
+
+        if (detail.getNamespaceId() > 0L) {
+            updateAsccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+        } else {
+            updateAsccpArguments.setNamespaceId(null);
+        }
+        updateAsccpArguments
+            .setPropertyTerm(detail.getPropertyTerm())
+            .setDen(detail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
+            .setReuseableIndicator(detail.isReusable())
+            .setLastUpdatedBy(userId)
+            .setLastUpdateTimestamp(timestamp)
+            .setRevisionAction(RevisionAction.Update)
+            .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
+            .setPrevAsccpId(asccpRecord.getAsccpId());
 
         ULong asccpId = ccRepository.execute(updateAsccpArguments);
 
