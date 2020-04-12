@@ -15,6 +15,7 @@ import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.cc_arguments.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,9 @@ public class CcNodeService {
 
     @Autowired
     private ReleaseRepository releaseRepository;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public CcAccNode getAccNode(User user, long manifestId) {
         AccManifestRecord accManifestRecord =
@@ -597,19 +601,40 @@ public class CcNodeService {
     @Transactional
     public CcAccNode updateAccState(User user, long accManifestId, String state) {
         CcState ccState = getStateCode(state);
-        return repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
+        CcAccNode resp = repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
+
+        CcEvent event = new CcEvent();
+        event.setAction("Update");
+        event.addProperty("State", state);
+        simpMessagingTemplate.convertAndSend("/topic/acc/" + accManifestId, event);
+
+        return resp;
     }
 
     @Transactional
     public CcAsccpNode updateAsccpState(User user, long asccpManifestId, String state) {
         CcState ccState = getStateCode(state);
-        return repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
+        CcAsccpNode resp = repository.updateAsccpState(user, ULong.valueOf(asccpManifestId), ccState);
+
+        CcEvent event = new CcEvent();
+        event.setAction("Update");
+        event.addProperty("State", state);
+        simpMessagingTemplate.convertAndSend("/topic/asccp/" + asccpManifestId, event);
+
+        return resp;
     }
 
     @Transactional
     public CcBccpNode updateBccpState(User user, long bccpManifestId, String state) {
         CcState ccState = getStateCode(state);
-        return repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
+        CcBccpNode resp = repository.updateBccpState(user, ULong.valueOf(bccpManifestId), ccState);
+
+        CcEvent event = new CcEvent();
+        event.setAction("Update");
+        event.addProperty("State", state);
+        simpMessagingTemplate.convertAndSend("/topic/bccp/" + bccpManifestId, event);
+
+        return resp;
     }
 
     @Transactional

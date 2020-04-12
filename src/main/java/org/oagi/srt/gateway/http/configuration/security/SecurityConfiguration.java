@@ -71,7 +71,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/event/**");
+        web.ignoring().antMatchers("/info/**", "/messages/**");
     }
 
     @Override
@@ -83,9 +83,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/event/**").permitAll()
                 .antMatchers("/info/**").permitAll()
-                .antMatchers("/**").authenticated()
+                .antMatchers("/messages/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
