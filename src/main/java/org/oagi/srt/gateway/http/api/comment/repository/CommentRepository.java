@@ -77,6 +77,17 @@ public class CommentRepository {
                 .collect(Collectors.toList());
     }
 
+    public Comment getCommentByCommentId(long commentId) {
+        return dslContext.select(
+                COMMENT.COMMENT_ID, APP_USER.LOGIN_ID, COMMENT.COMMENT_.as("text"),
+                COMMENT.LAST_UPDATE_TIMESTAMP.as("timestamp"),
+                COMMENT.IS_HIDDEN, COMMENT.PREV_COMMENT_ID)
+                .from(COMMENT)
+                .join(APP_USER).on(COMMENT.CREATED_BY.eq(APP_USER.APP_USER_ID))
+                .where(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentId)), COMMENT.IS_DELETED.eq((byte) 0))
+                .fetchOneInto(Comment.class);
+    }
+
     @Data
     public class InsertCommentArguments {
 
@@ -116,8 +127,8 @@ public class CommentRepository {
             return this;
         }
 
-        public void execute() {
-            executeInsertComment(this);
+        public long execute() {
+            return executeInsertComment(this);
         }
     }
 
@@ -125,7 +136,7 @@ public class CommentRepository {
         return new InsertCommentArguments();
     }
 
-    private void executeInsertComment(InsertCommentArguments arguments) {
+    private long executeInsertComment(InsertCommentArguments arguments) {
         CommentRecord record = new CommentRecord();
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -139,9 +150,9 @@ public class CommentRepository {
         record.setCreationTimestamp(timestamp);
         record.setLastUpdateTimestamp(timestamp);
 
-        dslContext.insertInto(COMMENT)
+        return dslContext.insertInto(COMMENT)
                 .set(record)
-                .execute();
+                .returning().fetchOne().getCommentId().longValue();
     }
 
     public Long getOwnerIdByCommentId(long commentId) {

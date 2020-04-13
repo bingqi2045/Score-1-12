@@ -273,6 +273,12 @@ public class CcNodeService {
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
             CcAccNodeDetail updatedAccNodeDetail = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(updatedAccNodeDetail);
+
+            CcEvent event = new CcEvent();
+            event.setAction("UpdateDetail");
+            event.addProperty("actor", user.getUsername());
+            simpMessagingTemplate.convertAndSend("/topic/acc/" + detail.getManifestId(), event);
+
         }
         return updatedAccNodeDetails;
     }
@@ -633,8 +639,9 @@ public class CcNodeService {
         CcAccNode resp = repository.updateAccState(user, ULong.valueOf(accManifestId), ccState);
 
         CcEvent event = new CcEvent();
-        event.setAction("Update");
+        event.setAction("ChangeState");
         event.addProperty("State", state);
+        event.addProperty("actor", user.getUsername());
         simpMessagingTemplate.convertAndSend("/topic/acc/" + accManifestId, event);
 
         return resp;
