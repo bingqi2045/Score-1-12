@@ -20,5 +20,6 @@ public class CodeListForList {
     private String lastUpdateUser;
     private boolean extensible;
     private String state;
+    private boolean deprecated;
 
 }

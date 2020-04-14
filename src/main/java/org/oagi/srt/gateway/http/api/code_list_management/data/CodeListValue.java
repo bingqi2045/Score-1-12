@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CodeListValue {
 
-    long codeListValueId;
+    Long codeListValueManifestId;
     String guid;
     String value;
     String name;

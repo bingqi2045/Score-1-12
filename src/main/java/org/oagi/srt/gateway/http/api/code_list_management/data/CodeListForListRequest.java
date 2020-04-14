@@ -13,6 +13,7 @@ public class CodeListForListRequest {
     private long releaseId;
     private String name;
     private List<String> states = Collections.emptyList();
+    private Boolean deprecated;
     private Boolean extensible;
 
     private List<String> ownerLoginIds;

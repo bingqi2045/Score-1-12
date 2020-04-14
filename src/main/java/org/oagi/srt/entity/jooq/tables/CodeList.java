@@ -13,7 +13,6 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = -824928647;
+    private static final long serialVersionUID = -1115031208;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -146,6 +145,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
      * The column <code>oagi.code_list.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
      */
     public final TableField<CodeListRecord, Integer> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGER)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+
+    /**
+     * The column <code>oagi.code_list.is_deprecated</code>. Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
+     */
+    public final TableField<CodeListRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
 
     /**
      * The column <code>oagi.code_list.state</code>. Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.
@@ -268,14 +272,5 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     @Override
     public CodeList rename(Name name) {
         return new CodeList(name, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Row22 type methods
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row22<ULong, String, String, String, String, ULong, String, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, String, ULong, ULong> fieldsRow() {
-        return (Row22) super.fieldsRow();
     }
 }

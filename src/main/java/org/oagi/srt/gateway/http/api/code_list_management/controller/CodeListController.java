@@ -30,6 +30,7 @@ public class CodeListController {
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "states", required = false) String states,
+            @RequestParam(name = "deprecated", required = false) String deprecated,
             @RequestParam(name = "extensible", required = false) Boolean extensible,
             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
@@ -46,6 +47,13 @@ public class CodeListController {
         request.setName(name);
         request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
                 Arrays.asList(states.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        if (!StringUtils.isEmpty(deprecated)) {
+            if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
+                request.setDeprecated(true);
+            } else if ("false".equalsIgnoreCase(deprecated.toLowerCase())) {
+                request.setDeprecated(false);
+            }
+        }
         request.setExtensible(extensible);
 
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
