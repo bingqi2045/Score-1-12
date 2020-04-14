@@ -48,6 +48,7 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPri;
 import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
 import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
+import org.oagi.srt.entity.jooq.tables.CodeListManifest;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
 import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
@@ -75,7 +76,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1047731046;
+    private static final long serialVersionUID = -1990120143;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -285,6 +286,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final CodeList CODE_LIST = CodeList.CODE_LIST;
 
     /**
+     * The table <code>oagi.code_list_manifest</code>.
+     */
+    public final CodeListManifest CODE_LIST_MANIFEST = CodeListManifest.CODE_LIST_MANIFEST;
+
+    /**
      * Each record in this table stores a code list value of a code list. A code list value may be inherited from another code list on which it is based. However, inherited value may be restricted (i.e., disabled and cannot be used) in this code list, i.e., the USED_INDICATOR = false. If the value cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, because the USED_INDICATOR of such code list value is FALSE by default and can no longer be changed.
      */
     public final CodeListValue CODE_LIST_VALUE = CodeListValue.CODE_LIST_VALUE;
@@ -433,6 +439,7 @@ If we use a separate table for each expression, then we need binding all the way
             CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP,
             Client.CLIENT,
             CodeList.CODE_LIST,
+            CodeListManifest.CODE_LIST_MANIFEST,
             CodeListValue.CODE_LIST_VALUE,
             Comment.COMMENT,
             CtxCategory.CTX_CATEGORY,

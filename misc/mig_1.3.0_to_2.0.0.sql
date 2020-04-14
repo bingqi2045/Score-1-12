@@ -579,7 +579,7 @@ UPDATE `bcc` SET `state` = 'Published' where `state` = '3';
 
 ALTER TABLE `bcc` MODIFY COLUMN `is_nillable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '@deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.\n\nIndicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.';
 
-    CREATE TABLE `bcc_manifest` (
+CREATE TABLE `bcc_manifest` (
     `bcc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
     `bcc_id` bigint(20) unsigned NOT NULL,
@@ -673,6 +673,55 @@ CREATE INDEX `bcc_revision_idx` ON `bcc` (`revision_num`, `revision_tracking_num
 CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timestamp` DESC);
 
 
+-- Making relations between `code_list` and `release` tables.
+ALTER TABLE `code_list`
+    ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `created_by`,
+    ADD COLUMN `revision_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).' AFTER `last_update_timestamp`,
+    ADD COLUMN `revision_tracking_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component''s EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.' AFTER `revision_num`,
+    ADD COLUMN `revision_action` int(11) DEFAULT '1' COMMENT 'This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.' AFTER `revision_tracking_num`,
+    ADD COLUMN `prev_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    ADD COLUMN `next_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+    ADD CONSTRAINT `code_list_prev_code_list_id_fk` FOREIGN KEY (`prev_code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`);
+
+UPDATE `code_list` SET `revision_num` = 1, `revision_tracking_num` = 1, `owner_user_id` = `last_updated_by`;
+
+CREATE TABLE `code_list_manifest` (
+    `code_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned DEFAULT NULL,
+    `code_list_id` bigint(20) unsigned NOT NULL,
+    `based_code_list_manifest_id` bigint(20) unsigned DEFAULT NULL,
+    PRIMARY KEY (`code_list_manifest_id`),
+    KEY `code_list_manifest_code_list_id_fk` (`code_list_id`),
+    KEY `code_list_manifest_based_code_list_manifest_id_fk` (`based_code_list_manifest_id`),
+    KEY `code_list_manifest_release_id_fk` (`release_id`),
+    KEY `code_list_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `code_list_manifest_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    CONSTRAINT `code_list_manifest_based_code_list_manifest_id_fk` FOREIGN KEY (`based_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`),
+    CONSTRAINT `code_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT `code_list_manifest` (`release_id`, `module_id`, `code_list_id`)
+SELECT
+    `release`.`release_id`,
+    `code_list`.`module_id`,
+    `code_list`.`code_list_id`
+FROM `code_list`, `release`
+ORDER BY `release_id`, `code_list_id`;
+
+-- Updating `based_code_list_manifest_id`
+UPDATE `code_list_manifest`, (
+    SELECT a.`code_list_manifest_id`, `code_list`.`code_list_id`, b.`code_list_manifest_id` as `based_code_list_manifest_id`, `code_list`.`based_code_list_id`
+    FROM `code_list` JOIN `code_list_manifest` a ON `code_list`.`code_list_id` = a.`code_list_id`
+                     JOIN `code_list_manifest` b ON `code_list`.`based_code_list_id` = b.`code_list_id`
+    WHERE `code_list`.`based_code_list_id` IS NOT NULL AND a.`release_id` = b.`release_id`
+) t
+SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
+WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
+
+
 -- BIEs
 -- ABIE
 ALTER TABLE `abie` ADD COLUMN `based_acc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.' AFTER `guid`,
@@ -751,6 +800,8 @@ WHERE `bbie_sc`.`dt_sc_id` = `dt_sc_manifest`.`dt_sc_id`
 
 ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_dt_sc_id_fk`,
                       DROP COLUMN `dt_sc_id`;
+
+
 
 -- Making relations between `xbt` and `release` tables.
 
@@ -1065,5 +1116,11 @@ ALTER TABLE `xbt` DROP COLUMN `release_id`;
 ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_module_id_fk`;
 DROP INDEX `xbt_module_id_fk` ON `xbt`;
 ALTER TABLE `xbt` DROP COLUMN `module_id`;
+
+-- DROP `based_code_list_id` and `module_id` columns on `code_list` table.
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
+                        DROP COLUMN `based_code_list_id`,
+                        DROP FOREIGN KEY `code_list_module_id_fk`,
+                        DROP COLUMN `module_id`;
 
 SET FOREIGN_KEY_CHECKS = 1;

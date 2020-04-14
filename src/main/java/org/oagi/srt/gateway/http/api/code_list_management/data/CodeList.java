@@ -8,10 +8,11 @@ import java.util.List;
 @Data
 public class CodeList {
 
-    private long codeListId;
+    private long releaseId;
+    private long codeListManifestId;
     private String codeListName;
     private String guid;
-    private Long basedCodeListId;
+    private Long basedCodeListManifestId;
     private String basedCodeListName;
 
     private long agencyId;

@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class BieEditCodeList {
 
-    private long codeListId;
-    private Long basedCodeListId;
+    private long codeListManifestId;
+    private Long basedCodeListManifestId;
     private boolean isDefault;
     private String codeListName;
 

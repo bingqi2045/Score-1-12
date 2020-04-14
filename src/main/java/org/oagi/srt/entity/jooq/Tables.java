@@ -42,6 +42,7 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPri;
 import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
 import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
+import org.oagi.srt.entity.jooq.tables.CodeListManifest;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
 import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
@@ -270,6 +271,11 @@ If we use a separate table for each expression, then we need binding all the way
      * This table stores information about a code list. When a code list is derived from another code list, the whole set of code values belonging to the based code list will be copied.
      */
     public static final CodeList CODE_LIST = CodeList.CODE_LIST;
+
+    /**
+     * The table <code>oagi.code_list_manifest</code>.
+     */
+    public static final CodeListManifest CODE_LIST_MANIFEST = CodeListManifest.CODE_LIST_MANIFEST;
 
     /**
      * Each record in this table stores a code list value of a code list. A code list value may be inherited from another code list on which it is based. However, inherited value may be restricted (i.e., disabled and cannot be used) in this code list, i.e., the USED_INDICATOR = false. If the value cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, because the USED_INDICATOR of such code list value is FALSE by default and can no longer be changed.

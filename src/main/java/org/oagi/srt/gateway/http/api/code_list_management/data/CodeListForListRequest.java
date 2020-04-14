@@ -10,10 +10,12 @@ import java.util.List;
 @Data
 public class CodeListForListRequest {
 
+    private long releaseId;
     private String name;
     private List<String> states = Collections.emptyList();
     private Boolean extensible;
 
+    private List<String> ownerLoginIds;
     private List<String> updaterLoginIds;
     private Date updateStartDate;
     private Date updateEndDate;

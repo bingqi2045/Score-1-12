@@ -1,9 +1,6 @@
 package org.oagi.srt.gateway.http.api.code_list_management.controller;
 
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeList;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForList;
-import org.oagi.srt.gateway.http.api.code_list_management.data.CodeListForListRequest;
-import org.oagi.srt.gateway.http.api.code_list_management.data.DeleteCodeListRequest;
+import org.oagi.srt.gateway.http.api.code_list_management.data.*;
 import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -30,9 +27,11 @@ public class CodeListController {
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CodeListForList> getCodeLists(
+            @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "states", required = false) String states,
             @RequestParam(name = "extensible", required = false) Boolean extensible,
+            @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -43,11 +42,14 @@ public class CodeListController {
 
         CodeListForListRequest request = new CodeListForListRequest();
 
+        request.setReleaseId(releaseId);
         request.setName(name);
         request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
                 Arrays.asList(states.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setExtensible(extensible);
 
+        request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
+                Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
@@ -71,10 +73,10 @@ public class CodeListController {
         return service.getCodeLists(request);
     }
 
-    @RequestMapping(value = "/code_list/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CodeList getCodeList(@PathVariable("id") long id) {
-        return service.getCodeList(id);
+    public CodeList getCodeList(@PathVariable("manifestId") long manifestId) {
+        return service.getCodeList(manifestId);
     }
 
     @RequestMapping(value = "/code_list", method = RequestMethod.PUT)
@@ -85,20 +87,20 @@ public class CodeListController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/code_list/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("id") long id,
+            @PathVariable("manifestId") long manifestId,
             @AuthenticationPrincipal User user,
             @RequestBody CodeList codeList) {
-        codeList.setCodeListId(id);
+        codeList.setCodeListManifestId(manifestId);
         service.update(user, codeList);
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/code_list/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @PathVariable("id") long id) {
-        service.delete(id);
+            @PathVariable("manifestId") long manifestId) {
+        service.delete(manifestId);
         return ResponseEntity.noContent().build();
     }
 
@@ -106,5 +108,39 @@ public class CodeListController {
     public ResponseEntity deletes(@RequestBody DeleteCodeListRequest request) {
         service.delete(request.getCodeListIds());
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/code_list/check_uniqueness", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkUniqueness(
+            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
+            @RequestParam(name = "listId") String listId,
+            @RequestParam(name = "agencyId") Long agencyId,
+            @RequestParam(name = "versionId") String versionId) {
+
+        SameCodeListParams params = new SameCodeListParams();
+        params.setReleaseId(releaseId);
+        params.setCodeListManifestId(codeListManifestId);
+        params.setListId(listId);
+        params.setAgencyId(agencyId);
+        params.setVersionId(versionId);
+
+        return service.hasSameCodeList(params);
+    }
+
+    @RequestMapping(value = "/code_list/check_name_uniqueness", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkNameUniqueness(
+            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "codeListManifestId", required = false) Long codeListManifestId,
+            @RequestParam(name = "codeListName") String codeListName) {
+
+        SameNameCodeListParams params = new SameNameCodeListParams();
+        params.setReleaseId(releaseId);
+        params.setCodeListManifestId(codeListManifestId);
+        params.setCodeListName(codeListName);
+
+        return service.hasSameNameCodeList(params);
     }
 }

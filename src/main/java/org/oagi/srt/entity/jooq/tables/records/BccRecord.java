@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1874197594;
+    private static final long serialVersionUID = 1486673562;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -348,14 +348,18 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.bcc.is_nillable</code>. Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
+     * Setter for <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.
+
+Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
         set(21, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.is_nillable</code>. Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
+     * Getter for <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.
+
+Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
         return (Byte) get(21);

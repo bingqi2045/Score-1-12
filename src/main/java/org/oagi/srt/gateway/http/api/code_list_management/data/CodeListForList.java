@@ -7,10 +7,10 @@ import java.util.Date;
 @Data
 public class CodeListForList {
 
-    private long codeListId;
+    private long codeListManifestId;
     private String codeListName;
     private String guid;
-    private Long basedCodeListId;
+    private Long basedCodeListManifestId;
     private String basedCodeListName;
     private long agencyId;
     private String listId;

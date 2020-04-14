@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = -1393340092;
+    private static final long serialVersionUID = 2106837020;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -172,9 +172,11 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<BccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.bcc.is_nillable</code>. Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
+     * The column <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.
+
+Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
-    public final TableField<BccRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.");
+    public final TableField<BccRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "@deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.\n\nIndicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.");
 
     /**
      * The column <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
