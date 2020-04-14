@@ -46,7 +46,7 @@ public class BieRepository {
                 .fetchOneInto(Long.class);
     }
 
-    public BieEditAcc getAccByAccId(long accManifestId, long releaseId) {
+    public BieEditAcc getAccByAccId(long accId, long releaseId) {
         // BIE only can see the ACCs whose state is in Published.
         return dslContext.select(
                 ACC.ACC_ID,
@@ -63,8 +63,29 @@ public class BieRepository {
                 .where(and(
                         ACC.REVISION_NUM.greaterThan(0),
                         ACC.STATE.eq(CcState.Published.name()),
-                        ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
+                        ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                ))
+                .fetchOneInto(BieEditAcc.class);
+    }
+
+    public BieEditAcc getAccByAccManifestId(long accManifestId) {
+        // BIE only can see the ACCs whose state is in Published.
+        return dslContext.select(
+                ACC.ACC_ID,
+                ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
+                ACC.OAGIS_COMPONENT_TYPE,
+                ACC.REVISION_NUM,
+                ACC.REVISION_TRACKING_NUM,
+                ACC_MANIFEST.RELEASE_ID)
+                .from(ACC)
+                .join(ACC_MANIFEST)
+                .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .leftJoin(ACC_MANIFEST.as("base"))
+                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
+                .where(and(
+                        ACC.STATE.eq(CcState.Published.name()),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId))
                 ))
                 .fetchOneInto(BieEditAcc.class);
     }
@@ -219,7 +240,7 @@ public class BieRepository {
                 .fetchOptionalInto(String.class).orElse(null);
     }
 
-    public BieEditAsccp getAsccpByAsccpId(long asccpManifestId, long releaseId) {
+    public BieEditAsccp getAsccpByAsccpManifestId(long asccpManifestId) {
         return dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
@@ -231,14 +252,11 @@ public class BieRepository {
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .where(and(
-                        ASCCP.REVISION_NUM.greaterThan(0),
-                        ASCCP_MANIFEST.ASCCP_ID.eq(ULong.valueOf(asccpManifestId)),
-                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOneInto(BieEditAsccp.class);
     }
 
-    public BieEditBccp getBccpByBccpId(long bccpManifestId, long releaseId) {
+    public BieEditBccp getBccpByBccpManifestId(long bccpManifestId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -250,10 +268,7 @@ public class BieRepository {
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
-                .where(and(
-                        BCCP.REVISION_NUM.greaterThan(0),
-                        BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)),
-                        BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(BieEditBccp.class);
     }
 
@@ -342,6 +357,7 @@ public class BieRepository {
         return dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC.GUID,
+                ASCC_MANIFEST.ASCC_MANIFEST_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                 ASCC.SEQ_KEY,
@@ -379,6 +395,7 @@ public class BieRepository {
         return dslContext.select(
                 BCC.BCC_ID,
                 BCC.GUID,
+                BCC_MANIFEST.BCC_MANIFEST_ID,
                 BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
                 BCC.SEQ_KEY,

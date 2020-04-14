@@ -9,7 +9,6 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.data.TopLevelAbie;
-import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
@@ -22,7 +21,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +36,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.SrtJdbcTemplate.newSqlParameterSource;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @Component
@@ -373,7 +370,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         asbiepNode.setGuid(ascc.getGuid());
         asbiepNode.setAsccId(ascc.getAsccId());
 
-        BieEditAsccp asccp = repository.getAsccpByAsccpId(ascc.getToAsccpManifestId(), releaseId);
+        BieEditAsccp asccp = repository.getAsccpByAsccpManifestId(ascc.getToAsccpManifestId());
+
         asbiepNode.setAsccpId(asccp.getAsccpId());
 
         if (StringUtils.isEmpty(asbiepNode.getName())) {
@@ -382,7 +380,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         BieEditAcc acc;
         if (asbiepNode.getAccId() == 0L) {
-            acc = repository.getAccByAccId(asccp.getRoleOfAccManifestId(), releaseId);
+            acc = repository.getAccByAccManifestId(asccp.getRoleOfAccManifestId());
             if (acc == null) {
                 return null;
             }
@@ -400,7 +398,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
             long asbiepId = asbiepRecord.getAsbiepId().longValue();
-            AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccId(),
+            AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccManifestId(),
                     seqKey, topLevelAbieId);
 
             asbie = new BieEditAsbie();
@@ -446,7 +444,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         bbiepNode.setAttribute(bcc.isAttribute());
 
         bbiepNode.setBccId(bcc.getBccId());
-        BieEditBccp bccp = repository.getBccpByBccpId(bcc.getToBccpManifestId(), topLevelAbie.getReleaseId());
+        BieEditBccp bccp = repository.getBccpByBccpManifestId(bcc.getToBccpManifestId());
         bbiepNode.setBccpId(bccp.getBccpId());
         bbiepNode.setBdtId(bccp.getBdtManifestId());
 
@@ -458,7 +456,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             BbiepRecord bbiepRecord = repository.createBbiep(user, bcc.getToBccpManifestId(), topLevelAbieId);
             long bbiepId = bbiepRecord.getBbiepId().longValue();
             BbieRecord bbieRecord = repository.createBbie(user, fromAbieId, bbiepId,
-                    bcc.getToBccpManifestId(), bccp.getBdtManifestId(), seqKey, topLevelAbieId);
+                    bcc.getBccManifestId(), bccp.getBdtManifestId(), seqKey, topLevelAbieId);
             long bbieId = bbieRecord.getBbieId().longValue();
 
             bbie = new BieEditBbie();

@@ -11,6 +11,7 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 public class BieEditBcc extends TrackableImpl implements SeqKeySupportable, Cardinality {
 
     private long bccId;
+    private long bccManifestId;
     private String guid;
     private long fromAccManifestId;
     private long toBccpManifestId;
