@@ -785,6 +785,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 BDT_PRI_RESTRI.IS_DEFAULT, CODE_LIST.NAME.as("code_list_name"))
                 .from(BDT_PRI_RESTRI)
                 .join(CODE_LIST_MANIFEST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .where(BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId)))
                 .fetchInto(BieEditCodeList.class);
 
