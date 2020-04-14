@@ -50,6 +50,7 @@ import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
 import org.oagi.srt.entity.jooq.tables.CodeListManifest;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
+import org.oagi.srt.entity.jooq.tables.CodeListValueManifest;
 import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
@@ -76,7 +77,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1990120143;
+    private static final long serialVersionUID = -1131198534;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -296,6 +297,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final CodeListValue CODE_LIST_VALUE = CodeListValue.CODE_LIST_VALUE;
 
     /**
+     * The table <code>oagi.code_list_value_manifest</code>.
+     */
+    public final CodeListValueManifest CODE_LIST_VALUE_MANIFEST = CodeListValueManifest.CODE_LIST_VALUE_MANIFEST;
+
+    /**
      * The table <code>oagi.comment</code>.
      */
     public final Comment COMMENT = Comment.COMMENT;
@@ -441,6 +447,7 @@ If we use a separate table for each expression, then we need binding all the way
             CodeList.CODE_LIST,
             CodeListManifest.CODE_LIST_MANIFEST,
             CodeListValue.CODE_LIST_VALUE,
+            CodeListValueManifest.CODE_LIST_VALUE_MANIFEST,
             Comment.COMMENT,
             CtxCategory.CTX_CATEGORY,
             CtxScheme.CTX_SCHEME,

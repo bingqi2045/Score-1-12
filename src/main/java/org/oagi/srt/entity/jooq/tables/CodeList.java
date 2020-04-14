@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = -1366140651;
+    private static final long serialVersionUID = -824928647;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -212,12 +212,12 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<UniqueKey<CodeListRecord>> getKeys() {
-        return Arrays.<UniqueKey<CodeListRecord>>asList(Keys.KEY_CODE_LIST_PRIMARY, Keys.KEY_CODE_LIST_CODE_LIST_UK1, Keys.KEY_CODE_LIST_CODE_LIST_UK2);
+        return Arrays.<UniqueKey<CodeListRecord>>asList(Keys.KEY_CODE_LIST_PRIMARY);
     }
 
     @Override
     public List<ForeignKey<CodeListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
+        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
@@ -226,6 +226,10 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     public AppUser codeListCreatedByFk() {
         return new AppUser(this, Keys.CODE_LIST_CREATED_BY_FK);
+    }
+
+    public AppUser codeListOwnerUserIdFk() {
+        return new AppUser(this, Keys.CODE_LIST_OWNER_USER_ID_FK);
     }
 
     public AppUser codeListLastUpdatedByFk() {

@@ -44,6 +44,7 @@ import org.oagi.srt.entity.jooq.tables.Client;
 import org.oagi.srt.entity.jooq.tables.CodeList;
 import org.oagi.srt.entity.jooq.tables.CodeListManifest;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
+import org.oagi.srt.entity.jooq.tables.CodeListValueManifest;
 import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.CtxCategory;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
@@ -281,6 +282,11 @@ If we use a separate table for each expression, then we need binding all the way
      * Each record in this table stores a code list value of a code list. A code list value may be inherited from another code list on which it is based. However, inherited value may be restricted (i.e., disabled and cannot be used) in this code list, i.e., the USED_INDICATOR = false. If the value cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, because the USED_INDICATOR of such code list value is FALSE by default and can no longer be changed.
      */
     public static final CodeListValue CODE_LIST_VALUE = CodeListValue.CODE_LIST_VALUE;
+
+    /**
+     * The table <code>oagi.code_list_value_manifest</code>.
+     */
+    public static final CodeListValueManifest CODE_LIST_VALUE_MANIFEST = CodeListValueManifest.CODE_LIST_VALUE_MANIFEST;
 
     /**
      * The table <code>oagi.comment</code>.

@@ -4,6 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +39,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
-    private static final long serialVersionUID = 787990779;
+    private static final long serialVersionUID = 212067125;
 
     /**
      * The reference instance of <code>oagi.code_list_value</code>
@@ -99,6 +100,58 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     public final TableField<CodeListValueRecord, Byte> EXTENSION_INDICATOR = createField(DSL.name("extension_Indicator"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates whether this code value has just been added in this code list. It is used particularly in the derived code list. If the code value has only been added to the derived code list, then it can be deleted; otherwise, it cannot be deleted.");
 
     /**
+     * The column <code>oagi.code_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
+     */
+    public final TableField<CodeListValueRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the code list.");
+
+    /**
+     * The column <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     */
+    public final TableField<CodeListValueRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+
+    /**
+     * The column <code>oagi.code_list_value.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
+     */
+    public final TableField<CodeListValueRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the code list.");
+
+    /**
+     * The column <code>oagi.code_list_value.creation_timestamp</code>. Timestamp when the code list was created.
+     */
+    public final TableField<CodeListValueRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was created.");
+
+    /**
+     * The column <code>oagi.code_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
+     */
+    public final TableField<CodeListValueRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was last updated.");
+
+    /**
+     * The column <code>oagi.code_list_value.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     */
+    public final TableField<CodeListValueRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).");
+
+    /**
+     * The column <code>oagi.code_list_value.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
+     */
+    public final TableField<CodeListValueRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.");
+
+    /**
+     * The column <code>oagi.code_list_value.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
+     */
+    public final TableField<CodeListValueRecord, Integer> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGER)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+
+    /**
+     * The column <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<CodeListValueRecord, ULong> PREV_CODE_LIST_VALUE_ID = createField(DSL.name("prev_code_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.code_list_value.next_code_list_value_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<CodeListValueRecord, ULong> NEXT_CODE_LIST_VALUE_ID = createField(DSL.name("next_code_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
+
+    /**
      * Create a <code>oagi.code_list_value</code> table reference
      */
     public CodeListValue() {
@@ -153,11 +206,31 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     @Override
     public List<ForeignKey<CodeListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK);
+        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     public CodeList codeList() {
         return new CodeList(this, Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK);
+    }
+
+    public AppUser codeListValueCreatedByFk() {
+        return new AppUser(this, Keys.CODE_LIST_VALUE_CREATED_BY_FK);
+    }
+
+    public AppUser codeListValueOwnerUserIdFk() {
+        return new AppUser(this, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK);
+    }
+
+    public AppUser codeListValueLastUpdatedByFk() {
+        return new AppUser(this, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK);
+    }
+
+    public CodeListValue codeListValuePrevCodeListValueIdFk() {
+        return new CodeListValue(this, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK);
+    }
+
+    public CodeListValue codeListValueNextCodeListValueIdFk() {
+        return new CodeListValue(this, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     @Override
@@ -187,11 +260,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, String, String, String, String, Byte, Byte, Byte> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row19<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, ULong, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

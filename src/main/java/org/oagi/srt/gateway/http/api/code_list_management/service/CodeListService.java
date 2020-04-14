@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.code_list_management.service;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.api.code_list_management.data.CodeListState.Editing;
+import static org.oagi.srt.gateway.http.api.code_list_management.data.CodeListState.WIP;
 import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Service
@@ -227,6 +228,9 @@ public class CodeListService {
                 CODE_LIST.DEFINITION_SOURCE,
                 CODE_LIST.EXTENSIBLE_INDICATOR,
                 CODE_LIST.STATE,
+                CODE_LIST.REVISION_NUM,
+                CODE_LIST.REVISION_TRACKING_NUM,
+                CODE_LIST.REVISION_ACTION,
                 CODE_LIST.CREATED_BY,
                 CODE_LIST.OWNER_USER_ID,
                 CODE_LIST.LAST_UPDATED_BY,
@@ -241,7 +245,8 @@ public class CodeListService {
                 codeList.getDefinition(),
                 codeList.getDefinitionSource(),
                 (byte) ((codeList.isExtensible()) ? 1 : 0),
-                Editing.name(),
+                WIP.name(),
+                1, 1, RevisionAction.Insert.getValue(),
                 userId, userId, userId, timestamp, timestamp)
                 .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getValue(CODE_LIST.CODE_LIST_ID);
 
@@ -339,6 +344,7 @@ public class CodeListService {
             }
         }
 
+        codeListRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum() + 1);
         codeListRecord.setCreatedBy(requesterId);
         codeListRecord.setOwnerUserId(requesterId);
         codeListRecord.setLastUpdatedBy(requesterId);
@@ -464,7 +470,7 @@ public class CodeListService {
             throw new IllegalArgumentException();
         }
         CodeListState codeListState = CodeListState.valueOf(state);
-        if (Editing != codeListState) {
+        if (WIP != codeListState) {
             throw new DataAccessForbiddenException("Not allowed to delete the code list in '" + codeListState + "' state.");
         }
     }
