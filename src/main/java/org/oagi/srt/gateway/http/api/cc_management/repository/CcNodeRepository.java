@@ -708,7 +708,9 @@ public class CcNodeRepository {
         }
         long asccCount = dslContext.selectCount()
                 .from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
+                .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        ASCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                 .fetchOneInto(long.class);
         if (asccCount > 0) {
             return true;
@@ -716,7 +718,9 @@ public class CcNodeRepository {
 
         long bccCount = dslContext.selectCount()
                 .from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
+                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        BCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                 .fetchOneInto(long.class);
         return bccCount > 0;
     }
@@ -865,14 +869,12 @@ public class CcNodeRepository {
             CcAccNode basedAccNode = getAccNodeByAccManifestId(user, accManifestRecord.getBasedAccManifestId());
             descendants.add(basedAccNode);
         }
-        long fromAccId = accManifestRecord.getAccId().longValue();
-
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
         seqKeySupportableList.addAll(
-                getAsccpNodes(user, fromAccId, releaseId)
+                getAsccpNodes(user, accManifestRecord.getAccManifestId().longValue())
         );
         seqKeySupportableList.addAll(
-                getBccpNodes(user, fromAccId, releaseId)
+                getBccpNodes(user, accManifestRecord.getAccManifestId().longValue())
         );
         seqKeySupportableList.sort(Comparator.comparingInt(SeqKeySupportable::getSeqKey));
 
@@ -927,7 +929,7 @@ public class CcNodeRepository {
                 .fetchOptionalInto(int.class).orElse(0);
     }
 
-    private List<CcAsccpNode> getAsccpNodes(User user, long fromAccId, Long releaseId) {
+    private List<CcAsccpNode> getAsccpNodes(User user, long fromAccManifestId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC_MANIFEST.ASCC_MANIFEST_ID.as("manifest_id"),
@@ -943,9 +945,8 @@ public class CcNodeRepository {
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
                 .where(and(
-                        ASCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)),
-                        ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
-                ))
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)),
+                        ASCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
@@ -969,7 +970,7 @@ public class CcNodeRepository {
         }).collect(Collectors.toList());
     }
 
-    private List<CcBccpNode> getBccpNodes(User user, long fromAccId, Long releaseId) {
+    private List<CcBccpNode> getBccpNodes(User user, long fromAccManifestId) {
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
                 BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"),
@@ -987,7 +988,8 @@ public class CcNodeRepository {
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
                 .join(BCCP_MANIFEST)
                 .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
-                .where(BCC.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)).and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
+                        .and(BCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                 .fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
@@ -1522,76 +1524,6 @@ public class CcNodeRepository {
                 accManifestRecord.getReleaseId().longValue());
     }
 
-    private void ensureDependenciesOfAcc(AccManifestRecord accManifestRecord, CcState ccState) {
-        CcState minChildState = CcState.Published;
-        CcState childState;
-
-        List<AsccManifestRecord> asccManifestRecords =
-                manifestRepository.getAsccManifestByFromAccManifestId(accManifestRecord.getAccManifestId());
-
-        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
-            childState = CcState.valueOf(getAsccpRecordById(asccManifestRecord.getToAsccpManifestId()).getState());
-            if (childState.compareTo(minChildState) < 0) {
-                minChildState = childState;
-            }
-        }
-
-        List<BccManifestRecord> bccManifestRecords =
-                manifestRepository.getBccManifestByFromAccManifestId(accManifestRecord.getAccManifestId());
-
-        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
-            childState = CcState.valueOf(getBccpRecordById(bccManifestRecord.getToBccpManifestId()).getState());
-            if (childState.compareTo(minChildState) < 0) {
-                minChildState = childState;
-            }
-        }
-
-        if (minChildState.compareTo(ccState) < 0) {
-            throw new IllegalArgumentException("ACC must precede the state of child CCs.");
-        }
-
-        if (accManifestRecord.getBasedAccManifestId() != null) {
-            AccRecord basedAccRecord = getAccRecordByManifestId(accManifestRecord.getBasedAccManifestId());
-            if (CcState.valueOf(basedAccRecord.getState()).compareTo(ccState) < 0) {
-                throw new IllegalArgumentException("ACC cannot precede the state of basedAcc.");
-            }
-        }
-
-        CcState minBasedState = CcState.WIP;
-        CcState basedAccState;
-
-        List<AccManifestRecord> accManifestRecordList =
-                manifestRepository.getAccManifestByBasedAccManifestId(accManifestRecord.getAccManifestId());
-
-        for (AccManifestRecord basedAcc : accManifestRecordList) {
-            basedAccState = CcState.valueOf(getAccRecordByManifestId(basedAcc.getAccManifestId()).getState());
-            if (minBasedState.compareTo(basedAccState) < 0) {
-                minBasedState = basedAccState;
-            }
-        }
-
-        if (minBasedState.compareTo(ccState) > 0) {
-            throw new IllegalArgumentException("ACC cannot be behind state of Referencing ACC.");
-        }
-
-        List<AsccpManifestRecord> asccpManifestList =
-                manifestRepository.getAsccpManifestByRoleOfAccManifestId(accManifestRecord.getAccManifestId());
-
-        CcState minRoleOfState = CcState.WIP;
-        CcState asccpState;
-
-        for (AsccpManifestRecord asccpManifest : asccpManifestList) {
-            asccpState = CcState.valueOf(getAsccpRecordById(asccpManifest.getAsccpManifestId()).getState());
-            if (asccpState.compareTo(minRoleOfState) < 0) {
-                minRoleOfState = asccpState;
-            }
-        }
-
-        if (minRoleOfState.compareTo(ccState) > 0) {
-            throw new IllegalArgumentException("ACC cannot be behind state of Referencing ASCCP.");
-        }
-    }
-
     public CcAsccpNode updateAsccpState(User user, ULong asccpManifestId, CcState ccState) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
@@ -1622,29 +1554,6 @@ public class CcNodeRepository {
                 asccpRecord.getPropertyTerm(), timestamp);
 
         return getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
-    }
-
-    private void ensureDependenciesOfAsccp(AsccpManifestRecord asccpManifestRecord, AccRecord roleOfAccRecord, CcState ccState) {
-        if (CcState.valueOf(roleOfAccRecord.getState()).compareTo(ccState) < 0) {
-            throw new IllegalArgumentException("ASCCP state can not precede ACC.");
-        }
-
-        List<CcState> parentAccStates = dslContext.select(ACC.STATE)
-                .from(ACC)
-                .join(ACC_MANIFEST).on(and(
-                        ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID),
-                        ACC_MANIFEST.RELEASE_ID.eq(asccpManifestRecord.getReleaseId())
-                ))
-                .join(ASCC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
-                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
-                .fetchStream().map(e -> CcState.valueOf(e.value1())).collect(Collectors.toList());
-
-        for (CcState state : parentAccStates) {
-            if (state.compareTo(ccState) > 0) {
-                throw new IllegalArgumentException("ASCCP state cannot be behind of parent ACC.");
-            }
-        }
     }
 
     public CcBccpNode updateBccpState(User user, ULong bccpManifestId, CcState ccState) {
@@ -1678,260 +1587,6 @@ public class CcNodeRepository {
 
         return getBccpNodeByBccpManifestId(user,
                 bccpManifestRecord.getBccpManifestId().longValue());
-    }
-
-    private void ensureDependenciesOfBccp(BccpManifestRecord bccpManifestRecord, CcState ccState) {
-        List<CcState> parentAccStates = dslContext.select(ACC.STATE)
-                .from(ACC)
-                .join(ACC_MANIFEST).on(and(
-                        ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID),
-                        ACC_MANIFEST.RELEASE_ID.eq(bccpManifestRecord.getReleaseId())
-                ))
-                .join(BCC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(BCC_MANIFEST.FROM_ACC_MANIFEST_ID))
-                .where(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
-                .fetchStream().map(e -> CcState.valueOf(e.value1())).collect(Collectors.toList());
-
-        for (CcState state : parentAccStates) {
-            if (state.compareTo(ccState) > 0) {
-                throw new IllegalArgumentException("BCCP state cannot be behind of parent ACC.");
-            }
-        }
-    }
-
-    public CcAccNode makeNewRevisionForAcc(User user, ULong accManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-
-        AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
-        AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
-        if (CcState.valueOf(accRecord.getState()) != CcState.Published) {
-            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
-        }
-
-        Release workingRelease = releaseRepository.getWorkingRelease();
-
-        if (accManifestRecord.getReleaseId().longValue() != workingRelease.getReleaseId()) {
-            throw new IllegalArgumentException("Creating new revision is not allow for this release");
-        }
-
-        accRecord.set(ACC.ACC_ID, null);
-        accRecord.set(ACC.LAST_UPDATED_BY, userId);
-        accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
-        accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
-        accRecord.set(ACC.REVISION_NUM, accRecord.getRevisionNum() + 1);
-        accRecord.set(ACC.REVISION_TRACKING_NUM, 1);
-        accRecord.set(ACC.STATE, CcState.WIP.name());
-        accRecord.insert();
-
-        accManifestRecord.setAccId(accRecord.getAccId());
-        accManifestRecord.update();
-
-        makeNewRevisionForAscc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
-        makeNewRevisionForBcc(accManifestRecord, accRecord, userId, timestamp, accManifestRecord.getReleaseId());
-
-        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
-    }
-
-    public List<AsccManifestRecord> makeNewRevisionForAscc(AccManifestRecord accManifestRecord,
-                                                            AccRecord accRecord,
-                                                            ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
-        List<AsccManifestRecord> asccManifestRecords =
-                dslContext.selectFrom(ASCC_MANIFEST)
-                        .where(and(
-                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()),
-                                ASCC_MANIFEST.RELEASE_ID.eq(accManifestRecord.getReleaseId())
-                        )).fetch();
-
-        List<AsccManifestRecord> asccManifestRecordsInWorkingRelease = new ArrayList(asccManifestRecords.size());
-        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
-            AsccRecord asccRecord =
-                    dslContext.selectFrom(ASCC)
-                            .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
-
-            asccRecord.set(ASCC.ASCC_ID, null);
-            asccRecord.set(ASCC.FROM_ACC_ID, accRecord.getAccId());
-            asccRecord.set(ASCC.LAST_UPDATED_BY, userId);
-            asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
-            asccRecord.set(ASCC.REVISION_NUM, asccRecord.getRevisionNum() + 1);
-            asccRecord.set(ASCC.REVISION_TRACKING_NUM, 1);
-            asccRecord.set(ASCC.STATE, CcState.WIP.name());
-            asccRecord.insert();
-
-            AsccManifestRecord asccManifestRecordInWorkingRelease =
-                    dslContext.selectFrom(ASCC_MANIFEST)
-                            .where(and(
-                                    ASCC_MANIFEST.ASCC_ID.eq(asccManifestRecord.getAsccId()),
-                                    ASCC_MANIFEST.RELEASE_ID.eq(workingReleaseId)
-                            ))
-                            .fetchOptional().orElse(null);
-
-            if (asccManifestRecordInWorkingRelease != null) {
-                asccManifestRecordInWorkingRelease.setAsccId(asccRecord.getAsccId());
-                asccManifestRecordInWorkingRelease.setFromAccManifestId(asccManifestRecord.getFromAccManifestId());
-                asccManifestRecordInWorkingRelease.setToAsccpManifestId(asccManifestRecord.getToAsccpManifestId());
-                asccManifestRecordInWorkingRelease.update();
-            } else {
-                asccManifestRecordInWorkingRelease = dslContext.insertInto(ASCC_MANIFEST)
-                        .set(ASCC_MANIFEST.ASCC_ID, asccRecord.getAsccId())
-                        .set(ASCC_MANIFEST.RELEASE_ID, workingReleaseId)
-                        .set(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, asccManifestRecord.getFromAccManifestId())
-                        .set(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID, asccManifestRecord.getToAsccpManifestId())
-                        .returning().fetchOne();
-            }
-
-            asccManifestRecordsInWorkingRelease.add(asccManifestRecordInWorkingRelease);
-        }
-
-        return asccManifestRecordsInWorkingRelease;
-    }
-
-    public List<BccManifestRecord> makeNewRevisionForBcc(AccManifestRecord accManifestRecord,
-                                                          AccRecord accRecord,
-                                                          ULong userId, LocalDateTime timestamp, ULong workingReleaseId) {
-        List<BccManifestRecord> bccManifestRecords =
-                dslContext.selectFrom(BCC_MANIFEST)
-                        .where(and(
-                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()),
-                                BCC_MANIFEST.RELEASE_ID.eq(accManifestRecord.getReleaseId())
-                        )).fetch();
-
-        List<BccManifestRecord> bccManifestRecordsInWorkingRelease = new ArrayList(bccManifestRecords.size());
-        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
-            BccRecord bccRecord =
-                    dslContext.selectFrom(BCC)
-                            .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne();
-
-            bccRecord.set(BCC.BCC_ID, null);
-            bccRecord.set(BCC.FROM_ACC_ID, accRecord.getAccId());
-            bccRecord.set(BCC.LAST_UPDATED_BY, userId);
-            bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
-            bccRecord.set(BCC.REVISION_NUM, bccRecord.getRevisionNum() + 1);
-            bccRecord.set(BCC.REVISION_TRACKING_NUM, 1);
-            bccRecord.set(BCC.STATE, CcState.WIP.name());
-            bccRecord.insert();
-
-            BccManifestRecord bccManifestRecordInWorkingRelease =
-                    dslContext.selectFrom(BCC_MANIFEST)
-                            .where(and(
-                                    BCC_MANIFEST.BCC_ID.eq(bccManifestRecord.getBccId()),
-                                    BCC_MANIFEST.RELEASE_ID.eq(workingReleaseId)
-                            ))
-                            .fetchOptional().orElse(null);
-
-            if (bccManifestRecordInWorkingRelease != null) {
-                bccManifestRecordInWorkingRelease.setBccId(bccRecord.getBccId());
-                bccManifestRecordInWorkingRelease.setFromAccManifestId(bccManifestRecord.getFromAccManifestId());
-                bccManifestRecordInWorkingRelease.setToBccpManifestId(bccManifestRecord.getToBccpManifestId());
-                bccManifestRecordInWorkingRelease.update();
-            } else {
-                bccManifestRecordInWorkingRelease = dslContext.insertInto(BCC_MANIFEST)
-                        .set(BCC_MANIFEST.BCC_ID, bccRecord.getBccId())
-                        .set(BCC_MANIFEST.RELEASE_ID, workingReleaseId)
-                        .set(BCC_MANIFEST.FROM_ACC_MANIFEST_ID, bccManifestRecord.getFromAccManifestId())
-                        .set(BCC_MANIFEST.TO_BCCP_MANIFEST_ID, bccManifestRecord.getToBccpManifestId())
-                        .returning().fetchOne();
-            }
-
-            bccManifestRecordsInWorkingRelease.add(bccManifestRecordInWorkingRelease);
-        }
-
-        return bccManifestRecordsInWorkingRelease;
-    }
-
-    public CcAsccpNode makeNewRevisionForAsccp(User user, ULong asccpManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-
-        AsccpManifestRecord asccpManifestRecord = manifestRepository.getAsccpManifestById(asccpManifestId);
-        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
-        if (CcState.valueOf(asccpRecord.getState()) != CcState.Published) {
-            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
-        }
-
-        asccpRecord.set(ASCCP.ASCCP_ID, null);
-        asccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
-        asccpRecord.set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        asccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Insert.getValue());
-        asccpRecord.set(ASCCP.REVISION_NUM, asccpRecord.getRevisionNum() + 1);
-        asccpRecord.set(ASCCP.REVISION_TRACKING_NUM, 1);
-        asccpRecord.set(ASCCP.STATE, CcState.WIP.name());
-        asccpRecord.insert();
-
-        Release workingRelease = releaseRepository.getWorkingRelease();
-        ULong workingReleaseId = ULong.valueOf(workingRelease.getReleaseId());
-        AsccpManifestRecord asccpManifestRecordInWorkingRelease =
-                dslContext.selectFrom(ASCCP_MANIFEST)
-                        .where(and(
-                                ASCCP_MANIFEST.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()),
-                                ASCCP_MANIFEST.RELEASE_ID.eq(workingReleaseId)
-                        ))
-                        .fetchOptional().orElse(null);
-
-        if (asccpManifestRecordInWorkingRelease != null) {
-            asccpManifestRecordInWorkingRelease.setAsccpId(asccpRecord.getAsccpId());
-            asccpManifestRecordInWorkingRelease.setRoleOfAccManifestId(asccpManifestRecord.getRoleOfAccManifestId());
-            asccpManifestRecordInWorkingRelease.update();
-        } else {
-            asccpManifestRecordInWorkingRelease = dslContext.insertInto(ASCCP_MANIFEST)
-                    .set(ASCCP_MANIFEST.ASCCP_ID, asccpRecord.getAsccpId())
-                    .set(ASCCP_MANIFEST.RELEASE_ID, workingReleaseId)
-                    .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, asccpManifestRecord.getRoleOfAccManifestId())
-                    .set(ASCCP_MANIFEST.MODULE_ID, asccpManifestRecord.getModuleId())
-                    .returning().fetchOne();
-        }
-
-        return getAsccpNodeByAsccpManifestId(user, asccpManifestRecordInWorkingRelease.getAsccpManifestId().longValue());
-    }
-
-    public CcBccpNode makeNewRevisionForBccp(User user, ULong bccpManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-
-        BccpManifestRecord bccpManifestRecord =
-                manifestRepository.getBccpManifestById(bccpManifestId);
-        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
-                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
-        if (CcState.valueOf(bccpRecord.getState()) != CcState.Published) {
-            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
-        }
-
-        bccpRecord.set(BCCP.BCCP_ID, null);
-        bccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
-        bccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        bccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Insert.getValue());
-        bccpRecord.set(BCCP.REVISION_NUM, bccpRecord.getRevisionNum() + 1);
-        bccpRecord.set(BCCP.REVISION_TRACKING_NUM, 1);
-        bccpRecord.set(BCCP.STATE, CcState.WIP.name());
-        bccpRecord.insert();
-
-        Release workingRelease = releaseRepository.getWorkingRelease();
-        ULong workingReleaseId = ULong.valueOf(workingRelease.getReleaseId());
-        BccpManifestRecord bccpManifestRecordInWorkingRelease =
-                dslContext.selectFrom(BCCP_MANIFEST)
-                        .where(and(
-                                BCCP_MANIFEST.BCCP_ID.eq(bccpManifestRecord.getBccpId()),
-                                BCCP_MANIFEST.RELEASE_ID.eq(workingReleaseId)
-                        ))
-                        .fetchOptional().orElse(null);
-
-        if (bccpManifestRecordInWorkingRelease != null) {
-            bccpManifestRecordInWorkingRelease.setBccpId(bccpRecord.getBccpId());
-            bccpManifestRecordInWorkingRelease.setBdtManifestId(bccpManifestRecord.getBdtManifestId());
-            bccpManifestRecordInWorkingRelease.update();
-        } else {
-            bccpManifestRecordInWorkingRelease = dslContext.insertInto(BCCP_MANIFEST)
-                    .set(BCCP_MANIFEST.BCCP_ID, bccpRecord.getBccpId())
-                    .set(BCCP_MANIFEST.RELEASE_ID, workingReleaseId)
-                    .set(BCCP_MANIFEST.BDT_MANIFEST_ID, bccpManifestRecord.getBdtManifestId())
-                    .set(BCCP_MANIFEST.MODULE_ID, bccpManifestRecord.getModuleId())
-                    .returning().fetchOne();
-        }
-
-        return getBccpNodeByBccpManifestId(user, bccpManifestRecordInWorkingRelease.getBccpManifestId().longValue());
     }
 
     public void appendAsccp(User user, ULong accManifestId, ULong asccpManifestId) {

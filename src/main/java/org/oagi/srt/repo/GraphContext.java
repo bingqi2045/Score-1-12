@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
@@ -149,7 +150,8 @@ public class GraphContext {
                         ASCC.CARDINALITY_MAX)
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                        .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId))
+                        .where(and(ASCC_MANIFEST.RELEASE_ID.eq(releaseId),
+                                ASCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                         .fetch(record -> new AsccManifest(
                                 record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
                                 record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID),
@@ -169,7 +171,8 @@ public class GraphContext {
                         BCC.CARDINALITY_MAX)
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                        .where(BCC_MANIFEST.RELEASE_ID.eq(releaseId))
+                        .where(and(BCC_MANIFEST.RELEASE_ID.eq(releaseId),
+                                BCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
                         .fetch(record -> new BccManifest(
                                 record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
                                 record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID),

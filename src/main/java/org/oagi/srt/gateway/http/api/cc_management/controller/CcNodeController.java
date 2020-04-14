@@ -192,28 +192,6 @@ public class CcNodeController {
         return service.getAsccp(id);
     }
 
-    @RequestMapping(value = "/core_component/node/children/{type}",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<? extends CcNode> getNodeChildren(@AuthenticationPrincipal User user,
-                                                  @PathVariable("type") String type,
-                                                  @RequestParam("data") String data) {
-
-        switch (type) {
-            case "acc":
-                CcAccNode accNode = convertValue(data, CcAccNode.class);
-                return service.getDescendants(user, accNode);
-            case "asccp":
-                CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
-                return service.getDescendants(user, asccpNode);
-            case "bccp":
-                CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
-                return service.getDescendants(user, bccpNode);
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
     private <T> T convertValue(String data, Class<T> clazz) {
         Map<String, Object> params = new HashMap();
         Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
@@ -253,19 +231,21 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/append",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity appendNode(@AuthenticationPrincipal User user,
+    public CcCreateResponse appendNode(@AuthenticationPrincipal User user,
                                      @RequestBody CcAppendRequest ccAppendRequest) {
 
+        long manifestId = 0L;
         if (ccAppendRequest.getAccManifestId() != null) {
             if (ccAppendRequest.getAsccpManifestId() != null) {
-                service.appendAsccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccpManifestId());
+                manifestId = service.appendAsccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccpManifestId());
             }
             if (ccAppendRequest.getBccpManifestId() != null) {
-                service.appendBccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccpManifestId());
+                manifestId = service.appendBccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccpManifestId());
             }
         }
-
-        return ResponseEntity.accepted().build();
+        CcCreateResponse response = new CcCreateResponse();
+        response.setManifestId(manifestId);
+        return response;
     }
 
     @RequestMapping(value = "/core_component/node/acc/{manifestId}/base",

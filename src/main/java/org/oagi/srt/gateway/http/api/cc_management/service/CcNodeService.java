@@ -112,18 +112,6 @@ public class CcNodeService {
         }
     }
 
-    public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
-        return repository.getDescendants(user, accNode);
-    }
-
-    public List<? extends CcNode> getDescendants(User user, CcAsccpNode asccpNode) {
-        return repository.getDescendants(user, asccpNode);
-    }
-
-    public List<? extends CcNode> getDescendants(User user, CcBccpNode bccpNode) {
-        return repository.getDescendants(user, bccpNode);
-    }
-
     public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
         return repository.getAccNodeDetail(user, accNode);
     }
@@ -511,7 +499,7 @@ public class CcNodeService {
 
 
     @Transactional
-    public void appendAsccp(User user, long accManifestId, long asccpManifestId) {
+    public long appendAsccp(User user, long accManifestId, long asccpManifestId) {
         long userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -547,16 +535,16 @@ public class CcNodeService {
                 .setRevisionAction(RevisionAction.Insert)
                 .execute();
 
-        ccRepository.insertAsccManifestArguments()
+        return ccRepository.insertAsccManifestArguments()
                 .setReleaseId(accManifest.getReleaseId())
                 .setAsccId(asccId)
                 .setFromAccManifestId(accManifest.getAccManifestId())
                 .setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId())
-                .execute();
+                .execute().longValue();
     }
 
     @Transactional
-    public void appendBccp(User user, long accManifestId, long bccpManifestId) {
+    public long appendBccp(User user, long accManifestId, long bccpManifestId) {
         long userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -594,12 +582,12 @@ public class CcNodeService {
                 .setRevisionAction(RevisionAction.Insert)
                 .execute();
 
-        ccRepository.insertBccManifestArguments()
+        return ccRepository.insertBccManifestArguments()
                 .setReleaseId(accManifest.getReleaseId())
                 .setBccId(bccId)
                 .setFromAccManifestId(accManifest.getAccManifestId())
                 .setToBccpManifestId(bccpManifestRecord.getBccpManifestId())
-                .execute();
+                .execute().longValue();
     }
 
     @Transactional
@@ -806,12 +794,44 @@ public class CcNodeService {
 
     @Transactional
     public void discardAscc(User user, long asccManifestId) {
-        repository.discardAsccById(user, asccManifestId);
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+        AsccManifestRecord asccManifestRecord = ccRepository.getAsccManifestByManifestId(ULong.valueOf(asccManifestId));
+        AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
+
+        ULong asccId = ccRepository.updateAsccArguments(asccRecord)
+                .setLastUpdateTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setRevisionAction(RevisionAction.Delete)
+                .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                .execute();
+        
+        ccRepository.updateAsccManifestArguments(asccManifestRecord)
+                .setAsccId(asccId)
+                .execute();
+        
+        decreaseSeqKeyGreaterThan(userId, asccManifestRecord.getFromAccManifestId(), asccRecord.getSeqKey(), timestamp);
     }
 
     @Transactional
     public void discardBcc(User user, long bccManifestId) {
-        repository.discardBccById(user, bccManifestId);
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+        BccManifestRecord bccManifestRecord = ccRepository.getBccManifestByManifestId(ULong.valueOf(bccManifestId));
+        BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
+
+        ULong bccId = ccRepository.updateBccArguments(bccRecord)
+                .setLastUpdateTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setRevisionAction(RevisionAction.Delete)
+                .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                .execute();
+
+        ccRepository.updateBccManifestArguments(bccManifestRecord)
+                .setBccId(bccId)
+                .execute();
+
+        decreaseSeqKeyGreaterThan(userId, bccManifestRecord.getFromAccManifestId(), bccRecord.getSeqKey(), timestamp);
     }
 
 
@@ -833,9 +853,59 @@ public class CcNodeService {
         }
         return null;
     }
+
+    private void decreaseSeqKeyGreaterThan(long userId, ULong accManifestId, int seqKey, LocalDateTime timestamp) {
+        if (seqKey == 0) {
+            return;
+        }
+
+        List<AsccManifestRecord> asccManifestRecords =
+                ccRepository.getAsccManifestByFromAccManifestId(accManifestId);
+
+        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
+            AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
+            if (asccRecord.getSeqKey() <= seqKey) {
+                continue;
+            }
+
+            ULong asccId = ccRepository.updateAsccArguments(asccRecord)
+                    .setLastUpdatedBy(ULong.valueOf(userId))
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setSeqKey(asccRecord.getSeqKey() - 1)
+                    .execute();
+
+            ccRepository.updateAsccManifestArguments(asccManifestRecord)
+                    .setAsccId(asccId)
+                    .execute();
+        }
+
+        List<BccManifestRecord> bccManifestRecords =
+                manifestRepository.getBccManifestByFromAccManifestId(accManifestId);
+        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
+            BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
+            if (bccRecord.getSeqKey() <= seqKey) {
+                continue;
+            }
+
+            ULong bccId = ccRepository.updateBccArguments(bccRecord)
+                    .setLastUpdatedBy(ULong.valueOf(userId))
+                    .setLastUpdateTimestamp(timestamp)
+                    .setRevisionAction(RevisionAction.Update)
+                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setSeqKey(bccRecord.getSeqKey() - 1)
+                    .execute();
+
+            ccRepository.updateBccManifestArguments(bccManifestRecord)
+                    .setBccId(bccId)
+                    .execute();
+        }
+    }
+    
     public CcRevisionResponse getAccNoddRevision(User user, long manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), ACC);
+        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(lastPublishedCcId));
@@ -847,7 +917,7 @@ public class CcNodeService {
                     = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
             List<String> associationKeys = new ArrayList<>();
             for (AsccManifestRecord asccManifestRecord: asccManifestRecordList) {
-                Long lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().longValue(), ASCC);
+                Long lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().longValue(), CcType.ASCC);
                 if (lastAsccId != null) {
                     associationKeys.add(CcType.ASCCP.toString().toLowerCase() + asccManifestRecord.getToAsccpManifestId());
                 }
@@ -855,7 +925,7 @@ public class CcNodeService {
             List<BccManifestRecord> bccManifestRecordList
                     = ccRepository.getBccManifestByFromAccManifestId(ULong.valueOf(manifestId));
             for (BccManifestRecord bccManifestRecord: bccManifestRecordList) {
-                Long lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().longValue(), BCC);
+                Long lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().longValue(), CcType.BCC);
                 if (lastBccId != null) {
                     associationKeys.add(CcType.BCCP.toString().toLowerCase() + bccManifestRecord.getToBccpManifestId());
                 }
@@ -909,7 +979,7 @@ public class CcNodeService {
                 if (accRecord.getPrevAccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), ACC);
+                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), CcType.ACC);
             case ASCC:
                 AsccRecord asccRecord = ccRepository.getAsccById(ULong.valueOf(ccId));
                 if (asccRecord.getState().equals(CcState.Published.name())) {
@@ -918,7 +988,7 @@ public class CcNodeService {
                 if (asccRecord.getPrevAsccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(asccRecord.getPrevAsccId().longValue(), ASCC);
+                return getLastPublishedCcId(asccRecord.getPrevAsccId().longValue(), CcType.ASCC);
             case BCC:
                 BccRecord bccRecord = ccRepository.getBccById(ULong.valueOf(ccId));
                 if (bccRecord.getState().equals(CcState.Published.name())) {
@@ -927,7 +997,7 @@ public class CcNodeService {
                 if (bccRecord.getPrevBccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccRecord.getPrevBccId().longValue(), BCC);
+                return getLastPublishedCcId(bccRecord.getPrevBccId().longValue(), CcType.BCC);
             case ASCCP:
                 AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(ccId));
                 if (asccpRecord.getState().equals(CcState.Published.name())) {
@@ -936,7 +1006,7 @@ public class CcNodeService {
                 if (asccpRecord.getPrevAsccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), ASCCP);
+                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), CcType.ASCCP);
             case BCCP:
                 BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
                 if (bccpRecord.getState().equals(CcState.Published.name())) {
@@ -945,7 +1015,7 @@ public class CcNodeService {
                 if (bccpRecord.getPrevBccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(), BCCP);
+                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(),CcType. BCCP);
 
             case BDT:
                 return null;
