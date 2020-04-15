@@ -99,4 +99,8 @@ public class Node {
         }
         return false;
     }
+
+    public boolean isAssociation() {
+        return getType() == NodeType.ASCC || getType() == NodeType.BCC || getType() == NodeType.BDT;
+    }
 }

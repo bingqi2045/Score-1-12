@@ -68,21 +68,21 @@ public class Graph {
         }
 
         String qlc = query.toLowerCase().trim();
-        LinkedBlockingQueue<List<Node>> queue = new LinkedBlockingQueue<>();
-        queue.add(Arrays.asList(root));
+        LinkedList<List<Node>> linkedList = new LinkedList();
+        linkedList.add(Arrays.asList(root));
 
         Set<List<String>> paths = new LinkedHashSet();
 
-        while (!queue.isEmpty()) {
-            List<Node> cur = queue.poll();
+        while (!linkedList.isEmpty()) {
+            List<Node> cur = linkedList.poll();
             Node lastNode = cur.get(cur.size() - 1);
-            if (lastNode.hasTerm(qlc)) {
+            if (lastNode.hasTerm(qlc) && !lastNode.isAssociation()) {
                 paths.add(cur.stream().map(e -> e.getKey()).collect(Collectors.toList()));
             }
 
             List<String> targets = edges.getOrDefault(lastNode.getKey(), Edge.EMPTY_EDGE).getTargets();
             if (!targets.isEmpty()) {
-                queue.addAll(targets.stream().map(e -> {
+                linkedList.addAll(linkedList.indexOf(cur) + 1, targets.stream().map(e -> {
                     List<Node> n = new ArrayList(cur);
                     n.add(nodes.get(e));
                     return n;
