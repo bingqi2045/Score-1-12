@@ -144,8 +144,7 @@ public class CcNodeController {
                                         @RequestParam(value = "acc", required = false) List<Long> accManifestIdList,
                                         @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
                                         @RequestParam(value = "bccp", required = false) List<Long> bccpManifestIdList) {
-
-
+        
         service.updateCcStateDelete(user, accManifestIdList, asccpManifestIdList, bccpManifestIdList);
 
         return ResponseEntity.accepted().build();

@@ -1419,6 +1419,45 @@ public class CcNodeRepository {
                 .execute();
     }
 
+    private void insert(AccRecord accRecord) {
+        ULong prevAccId = accRecord.getAccId();
+        accRecord.setAccId(null);
+        accRecord.setPrevAccId(prevAccId);
+        accRecord.insert();
+
+        ULong nextAccId = accRecord.getAccId();
+        dslContext.update(ACC)
+                .set(ACC.NEXT_ACC_ID, nextAccId)
+                .where(ACC.ACC_ID.eq(prevAccId))
+                .execute();
+    }
+
+    private void insert(AsccpRecord asccpRecord) {
+        ULong prevAsccpId = asccpRecord.getAsccpId();
+        asccpRecord.setAsccpId(null);
+        asccpRecord.setPrevAsccpId(prevAsccpId);
+        asccpRecord.insert();
+
+        ULong nextAsccpId = asccpRecord.getAsccpId();
+        dslContext.update(ASCCP)
+                .set(ASCCP.NEXT_ASCCP_ID, nextAsccpId)
+                .where(ASCCP.ASCCP_ID.eq(prevAsccpId))
+                .execute();
+    }
+
+    private void insert(BccpRecord bccpRecord) {
+        ULong prevBccpId = bccpRecord.getBccpId();
+        bccpRecord.setBccpId(null);
+        bccpRecord.setPrevBccpId(prevBccpId);
+        bccpRecord.insert();
+
+        ULong nextBccpId = bccpRecord.getBccpId();
+        dslContext.update(BCCP)
+                .set(BCCP.NEXT_BCCP_ID, nextBccpId)
+                .where(BCCP.BCCP_ID.eq(prevBccpId))
+                .execute();
+    }
+
     public CcNode updateAsccpRoleOfAcc(User user, ULong asccpManifestId, ULong accManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         long userId = sessionService.userId(user);
@@ -1428,21 +1467,20 @@ public class CcNodeRepository {
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
 
-        long originAsccpId = asccpManifestRecord.getAsccpId().longValue();
-        asccpRecord.setAsccpId(null);
         asccpRecord.setRoleOfAccId(accRecord.getAccId());
         asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
         asccpRecord.setLastUpdatedBy(ULong.valueOf(userId));
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
         asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
-        asccpRecord.insert();
+        insert(asccpRecord);
 
         asccpManifestRecord.setRoleOfAccManifestId(accManifestId);
         asccpManifestRecord.setAsccpId(asccpRecord.getAsccpId());
         asccpManifestRecord.update();
 
-        updateAsccByToAsccp(userId, originAsccpId,
+        updateAsccByToAsccp(userId,
+                asccpManifestRecord.getAsccpId().longValue(),
                 asccpRecord.getAsccpId().longValue(), asccpManifestRecord.getReleaseId(),
                 asccpRecord.getPropertyTerm(), timestamp);
 
@@ -1453,37 +1491,39 @@ public class CcNodeRepository {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
-        long bdtId = dslContext.select(DT_MANIFEST.DT_ID).from(DT_MANIFEST)
+        ULong bdtId = dslContext.select(DT_MANIFEST.DT_ID)
+                .from(DT_MANIFEST)
                 .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(bdtManifestId)))
-                .fetchOneInto(long.class);
+                .fetchOneInto(ULong.class);
 
         DtRecord dtRecord = dslContext.selectFrom(DT)
-                .where(DT.DT_ID.eq(ULong.valueOf(bdtId))).fetchOne();
+                .where(DT.DT_ID.eq(bdtId))
+                .fetchOne();
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId))).fetchOne();
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .fetchOne();
 
-        long originBccpId = bccpManifestRecord.getBccpId().longValue();
+        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                .fetchOne();
 
-        BccpRecord baseBccpRecord = dslContext.selectFrom(BCCP)
-                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
+        bccpRecord.setBdtId(bdtId);
+        bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + dtRecord.getDataTypeTerm());
+        bccpRecord.setLastUpdatedBy(userId);
+        bccpRecord.setLastUpdateTimestamp(timestamp);
+        bccpRecord.setRevisionAction(RevisionAction.Update.getValue());
+        bccpRecord.setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1);
+        insert(bccpRecord);
 
-        baseBccpRecord.set(BCCP.BCCP_ID, null);
-        baseBccpRecord.set(BCCP.BDT_ID, ULong.valueOf(bdtId));
-        baseBccpRecord.set(BCCP.DEN, baseBccpRecord.getPropertyTerm() + ". " + dtRecord.getDataTypeTerm());
-        baseBccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
-        baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-        baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
-        baseBccpRecord.insert();
-
-        bccpManifestRecord.setBccpId(baseBccpRecord.getBccpId());
+        bccpManifestRecord.setBccpId(bccpRecord.getBccpId());
         bccpManifestRecord.setBdtManifestId(ULong.valueOf(bdtManifestId));
         bccpManifestRecord.update();
 
-        updateBccByToBccp(userId.longValue(), originBccpId,
-                baseBccpRecord.getBccpId().longValue(), bccpManifestRecord.getReleaseId(),
-                baseBccpRecord.getPropertyTerm(), timestamp);
+        updateBccByToBccp(userId.longValue(),
+                bccpManifestRecord.getBccpId().longValue(),
+                bccpRecord.getBccpId().longValue(), bccpManifestRecord.getReleaseId(),
+                bccpRecord.getPropertyTerm(), timestamp);
 
         return getBccpNodeByBccpManifestId(user, bccpManifestRecord.getBccpManifestId().longValue());
     }
@@ -1498,16 +1538,15 @@ public class CcNodeRepository {
 
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
 
-        accRecord.set(ACC.ACC_ID, null);
         if (accRecord.getOagisComponentType() == OagisComponentType.UserExtensionGroup.getValue()) {
-            accRecord.set(ACC.OWNER_USER_ID, userId);
+            accRecord.setOwnerUserId(userId);
         }
-        accRecord.set(ACC.LAST_UPDATED_BY, userId);
-        accRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
-        accRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        accRecord.set(ACC.REVISION_TRACKING_NUM, accRecord.getRevisionTrackingNum() + 1);
-        accRecord.set(ACC.STATE, ccState.name());
-        accRecord.insert();
+        accRecord.setLastUpdatedBy(userId);
+        accRecord.setLastUpdateTimestamp(timestamp);
+        accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+        accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
+        accRecord.setState(ccState.name());
+        insert(accRecord);
 
         accManifestRecord.setAccId(accRecord.getAccId());
         accManifestRecord.update();
@@ -1537,19 +1576,18 @@ public class CcNodeRepository {
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
 
-        asccpRecord.set(ASCCP.ASCCP_ID, null);
-        asccpRecord.set(ASCCP.LAST_UPDATED_BY, userId);
-        asccpRecord.set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        asccpRecord.set(ASCCP.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        asccpRecord.set(ASCCP.REVISION_TRACKING_NUM, asccpRecord.getRevisionTrackingNum() + 1);
-        asccpRecord.set(ASCCP.STATE, ccState.name());
-        asccpRecord.insert();
+        asccpRecord.setLastUpdatedBy(userId);
+        asccpRecord.setLastUpdateTimestamp(timestamp);
+        asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
+        asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
+        asccpRecord.setState(ccState.name());
+        insert(asccpRecord);
 
-        long originAsccpId = asccpManifestRecord.getAsccpId().longValue();
         asccpManifestRecord.setAsccpId(asccpRecord.getAsccpId());
         asccpManifestRecord.update();
 
-        updateAsccByToAsccp(userId.longValue(), originAsccpId,
+        updateAsccByToAsccp(userId.longValue(),
+                asccpManifestRecord.getAsccpId().longValue(),
                 asccpRecord.getAsccpId().longValue(), asccpManifestRecord.getReleaseId(),
                 asccpRecord.getPropertyTerm(), timestamp);
 
@@ -1569,19 +1607,18 @@ public class CcNodeRepository {
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
 
-        bccpRecord.set(BCCP.BCCP_ID, null);
-        bccpRecord.set(BCCP.LAST_UPDATED_BY, userId);
-        bccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-        bccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-        bccpRecord.set(BCCP.REVISION_TRACKING_NUM, bccpRecord.getRevisionTrackingNum() + 1);
-        bccpRecord.set(BCCP.STATE, ccState.name());
-        bccpRecord.insert();
+        bccpRecord.setLastUpdatedBy(userId);
+        bccpRecord.setLastUpdateTimestamp(timestamp);
+        bccpRecord.setRevisionAction(RevisionAction.Update.getValue());
+        bccpRecord.setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1);
+        bccpRecord.setState(ccState.name());
+        insert(bccpRecord);
 
-        long originBccpId = bccpManifestRecord.getBccpId().longValue();
         bccpManifestRecord.setBccpId(bccpRecord.getBccpId());
         bccpManifestRecord.update();
 
-        updateBccByToBccp(userId.longValue(), originBccpId,
+        updateBccByToBccp(userId.longValue(),
+                bccpManifestRecord.getBccpId().longValue(),
                 bccpRecord.getBccpId().longValue(), bccpManifestRecord.getReleaseId(),
                 bccpRecord.getPropertyTerm(), timestamp);
 
