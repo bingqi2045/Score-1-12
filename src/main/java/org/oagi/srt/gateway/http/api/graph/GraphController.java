@@ -7,10 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,7 +47,10 @@ public class GraphController {
             Collection<List<String>> paths = graph.findPaths(type + manifestId, query);
             response.put("query", query);
             response.put("paths", paths.stream()
-                    .map(e -> String.join(">", e))
+                    .map(e -> e.stream()
+                            .filter(item -> !item.matches("ascc\\d+|bcc\\d+|bdt\\d+"))
+                            .collect(Collectors.joining(">"))
+                    )
                     .collect(Collectors.toList()));
         } else {
             response.put("graph", graph);
