@@ -317,7 +317,6 @@ public class GraphContext {
         Node node = Node.toNode(Node.NodeType.BCCP, bccpManifest.getBccpManifestId());
         node.setLinkedManifestId(bccpManifest.getBdtManifestId());
         node.put("propertyTerm", bccpManifest.getPropertyTerm());
-        node.put("representationTerm", bccpManifest.getRepresentationTerm());
         return node;
     }
 
