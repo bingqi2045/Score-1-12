@@ -301,7 +301,7 @@ public class UpdateAccArguments {
 
     public ULong execute() {
         if (!isDirty()) {
-            return getPrevAccId();
+            return getAccId();
         }
 
         return repository.execute(this);

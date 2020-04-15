@@ -1816,13 +1816,12 @@ public class CcNodeRepository {
         AccManifestRecord accManifest = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifest.getAccManifestId());
 
-        accRecord.setAccId(null);
         accRecord.setBasedAccId(null);
         accRecord.setLastUpdatedBy(ULong.valueOf(userId));
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
         accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        accRecord.insert();
+        insert(accRecord);
 
         accManifest.setBasedAccManifestId(null);
         accManifest.setAccId(accRecord.getAccId());
@@ -1841,13 +1840,12 @@ public class CcNodeRepository {
         AccManifestRecord accManifestRecord = manifestRepository.getAccManifestById(accManifestId);
         AccRecord accRecord = getAccRecordByManifestId(accManifestRecord.getAccManifestId());
 
-        accRecord.setAccId(null);
         accRecord.setBasedAccId(basedAccManifestRecord.getAccId());
         accRecord.setLastUpdatedBy(ULong.valueOf(userId));
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
         accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        accRecord.insert();
+        insert(accRecord);
 
         accManifestRecord.setBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
         accManifestRecord.setAccId(accRecord.getAccId());

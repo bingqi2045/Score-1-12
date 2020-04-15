@@ -495,13 +495,14 @@ public class CoreComponentRepository {
                 .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
-                .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
+                .set(ACC.PREV_ACC_ID, arguments.getAccId())
                 .returning(ACC.ACC_ID).fetchOne().getAccId();
 
         dslContext.update(ACC)
                 .set(ACC.NEXT_ACC_ID, nextAccId)
-                .where(ACC.ACC_ID.eq(arguments.getPrevAccId()))
+                .where(ACC.ACC_ID.eq(arguments.getAccId()))
                 .execute();
+
         return nextAccId;
     }
 

@@ -258,6 +258,7 @@ public class CcNodeService {
     public List<CcAccNodeDetail> updateAccDetail(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcAccNodeDetail> updatedAccNodeDetails = new ArrayList<>();
+
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
             CcAccNodeDetail updatedAccNodeDetail = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(updatedAccNodeDetail);
@@ -266,8 +267,8 @@ public class CcNodeService {
             event.setAction("UpdateDetail");
             event.addProperty("actor", user.getUsername());
             simpMessagingTemplate.convertAndSend("/topic/acc/" + detail.getManifestId(), event);
-
         }
+
         return updatedAccNodeDetails;
     }
 
