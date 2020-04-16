@@ -913,6 +913,7 @@ public class CcNodeService {
             ccRevisionResponse.setCcId(accRecord.getAccId().longValue());
             ccRevisionResponse.setType(ACC.toString());
             ccRevisionResponse.setIsDeprecated(accRecord.getIsDeprecated() == 1);
+            ccRevisionResponse.setIsAbstract(accRecord.getIsAbstract() == 1);
             ccRevisionResponse.setName(accRecord.getObjectClassTerm());
             List<AsccManifestRecord> asccManifestRecordList
                     = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));

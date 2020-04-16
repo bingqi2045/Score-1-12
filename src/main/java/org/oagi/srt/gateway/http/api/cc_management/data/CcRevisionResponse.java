@@ -10,6 +10,7 @@ public class CcRevisionResponse {
     Long ccId;
     Boolean isDeprecated;
     Boolean isNillable;
+    Boolean isAbstract;
     String name;
     String fixedValue;
     List<String> associationKeys;

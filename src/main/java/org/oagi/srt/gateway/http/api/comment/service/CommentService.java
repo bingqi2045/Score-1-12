@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -56,7 +57,10 @@ public class CommentService {
         event.addProperty("prevCommentId", comment.getPrevCommentId());
         event.addProperty("commentId", commentId);
         event.addProperty("timestamp", comment.getTimestamp());
-        simpMessagingTemplate.convertAndSend("/topic/acc/" + request.getReference().replace("acc", ""), event);
+        List<String> parts = Arrays.asList(request.getReference().split("(?<=\\D)(?=\\d)"));
+        if (parts.size() == 2) {
+            simpMessagingTemplate.convertAndSend("/topic/" + parts.get(0) + "/" + parts.get(1), event);
+        }
     }
 
     @Transactional
