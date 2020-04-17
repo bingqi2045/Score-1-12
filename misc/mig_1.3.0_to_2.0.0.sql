@@ -21,10 +21,10 @@ EXECUTE st;
 
 DROP TABLE IF EXISTS `app_group`;
 CREATE TABLE `app_group` (
-  `app_group_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL DEFAULT '',
-  `authority` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`app_group_id`)
+    `app_group_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(100) NOT NULL DEFAULT '',
+    `authority` int(10) unsigned NOT NULL,
+    PRIMARY KEY (`app_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `app_group` (`app_group_id`, `name`, `authority`)
@@ -35,12 +35,12 @@ VALUES
 
 DROP TABLE IF EXISTS `app_group_user`;
 CREATE TABLE `app_group_user` (
-  `app_group_id` bigint(20) unsigned NOT NULL,
-  `app_user_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`app_group_id`,`app_user_id`),
-  KEY `app_user_id` (`app_user_id`),
-  CONSTRAINT `app_group_user_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
-  CONSTRAINT `app_group_user_fk_2` FOREIGN KEY (`app_user_id`) REFERENCES `app_user` (`app_user_id`)
+    `app_group_id` bigint(20) unsigned NOT NULL,
+    `app_user_id` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`app_group_id`,`app_user_id`),
+    KEY `app_user_id` (`app_user_id`),
+    CONSTRAINT `app_group_user_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
+    CONSTRAINT `app_group_user_fk_2` FOREIGN KEY (`app_user_id`) REFERENCES `app_user` (`app_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
@@ -60,27 +60,47 @@ WHERE `app_user`.`is_developer` = 0;
 -- Create syntax for TABLE 'app_permission'
 DROP TABLE IF EXISTS `app_permission`;
 CREATE TABLE `app_permission` (
-  `app_permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `segment` varchar(64) NOT NULL DEFAULT '',
-  `object` varchar(256) NOT NULL DEFAULT '',
-  `operation` varchar(64) NOT NULL DEFAULT 'Unprepared',
-  `description` tinytext,
-  PRIMARY KEY (`app_permission_id`)
+    `app_permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `segment` varchar(64) NOT NULL DEFAULT '',
+    `object` varchar(256) NOT NULL DEFAULT '',
+    `operation` varchar(64) NOT NULL DEFAULT 'Unprepared',
+    `description` tinytext,
+    PRIMARY KEY (`app_permission_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'app_permission_group'
 DROP TABLE IF EXISTS `app_permission_group`;
 CREATE TABLE `app_permission_group` (
-  `app_permission_id` bigint(20) unsigned NOT NULL,
-  `app_group_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`app_permission_id`,`app_group_id`),
-  KEY `app_permission_id` (`app_permission_id`),
-  KEY `app_permission_group_fk_1` (`app_group_id`),
-  CONSTRAINT `app_permission_group_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
-  CONSTRAINT `app_permission_group_fk_2` FOREIGN KEY (`app_permission_id`) REFERENCES `app_permission` (`app_permission_id`)
+    `app_permission_id` bigint(20) unsigned NOT NULL,
+    `app_group_id` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`app_permission_id`,`app_group_id`),
+    KEY `app_permission_id` (`app_permission_id`),
+    KEY `app_permission_group_fk_1` (`app_group_id`),
+    CONSTRAINT `app_permission_group_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
+    CONSTRAINT `app_permission_group_fk_2` FOREIGN KEY (`app_permission_id`) REFERENCES `app_permission` (`app_permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Create table for 'comment'
+-- Create `revision` table for revision management
+DROP TABLE IF EXISTS `revision`;
+CREATE TABLE `revision` (
+    `revision_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `revision_num` int(10) unsigned NOT NULL DEFAULT '1' COMMENT 'This is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 1, 2, and so on.',
+    `revision_tracking_num` int(10) unsigned NOT NULL DEFAULT '1' COMMENT 'This supports the ability to undo changes during a revision (life cycle of a revision is from the component''s WIP state to PUBLISHED state). REVISION_TRACKING_NUM can be 1, 2, and so on.',
+    `revision_action` varchar(20) DEFAULT NULL COMMENT 'This indicates the action associated with the record.',
+    `reference` varchar(100) CHARACTER SET ascii NOT NULL,
+    `body` JSON,
+    `prev_revision_id` bigint(20) unsigned DEFAULT NULL,
+    `created_by` bigint(20) unsigned NOT NULL,
+    `creation_timestamp` datetime(6) NOT NULL,
+    PRIMARY KEY (`revision_id`),
+    KEY `reference` (`reference`),
+    KEY `revision_created_by_fk` (`created_by`),
+    KEY `revision_prev_revision_id_fk` (`prev_revision_id`),
+    CONSTRAINT `revision_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `revision_prev_revision_id_fk` FOREIGN KEY (`prev_revision_id`) REFERENCES `revision` (`revision_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create `comment` table for comments
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
     `comment_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -93,6 +113,7 @@ CREATE TABLE `comment` (
     `creation_timestamp` datetime(6) NOT NULL,
     `last_update_timestamp` datetime(6) NOT NULL,
     PRIMARY KEY (`comment_id`),
+    KEY `reference` (`reference`),
     KEY `comment_created_by_fk` (`created_by`),
     KEY `comment_prev_comment_id_fk` (`prev_comment_id`),
     CONSTRAINT `comment_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
@@ -211,8 +232,28 @@ ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
                   MODIFY COLUMN `current_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\\n\\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\\n\\nThe value of this column for the current record should be left NULL.',
                   ADD COLUMN `prev_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                   ADD COLUMN `next_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                   ADD CONSTRAINT `acc_prev_acc_id_fk` FOREIGN KEY (`prev_acc_id`) REFERENCES `acc` (`acc_id`),
-                  ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`);
+                  ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`),
+                  ADD CONSTRAINT `acc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `acc`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT `acc`.`revision_num`, `acc`.`revision_tracking_num`,
+       (CASE WHEN `acc`.`revision_action` = 1 THEN 'Added' WHEN `acc`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
+       CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference,
+       `acc`.`created_by`, `acc`.`creation_timestamp`
+FROM `acc` JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
+           JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `acc`, `revision`, (
+    SELECT `acc`.`acc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
+    FROM `acc` JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
+               JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `acc`.`revision_id` = `revision`.`revision_id`
+WHERE `acc`.`acc_id` = t.`acc_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `acc_guid_idx` ON `acc` (`guid`);
@@ -295,8 +336,28 @@ ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL 
                     MODIFY COLUMN `current_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                     ADD COLUMN `prev_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                     ADD COLUMN `next_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                     ADD CONSTRAINT `asccp_prev_asccp_id_fk` FOREIGN KEY (`prev_asccp_id`) REFERENCES `asccp` (`asccp_id`),
-                    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`);
+                    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`),
+                    ADD CONSTRAINT `asccp_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `asccp`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT `asccp`.`revision_num`, `asccp`.`revision_tracking_num`,
+       (CASE WHEN `asccp`.`revision_action` = 1 THEN 'Added' WHEN `asccp`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
+       CONCAT('asccp', `asccp_manifest`.`asccp_manifest_id`) as reference,
+       `asccp`.`created_by`, `asccp`.`creation_timestamp`
+FROM `asccp` JOIN `asccp_manifest` ON `asccp`.`asccp_id` = `asccp_manifest`.`asccp_id`
+           JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `asccp`, `revision`, (
+    SELECT `asccp`.`asccp_id`, CONCAT('asccp', `asccp_manifest`.`asccp_manifest_id`) as reference
+    FROM `asccp` JOIN `asccp_manifest` ON `asccp`.`asccp_id` = `asccp_manifest`.`asccp_id`
+               JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `asccp`.`revision_id` = `revision`.`revision_id`
+WHERE `asccp`.`asccp_id` = t.`asccp_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `asccp_guid_idx` ON `asccp` (`guid`);
@@ -360,8 +421,28 @@ ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COM
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
                  ADD COLUMN `prev_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                  ADD COLUMN `next_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                 ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                  ADD CONSTRAINT `dt_prev_dt_id_fk` FOREIGN KEY (`prev_dt_id`) REFERENCES `dt` (`dt_id`),
-                 ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`);
+                 ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`),
+                 ADD CONSTRAINT `dt_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `dt`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT `dt`.`revision_num`, `dt`.`revision_tracking_num`,
+       (CASE WHEN `dt`.`revision_action` = 1 THEN 'Added' WHEN `dt`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
+       CONCAT('dt', `dt_manifest`.`dt_manifest_id`) as reference,
+       `dt`.`created_by`, `dt`.`creation_timestamp`
+FROM `dt` JOIN `dt_manifest` ON `dt`.`dt_id` = `dt_manifest`.`dt_id`
+            JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `dt`, `revision`, (
+    SELECT `dt`.`dt_id`, CONCAT('dt', `dt_manifest`.`dt_manifest_id`) as reference
+    FROM `dt` JOIN `dt_manifest` ON `dt`.`dt_id` = `dt_manifest`.`dt_id`
+                JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `dt`.`revision_id` = `revision`.`revision_id`
+WHERE `dt`.`dt_id` = t.`dt_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
@@ -462,8 +543,28 @@ ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL C
                    MODIFY COLUMN `current_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                    ADD COLUMN `prev_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                    ADD COLUMN `next_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                   ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                    ADD CONSTRAINT `bccp_prev_bccp_id_fk` FOREIGN KEY (`prev_bccp_id`) REFERENCES `bccp` (`bccp_id`),
-                   ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`);
+                   ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`),
+                   ADD CONSTRAINT `bccp_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `bccp`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT `bccp`.`revision_num`, `bccp`.`revision_tracking_num`,
+       (CASE WHEN `bccp`.`revision_action` = 1 THEN 'Added' WHEN `bccp`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
+       CONCAT('bccp', `bccp_manifest`.`bccp_manifest_id`) as reference,
+       `bccp`.`created_by`, `bccp`.`creation_timestamp`
+FROM `bccp` JOIN `bccp_manifest` ON `bccp`.`bccp_id` = `bccp_manifest`.`bccp_id`
+             JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `bccp`, `revision`, (
+    SELECT `bccp`.`bccp_id`, CONCAT('bccp', `bccp_manifest`.`bccp_manifest_id`) as reference
+    FROM `bccp` JOIN `bccp_manifest` ON `bccp`.`bccp_id` = `bccp_manifest`.`bccp_id`
+                 JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `bccp`.`revision_id` = `revision`.`revision_id`
+WHERE `bccp`.`bccp_id` = t.`bccp_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `bccp_guid_idx` ON `bccp` (`guid`);
@@ -562,8 +663,20 @@ ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL C
                    MODIFY COLUMN `current_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                    ADD COLUMN `prev_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                    ADD COLUMN `next_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                   ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                    ADD CONSTRAINT `ascc_prev_ascc_id_fk` FOREIGN KEY (`prev_ascc_id`) REFERENCES `ascc` (`ascc_id`),
-                   ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`);
+                   ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`),
+                   ADD CONSTRAINT `ascc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `ascc`.
+UPDATE `ascc`, `revision`, (
+    SELECT `ascc`.`ascc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
+    FROM `ascc` JOIN `ascc_manifest` ON `ascc`.`ascc_id` = `ascc_manifest`.`ascc_id`
+                JOIN `acc_manifest` ON `ascc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`
+                JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `ascc`.`revision_id` = `revision`.`revision_id`
+WHERE `ascc`.`ascc_id` = t.`ascc_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `ascc_guid_idx` ON `ascc` (`guid`);
@@ -664,8 +777,20 @@ ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
                   MODIFY COLUMN `current_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                   ADD COLUMN `prev_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                   ADD COLUMN `next_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                   ADD CONSTRAINT `bcc_prev_bcc_id_fk` FOREIGN KEY (`prev_bcc_id`) REFERENCES `bcc` (`bcc_id`),
-                  ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`);
+                  ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`),
+                  ADD CONSTRAINT `bcc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `bcc`.
+UPDATE `bcc`, `revision`, (
+    SELECT `bcc`.`bcc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
+    FROM `bcc` JOIN `bcc_manifest` ON `bcc`.`bcc_id` = `bcc_manifest`.`bcc_id`
+                JOIN `acc_manifest` ON `bcc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`
+                JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `bcc`.`revision_id` = `revision`.`revision_id`
+WHERE `bcc`.`bcc_id` = t.`bcc_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `bcc_guid_idx` ON `bcc` (`guid`);
@@ -676,17 +801,16 @@ CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timesta
 -- Making relations between `code_list` and `release` tables.
 ALTER TABLE `code_list`
     ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.' AFTER `created_by`,
-    ADD COLUMN `revision_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).' AFTER `last_update_timestamp`,
-    ADD COLUMN `revision_tracking_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component''s EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.' AFTER `revision_num`,
-    ADD COLUMN `revision_action` int(11) DEFAULT '1' COMMENT 'This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.' AFTER `revision_tracking_num`,
-    ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).' AFTER `revision_action`,
+    ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).' AFTER `extensible_indicator`,
     ADD COLUMN `prev_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     ADD COLUMN `next_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
     ADD CONSTRAINT `code_list_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_prev_code_list_id_fk` FOREIGN KEY (`prev_code_list_id`) REFERENCES `code_list` (`code_list_id`),
-    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`);
+    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`),
+    ADD CONSTRAINT `code_list_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
 
-UPDATE `code_list` SET `revision_num` = 1, `revision_tracking_num` = 1, `owner_user_id` = `last_updated_by`;
+UPDATE `code_list` SET `owner_user_id` = `last_updated_by`;
 UPDATE `code_list` SET `state` = 'WIP' WHERE `state` = 'Editing';
 
 ALTER TABLE `code_list`
@@ -728,6 +852,23 @@ UPDATE `code_list_manifest`, (
 SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
 WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
 
+-- Insert initial revision records of `code_list`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT 1, 1, 'Added',
+       CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference,
+       `code_list`.`created_by`, `code_list`.`creation_timestamp`
+FROM `code_list` JOIN `code_list_manifest` ON `code_list`.`code_list_id` = `code_list_manifest`.`code_list_id`
+                 JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `code_list`, `revision`, (
+    SELECT `code_list`.`code_list_id`, CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference
+    FROM `code_list` JOIN `code_list_manifest` ON `code_list`.`code_list_id` = `code_list_manifest`.`code_list_id`
+                     JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `code_list`.`revision_id` = `revision`.`revision_id`
+WHERE `code_list`.`code_list_id` = t.`code_list_id` AND `revision`.`reference` = t.`reference`;
+
 
 -- Making relations between `code_list_value` and `release` tables.
 ALTER TABLE `code_list_value`
@@ -736,20 +877,18 @@ ALTER TABLE `code_list_value`
     ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',
     ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was created.',
     ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was last updated.',
-    ADD COLUMN `revision_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).',
-    ADD COLUMN `revision_tracking_num` int(11) NOT NULL DEFAULT '0' COMMENT 'REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component''s EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.',
-    ADD COLUMN `revision_action` int(11) DEFAULT '1' COMMENT 'This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.',
+    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.',
     ADD COLUMN `prev_code_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     ADD COLUMN `next_code_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
     ADD CONSTRAINT `code_list_value_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_prev_code_list_value_id_fk` FOREIGN KEY (`prev_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
-    ADD CONSTRAINT `code_list_value_next_code_list_value_id_fk` FOREIGN KEY (`next_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`);
+    ADD CONSTRAINT `code_list_value_next_code_list_value_id_fk` FOREIGN KEY (`next_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
+    ADD CONSTRAINT `code_list_value_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
 
 UPDATE `code_list_value`, `code_list`
-SET `code_list_value`.`revision_num` = 1, `code_list_value`.`revision_tracking_num` = 1,
-    `code_list_value`.`created_by` = `code_list`.`created_by`,
+SET `code_list_value`.`created_by` = `code_list`.`created_by`,
     `code_list_value`.`owner_user_id` = `code_list`.`owner_user_id`,
     `code_list_value`.`last_updated_by` = `code_list`.`last_updated_by`,
     `code_list_value`.`creation_timestamp` = `code_list`.`creation_timestamp`,
@@ -775,6 +914,16 @@ SELECT
     `code_list_manifest`.`release_id`, `code_list_value`.`code_list_value_id`, `code_list_manifest`.`code_list_manifest_id`
 FROM
     `code_list_value` JOIN `code_list_manifest` ON `code_list_value`.`code_list_id` = `code_list_manifest`.`code_list_id`;
+
+-- Insert initial revision records of `code_list_value`.
+UPDATE `code_list_value`, `revision`, (
+    SELECT `code_list_value`.`code_list_value_id`, CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference
+    FROM `code_list_value` JOIN `code_list_value_manifest` ON `code_list_value`.`code_list_value_id` = `code_list_value_manifest`.`code_list_value_id`
+                           JOIN `code_list_manifest` ON `code_list_value_manifest`.`code_list_manifest_id` = `code_list_manifest`.`code_list_manifest_id`
+                           JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `code_list_value`.`revision_id` = `revision`.`revision_id`
+WHERE `code_list_value`.`code_list_value_id` = t.`code_list_value_id` AND `revision`.`reference` = t.`reference`;
 
 
 -- BIEs
@@ -857,9 +1006,7 @@ ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_dt_sc_id_fk`,
                       DROP COLUMN `dt_sc_id`;
 
 
-
 -- Making relations between `xbt` and `release` tables.
-
 CREATE TABLE `xbt_manifest` (
     `xbt_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
@@ -1023,7 +1170,27 @@ UPDATE `xbt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_acti
 
 -- Add deprecated annotations
 ALTER TABLE `xbt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.',
-                  MODIFY COLUMN `current_xbt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.';
+                  MODIFY COLUMN `current_xbt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.',
+                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
+                  ADD CONSTRAINT `xbt_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+
+-- Insert initial revision records of `xbt`.
+INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
+SELECT `xbt`.`revision_num`, `xbt`.`revision_tracking_num`,
+       (CASE WHEN `xbt`.`revision_action` = 1 THEN 'Added' WHEN `xbt`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
+       CONCAT('xbt', `xbt_manifest`.`xbt_manifest_id`) as reference,
+       `xbt`.`created_by`, `xbt`.`creation_timestamp`
+FROM `xbt` JOIN `xbt_manifest` ON `xbt`.`xbt_id` = `xbt_manifest`.`xbt_id`
+            JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+UPDATE `xbt`, `revision`, (
+    SELECT `xbt`.`xbt_id`, CONCAT('xbt', `xbt_manifest`.`xbt_manifest_id`) as reference
+    FROM `xbt` JOIN `xbt_manifest` ON `xbt`.`xbt_id` = `xbt_manifest`.`xbt_id`
+                JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
+) t
+SET `xbt`.`revision_id` = `revision`.`revision_id`
+WHERE `xbt`.`xbt_id` = t.`xbt_id` AND `revision`.`reference` = t.`reference`;
 
 -- Add indices
 CREATE INDEX `xbt_guid_idx` ON `xbt` (`guid`);
@@ -1080,6 +1247,11 @@ ALTER TABLE `acc` DROP FOREIGN KEY `acc_module_id_fk`;
 DROP INDEX `acc_module_id_fk` ON `acc`;
 ALTER TABLE `acc` DROP COLUMN `module_id`;
 
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `acc` table.
+ALTER TABLE `acc` DROP COLUMN `revision_num`,
+                  DROP COLUMN `revision_tracking_num`,
+                  DROP COLUMN `revision_action`;
+
 -- DROP `current_asccp_id` column on `asccp` table.
 ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_current_asccp_id_fk`;
 DROP INDEX `asccp_current_asccp_id_fk` ON `asccp`;
@@ -1097,6 +1269,11 @@ ALTER TABLE `asccp` DROP COLUMN `release_id`;
 ALTER TABLE `asccp` DROP FOREIGN KEY `asccp_module_id_fk`;
 DROP INDEX `asccp_module_id_fk` ON `asccp`;
 ALTER TABLE `asccp` DROP COLUMN `module_id`;
+
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `asccp` table.
+ALTER TABLE `asccp` DROP COLUMN `revision_num`,
+                    DROP COLUMN `revision_tracking_num`,
+                    DROP COLUMN `revision_action`;
 
 -- DROP `current_bccp_id` column on `bccp` table.
 ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_current_bccp_id_fk`;
@@ -1116,6 +1293,11 @@ ALTER TABLE `bccp` DROP FOREIGN KEY `bccp_module_id_fk`;
 DROP INDEX `bccp_module_id_fk` ON `bccp`;
 ALTER TABLE `bccp` DROP COLUMN `module_id`;
 
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `bccp` table.
+ALTER TABLE `bccp` DROP COLUMN `revision_num`,
+                   DROP COLUMN `revision_tracking_num`,
+                   DROP COLUMN `revision_action`;
+
 -- DROP `current_ascc_id` column on `ascc` table.
 ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_current_ascc_id_fk`;
 DROP INDEX `ascc_current_ascc_id_fk` ON `ascc`;
@@ -1129,6 +1311,11 @@ ALTER TABLE `ascc` DROP FOREIGN KEY `ascc_release_id_fk`;
 DROP INDEX `ascc_release_id_fk` ON `ascc`;
 ALTER TABLE `ascc` DROP COLUMN `release_id`;
 
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `ascc` table.
+ALTER TABLE `ascc` DROP COLUMN `revision_num`,
+                   DROP COLUMN `revision_tracking_num`,
+                   DROP COLUMN `revision_action`;
+
 -- DROP `current_bcc_id` column on `bcc` table.
 ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_current_bcc_id_fk`;
 DROP INDEX `bcc_current_bcc_id_fk` ON `bcc`;
@@ -1141,6 +1328,11 @@ DELETE FROM `bcc` WHERE `release_id` IS NULL AND `revision_num` = 0;
 ALTER TABLE `bcc` DROP FOREIGN KEY `bcc_release_id_fk`;
 DROP INDEX `bcc_release_id_fk` ON `bcc`;
 ALTER TABLE `bcc` DROP COLUMN `release_id`;
+
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `bcc` table.
+ALTER TABLE `bcc` DROP COLUMN `revision_num`,
+                  DROP COLUMN `revision_tracking_num`,
+                  DROP COLUMN `revision_action`;
 
 -- DROP `current_bdt_id` column on `dt` table.
 ALTER TABLE `dt` DROP FOREIGN KEY `dt_current_bdt_id_fk`;
@@ -1157,6 +1349,11 @@ ALTER TABLE `dt` DROP FOREIGN KEY `dt_module_id_fk`;
 DROP INDEX `dt_module_id_fk` ON `dt`;
 ALTER TABLE `dt` DROP COLUMN `module_id`;
 
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `dt` table.
+ALTER TABLE `dt` DROP COLUMN `revision_num`,
+                 DROP COLUMN `revision_tracking_num`,
+                 DROP COLUMN `revision_action`;
+
 -- DROP `current_xbt_id` column on `xbt` table.
 ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_current_xbt_id_fk`;
 DROP INDEX `xbt_current_xbt_id_fk` ON `xbt`;
@@ -1171,6 +1368,11 @@ ALTER TABLE `xbt` DROP COLUMN `release_id`;
 ALTER TABLE `xbt` DROP FOREIGN KEY `xbt_module_id_fk`;
 DROP INDEX `xbt_module_id_fk` ON `xbt`;
 ALTER TABLE `xbt` DROP COLUMN `module_id`;
+
+-- DROP `revision_num`, `revision_tracking_num`, and `revision_action` columns on `xbt` table.
+ALTER TABLE `xbt` DROP COLUMN `revision_num`,
+                  DROP COLUMN `revision_tracking_num`,
+                  DROP COLUMN `revision_action`;
 
 -- DROP `based_code_list_id` and `module_id` columns on `code_list` table.
 ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
