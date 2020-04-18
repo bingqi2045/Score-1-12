@@ -26,10 +26,13 @@ public class BCCP implements CoreComponent {
     private long ownerUserId;
     private long lastUpdatedBy;
     private Date creationTimestamp;
-    private Date lastUpdateTimestamp;
-    private long revisionId;
-    private Long releaseId;
+    private Date lastUpdateTimestamp;;
     private CcState state;
+    private long releaseId;
+    private String releaseNum;
+    private long revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
     private boolean deprecated;
     private boolean nillable;
 

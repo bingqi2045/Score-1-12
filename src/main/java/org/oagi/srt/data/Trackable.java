@@ -6,9 +6,12 @@ public interface Trackable extends Serializable {
 
     long getId();
 
-    Long getReleaseId();
+    long getReleaseId();
+    String getReleaseNum();
 
-    Long getRevisionId();
+    long getRevisionId();
+    int getRevisionNum();
+    int getRevisionTrackingNum();
 
 
 }

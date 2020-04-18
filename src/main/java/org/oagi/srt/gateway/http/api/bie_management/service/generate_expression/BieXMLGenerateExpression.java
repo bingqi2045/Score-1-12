@@ -491,11 +491,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             ccts_Based_GUID.setText(guid);
 
             int revisionNumber = bieDocumentation.getRevisionNumber();
-            if (revisionNumber > 0) {
-                Element ccts_BasedRevisionNumber = new Element("ccts_Based" + ccType + "RevisionNumber", OAGI_NS);
-                documentation.addContent(ccts_BasedRevisionNumber);
-                ccts_BasedRevisionNumber.setText(Integer.toString(revisionNumber));
-            }
+            Element ccts_BasedRevisionNumber = new Element("ccts_Based" + ccType + "RevisionNumber", OAGI_NS);
+            documentation.addContent(ccts_BasedRevisionNumber);
+            ccts_BasedRevisionNumber.setText(Integer.toString(revisionNumber));
 
             for (Definition definition : bieDocumentation.getCoreComponentDefinitions()) {
                 if (!StringUtils.isEmpty(definition.getDefinition())) {

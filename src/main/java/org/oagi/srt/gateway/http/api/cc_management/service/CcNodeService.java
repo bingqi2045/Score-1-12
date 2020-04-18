@@ -147,7 +147,7 @@ public class CcNodeService {
         ULong revisionId = revisionRepository.insertRevisionArguments()
                 .setCreatedBy(userId)
                 .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Add)
+                .setRevisionAction(RevisionAction.Added)
                 .setReference("Add" + guid)
                 .execute();
 
@@ -187,7 +187,7 @@ public class CcNodeService {
         ULong revisionId = revisionRepository.insertRevisionArguments()
                 .setCreatedBy(ULong.valueOf(userId))
                 .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Add)
+                .setRevisionAction(RevisionAction.Added)
                 .setReference("Add" + guid)
                 .execute();
 
@@ -232,7 +232,7 @@ public class CcNodeService {
         ULong revisionId = revisionRepository.insertRevisionArguments()
                 .setCreatedBy(userId)
                 .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Add)
+                .setRevisionAction(RevisionAction.Added)
                 .setReference("Add" + guid)
                 .execute();
 

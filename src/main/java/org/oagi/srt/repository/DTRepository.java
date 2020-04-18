@@ -34,19 +34,26 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.CONTENT_COMPONENT_DEFINITION,
                 Tables.DT.REVISION_DOC,
                 Tables.DT.STATE,
+                Tables.DT_MANIFEST.RELEASE_ID,
+                Tables.RELEASE.RELEASE_NUM,
+                Tables.DT.REVISION_ID,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.DT_MANIFEST.MODULE_ID,
                 Tables.DT.CREATED_BY,
                 Tables.DT.LAST_UPDATED_BY,
                 Tables.DT.OWNER_USER_ID,
                 Tables.DT.CREATION_TIMESTAMP,
                 Tables.DT.LAST_UPDATE_TIMESTAMP,
-                Tables.DT.REVISION_ID,
-                Tables.DT_MANIFEST.RELEASE_ID,
                 Tables.DT.IS_DEPRECATED.as("deprecated"),
                 Tables.MODULE.MODULE_.as("module"))
                 .from(Tables.DT)
                 .join(Tables.DT_MANIFEST)
                 .on(Tables.DT.DT_ID.eq(Tables.DT_MANIFEST.DT_ID))
+                .join(Tables.RELEASE)
+                .on(Tables.DT_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.REVISION)
+                .on(Tables.DT.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.DT_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

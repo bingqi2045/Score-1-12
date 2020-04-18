@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record22;
+import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
@@ -9,7 +9,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,7 +17,7 @@ public class ACCRepository implements SrtRepository<ACC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record22<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, String>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
@@ -37,14 +36,21 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
                 Tables.ACC.STATE,
-                Tables.ACC.REVISION_ID,
                 Tables.ACC_MANIFEST.RELEASE_ID,
+                Tables.RELEASE.RELEASE_NUM,
+                Tables.ACC.REVISION_ID,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),
                 Tables.MODULE.MODULE_.as("module"))
                 .from(Tables.ACC)
                 .join(Tables.ACC_MANIFEST)
                 .on(Tables.ACC.ACC_ID.eq(Tables.ACC_MANIFEST.ACC_ID))
+                .join(Tables.RELEASE)
+                .on(Tables.ACC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.REVISION)
+                .on(Tables.ACC.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ACC_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class CodeList {
+
     private long codeListId;
     private String guid;
     private String enumTypeGuid;

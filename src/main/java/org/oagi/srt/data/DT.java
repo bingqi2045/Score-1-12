@@ -25,6 +25,11 @@ public class DT implements CoreComponent {
     private String contentComponentDefinition;
     private String revisionDoc;
     private CcState state;
+    private long releaseId;
+    private String releaseNum;
+    private long revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
     private Long moduleId;
     private String module;
     private long createdBy;
@@ -32,8 +37,6 @@ public class DT implements CoreComponent {
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private long revisionId;
-    private Long releaseId;
     private boolean deprecated;
 
     @Override

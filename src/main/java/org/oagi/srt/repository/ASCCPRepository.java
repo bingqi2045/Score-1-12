@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record21;
+import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ASCCP;
@@ -9,7 +9,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,7 +17,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record21<ULong, String, String, String, String, String, ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, Byte, String>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
@@ -35,8 +34,11 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.CREATION_TIMESTAMP,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCCP.STATE,
-                Tables.ASCCP.REVISION_ID,
                 Tables.ASCCP_MANIFEST.RELEASE_ID,
+                Tables.RELEASE.RELEASE_NUM,
+                Tables.ASCCP.REVISION_ID,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCCP.IS_NILLABLE.as("nillable"),
@@ -44,6 +46,10 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 .from(Tables.ASCCP)
                 .join(Tables.ASCCP_MANIFEST)
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
+                .join(Tables.RELEASE)
+                .on(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.REVISION)
+                .on(Tables.ASCCP.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ASCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

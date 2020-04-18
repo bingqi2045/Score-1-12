@@ -6,7 +6,11 @@ import org.oagi.srt.data.Trackable;
 @Data
 public abstract class TrackableImpl implements Trackable {
 
-    private Long releaseId;
-    private Long revisionId;
+    private long releaseId;
+    private String releaseNum;
+
+    private long revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
 
 }

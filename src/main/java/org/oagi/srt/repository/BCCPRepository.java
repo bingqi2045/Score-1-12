@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record22;
+import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCP;
@@ -9,7 +9,6 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,7 +17,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record22<ULong, String, String, String, String, ULong, String, String, String, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, String>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.GUID,
@@ -37,14 +36,21 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.CREATION_TIMESTAMP,
                 Tables.BCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.BCCP.STATE,
-                Tables.BCCP.REVISION_ID,
                 Tables.BCCP_MANIFEST.RELEASE_ID,
+                Tables.RELEASE.RELEASE_NUM,
+                Tables.BCCP.REVISION_ID,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.IS_NILLABLE.as("nillable"),
                 Tables.MODULE.MODULE_.as("module"))
                 .from(Tables.BCCP)
                 .join(Tables.BCCP_MANIFEST)
                 .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_MANIFEST.BCCP_ID))
+                .join(Tables.RELEASE)
+                .on(Tables.BCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.REVISION)
+                .on(Tables.BCCP.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

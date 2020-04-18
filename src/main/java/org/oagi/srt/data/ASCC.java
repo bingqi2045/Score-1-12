@@ -25,9 +25,12 @@ public class ASCC implements CoreComponent {
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private Long revisionId;
-    private Long releaseId;
     private CcState state;
+    private long releaseId;
+    private String releaseNum;
+    private long revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
     private boolean deprecated;
 
     public long getId() {

@@ -243,9 +243,6 @@ public class CodeListService {
                 CODE_LIST.DEFINITION_SOURCE,
                 CODE_LIST.EXTENSIBLE_INDICATOR,
                 CODE_LIST.STATE,
-                CODE_LIST.REVISION_NUM,
-                CODE_LIST.REVISION_TRACKING_NUM,
-                CODE_LIST.REVISION_ACTION,
                 CODE_LIST.IS_DEPRECATED,
                 CODE_LIST.CREATED_BY,
                 CODE_LIST.OWNER_USER_ID,
@@ -262,7 +259,7 @@ public class CodeListService {
                 codeList.getDefinitionSource(),
                 (byte) ((codeList.isExtensible()) ? 1 : 0),
                 WIP.name(),
-                1, 1, RevisionAction.Add.getValue(), (byte) 0,
+                (byte) 0,
                 userId, userId, userId, timestamp, timestamp)
                 .returning().fetchOne();
 
@@ -306,10 +303,7 @@ public class CodeListService {
                 CODE_LIST_VALUE.OWNER_USER_ID,
                 CODE_LIST_VALUE.LAST_UPDATED_BY,
                 CODE_LIST_VALUE.CREATION_TIMESTAMP,
-                CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP,
-                CODE_LIST_VALUE.REVISION_NUM,
-                CODE_LIST_VALUE.REVISION_TRACKING_NUM,
-                CODE_LIST_VALUE.REVISION_ACTION).values(
+                CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP).values(
                 manifestRecord.getCodeListId(),
                 codeListValue.getValue(),
                 codeListValue.getName(),
@@ -322,10 +316,7 @@ public class CodeListService {
                 codeListRecord.getOwnerUserId(),
                 codeListRecord.getLastUpdatedBy(),
                 codeListRecord.getCreationTimestamp(),
-                codeListRecord.getLastUpdateTimestamp(),
-                codeListRecord.getRevisionNum(),
-                codeListRecord.getRevisionTrackingNum(),
-                codeListRecord.getRevisionAction())
+                codeListRecord.getLastUpdateTimestamp())
                 .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId();
 
         dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
@@ -384,7 +375,6 @@ public class CodeListService {
         }
 
         codeListRecord.setCodeListId(null);
-        codeListRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum() + 1);
         codeListRecord.setCreatedBy(requesterId);
         codeListRecord.setOwnerUserId(requesterId);
         codeListRecord.setLastUpdatedBy(requesterId);
@@ -468,10 +458,6 @@ public class CodeListService {
                 codeListValueRecord.setLastUpdatedBy(requesterId);
                 codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
-                codeListValueRecord.setRevisionNum(codeListRecord.getRevisionNum());
-                codeListValueRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum());
-                codeListValueRecord.setRevisionAction(RevisionAction.Deleted.getValue());
-
                 codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
                         .set(codeListValueRecord)
                         .returning().fetchOne();
@@ -540,13 +526,6 @@ public class CodeListService {
 
             codeListValueRecord.setLastUpdatedBy(requesterId);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
-
-            codeListValueRecord.setRevisionNum(codeListRecord.getRevisionNum());
-            codeListValueRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum());
-            codeListValueRecord.setRevisionAction(
-                    (isUpdate ?
-                            RevisionAction.Modified :
-                            RevisionAction.Add).getValue());
 
             codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
                     .set(codeListValueRecord)
