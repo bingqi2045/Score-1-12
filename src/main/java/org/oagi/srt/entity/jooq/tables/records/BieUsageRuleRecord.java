@@ -14,12 +14,12 @@ import org.oagi.srt.entity.jooq.tables.BieUsageRule;
 
 
 /**
- * This is an intersection table. Per CCTS, a usage rule may be reused. This 
- * table allows m-m relationships between the usage rule and all kinds of 
- * BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID, 
+ * This is an intersection table. Per CCTS, a usage rule may be reused. This
+ * table allows m-m relationships between the usage rule and all kinds of
+ * BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID,
  * TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> implements Record7<ULong, ULong, ULong, ULong, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = -828124457;

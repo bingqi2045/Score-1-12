@@ -4,21 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row17;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -26,17 +12,21 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * Each record in this table stores a code list value of a code list. A code 
- * list value may be inherited from another code list on which it is based. 
- * However, inherited value may be restricted (i.e., disabled and cannot be 
- * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
- * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, 
- * because the USED_INDICATOR of such code list value is FALSE by default 
+ * Each record in this table stores a code list value of a code list. A code
+ * list value may be inherited from another code list on which it is based.
+ * However, inherited value may be restricted (i.e., disabled and cannot be
+ * used) in this code list, i.e., the USED_INDICATOR = false. If the value
+ * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE,
+ * because the USED_INDICATOR of such code list value is FALSE by default
  * and can no longer be changed.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     private static final long serialVersionUID = 822918406;
@@ -106,8 +96,8 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     /**
      * The column <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public final TableField<CodeListValueRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 

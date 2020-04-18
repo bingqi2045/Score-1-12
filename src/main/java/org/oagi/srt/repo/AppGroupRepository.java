@@ -9,6 +9,7 @@ import org.oagi.srt.gateway.http.api.permission_management.data.AppPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +21,19 @@ public class AppGroupRepository {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep <Record3<ULong, String, UInteger>> getSelectOnConditionStepForAppGroup() {
+    private SelectJoinStep<Record3<ULong, String, UInteger>> getSelectOnConditionStepForAppGroup() {
         return dslContext.select(APP_GROUP.APP_GROUP_ID, APP_GROUP.NAME, APP_GROUP.AUTHORITY)
                 .from(APP_GROUP);
     }
 
-    private SelectWhereStep <Record4<ULong, String, String, String>> getSelectOnConditionStepForAppUser() {
+    private SelectWhereStep<Record4<ULong, String, String, String>> getSelectOnConditionStepForAppUser() {
         return dslContext.select(APP_USER.APP_USER_ID, APP_USER.LOGIN_ID, APP_USER.ORGANIZATION, APP_USER.NAME)
                 .from(APP_GROUP)
                 .join(APP_GROUP_USER).on(APP_GROUP.APP_GROUP_ID.eq(APP_GROUP_USER.APP_GROUP_ID))
                 .join(APP_USER).on(APP_GROUP_USER.APP_USER_ID.eq(APP_USER.APP_USER_ID));
     }
 
-    private SelectWhereStep <Record3<ULong, String, String>> getSelectOnConditionStepForAppPermission() {
+    private SelectWhereStep<Record3<ULong, String, String>> getSelectOnConditionStepForAppPermission() {
         return dslContext.select(APP_PERMISSION.APP_PERMISSION_ID, APP_PERMISSION.SEGMENT, APP_PERMISSION.OBJECT)
                 .from(APP_GROUP)
                 .join(APP_PERMISSION_GROUP).on(APP_GROUP.APP_GROUP_ID.eq(APP_PERMISSION_GROUP.APP_GROUP_ID))
@@ -49,10 +50,10 @@ public class AppGroupRepository {
     }
 
     private void insertAppGroupUser(InsertAppGroupUserArguments arguments) {
-            dslContext.insertInto(APP_GROUP_USER)
-                    .set(APP_GROUP_USER.APP_USER_ID, arguments.getAppUserId())
-                    .set(APP_GROUP_USER.APP_GROUP_ID, arguments.getAppGroupId())
-                    .execute();
+        dslContext.insertInto(APP_GROUP_USER)
+                .set(APP_GROUP_USER.APP_USER_ID, arguments.getAppUserId())
+                .set(APP_GROUP_USER.APP_GROUP_ID, arguments.getAppGroupId())
+                .execute();
     }
 
     private void deleteAppGroupUser(DeleteAppGroupUserArguments arguments) {
@@ -137,15 +138,15 @@ public class AppGroupRepository {
         }
 
         private <E> PaginationResponse<E> selectAppGroups(SelectAppGroupArguments arguments, Class<? extends E> type) {
-            SelectJoinStep <Record3<ULong, String, UInteger>> step = getSelectOnConditionStepForAppGroup();
+            SelectJoinStep<Record3<ULong, String, UInteger>> step = getSelectOnConditionStepForAppGroup();
 
-            SelectConnectByStep <Record3<ULong, String, UInteger>> conditionStep
+            SelectConnectByStep<Record3<ULong, String, UInteger>> conditionStep
                     = step.where(arguments.getConditions());
 
             int pageCount = dslContext.fetchCount(conditionStep);
 
             SortField sortField = arguments.getSortField();
-            SelectWithTiesAfterOffsetStep <Record3<ULong, String, UInteger>> offsetStep = null;
+            SelectWithTiesAfterOffsetStep<Record3<ULong, String, UInteger>> offsetStep = null;
             if (sortField != null) {
                 if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                     offsetStep = conditionStep.orderBy(sortField)
@@ -213,7 +214,7 @@ public class AppGroupRepository {
     public class InsertAppGroupUserArguments {
         ULong appGroupId;
         ULong appUserId;
-        
+
         public ULong getAppGroupId() {
             return appGroupId;
         }
@@ -236,9 +237,10 @@ public class AppGroupRepository {
             insertAppGroupUser(this);
         }
     }
+
     public class DeleteAppGroupUserArguments {
         ULong appGroupId;
-        
+
         public ULong getAppGroupId() {
             return appGroupId;
         }
@@ -247,7 +249,7 @@ public class AppGroupRepository {
             this.appGroupId = appGroupId;
             return this;
         }
-        
+
         public void execute() {
             deleteAppGroupUser(this);
         }
@@ -256,7 +258,7 @@ public class AppGroupRepository {
     public class InsertAppPermissionGroupArguments {
         ULong appGroupId;
         ULong appPermissionId;
-        
+
         public ULong getAppGroupId() {
             return appGroupId;
         }
@@ -274,14 +276,15 @@ public class AppGroupRepository {
             this.appPermissionId = appPermissionId;
             return this;
         }
-       
+
         public void execute() {
             insertAppPermissionGroup(this);
         }
     }
+
     public class DeleteAppPermissionGroupArguments {
         ULong appGroupId;
-        
+
         public ULong getAppGroupId() {
             return appGroupId;
         }
@@ -290,7 +293,7 @@ public class AppGroupRepository {
             this.appGroupId = appGroupId;
             return this;
         }
-        
+
         public void execute() {
             deleteAppPermissionGroup(this);
         }
@@ -300,15 +303,23 @@ public class AppGroupRepository {
         return new SelectAppGroupArguments();
     }
 
-    public UpdateAppGroupArguments updateAppGroup() { return new UpdateAppGroupArguments(); }
+    public UpdateAppGroupArguments updateAppGroup() {
+        return new UpdateAppGroupArguments();
+    }
 
-    public InsertAppGroupUserArguments insertAppGroupUserArguments() { return new InsertAppGroupUserArguments(); }
-    public DeleteAppGroupUserArguments deleteAppGroupUserArguments() { return new DeleteAppGroupUserArguments(); }
+    public InsertAppGroupUserArguments insertAppGroupUserArguments() {
+        return new InsertAppGroupUserArguments();
+    }
+
+    public DeleteAppGroupUserArguments deleteAppGroupUserArguments() {
+        return new DeleteAppGroupUserArguments();
+    }
 
     public InsertAppPermissionGroupArguments insertAppPermissionGroupArguments() {
         return new InsertAppPermissionGroupArguments();
     }
-    public DeleteAppPermissionGroupArguments deleteAppPermissionGroupArguments() { 
+
+    public DeleteAppPermissionGroupArguments deleteAppPermissionGroupArguments() {
         return new DeleteAppPermissionGroupArguments();
     }
 

@@ -1,7 +1,6 @@
 package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.types.ULong;
-import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccManifestRecord;
 import org.oagi.srt.repo.CoreComponentRepository;
 
@@ -21,7 +20,7 @@ public class UpdateAsccManifestArguments {
 
     public UpdateAsccManifestArguments(CoreComponentRepository repository, AsccManifestRecord asccManifestRecord) {
         this.repository = repository;
-        if(asccManifestRecord != null) {
+        if (asccManifestRecord != null) {
             this.asccManifestId = asccManifestRecord.getAsccManifestId();
             this.asccId = asccManifestRecord.getAsccId();
             this.releaseId = asccManifestRecord.getReleaseId();

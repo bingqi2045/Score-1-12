@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcAccNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
@@ -172,12 +171,12 @@ public class CcNodeControllerTest {
             return this.mockMvc.perform(post(uri).content(json).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is2xxSuccessful())
                     .andReturn();
         } else {
-            return this.mockMvc.perform(get(uri).params((MultiValueMap<String, String>)params).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is2xxSuccessful())
+            return this.mockMvc.perform(get(uri).params((MultiValueMap<String, String>) params).contentType(MediaType.APPLICATION_JSON)).andExpect(status().is2xxSuccessful())
                     .andReturn();
         }
     }
 
-    private <T> T objectMapping(MvcResult mvcResult, Class<T> valueType) throws Exception{
+    private <T> T objectMapping(MvcResult mvcResult, Class<T> valueType) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         String response = mvcResult.getResponse().getContentAsString();

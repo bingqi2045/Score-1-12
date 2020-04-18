@@ -4,22 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row20;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -28,11 +13,15 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * An ASCCP specifies a role (or property) an ACC may play under another ACC.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Asccp extends TableImpl<AsccpRecord> {
 
     private static final long serialVersionUID = 1567260120;
@@ -86,44 +75,44 @@ public class Asccp extends TableImpl<AsccpRecord> {
     public final TableField<AsccpRecord, String> DEN = createField(DSL.name("den"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "The dictionary entry name of the ASCCP.");
 
     /**
-     * The column <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
-
-This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * The column <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
+     * <p>
+     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public final TableField<AsccpRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.asccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public final TableField<AsccpRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
 
     /**
-     * The column <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * The column <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public final TableField<AsccpRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
-     * The column <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created. 
-
-This never change for a revision.
+     * The column <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created.
+     * <p>
+     * This never change for a revision.
      */
     public final TableField<AsccpRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the revision of the ASCCP was created. \n\nThis never change for a revision.");
 
     /**
      * The column <code>oagi.asccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-
-The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+     * <p>
+     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public final TableField<AsccpRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.");
 
     /**
      * The column <code>oagi.asccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCCP.
-
-State change can't be undone. But the history record can still keep the records of when the state was changed.
+     * <p>
+     * State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<AsccpRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCCP.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 

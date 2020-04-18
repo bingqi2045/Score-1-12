@@ -14,12 +14,12 @@ import org.oagi.srt.entity.jooq.tables.UsageRule;
 
 
 /**
- * This table captures a usage rule information. A usage rule may be expressed 
- * in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION 
- * table. To capture a description of a usage rule, create a usage rule expression 
+ * This table captures a usage rule information. A usage rule may be expressed
+ * in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION
+ * table. To capture a description of a usage rule, create a usage rule expression
  * with the unstructured constraint type.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implements Record3<ULong, String, Integer> {
 
     private static final long serialVersionUID = -696736486;

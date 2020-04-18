@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record16;
@@ -14,19 +12,21 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Abie;
 
+import java.time.LocalDateTime;
+
 
 /**
- * The ABIE table stores information about an ABIE, which is a contextualized 
- * ACC. The context is represented by the BUSINESS_CTX_ID column that refers 
- * to a business context. Each ABIE must have a business context and a based 
+ * The ABIE table stores information about an ABIE, which is a contextualized
+ * ACC. The context is represented by the BUSINESS_CTX_ID column that refers
+ * to a business context. Each ABIE must have a business context and a based
  * ACC.
- * 
- * It should be noted that, per design document, there is no corresponding 
- * ABIE created for an ACC which will not show up in the instance document 
- * such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP", 
+ * <p>
+ * It should be noted that, per design document, there is no corresponding
+ * ABIE created for an ACC which will not show up in the instance document
+ * such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP",
  * etc.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record16<ULong, String, ULong, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> {
 
     private static final long serialVersionUID = -1003802884;
@@ -242,14 +242,14 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. 
+     * Setter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
         set(15, value);
     }
 
     /**
-     * Getter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. 
+     * Getter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column.
      */
     public ULong getOwnerTopLevelAbieId() {
         return (ULong) get(15);

@@ -1,11 +1,9 @@
 package org.oagi.srt.gateway.http.api.code_list_management.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.Revision;
 import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueManifestRecord;
@@ -264,7 +262,7 @@ public class CodeListService {
                 codeList.getDefinitionSource(),
                 (byte) ((codeList.isExtensible()) ? 1 : 0),
                 WIP.name(),
-                1, 1, RevisionAction.Insert.getValue(), (byte) 0,
+                1, 1, RevisionAction.Add.getValue(), (byte) 0,
                 userId, userId, userId, timestamp, timestamp)
                 .returning().fetchOne();
 
@@ -352,7 +350,7 @@ public class CodeListService {
             throw new DataAccessForbiddenException("'" + user.getUsername() +
                     "' doesn't have an access privilege.");
         }
-        
+
         LocalDateTime timestamp = LocalDateTime.now();
         ULong prevCodeListId = codeListRecord.getCodeListId();
 
@@ -472,7 +470,7 @@ public class CodeListService {
 
                 codeListValueRecord.setRevisionNum(codeListRecord.getRevisionNum());
                 codeListValueRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum());
-                codeListValueRecord.setRevisionAction(RevisionAction.Delete.getValue());
+                codeListValueRecord.setRevisionAction(RevisionAction.Deleted.getValue());
 
                 codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
                         .set(codeListValueRecord)
@@ -503,7 +501,7 @@ public class CodeListService {
                     throw new IllegalArgumentException();
                 }
                 codeListValueRecord = codeListValueRecordMap.get(
-                    codeListValueManifestRecord.getCodeListValueId()
+                        codeListValueManifestRecord.getCodeListValueId()
                 );
             }
 
@@ -547,8 +545,8 @@ public class CodeListService {
             codeListValueRecord.setRevisionTrackingNum(codeListRecord.getRevisionTrackingNum());
             codeListValueRecord.setRevisionAction(
                     (isUpdate ?
-                            RevisionAction.Update :
-                            RevisionAction.Insert).getValue());
+                            RevisionAction.Modified :
+                            RevisionAction.Add).getValue());
 
             codeListValueRecord = dslContext.insertInto(CODE_LIST_VALUE)
                     .set(codeListValueRecord)

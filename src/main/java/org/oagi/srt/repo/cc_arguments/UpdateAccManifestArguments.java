@@ -3,6 +3,7 @@ package org.oagi.srt.repo.cc_arguments;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.repo.CoreComponentRepository;
+
 import java.util.Objects;
 
 public class UpdateAccManifestArguments {
@@ -19,7 +20,7 @@ public class UpdateAccManifestArguments {
 
     public UpdateAccManifestArguments(CoreComponentRepository repository, AccManifestRecord accManifestRecord) {
         this.repository = repository;
-        if(accManifestRecord != null) {
+        if (accManifestRecord != null) {
             this.accManifestId = accManifestRecord.getAccManifestId();
             this.accId = accManifestRecord.getAccId();
             this.releaseId = accManifestRecord.getReleaseId();

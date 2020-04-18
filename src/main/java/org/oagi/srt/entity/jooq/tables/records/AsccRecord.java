@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record20;
@@ -14,12 +12,14 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Ascc;
 
+import java.time.LocalDateTime;
+
 
 /**
- * An ASCC represents a relationship/association between two ACCs through 
- * an ASCCP. 
+ * An ASCC represents a relationship/association between two ACCs through
+ * an ASCCP.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = -117426590;
@@ -81,14 +81,14 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
+     * Setter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
     public void setSeqKey(Integer value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
+     * Getter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
     public Integer getSeqKey() {
         return (Integer) get(4);
@@ -109,28 +109,28 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
+     * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.
      */
     public void setToAsccpId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
+     * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.
      */
     public ULong getToAsccpId() {
         return (ULong) get(6);
     }
 
     /**
-     * Setter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
+     * Setter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN.
      */
     public void setDen(String value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
+     * Getter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN.
      */
     public String getDen() {
         return (String) get(7);
@@ -180,8 +180,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Setter for <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
-
-This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * <p>
+     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
         set(11, value);
@@ -189,8 +189,8 @@ This column never change between the history and the current record for a given 
 
     /**
      * Getter for <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
-
-This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * <p>
+     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
         return (ULong) get(11);
@@ -198,8 +198,8 @@ This column never change between the history and the current record for a given 
 
     /**
      * Setter for <code>oagi.ascc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(12, value);
@@ -207,44 +207,44 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     /**
      * Getter for <code>oagi.ascc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(12);
     }
 
     /**
-     * Setter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
         set(13, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(13);
     }
 
     /**
-     * Setter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created. 
-
-This never change for a revision.
+     * Setter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created.
+     * <p>
+     * This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created. 
-
-This never change for a revision.
+     * Getter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created.
+     * <p>
+     * This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(14);
@@ -252,8 +252,8 @@ This never change for a revision.
 
     /**
      * Setter for <code>oagi.ascc.last_update_timestamp</code>. The timestamp when the record was last updated.
-
-The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
+     * <p>
+     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
         set(15, value);
@@ -261,8 +261,8 @@ The value of this column in the latest history record should be the same as that
 
     /**
      * Getter for <code>oagi.ascc.last_update_timestamp</code>. The timestamp when the record was last updated.
-
-The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
+     * <p>
+     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
         return (LocalDateTime) get(15);
@@ -270,8 +270,8 @@ The value of this column in the latest history record should be the same as that
 
     /**
      * Setter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
-
-State change can't be undone. But the history record can still keep the records of when the state was changed.
+     * <p>
+     * State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(16, value);
@@ -279,8 +279,8 @@ State change can't be undone. But the history record can still keep the records 
 
     /**
      * Getter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
-
-State change can't be undone. But the history record can still keep the records of when the state was changed.
+     * <p>
+     * State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(16);

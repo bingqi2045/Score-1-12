@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record17;
@@ -14,17 +12,19 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
 
+import java.time.LocalDateTime;
+
 
 /**
- * Each record in this table stores a code list value of a code list. A code 
- * list value may be inherited from another code list on which it is based. 
- * However, inherited value may be restricted (i.e., disabled and cannot be 
- * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
- * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, 
- * because the USED_INDICATOR of such code list value is FALSE by default 
+ * Each record in this table stores a code list value of a code list. A code
+ * list value may be inherited from another code list on which it is based.
+ * However, inherited value may be restricted (i.e., disabled and cannot be
+ * used) in this code list, i.e., the USED_INDICATOR = false. If the value
+ * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE,
+ * because the USED_INDICATOR of such code list value is FALSE by default
  * and can no longer be changed.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 1899580582;
@@ -171,8 +171,8 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Setter for <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(10, value);
@@ -180,8 +180,8 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     /**
      * Getter for <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(10);

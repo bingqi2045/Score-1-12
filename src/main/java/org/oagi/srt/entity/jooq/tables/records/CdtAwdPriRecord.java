@@ -14,11 +14,11 @@ import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
 
 
 /**
- * This table capture allowed primitives of the CDT?s Content Component.  
- * The information in this table is captured from the Allowed Primitive column 
+ * This table capture allowed primitives of the CDT?s Content Component.
+ * The information in this table is captured from the Allowed Primitive column
  * in each of the CDT Content Component section/table in CCTS DTC3.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implements Record4<ULong, ULong, ULong, Byte> {
 
     private static final long serialVersionUID = -162122372;
@@ -52,14 +52,14 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. 
+     * Setter for <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column.
      */
     public void setCdtPriId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. 
+     * Getter for <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column.
      */
     public ULong getCdtPriId() {
         return (ULong) get(2);

@@ -4,21 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row12;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -27,14 +13,17 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * This table represents the supplementary component (SC) of a DT. Revision 
- * is not tracked at the supplementary component. It is considered intrinsic 
- * part of the DT. In other words, when a new revision of a DT is created 
- * a new set of supplementary components is created along with it. 
+ * This table represents the supplementary component (SC) of a DT. Revision
+ * is not tracked at the supplementary component. It is considered intrinsic
+ * part of the DT. In other words, when a new revision of a DT is created
+ * a new set of supplementary components is created along with it.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class DtSc extends TableImpl<DtScRecord> {
 
     private static final long serialVersionUID = -943145479;

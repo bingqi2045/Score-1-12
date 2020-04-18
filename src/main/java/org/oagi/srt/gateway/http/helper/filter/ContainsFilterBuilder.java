@@ -11,8 +11,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.oagi.srt.entity.jooq.Tables.ASCC;
-
 public class ContainsFilterBuilder {
 
     public static <T> Predicate<T> contains(String query, Function<T, String> mapper) {

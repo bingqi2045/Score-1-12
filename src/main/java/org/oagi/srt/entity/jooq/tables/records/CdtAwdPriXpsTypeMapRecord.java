@@ -14,21 +14,21 @@ import org.oagi.srt.entity.jooq.tables.CdtAwdPriXpsTypeMap;
 
 
 /**
- * This table allows for concrete mapping between the CDT Primitives and types 
- * in a particular expression such as XML Schema, JSON. At this point, it 
- * is not clear whether a separate table will be needed for each expression. 
- * The current table holds the map to XML Schema built-in types. 
- * 
- * For each additional expression, a column similar to the XBT_ID column will 
+ * This table allows for concrete mapping between the CDT Primitives and types
+ * in a particular expression such as XML Schema, JSON. At this point, it
+ * is not clear whether a separate table will be needed for each expression.
+ * The current table holds the map to XML Schema built-in types.
+ * <p>
+ * For each additional expression, a column similar to the XBT_ID column will
  * need to be added to this table for mapping to data types in another expression.
- * 
- * If we use a separate table for each expression, then we need binding all 
- * the way to BDT (or even BBIE) for every new expression. That would be almost 
- * like just store a BDT file. But using a column may not work with all kinds 
- * of expressions, particulary if it does not map well to the XML schema data 
- * types. 
+ * <p>
+ * If we use a separate table for each expression, then we need binding all
+ * the way to BDT (or even BBIE) for every new expression. That would be almost
+ * like just store a BDT file. But using a column may not work with all kinds
+ * of expressions, particulary if it does not map well to the XML schema data
+ * types.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CdtAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 1690153219;

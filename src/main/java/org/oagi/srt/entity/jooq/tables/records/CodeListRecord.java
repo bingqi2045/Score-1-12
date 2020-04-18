@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record21;
@@ -14,13 +12,15 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.CodeList;
 
+import java.time.LocalDateTime;
+
 
 /**
- * This table stores information about a code list. When a code list is derived 
- * from another code list, the whole set of code values belonging to the based 
+ * This table stores information about a code list. When a code list is derived
+ * from another code list, the whole set of code values belonging to the based
  * code list will be copied.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implements Record21<ULong, String, String, String, String, ULong, String, String, String, String, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 771080344;
@@ -209,8 +209,8 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implemen
 
     /**
      * Setter for <code>oagi.code_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(13, value);
@@ -218,8 +218,8 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     /**
      * Getter for <code>oagi.code_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(13);

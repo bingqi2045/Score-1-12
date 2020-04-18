@@ -4,21 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row16;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -26,19 +12,23 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * The ABIE table stores information about an ABIE, which is a contextualized 
- * ACC. The context is represented by the BUSINESS_CTX_ID column that refers 
- * to a business context. Each ABIE must have a business context and a based 
+ * The ABIE table stores information about an ABIE, which is a contextualized
+ * ACC. The context is represented by the BUSINESS_CTX_ID column that refers
+ * to a business context. Each ABIE must have a business context and a based
  * ACC.
- * 
- * It should be noted that, per design document, there is no corresponding 
- * ABIE created for an ACC which will not show up in the instance document 
- * such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP", 
+ * <p>
+ * It should be noted that, per design document, there is no corresponding
+ * ABIE created for an ACC which will not show up in the instance document
+ * such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP",
  * etc.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Abie extends TableImpl<AbieRecord> {
 
     private static final long serialVersionUID = 1669045112;
@@ -132,7 +122,7 @@ public class Abie extends TableImpl<AbieRecord> {
     public final TableField<AbieRecord, String> BIZ_TERM = createField(DSL.name("biz_term"), org.jooq.impl.SQLDataType.VARCHAR(225), this, "To indicate what the BIE is called in a particular business context. With this current design, only one business term is allowed per business context.");
 
     /**
-     * The column <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. 
+     * The column <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column.
      */
     public final TableField<AbieRecord, ULong> OWNER_TOP_LEVEL_ABIE_ID = createField(DSL.name("owner_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. ");
 

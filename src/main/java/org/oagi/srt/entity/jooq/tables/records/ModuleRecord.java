@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
@@ -14,12 +12,14 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Module;
 
+import java.time.LocalDateTime;
+
 
 /**
- * The module table stores information about a physical file, into which CC 
+ * The module table stores information about a physical file, into which CC
  * components will be generated during the expression generation.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = -2141879399;
@@ -109,18 +109,18 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.module.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.module.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.module.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.module.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(6);

@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record17;
@@ -14,13 +12,15 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Xbt;
 
+import java.time.LocalDateTime;
+
 
 /**
- * This table stores XML schema built-in types and OAGIS built-in types. OAGIS 
- * built-in types are those types defined in the XMLSchemaBuiltinType and 
+ * This table stores XML schema built-in types and OAGIS built-in types. OAGIS
+ * built-in types are those types defined in the XMLSchemaBuiltinType and
  * the XMLSchemaBuiltinType Patterns schemas.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
     private static final long serialVersionUID = 341833768;

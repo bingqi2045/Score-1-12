@@ -14,13 +14,13 @@ import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 
 
 /**
- * This is an intersection table. Per CCTS, a usage rule may be reused. This 
- * table allows m-m relationships between the usage rule and the DT content 
- * component and usage rules and DT supplementary component. In a particular 
- * record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not 
+ * This is an intersection table. Per CCTS, a usage rule may be reused. This
+ * table allows m-m relationships between the usage rule and the DT content
+ * component and usage rules and DT supplementary component. In a particular
+ * record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not
  * both.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> implements Record4<ULong, ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 920361354;

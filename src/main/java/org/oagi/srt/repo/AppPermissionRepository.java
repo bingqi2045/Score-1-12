@@ -17,7 +17,7 @@ public class AppPermissionRepository {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep <Record5<ULong, String, String, String, String>> getSelectOnConditionStepForAppPermission() {
+    private SelectJoinStep<Record5<ULong, String, String, String, String>> getSelectOnConditionStepForAppPermission() {
         return dslContext.select(APP_PERMISSION.APP_PERMISSION_ID, APP_PERMISSION.SEGMENT, APP_PERMISSION.OBJECT,
                 APP_PERMISSION.OPERATION, APP_PERMISSION.DESCRIPTION)
                 .from(APP_PERMISSION);
@@ -115,16 +115,16 @@ public class AppPermissionRepository {
         }
 
         private <E> PaginationResponse<E> selectAppPermissions(SelectAppPermissionArguments arguments, Class<? extends E> type) {
-            SelectJoinStep <Record5<ULong, String, String, String, String>> step
+            SelectJoinStep<Record5<ULong, String, String, String, String>> step
                     = getSelectOnConditionStepForAppPermission();
 
-            SelectConnectByStep <Record5<ULong, String, String, String, String>> conditionStep
+            SelectConnectByStep<Record5<ULong, String, String, String, String>> conditionStep
                     = step.where(arguments.getConditions());
 
             int pageCount = dslContext.fetchCount(conditionStep);
 
             SortField sortField = arguments.getSortField();
-            SelectWithTiesAfterOffsetStep <Record5<ULong, String, String, String, String>> offsetStep = null;
+            SelectWithTiesAfterOffsetStep<Record5<ULong, String, String, String, String>> offsetStep = null;
             if (sortField != null) {
                 if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                     offsetStep = conditionStep.orderBy(sortField)
@@ -212,7 +212,9 @@ public class AppPermissionRepository {
         return new SelectAppPermissionArguments();
     }
 
-    public UpdateAppPermissionArguments updateAppPermission() { return new UpdateAppPermissionArguments(); }
+    public UpdateAppPermissionArguments updateAppPermission() {
+        return new UpdateAppPermissionArguments();
+    }
 
 
     public AppPermission findAppPermissionByAppPermissionId(ULong appPermissionId) {

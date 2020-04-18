@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Service
 @Transactional(readOnly = true)

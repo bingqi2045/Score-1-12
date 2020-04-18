@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record14;
@@ -14,12 +12,14 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.AgencyIdList;
 
+import java.time.LocalDateTime;
+
 
 /**
- * The AGENCY_ID_LIST table stores information about agency identification 
+ * The AGENCY_ID_LIST table stores information about agency identification
  * lists. The list's values are however kept in the AGENCY_ID_LIST_VALUE.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record14<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String> {
 
     private static final long serialVersionUID = 80512330;

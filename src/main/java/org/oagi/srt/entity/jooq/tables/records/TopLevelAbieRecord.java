@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
@@ -14,13 +12,15 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 
+import java.time.LocalDateTime;
+
 
 /**
- * This table indexes the ABIE which is a top-level ABIE. This table and the 
- * owner_top_level_abie_id column in all BIE tables allow all related BIEs 
+ * This table indexes the ABIE which is a top-level ABIE. This table and the
+ * owner_top_level_abie_id column in all BIE tables allow all related BIEs
  * to be retrieved all at once speeding up the profile BOD transactions.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> implements Record7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, Integer> {
 
     private static final long serialVersionUID = -1207106447;

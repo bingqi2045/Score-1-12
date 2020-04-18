@@ -4,21 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row13;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -26,12 +12,16 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CtxSchemeRecord;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * This table represents a context scheme (a classification scheme) for a 
+ * This table represents a context scheme (a classification scheme) for a
  * context category.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CtxScheme extends TableImpl<CtxSchemeRecord> {
 
     private static final long serialVersionUID = -2064432905;
@@ -60,7 +50,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     public final TableField<CtxSchemeRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "GUID of the classification scheme. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme. 
+     * The column <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme.
      */
     public final TableField<CtxSchemeRecord, String> SCHEME_ID = createField(DSL.name("scheme_id"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "External identification of the scheme. ");
 

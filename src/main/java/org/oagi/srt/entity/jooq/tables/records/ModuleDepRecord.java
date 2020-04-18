@@ -16,7 +16,7 @@ import org.oagi.srt.entity.jooq.tables.ModuleDep;
 /**
  * This table carries the dependency between modules in the MODULE table.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implements Record4<ULong, Integer, ULong, ULong> {
 
     private static final long serialVersionUID = -1616111790;

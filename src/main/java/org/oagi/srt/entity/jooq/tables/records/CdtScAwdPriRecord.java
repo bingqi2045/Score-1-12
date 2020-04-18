@@ -14,11 +14,11 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPri;
 
 
 /**
- * This table capture the CDT primitives allowed for a particular SC of a 
- * CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends 
+ * This table capture the CDT primitives allowed for a particular SC of a
+ * CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends
  * its base (such SC is not defined in the CCTS data type catalog specification).
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<ULong, ULong, ULong, Byte> {
 
     private static final long serialVersionUID = 389204230;

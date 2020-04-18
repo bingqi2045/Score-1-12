@@ -14,10 +14,10 @@ import org.oagi.srt.entity.jooq.tables.AppUser;
 
 
 /**
- * This table captures the user information for authentication and authorization 
+ * This table captures the user information for authentication and authorization
  * purposes.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record6<ULong, String, String, String, String, Byte> {
 
     private static final long serialVersionUID = 522057442;

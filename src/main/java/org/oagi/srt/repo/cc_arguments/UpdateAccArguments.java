@@ -2,7 +2,6 @@ package org.oagi.srt.repo.cc_arguments;
 
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.CoreComponentRepository;

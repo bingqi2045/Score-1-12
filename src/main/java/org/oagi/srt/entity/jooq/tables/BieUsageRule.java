@@ -4,20 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row7;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -25,14 +12,17 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BieUsageRuleRecord;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
- * This is an intersection table. Per CCTS, a usage rule may be reused. This 
- * table allows m-m relationships between the usage rule and all kinds of 
- * BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID, 
+ * This is an intersection table. Per CCTS, a usage rule may be reused. This
+ * table allows m-m relationships between the usage rule and all kinds of
+ * BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID,
  * TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
 
     private static final long serialVersionUID = 443941336;

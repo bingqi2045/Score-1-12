@@ -8,7 +8,6 @@ import org.jooq.types.ULong;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 @Data

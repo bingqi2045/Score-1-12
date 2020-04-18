@@ -2,30 +2,33 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record11;
+import org.jooq.Record4;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.*;
+import org.oagi.srt.data.AppUser;
+import org.oagi.srt.data.BCCEntityType;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.tables.records.*;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.repository.ReleaseRepository;
 import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
-import static org.oagi.srt.data.BCCEntityType.Element;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
@@ -45,9 +48,9 @@ public class CcNodeRepository {
     private UserRepository userRepository;
 
     private SelectOnConditionStep<Record11<
-                ULong, String, String, ULong, Integer,
-                String, String, ULong, ULong,
-                ULong, ULong>> getSelectJoinStepForAccNode() {
+            ULong, String, String, ULong, Integer,
+            String, String, ULong, ULong,
+            ULong, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                 ACC.ACC_ID,
                 ACC.GUID,

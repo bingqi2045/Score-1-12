@@ -14,12 +14,12 @@ import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
 
 
 /**
- * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, 
- * but it is for the supplementary component (SC). It allows for the concrete 
- * mapping between the CDT Primitives and types in a particular expression 
- * such as XML Schema, JSON. 
+ * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP,
+ * but it is for the supplementary component (SC). It allows for the concrete
+ * mapping between the CDT Primitives and types in a particular expression
+ * such as XML Schema, JSON.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CdtScAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtScAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
     private static final long serialVersionUID = -1142480310;

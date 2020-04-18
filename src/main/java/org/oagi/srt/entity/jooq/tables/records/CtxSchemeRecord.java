@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record13;
@@ -14,12 +12,14 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.CtxScheme;
 
+import java.time.LocalDateTime;
+
 
 /**
- * This table represents a context scheme (a classification scheme) for a 
+ * This table represents a context scheme (a classification scheme) for a
  * context category.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 12340187;
@@ -53,14 +53,14 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme. 
+     * Setter for <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme.
      */
     public void setSchemeId(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme. 
+     * Getter for <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme.
      */
     public String getSchemeId() {
         return (String) get(2);

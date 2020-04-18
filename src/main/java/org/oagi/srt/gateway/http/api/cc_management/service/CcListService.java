@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
-import org.checkerframework.checker.units.qual.A;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;

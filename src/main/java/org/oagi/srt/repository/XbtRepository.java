@@ -1,6 +1,8 @@
 package org.oagi.srt.repository;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record19;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Xbt;

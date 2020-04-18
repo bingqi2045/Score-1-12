@@ -1,26 +1,18 @@
 package org.oagi.srt.repo;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.records.CtxCategoryRecord;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.count;
-import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.srt.entity.jooq.Tables.REVISION;
 
 @Repository
 public class RevisionRepository {
@@ -37,10 +29,12 @@ public class RevisionRepository {
             String before;
             String after;
         }
+
         private class BodyEntry {
             String key;
             BodyDiff diff;
         }
+
         private List<BodyEntry> content;
 
         private ULong revisionId;

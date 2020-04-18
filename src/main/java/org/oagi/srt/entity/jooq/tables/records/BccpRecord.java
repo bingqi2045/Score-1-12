@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record22;
@@ -14,12 +12,14 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bccp;
 
+import java.time.LocalDateTime;
+
 
 /**
- * An BCCP specifies a property concept and data type associated with it. 
+ * An BCCP specifies a property concept and data type associated with it.
  * A BCCP can be then added as a property of an ACC.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, String, String, ULong, ULong> {
 
     private static final long serialVersionUID = 357090287;
@@ -53,14 +53,14 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.bccp.property_term</code>. The property concept that the BCCP models. 
+     * Setter for <code>oagi.bccp.property_term</code>. The property concept that the BCCP models.
      */
     public void setPropertyTerm(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.property_term</code>. The property concept that the BCCP models. 
+     * Getter for <code>oagi.bccp.property_term</code>. The property concept that the BCCP models.
      */
     public String getPropertyTerm() {
         return (String) get(2);
@@ -165,18 +165,18 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
-
-This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * Setter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
+     * <p>
+     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
-
-This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * Getter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
+     * <p>
+     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
         return (ULong) get(10);
@@ -184,8 +184,8 @@ This column never change between the history and the current record for a given 
 
     /**
      * Setter for <code>oagi.bccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(11, value);
@@ -193,44 +193,44 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     /**
      * Getter for <code>oagi.bccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-
-The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * <p>
+     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(11);
     }
 
     /**
-     * Setter for <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
         set(12, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
-
-In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
+     * <p>
+     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(12);
     }
 
     /**
-     * Setter for <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created. 
-
-This never change for a revision.
+     * Setter for <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created.
+     * <p>
+     * This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(13, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created. 
-
-This never change for a revision.
+     * Getter for <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created.
+     * <p>
+     * This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(13);
@@ -238,8 +238,8 @@ This never change for a revision.
 
     /**
      * Setter for <code>oagi.bccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-
-The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+     * <p>
+     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
         set(14, value);
@@ -247,8 +247,8 @@ The value of this column in the latest history record should be the same as that
 
     /**
      * Getter for <code>oagi.bccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-
-The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+     * <p>
+     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
         return (LocalDateTime) get(14);
@@ -256,8 +256,8 @@ The value of this column in the latest history record should be the same as that
 
     /**
      * Setter for <code>oagi.bccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.
-
-State change can't be undone. But the history record can still keep the records of when the state was changed.
+     * <p>
+     * State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(15, value);
@@ -265,8 +265,8 @@ State change can't be undone. But the history record can still keep the records 
 
     /**
      * Getter for <code>oagi.bccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.
-
-State change can't be undone. But the history record can still keep the records of when the state was changed.
+     * <p>
+     * State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(15);
@@ -287,14 +287,14 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
+     * Setter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification.
      */
     public void setIsNillable(Byte value) {
         set(17, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
+     * Getter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification.
      */
     public Byte getIsNillable() {
         return (Byte) get(17);

@@ -3,7 +3,6 @@ package org.oagi.srt.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectJoinStep;
-import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BBIE;
 import org.oagi.srt.entity.jooq.Tables;

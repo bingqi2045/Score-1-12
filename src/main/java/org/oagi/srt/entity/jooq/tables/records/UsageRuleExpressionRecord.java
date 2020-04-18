@@ -14,11 +14,11 @@ import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
 
 
 /**
- * The USAGE_RULE_EXPRESSION provides a representation of a usage rule in 
- * a particular syntax indicated by the CONSTRAINT_TYPE column. One of the 
+ * The USAGE_RULE_EXPRESSION provides a representation of a usage rule in
+ * a particular syntax indicated by the CONSTRAINT_TYPE column. One of the
  * syntaxes can be unstructured, which works a description of the usage rule.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpressionRecord> implements Record4<ULong, Integer, String, ULong> {
 
     private static final long serialVersionUID = -928106694;

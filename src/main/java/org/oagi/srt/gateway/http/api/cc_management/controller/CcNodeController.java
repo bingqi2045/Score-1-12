@@ -61,7 +61,7 @@ public class CcNodeController {
 
             case "bccp":
                 return service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
-                
+
             default:
                 throw new UnsupportedOperationException();
         }
@@ -241,7 +241,7 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendNode(@AuthenticationPrincipal User user,
-                                     @RequestBody CcAppendRequest ccAppendRequest) {
+                                       @RequestBody CcAppendRequest ccAppendRequest) {
 
         long manifestId = 0L;
         if (ccAppendRequest.getAccManifestId() != null) {
@@ -304,8 +304,8 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId}/revision", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
-                            @PathVariable("type") String type,
-                            @PathVariable("manifestId") long manifestId) {
+                                                @PathVariable("type") String type,
+                                                @PathVariable("manifestId") long manifestId) {
         switch (type) {
             case "acc":
                 return service.getAccNoddRevision(user, manifestId);

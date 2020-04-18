@@ -20,7 +20,7 @@ public class UpdateBccManifestArguments {
 
     public UpdateBccManifestArguments(CoreComponentRepository repository, BccManifestRecord bccManifestRecord) {
         this.repository = repository;
-        if(bccManifestRecord != null) {
+        if (bccManifestRecord != null) {
             this.bccManifestId = bccManifestRecord.getBccManifestId();
             this.bccId = bccManifestRecord.getBccId();
             this.releaseId = bccManifestRecord.getReleaseId();

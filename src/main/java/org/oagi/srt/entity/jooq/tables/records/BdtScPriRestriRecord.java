@@ -14,22 +14,22 @@ import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
 
 
 /**
- * This table is similar to the BDT_PRI_RESTRI table but it is for the BDT 
- * SC. The allowed primitives are captured by three columns the CDT_SC_AWD_PRI_XPS_TYPE_MAP, 
- * CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive 
- * by the built-in type of an expression language such as the XML Schema built-in 
- * type. The second specifies the primitive, which is a code list, while the 
- * last one specifies the primitive which is an agency identification list. 
+ * This table is similar to the BDT_PRI_RESTRI table but it is for the BDT
+ * SC. The allowed primitives are captured by three columns the CDT_SC_AWD_PRI_XPS_TYPE_MAP,
+ * CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive
+ * by the built-in type of an expression language such as the XML Schema built-in
+ * type. The second specifies the primitive, which is a code list, while the
+ * last one specifies the primitive which is an agency identification list.
  * Only one column among the three can have a value in a particular record.
- * 
- * It should be noted that the table does not store the fact about primitive 
- * restriction hierarchical relationships. In other words, if a BDT SC is 
- * derived from another BDT SC and the derivative BDT SC applies some primitive 
- * restrictions, that relationship will not be explicitly stored. The derivative 
- * BDT SC points directly to the CDT_AWD_PRI_XPS_TYPE_MAP key rather than 
+ * <p>
+ * It should be noted that the table does not store the fact about primitive
+ * restriction hierarchical relationships. In other words, if a BDT SC is
+ * derived from another BDT SC and the derivative BDT SC applies some primitive
+ * restrictions, that relationship will not be explicitly stored. The derivative
+ * BDT SC points directly to the CDT_AWD_PRI_XPS_TYPE_MAP key rather than
  * the BDT_SC_PRI_RESTRI key.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class BdtScPriRestriRecord extends UpdatableRecordImpl<BdtScPriRestriRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, Byte> {
 
     private static final long serialVersionUID = 1897341136;
