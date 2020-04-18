@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
+import org.jooq.Record22;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCP;
@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,7 +18,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record22<ULong, String, String, String, String, ULong, String, String, String, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.GUID,
@@ -36,9 +37,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.CREATION_TIMESTAMP,
                 Tables.BCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.BCCP.STATE,
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.REVISION_ACTION,
+                Tables.BCCP.REVISION_ID,
                 Tables.BCCP_MANIFEST.RELEASE_ID,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.BCCP.IS_NILLABLE.as("nillable"),

@@ -40,8 +40,7 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.OWNER_USER_ID,
                 Tables.DT.CREATION_TIMESTAMP,
                 Tables.DT.LAST_UPDATE_TIMESTAMP,
-                Tables.DT.REVISION_NUM,
-                Tables.DT.REVISION_TRACKING_NUM,
+                Tables.DT.REVISION_ID,
                 Tables.DT_MANIFEST.RELEASE_ID,
                 Tables.DT.IS_DEPRECATED.as("deprecated"),
                 Tables.MODULE.MODULE_.as("module"))

@@ -8,8 +8,7 @@ public interface Trackable extends Serializable {
 
     Long getReleaseId();
 
-    int getRevisionNum();
+    Long getRevisionId();
 
-    int getRevisionTrackingNum();
 
 }

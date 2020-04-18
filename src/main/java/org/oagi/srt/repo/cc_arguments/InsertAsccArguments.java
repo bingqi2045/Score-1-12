@@ -27,9 +27,7 @@ public class InsertAsccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private ULong prevAsccId;
     private ULong nextAsccId;
 
@@ -190,30 +188,12 @@ public class InsertAsccArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public InsertAsccArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public InsertAsccArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public InsertAsccArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public InsertAsccArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 

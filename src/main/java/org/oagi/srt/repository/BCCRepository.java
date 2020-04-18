@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
+import org.jooq.Record22;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCC;
@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,7 +18,7 @@ public class BCCRepository implements SrtRepository<BCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectJoinStep() {
+    private SelectOnConditionStep<Record22<ULong, String, Integer, Integer, Integer, Integer, ULong, ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BCC.BCC_ID,
                 Tables.BCC.GUID,
@@ -37,9 +38,7 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.CREATION_TIMESTAMP,
                 Tables.BCC.LAST_UPDATE_TIMESTAMP,
                 Tables.BCC.STATE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.REVISION_ACTION,
+                Tables.BCC.REVISION_ID,
                 Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
                 Tables.BCC.IS_NILLABLE.as("nillable"))

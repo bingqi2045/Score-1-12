@@ -32,9 +32,7 @@ public class DT implements CoreComponent {
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private int revisionNum;
-    private int revisionTrackingNum;
-    private Integer revisionAction;
+    private long revisionId;
     private Long releaseId;
     private boolean deprecated;
 

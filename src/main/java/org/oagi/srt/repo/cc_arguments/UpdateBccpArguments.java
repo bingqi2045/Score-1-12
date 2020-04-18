@@ -27,9 +27,7 @@ public class UpdateBccpArguments {
     private ULong lastUpdatedBy;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private Boolean isNillable;
     private String defaultValue;
     private String fixedValue;
@@ -54,9 +52,7 @@ public class UpdateBccpArguments {
         this.lastUpdatedBy = bccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(bccp.getState());
-        this.revisionNum = bccp.getRevisionNum();
-        this.revisionTrackingNum = bccp.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(bccp.getRevisionAction());
+        this.revisionId = bccp.getRevisionId();
         this.isNillable = bccp.getIsNillable() == 1;
         this.defaultValue = bccp.getDefaultValue();
         this.fixedValue = bccp.getFixedValue();
@@ -194,30 +190,12 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public UpdateBccpArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public UpdateBccpArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public UpdateBccpArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public UpdateBccpArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 
@@ -264,9 +242,7 @@ public class UpdateBccpArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionNum, that.revisionNum) &&
-                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
-                revisionAction == that.revisionAction &&
+                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(isNillable, that.isNillable) &&
                 Objects.equals(defaultValue, that.defaultValue) &&
                 Objects.equals(fixedValue, that.fixedValue) &&
@@ -275,7 +251,7 @@ public class UpdateBccpArguments {
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertyTerm, representationTerm, bdtId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, isNillable, defaultValue, fixedValue, prevBccpId);
+        return Objects.hash(propertyTerm, representationTerm, bdtId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isNillable, defaultValue, fixedValue, prevBccpId);
     }
 
     private boolean isDirty() {

@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
+import org.jooq.Record22;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,7 +18,7 @@ public class ACCRepository implements SrtRepository<ACC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record22<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
@@ -36,9 +37,7 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
                 Tables.ACC.STATE,
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.REVISION_ACTION,
+                Tables.ACC.REVISION_ID,
                 Tables.ACC_MANIFEST.RELEASE_ID,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),

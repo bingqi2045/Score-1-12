@@ -27,9 +27,7 @@ public class InsertAsccpArguments {
     private ULong namespaceId;
     private Boolean reuseableIndicator;
     private Boolean isDeprecated;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private Boolean isNillable;
     private ULong prevAsccpId;
     private ULong nextAsccpId;
@@ -177,30 +175,12 @@ public class InsertAsccpArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public InsertAsccpArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public InsertAsccpArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public InsertAsccpArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public InsertAsccpArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 

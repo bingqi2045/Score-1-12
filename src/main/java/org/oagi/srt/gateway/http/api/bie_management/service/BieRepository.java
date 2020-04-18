@@ -52,8 +52,7 @@ public class BieRepository {
                 ACC.ACC_ID,
                 ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
+                ACC.REVISION_ID,
                 ACC_MANIFEST.RELEASE_ID)
                 .from(ACC)
                 .join(ACC_MANIFEST)
@@ -61,7 +60,6 @@ public class BieRepository {
                 .leftJoin(ACC_MANIFEST.as("base"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(and(
-                        ACC.REVISION_NUM.greaterThan(0),
                         ACC.STATE.eq(CcState.Published.name()),
                         ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
@@ -75,8 +73,7 @@ public class BieRepository {
                 ACC.ACC_ID,
                 ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
+                ACC.REVISION_ID,
                 ACC_MANIFEST.RELEASE_ID)
                 .from(ACC)
                 .join(ACC_MANIFEST)
@@ -95,8 +92,7 @@ public class BieRepository {
                 ACC.ACC_ID,
                 ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
+                ACC.REVISION_ID,
                 ACC_MANIFEST.RELEASE_ID)
                 .from(ACC)
                 .join(ACC_MANIFEST)
@@ -131,8 +127,7 @@ public class BieRepository {
                 ACC_MANIFEST.ACC_ID.as("from_acc_id"),
                 BCCP_MANIFEST.BCCP_ID.as("to_bccp_id"),
                 BCC.ENTITY_TYPE,
-                BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
+                BCC.REVISION_ID,
                 BCC_MANIFEST.RELEASE_ID)
                 .from(BCC)
                 .join(BCC_MANIFEST)
@@ -151,8 +146,7 @@ public class BieRepository {
                 BCCP.GUID,
                 BCCP.BDT_ID,
                 BCCP.PROPERTY_TERM,
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
+                BCCP.REVISION_ID,
                 BCCP_MANIFEST.RELEASE_ID)
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
@@ -246,8 +240,7 @@ public class BieRepository {
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
+                ASCCP.REVISION_ID,
                 ASCCP_MANIFEST.RELEASE_ID)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
@@ -262,8 +255,7 @@ public class BieRepository {
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM,
                 BCCP_MANIFEST.BDT_MANIFEST_ID,
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
+                BCCP.REVISION_ID,
                 BCCP_MANIFEST.RELEASE_ID)
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
@@ -343,7 +335,6 @@ public class BieRepository {
 
     public List<BieEditAscc> getAsccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
-                ASCC.REVISION_NUM.greaterThan(0),
                 ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
                 ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
         ));
@@ -363,8 +354,7 @@ public class BieRepository {
                 ASCC.SEQ_KEY,
                 ASCC.CARDINALITY_MIN,
                 ASCC.CARDINALITY_MAX,
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
+                ASCC.REVISION_ID,
                 ASCC_MANIFEST.RELEASE_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
@@ -381,7 +371,6 @@ public class BieRepository {
 
     public List<BieEditBcc> getBccListByFromAccId(long fromAccId, long releaseId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
-                BCC.REVISION_NUM.greaterThan(0),
                 ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
                 BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
         ));
@@ -402,8 +391,7 @@ public class BieRepository {
                 BCC.ENTITY_TYPE,
                 BCC.CARDINALITY_MIN,
                 BCC.CARDINALITY_MAX,
-                BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
+                BCC.REVISION_ID,
                 BCC_MANIFEST.RELEASE_ID)
                 .from(BCC)
                 .join(BCC_MANIFEST)

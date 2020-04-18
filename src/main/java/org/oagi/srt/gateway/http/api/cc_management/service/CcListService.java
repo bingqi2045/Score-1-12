@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
+import org.checkerframework.checker.units.qual.A;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
@@ -41,6 +42,9 @@ public class CcListService {
 
     @Autowired
     private CcListRepository repository;
+
+    @Autowired
+    private CcNodeService ccNodeService;
 
     @Autowired
     private ManifestRepository manifestRepository;
@@ -160,9 +164,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
 
-                ULong accId = repository.updateAccOwnerUserId(accManifest, target, userId, timestamp);
-                repository.updateAsccOwnerUserId(accManifest.getAccManifestId(), accId, target, userId, timestamp);
-                repository.updateBccOwnerUserId(accManifest.getAccManifestId(), accId, target, userId, timestamp);
+                ccNodeService.updateAccOwnerUserId(accManifest.getAccManifestId(), target, userId, timestamp);
                 break;
 
             case "ASCCP":
@@ -171,7 +173,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                repository.updateAsccpOwnerUserId(asccpManifest, target, userId, timestamp);
+                ccNodeService.updateAsccpOwnerUserId(asccpManifest.getAsccpManifestId(), target, userId, timestamp);
                 break;
 
             case "BCCP":
@@ -180,7 +182,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                repository.updateBccpOwnerUserId(bccpManifest, target, userId, timestamp);
+                ccNodeService.updateBccpOwnerUserId(bccpManifest.getBccpManifestId(), target, userId, timestamp);
                 break;
 
             default:

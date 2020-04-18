@@ -30,9 +30,7 @@ public class UpdateAsccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private ULong prevAsccId;
     private ULong nextAsccId;
 
@@ -57,9 +55,7 @@ public class UpdateAsccArguments {
         this.creationTimestamp = ascc.getCreationTimestamp();
         this.lastUpdateTimestamp = ascc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(ascc.getState());
-        this.revisionNum = ascc.getRevisionNum();
-        this.revisionTrackingNum = ascc.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(ascc.getRevisionAction());
+        this.revisionId = ascc.getRevisionId();
         this.prevAsccId = ascc.getPrevAsccId();
 
         this._hashCode = this.hashCode();
@@ -218,30 +214,12 @@ public class UpdateAsccArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public UpdateAsccArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public UpdateAsccArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public UpdateAsccArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public UpdateAsccArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 
@@ -280,15 +258,13 @@ public class UpdateAsccArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionNum, that.revisionNum) &&
-                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
-                revisionAction.equals(that.revisionAction) &&
+                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(prevAsccId, that.prevAsccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toAsccpId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, prevAsccId);
+        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toAsccpId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, prevAsccId);
     }
 
     private boolean isDirty() {

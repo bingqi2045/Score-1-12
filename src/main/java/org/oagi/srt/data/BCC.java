@@ -26,9 +26,7 @@ public class BCC implements CoreComponent {
     private long lastUpdatedBy;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private int revisionNum;
-    private int revisionTrackingNum;
-    private Integer revisionAction;
+    private Long revisionId;
     private Long releaseId;
     private CcState state;
     private boolean deprecated;

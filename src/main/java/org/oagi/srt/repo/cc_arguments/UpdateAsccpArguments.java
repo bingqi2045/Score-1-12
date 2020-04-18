@@ -29,9 +29,7 @@ public class UpdateAsccpArguments {
     private ULong namespaceId;
     private Boolean reuseableIndicator;
     private Boolean isDeprecated;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private Boolean isNillable;
     private ULong prevAsccpId;
     private ULong nextAsccpId;
@@ -56,9 +54,7 @@ public class UpdateAsccpArguments {
         this.lastUpdatedBy = asccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = asccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(asccp.getState());
-        this.revisionNum = asccp.getRevisionNum();
-        this.revisionTrackingNum = asccp.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(asccp.getRevisionAction());
+        this.revisionId = asccp.getRevisionId();
         this.isNillable = asccp.getIsNillable() == 1;
         this.prevAsccpId = asccp.getAsccpId();
         this.nextAsccpId = asccp.getNextAsccpId();
@@ -159,30 +155,12 @@ public class UpdateAsccpArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public UpdateAsccpArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public UpdateAsccpArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public UpdateAsccpArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public UpdateAsccpArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 
@@ -289,16 +267,14 @@ public class UpdateAsccpArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionNum, that.revisionNum) &&
-                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
-                revisionAction == that.revisionAction &&
+                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(isNillable, that.isNillable) &&
                 Objects.equals(prevAsccpId, that.prevAsccpId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertyTerm, roleOfAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, isNillable, reuseableIndicator, prevAsccpId);
+        return Objects.hash(propertyTerm, roleOfAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isNillable, reuseableIndicator, prevAsccpId);
     }
 
     private boolean isDirty() {

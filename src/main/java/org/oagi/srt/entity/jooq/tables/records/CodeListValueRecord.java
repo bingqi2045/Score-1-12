@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record19;
-import org.jooq.Row19;
+import org.jooq.Record17;
+import org.jooq.Row17;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
@@ -25,9 +25,9 @@ import org.oagi.srt.entity.jooq.tables.CodeListValue;
  * and can no longer be changed.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record19<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, ULong, ULong> {
+public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 100563899;
+    private static final long serialVersionUID = 1899580582;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.
@@ -230,73 +230,45 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     /**
-     * Setter for <code>oagi.code_list_value.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Setter for <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public void setRevisionNum(Integer value) {
+    public void setRevisionId(ULong value) {
         set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Getter for <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public Integer getRevisionNum() {
-        return (Integer) get(14);
-    }
-
-    /**
-     * Setter for <code>oagi.code_list_value.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public void setRevisionTrackingNum(Integer value) {
-        set(15, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public Integer getRevisionTrackingNum() {
-        return (Integer) get(15);
-    }
-
-    /**
-     * Setter for <code>oagi.code_list_value.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public void setRevisionAction(Integer value) {
-        set(16, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public Integer getRevisionAction() {
-        return (Integer) get(16);
+    public ULong getRevisionId() {
+        return (ULong) get(14);
     }
 
     /**
      * Setter for <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevCodeListValueId(ULong value) {
-        set(17, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevCodeListValueId() {
-        return (ULong) get(17);
+        return (ULong) get(15);
     }
 
     /**
      * Setter for <code>oagi.code_list_value.next_code_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextCodeListValueId(ULong value) {
-        set(18, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.next_code_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextCodeListValueId() {
-        return (ULong) get(18);
+        return (ULong) get(16);
     }
 
     // -------------------------------------------------------------------------
@@ -309,17 +281,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Record19 type implementation
+    // Record17 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 
     @Override
-    public Row19<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, ULong, ULong> valuesRow() {
-        return (Row19) super.valuesRow();
+    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> valuesRow() {
+        return (Row17) super.valuesRow();
     }
 
     @Override
@@ -393,27 +365,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     @Override
-    public Field<Integer> field15() {
-        return CodeListValue.CODE_LIST_VALUE.REVISION_NUM;
+    public Field<ULong> field15() {
+        return CodeListValue.CODE_LIST_VALUE.REVISION_ID;
     }
 
     @Override
-    public Field<Integer> field16() {
-        return CodeListValue.CODE_LIST_VALUE.REVISION_TRACKING_NUM;
-    }
-
-    @Override
-    public Field<Integer> field17() {
-        return CodeListValue.CODE_LIST_VALUE.REVISION_ACTION;
-    }
-
-    @Override
-    public Field<ULong> field18() {
+    public Field<ULong> field16() {
         return CodeListValue.CODE_LIST_VALUE.PREV_CODE_LIST_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<ULong> field17() {
         return CodeListValue.CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID;
     }
 
@@ -488,27 +450,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     @Override
-    public Integer component15() {
-        return getRevisionNum();
+    public ULong component15() {
+        return getRevisionId();
     }
 
     @Override
-    public Integer component16() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Integer component17() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public ULong component18() {
+    public ULong component16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong component19() {
+    public ULong component17() {
         return getNextCodeListValueId();
     }
 
@@ -583,27 +535,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     @Override
-    public Integer value15() {
-        return getRevisionNum();
+    public ULong value15() {
+        return getRevisionId();
     }
 
     @Override
-    public Integer value16() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Integer value17() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public ULong value18() {
+    public ULong value16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong value19() {
+    public ULong value17() {
         return getNextCodeListValueId();
     }
 
@@ -692,37 +634,25 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     @Override
-    public CodeListValueRecord value15(Integer value) {
-        setRevisionNum(value);
+    public CodeListValueRecord value15(ULong value) {
+        setRevisionId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value16(Integer value) {
-        setRevisionTrackingNum(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value17(Integer value) {
-        setRevisionAction(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value18(ULong value) {
+    public CodeListValueRecord value16(ULong value) {
         setPrevCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value19(ULong value) {
+    public CodeListValueRecord value17(ULong value) {
         setNextCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, Byte value7, Byte value8, Byte value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, Integer value15, Integer value16, Integer value17, ULong value18, ULong value19) {
+    public CodeListValueRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, Byte value7, Byte value8, Byte value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, ULong value15, ULong value16, ULong value17) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -740,8 +670,6 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         value15(value15);
         value16(value16);
         value17(value17);
-        value18(value18);
-        value19(value19);
         return this;
     }
 
@@ -759,7 +687,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Integer revisionAction, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong revisionId, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         set(0, codeListValueId);
@@ -776,10 +704,8 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(11, lastUpdatedBy);
         set(12, creationTimestamp);
         set(13, lastUpdateTimestamp);
-        set(14, revisionNum);
-        set(15, revisionTrackingNum);
-        set(16, revisionAction);
-        set(17, prevCodeListValueId);
-        set(18, nextCodeListValueId);
+        set(14, revisionId);
+        set(15, prevCodeListValueId);
+        set(16, nextCodeListValueId);
     }
 }

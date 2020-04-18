@@ -1,9 +1,11 @@
 package org.oagi.srt.gateway.http.api.code_list_management.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.tables.Revision;
 import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueManifestRecord;
@@ -14,6 +16,7 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.RevisionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.User;
@@ -40,6 +43,9 @@ public class CodeListService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private RevisionRepository revisionRepository;
 
     private SelectOnConditionStep<
             Record15<ULong, String, String, ULong, String,

@@ -145,7 +145,17 @@ public class CcNodeController {
                                         @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
                                         @RequestParam(value = "bccp", required = false) List<Long> bccpManifestIdList) {
 
-        service.updateCcStateDelete(user, accManifestIdList, asccpManifestIdList, bccpManifestIdList);
+        accManifestIdList.forEach(manifestId -> {
+            service.updateAccState(user, manifestId.longValue(), CcState.Deleted.name());
+        });
+
+        asccpManifestIdList.forEach(manifestId -> {
+            service.updateAsccpState(user, manifestId.longValue(), CcState.Deleted.name());
+        });
+
+        asccpManifestIdList.forEach(manifestId -> {
+            service.updateBccpState(user, manifestId.longValue(), CcState.Deleted.name());
+        });
 
         return ResponseEntity.accepted().build();
     }

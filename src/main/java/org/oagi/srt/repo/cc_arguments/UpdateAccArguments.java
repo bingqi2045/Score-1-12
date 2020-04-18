@@ -30,9 +30,7 @@ public class UpdateAccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private Integer revisionNum;
-    private Integer revisionTrackingNum;
-    private RevisionAction revisionAction;
+    private ULong revisionId;
     private Boolean isDeprecated;
     private Boolean isAbstract;
     private ULong prevAccId;
@@ -57,9 +55,7 @@ public class UpdateAccArguments {
         this.creationTimestamp = acc.getCreationTimestamp();
         this.lastUpdateTimestamp = acc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(acc.getState());
-        this.revisionNum = acc.getRevisionNum();
-        this.revisionTrackingNum = acc.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(acc.getRevisionAction());
+        this.revisionId = acc.getRevisionId();
         this.isDeprecated = acc.getIsDeprecated() == 1;
         this.isAbstract = acc.getIsAbstract() == 1;
         this.prevAccId = acc.getPrevAccId();
@@ -211,30 +207,12 @@ public class UpdateAccArguments {
         return this;
     }
 
-    public Integer getRevisionNum() {
-        return revisionNum;
+    public ULong getRevisionId() {
+        return revisionId;
     }
 
-    public UpdateAccArguments setRevisionNum(Integer revisionNum) {
-        this.revisionNum = revisionNum;
-        return this;
-    }
-
-    public Integer getRevisionTrackingNum() {
-        return revisionTrackingNum;
-    }
-
-    public UpdateAccArguments setRevisionTrackingNum(Integer revisionTrackingNum) {
-        this.revisionTrackingNum = revisionTrackingNum;
-        return this;
-    }
-
-    public RevisionAction getRevisionAction() {
-        return revisionAction;
-    }
-
-    public UpdateAccArguments setRevisionAction(RevisionAction revisionAction) {
-        this.revisionAction = revisionAction;
+    public UpdateAccArguments setRevisionId(ULong revisionId) {
+        this.revisionId = revisionId;
         return this;
     }
 
@@ -284,15 +262,13 @@ public class UpdateAccArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionNum, that.revisionNum) &&
-                Objects.equals(revisionTrackingNum, that.revisionTrackingNum) &&
-                revisionAction.equals(that.revisionAction) &&
+                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(prevAccId, that.prevAccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(objectClassTerm, basedAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionNum, revisionTrackingNum, revisionAction, isAbstract, prevAccId);
+        return Objects.hash(objectClassTerm, basedAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isAbstract, prevAccId);
     }
 
     private boolean isDirty() {

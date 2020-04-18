@@ -16,11 +16,11 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record21<
+    private SelectOnConditionStep<Record19<
             ULong, String, Integer, Integer, Integer,
             ULong, ULong, String, String, String,
             ULong, ULong, ULong, LocalDateTime, LocalDateTime,
-            String, Integer, Integer, Byte, ULong,
+            String, ULong, ULong,
             Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,
@@ -39,9 +39,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION,
+                Tables.ASCC.REVISION_ID,
                 Tables.ASCC_MANIFEST.RELEASE_ID,
                 Tables.ASCC.IS_DEPRECATED.as("deprecated"))
                 .from(Tables.ASCC)
