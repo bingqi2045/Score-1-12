@@ -6,7 +6,10 @@ package org.oagi.srt.entity.jooq.tables.records;
 
 import java.time.LocalDateTime;
 
+import org.jooq.Field;
 import org.jooq.Record1;
+import org.jooq.Record22;
+import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bccp;
@@ -17,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Bccp;
  * A BCCP can be then added as a property of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BccpRecord extends UpdatableRecordImpl<BccpRecord> {
+public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, String, String, ULong, ULong> {
 
-    private static final long serialVersionUID = -1458999002;
+    private static final long serialVersionUID = 357090287;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.
@@ -270,115 +273,87 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.bccp.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Setter for <code>oagi.bccp.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public void setRevisionNum(Integer value) {
+    public void setRevisionId(ULong value) {
         set(16, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Getter for <code>oagi.bccp.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public Integer getRevisionNum() {
-        return (Integer) get(16);
-    }
-
-    /**
-     * Setter for <code>oagi.bccp.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public void setRevisionTrackingNum(Integer value) {
-        set(17, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bccp.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public Integer getRevisionTrackingNum() {
-        return (Integer) get(17);
-    }
-
-    /**
-     * Setter for <code>oagi.bccp.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public void setRevisionAction(Integer value) {
-        set(18, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bccp.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public Integer getRevisionAction() {
-        return (Integer) get(18);
+    public ULong getRevisionId() {
+        return (ULong) get(16);
     }
 
     /**
      * Setter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
      */
     public void setIsNillable(Byte value) {
-        set(19, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
      */
     public Byte getIsNillable() {
-        return (Byte) get(19);
+        return (Byte) get(17);
     }
 
     /**
      * Setter for <code>oagi.bccp.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setDefaultValue(String value) {
-        set(20, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getDefaultValue() {
-        return (String) get(20);
+        return (String) get(18);
     }
 
     /**
      * Setter for <code>oagi.bccp.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setFixedValue(String value) {
-        set(21, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getFixedValue() {
-        return (String) get(21);
+        return (String) get(19);
     }
 
     /**
      * Setter for <code>oagi.bccp.prev_bccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevBccpId(ULong value) {
-        set(22, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.prev_bccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevBccpId() {
-        return (ULong) get(22);
+        return (ULong) get(20);
     }
 
     /**
      * Setter for <code>oagi.bccp.next_bccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextBccpId(ULong value) {
-        set(23, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.next_bccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextBccpId() {
-        return (ULong) get(23);
+        return (ULong) get(21);
     }
 
     // -------------------------------------------------------------------------
@@ -388,6 +363,509 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Record1<ULong> key() {
         return (Record1) super.key();
+    }
+
+    // -------------------------------------------------------------------------
+    // Record22 type implementation
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, String, String, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
+    }
+
+    @Override
+    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, String, String, ULong, ULong> valuesRow() {
+        return (Row22) super.valuesRow();
+    }
+
+    @Override
+    public Field<ULong> field1() {
+        return Bccp.BCCP.BCCP_ID;
+    }
+
+    @Override
+    public Field<String> field2() {
+        return Bccp.BCCP.GUID;
+    }
+
+    @Override
+    public Field<String> field3() {
+        return Bccp.BCCP.PROPERTY_TERM;
+    }
+
+    @Override
+    public Field<String> field4() {
+        return Bccp.BCCP.REPRESENTATION_TERM;
+    }
+
+    @Override
+    public Field<ULong> field5() {
+        return Bccp.BCCP.BDT_ID;
+    }
+
+    @Override
+    public Field<String> field6() {
+        return Bccp.BCCP.DEN;
+    }
+
+    @Override
+    public Field<String> field7() {
+        return Bccp.BCCP.DEFINITION;
+    }
+
+    @Override
+    public Field<String> field8() {
+        return Bccp.BCCP.DEFINITION_SOURCE;
+    }
+
+    @Override
+    public Field<ULong> field9() {
+        return Bccp.BCCP.NAMESPACE_ID;
+    }
+
+    @Override
+    public Field<Byte> field10() {
+        return Bccp.BCCP.IS_DEPRECATED;
+    }
+
+    @Override
+    public Field<ULong> field11() {
+        return Bccp.BCCP.CREATED_BY;
+    }
+
+    @Override
+    public Field<ULong> field12() {
+        return Bccp.BCCP.OWNER_USER_ID;
+    }
+
+    @Override
+    public Field<ULong> field13() {
+        return Bccp.BCCP.LAST_UPDATED_BY;
+    }
+
+    @Override
+    public Field<LocalDateTime> field14() {
+        return Bccp.BCCP.CREATION_TIMESTAMP;
+    }
+
+    @Override
+    public Field<LocalDateTime> field15() {
+        return Bccp.BCCP.LAST_UPDATE_TIMESTAMP;
+    }
+
+    @Override
+    public Field<String> field16() {
+        return Bccp.BCCP.STATE;
+    }
+
+    @Override
+    public Field<ULong> field17() {
+        return Bccp.BCCP.REVISION_ID;
+    }
+
+    @Override
+    public Field<Byte> field18() {
+        return Bccp.BCCP.IS_NILLABLE;
+    }
+
+    @Override
+    public Field<String> field19() {
+        return Bccp.BCCP.DEFAULT_VALUE;
+    }
+
+    @Override
+    public Field<String> field20() {
+        return Bccp.BCCP.FIXED_VALUE;
+    }
+
+    @Override
+    public Field<ULong> field21() {
+        return Bccp.BCCP.PREV_BCCP_ID;
+    }
+
+    @Override
+    public Field<ULong> field22() {
+        return Bccp.BCCP.NEXT_BCCP_ID;
+    }
+
+    @Override
+    public ULong component1() {
+        return getBccpId();
+    }
+
+    @Override
+    public String component2() {
+        return getGuid();
+    }
+
+    @Override
+    public String component3() {
+        return getPropertyTerm();
+    }
+
+    @Override
+    public String component4() {
+        return getRepresentationTerm();
+    }
+
+    @Override
+    public ULong component5() {
+        return getBdtId();
+    }
+
+    @Override
+    public String component6() {
+        return getDen();
+    }
+
+    @Override
+    public String component7() {
+        return getDefinition();
+    }
+
+    @Override
+    public String component8() {
+        return getDefinitionSource();
+    }
+
+    @Override
+    public ULong component9() {
+        return getNamespaceId();
+    }
+
+    @Override
+    public Byte component10() {
+        return getIsDeprecated();
+    }
+
+    @Override
+    public ULong component11() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong component12() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong component13() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime component14() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime component15() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public String component16() {
+        return getState();
+    }
+
+    @Override
+    public ULong component17() {
+        return getRevisionId();
+    }
+
+    @Override
+    public Byte component18() {
+        return getIsNillable();
+    }
+
+    @Override
+    public String component19() {
+        return getDefaultValue();
+    }
+
+    @Override
+    public String component20() {
+        return getFixedValue();
+    }
+
+    @Override
+    public ULong component21() {
+        return getPrevBccpId();
+    }
+
+    @Override
+    public ULong component22() {
+        return getNextBccpId();
+    }
+
+    @Override
+    public ULong value1() {
+        return getBccpId();
+    }
+
+    @Override
+    public String value2() {
+        return getGuid();
+    }
+
+    @Override
+    public String value3() {
+        return getPropertyTerm();
+    }
+
+    @Override
+    public String value4() {
+        return getRepresentationTerm();
+    }
+
+    @Override
+    public ULong value5() {
+        return getBdtId();
+    }
+
+    @Override
+    public String value6() {
+        return getDen();
+    }
+
+    @Override
+    public String value7() {
+        return getDefinition();
+    }
+
+    @Override
+    public String value8() {
+        return getDefinitionSource();
+    }
+
+    @Override
+    public ULong value9() {
+        return getNamespaceId();
+    }
+
+    @Override
+    public Byte value10() {
+        return getIsDeprecated();
+    }
+
+    @Override
+    public ULong value11() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong value12() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong value13() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime value14() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime value15() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public String value16() {
+        return getState();
+    }
+
+    @Override
+    public ULong value17() {
+        return getRevisionId();
+    }
+
+    @Override
+    public Byte value18() {
+        return getIsNillable();
+    }
+
+    @Override
+    public String value19() {
+        return getDefaultValue();
+    }
+
+    @Override
+    public String value20() {
+        return getFixedValue();
+    }
+
+    @Override
+    public ULong value21() {
+        return getPrevBccpId();
+    }
+
+    @Override
+    public ULong value22() {
+        return getNextBccpId();
+    }
+
+    @Override
+    public BccpRecord value1(ULong value) {
+        setBccpId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value2(String value) {
+        setGuid(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value3(String value) {
+        setPropertyTerm(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value4(String value) {
+        setRepresentationTerm(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value5(ULong value) {
+        setBdtId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value6(String value) {
+        setDen(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value7(String value) {
+        setDefinition(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value8(String value) {
+        setDefinitionSource(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value9(ULong value) {
+        setNamespaceId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value10(Byte value) {
+        setIsDeprecated(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value11(ULong value) {
+        setCreatedBy(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value12(ULong value) {
+        setOwnerUserId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value13(ULong value) {
+        setLastUpdatedBy(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value14(LocalDateTime value) {
+        setCreationTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value15(LocalDateTime value) {
+        setLastUpdateTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value16(String value) {
+        setState(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value17(ULong value) {
+        setRevisionId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value18(Byte value) {
+        setIsNillable(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value19(String value) {
+        setDefaultValue(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value20(String value) {
+        setFixedValue(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value21(ULong value) {
+        setPrevBccpId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value22(ULong value) {
+        setNextBccpId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord values(ULong value1, String value2, String value3, String value4, ULong value5, String value6, String value7, String value8, ULong value9, Byte value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, String value16, ULong value17, Byte value18, String value19, String value20, ULong value21, ULong value22) {
+        value1(value1);
+        value2(value2);
+        value3(value3);
+        value4(value4);
+        value5(value5);
+        value6(value6);
+        value7(value7);
+        value8(value8);
+        value9(value9);
+        value10(value10);
+        value11(value11);
+        value12(value12);
+        value13(value13);
+        value14(value14);
+        value15(value15);
+        value16(value16);
+        value17(value17);
+        value18(value18);
+        value19(value19);
+        value20(value20);
+        value21(value21);
+        value22(value22);
+        return this;
     }
 
     // -------------------------------------------------------------------------
@@ -404,7 +882,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised BccpRecord
      */
-    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Integer revisionNum, Integer revisionTrackingNum, Integer revisionAction, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
+    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong revisionId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
         super(Bccp.BCCP);
 
         set(0, bccpId);
@@ -423,13 +901,11 @@ State change can't be undone. But the history record can still keep the records 
         set(13, creationTimestamp);
         set(14, lastUpdateTimestamp);
         set(15, state);
-        set(16, revisionNum);
-        set(17, revisionTrackingNum);
-        set(18, revisionAction);
-        set(19, isNillable);
-        set(20, defaultValue);
-        set(21, fixedValue);
-        set(22, prevBccpId);
-        set(23, nextBccpId);
+        set(16, revisionId);
+        set(17, isNillable);
+        set(18, defaultValue);
+        set(19, fixedValue);
+        set(20, prevBccpId);
+        set(21, nextBccpId);
     }
 }

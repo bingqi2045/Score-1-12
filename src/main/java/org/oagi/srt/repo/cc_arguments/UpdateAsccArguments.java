@@ -57,9 +57,6 @@ public class UpdateAsccArguments {
         this.creationTimestamp = ascc.getCreationTimestamp();
         this.lastUpdateTimestamp = ascc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(ascc.getState());
-        this.revisionNum = ascc.getRevisionNum();
-        this.revisionTrackingNum = ascc.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(ascc.getRevisionAction());
         this.prevAsccId = ascc.getPrevAsccId();
 
         this._hashCode = this.hashCode();

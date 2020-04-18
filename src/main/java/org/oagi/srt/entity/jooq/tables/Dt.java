@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1577007840;
+    private static final long serialVersionUID = 1395065059;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -128,6 +128,11 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<DtRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
+     * The column <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public final TableField<DtRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+
+    /**
      * The column <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public final TableField<DtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this DT.");
@@ -157,21 +162,6 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public final TableField<DtRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.");
-
-    /**
-     * The column <code>oagi.dt.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
-     */
-    public final TableField<DtRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).");
-
-    /**
-     * The column <code>oagi.dt.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public final TableField<DtRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.");
-
-    /**
-     * The column <code>oagi.dt.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public final TableField<DtRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
 
     /**
      * The column <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
@@ -228,7 +218,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.DT_DT_REVISION_IDX);
+        return Arrays.<Index>asList(Indexes.DT_DT_GUID_IDX, Indexes.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX);
     }
 
     @Override
@@ -248,7 +238,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_REVISION_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
     public Dt dtPreviousVersionDtIdFk() {
@@ -257,6 +247,10 @@ The value of this column in the latest history record should be the same as that
 
     public Dt dtBasedDtIdFk() {
         return new Dt(this, Keys.DT_BASED_DT_ID_FK);
+    }
+
+    public Revision revision() {
+        return new Revision(this, Keys.DT_REVISION_ID_FK);
     }
 
     public AppUser dtCreatedByFk() {

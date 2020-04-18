@@ -57,9 +57,6 @@ public class UpdateAccArguments {
         this.creationTimestamp = acc.getCreationTimestamp();
         this.lastUpdateTimestamp = acc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(acc.getState());
-        this.revisionNum = acc.getRevisionNum();
-        this.revisionTrackingNum = acc.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(acc.getRevisionAction());
         this.isDeprecated = acc.getIsDeprecated() == 1;
         this.isAbstract = acc.getIsAbstract() == 1;
         this.prevAccId = acc.getPrevAccId();

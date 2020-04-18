@@ -2,6 +2,7 @@ package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.repo.cc_arguments.*;
@@ -202,13 +203,15 @@ public class CoreComponentRepository {
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
                 BCCP.STATE,
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 BCCP.BDT_ID,
                 BCCP.OWNER_USER_ID,
                 BCCP.PREV_BCCP_ID,
                 BCCP.NEXT_BCCP_ID)
                 .from(BCCP)
+                .join(REVISION)
+                .on(Tables.BCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNode.class);
     }
@@ -305,9 +308,6 @@ public class CoreComponentRepository {
                 .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
                 .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
@@ -332,9 +332,6 @@ public class CoreComponentRepository {
                 .set(ASCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCC.STATE, arguments.getState().name())
-                .set(ASCC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ASCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ASCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ASCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ASCC.PREV_ASCC_ID, arguments.getPrevAsccId())
                 .set(ASCC.NEXT_ASCC_ID, arguments.getNextAsccId()).returning(ASCC.ASCC_ID).fetchOne().getAsccId();
@@ -359,9 +356,6 @@ public class CoreComponentRepository {
                 .set(BCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCC.STATE, arguments.getState().name())
-                .set(BCC.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(BCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(BCC.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(BCC.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -415,9 +409,6 @@ public class CoreComponentRepository {
                 .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -453,9 +444,6 @@ public class CoreComponentRepository {
                 .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCCP.STATE, arguments.getState().name())
-                .set(ASCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(ASCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ASCCP.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())
@@ -490,9 +478,6 @@ public class CoreComponentRepository {
                 .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ACC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ACC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1: 0)
                 .set(ACC.PREV_ACC_ID, arguments.getAccId())
@@ -533,9 +518,6 @@ public class CoreComponentRepository {
                 .set(ASCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCC.STATE, arguments.getState().name())
-                .set(ASCC.REVISION_NUM, arguments.getRevisionNum())
-                .set(ASCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ASCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ASCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ASCC.PREV_ASCC_ID, arguments.getPrevAsccId())
                 .set(ASCC.NEXT_ASCC_ID, arguments.getNextAsccId()).returning(ASCC.ASCC_ID).fetchOne().getAsccId();
@@ -577,9 +559,6 @@ public class CoreComponentRepository {
                 .set(BCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCC.STATE, arguments.getState().name())
-                .set(BCC.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCC.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCC.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(BCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(BCC.PREV_BCC_ID, arguments.getPrevBccId())
                 .set(BCC.NEXT_BCC_ID, arguments.getNextBccId()).returning(BCC.BCC_ID).fetchOne().getBccId();
@@ -617,9 +596,6 @@ public class CoreComponentRepository {
                 .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(BCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(BCCP.REVISION_ACTION, arguments.getRevisionAction().getValue())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -651,9 +627,6 @@ public class CoreComponentRepository {
                 .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCCP.STATE, arguments.getState().name())
-                .set(ASCCP.REVISION_NUM, arguments.getRevisionNum())
-                .set(ASCCP.REVISION_TRACKING_NUM, arguments.getRevisionTrackingNum())
-                .set(ASCCP.REVISION_ACTION, (byte) arguments.getRevisionAction().getValue())
                 .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1: 0)
                 .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1: 0)
                 .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())

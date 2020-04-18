@@ -11,6 +11,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Row9;
@@ -22,6 +23,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CommentRecord;
@@ -33,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.CommentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Comment extends TableImpl<CommentRecord> {
 
-    private static final long serialVersionUID = 673385482;
+    private static final long serialVersionUID = 1206921249;
 
     /**
      * The reference instance of <code>oagi.comment</code>
@@ -129,6 +131,11 @@ public class Comment extends TableImpl<CommentRecord> {
     @Override
     public Schema getSchema() {
         return Oagi.OAGI;
+    }
+
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.COMMENT_REFERENCE);
     }
 
     @Override

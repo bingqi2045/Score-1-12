@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = 2106837020;
+    private static final long serialVersionUID = 1297317569;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -152,19 +152,9 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<BccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
-     * The column <code>oagi.bcc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * The column <code>oagi.bcc.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public final TableField<BccRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).");
-
-    /**
-     * The column <code>oagi.bcc.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public final TableField<BccRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.");
-
-    /**
-     * The column <code>oagi.bcc.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public final TableField<BccRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+    public final TableField<BccRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
@@ -238,7 +228,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCC_BCC_REVISION_IDX);
+        return Arrays.<Index>asList(Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
     }
 
     @Override
@@ -258,7 +248,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
+        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_REVISION_ID_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
     }
 
     public Bccp bccp() {
@@ -279,6 +269,10 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     public AppUser bccLastUpdatedByFk() {
         return new AppUser(this, Keys.BCC_LAST_UPDATED_BY_FK);
+    }
+
+    public Revision revision() {
+        return new Revision(this, Keys.BCC_REVISION_ID_FK);
     }
 
     public Bcc bccPrevBccIdFk() {

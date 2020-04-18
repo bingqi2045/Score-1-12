@@ -1,6 +1,9 @@
 package org.oagi.srt.repository;
 
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record21;
+import org.jooq.SelectOnConditionStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ASCC;
 import org.oagi.srt.entity.jooq.Tables;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.oagi.srt.entity.jooq.Tables.REVISION;
 
 @Repository
 public class ASCCRepository implements SrtRepository<ASCC> {
@@ -20,7 +25,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
             ULong, String, Integer, Integer, Integer,
             ULong, ULong, String, String, String,
             ULong, ULong, ULong, LocalDateTime, LocalDateTime,
-            String, Integer, Integer, Byte, ULong,
+            String, UInteger, UInteger, String, ULong,
             Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.ASCC.ASCC_ID,
@@ -39,14 +44,16 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
+                Tables.REVISION.REVISION_ACTION,
                 Tables.ASCC_MANIFEST.RELEASE_ID,
                 Tables.ASCC.IS_DEPRECATED.as("deprecated"))
                 .from(Tables.ASCC)
                 .join(Tables.ASCC_MANIFEST)
-                .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_MANIFEST.ASCC_ID));
+                .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_MANIFEST.ASCC_ID))
+                .join(REVISION)
+                .on(Tables.ASCC.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
     @Override

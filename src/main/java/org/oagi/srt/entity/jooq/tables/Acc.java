@@ -14,6 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 794007736;
+    private static final long serialVersionUID = -1410599858;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -140,19 +141,9 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
-     * The column <code>oagi.acc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * The column <code>oagi.acc.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public final TableField<AccRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).");
-
-    /**
-     * The column <code>oagi.acc.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public final TableField<AccRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.");
-
-    /**
-     * The column <code>oagi.acc.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public final TableField<AccRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+    public final TableField<AccRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.acc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
@@ -214,7 +205,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_ACC_REVISION_IDX);
+        return Arrays.<Index>asList(Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
     }
 
     @Override
@@ -234,7 +225,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
+        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_REVISION_ID_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
     }
 
     public Acc accBasedAccIdFk() {
@@ -255,6 +246,10 @@ State change can't be undone. But the history record can still keep the records 
 
     public AppUser accLastUpdatedByFk() {
         return new AppUser(this, Keys.ACC_LAST_UPDATED_BY_FK);
+    }
+
+    public Revision revision() {
+        return new Revision(this, Keys.ACC_REVISION_ID_FK);
     }
 
     public Acc accPrevAccIdFk() {
@@ -289,5 +284,14 @@ State change can't be undone. But the history record can still keep the records 
     @Override
     public Acc rename(Name name) {
         return new Acc(name, null);
+    }
+
+    // -------------------------------------------------------------------------
+    // Row21 type methods
+    // -------------------------------------------------------------------------
+
+    @Override
+    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

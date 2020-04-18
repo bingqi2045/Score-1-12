@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1532714729;
+    private static final long serialVersionUID = -937599080;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -236,17 +236,31 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
+     * Setter for <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public void setRevisionId(ULong value) {
+        set(15, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public ULong getRevisionId() {
+        return (ULong) get(15);
+    }
+
+    /**
      * Setter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public void setCreatedBy(ULong value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(15);
+        return (ULong) get(16);
     }
 
     /**
@@ -255,7 +269,7 @@ State change can't be undone. But the history record can still keep the records 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
@@ -264,21 +278,21 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(16);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(17);
+        return (ULong) get(18);
     }
 
     /**
@@ -287,7 +301,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
@@ -296,7 +310,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(18);
+        return (LocalDateTime) get(19);
     }
 
     /**
@@ -305,7 +319,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
@@ -314,91 +328,49 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(19);
-    }
-
-    /**
-     * Setter for <code>oagi.dt.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
-     */
-    public void setRevisionNum(Integer value) {
-        set(20, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
-     */
-    public Integer getRevisionNum() {
-        return (Integer) get(20);
-    }
-
-    /**
-     * Setter for <code>oagi.dt.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public void setRevisionTrackingNum(Integer value) {
-        set(21, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public Integer getRevisionTrackingNum() {
-        return (Integer) get(21);
-    }
-
-    /**
-     * Setter for <code>oagi.dt.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public void setRevisionAction(Byte value) {
-        set(22, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public Byte getRevisionAction() {
-        return (Byte) get(22);
+        return (LocalDateTime) get(20);
     }
 
     /**
      * Setter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(23, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(23);
+        return (Byte) get(21);
     }
 
     /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtId(ULong value) {
-        set(24, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtId() {
-        return (ULong) get(24);
+        return (ULong) get(22);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtId(ULong value) {
-        set(25, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtId() {
-        return (ULong) get(25);
+        return (ULong) get(23);
     }
 
     // -------------------------------------------------------------------------
@@ -424,7 +396,7 @@ The value of this column in the latest history record should be the same as that
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, String state, ULong revisionId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -442,16 +414,14 @@ The value of this column in the latest history record should be the same as that
         set(12, contentComponentDefinition);
         set(13, revisionDoc);
         set(14, state);
-        set(15, createdBy);
-        set(16, lastUpdatedBy);
-        set(17, ownerUserId);
-        set(18, creationTimestamp);
-        set(19, lastUpdateTimestamp);
-        set(20, revisionNum);
-        set(21, revisionTrackingNum);
-        set(22, revisionAction);
-        set(23, isDeprecated);
-        set(24, prevDtId);
-        set(25, nextDtId);
+        set(15, revisionId);
+        set(16, createdBy);
+        set(17, lastUpdatedBy);
+        set(18, ownerUserId);
+        set(19, creationTimestamp);
+        set(20, lastUpdateTimestamp);
+        set(21, isDeprecated);
+        set(22, prevDtId);
+        set(23, nextDtId);
     }
 }

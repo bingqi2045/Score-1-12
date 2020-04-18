@@ -146,7 +146,7 @@ public class CcNodeService {
                 .setState(CcState.WIP)
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
-                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionAction(RevisionAction.Added)
                 .setDeprecated(false)
                 .setAbstract(false)
                 .setCreatedBy(userId)
@@ -184,7 +184,7 @@ public class CcNodeService {
                 .setNamespaceId(null)
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
-                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionAction(RevisionAction.Added)
                 .setCreatedBy(ULong.valueOf(userId))
                 .setLastUpdatedBy(ULong.valueOf(userId))
                 .setOwnerUserId(ULong.valueOf(userId))
@@ -223,7 +223,7 @@ public class CcNodeService {
                 .setNamespaceId(null)
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
-                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionAction(RevisionAction.Added)
                 .setCreatedBy(userId)
                 .setLastUpdatedBy(userId)
                 .setOwnerUserId(userId)
@@ -353,8 +353,7 @@ public class CcNodeService {
 
         ULong accId = updateAccArguments.setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Update)
-                .setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1)
+                .setRevisionAction(RevisionAction.Modified)
                 .setPrevAccId(accRecord.getAccId())
                 .execute();
 
@@ -424,8 +423,7 @@ public class CcNodeService {
 
         updateBccpArguments.setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Update)
-                .setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1)
+                .setRevisionAction(RevisionAction.Modified)
                 .setPrevBccpId(bccpRecord.getBccpId());
         ULong bccpId = ccRepository.execute(updateBccpArguments);
 
@@ -480,8 +478,7 @@ public class CcNodeService {
             .setReuseableIndicator(detail.isReusable())
             .setLastUpdatedBy(userId)
             .setLastUpdateTimestamp(timestamp)
-            .setRevisionAction(RevisionAction.Update)
-            .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
+            .setRevisionAction(RevisionAction.Modified)
             .setPrevAsccpId(asccpRecord.getAsccpId());
 
         ULong asccpId = ccRepository.execute(updateAsccpArguments);
@@ -533,7 +530,7 @@ public class CcNodeService {
                 .setState(CcState.valueOf(accRecord.getState()))
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
-                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionAction(RevisionAction.Added)
                 .execute();
 
         return ccRepository.insertAsccManifestArguments()
@@ -580,7 +577,7 @@ public class CcNodeService {
                 .setState(CcState.valueOf(accRecord.getState()))
                 .setRevisionNum(1)
                 .setRevisionTrackingNum(1)
-                .setRevisionAction(RevisionAction.Insert)
+                .setRevisionAction(RevisionAction.Added)
                 .execute();
 
         return ccRepository.insertBccManifestArguments()
@@ -682,9 +679,7 @@ public class CcNodeService {
         ULong accId = ccRepository.updateAccArguments(accRecord)
                 .setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Insert)
-                .setRevisionNum(accRecord.getRevisionNum() + 1)
-                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Added)
                 .setPrevAccId(accRecord.getAccId())
                 .setState(CcState.WIP)
                 .execute();
@@ -724,9 +719,7 @@ public class CcNodeService {
         ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
                 .setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Insert)
-                .setRevisionNum(asccpRecord.getRevisionNum() + 1)
-                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Added)
                 .setState(CcState.WIP)
                 .setPrevAsccpId(asccpRecord.getAsccpId())
                 .execute();
@@ -753,9 +746,7 @@ public class CcNodeService {
         ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
                 .setLastUpdatedBy(userId)
                 .setLastUpdateTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Insert)
-                .setRevisionNum(bccpRecord.getRevisionNum() + 1)
-                .setRevisionTrackingNum(1)
+                .setRevisionAction(RevisionAction.Added)
                 .setState(CcState.WIP)
                 .setPrevBccpId(bccpRecord.getBccpId())
                 .execute();
@@ -803,8 +794,7 @@ public class CcNodeService {
         ULong asccId = ccRepository.updateAsccArguments(asccRecord)
                 .setLastUpdateTimestamp(timestamp)
                 .setLastUpdatedBy(ULong.valueOf(userId))
-                .setRevisionAction(RevisionAction.Delete)
-                .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                .setRevisionAction(RevisionAction.Deleted)
                 .execute();
         
         ccRepository.updateAsccManifestArguments(asccManifestRecord)
@@ -824,8 +814,7 @@ public class CcNodeService {
         ULong bccId = ccRepository.updateBccArguments(bccRecord)
                 .setLastUpdateTimestamp(timestamp)
                 .setLastUpdatedBy(ULong.valueOf(userId))
-                .setRevisionAction(RevisionAction.Delete)
-                .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                .setRevisionAction(RevisionAction.Deleted)
                 .execute();
 
         ccRepository.updateBccManifestArguments(bccManifestRecord)
@@ -872,8 +861,7 @@ public class CcNodeService {
             ULong asccId = ccRepository.updateAsccArguments(asccRecord)
                     .setLastUpdatedBy(ULong.valueOf(userId))
                     .setLastUpdateTimestamp(timestamp)
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setSeqKey(asccRecord.getSeqKey() - 1)
                     .execute();
 
@@ -893,8 +881,7 @@ public class CcNodeService {
             ULong bccId = ccRepository.updateBccArguments(bccRecord)
                     .setLastUpdatedBy(ULong.valueOf(userId))
                     .setLastUpdateTimestamp(timestamp)
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setSeqKey(bccRecord.getSeqKey() - 1)
                     .execute();
 
@@ -1055,8 +1042,7 @@ public class CcNodeService {
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
                     .setState(CcState.valueOf(acc.getState()))
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevAsccId(asccRecord.getAsccId())
                     .execute();
             ccRepository.updateAsccManifestArguments(asccManifest)
@@ -1077,8 +1063,7 @@ public class CcNodeService {
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
                     .setState(CcState.valueOf(asccp.getState()))
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevAsccId(asccRecord.getAsccId())
                     .execute();
             ccRepository.updateAsccManifestArguments(asccManifest)
@@ -1099,8 +1084,7 @@ public class CcNodeService {
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
                     .setState(CcState.valueOf(acc.getState()))
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevBccId(bccRecord.getBccId())
                     .execute();
             ccRepository.updateBccManifestArguments(bccManifest)
@@ -1121,8 +1105,7 @@ public class CcNodeService {
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
                     .setState(CcState.valueOf(bccp.getState()))
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevBccId(bccRecord.getBccId())
                     .execute();
             ccRepository.updateBccManifestArguments(bccManifest)
@@ -1140,8 +1123,7 @@ public class CcNodeService {
                     .setRoleOfAccId(accRecord.getAccId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevAsccpId(asccpRecord.getAsccpId())
                     .execute();
             ccRepository.updateAsccpManifestArguments(asccpManifest)
@@ -1162,8 +1144,7 @@ public class CcNodeService {
                     .setBasedAccId(basedAccRecord.getAccId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setRevisionAction(RevisionAction.Update)
-                    .setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1)
+                    .setRevisionAction(RevisionAction.Modified)
                     .setPrevAccId(accRecord.getAccId())
                     .execute();
             ccRepository.updateAccManifestArguments(accManifestRecord)

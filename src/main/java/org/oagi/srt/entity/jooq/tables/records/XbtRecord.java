@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record19;
-import org.jooq.Row19;
+import org.jooq.Record17;
+import org.jooq.Row17;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Xbt;
@@ -21,9 +21,9 @@ import org.oagi.srt.entity.jooq.tables.Xbt;
  * the XMLSchemaBuiltinType Patterns schemas.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record19<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Byte, Byte> {
+public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
-    private static final long serialVersionUID = 963080615;
+    private static final long serialVersionUID = 341833768;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
@@ -166,129 +166,101 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     /**
+     * Setter for <code>oagi.xbt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public void setRevisionId(ULong value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>oagi.xbt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public ULong getRevisionId() {
+        return (ULong) get(10);
+    }
+
+    /**
      * Setter for <code>oagi.xbt.created_by</code>.
      */
     public void setCreatedBy(ULong value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.created_by</code>.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(10);
+        return (ULong) get(11);
     }
 
     /**
      * Setter for <code>oagi.xbt.owner_user_id</code>.
      */
     public void setOwnerUserId(ULong value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.owner_user_id</code>.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(11);
+        return (ULong) get(12);
     }
 
     /**
      * Setter for <code>oagi.xbt.last_updated_by</code>.
      */
     public void setLastUpdatedBy(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.last_updated_by</code>.
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
      * Setter for <code>oagi.xbt.creation_timestamp</code>.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.creation_timestamp</code>.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(13);
+        return (LocalDateTime) get(14);
     }
 
     /**
      * Setter for <code>oagi.xbt.last_update_timestamp</code>.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.last_update_timestamp</code>.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(14);
-    }
-
-    /**
-     * Setter for <code>oagi.xbt.revision_num</code>.
-     */
-    public void setRevisionNum(Integer value) {
-        set(15, value);
-    }
-
-    /**
-     * Getter for <code>oagi.xbt.revision_num</code>.
-     */
-    public Integer getRevisionNum() {
-        return (Integer) get(15);
-    }
-
-    /**
-     * Setter for <code>oagi.xbt.revision_tracking_num</code>.
-     */
-    public void setRevisionTrackingNum(Integer value) {
-        set(16, value);
-    }
-
-    /**
-     * Getter for <code>oagi.xbt.revision_tracking_num</code>.
-     */
-    public Integer getRevisionTrackingNum() {
-        return (Integer) get(16);
-    }
-
-    /**
-     * Setter for <code>oagi.xbt.revision_action</code>.
-     */
-    public void setRevisionAction(Byte value) {
-        set(17, value);
-    }
-
-    /**
-     * Getter for <code>oagi.xbt.revision_action</code>.
-     */
-    public Byte getRevisionAction() {
-        return (Byte) get(17);
+        return (LocalDateTime) get(15);
     }
 
     /**
      * Setter for <code>oagi.xbt.is_deprecated</code>.
      */
     public void setIsDeprecated(Byte value) {
-        set(18, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.xbt.is_deprecated</code>.
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(18);
+        return (Byte) get(16);
     }
 
     // -------------------------------------------------------------------------
@@ -301,17 +273,17 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     // -------------------------------------------------------------------------
-    // Record19 type implementation
+    // Record17 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Byte, Byte> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 
     @Override
-    public Row19<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Byte, Byte> valuesRow() {
-        return (Row19) super.valuesRow();
+    public Row17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> valuesRow() {
+        return (Row17) super.valuesRow();
     }
 
     @Override
@@ -366,46 +338,36 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
 
     @Override
     public Field<ULong> field11() {
-        return Xbt.XBT.CREATED_BY;
+        return Xbt.XBT.REVISION_ID;
     }
 
     @Override
     public Field<ULong> field12() {
-        return Xbt.XBT.OWNER_USER_ID;
+        return Xbt.XBT.CREATED_BY;
     }
 
     @Override
     public Field<ULong> field13() {
+        return Xbt.XBT.OWNER_USER_ID;
+    }
+
+    @Override
+    public Field<ULong> field14() {
         return Xbt.XBT.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field14() {
+    public Field<LocalDateTime> field15() {
         return Xbt.XBT.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field15() {
+    public Field<LocalDateTime> field16() {
         return Xbt.XBT.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<Integer> field16() {
-        return Xbt.XBT.REVISION_NUM;
-    }
-
-    @Override
-    public Field<Integer> field17() {
-        return Xbt.XBT.REVISION_TRACKING_NUM;
-    }
-
-    @Override
-    public Field<Byte> field18() {
-        return Xbt.XBT.REVISION_ACTION;
-    }
-
-    @Override
-    public Field<Byte> field19() {
+    public Field<Byte> field17() {
         return Xbt.XBT.IS_DEPRECATED;
     }
 
@@ -461,46 +423,36 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
 
     @Override
     public ULong component11() {
-        return getCreatedBy();
+        return getRevisionId();
     }
 
     @Override
     public ULong component12() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong component13() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong component14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component14() {
+    public LocalDateTime component15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component15() {
+    public LocalDateTime component16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public Integer component16() {
-        return getRevisionNum();
-    }
-
-    @Override
-    public Integer component17() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Byte component18() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public Byte component19() {
+    public Byte component17() {
         return getIsDeprecated();
     }
 
@@ -556,46 +508,36 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
 
     @Override
     public ULong value11() {
-        return getCreatedBy();
+        return getRevisionId();
     }
 
     @Override
     public ULong value12() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong value13() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong value14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value14() {
+    public LocalDateTime value15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value15() {
+    public LocalDateTime value16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public Integer value16() {
-        return getRevisionNum();
-    }
-
-    @Override
-    public Integer value17() {
-        return getRevisionTrackingNum();
-    }
-
-    @Override
-    public Byte value18() {
-        return getRevisionAction();
-    }
-
-    @Override
-    public Byte value19() {
+    public Byte value17() {
         return getIsDeprecated();
     }
 
@@ -661,60 +603,48 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
 
     @Override
     public XbtRecord value11(ULong value) {
-        setCreatedBy(value);
+        setRevisionId(value);
         return this;
     }
 
     @Override
     public XbtRecord value12(ULong value) {
-        setOwnerUserId(value);
+        setCreatedBy(value);
         return this;
     }
 
     @Override
     public XbtRecord value13(ULong value) {
+        setOwnerUserId(value);
+        return this;
+    }
+
+    @Override
+    public XbtRecord value14(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public XbtRecord value14(LocalDateTime value) {
+    public XbtRecord value15(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public XbtRecord value15(LocalDateTime value) {
+    public XbtRecord value16(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public XbtRecord value16(Integer value) {
-        setRevisionNum(value);
-        return this;
-    }
-
-    @Override
-    public XbtRecord value17(Integer value) {
-        setRevisionTrackingNum(value);
-        return this;
-    }
-
-    @Override
-    public XbtRecord value18(Byte value) {
-        setRevisionAction(value);
-        return this;
-    }
-
-    @Override
-    public XbtRecord value19(Byte value) {
+    public XbtRecord value17(Byte value) {
         setIsDeprecated(value);
         return this;
     }
 
     @Override
-    public XbtRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, Integer value16, Integer value17, Byte value18, Byte value19) {
+    public XbtRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, Byte value17) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -732,8 +662,6 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
         value15(value15);
         value16(value16);
         value17(value17);
-        value18(value18);
-        value19(value19);
         return this;
     }
 
@@ -751,7 +679,7 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     /**
      * Create a detached, initialised XbtRecord
      */
-    public XbtRecord(ULong xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, ULong subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated) {
+    public XbtRecord(ULong xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, ULong subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong revisionId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
         super(Xbt.XBT);
 
         set(0, xbtId);
@@ -764,14 +692,12 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
         set(7, schemaDefinition);
         set(8, revisionDoc);
         set(9, state);
-        set(10, createdBy);
-        set(11, ownerUserId);
-        set(12, lastUpdatedBy);
-        set(13, creationTimestamp);
-        set(14, lastUpdateTimestamp);
-        set(15, revisionNum);
-        set(16, revisionTrackingNum);
-        set(17, revisionAction);
-        set(18, isDeprecated);
+        set(10, revisionId);
+        set(11, createdBy);
+        set(12, ownerUserId);
+        set(13, lastUpdatedBy);
+        set(14, creationTimestamp);
+        set(15, lastUpdateTimestamp);
+        set(16, isDeprecated);
     }
 }

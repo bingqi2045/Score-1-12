@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.*;
+
 @Repository
 public class BCCPRepository implements SrtRepository<BCCP> {
 
@@ -19,34 +21,36 @@ public class BCCPRepository implements SrtRepository<BCCP> {
 
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
-                Tables.BCCP.BCCP_ID,
-                Tables.BCCP.GUID,
-                Tables.BCCP.PROPERTY_TERM,
-                Tables.BCCP.REPRESENTATION_TERM,
-                Tables.BCCP.DEFAULT_VALUE,
-                Tables.BCCP.BDT_ID,
-                Tables.BCCP.DEN,
-                Tables.BCCP.DEFINITION,
-                Tables.BCCP.DEFINITION_SOURCE,
-                Tables.BCCP_MANIFEST.MODULE_ID,
-                Tables.BCCP.NAMESPACE_ID,
-                Tables.BCCP.CREATED_BY,
-                Tables.BCCP.OWNER_USER_ID,
-                Tables.BCCP.LAST_UPDATED_BY,
-                Tables.BCCP.CREATION_TIMESTAMP,
-                Tables.BCCP.LAST_UPDATE_TIMESTAMP,
-                Tables.BCCP.STATE,
-                Tables.BCCP.REVISION_NUM,
-                Tables.BCCP.REVISION_TRACKING_NUM,
-                Tables.BCCP.REVISION_ACTION,
-                Tables.BCCP_MANIFEST.RELEASE_ID,
-                Tables.BCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.BCCP.IS_NILLABLE.as("nillable"),
+                BCCP.BCCP_ID,
+                BCCP.GUID,
+                BCCP.PROPERTY_TERM,
+                BCCP.REPRESENTATION_TERM,
+                BCCP.DEFAULT_VALUE,
+                BCCP.BDT_ID,
+                BCCP.DEN,
+                BCCP.DEFINITION,
+                BCCP.DEFINITION_SOURCE,
+                BCCP_MANIFEST.MODULE_ID,
+                BCCP.NAMESPACE_ID,
+                BCCP.CREATED_BY,
+                BCCP.OWNER_USER_ID,
+                BCCP.LAST_UPDATED_BY,
+                BCCP.CREATION_TIMESTAMP,
+                BCCP.LAST_UPDATE_TIMESTAMP,
+                BCCP.STATE,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
+                REVISION.REVISION_ACTION,
+                BCCP_MANIFEST.RELEASE_ID,
+                BCCP.IS_DEPRECATED.as("deprecated"),
+                BCCP.IS_NILLABLE.as("nillable"),
                 Tables.MODULE.MODULE_.as("module"))
-                .from(Tables.BCCP)
-                .join(Tables.BCCP_MANIFEST)
-                .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_MANIFEST.BCCP_ID))
-                .leftJoin(Tables.MODULE).on(Tables.BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .from(BCCP)
+                .join(BCCP_MANIFEST)
+                .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(REVISION)
+                .on(BCCP.REVISION_ID.eq(REVISION.REVISION_ID))
+                .leftJoin(Tables.MODULE).on(BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 
     @Override
@@ -60,7 +64,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.BCCP.BCCP_ID.eq(ULong.valueOf(id)))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(id)))
                 .fetchOptionalInto(BCCP.class).orElse(null);
     }
 }

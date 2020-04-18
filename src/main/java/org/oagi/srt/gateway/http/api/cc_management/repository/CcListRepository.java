@@ -2,12 +2,9 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.TableField;
-import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.Release;
-import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
@@ -26,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.oagi.srt.data.DTType.BDT;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
 public class CcListRepository {
@@ -106,12 +103,14 @@ public class CcListRepository {
                 ACC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ACC)
                 .join(ACC_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID).and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(ACC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -137,7 +136,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ACC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(ACC.REVISION_NUM) + "." + row.getValue(ACC.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -196,12 +195,14 @@ public class CcListRepository {
                 ASCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID).and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -222,7 +223,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(ASCC.REVISION_NUM) + "." + row.getValue(ASCC.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -281,12 +282,14 @@ public class CcListRepository {
                 BCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID).and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(BCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -307,7 +310,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(BCC.REVISION_NUM) + "." + row.getValue(BCC.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -370,12 +373,14 @@ public class CcListRepository {
                 ASCCP.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(ASCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -399,7 +404,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(ASCCP.REVISION_NUM) + "." + row.getValue(ASCCP.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -461,12 +466,14 @@ public class CcListRepository {
                 BCCP.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID).and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(BCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -490,7 +497,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(BCCP.REVISION_NUM) + "." + row.getValue(BCCP.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -550,12 +557,14 @@ public class CcListRepository {
                 DT.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                DT.REVISION_NUM,
-                DT.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(DT)
                 .join(DT_MANIFEST)
                 .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID).and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(REVISION)
+                .on(DT.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -583,7 +592,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(DT.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(DT.REVISION_NUM) + "." + row.getValue(DT.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -599,8 +608,6 @@ public class CcListRepository {
         acc.setOwnerUserId(ownerUserId);
         acc.setLastUpdatedBy(requesterUserId);
         acc.setLastUpdateTimestamp(timestamp);
-        acc.setRevisionTrackingNum(acc.getRevisionTrackingNum() + 1);
-        acc.setRevisionAction((byte) RevisionAction.Update.getValue());
         acc.insert();
 
         accManifest.setAccId(acc.getAccId());
@@ -621,8 +628,6 @@ public class CcListRepository {
             asccRecord.setOwnerUserId(ownerUserId);
             asccRecord.setLastUpdatedBy(requesterUserId);
             asccRecord.setLastUpdateTimestamp(timestamp);
-            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -646,8 +651,6 @@ public class CcListRepository {
             bccRecord.setOwnerUserId(ownerUserId);
             bccRecord.setLastUpdatedBy(requesterUserId);
             bccRecord.setLastUpdateTimestamp(timestamp);
-            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.insert();
 
             bccManifestRecord.setBccId(bccRecord.getBccId());
@@ -672,8 +675,6 @@ public class CcListRepository {
         asccp.setOwnerUserId(ownerUserId);
         asccp.setLastUpdatedBy(requesterUserId);
         asccp.setLastUpdateTimestamp(timestamp);
-        asccp.setRevisionTrackingNum(asccp.getRevisionTrackingNum() + 1);
-        asccp.setRevisionAction((byte) RevisionAction.Update.getValue());
         asccp.insert();
 
         asccpManifest.setAsccpId(asccp.getAsccpId());
@@ -685,8 +686,6 @@ public class CcListRepository {
             asccRecord.setToAsccpId(asccp.getAsccpId());
             asccRecord.setLastUpdatedBy(requesterUserId);
             asccRecord.setLastUpdateTimestamp(timestamp);
-            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -707,8 +706,6 @@ public class CcListRepository {
         bccp.setOwnerUserId(ownerUserId);
         bccp.setLastUpdatedBy(requesterUserId);
         bccp.setLastUpdateTimestamp(timestamp);
-        bccp.setRevisionTrackingNum(bccp.getRevisionTrackingNum() + 1);
-        bccp.setRevisionAction(RevisionAction.Update.getValue());
         bccp.insert();
 
         bccpManifest.setBccpId(bccp.getBccpId());
@@ -721,8 +718,6 @@ public class CcListRepository {
             bccRecord.setToBccpId(bccp.getBccpId());
             bccRecord.setLastUpdatedBy(requesterUserId);
             bccRecord.setLastUpdateTimestamp(timestamp);
-            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.insert();
 
             bccManifestRecord.setBccId(bccRecord.getBccId());

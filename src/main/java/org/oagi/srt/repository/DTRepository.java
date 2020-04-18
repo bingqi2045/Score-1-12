@@ -5,11 +5,12 @@ import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.DT;
-import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
 public class DTRepository implements SrtRepository<DT> {
@@ -19,36 +20,38 @@ public class DTRepository implements SrtRepository<DT> {
 
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
-                Tables.DT.DT_ID,
-                Tables.DT.GUID,
-                Tables.DT.TYPE,
-                Tables.DT.VERSION_NUM,
-                Tables.DT.PREVIOUS_VERSION_DT_ID,
-                Tables.DT.DATA_TYPE_TERM,
-                Tables.DT.QUALIFIER,
-                Tables.DT.BASED_DT_ID,
-                Tables.DT.DEN,
-                Tables.DT.CONTENT_COMPONENT_DEN,
-                Tables.DT.DEFINITION,
-                Tables.DT.DEFINITION_SOURCE,
-                Tables.DT.CONTENT_COMPONENT_DEFINITION,
-                Tables.DT.REVISION_DOC,
-                Tables.DT.STATE,
-                Tables.DT_MANIFEST.MODULE_ID,
-                Tables.DT.CREATED_BY,
-                Tables.DT.LAST_UPDATED_BY,
-                Tables.DT.OWNER_USER_ID,
-                Tables.DT.CREATION_TIMESTAMP,
-                Tables.DT.LAST_UPDATE_TIMESTAMP,
-                Tables.DT.REVISION_NUM,
-                Tables.DT.REVISION_TRACKING_NUM,
-                Tables.DT_MANIFEST.RELEASE_ID,
-                Tables.DT.IS_DEPRECATED.as("deprecated"),
-                Tables.MODULE.MODULE_.as("module"))
-                .from(Tables.DT)
-                .join(Tables.DT_MANIFEST)
-                .on(Tables.DT.DT_ID.eq(Tables.DT_MANIFEST.DT_ID))
-                .leftJoin(Tables.MODULE).on(Tables.DT_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                DT.DT_ID,
+                DT.GUID,
+                DT.TYPE,
+                DT.VERSION_NUM,
+                DT.PREVIOUS_VERSION_DT_ID,
+                DT.DATA_TYPE_TERM,
+                DT.QUALIFIER,
+                DT.BASED_DT_ID,
+                DT.DEN,
+                DT.CONTENT_COMPONENT_DEN,
+                DT.DEFINITION,
+                DT.DEFINITION_SOURCE,
+                DT.CONTENT_COMPONENT_DEFINITION,
+                DT.REVISION_DOC,
+                DT.STATE,
+                DT_MANIFEST.MODULE_ID,
+                DT.CREATED_BY,
+                DT.LAST_UPDATED_BY,
+                DT.OWNER_USER_ID,
+                DT.CREATION_TIMESTAMP,
+                DT.LAST_UPDATE_TIMESTAMP,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
+                DT_MANIFEST.RELEASE_ID,
+                DT.IS_DEPRECATED.as("deprecated"),
+                MODULE.MODULE_.as("module"))
+                .from(DT)
+                .join(DT_MANIFEST)
+                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .join(REVISION)
+                .on(DT.REVISION_ID.eq(REVISION.REVISION_ID))
+                .leftJoin(MODULE).on(DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID));
     }
 
     @Override
@@ -62,7 +65,7 @@ public class DTRepository implements SrtRepository<DT> {
             return null;
         }
         return getSelectOnConditionStep()
-                .where(Tables.DT.DT_ID.eq(ULong.valueOf(id)))
+                .where(DT.DT_ID.eq(ULong.valueOf(id)))
                 .fetchOptionalInto(DT.class).orElse(null);
     }
 }

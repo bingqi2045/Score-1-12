@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.REVISION;
+
 @Repository
 public class BCCRepository implements SrtRepository<BCC> {
 
@@ -37,15 +39,17 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.CREATION_TIMESTAMP,
                 Tables.BCC.LAST_UPDATE_TIMESTAMP,
                 Tables.BCC.STATE,
-                Tables.BCC.REVISION_NUM,
-                Tables.BCC.REVISION_TRACKING_NUM,
-                Tables.BCC.REVISION_ACTION,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
+                Tables.REVISION.REVISION_ACTION,
                 Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
                 Tables.BCC.IS_NILLABLE.as("nillable"))
                 .from(Tables.BCC)
                 .join(Tables.BCC_MANIFEST)
-                .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID));
+                .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID))
+                .join(REVISION)
+                .on(Tables.BCC.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = -1713519496;
+    private static final long serialVersionUID = -394609608;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -103,6 +103,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
+     * The column <code>oagi.xbt.revision_id</code>. A foreign key pointed to revision for the current record.
+     */
+    public final TableField<XbtRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+
+    /**
      * The column <code>oagi.xbt.created_by</code>.
      */
     public final TableField<XbtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
@@ -126,21 +131,6 @@ public class Xbt extends TableImpl<XbtRecord> {
      * The column <code>oagi.xbt.last_update_timestamp</code>.
      */
     public final TableField<XbtRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
-
-    /**
-     * The column <code>oagi.xbt.revision_num</code>.
-     */
-    public final TableField<XbtRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
-
-    /**
-     * The column <code>oagi.xbt.revision_tracking_num</code>.
-     */
-    public final TableField<XbtRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
-
-    /**
-     * The column <code>oagi.xbt.revision_action</code>.
-     */
-    public final TableField<XbtRecord, Byte> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
 
     /**
      * The column <code>oagi.xbt.is_deprecated</code>.
@@ -187,7 +177,7 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.XBT_XBT_GUID_IDX, Indexes.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.XBT_XBT_REVISION_IDX);
+        return Arrays.<Index>asList(Indexes.XBT_XBT_GUID_IDX, Indexes.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX);
     }
 
     @Override
@@ -207,11 +197,15 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<ForeignKey<XbtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_REVISION_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK);
     }
 
     public Xbt xbt() {
         return new Xbt(this, Keys.XBT_SUBTYPE_OF_XBT_ID_FK);
+    }
+
+    public Revision revision() {
+        return new Revision(this, Keys.XBT_REVISION_ID_FK);
     }
 
     public AppUser xbtCreatedByFk() {
@@ -253,11 +247,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Byte, Byte> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

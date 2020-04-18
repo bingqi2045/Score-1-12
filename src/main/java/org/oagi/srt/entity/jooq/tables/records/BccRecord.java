@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1486673562;
+    private static final long serialVersionUID = -2072117189;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -292,59 +292,31 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.bcc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Setter for <code>oagi.bcc.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public void setRevisionNum(Integer value) {
+    public void setRevisionId(ULong value) {
         set(17, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * Getter for <code>oagi.bcc.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public Integer getRevisionNum() {
-        return (Integer) get(17);
-    }
-
-    /**
-     * Setter for <code>oagi.bcc.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public void setRevisionTrackingNum(Integer value) {
-        set(18, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bcc.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUM can be 0, 1, 2, and so on. The zero value is assign to the record with REVISION_NUM = 0 as a default.
-     */
-    public Integer getRevisionTrackingNum() {
-        return (Integer) get(18);
-    }
-
-    /**
-     * Setter for <code>oagi.bcc.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public void setRevisionAction(Byte value) {
-        set(19, value);
-    }
-
-    /**
-     * Getter for <code>oagi.bcc.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public Byte getRevisionAction() {
-        return (Byte) get(19);
+    public ULong getRevisionId() {
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(20, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(20);
+        return (Byte) get(18);
     }
 
     /**
@@ -353,7 +325,7 @@ State change can't be undone. But the history record can still keep the records 
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(21, value);
+        set(19, value);
     }
 
     /**
@@ -362,63 +334,63 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(21);
+        return (Byte) get(19);
     }
 
     /**
      * Setter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public void setDefaultValue(String value) {
-        set(22, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public String getDefaultValue() {
-        return (String) get(22);
+        return (String) get(20);
     }
 
     /**
      * Setter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setFixedValue(String value) {
-        set(23, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getFixedValue() {
-        return (String) get(23);
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevBccId(ULong value) {
-        set(24, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevBccId() {
-        return (ULong) get(24);
+        return (ULong) get(22);
     }
 
     /**
      * Setter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextBccId(ULong value) {
-        set(25, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextBccId() {
-        return (ULong) get(25);
+        return (ULong) get(23);
     }
 
     // -------------------------------------------------------------------------
@@ -444,7 +416,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Integer revisionNum, Integer revisionTrackingNum, Byte revisionAction, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong revisionId, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -464,14 +436,12 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
         set(14, creationTimestamp);
         set(15, lastUpdateTimestamp);
         set(16, state);
-        set(17, revisionNum);
-        set(18, revisionTrackingNum);
-        set(19, revisionAction);
-        set(20, isDeprecated);
-        set(21, isNillable);
-        set(22, defaultValue);
-        set(23, fixedValue);
-        set(24, prevBccId);
-        set(25, nextBccId);
+        set(17, revisionId);
+        set(18, isDeprecated);
+        set(19, isNillable);
+        set(20, defaultValue);
+        set(21, fixedValue);
+        set(22, prevBccId);
+        set(23, nextBccId);
     }
 }

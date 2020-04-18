@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -39,7 +39,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
-    private static final long serialVersionUID = 212067125;
+    private static final long serialVersionUID = 822918406;
 
     /**
      * The reference instance of <code>oagi.code_list_value</code>
@@ -127,19 +127,9 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     public final TableField<CodeListValueRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was last updated.");
 
     /**
-     * The column <code>oagi.code_list_value.revision_num</code>. REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).
+     * The column <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
      */
-    public final TableField<CodeListValueRecord, Integer> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_NUM is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 0, 1, 2, and so on. A record with zero revision number reflects the current record of the component (the identity of a component in this case is its GUID or the primary key).");
-
-    /**
-     * The column <code>oagi.code_list_value.revision_tracking_num</code>. REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.
-     */
-    public final TableField<CodeListValueRecord, Integer> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "REVISION_TRACKING_NUM supports the ability to undo changes during a revision (life cycle of a revision is from the component's EDITING state to PUBLISHED state). Once the component has transitioned into the PUBLISHED state for its particular revision, all revision tracking records are deleted except the latest one. REVISION_TRACKING_NUMB can be 0, 1, 2, and so on. The zero value is assigned to the record with REVISION_NUM = 0 as a default.");
-
-    /**
-     * The column <code>oagi.code_list_value.revision_action</code>. This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.
-     */
-    public final TableField<CodeListValueRecord, Integer> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGER)), this, "This indicates the action associated with the record. The action can be 1 = INSERT, 2 = UPDATE, and 3 = DELETE. This column is null for the current record.");
+    public final TableField<CodeListValueRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
@@ -206,7 +196,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<CodeListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
+        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_REVISION_ID_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     public CodeList codeList() {
@@ -223,6 +213,10 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     public AppUser codeListValueLastUpdatedByFk() {
         return new AppUser(this, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK);
+    }
+
+    public Revision revision() {
+        return new Revision(this, Keys.CODE_LIST_VALUE_REVISION_ID_FK);
     }
 
     public CodeListValue codeListValuePrevCodeListValueIdFk() {
@@ -260,11 +254,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer, Integer, Integer, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.REVISION;
+import static org.oagi.srt.entity.jooq.Tables.XBT;
+
 @Repository
 public class ASCCPRepository implements SrtRepository<ASCCP> {
 
@@ -34,9 +37,9 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.CREATION_TIMESTAMP,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCCP.STATE,
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.REVISION_ACTION,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
+                Tables.REVISION.REVISION_ACTION,
                 Tables.ASCCP_MANIFEST.RELEASE_ID,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
@@ -45,6 +48,8 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 .from(Tables.ASCCP)
                 .join(Tables.ASCCP_MANIFEST)
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
+                .join(REVISION)
+                .on(Tables.ASCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ASCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

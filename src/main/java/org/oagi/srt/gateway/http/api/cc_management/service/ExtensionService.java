@@ -5,7 +5,6 @@ import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
@@ -175,10 +174,7 @@ public class ExtensionService {
                 Tables.ACC.OWNER_USER_ID,
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
-                Tables.ACC.STATE,
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.REVISION_ACTION).values(
+                Tables.ACC.STATE).values(
                 SrtGuid.randomGuid(),
                 objectClassTerm,
                 objectClassTerm + ". Details",
@@ -189,10 +185,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.WIP.name(),
-                1,
-                1,
-                (byte) 1
+                CcState.WIP.name()
         ).returning().fetchOne();
     }
 
@@ -224,10 +217,7 @@ public class ExtensionService {
                 Tables.ASCCP.OWNER_USER_ID,
                 Tables.ASCCP.CREATION_TIMESTAMP,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCCP.STATE,
-                Tables.ASCCP.REVISION_NUM,
-                Tables.ASCCP.REVISION_TRACKING_NUM,
-                Tables.ASCCP.REVISION_ACTION).values(
+                Tables.ASCCP.STATE).values(
                 SrtGuid.randomGuid(),
                 ueAcc.getObjectClassTerm(),
                 ueAcc.getAccId(),
@@ -241,10 +231,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Production.name(),
-                1,
-                1,
-                (byte) 1
+                CcState.Production.name()
         ).returning().fetchOne();
     }
 
@@ -279,10 +266,7 @@ public class ExtensionService {
                 Tables.ASCC.OWNER_USER_ID,
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
-                Tables.ASCC.STATE,
-                Tables.ASCC.REVISION_NUM,
-                Tables.ASCC.REVISION_TRACKING_NUM,
-                Tables.ASCC.REVISION_ACTION).values(
+                Tables.ASCC.STATE).values(
                 SrtGuid.randomGuid(),
                 0,
                 1,
@@ -296,10 +280,7 @@ public class ExtensionService {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.Production.name(),
-                1,
-                1,
-                (byte) 1
+                CcState.Production.name()
         ).returning().fetchOne();
     }
 
@@ -431,8 +412,6 @@ public class ExtensionService {
         history.setIsDeprecated((byte) ((ascc.isDeprecated()) ? 1 : 0));
         history.setDefinition(ascc.getDefinition());
         history.setDefinitionSource(ascc.getDefinitionSource());
-        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-        history.setRevisionAction((byte) RevisionAction.Update.getValue());
         history.setCreatedBy(userId);
         history.setLastUpdatedBy(userId);
         history.setCreationTimestamp(timestamp);
@@ -473,8 +452,6 @@ public class ExtensionService {
         history.setDefaultValue(bcc.getDefaultValue());
         history.setDefinition(bcc.getDefinition());
         history.setDefinitionSource(bcc.getDefinitionSource());
-        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-        history.setRevisionAction((byte) RevisionAction.Update.getValue());
         history.setCreatedBy(userId);
         history.setLastUpdatedBy(userId);
         history.setCreationTimestamp(timestamp);
@@ -527,8 +504,6 @@ public class ExtensionService {
                 .fetchOne();
 
         history.setAccId(null);
-        history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-        history.setRevisionAction((byte) RevisionAction.Update.getValue());
         history.setCreatedBy(userId);
         history.setLastUpdatedBy(userId);
         history.setCreationTimestamp(timestamp);
@@ -566,8 +541,6 @@ public class ExtensionService {
                     asccManifestRecordMap.get(history.getAsccId());
 
             history.setAsccId(null);
-            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
             history.setCreatedBy(userId);
             history.setLastUpdatedBy(userId);
             history.setCreationTimestamp(timestamp);
@@ -606,8 +579,6 @@ public class ExtensionService {
                     bccManifestRecordMap.get(history.getBccId());
 
             history.setBccId(null);
-            history.setRevisionTrackingNum(history.getRevisionTrackingNum() + 1);
-            history.setRevisionAction((byte) RevisionAction.Update.getValue());
             history.setCreatedBy(userId);
             history.setLastUpdatedBy(userId);
             history.setCreationTimestamp(timestamp);
@@ -635,10 +606,13 @@ public class ExtensionService {
             return dslContext.select(
                     ASCC.ASCC_ID,
                     ASCC.GUID,
-                    ASCC.REVISION_NUM,
-                    ASCC.REVISION_TRACKING_NUM,
+                    REVISION.REVISION_NUM,
+                    REVISION.REVISION_TRACKING_NUM,
                     ASCC.CARDINALITY_MIN,
-                    ASCC.CARDINALITY_MAX).from(ASCC)
+                    ASCC.CARDINALITY_MAX)
+                    .from(ASCC)
+                    .join(REVISION)
+                    .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
                     .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.name())))
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
@@ -652,11 +626,14 @@ public class ExtensionService {
                     .fetchOneInto(String.class);
             return dslContext.select(BCC.BCC_ID,
                     BCC.GUID,
-                    BCC.REVISION_NUM,
-                    BCC.REVISION_TRACKING_NUM,
+                    REVISION.REVISION_NUM,
+                    REVISION.REVISION_TRACKING_NUM,
                     BCC.CARDINALITY_MIN,
                     BCC.CARDINALITY_MAX,
-                    BCC.IS_NILLABLE.as("nillable")).from(BCC)
+                    BCC.IS_NILLABLE.as("nillable"))
+                    .from(BCC)
+                    .join(REVISION)
+                    .on(BCC.REVISION_ID.eq(REVISION.REVISION_ID))
                     .where(and(BCC.GUID.eq(guid), BCC.STATE.eq(CcState.Published.name())))
                     .orderBy(BCC.BCC_ID.desc()).limit(1)
                     .fetchOneInto(CcBccNode.class);

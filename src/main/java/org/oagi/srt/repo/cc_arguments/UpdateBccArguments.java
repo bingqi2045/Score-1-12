@@ -63,9 +63,6 @@ public class UpdateBccArguments {
         this.creationTimestamp = bcc.getCreationTimestamp();
         this.lastUpdateTimestamp = bcc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(bcc.getState());
-        this.revisionNum = bcc.getRevisionNum();
-        this.revisionTrackingNum = bcc.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(bcc.getRevisionAction());
         this.prevBccId = bcc.getPrevBccId();
 
         this._hashCode = this.hashCode();

@@ -56,9 +56,6 @@ public class UpdateAsccpArguments {
         this.lastUpdatedBy = asccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = asccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(asccp.getState());
-        this.revisionNum = asccp.getRevisionNum();
-        this.revisionTrackingNum = asccp.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(asccp.getRevisionAction());
         this.isNillable = asccp.getIsNillable() == 1;
         this.prevAsccpId = asccp.getAsccpId();
         this.nextAsccpId = asccp.getNextAsccpId();

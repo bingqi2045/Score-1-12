@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.REVISION;
+
 @Repository
 public class ACCRepository implements SrtRepository<ACC> {
 
@@ -36,9 +38,9 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
                 Tables.ACC.STATE,
-                Tables.ACC.REVISION_NUM,
-                Tables.ACC.REVISION_TRACKING_NUM,
-                Tables.ACC.REVISION_ACTION,
+                Tables.REVISION.REVISION_NUM,
+                Tables.REVISION.REVISION_TRACKING_NUM,
+                Tables.REVISION.REVISION_ACTION,
                 Tables.ACC_MANIFEST.RELEASE_ID,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
                 Tables.ACC.IS_ABSTRACT.as("abstracted"),
@@ -46,6 +48,8 @@ public class ACCRepository implements SrtRepository<ACC> {
                 .from(Tables.ACC)
                 .join(Tables.ACC_MANIFEST)
                 .on(Tables.ACC.ACC_ID.eq(Tables.ACC_MANIFEST.ACC_ID))
+                .join(REVISION)
+                .on(Tables.ACC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ACC_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

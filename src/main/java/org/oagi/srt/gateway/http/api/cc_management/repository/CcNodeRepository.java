@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record12;
 import org.jooq.Record4;
 import org.jooq.SelectOnConditionStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -51,7 +52,7 @@ public class CcNodeRepository {
 
     private SelectOnConditionStep<Record12<
             ULong, String, String, ULong, Integer,
-            String, String, Integer, Integer, ULong,
+            String, String, UInteger, UInteger, ULong,
             ULong, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                 ACC.ACC_ID,
@@ -61,14 +62,16 @@ public class CcNodeRepository {
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE,
-                ACC.REVISION_NUM,
-                ACC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ACC_MANIFEST.RELEASE_ID,
                 ACC.OWNER_USER_ID,
                 ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"))
                 .from(ACC)
                 .join(ACC_MANIFEST)
-                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID));
+                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(REVISION)
+                .on(ACC.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
     public CcAccNode getAccNodeByAccId(User user, long accId, long releaseId) {
@@ -95,12 +98,14 @@ public class CcNodeRepository {
                 ASCC.ASCC_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 ASCC.SEQ_KEY,
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ASCC_MANIFEST.RELEASE_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                .join(REVISION)
+                .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(ASCCP_MANIFEST)
                 .on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .where(and(
@@ -153,10 +158,7 @@ public class CcNodeRepository {
                 ASCC.OWNER_USER_ID,
                 ASCC.CREATION_TIMESTAMP,
                 ASCC.LAST_UPDATE_TIMESTAMP,
-                ASCC.STATE,
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
-                ASCC.REVISION_ACTION).values(
+                ASCC.STATE).values(
                 SrtGuid.randomGuid(),
                 0,
                 1,
@@ -170,10 +172,7 @@ public class CcNodeRepository {
                 userId,
                 timestamp,
                 timestamp,
-                CcState.WIP.name(),
-                0,
-                0,
-                null
+                CcState.WIP.name()
         ).returning().fetchOne();
     }
 
@@ -195,9 +194,6 @@ public class CcNodeRepository {
         accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
         accRecord.setOagisComponentType(OagisComponentType.Semantics.getValue());
         accRecord.setState(CcState.WIP.name());
-        accRecord.setRevisionNum(1);
-        accRecord.setRevisionTrackingNum(1);
-        accRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
         accRecord.setCreatedBy(userId);
         accRecord.setLastUpdatedBy(userId);
         accRecord.setOwnerUserId(userId);
@@ -243,9 +239,6 @@ public class CcNodeRepository {
         asccpRecord.setReusableIndicator((byte) 0);
         asccpRecord.setIsDeprecated((byte) 0);
         asccpRecord.setIsNillable((byte) 0);
-        asccpRecord.setRevisionNum(1);
-        asccpRecord.setRevisionTrackingNum(1);
-        asccpRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
         asccpRecord.setCreatedBy(userId);
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setOwnerUserId(userId);
@@ -292,9 +285,6 @@ public class CcNodeRepository {
         bccpRecord.setState(CcState.WIP.name());
         bccpRecord.setIsDeprecated((byte) 0);
         bccpRecord.setIsNillable((byte) 0);
-        bccpRecord.setRevisionNum(1);
-        bccpRecord.setRevisionTrackingNum(1);
-        bccpRecord.setRevisionAction(RevisionAction.Insert.getValue());
         bccpRecord.setCreatedBy(userId);
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setOwnerUserId(userId);
@@ -339,8 +329,6 @@ public class CcNodeRepository {
         baseAccRecord.set(ACC.IS_ABSTRACT, (byte) (accNodeDetail.isAbstracted() ? 1 : 0));
         baseAccRecord.set(ACC.LAST_UPDATED_BY, ULong.valueOf(userId));
         baseAccRecord.set(ACC.LAST_UPDATE_TIMESTAMP, timestamp);
-        baseAccRecord.set(ACC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-        baseAccRecord.set(ACC.REVISION_TRACKING_NUM, baseAccRecord.getRevisionTrackingNum() + 1);
         baseAccRecord.insert();
 
         accManifestRecord.setAccId(baseAccRecord.getAccId());
@@ -377,8 +365,6 @@ public class CcNodeRepository {
             }
             asccpRecord.setLastUpdatedBy(ULong.valueOf(userId));
             asccpRecord.setLastUpdateTimestamp(timestamp);
-            asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
             asccpRecord.insert();
 
             asccpManifestRecord.setAsccpId(asccpRecord.getAsccpId());
@@ -395,8 +381,6 @@ public class CcNodeRepository {
                 asccRecord.setToAsccpId(asccpRecord.getAsccpId());
                 asccRecord.setLastUpdatedBy(ULong.valueOf(userId));
                 asccRecord.setLastUpdateTimestamp(timestamp);
-                asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-                asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
                 asccRecord.insert();
 
                 asccManifestRecord.setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId());
@@ -417,8 +401,6 @@ public class CcNodeRepository {
             accRecord.setBasedAccId(basedAccId);
             accRecord.setLastUpdatedBy(ULong.valueOf(userId));
             accRecord.setLastUpdateTimestamp(timestamp);
-            accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
             accRecord.insert();
 
             accManifestRecord.setAccId(accRecord.getAccId());
@@ -469,8 +451,6 @@ public class CcNodeRepository {
             baseAsccRecord.setAsccId(null);
             baseAsccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             baseAsccRecord.setLastUpdateTimestamp(timestamp);
-            baseAsccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            baseAsccRecord.setRevisionTrackingNum(baseAsccRecord.getRevisionTrackingNum() + 1);
             baseAsccRecord.insert();
 
             asccManifestRecord.setAsccId(baseAsccRecord.getAsccId());
@@ -528,8 +508,6 @@ public class CcNodeRepository {
             baseAsccpRecord.setAsccpId(null);
             baseAsccpRecord.setLastUpdatedBy(ULong.valueOf(userId));
             baseAsccpRecord.setLastUpdateTimestamp(timestamp);
-            baseAsccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            baseAsccpRecord.setRevisionTrackingNum(baseAsccpRecord.getRevisionTrackingNum() + 1);
             baseAsccpRecord.insert();
 
             asccpManifestRecord.setAsccpId(baseAsccpRecord.getAsccpId());
@@ -602,8 +580,6 @@ public class CcNodeRepository {
             baseBccRecord.setDefinition(bccNodeDetail.getDefinition());
             baseBccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             baseBccRecord.setLastUpdateTimestamp(timestamp);
-            baseBccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            baseBccRecord.setRevisionTrackingNum(baseBccRecord.getRevisionTrackingNum() + 1);
             baseBccRecord.insert();
 
             bccManifestRecord.setBccId(baseBccRecord.getBccId());
@@ -674,8 +650,6 @@ public class CcNodeRepository {
             baseBccpRecord.set(BCCP.BCCP_ID, null);
             baseBccpRecord.set(BCCP.LAST_UPDATED_BY, ULong.valueOf(userId));
             baseBccpRecord.set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp);
-            baseBccpRecord.set(BCCP.REVISION_ACTION, RevisionAction.Update.getValue());
-            baseBccpRecord.set(BCCP.REVISION_TRACKING_NUM, baseBccpRecord.getRevisionTrackingNum() + 1);
             baseBccpRecord.insert();
 
             bccpManifestRecord.setBccpId(baseBccpRecord.getBccpId());
@@ -709,8 +683,11 @@ public class CcNodeRepository {
         long asccCount = dslContext.selectCount()
                 .from(ASCC_MANIFEST)
                 .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
-                        ASCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
+                .join(REVISION)
+                .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
+                .where(and(
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        REVISION.REVISION_ACTION.notEqual(RevisionAction.Deleted.name())))
                 .fetchOneInto(long.class);
         if (asccCount > 0) {
             return true;
@@ -719,8 +696,11 @@ public class CcNodeRepository {
         long bccCount = dslContext.selectCount()
                 .from(BCC_MANIFEST)
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
-                        BCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
+                .join(REVISION)
+                .on(BCC.REVISION_ID.eq(REVISION.REVISION_ID))
+                .where(and(
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        REVISION.REVISION_ACTION.notEqual(RevisionAction.Deleted.name())))
                 .fetchOneInto(long.class);
         return bccCount > 0;
     }
@@ -732,8 +712,8 @@ public class CcNodeRepository {
                 ASCCP.PROPERTY_TERM.as("name"),
                 ACC_MANIFEST.ACC_ID.as("role_of_acc_id"),
                 ASCCP.STATE,
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
                 ASCCP.OWNER_USER_ID,
@@ -742,6 +722,8 @@ public class CcNodeRepository {
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(REVISION)
+                .on(ASCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(ACC_MANIFEST)
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
@@ -790,14 +772,16 @@ public class CcNodeRepository {
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
                 ASCCP.STATE.as("raw_state"),
-                ASCCP.REVISION_NUM,
-                ASCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
                 ASCCP.PREV_ASCCP_ID,
                 ASCCP.NEXT_ASCCP_ID)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(REVISION)
+                .on(ASCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(ACC_MANIFEST)
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(and(
@@ -821,8 +805,8 @@ public class CcNodeRepository {
                 BCCP.PROPERTY_TERM.as("name"),
                 DT_MANIFEST.DT_ID.as("bdt_id"),
                 BCCP.STATE,
-                BCCP.REVISION_NUM,
-                BCCP.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID,
                 BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
                 BCCP.OWNER_USER_ID,
@@ -831,6 +815,8 @@ public class CcNodeRepository {
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(REVISION)
+                .on(BCCP.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(DT_MANIFEST)
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
@@ -913,18 +899,22 @@ public class CcNodeRepository {
 
     private int getLatestRevisionAscc(long asccManifestId) {
         return dslContext.select(
-                ASCC.REVISION_NUM
+                REVISION.REVISION_NUM
         ).from(ASCC_MANIFEST)
                 .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                .join(REVISION)
+                .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
                 .fetchOptionalInto(int.class).orElse(0);
     }
 
     private int getLatestRevisionBcc(long bccManifestId) {
         return dslContext.select(
-                BCC.REVISION_NUM
+                REVISION.REVISION_NUM
         ).from(BCC_MANIFEST)
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .join(REVISION)
+                .on(BCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                 .fetchOptionalInto(int.class).orElse(0);
     }
@@ -938,15 +928,18 @@ public class CcNodeRepository {
                 ASCC.GUID,
                 ASCC.SEQ_KEY,
                 ASCC.STATE.as("raw_state"),
-                ASCC.REVISION_NUM,
-                ASCC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ASCC_MANIFEST.RELEASE_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                .join(REVISION)
+                .on(ASCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(and(
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)),
-                        ASCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
+                        REVISION.REVISION_ACTION.notEqual(RevisionAction.Deleted.name())
+                ))
                 .fetchInto(CcAsccNode.class);
 
         if (asccNodes.isEmpty()) {
@@ -980,16 +973,20 @@ public class CcNodeRepository {
                 BCC.SEQ_KEY,
                 BCC.ENTITY_TYPE,
                 BCC.STATE.as("raw_state"),
-                BCC.REVISION_NUM,
-                BCC.REVISION_TRACKING_NUM,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 BCC_MANIFEST.RELEASE_ID)
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                .join(REVISION)
+                .on(BCC.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(BCCP_MANIFEST)
                 .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
-                        .and(BCC.REVISION_ACTION.notEqual((byte) RevisionAction.Delete.getValue())))
+                .where(and(
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)),
+                        REVISION.REVISION_ACTION.notEqual(RevisionAction.Deleted.name())
+                ))
                 .fetchInto(CcBccNode.class);
 
         if (bccNodes.isEmpty()) {
@@ -1471,8 +1468,6 @@ public class CcNodeRepository {
         asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
         asccpRecord.setLastUpdatedBy(ULong.valueOf(userId));
         asccpRecord.setLastUpdateTimestamp(timestamp);
-        asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
         insert(asccpRecord);
 
         asccpManifestRecord.setRoleOfAccManifestId(accManifestId);
@@ -1512,8 +1507,6 @@ public class CcNodeRepository {
         bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + dtRecord.getDataTypeTerm());
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setLastUpdateTimestamp(timestamp);
-        bccpRecord.setRevisionAction(RevisionAction.Update.getValue());
-        bccpRecord.setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1);
         insert(bccpRecord);
 
         bccpManifestRecord.setBccpId(bccpRecord.getBccpId());
@@ -1543,8 +1536,6 @@ public class CcNodeRepository {
         }
         accRecord.setLastUpdatedBy(userId);
         accRecord.setLastUpdateTimestamp(timestamp);
-        accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
         accRecord.setState(ccState.name());
         insert(accRecord);
 
@@ -1578,8 +1569,6 @@ public class CcNodeRepository {
 
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setLastUpdateTimestamp(timestamp);
-        asccpRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-        asccpRecord.setRevisionTrackingNum(asccpRecord.getRevisionTrackingNum() + 1);
         asccpRecord.setState(ccState.name());
         insert(asccpRecord);
 
@@ -1609,8 +1598,6 @@ public class CcNodeRepository {
 
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setLastUpdateTimestamp(timestamp);
-        bccpRecord.setRevisionAction(RevisionAction.Update.getValue());
-        bccpRecord.setRevisionTrackingNum(bccpRecord.getRevisionTrackingNum() + 1);
         bccpRecord.setState(ccState.name());
         insert(bccpRecord);
 
@@ -1656,9 +1643,6 @@ public class CcNodeRepository {
         asccRecord.setLastUpdateTimestamp(timestamp);
         asccRecord.setOwnerUserId(ULong.valueOf(userId));
         asccRecord.setState(accRecord.getState());
-        asccRecord.setRevisionNum(1);
-        asccRecord.setRevisionTrackingNum(1);
-        asccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
 
         AsccRecord insertedAscc = dslContext.insertInto(ASCC).set(asccRecord).returning().fetchOne();
 
@@ -1704,9 +1688,6 @@ public class CcNodeRepository {
         bccRecord.setOwnerUserId(ULong.valueOf(userId));
         bccRecord.setState(accRecord.getState());
         bccRecord.setEntityType(Element.getValue());
-        bccRecord.setRevisionNum(1);
-        bccRecord.setRevisionTrackingNum(1);
-        bccRecord.setRevisionAction((byte) RevisionAction.Insert.getValue());
 
         BccRecord insertedBcc = dslContext.insertInto(BCC).set(bccRecord).returning().fetchOne();
 
@@ -1819,8 +1800,6 @@ public class CcNodeRepository {
         accRecord.setBasedAccId(null);
         accRecord.setLastUpdatedBy(ULong.valueOf(userId));
         accRecord.setLastUpdateTimestamp(timestamp);
-        accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
-        accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
         insert(accRecord);
 
         accManifest.setBasedAccManifestId(null);
@@ -1843,8 +1822,6 @@ public class CcNodeRepository {
         accRecord.setBasedAccId(basedAccManifestRecord.getAccId());
         accRecord.setLastUpdatedBy(ULong.valueOf(userId));
         accRecord.setLastUpdateTimestamp(timestamp);
-        accRecord.setRevisionTrackingNum(accRecord.getRevisionTrackingNum() + 1);
-        accRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
         insert(accRecord);
 
         accManifestRecord.setBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
@@ -1908,8 +1885,6 @@ public class CcNodeRepository {
             asccRecord.set(ASCC.FROM_ACC_ID, accId);
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -1932,8 +1907,6 @@ public class CcNodeRepository {
             bccRecord.set(BCC.FROM_ACC_ID, accId);
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.insert();
 
             bccManifestRecord.setBccId(bccRecord.getBccId());
@@ -1961,8 +1934,6 @@ public class CcNodeRepository {
             asccRecord.set(ASCC.TO_ASCCP_ID, ULong.valueOf(newAsccpId));
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.insert();
 
             asccManifestRecord.setAsccId(asccRecord.getAsccId());
@@ -1990,8 +1961,6 @@ public class CcNodeRepository {
             bccRecord.set(BCC.TO_BCCP_ID, ULong.valueOf(newBccpId));
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.insert();
 
             bccManifestRecord.setBccId(bccRecord.getBccId());
@@ -2011,8 +1980,6 @@ public class CcNodeRepository {
             asccRecord.set(ASCC.FROM_ACC_ID, accId);
             asccRecord.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             asccRecord.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            asccRecord.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            asccRecord.set(ASCC.REVISION_TRACKING_NUM, asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.set(ASCC.STATE, state.name());
             asccRecord.insert();
 
@@ -2033,8 +2000,6 @@ public class CcNodeRepository {
             bccRecord.set(BCC.FROM_ACC_ID, accId);
             bccRecord.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
             bccRecord.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
-            bccRecord.set(BCC.REVISION_ACTION, (byte) RevisionAction.Update.getValue());
-            bccRecord.set(BCC.REVISION_TRACKING_NUM, bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.set(BCC.STATE, state.name());
             bccRecord.insert();
 
@@ -2053,8 +2018,6 @@ public class CcNodeRepository {
         ascc.setAsccId(null);
         ascc.set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp);
         ascc.set(ASCC.LAST_UPDATED_BY, ULong.valueOf(userId));
-        ascc.set(ASCC.REVISION_ACTION, (byte) RevisionAction.Delete.getValue());
-        ascc.set(ASCC.REVISION_TRACKING_NUM, ascc.getRevisionTrackingNum() + 1);
         dslContext.insertInto(ASCC).set(ascc).execute();
 
         decreaseSeqKeyGreaterThan(userId, asccManifestRecord.getFromAccManifestId(), ascc.getSeqKey(), timestamp);
@@ -2074,8 +2037,6 @@ public class CcNodeRepository {
         bcc.setBccId(null);
         bcc.set(BCC.LAST_UPDATE_TIMESTAMP, timestamp);
         bcc.set(BCC.LAST_UPDATED_BY, ULong.valueOf(userId));
-        bcc.set(BCC.REVISION_ACTION, (byte) RevisionAction.Delete.getValue());
-        bcc.set(BCC.REVISION_TRACKING_NUM, bcc.getRevisionTrackingNum() + 1);
         dslContext.insertInto(BCC).set(bcc).execute();
 
         decreaseSeqKeyGreaterThan(userId, bccManifestRecord.getFromAccManifestId(), bcc.getSeqKey(), timestamp);
@@ -2129,8 +2090,6 @@ public class CcNodeRepository {
             asccRecord.setAsccId(null);
             asccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             asccRecord.setLastUpdateTimestamp(timestamp);
-            asccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            asccRecord.setRevisionTrackingNum(asccRecord.getRevisionTrackingNum() + 1);
             asccRecord.setSeqKey(asccRecord.getSeqKey() - 1);
             asccRecord.insert();
 
@@ -2149,8 +2108,6 @@ public class CcNodeRepository {
             bccRecord.setBccId(null);
             bccRecord.setLastUpdatedBy(ULong.valueOf(userId));
             bccRecord.setLastUpdateTimestamp(timestamp);
-            bccRecord.setRevisionAction((byte) RevisionAction.Update.getValue());
-            bccRecord.setRevisionTrackingNum(bccRecord.getRevisionTrackingNum() + 1);
             bccRecord.setSeqKey(bccRecord.getSeqKey() - 1);
             bccRecord.insert();
 

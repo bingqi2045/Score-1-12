@@ -54,9 +54,6 @@ public class UpdateBccpArguments {
         this.lastUpdatedBy = bccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(bccp.getState());
-        this.revisionNum = bccp.getRevisionNum();
-        this.revisionTrackingNum = bccp.getRevisionTrackingNum();
-        this.revisionAction = RevisionAction.valueOf(bccp.getRevisionAction());
         this.isNillable = bccp.getIsNillable() == 1;
         this.defaultValue = bccp.getDefaultValue();
         this.fixedValue = bccp.getFixedValue();
