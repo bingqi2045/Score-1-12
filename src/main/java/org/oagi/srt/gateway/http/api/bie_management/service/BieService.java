@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -282,7 +283,7 @@ public class BieService {
 
         List<BieList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(BieList.class) : conditionStep.fetchInto(BieList.class);
-        result.forEach(bieList -> setBusinessContexts(bieList));
+        setBusinessContexts(result);
 
         if (!StringUtils.isEmpty(request.getBusinessContext())) {
             String nameFiltered = request.getBusinessContext();
@@ -302,25 +303,33 @@ public class BieService {
         return response;
     }
 
-    private void setBusinessContexts(BieList bieList) {
-        List<ULong> bizCtxIds = dslContext.selectDistinct(
-                BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
-                .from(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(bieList.getTopLevelAbieId())))
-                .fetchInto(ULong.class);
+    private void setBusinessContexts(List<BieList> bieLists) {
+        Map<Long, BieList> bieListMap = bieLists.stream()
+                .collect(Collectors.toMap(BieList::getTopLevelAbieId, Function.identity()));
 
-        bieList.setBusinessContexts(
-                dslContext.select(
-                        BIZ_CTX.BIZ_CTX_ID,
-                        BIZ_CTX.NAME,
-                        BIZ_CTX.GUID,
-                        BIZ_CTX.CREATION_TIMESTAMP,
-                        BIZ_CTX.LAST_UPDATED_BY,
-                        BIZ_CTX.LAST_UPDATE_TIMESTAMP)
-                        .from(BIZ_CTX)
-                        .where(BIZ_CTX.BIZ_CTX_ID.in(bizCtxIds))
-                        .fetchInto(BusinessContext.class)
-        );
+        dslContext.select(
+                BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID,
+                BIZ_CTX.BIZ_CTX_ID,
+                BIZ_CTX.NAME)
+                .from(BIZ_CTX)
+                .join(BIZ_CTX_ASSIGNMENT).on(BIZ_CTX.BIZ_CTX_ID.eq(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID))
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(
+                        bieLists.stream().map(e -> e.getTopLevelAbieId()).collect(Collectors.toList())
+                ))
+                .fetchStream().forEach(e -> {
+            BusinessContext bc = new BusinessContext();
+            bc.setBizCtxId(e.get(BIZ_CTX.BIZ_CTX_ID).longValue());
+            bc.setName(e.get(BIZ_CTX.NAME));
+
+            BieList bieList = bieListMap.get(e.get(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID).longValue());
+            List<BusinessContext> bizCtxs = bieList.getBusinessContexts();
+            if (bizCtxs == null) {
+                bizCtxs = new ArrayList();
+                bieList.setBusinessContexts(bizCtxs);
+            }
+
+            bizCtxs.add(bc);
+        });
     }
 
     private List<BieList> appendAccessPrivilege(List<BieList> bieLists, User user) {
@@ -396,7 +405,7 @@ public class BieService {
             bieLists = selectOnConditionStep.fetchInto(BieList.class);
         }
 
-        bieLists.forEach(bieList -> setBusinessContexts(bieList));
+        setBusinessContexts(bieLists);
         return appendAccessPrivilege(bieLists, user);
     }
 
