@@ -1,5 +1,7 @@
 package org.oagi.srt.repo;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
@@ -10,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.REVISION;
 
@@ -24,19 +25,9 @@ public class RevisionRepository {
     }
 
     public class InsertRevisionArguments {
+        final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
 
-        private class BodyDiff {
-            String before;
-            String after;
-        }
-
-        private class BodyEntry {
-            String key;
-            BodyDiff diff;
-        }
-
-        private List<BodyEntry> content;
-
+        private final ObjectNode content = nodeFactory.objectNode();
         private ULong revisionId;
         private UInteger revisionNum;
         private UInteger revisionTrackingNum;
@@ -119,12 +110,10 @@ public class RevisionRepository {
         }
 
         public void addContent(String key, Object before, Object after) {
-            BodyEntry entry = new BodyEntry();
-            entry.key = key;
-            entry.diff.after = String.valueOf(after);
-            entry.diff.before = String.valueOf(before);
-
-            content.add(entry);
+            final ObjectNode entry = nodeFactory.objectNode();
+            entry.put("before", String.valueOf(before));
+            entry.put("after",  String.valueOf(after));
+            content.set(key, entry);
         }
 
         public ULong execute() {
@@ -138,7 +127,7 @@ public class RevisionRepository {
             }
 
             return dslContext.insertInto(REVISION)
-                    .set(REVISION.BODY, JSON.valueOf(content.toString()))
+                    .set(REVISION.BODY, content  != null ? JSON.valueOf(content.toString()) : null)
                     .set(REVISION.PREV_REVISION_ID, getPrevRevisionId())
                     .set(REVISION.CREATED_BY, getCreatedBy())
                     .set(REVISION.REFERENCE, getReference())
