@@ -1,9 +1,12 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.Release;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.tables.AsccManifest;
+import org.oagi.srt.entity.jooq.tables.AsccpManifest;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -70,51 +73,186 @@ public class CcNodeService {
     }
 
     @Transactional
-    public void deleteAccNode(User user, long manifestId) {
-        AccManifestRecord accManifestRecord =
-                manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
-
-        boolean used = repository.isAccManifestUsed(accManifestRecord.getAccManifestId().longValue());
-        if (used) {
-            throw new IllegalArgumentException("The target ACC is currently in use by another component.");
+    public void deleteAcc(User user, long manifestId) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        LocalDateTime timestamp = LocalDateTime.now();
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(ULong.valueOf(manifestId));
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        RevisionRecord revisionRecord = revisionRepository.getRevisionById(accRecord.getRevisionId());
+        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
+            throw new IllegalArgumentException("The target ACC can not be Delete.");
         }
 
-        manifestRepository.deleteAccManifestById(manifestId);
-        if (!manifestRepository.isAccUsed(accManifestRecord.getAccId().longValue())) {
-            repository.deleteAccRecords(accManifestRecord);
-        }
+        ULong revisionId = revisionRepository.insertRevisionArguments()
+                .setCreatedBy(userId)
+                .setCreationTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Deleted)
+                .setReference("acc" + accManifestRecord.getAccManifestId())
+                .setPrevRevisionId(accRecord.getRevisionId())
+                .execute();
+
+        ULong accId = ccRepository.updateAccArguments(accRecord)
+                .setState(CcState.Deleted)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId)
+                .execute();
+
+        updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp, revisionId);
     }
 
     @Transactional
-    public void deleteAsccpNode(User user, long manifestId) {
-        AsccpManifestRecord asccpManifestRecord =
-                manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
-
-        boolean used = repository.isAsccpManifestUsed(asccpManifestRecord.getAsccpManifestId().longValue());
-        if (used) {
-            throw new IllegalArgumentException("The target ASCCP is currently in use by another component.");
+    public void deleteAsccp(User user, long manifestId) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        LocalDateTime timestamp = LocalDateTime.now();
+        AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(ULong.valueOf(manifestId));
+        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+        RevisionRecord revisionRecord = revisionRepository.getRevisionById(asccpRecord.getRevisionId());
+        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
+            throw new IllegalArgumentException("The target ASCCP can not be Delete.");
         }
 
-        manifestRepository.deleteAsccpManifestById(manifestId);
-        if (!manifestRepository.isAsccpUsed(asccpManifestRecord.getAsccpId().longValue())) {
-            repository.deleteAsccpRecords(asccpManifestRecord.getAsccpId().longValue());
-        }
+        ULong revisionId = revisionRepository.insertRevisionArguments()
+                .setCreatedBy(userId)
+                .setCreationTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Deleted)
+                .setReference("asccp" + asccpManifestRecord.getAsccpManifestId())
+                .setPrevRevisionId(asccpRecord.getRevisionId())
+                .execute();
+
+        ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
+                .setState(CcState.Deleted)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateAsccpManifestArguments(asccpManifestRecord)
+                .setAsccpId(asccpId)
+                .execute();
+        
+        updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
     }
 
     @Transactional
-    public void deleteBccpNode(User user, long manifestId) {
-        BccpManifestRecord bccpManifestRecord =
-                manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
-
-        boolean used = repository.isBccpManifestUsed(bccpManifestRecord.getBccpManifestId().longValue());
-        if (used) {
-            throw new IllegalArgumentException("The target BCCP is currently in use by another component.");
+    public void deleteBccp(User user, long manifestId) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+        LocalDateTime timestamp = LocalDateTime.now();
+        BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(ULong.valueOf(manifestId));
+        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+        RevisionRecord revisionRecord = revisionRepository.getRevisionById(bccpRecord.getRevisionId());
+        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
+            throw new IllegalArgumentException("The target BCCP can not be Delete.");
         }
 
-        manifestRepository.deleteBccpManifestById(manifestId);
-        if (!manifestRepository.isBccpUsed(bccpManifestRecord.getBccpId().longValue())) {
-            repository.deleteBccpRecords(bccpManifestRecord.getBccpId().longValue());
+        ULong revisionId = revisionRepository.insertRevisionArguments()
+                .setCreatedBy(userId)
+                .setCreationTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Deleted)
+                .setReference("bccp" + bccpManifestRecord.getBccpManifestId())
+                .setPrevRevisionId(bccpRecord.getRevisionId())
+                .execute();
+
+        ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
+                .setState(CcState.Deleted)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateBccpManifestArguments(bccpManifestRecord)
+                .setBccpId(bccpId)
+                .execute();
+
+        updateBccByToBccp(userId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
+    }
+
+    @Transactional
+    public void deleteAscc(User user, long asccManifestId) {
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+        AsccManifestRecord asccManifestRecord = ccRepository.getAsccManifestByManifestId(ULong.valueOf(asccManifestId));
+        AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(asccManifestRecord.getFromAccManifestId());
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        RevisionRecord revisionRecord = revisionRepository.getRevisionById(accRecord.getRevisionId());
+        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
+            throw new IllegalArgumentException("The target ASCC can not be Delete.");
         }
+
+        ULong revisionId = revisionRepository.insertRevisionArguments()
+                .setCreatedBy(ULong.valueOf(userId))
+                .setCreationTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Modified)
+                .setReference("acc" + accManifestRecord.getAccManifestId())
+                .setPrevRevisionId(accRecord.getRevisionId())
+                .execute();
+
+        ULong accId = ccRepository.updateAccArguments(accRecord)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId)
+                .execute();
+
+        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
+
+        ULong asccId = ccRepository.updateAsccArguments(asccRecord)
+                .setLastUpdateTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setState(CcState.Deleted)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateAsccManifestArguments(asccManifestRecord)
+                .setAsccId(asccId)
+                .execute();
+
+        decreaseSeqKeyGreaterThan(userId, asccManifestRecord.getFromAccManifestId(), asccRecord.getSeqKey(), timestamp, revisionId);
+    }
+
+    @Transactional
+    public void deleteBcc(User user, long bccManifestId) {
+        long userId = sessionService.userId(user);
+        LocalDateTime timestamp = LocalDateTime.now();
+        BccManifestRecord bccManifestRecord = ccRepository.getBccManifestByManifestId(ULong.valueOf(bccManifestId));
+        BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(bccManifestRecord.getFromAccManifestId());
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        RevisionRecord revisionRecord = revisionRepository.getRevisionById(accRecord.getRevisionId());
+        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
+            throw new IllegalArgumentException("The target Bcc can not be Delete.");
+        }
+
+        ULong revisionId = revisionRepository.insertRevisionArguments()
+                .setCreatedBy(ULong.valueOf(userId))
+                .setCreationTimestamp(timestamp)
+                .setRevisionAction(RevisionAction.Modified)
+                .setReference("acc" + accManifestRecord.getAccManifestId())
+                .setPrevRevisionId(accRecord.getRevisionId())
+                .execute();
+
+        ULong accId = ccRepository.updateAccArguments(accRecord)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateAccManifestArguments(accManifestRecord)
+                .setAccId(accId)
+                .execute();
+
+        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
+
+        ULong bccId = ccRepository.updateBccArguments(bccRecord)
+                .setLastUpdateTimestamp(timestamp)
+                .setLastUpdatedBy(ULong.valueOf(userId))
+                .setState(CcState.Deleted)
+                .setRevisionId(revisionId)
+                .execute();
+
+        ccRepository.updateBccManifestArguments(bccManifestRecord)
+                .setBccId(bccId)
+                .execute();
+
+        decreaseSeqKeyGreaterThan(userId, bccManifestRecord.getFromAccManifestId(), bccRecord.getSeqKey(), timestamp, revisionId);
     }
 
     public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
@@ -170,7 +308,10 @@ public class CcNodeService {
         InsertAccManifestArguments accManifestArguments = ccRepository.insertAccManifestArguments()
                 .setAccId(accId)
                 .setReleaseId(ULong.valueOf(request.getReleaseId()));
-        return ccRepository.execute(accManifestArguments).longValue();
+        long accManifestId = ccRepository.execute(accManifestArguments).longValue();
+
+        revisionRepository.updateRevisionReference(revisionId, CcType.ACC.name().toLowerCase() + accManifestId );
+        return accManifestId;
     }
 
     @Transactional
@@ -215,7 +356,10 @@ public class CcNodeService {
                 .setRoleOfAccManifestId(accManifestRecord.getAccManifestId())
                 .setReleaseId(accManifestRecord.getReleaseId());
 
-        return ccRepository.execute(insertAsccpManifestArguments).longValue();
+        long asccpManifestId = ccRepository.execute(insertAsccpManifestArguments).longValue();;
+
+        revisionRepository.updateRevisionReference(revisionId, CcType.ASCCP.name().toLowerCase() + asccpManifestId);
+        return asccpManifestId;
     }
 
     @Transactional
@@ -259,6 +403,8 @@ public class CcNodeService {
                 .setBdtManifestId(bdtManifest.getDtManifestId())
                 .setReleaseId(ULong.valueOf(request.getReleaseId()))
                 .execute();
+
+        revisionRepository.updateRevisionReference(revisionId, CcType.BCCP.name().toLowerCase() + bccpManifestId);
 
         return bccpManifestId.longValue();
     }
@@ -336,13 +482,13 @@ public class CcNodeService {
 
         Byte abstracted = (byte) (detail.isAbstracted() ? 1 : 0);
         if (!accRecord.getIsAbstract().equals(abstracted)) {
-            insertRevisionArguments.addContent("Abstract", accRecord.getIsAbstract().toString(), abstracted.toString());
+            insertRevisionArguments.addContent("Abstract", accRecord.getIsAbstract(), abstracted);
             updateAccArguments.setAbstract(detail.isAbstracted());
         }
 
         Byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
         if (!accRecord.getIsDeprecated().equals(deprecated)) {
-            insertRevisionArguments.addContent("Deprecated", accRecord.getIsDeprecated().toString(), deprecated.toString());
+            insertRevisionArguments.addContent("Deprecated", accRecord.getIsDeprecated(), deprecated);
             updateAccArguments.setDeprecated(detail.isDeprecated());
         }
 
@@ -357,7 +503,7 @@ public class CcNodeService {
         }
 
         if (!Objects.equals(accRecord.getOagisComponentType(), detail.getOagisComponentType())) {
-            insertRevisionArguments.addContent("OagisComponentType", accRecord.getObjectClassTerm(), String.valueOf(detail.getOagisComponentType()));
+            insertRevisionArguments.addContent("OagisComponentType", accRecord.getObjectClassTerm(), detail.getOagisComponentType());
             updateAccArguments.setOagisComponentType(OagisComponentType.valueOf((int) detail.getOagisComponentType()));
         }
 
@@ -367,7 +513,7 @@ public class CcNodeService {
             } else {
                 updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
             }
-            insertRevisionArguments.addContent("NamesapceId", accRecord.getNamespaceId().toString(), String.valueOf(detail.getNamespaceId()));
+            insertRevisionArguments.addContent("NamesapceId", accRecord.getNamespaceId(), detail.getNamespaceId());
         }
 
         ULong revisionId = insertRevisionArguments
@@ -415,13 +561,13 @@ public class CcNodeService {
 
         byte nillable = (byte) (detail.isNillable() ? 1 : 0);
         if (!bccpRecord.getIsNillable().equals(nillable)) {
-            insertRevisionArguments.addContent("Nillable", bccpRecord.getIsNillable().toString(), String.valueOf(nillable));
+            insertRevisionArguments.addContent("Nillable", bccpRecord.getIsNillable(), nillable);
             updateBccpArguments.setNillable(detail.isNillable());
         }
 
         byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
         if (!bccpRecord.getIsDeprecated().equals(deprecated)) {
-            insertRevisionArguments.addContent("Deprecated", bccpRecord.getIsDeprecated().toString(), String.valueOf(deprecated));
+            insertRevisionArguments.addContent("Deprecated", bccpRecord.getIsDeprecated(), deprecated);
             updateBccpArguments.setDeprecated(detail.isDeprecated());
         }
 
@@ -457,7 +603,7 @@ public class CcNodeService {
             } else {
                 updateBccpArguments.setNamespaceId(null);
             }
-            insertRevisionArguments.addContent("NamespaceId", bccpRecord.getNamespaceId().toString(), String.valueOf(detail.getNamespaceId()));
+            insertRevisionArguments.addContent("NamespaceId", bccpRecord.getNamespaceId(), detail.getNamespaceId());
         }
 
         ULong revisionId = insertRevisionArguments
@@ -474,7 +620,7 @@ public class CcNodeService {
                 .setPrevBccpId(bccpRecord.getBccpId());
         ULong bccpId = ccRepository.execute(updateBccpArguments);
 
-        updateBccByToBccp(userId, bccpManifestRecord, bccpRecord, timestamp, revisionId);
+        updateBccByToBccp(userId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
 
         UpdateBccpManifestArguments updateBccpManifestArguments =
                 ccRepository.updateBccpManifestArguments(bccpManifestRecord);
@@ -550,7 +696,7 @@ public class CcNodeService {
                     = ccRepository.updateAsccpManifestArguments(asccpManifestRecord)
                     .setAsccpId(asccpId);
             ccRepository.execute(updateAsccpManifestArguments);
-            updateAsccByToAsccp(userId, asccpManifestRecord, asccpRecord, timestamp, revisionId);
+            updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(),  timestamp, revisionId);
         }
 
         return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
@@ -713,7 +859,7 @@ public class CcNodeService {
                 .setRoleOfAccManifestId(accManifestRecord.getAccManifestId())
                 .execute();
 
-        updateAsccByToAsccp(userId, asccpManifestRecord, asccpRecord, timestamp, revisionId);
+        updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
 
         return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
     }
@@ -750,7 +896,7 @@ public class CcNodeService {
                 .setBdtManifestId(dtManifestRecord.getDtManifestId())
                 .execute();
 
-        updateBccByToBccp(userId, bccpManifestRecord, bccpRecord, timestamp, revisionId);
+        updateBccByToBccp(userId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
 
         return repository.getBccpNodeByBccpManifestId(user, bccpManifestRecord.getBccpManifestId().longValue());
     }
@@ -824,7 +970,7 @@ public class CcNodeService {
                 .setAsccpId(asccpId)
                 .execute();
 
-        updateAsccByToAsccp(userId, asccpManifestRecord, asccpRecord, timestamp, revisionId);
+        updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
 
         CcEvent event = new CcEvent();
         event.setAction("ChangeState");
@@ -864,7 +1010,7 @@ public class CcNodeService {
                 .setBccpId(bccpId)
                 .execute();
 
-        updateBccByToBccp(userId, bccpManifestRecord, bccpRecord, timestamp, revisionId);
+        updateBccByToBccp(userId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
 
         CcEvent event = new CcEvent();
         event.setAction("ChangeState");
@@ -1084,89 +1230,6 @@ public class CcNodeService {
 
         return getAccNode(user, accManifestId);
     }
-
-    @Transactional
-    public void discardAscc(User user, long asccManifestId) {
-        long userId = sessionService.userId(user);
-        LocalDateTime timestamp = LocalDateTime.now();
-        AsccManifestRecord asccManifestRecord = ccRepository.getAsccManifestByManifestId(ULong.valueOf(asccManifestId));
-        AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
-        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(asccManifestRecord.getFromAccManifestId());
-        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accRecord.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .setRevisionId(revisionId)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
-
-        ULong asccId = ccRepository.updateAsccArguments(asccRecord)
-                .setLastUpdateTimestamp(timestamp)
-                .setLastUpdatedBy(ULong.valueOf(userId))
-                .setState(CcState.Deleted)
-                .setRevisionId(revisionId)
-                .execute();
-
-        ccRepository.updateAsccManifestArguments(asccManifestRecord)
-                .setAsccId(asccId)
-                .execute();
-
-        decreaseSeqKeyGreaterThan(userId, asccManifestRecord.getFromAccManifestId(), asccRecord.getSeqKey(), timestamp, revisionId);
-    }
-
-    @Transactional
-    public void discardBcc(User user, long bccManifestId) {
-        long userId = sessionService.userId(user);
-        LocalDateTime timestamp = LocalDateTime.now();
-        BccManifestRecord bccManifestRecord = ccRepository.getBccManifestByManifestId(ULong.valueOf(bccManifestId));
-        BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
-        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(bccManifestRecord.getFromAccManifestId());
-        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accRecord.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .setRevisionId(revisionId)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
-
-        ULong bccId = ccRepository.updateBccArguments(bccRecord)
-                .setLastUpdateTimestamp(timestamp)
-                .setLastUpdatedBy(ULong.valueOf(userId))
-                .setState(CcState.Deleted)
-                .setRevisionId(revisionId)
-                .execute();
-
-        ccRepository.updateBccManifestArguments(bccManifestRecord)
-                .setBccId(bccId)
-                .execute();
-
-        decreaseSeqKeyGreaterThan(userId, bccManifestRecord.getFromAccManifestId(), bccRecord.getSeqKey(), timestamp, revisionId);
-    }
-
 
     private CcState getStateCode(String state) {
         if (CcState.WIP.name().equals(state)) {
@@ -1394,18 +1457,20 @@ public class CcNodeService {
         }
     }
 
-    private void updateAsccByToAsccp(ULong userId, AsccpManifestRecord asccpManifest, AsccpRecord asccp, LocalDateTime timestamp, ULong revisionId) {
-        List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifest.getAsccpManifestId());
+    private void updateAsccByToAsccp(ULong userId, ULong asccpManifestId, LocalDateTime timestamp, ULong revisionId) {
+        AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(asccpManifestId);
+        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+        List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifestId);
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(asccManifest.getFromAccManifestId());
             AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
             ULong asccId = ccRepository.updateAsccArguments(asccRecord)
-                    .setDen(accRecord.getObjectClassTerm() + ". " + asccp.getPropertyTerm())
-                    .setToAsccpId(asccp.getAsccpId())
+                    .setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getPropertyTerm())
+                    .setToAsccpId(asccpRecord.getAsccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setState(CcState.valueOf(asccp.getState()))
+                    .setState(CcState.valueOf(asccpRecord.getState()))
                     .setRevisionId(revisionId)
                     .setPrevAsccId(asccRecord.getAsccId())
                     .execute();
@@ -1436,18 +1501,20 @@ public class CcNodeService {
         }
     }
 
-    private void updateBccByToBccp(ULong userId, BccpManifestRecord bccpManifest, BccpRecord bccp, LocalDateTime timestamp, ULong revisionId) {
-        List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifest.getBccpManifestId());
+    private void updateBccByToBccp(ULong userId, ULong bccpManifestId, LocalDateTime timestamp, ULong revisionId) {
+        BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(bccpManifestId);
+        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+        List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifestId);
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(bccManifest.getFromAccManifestId());
             AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
             ULong bccId = ccRepository.updateBccArguments(bccRecord)
-                    .setDen(accRecord.getObjectClassTerm() + ". " + bccp.getPropertyTerm())
-                    .setToBccpId(bccp.getBccpId())
+                    .setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm())
+                    .setToBccpId(bccpRecord.getBccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setState(CcState.valueOf(bccp.getState()))
+                    .setState(CcState.valueOf(bccpRecord.getState()))
                     .setRevisionId(revisionId)
                     .setPrevBccId(bccRecord.getBccId())
                     .execute();
@@ -1473,9 +1540,8 @@ public class CcNodeService {
                     .setAsccpId(asccpId)
                     .execute();
             asccpManifest.setAsccpId(asccpId);
-            AsccpRecord updatedAsccp = ccRepository.getAsccpById(asccpId);
 
-            updateAsccByToAsccp(userId, asccpManifest, updatedAsccp, timestamp, revisionId);
+            updateAsccByToAsccp(userId, asccpManifest.getAsccpManifestId(), timestamp, revisionId);
         }
     }
 
@@ -1552,7 +1618,7 @@ public class CcNodeService {
                 .setAsccpId(asccpId)
                 .execute();
 
-        updateAsccByToAsccp(requesterUserId, asccpManifestRecord, asccpRecord, timestamp, revisionId);
+        updateAsccByToAsccp(requesterUserId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
     }
 
     public void updateBccpOwnerUserId(ULong accManifestId, ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
@@ -1578,7 +1644,7 @@ public class CcNodeService {
                 .setBccpId(bccpId)
                 .execute();
 
-        updateBccByToBccp(requesterUserId, bccpManifestRecord, bccpRecord, timestamp, revisionId);
+        updateBccByToBccp(requesterUserId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
     }
 }
 

@@ -2,6 +2,7 @@ package org.oagi.srt.repo;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.protobuf.DescriptorProtos;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
@@ -117,7 +118,7 @@ public class RevisionRepository {
         }
 
         public ULong execute() {
-            if (getPrevRevisionId() != null) {
+            if (getPrevRevisionId() == null) {
                 setRevisionNum(UInteger.valueOf(1));
                 setRevisionTrackingNum(UInteger.valueOf(1));
             } else {
@@ -146,4 +147,11 @@ public class RevisionRepository {
     public RevisionRecord getRevisionById(ULong revisionId) {
         return dslContext.selectFrom(REVISION).where(REVISION.REVISION_ID.eq(revisionId)).fetchOne();
     }
+    public void updateRevisionReference(ULong revisionId, String key) {
+        dslContext.update(REVISION)
+                .set(REVISION.REFERENCE, key)
+                .where(REVISION.REVISION_ID.eq(revisionId))
+                .execute();
+    }
+
 }

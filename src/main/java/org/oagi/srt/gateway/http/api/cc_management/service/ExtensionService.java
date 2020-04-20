@@ -327,37 +327,6 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void discardAscc(User user, long manifestId, long asccId) {
-        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
-
-        long asccManifestId = dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                .from(ASCC_MANIFEST)
-                .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(and(ACC_MANIFEST.ACC_ID.eq(extensionAcc.getAccId()),
-                        ASCC_MANIFEST.ASCC_ID.eq(ULong.valueOf(asccId)),
-                        ASCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())
-                ))
-                .fetchOneInto(long.class);
-
-        ccNodeService.discardAscc(user, asccManifestId);
-    }
-
-    @Transactional
-    public void discardBcc(User user, long manifestId, long bccId) {
-        AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
-
-        long bccManifestId = dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
-                .from(BCC_MANIFEST)
-                .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(and(ACC_MANIFEST.ACC_ID.eq(extensionAcc.getAccId()),
-                        BCC_MANIFEST.BCC_ID.eq(ULong.valueOf(bccId)),
-                        BCC_MANIFEST.RELEASE_ID.eq(extensionAcc.getReleaseId())))
-                .fetchOneInto(long.class);
-
-        ccNodeService.discardBcc(user, bccManifestId);
-    }
-
-    @Transactional
     public void updateState(User user, long manifestId, CcState state) {
         ccNodeService.updateAccState(user, manifestId, state.name());
     }

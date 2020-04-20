@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
@@ -37,6 +38,7 @@ public class GraphContext {
         private ULong accManifestId;
         private ULong basedAccManifestId;
         private String objectClassTerm;
+        private String state;
     }
 
     @Data
@@ -45,6 +47,7 @@ public class GraphContext {
         private ULong asccpManifestId;
         private ULong roleOfAccManifestId;
         private String propertyTerm;
+        private String state;
     }
 
     @Data
@@ -54,6 +57,7 @@ public class GraphContext {
         private ULong bdtManifestId;
         private String propertyTerm;
         private String representationTerm;
+        private String state;
     }
 
     private interface Assoc {
@@ -69,6 +73,7 @@ public class GraphContext {
         private int seqKey;
         private int cardinalityMin;
         private int cardinalityMax;
+        private String state;
     }
 
     @Data
@@ -80,6 +85,7 @@ public class GraphContext {
         private int seqKey;
         private int cardinalityMin;
         private int cardinalityMax;
+        private String state;
     }
 
     @Data
@@ -88,6 +94,7 @@ public class GraphContext {
         private ULong dtManifestId;
         private String dataTypeTerm;
         private String qualifier;
+        private String State;
     }
 
     @Data
@@ -104,31 +111,33 @@ public class GraphContext {
 
         accManifestMap =
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
-                        ACC.OBJECT_CLASS_TERM)
+                        ACC.OBJECT_CLASS_TERM, ACC.STATE)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .where(ACC_MANIFEST.RELEASE_ID.eq(releaseId))
                         .fetch(record -> new AccManifest(
                                 record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
                                 record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
-                                record.get(ACC.OBJECT_CLASS_TERM)
+                                record.get(ACC.OBJECT_CLASS_TERM),
+                                record.get(ACC.STATE)
                         )).stream()
                         .collect(Collectors.toMap(AccManifest::getAccManifestId, Function.identity()));
         asccpManifestMap =
                 dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
-                        ASCCP.PROPERTY_TERM)
+                        ASCCP.PROPERTY_TERM, ASCCP.STATE)
                         .from(ASCCP_MANIFEST)
                         .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                         .where(ASCCP_MANIFEST.RELEASE_ID.eq(releaseId))
                         .fetch(record -> new AsccpManifest(
                                 record.get(ASCCP_MANIFEST.ASCCP_MANIFEST_ID),
                                 record.get(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID),
-                                record.get(ASCCP.PROPERTY_TERM)
+                                record.get(ASCCP.PROPERTY_TERM),
+                                record.get(ASCCP.STATE)
                         )).stream()
                         .collect(Collectors.toMap(AsccpManifest::getAsccpManifestId, Function.identity()));
         bccpManifestMap =
                 dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP_MANIFEST.BDT_MANIFEST_ID,
-                        BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM)
+                        BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE)
                         .from(BCCP_MANIFEST)
                         .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                         .where(BCCP_MANIFEST.RELEASE_ID.eq(releaseId))
@@ -136,7 +145,8 @@ public class GraphContext {
                                 record.get(BCCP_MANIFEST.BCCP_MANIFEST_ID),
                                 record.get(BCCP_MANIFEST.BDT_MANIFEST_ID),
                                 record.get(BCCP.PROPERTY_TERM),
-                                record.get(BCCP.REPRESENTATION_TERM)
+                                record.get(BCCP.REPRESENTATION_TERM),
+                                record.get(BCCP.STATE)
                         )).stream()
                         .collect(Collectors.toMap(BccpManifest::getBccpManifestId, Function.identity()));
         asccManifestMap =
@@ -146,7 +156,8 @@ public class GraphContext {
                         ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                         ASCC.SEQ_KEY,
                         ASCC.CARDINALITY_MIN,
-                        ASCC.CARDINALITY_MAX)
+                        ASCC.CARDINALITY_MAX,
+                        ASCC.STATE)
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseId))
@@ -156,7 +167,8 @@ public class GraphContext {
                                 record.get(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID),
                                 record.get(ASCC.SEQ_KEY),
                                 record.get(ASCC.CARDINALITY_MIN),
-                                record.get(ASCC.CARDINALITY_MAX)
+                                record.get(ASCC.CARDINALITY_MAX),
+                                record.get(ASCC.STATE)
                         )).stream()
                         .collect(groupingBy(AsccManifest::getFromAccManifestId));
         bccManifestMap =
@@ -166,7 +178,8 @@ public class GraphContext {
                         BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
                         BCC.SEQ_KEY,
                         BCC.CARDINALITY_MIN,
-                        BCC.CARDINALITY_MAX)
+                        BCC.CARDINALITY_MAX,
+                        BCC.STATE)
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                         .where(BCC_MANIFEST.RELEASE_ID.eq(releaseId))
@@ -176,18 +189,20 @@ public class GraphContext {
                                 record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID),
                                 record.get(BCC.SEQ_KEY),
                                 record.get(BCC.CARDINALITY_MIN),
-                                record.get(BCC.CARDINALITY_MAX)
+                                record.get(BCC.CARDINALITY_MAX),
+                                record.get(BCC.STATE)
                         )).stream()
                         .collect(groupingBy(BccManifest::getFromAccManifestId));
         dtManifestMap =
-                dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER)
+                dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.STATE)
                         .from(DT_MANIFEST)
                         .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
                         .where(DT_MANIFEST.RELEASE_ID.eq(releaseId))
                         .fetch(record -> new DtManifest(
                                 record.get(DT_MANIFEST.DT_MANIFEST_ID),
                                 record.get(DT.DATA_TYPE_TERM),
-                                record.get(DT.QUALIFIER)
+                                record.get(DT.QUALIFIER),
+                                record.get(DT.STATE)
                         )).stream()
                         .collect(Collectors.toMap(DtManifest::getDtManifestId, Function.identity()));
         dtScManifestMap =
@@ -269,36 +284,37 @@ public class GraphContext {
     }
 
     public Node toNode(AccManifestRecord record) {
-        String objectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+        Record2<String, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.STATE)
                 .from(ACC)
                 .where(ACC.ACC_ID.eq(record.getAccId()))
-                .fetchOptionalInto(String.class).orElse(null);
+                .fetchOne();
         return toNode(new AccManifest(record.getAccManifestId(), record.getBasedAccManifestId(),
-                objectClassTerm));
+                res.get(ACC.OBJECT_CLASS_TERM), res.get(ACC.STATE)));
     }
 
     public Node toNode(AsccpManifestRecord record) {
-        String propertyTerm = dslContext.select(ASCCP.PROPERTY_TERM)
+        Record2<String, String> res = dslContext.select(ASCCP.PROPERTY_TERM, ASCCP.STATE)
                 .from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(record.getAsccpId()))
-                .fetchOptionalInto(String.class).orElse(null);
+                .fetchOne();
         return toNode(new AsccpManifest(record.getAsccpManifestId(), record.getRoleOfAccManifestId(),
-                propertyTerm));
+                res.get(ASCCP.PROPERTY_TERM), res.get(ASCCP.STATE)));
     }
 
     public Node toNode(BccpManifestRecord record) {
-        Record2<String, String> res =
-                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM)
+        Record3<String, String, String> res =
+                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE)
                         .from(BCCP)
                         .where(BCCP.BCCP_ID.eq(record.getBccpId()))
                         .fetchOne();
         return toNode(new BccpManifest(record.getBccpManifestId(), record.getBdtManifestId(),
-                res.get(BCCP.PROPERTY_TERM), res.get(BCCP.REPRESENTATION_TERM)));
+                res.get(BCCP.PROPERTY_TERM), res.get(BCCP.REPRESENTATION_TERM), res.get(BCCP.STATE)));
     }
 
     private Node toNode(AccManifest accManifest) {
         Node node = Node.toNode(Node.NodeType.ACC, accManifest.getAccManifestId());
         node.setBasedManifestId(accManifest.getBasedAccManifestId());
+        node.put("state", accManifest.getState());
         node.put("objectClassTerm", accManifest.getObjectClassTerm());
         return node;
     }
@@ -306,6 +322,7 @@ public class GraphContext {
     private Node toNode(AsccpManifest asccpManifest) {
         Node node = Node.toNode(Node.NodeType.ASCCP, asccpManifest.getAsccpManifestId());
         node.setLinkedManifestId(asccpManifest.getRoleOfAccManifestId());
+        node.put("state", asccpManifest.getState());
         node.put("propertyTerm", asccpManifest.getPropertyTerm());
         return node;
     }
@@ -313,6 +330,7 @@ public class GraphContext {
     private Node toNode(BccpManifest bccpManifest) {
         Node node = Node.toNode(Node.NodeType.BCCP, bccpManifest.getBccpManifestId());
         node.setLinkedManifestId(bccpManifest.getBdtManifestId());
+        node.put("state", bccpManifest.getState());
         node.put("propertyTerm", bccpManifest.getPropertyTerm());
         return node;
     }
@@ -320,6 +338,7 @@ public class GraphContext {
     private Node toNode(AsccManifest asccManifest) {
         Node node = Node.toNode(Node.NodeType.ASCC, asccManifest.getAsccManifestId());
         node.setLinkedManifestId(asccManifest.getToAsccpManifestId());
+        node.put("state", asccManifest.getState());
         node.put("cardinalityMin", asccManifest.getCardinalityMin());
         node.put("cardinalityMax", asccManifest.getCardinalityMax());
         return node;
@@ -328,6 +347,7 @@ public class GraphContext {
     private Node toNode(BccManifest bccManifest) {
         Node node = Node.toNode(Node.NodeType.BCC, bccManifest.getBccManifestId());
         node.setLinkedManifestId(bccManifest.getToBccpManifestId());
+        node.put("state", bccManifest.getState());
         node.put("cardinalityMin", bccManifest.getCardinalityMin());
         node.put("cardinalityMax", bccManifest.getCardinalityMax());
         return node;
@@ -335,6 +355,7 @@ public class GraphContext {
 
     private Node toNode(DtManifest dtManifest) {
         Node node = Node.toNode(Node.NodeType.BDT, dtManifest.getDtManifestId());
+        node.put("state", dtManifest.getState());
         node.put("dataTypeTerm", dtManifest.getDataTypeTerm());
         node.put("qualifier", dtManifest.getQualifier());
         return node;

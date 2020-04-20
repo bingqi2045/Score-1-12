@@ -106,24 +106,6 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/discard",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void discardCc(@AuthenticationPrincipal User user,
-                          @PathVariable("type") String type,
-                          @PathVariable("manifestId") long manifestId) {
-        switch (type) {
-            case "asccp":
-                service.discardAscc(user, manifestId);
-                break;
-            case "bccp":
-                service.discardBcc(user, manifestId);
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
     private CcAccNode getAccNode(User user, long manifestId) {
         return service.getAccNode(user, manifestId);
     }
@@ -136,30 +118,6 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
-
-    @RequestMapping(value = "/core_component",
-            method = RequestMethod.DELETE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteCcNodes(@AuthenticationPrincipal User user,
-                                        @RequestParam(value = "acc", required = false) List<Long> accManifestIdList,
-                                        @RequestParam(value = "asccp", required = false) List<Long> asccpManifestIdList,
-                                        @RequestParam(value = "bccp", required = false) List<Long> bccpManifestIdList) {
-
-        accManifestIdList.forEach(manifestId -> {
-            service.updateAccState(user, manifestId.longValue(), CcState.Deleted.name());
-        });
-
-        asccpManifestIdList.forEach(manifestId -> {
-            service.updateAsccpState(user, manifestId.longValue(), CcState.Deleted.name());
-        });
-
-        asccpManifestIdList.forEach(manifestId -> {
-            service.updateBccpState(user, manifestId.longValue(), CcState.Deleted.name());
-        });
-
-        return ResponseEntity.accepted().build();
-    }
-
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -168,31 +126,25 @@ public class CcNodeController {
                                        @PathVariable("manifestId") long manifestId) {
         switch (type) {
             case "acc":
-                deleteAccNode(user, manifestId);
+                service.deleteAcc(user, manifestId);
                 break;
             case "asccp":
-                deleteAsccpNode(user, manifestId);
+                service.deleteAsccp(user, manifestId);
                 break;
             case "bccp":
-                deleteBccpNode(user, manifestId);
+                service.deleteBccp(user, manifestId);
+                break;
+            case "ascc":
+                service.deleteAscc(user, manifestId);
+                break;
+            case "bcc":
+                service.deleteBcc(user, manifestId);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
         return ResponseEntity.accepted().build();
-    }
-
-    private void deleteAccNode(User user, long manifestId) {
-        service.deleteAccNode(user, manifestId);
-    }
-
-    private void deleteAsccpNode(User user, long manifestId) {
-        service.deleteAsccpNode(user, manifestId);
-    }
-
-    private void deleteBccpNode(User user, long manifestId) {
-        service.deleteBccpNode(user, manifestId);
     }
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
