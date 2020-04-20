@@ -1260,7 +1260,7 @@ public class CcNodeService {
 
         for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
-            if (asccRecord.getSeqKey() <= seqKey) {
+            if (asccRecord.getSeqKey() <= seqKey || asccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
 
@@ -1280,7 +1280,7 @@ public class CcNodeService {
                 manifestRepository.getBccManifestByFromAccManifestId(accManifestId);
         for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
-            if (bccRecord.getSeqKey() <= seqKey) {
+            if (bccRecord.getSeqKey() <= seqKey || bccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
 
@@ -1440,6 +1440,9 @@ public class CcNodeService {
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
+            if (asccRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(asccManifest.getToAsccpManifestId());
             AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
             ULong asccId = ccRepository.updateAsccArguments(asccRecord)
@@ -1463,6 +1466,9 @@ public class CcNodeService {
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifestId);
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
+            if (asccRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(asccManifest.getFromAccManifestId());
             AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
             ULong asccId = ccRepository.updateAsccArguments(asccRecord)
@@ -1484,6 +1490,9 @@ public class CcNodeService {
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
+            if (bccRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(bccManifest.getToBccpManifestId());
             BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
             ULong bccId = ccRepository.updateBccArguments(bccRecord)
@@ -1507,6 +1516,9 @@ public class CcNodeService {
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifestId);
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
+            if (bccRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(bccManifest.getFromAccManifestId());
             AccRecord accRecord = ccRepository.getAccById(AccManifestRecord.getAccId());
             ULong bccId = ccRepository.updateBccArguments(bccRecord)
@@ -1528,6 +1540,9 @@ public class CcNodeService {
         List<AsccpManifestRecord> asccpManifestRecordList = ccRepository.getAsccpManifestByRolOfAccManifestId(accManifestRecord.getAccManifestId());
         for (AsccpManifestRecord asccpManifest : asccpManifestRecordList) {
             AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifest.getAsccpId());
+            if (asccpRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
                     .setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm())
                     .setRoleOfAccId(accRecord.getAccId())
@@ -1549,6 +1564,9 @@ public class CcNodeService {
         List<AccManifestRecord> accManifestRecordList = ccRepository.getAccManifestByBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
         for (AccManifestRecord accManifestRecord : accManifestRecordList) {
             AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+            if (accRecord.getState().equals(CcState.Deleted.name())) {
+                continue;
+            }
             ULong accId = ccRepository.updateAccArguments(accRecord)
                     .setBasedAccId(basedAccRecord.getAccId())
                     .setLastUpdatedBy(userId)

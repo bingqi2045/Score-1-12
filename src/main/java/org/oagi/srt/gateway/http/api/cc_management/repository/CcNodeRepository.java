@@ -12,6 +12,7 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
@@ -133,7 +134,8 @@ public class CcNodeRepository {
         long asccCount = dslContext.selectCount()
                 .from(ASCC_MANIFEST)
                 .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        ASCC.STATE.notEqual(CcState.Deleted.name())))
                 .fetchOneInto(long.class);
         if (asccCount > 0) {
             return true;
@@ -142,7 +144,8 @@ public class CcNodeRepository {
         long bccCount = dslContext.selectCount()
                 .from(BCC_MANIFEST)
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())))
+                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(ccAccNode.getManifestId())),
+                        BCC.STATE.notEqual(CcState.Deleted.name())))
                 .fetchOneInto(long.class);
         return bccCount > 0;
     }
