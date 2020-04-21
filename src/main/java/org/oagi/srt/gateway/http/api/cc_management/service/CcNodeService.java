@@ -1476,7 +1476,6 @@ public class CcNodeService {
                     .setToAsccpId(asccpRecord.getAsccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setState(CcState.valueOf(asccpRecord.getState()))
                     .setRevisionId(revisionId)
                     .setPrevAsccId(asccRecord.getAsccId())
                     .execute();
@@ -1526,7 +1525,6 @@ public class CcNodeService {
                     .setToBccpId(bccpRecord.getBccpId())
                     .setLastUpdatedBy(userId)
                     .setLastUpdateTimestamp(timestamp)
-                    .setState(CcState.valueOf(bccpRecord.getState()))
                     .setRevisionId(revisionId)
                     .setPrevBccId(bccRecord.getBccId())
                     .execute();

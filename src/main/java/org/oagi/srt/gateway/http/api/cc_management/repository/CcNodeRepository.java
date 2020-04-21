@@ -205,7 +205,7 @@ public class CcNodeRepository {
                 }
                 break;
             case Deleted:
-                accessPrivilege = Prohibited;
+                accessPrivilege = CanMove;
                 break;
         }
         return accessPrivilege.name();
