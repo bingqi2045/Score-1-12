@@ -1,13 +1,10 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
+import org.jooq.*;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -596,14 +593,36 @@ public class BieRepository {
     }
 
     public long getDefaultBdtPriRestriIdByBdtId(long bdtManifestId) {
-        return dslContext.select(
+        ULong dtManifestId = ULong.valueOf(bdtManifestId);
+        String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
+                .from(DT)
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT_MANIFEST.DT_MANIFEST_ID.eq(dtManifestId));
+        if ("Date Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("xbt date"));
+        } else if ("Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
                 .from(BDT_PRI_RESTRI)
-                .join(DT_MANIFEST)
-                .on(BDT_PRI_RESTRI.BDT_ID.eq(DT_MANIFEST.DT_ID))
-                .where(and(
-                        DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(bdtManifestId))),
-                        BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) ((1))))
+                .join(DT).on(BDT_PRI_RESTRI.BDT_ID.eq(DT.DT_ID))
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
@@ -630,14 +649,37 @@ public class BieRepository {
                 .returning().fetchOne().getBbieScId().longValue();
     }
 
-    public long getDefaultDtScPriRestriIdByDtScId(long dtScId) {
-        return dslContext.select(
+    public long getDefaultDtScPriRestriIdByDtScId(long dtScManifestId) {
+        ULong bdtScManifestId = ULong.valueOf(dtScManifestId);
+        String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
+                .from(DT_SC)
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(bdtScManifestId));
+        if ("Date Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("xbt date"));
+        } else if ("Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
                 .from(BDT_SC_PRI_RESTRI)
-                .where(and(
-                        BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)),
-                        BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)
-                ))
+                .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 

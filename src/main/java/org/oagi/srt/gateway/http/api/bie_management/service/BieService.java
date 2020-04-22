@@ -181,7 +181,6 @@ public class BieService {
         return accessPrivilege;
     }
 
-
     public BizCtx findBizCtxByAbieId(long abieId) {
         long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
         // return the first biz ctx of the specific topLevelAbieId

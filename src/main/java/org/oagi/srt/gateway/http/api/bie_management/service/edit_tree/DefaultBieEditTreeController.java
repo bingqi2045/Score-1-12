@@ -728,13 +728,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBbieId() == 0L) {
-            long defaultBdtPriRestriId = dslContext.select(
-                    BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
-                    .from(BDT_PRI_RESTRI)
-                    .where(and(DT.DT_ID.eq(ULong.valueOf(detail.getBdtId())),
-                            BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
-                    .fetchOneInto(Long.class);
-
+            long defaultBdtPriRestriId = repository.getDefaultBdtPriRestriIdByBdtId(detail.getBdtId());
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
@@ -882,14 +876,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbieScNode.getBbieScId() == 0L) {
-            long defaultDtScPriRestriId = dslContext.select(
-                    BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
-                    .from(BDT_SC_PRI_RESTRI)
-                    .join(DT_SC_MANIFEST).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                    .where(and(
-                            DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bbieScNode.getDtScManifestId())),
-                            BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)))
-                    .fetchOneInto(Long.class);
+            long defaultDtScPriRestriId = repository.getDefaultDtScPriRestriIdByDtScId(bbieScNode.getDtScManifestId());
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
 
