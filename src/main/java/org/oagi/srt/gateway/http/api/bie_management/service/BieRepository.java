@@ -1,8 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.service;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
+import org.jooq.*;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
@@ -535,12 +533,34 @@ public class BieRepository {
     }
 
     public long getDefaultBdtPriRestriIdByBdtId(long bdtId) {
-        return dslContext.select(
+        ULong dtId = ULong.valueOf(bdtId);
+        String bdtDataTypeTerm = dslContext.select(DT.DATA_TYPE_TERM)
+                .from(DT)
+                .where(DT.DT_ID.eq(dtId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT.DT_ID.eq(dtId));
+        if ("Date Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("xbt date"));
+        } else if ("Time".equals(bdtDataTypeTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID)
                 .from(BDT_PRI_RESTRI)
-                .where(and(
-                        BDT_PRI_RESTRI.BDT_ID.eq(ULong.valueOf(bdtId))),
-                        BDT_PRI_RESTRI.IS_DEFAULT.eq((byte) ((1))))
+                .join(DT).on(BDT_PRI_RESTRI.BDT_ID.eq(DT.DT_ID))
+                .join(CDT_AWD_PRI_XPS_TYPE_MAP).on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
@@ -566,13 +586,34 @@ public class BieRepository {
     }
 
     public long getDefaultDtScPriRestriIdByDtScId(long dtScId) {
-        return dslContext.select(
+        ULong bdtScId = ULong.valueOf(dtScId);
+        String bdtScRepresentationTerm = dslContext.select(DT_SC.REPRESENTATION_TERM)
+                .from(DT_SC)
+                .where(DT_SC.DT_SC_ID.eq(bdtScId))
+                .fetchOneInto(String.class);
+
+        /*
+         * Issue #808
+         */
+        List<Condition> conds = new ArrayList();
+        conds.add(DT_SC.DT_SC_ID.eq(bdtScId));
+        if ("Date Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("date time"));
+        } else if ("Date".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("xbt date"));
+        } else if ("Time".equals(bdtScRepresentationTerm)) {
+            conds.add(XBT.NAME.eq("time"));
+        } else {
+            conds.add(BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1));
+        }
+
+        SelectOnConditionStep<Record1<ULong>> step = dslContext.select(
                 BDT_SC_PRI_RESTRI.BDT_SC_PRI_RESTRI_ID)
                 .from(BDT_SC_PRI_RESTRI)
-                .where(and(
-                        BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(ULong.valueOf(dtScId)),
-                        BDT_SC_PRI_RESTRI.IS_DEFAULT.eq((byte) 1)
-                ))
+                .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .join(CDT_SC_AWD_PRI_XPS_TYPE_MAP).on(BDT_SC_PRI_RESTRI.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID));
+        return step.where(conds)
                 .fetchOptionalInto(Long.class).orElse(0L);
     }
 
