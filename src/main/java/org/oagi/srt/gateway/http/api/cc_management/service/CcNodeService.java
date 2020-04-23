@@ -1599,7 +1599,7 @@ public class CcNodeService {
                 .setRevisionId(revisionId)
                 .setLastUpdateTimestamp(timestamp)
                 .setLastUpdatedBy(requesterUserId)
-                .setOwnerUserId(requesterUserId)
+                .setOwnerUserId(ownerUserId)
                 .execute();
 
         ccRepository.updateAccManifestArguments(accManifestRecord)
@@ -1624,7 +1624,7 @@ public class CcNodeService {
                 .execute();
 
         ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
-                .setOwnerUserId(requesterUserId)
+                .setOwnerUserId(ownerUserId)
                 .setLastUpdatedBy(requesterUserId)
                 .setLastUpdateTimestamp(timestamp)
                 .setRevisionId(revisionId)
@@ -1650,7 +1650,7 @@ public class CcNodeService {
                 .execute();
 
         ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
-                .setOwnerUserId(requesterUserId)
+                .setOwnerUserId(ownerUserId)
                 .setLastUpdatedBy(requesterUserId)
                 .setLastUpdateTimestamp(timestamp)
                 .setRevisionId(revisionId)
