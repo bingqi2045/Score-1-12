@@ -475,45 +475,48 @@ public class CcNodeService {
         InsertRevisionArguments insertRevisionArguments = revisionRepository.insertRevisionArguments();
 
         if (!accRecord.getObjectClassTerm().equals(detail.getObjectClassTerm())) {
-            insertRevisionArguments.addContent("ObjectClassTerm", accRecord.getObjectClassTerm(), detail.getObjectClassTerm());
             updateAccArguments.setObjectClassTerm(detail.getObjectClassTerm());
             updateAccArguments.setDen(detail.getObjectClassTerm() + ". Details");
+            insertRevisionArguments.addContent("ObjectClassTerm", accRecord.getObjectClassTerm(), updateAccArguments.getObjectClassTerm());
+            insertRevisionArguments.addContent("Den", accRecord.getDen(), updateAccArguments.getDen());
         }
 
         Byte abstracted = (byte) (detail.isAbstracted() ? 1 : 0);
         if (!accRecord.getIsAbstract().equals(abstracted)) {
-            insertRevisionArguments.addContent("Abstract", accRecord.getIsAbstract(), abstracted);
             updateAccArguments.setAbstract(detail.isAbstracted());
+            insertRevisionArguments.addContent("Abstract", accRecord.getIsAbstract() == 1, updateAccArguments.getAbstract());
         }
 
         Byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
         if (!accRecord.getIsDeprecated().equals(deprecated)) {
-            insertRevisionArguments.addContent("Deprecated", accRecord.getIsDeprecated(), deprecated);
             updateAccArguments.setDeprecated(detail.isDeprecated());
+            insertRevisionArguments.addContent("Deprecated", accRecord.getIsDeprecated() == 1, updateAccArguments.getDeprecated());
         }
 
         if (!Objects.equals(accRecord.getDefinition(), detail.getDefinition())) {
-            insertRevisionArguments.addContent("Definition", accRecord.getDefinition(), detail.getDefinition());
             updateAccArguments.setDefinition(detail.getDefinition());
+            insertRevisionArguments.addContent("Definition", accRecord.getDefinition(), updateAccArguments.getDefinition());
         }
 
         if (!Objects.equals(accRecord.getDefinitionSource(), detail.getDefinitionSource())) {
-            insertRevisionArguments.addContent("DefinitionSource", accRecord.getDefinitionSource(), detail.getDefinitionSource());
             updateAccArguments.setDefinitionSource(detail.getDefinitionSource());
+            insertRevisionArguments.addContent("DefinitionSource", accRecord.getDefinitionSource(), updateAccArguments.getDefinitionSource());
         }
 
-        if (!Objects.equals(accRecord.getOagisComponentType(), detail.getOagisComponentType())) {
-            insertRevisionArguments.addContent("OagisComponentType", accRecord.getObjectClassTerm(), detail.getOagisComponentType());
+        if (!accRecord.getOagisComponentType().equals((int) detail.getOagisComponentType())) {
+            insertRevisionArguments.addContent("OagisComponentType",
+                    OagisComponentType.valueOf(accRecord.getOagisComponentType()),
+                    updateAccArguments.getOagisComponentType());
             updateAccArguments.setOagisComponentType(OagisComponentType.valueOf((int) detail.getOagisComponentType()));
         }
 
-        if (!Objects.equals(accRecord.getNamespaceId(), detail.getNamespaceId())) {
+        if (!accRecord.getNamespaceId().equals(ULong.valueOf(detail.getNamespaceId()))) {
             if (detail.getNamespaceId() == 0) {
                 updateAccArguments.setNamespaceId(null);
             } else {
                 updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
             }
-            insertRevisionArguments.addContent("NamesapceId", accRecord.getNamespaceId(), detail.getNamespaceId());
+            insertRevisionArguments.addContent("NamespaceId", accRecord.getNamespaceId(), updateAccArguments.getNamespaceId());
         }
 
         ULong revisionId = insertRevisionArguments
@@ -643,14 +646,14 @@ public class CcNodeService {
 
         byte nillable = (byte) (detail.isNillable() ? 1 : 0);
         if (!asccpRecord.getIsNillable().equals(nillable)) {
-            insertRevisionArguments.addContent("Nillable", asccpRecord.getIsNillable(), nillable);
             updateAsccpArguments.setNillable(detail.isNillable());
+            insertRevisionArguments.addContent("Nillable", asccpRecord.getIsNillable() == 1, updateAsccpArguments.getNillable());
         }
 
         byte deprecated = (byte) (detail.isDeprecated() ? 1 : 0);
         if (!asccpRecord.getIsDeprecated().equals(deprecated)) {
-            insertRevisionArguments.addContent("Deprecated", asccpRecord.getIsDeprecated(), deprecated);
             updateAsccpArguments.setDeprecated(detail.isDeprecated());
+            insertRevisionArguments.addContent("Deprecated", asccpRecord.getIsDeprecated() == 1, updateAsccpArguments.getDeprecated());
         }
 
         if (!Objects.equals(asccpRecord.getDefinition(), detail.getDefinition())) {
@@ -669,7 +672,7 @@ public class CcNodeService {
             } else {
                 updateAsccpArguments.setNamespaceId(null);
             }
-            insertRevisionArguments.addContent("NamespaceId", asccpRecord.getNamespaceId(), detail.getNamespaceId());
+            insertRevisionArguments.addContent("NamespaceId", asccpRecord.getNamespaceId(), updateAsccpArguments.getNamespaceId());
         }
 
         ULong revisionId = insertRevisionArguments
@@ -1308,6 +1311,7 @@ public class CcNodeService {
             ccRevisionResponse.setIsDeprecated(accRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsAbstract(accRecord.getIsAbstract() == 1);
             ccRevisionResponse.setName(accRecord.getObjectClassTerm());
+            ccRevisionResponse.setHasBaseCc(accRecord.getBasedAccId() != null);
             List<AsccManifestRecord> asccManifestRecordList
                     = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
             List<String> associationKeys = new ArrayList<>();
@@ -1342,6 +1346,7 @@ public class CcNodeService {
             ccRevisionResponse.setIsNillable(bccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(bccpRecord.getPropertyTerm());
             ccRevisionResponse.setFixedValue(bccpRecord.getFixedValue());
+            ccRevisionResponse.setHasBaseCc(bccpRecord.getBdtId() != null);
         }
         return ccRevisionResponse;
     }
@@ -1357,6 +1362,7 @@ public class CcNodeService {
             ccRevisionResponse.setIsDeprecated(asccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(asccpRecord.getIsNillable() == 1);
             ccRevisionResponse.setName(asccpRecord.getPropertyTerm());
+            ccRevisionResponse.setHasBaseCc(asccpRecord.getRoleOfAccId() != null);
         }
         return ccRevisionResponse;
     }

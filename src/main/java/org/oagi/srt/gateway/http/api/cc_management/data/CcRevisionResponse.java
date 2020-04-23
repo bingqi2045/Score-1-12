@@ -11,6 +11,7 @@ public class CcRevisionResponse {
     Boolean isDeprecated;
     Boolean isNillable;
     Boolean isAbstract;
+    Boolean hasBaseCc;
     String name;
     String fixedValue;
     List<String> associationKeys;

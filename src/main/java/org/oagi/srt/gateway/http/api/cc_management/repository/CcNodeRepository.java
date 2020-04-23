@@ -185,6 +185,7 @@ public class CcNodeRepository {
         long userId = sessionService.userId(user);
         long ownerUserId = ccNode.getOwnerUserId();
         AppUser owner = userRepository.findById(ownerUserId);
+        AppUser currentUser = userRepository.findById(userId);
         switch (ccNode.getState()) {
             case WIP:
                 if (userId == ownerUserId) {
@@ -198,7 +199,7 @@ public class CcNodeRepository {
             case Production:
             case Candidate:
             case Published:
-                if (userId == ownerUserId) {
+                if (owner.isDeveloper() == currentUser.isDeveloper()) {
                     accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = CanView;
