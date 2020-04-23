@@ -19,9 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -63,24 +61,28 @@ public class BieRepository {
     }
 
     public List<SummaryBieForCcExt> getSummaryBieListByAccIds(List<Long> accIds) {
-        return dslContext.select(
+        List<SummaryBieForCcExt> bieListByAscc = dslContext.selectDistinct(
                 ACC.ACC_ID,
+                ACC.OBJECT_CLASS_TERM,
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
                 TOP_LEVEL_ABIE.STATE,
                 TOP_LEVEL_ABIE.OWNER_USER_ID,
                 APP_USER.LOGIN_ID,
                 ASCCP.PROPERTY_TERM)
-                .from(TOP_LEVEL_ABIE)
-                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .from(ASBIE)
+                .join(ASCC).on(ASBIE.BASED_ASCC_ID.eq(ASCC.ASCC_ID))
+                .join(ACC).on(ASCC.FROM_ACC_ID.eq(ACC.ACC_ID))
+                .join(TOP_LEVEL_ABIE).on(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ACC).on(ABIE.BASED_ACC_ID.eq(ACC.ACC_ID))
                 .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
                 .join(ASCCP).on(ASBIEP.BASED_ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .where(ACC.ACC_ID.in(accIds))
                 .fetchStream().map(e -> {
                     SummaryBieForCcExt item = new SummaryBieForCcExt();
                     item.setAccId(e.get(ACC.ACC_ID).longValue());
+                    item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
                     item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
                     item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP));
                     item.setState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
@@ -89,6 +91,42 @@ public class BieRepository {
                     item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
                     return item;
                 }).collect(Collectors.toList());
+
+        List<SummaryBieForCcExt> bieListByBcc = dslContext.selectDistinct(
+                ACC.ACC_ID,
+                ACC.OBJECT_CLASS_TERM,
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
+                TOP_LEVEL_ABIE.STATE,
+                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                APP_USER.LOGIN_ID,
+                ASCCP.PROPERTY_TERM)
+                .from(BBIE)
+                .join(BCC).on(BBIE.BASED_BCC_ID.eq(BCC.BCC_ID))
+                .join(ACC).on(BCC.FROM_ACC_ID.eq(ACC.ACC_ID))
+                .join(TOP_LEVEL_ABIE).on(BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
+                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
+                .join(ASCCP).on(ASBIEP.BASED_ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .where(ACC.ACC_ID.in(accIds))
+                .fetchStream().map(e -> {
+                    SummaryBieForCcExt item = new SummaryBieForCcExt();
+                    item.setAccId(e.get(ACC.ACC_ID).longValue());
+                    item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
+                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
+                    item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP));
+                    item.setState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
+                    item.setOwnerUserId(e.get(TOP_LEVEL_ABIE.OWNER_USER_ID).longValue());
+                    item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
+                    item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
+                    return item;
+                }).collect(Collectors.toList());
+
+        Set<SummaryBieForCcExt> result = new HashSet();
+        result.addAll(bieListByAscc);
+        result.addAll(bieListByBcc);
+        return new ArrayList(result);
     }
 
     public long getCurrentAccIdByTopLevelAbieId(long topLevelAbieId) {

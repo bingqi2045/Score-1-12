@@ -65,7 +65,7 @@ public class CoreComponentRepository {
 
     public List<SummaryCcExt> getSummaryCcExtList() {
         List<ULong> uegAccIds =
-                dslContext.select(max(Tables.ACC.ACC_ID).as("id"))
+                dslContext.select(max(Tables.ACC.CURRENT_ACC_ID).as("id"))
                         .from(Tables.ACC)
                         .where(and(
                                 Tables.ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),

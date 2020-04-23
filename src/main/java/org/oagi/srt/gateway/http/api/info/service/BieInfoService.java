@@ -2,6 +2,8 @@ package org.oagi.srt.gateway.http.api.info.service;
 
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
+import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
+import org.oagi.srt.gateway.http.api.context_management.data.FindBizCtxIdsByTopLevelAbieIdsResult;
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBie;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBieInfo;
@@ -50,9 +52,16 @@ public class BieInfoService {
                 .limit(10)
                 .collect(Collectors.toList());
 
+        Map<Long, List<FindBizCtxIdsByTopLevelAbieIdsResult>> res = bizCtxRepository.findBizCtxIdsByTopLevelAbieIds(
+                recentlyWorkedOn.stream().map(e -> e.getTopLevelAbieId()).collect(Collectors.toList())
+        );
         recentlyWorkedOn.forEach(e -> {
-            List<Long> bizCtxIds = repository.getBizCtxIdByTopLevelAbieId(e.getTopLevelAbieId());
-            e.setBusinessContexts(bizCtxRepository.findBusinessContextsByBizCtxIdIn(bizCtxIds));
+            e.setBusinessContexts(res.get(e.getTopLevelAbieId()).stream().map(item -> {
+                BusinessContext bc = new BusinessContext();
+                bc.setBizCtxId(item.getBizCtxId());
+                bc.setName(item.getName());
+                return bc;
+            }).collect(Collectors.toList()));
         });
 
         info.setRecentlyWorkedOn(recentlyWorkedOn);
