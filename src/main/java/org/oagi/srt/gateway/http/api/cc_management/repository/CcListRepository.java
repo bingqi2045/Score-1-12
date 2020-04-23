@@ -142,7 +142,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ACC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -229,7 +229,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -316,7 +316,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -410,7 +410,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -503,7 +503,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });
@@ -598,7 +598,7 @@ public class CcListRepository {
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(DT.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM) + "." + row.getValue(REVISION.REVISION_TRACKING_NUM));
+                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     return ccList;
                 });

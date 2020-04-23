@@ -9,17 +9,43 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 import static org.oagi.srt.entity.jooq.Tables.REVISION;
 
 @Repository
 public class RevisionRepository {
 
     private DSLContext dslContext;
+
+    public List<Revision> getRevisionByReference(String reference) {
+        if (reference.isEmpty()) {
+            return null;
+        }
+        return dslContext.select(
+                REVISION.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
+                REVISION.REFERENCE,
+                REVISION.REVISION_ACTION,
+                REVISION.BODY,
+                REVISION.PREV_REVISION_ID,
+                REVISION.CREATION_TIMESTAMP.as("timestamp"),
+                APP_USER.NAME.as("loginId")
+        )
+                .from(REVISION)
+                .join(APP_USER)
+                .on(REVISION.CREATED_BY.eq(APP_USER.APP_USER_ID))
+                .where(REVISION.REFERENCE.eq(reference))
+                .orderBy(REVISION.REVISION_ID.desc())
+                .fetchInto(Revision.class);
+    }
 
     public RevisionRepository(@Autowired DSLContext dslContext) {
         this.dslContext = dslContext;
