@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.info.service;
 
+import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CoreComponentRepository;
@@ -32,6 +33,10 @@ public class CcInfoService {
     private BusinessContextRepository bizCtxRepository;
 
     public SummaryCcExtInfo getSummaryCcExtInfo(User user) {
+        if (user == null) {
+            throw new DataAccessForbiddenException("Need authentication to access information.");
+        }
+
         List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList();
 
         SummaryCcExtInfo info = new SummaryCcExtInfo();

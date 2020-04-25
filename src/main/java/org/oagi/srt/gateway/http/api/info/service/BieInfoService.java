@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.info.service;
 
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.srt.gateway.http.api.context_management.data.FindBizCtxIdsByTopLevelAbieIdsResult;
@@ -28,6 +29,10 @@ public class BieInfoService {
     private SessionService sessionService;
 
     public SummaryBieInfo getSummaryBieInfo(User user) {
+        if (user == null) {
+            throw new DataAccessForbiddenException("Need authentication to access information.");
+        }
+
         List<SummaryBie> summaryBieList = repository.getSummaryBieList();
         long requesterId = sessionService.userId(user);
 
