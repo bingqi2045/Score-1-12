@@ -9,8 +9,8 @@ import java.util.Map;
 @Data
 public class SummaryBieInfo {
 
-    private Map<BieState, Integer> numberOfBieByStates;
-    private Map<String, Integer> numberOfBieByUsers;
+    private Map<BieState, Integer> numberOfTotalBieByStates;
+    private Map<BieState, Integer> numberOfMyBieByStates;
     private List<SummaryBie> recentlyWorkedOn;
 
 }

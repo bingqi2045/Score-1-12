@@ -37,13 +37,15 @@ public class BieInfoService {
         long requesterId = sessionService.userId(user);
 
         SummaryBieInfo info = new SummaryBieInfo();
-        Map<BieState, Integer> numberOfBieByStates =
+        Map<BieState, Integer> numberOfTotalBieByStates =
                 summaryBieList.stream().collect(Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum));
-        info.setNumberOfBieByStates(numberOfBieByStates);
+        info.setNumberOfTotalBieByStates(numberOfTotalBieByStates);
 
-        Map<String, Integer> numberOfBieByUsers =
-                summaryBieList.stream().collect(Collectors.toMap(SummaryBie::getOwnerUsername, (e) -> 1, Integer::sum));
-        info.setNumberOfBieByUsers(numberOfBieByUsers);
+        Map<BieState, Integer> numberOfMyBieByStates =
+                summaryBieList.stream()
+                        .filter(e -> e.getOwnerUserId() == requesterId)
+                        .collect(Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum));
+        info.setNumberOfMyBieByStates(numberOfMyBieByStates);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
