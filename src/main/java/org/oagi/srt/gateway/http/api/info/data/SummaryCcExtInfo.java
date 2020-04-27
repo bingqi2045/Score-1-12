@@ -11,8 +11,7 @@ public class SummaryCcExtInfo {
 
     private Map<CcState, Integer> numberOfTotalCcExtByStates;
     private Map<CcState, Integer> numberOfMyCcExtByStates;
-    
-
-    private Map<String, List<SummaryBieForCcExt>> summaryCcExtListMap;
+    private Map<String, Map<CcState, Integer>> ccExtByUsersAndStates;
+    private List<SummaryCcExt> myExtensionsUnusedInBIEs;
 
 }

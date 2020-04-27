@@ -13,6 +13,6 @@ public class SummaryBieInfo {
     private Map<BieState, Integer> numberOfTotalBieByStates;
     private Map<BieState, Integer> numberOfMyBieByStates;
     private Map<String, Map<BieState, Integer>> bieByUsersAndStates;
-    private List<BieList> recentlyWorkedOn;
+    private List<BieList> myRecentBIEs;
 
 }

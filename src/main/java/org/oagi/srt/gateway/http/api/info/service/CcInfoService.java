@@ -1,13 +1,12 @@
 package org.oagi.srt.gateway.http.api.info.service;
 
+import org.oagi.srt.data.AppUser;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CoreComponentRepository;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.FindBizCtxIdsByTopLevelAbieIdsResult;
+import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
-import org.oagi.srt.gateway.http.api.info.data.SummaryBieForCcExt;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExtInfo;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -28,6 +27,9 @@ public class CcInfoService {
     private CoreComponentRepository ccRepository;
 
     @Autowired
+    private CcListService ccListService;
+
+    @Autowired
     private BieRepository bieRepository;
 
     @Autowired
@@ -42,38 +44,30 @@ public class CcInfoService {
         }
 
         List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList();
-        long requesterId = sessionService.userId(user);
+        AppUser requester = sessionService.getAppUser(user);
 
         SummaryCcExtInfo info = new SummaryCcExtInfo();
         Map<CcState, Integer> numberOfCcExtByStates =
                 summaryCcExtList.stream().collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
         info.setNumberOfTotalCcExtByStates(numberOfCcExtByStates);
 
-        Map<CcState, Integer> numberOfUegByUsers =
+        Map<CcState, Integer> numberOfTotalCcExtByStates =
                 summaryCcExtList.stream()
-                        .filter(e -> e.getOwnerUserId() == requesterId)
                         .collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
-        info.setNumberOfMyCcExtByStates(numberOfUegByUsers);
+        info.setNumberOfTotalCcExtByStates(numberOfTotalCcExtByStates);
 
-        List<SummaryBieForCcExt> summaryBieList = bieRepository.getSummaryBieListByAccIds(
-                summaryCcExtList.stream().map(e -> e.getAccId()).collect(Collectors.toList())
-        );
+        Map<CcState, Integer> numberOfMyBieByStates =
+                summaryCcExtList.stream()
+                        .filter(e -> e.getOwnerUserId() == requester.getAppUserId())
+                        .collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
+        info.setNumberOfMyCcExtByStates(numberOfMyBieByStates);
 
-        Map<Long, List<FindBizCtxIdsByTopLevelAbieIdsResult>> res = bizCtxRepository.findBizCtxIdsByTopLevelAbieIds(
-                summaryBieList.stream().map(e -> e.getTopLevelAbieId()).collect(Collectors.toList())
-        );
-        summaryBieList.forEach(e -> {
-            e.setBusinessContexts(res.get(e.getTopLevelAbieId()).stream().map(item -> {
-                BusinessContext bc = new BusinessContext();
-                bc.setBizCtxId(item.getBizCtxId());
-                bc.setName(item.getName());
-                return bc;
-            }).collect(Collectors.toList()));
-        });
+        Map<String, Map<CcState, Integer>> ccExtByUsersAndStates = summaryCcExtList.stream()
+                .collect(groupingBy(SummaryCcExt::getOwnerUsername,
+                        Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum)));
+        info.setCcExtByUsersAndStates(ccExtByUsersAndStates);
 
-        Map<String, List<SummaryBieForCcExt>> summaryCcExtListMap = summaryBieList.stream()
-                .collect(groupingBy(SummaryBieForCcExt::getObjectClassTerm));
-        info.setSummaryCcExtListMap(summaryCcExtListMap);
+        info.setMyExtensionsUnusedInBIEs(ccListService.getMyExtensionsUnusedInBIEs(user));
 
         return info;
     }

@@ -71,7 +71,7 @@ public class BieInfoService {
         request.setOwnerLoginIds(Arrays.asList(requester.getLoginId()));
         request.setPageRequest(pageRequest);
 
-        info.setRecentlyWorkedOn(bieService.getBieList(user, request).getList());
+        info.setMyRecentBIEs(bieService.getBieList(user, request).getList());
 
         return info;
     }
