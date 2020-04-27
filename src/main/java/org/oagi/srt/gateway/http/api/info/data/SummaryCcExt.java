@@ -4,6 +4,7 @@ import lombok.Data;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -13,7 +14,7 @@ public class SummaryCcExt {
     private String guid;
     private String objectClassTerm;
     private CcState state;
-    private Date lastUpdateTimestamp;
+    private LocalDateTime lastUpdateTimestamp;
     private String lastUpdateUser;
 
     private String ownerUsername;

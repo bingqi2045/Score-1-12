@@ -9,9 +9,6 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
-import org.oagi.srt.data.ASCC;
-import org.oagi.srt.data.ASCCP;
-import org.oagi.srt.data.BCCP;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
@@ -21,6 +18,7 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repository.ReleaseRepository;
 import org.oagi.srt.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +28,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.sun.tools.doclint.Entity.and;
-import static java.util.Collections.max;
-import static org.oagi.srt.entity.jooq.Tables.ACC;
-import static org.oagi.srt.entity.jooq.Tables.APP_USER;
+import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,6 +55,9 @@ public class CcListService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ReleaseRepository releaseRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -201,14 +197,16 @@ public class CcListService {
     public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(User user) {
         long requesterId = sessionService.userId(user);
 
-        List<ULong> uegIds = dslContext.select(max(Tables.ACC.CURRENT_ACC_ID).as("id"))
-                .from(Tables.ACC)
+        Release workingRelease = releaseRepository.getWorkingRelease();
+
+        List<ULong> uegIds = dslContext.select(ACC.ACC_ID.as("id"))
+                .from(ACC)
+                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .where(and(
-                        Tables.ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
-                        Tables.ACC.RELEASE_ID.greaterThan(ULong.valueOf(0L)),
-                        Tables.ACC.OWNER_USER_ID.eq(ULong.valueOf(requesterId))
+                        ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
+                        ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(workingRelease.getReleaseId())),
+                        ACC.OWNER_USER_ID.eq(ULong.valueOf(requesterId))
                 ))
-                .groupBy(Tables.ACC.GUID)
                 .fetchInto(ULong.class);
 
         byte isUsed = (byte) 0;
@@ -228,15 +226,17 @@ public class CcListService {
                 ASCCP.PROPERTY_TERM,
                 ASBIE.SEQ_KEY)
                 .from(ASCC)
+                .join(ASCC_MANIFEST).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                 .join(ACC).on(ASCC.FROM_ACC_ID.eq(ACC.ACC_ID))
-                .join(ASBIE).on(and(ASCC.ASCC_ID.eq(ASBIE.BASED_ASCC_ID), ASBIE.IS_USED.eq(isUsed)))
+                .join(ASBIE).on(and(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ASBIE.BASED_ASCC_MANIFEST_ID), ASBIE.IS_USED.eq(isUsed)))
                 .join(ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
                 .join(TOP_LEVEL_ABIE).on(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
-                .join(ASCCP.as("bie")).on(ASBIEP.BASED_ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
+                .join(ASCCP.as("bie")).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
