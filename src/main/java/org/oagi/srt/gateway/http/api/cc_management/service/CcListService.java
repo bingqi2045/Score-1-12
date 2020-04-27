@@ -272,14 +272,16 @@ public class CcListService {
                 BBIE.SEQ_KEY)
                 .from(BCC)
                 .join(ACC).on(BCC.FROM_ACC_ID.eq(ACC.ACC_ID))
-                .join(BBIE).on(and(BCC.BCC_ID.eq(BBIE.BASED_BCC_ID), BBIE.IS_USED.eq(isUsed)))
+                .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                .join(BBIE).on(and(BCC_MANIFEST.BCC_MANIFEST_ID.eq(BBIE.BASED_BCC_MANIFEST_ID), BBIE.IS_USED.eq(isUsed)))
                 .join(BCCP).on(BCC.TO_BCCP_ID.eq(BCCP.BCCP_ID))
                 .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
                 .join(TOP_LEVEL_ABIE).on(BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
-                .join(ASCCP.as("bie")).on(ASBIEP.BASED_ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP.as("bie")).on(ASCCP.as("bie").ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();

@@ -7,7 +7,6 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
-import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBie;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBieInfo;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -16,7 +15,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,9 +29,6 @@ public class BieInfoService {
 
     @Autowired
     private BieService bieService;
-
-    @Autowired
-    private BusinessContextRepository bizCtxRepository;
 
     @Autowired
     private SessionService sessionService;

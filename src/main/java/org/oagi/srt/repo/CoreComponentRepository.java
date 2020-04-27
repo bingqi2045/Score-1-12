@@ -2,14 +2,18 @@ package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
+import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.repo.cc_arguments.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
@@ -240,6 +244,38 @@ public class CoreComponentRepository {
                 .from(BCCP)
                 .where(BCCP.BCCP_ID.eq(ULong.valueOf(bccpId)))
                 .fetchOneInto(CcBccpNode.class);
+    }
+
+    public List<SummaryCcExt> getSummaryCcExtList() {
+        List<ULong> uegAccIds =
+                dslContext.select(max(ACC.ACC_ID).as("id"))
+                        .from(ACC)
+                        .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .where(and(
+                                ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue()),
+                                ACC_MANIFEST.RELEASE_ID.greaterThan(ULong.valueOf(0))
+                        ))
+                        .groupBy(ACC.GUID)
+                        .fetchInto(ULong.class);
+
+        return dslContext.select(ACC.ACC_ID,
+                ACC.OBJECT_CLASS_TERM,
+                ACC.STATE,
+                ACC.OWNER_USER_ID,
+                APP_USER.LOGIN_ID)
+                .from(ACC)
+                .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .where(ACC.ACC_ID.in(uegAccIds))
+                .fetchStream().map(e -> {
+                    SummaryCcExt item = new SummaryCcExt();
+                    item.setAccId(e.get(ACC.ACC_ID).longValue());
+                    item.setObjectClassTerm(e.get(ACC.OBJECT_CLASS_TERM));
+                    item.setState(CcState.valueOf(e.get(ACC.STATE)));
+                    item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
+                    item.setOwnerUserId(e.get(ACC.OWNER_USER_ID).longValue());
+                    return item;
+                }).collect(Collectors.toList());
+
     }
 
     public InsertAccArguments insertAccArguments() {

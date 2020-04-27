@@ -4,12 +4,11 @@ import org.oagi.srt.data.AppUser;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.repository.CoreComponentRepository;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
-import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExtInfo;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.CoreComponentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -28,12 +27,6 @@ public class CcInfoService {
 
     @Autowired
     private CcListService ccListService;
-
-    @Autowired
-    private BieRepository bieRepository;
-
-    @Autowired
-    private BusinessContextRepository bizCtxRepository;
 
     @Autowired
     private SessionService sessionService;
