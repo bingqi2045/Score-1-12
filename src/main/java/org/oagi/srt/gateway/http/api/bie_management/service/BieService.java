@@ -14,6 +14,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
 import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
@@ -64,6 +66,37 @@ public class BieService {
 
     @Autowired
     private DSLContext dslContext;
+
+    public List<AsccpForBie> getAsccpListForBie(long releaseId) {
+        List<AsccpForBie> asccpForBieList = dslContext.select(
+                Tables.ASCCP.ASCCP_ID,
+                Tables.ASCCP.CURRENT_ASCCP_ID,
+                Tables.ASCCP.GUID,
+                Tables.ASCCP.PROPERTY_TERM,
+                Tables.ASCCP.MODULE_ID,
+                Tables.MODULE.MODULE_.as("module"),
+                Tables.ASCCP.STATE,
+                Tables.ASCCP.REVISION_NUM,
+                Tables.ASCCP.REVISION_TRACKING_NUM,
+                Tables.ASCCP.RELEASE_ID,
+                Tables.ASCCP.LAST_UPDATE_TIMESTAMP)
+                .from(Tables.ASCCP)
+                .leftJoin(Tables.MODULE).on(Tables.ASCCP.MODULE_ID.eq(Tables.MODULE.MODULE_ID))
+                .where(and(Tables.ASCCP.REVISION_NUM.greaterThan(0),
+                        Tables.ASCCP.STATE.eq(CcState.Published.getValue())))
+                .fetchInto(AsccpForBie.class);
+
+        Map<String, List<AsccpForBie>> groupingByGuidAsccpForBieList =
+                asccpForBieList.stream()
+                        .collect(groupingBy(AsccpForBie::getGuid));
+
+        asccpForBieList = groupingByGuidAsccpForBieList.values().stream()
+                .map(e -> CcUtility.getLatestEntity(releaseId, e))
+                .filter(e -> e != null)
+                .collect(Collectors.toList());
+
+        return asccpForBieList;
+    }
 
     @Transactional
     public BieCreateResponse createBie(User user, BieCreateRequest request) {

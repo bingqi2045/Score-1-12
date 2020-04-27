@@ -8,6 +8,7 @@ import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.info.data.SummaryBie;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -31,6 +33,32 @@ public class BieRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    public List<SummaryBie> getSummaryBieList() {
+        return dslContext.select(
+                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
+                TOP_LEVEL_ABIE.STATE,
+                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                APP_USER.LOGIN_ID,
+                ASCCP.PROPERTY_TERM)
+                .from(TOP_LEVEL_ABIE)
+                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
+                .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .fetchStream().map(e -> {
+            SummaryBie item = new SummaryBie();
+            item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
+            item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP));
+            item.setState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
+            item.setOwnerUserId(e.get(TOP_LEVEL_ABIE.OWNER_USER_ID).longValue());
+            item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
+            item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
+            return item;
+        }).collect(Collectors.toList());
+    }
 
     public long getAccIdByTopLevelAbieId(long topLevelAbieId, long releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_ID)
