@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Service
 public class BieInfoService {
 
@@ -47,16 +49,15 @@ public class BieInfoService {
                         .collect(Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum));
         info.setNumberOfMyBieByStates(numberOfMyBieByStates);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MONTH, -1);
-        Date dayBeforeMonth = calendar.getTime();
+        Map<String, Map<BieState, Integer>> bieByUsersAndStates = summaryBieList.stream()
+                .collect(groupingBy(SummaryBie::getOwnerUsername,
+                        Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum)));
+        info.setBieByUsersAndStates(bieByUsersAndStates);
 
         List<SummaryBie> recentlyWorkedOn = summaryBieList.stream()
                 .filter(e -> e.getOwnerUserId() == requesterId)
-                .filter(e -> e.getLastUpdateTimestamp().after(dayBeforeMonth))
                 .sorted(Comparator.comparing(SummaryBie::getLastUpdateTimestamp).reversed())
-                .limit(10)
+                .limit(5)
                 .collect(Collectors.toList());
 
         Map<Long, List<FindBizCtxIdsByTopLevelAbieIdsResult>> res = bizCtxRepository.findBizCtxIdsByTopLevelAbieIds(
