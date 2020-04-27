@@ -1,10 +1,12 @@
 package org.oagi.srt.gateway.http.api.info.service;
 
+import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
-import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.srt.gateway.http.api.context_management.data.FindBizCtxIdsByTopLevelAbieIdsResult;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieService;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.context_management.repository.BusinessContextRepository;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBie;
 import org.oagi.srt.gateway.http.api.info.data.SummaryBieInfo;
@@ -13,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -23,6 +28,9 @@ public class BieInfoService {
 
     @Autowired
     private BieRepository repository;
+
+    @Autowired
+    private BieService bieService;
 
     @Autowired
     private BusinessContextRepository bizCtxRepository;
@@ -36,7 +44,7 @@ public class BieInfoService {
         }
 
         List<SummaryBie> summaryBieList = repository.getSummaryBieList();
-        long requesterId = sessionService.userId(user);
+        AppUser requester = sessionService.getAppUser(user);
 
         SummaryBieInfo info = new SummaryBieInfo();
         Map<BieState, Integer> numberOfTotalBieByStates =
@@ -45,7 +53,7 @@ public class BieInfoService {
 
         Map<BieState, Integer> numberOfMyBieByStates =
                 summaryBieList.stream()
-                        .filter(e -> e.getOwnerUserId() == requesterId)
+                        .filter(e -> e.getOwnerUserId() == requester.getAppUserId())
                         .collect(Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum));
         info.setNumberOfMyBieByStates(numberOfMyBieByStates);
 
@@ -54,25 +62,16 @@ public class BieInfoService {
                         Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum)));
         info.setBieByUsersAndStates(bieByUsersAndStates);
 
-        List<SummaryBie> recentlyWorkedOn = summaryBieList.stream()
-                .filter(e -> e.getOwnerUserId() == requesterId)
-                .sorted(Comparator.comparing(SummaryBie::getLastUpdateTimestamp).reversed())
-                .limit(5)
-                .collect(Collectors.toList());
+        BieListRequest request = new BieListRequest();
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setSortActive("lastUpdateTimestamp");
+        pageRequest.setSortDirection("desc");
+        pageRequest.setPageIndex(0);
+        pageRequest.setPageSize(5);
+        request.setOwnerLoginIds(Arrays.asList(requester.getLoginId()));
+        request.setPageRequest(pageRequest);
 
-        Map<Long, List<FindBizCtxIdsByTopLevelAbieIdsResult>> res = bizCtxRepository.findBizCtxIdsByTopLevelAbieIds(
-                recentlyWorkedOn.stream().map(e -> e.getTopLevelAbieId()).collect(Collectors.toList())
-        );
-        recentlyWorkedOn.forEach(e -> {
-            e.setBusinessContexts(res.get(e.getTopLevelAbieId()).stream().map(item -> {
-                BusinessContext bc = new BusinessContext();
-                bc.setBizCtxId(item.getBizCtxId());
-                bc.setName(item.getName());
-                return bc;
-            }).collect(Collectors.toList()));
-        });
-
-        info.setRecentlyWorkedOn(recentlyWorkedOn);
+        info.setRecentlyWorkedOn(bieService.getBieList(user, request).getList());
 
         return info;
     }

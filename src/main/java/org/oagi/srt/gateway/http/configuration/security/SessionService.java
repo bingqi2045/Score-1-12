@@ -38,4 +38,8 @@ public class SessionService {
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(username))
                 .fetchOneInto(AppUser.class);
     }
+
+    public AppUser getAppUser(User user) {
+        return getAppUser(user.getUsername());
+    }
 }
