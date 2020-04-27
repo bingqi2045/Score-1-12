@@ -77,6 +77,7 @@ public class CoreComponentRepository {
         return dslContext.select(Tables.ACC.ACC_ID,
                 Tables.ACC.OBJECT_CLASS_TERM,
                 Tables.ACC.STATE,
+                Tables.ACC.OWNER_USER_ID,
                 Tables.APP_USER.LOGIN_ID)
                 .from(Tables.ACC)
                 .join(Tables.APP_USER).on(Tables.ACC.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID))
@@ -87,6 +88,7 @@ public class CoreComponentRepository {
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
                     item.setOwnerUsername(e.get(Tables.APP_USER.LOGIN_ID));
+                    item.setOwnerUserId(e.get(Tables.ACC.OWNER_USER_ID).longValue());
                     return item;
                 }).collect(Collectors.toList());
 

@@ -10,6 +10,7 @@ import org.oagi.srt.gateway.http.api.context_management.repository.BusinessConte
 import org.oagi.srt.gateway.http.api.info.data.SummaryBieForCcExt;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExtInfo;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -32,21 +33,27 @@ public class CcInfoService {
     @Autowired
     private BusinessContextRepository bizCtxRepository;
 
+    @Autowired
+    private SessionService sessionService;
+
     public SummaryCcExtInfo getSummaryCcExtInfo(User user) {
         if (user == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");
         }
 
         List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList();
+        long requesterId = sessionService.userId(user);
 
         SummaryCcExtInfo info = new SummaryCcExtInfo();
         Map<CcState, Integer> numberOfCcExtByStates =
                 summaryCcExtList.stream().collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
-        info.setNumberOfUegByStates(numberOfCcExtByStates);
+        info.setNumberOfTotalCcExtByStates(numberOfCcExtByStates);
 
-        Map<String, Integer> numberOfUegByUsers =
-                summaryCcExtList.stream().collect(Collectors.toMap(SummaryCcExt::getOwnerUsername, (e) -> 1, Integer::sum));
-        info.setNumberOfUegByUsers(numberOfUegByUsers);
+        Map<CcState, Integer> numberOfUegByUsers =
+                summaryCcExtList.stream()
+                        .filter(e -> e.getOwnerUserId() == requesterId)
+                        .collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
+        info.setNumberOfMyCcExtByStates(numberOfUegByUsers);
 
         List<SummaryBieForCcExt> summaryBieList = bieRepository.getSummaryBieListByAccIds(
                 summaryCcExtList.stream().map(e -> e.getAccId()).collect(Collectors.toList())

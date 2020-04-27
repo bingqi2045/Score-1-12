@@ -9,8 +9,9 @@ import java.util.Map;
 @Data
 public class SummaryCcExtInfo {
 
-    private Map<CcState, Integer> numberOfUegByStates;
-    private Map<String, Integer> numberOfUegByUsers;
+    private Map<CcState, Integer> numberOfTotalCcExtByStates;
+    private Map<CcState, Integer> numberOfMyCcExtByStates;
+    
 
     private Map<String, List<SummaryBieForCcExt>> summaryCcExtListMap;
 

@@ -12,6 +12,7 @@ public class SummaryCcExt {
     private CcState state;
     private String objectClassTerm;
     private String ownerUsername;
+    private long ownerUserId;
 
     private List<SummaryBieForCcExt> bieList;
 
