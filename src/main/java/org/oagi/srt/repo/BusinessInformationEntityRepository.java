@@ -416,16 +416,16 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setOwnerIds(List<ULong> ownerIds) {
-            if (!ownerIds.isEmpty()) {
-                conditions.add(APP_USER.LOGIN_ID.in(ownerIds));
+        public SelectBieListArguments setOwnerLoginIds(List<String> ownerLoginIds) {
+            if (!ownerLoginIds.isEmpty()) {
+                conditions.add(APP_USER.LOGIN_ID.in(ownerLoginIds));
             }
             return this;
         }
 
-        public SelectBieListArguments setUpdaterIds(List<ULong> updaterIds) {
-            if (!updaterIds.isEmpty()) {
-                conditions.add(APP_USER.as("updater").LOGIN_ID.in(updaterIds));
+        public SelectBieListArguments setUpdaterLoginIds(List<String> updaterLoginIds) {
+            if (!updaterLoginIds.isEmpty()) {
+                conditions.add(APP_USER.as("updater").LOGIN_ID.in(updaterLoginIds));
             }
             return this;
         }

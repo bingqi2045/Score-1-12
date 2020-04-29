@@ -220,11 +220,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         if (abieId == 0L && isForceBieUpdate()) {
             BieEditAcc acc = repository.getAcc(asbiepNode.getAccId(), asbiepNode.getReleaseId());
+            AccManifestRecord accManifest = ccNodeRepository.getAccManifestByAcc(asbiepNode.getAccId(), asbiepNode.getReleaseId());
 
             abieId = bieRepository.insertAbie()
                     .setUserId(sessionService.userId(user))
                     .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
-                    .setAccManifestId(acc.getAccId())
+                    .setAccManifestId(accManifest.getAccManifestId())
                     .execute().longValue();
         }
 
