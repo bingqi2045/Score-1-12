@@ -1,5 +1,7 @@
 package org.oagi.srt.repo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.DescriptorProtos;
@@ -9,6 +11,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
 import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -138,9 +141,15 @@ public class RevisionRepository {
 
         public void addContent(String key, Object before, Object after) {
             final ObjectNode entry = nodeFactory.objectNode();
-            entry.put("before", String.valueOf(before));
-            entry.put("after",  String.valueOf(after));
-            content.set(key, entry);
+            if (!String.valueOf(before).equals(String.valueOf(after))) {
+                entry.put("before", String.valueOf(before));
+                entry.put("after",  String.valueOf(after));
+                content.set(key, entry);
+            }
+        }
+
+        public void setAction(CcAction action) {
+            content.put("ActionDescription", action.toString());
         }
 
         public ULong execute() {
@@ -166,18 +175,68 @@ public class RevisionRepository {
         }
     }
 
+    public class UpdateRevisionArguments {
+        final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
+
+        private ObjectNode content;
+        private ULong revisionId;
+        private String reference;
+
+        UpdateRevisionArguments(ULong revisionId)  {
+            RevisionRecord revisionRecord = dslContext
+                    .selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(revisionId))
+                    .fetchOne();
+            this.revisionId = revisionRecord.getRevisionId();
+            this.reference = revisionRecord.getReference();
+            try {
+                this.content = (ObjectNode) new ObjectMapper().readTree(revisionRecord.getBody().toString());
+            } catch (JsonProcessingException e) {
+                this.content = nodeFactory.objectNode();
+            }
+        }
+
+        public UpdateRevisionArguments addContent(String key, Object before, Object after) {
+            final ObjectNode entry = nodeFactory.objectNode();
+            if (String.valueOf(before) != String.valueOf(after)) {
+                entry.put("before", String.valueOf(before));
+                entry.put("after",  String.valueOf(after));
+                content.set(key, entry);
+            }
+            return this;
+        }
+
+        public UpdateRevisionArguments setAction(CcAction action) {
+            content.put("ActionDescription", action.toString());
+            return this;
+        }
+
+        public UpdateRevisionArguments setReference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
+        public void execute() {
+            if (this.revisionId == null) {
+                return;
+            }
+
+            dslContext.update(REVISION)
+                    .set(REVISION.BODY, content  != null ? JSON.valueOf(content.toString()) : null)
+                    .set(REVISION.REFERENCE, this.reference)
+                    .where(REVISION.REVISION_ID.eq(this.revisionId))
+                    .returning().fetchOne();
+        }
+    }
+
     public InsertRevisionArguments insertRevisionArguments() {
         return new InsertRevisionArguments();
+    }
+    public UpdateRevisionArguments updateRevisionArguments(ULong revisionId) {
+        return new UpdateRevisionArguments(revisionId);
     }
 
     public RevisionRecord getRevisionById(ULong revisionId) {
         return dslContext.selectFrom(REVISION).where(REVISION.REVISION_ID.eq(revisionId)).fetchOne();
     }
-    public void updateRevisionReference(ULong revisionId, String key) {
-        dslContext.update(REVISION)
-                .set(REVISION.REFERENCE, key)
-                .where(REVISION.REVISION_ID.eq(revisionId))
-                .execute();
-    }
-
 }

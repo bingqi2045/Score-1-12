@@ -305,13 +305,22 @@ public class CcNodeService {
                 .setLastUpdateTimestamp(timestamp)
                 .execute();
 
-        InsertAccManifestArguments accManifestArguments = ccRepository.insertAccManifestArguments()
+        ULong accManifestId = ccRepository.insertAccManifestArguments()
                 .setAccId(accId)
-                .setReleaseId(ULong.valueOf(request.getReleaseId()));
-        long accManifestId = ccRepository.execute(accManifestArguments).longValue();
+                .setReleaseId(ULong.valueOf(request.getReleaseId()))
+                .execute();
 
-        revisionRepository.updateRevisionReference(revisionId, CcType.ACC.name().toLowerCase() + accManifestId );
-        return accManifestId;
+        revisionRepository.updateRevisionArguments(revisionId)
+                .setReference(CcType.ACC.name().toLowerCase() + accManifestId)
+                .setAction(CcAction.Created)
+                .addContent("ObjectClassTerm", "", defaultObjectClassTerm)
+                .addContent("Den", "", defaultObjectClassTerm + ". Details")
+                .addContent("OagisComponentType", "", OagisComponentType.Semantics)
+                .addContent("Deprecated", "", false)
+                .addContent("Abstract", "", false)
+                .execute();
+
+        return accManifestId.longValue();
     }
 
     @Transactional
@@ -351,15 +360,25 @@ public class CcNodeService {
 
         ULong asccpId = ccRepository.execute(insertAsccpArguments);
 
-        InsertAsccpManifestArguments insertAsccpManifestArguments = ccRepository.insertAsccpManifest()
+        ULong asccpManifestId = ccRepository.insertAsccpManifest()
                 .setAsccpId(asccpId)
                 .setRoleOfAccManifestId(accManifestRecord.getAccManifestId())
-                .setReleaseId(accManifestRecord.getReleaseId());
+                .setReleaseId(accManifestRecord.getReleaseId())
+                .execute();
 
-        long asccpManifestId = ccRepository.execute(insertAsccpManifestArguments).longValue();;
+        revisionRepository.updateRevisionArguments(revisionId)
+                .setReference(CcType.ASCCP.name().toLowerCase() + asccpManifestId)
+                .setAction(CcAction.Created)
+                .addContent("PropertyTerm", "", defaultPropertyTerm)
+                .addContent("Den", "", defaultPropertyTerm + ". " + accRecord.getObjectClassTerm())
+                .addContent("RoleOfAcc", "", accRecord.getDen())
+                .addContent("Reuseable", "", true)
+                .addContent("Nillable", "", false)
+                .addContent("Deprecated", "", false)
+                .addContent("NamespaceId", "", null)
+                .execute();
 
-        revisionRepository.updateRevisionReference(revisionId, CcType.ASCCP.name().toLowerCase() + asccpManifestId);
-        return asccpManifestId;
+        return asccpManifestId.longValue();
     }
 
     @Transactional
@@ -404,7 +423,16 @@ public class CcNodeService {
                 .setReleaseId(ULong.valueOf(request.getReleaseId()))
                 .execute();
 
-        revisionRepository.updateRevisionReference(revisionId, CcType.BCCP.name().toLowerCase() + bccpManifestId);
+        revisionRepository.updateRevisionArguments(revisionId)
+                .setReference(CcType.BCCP.name().toLowerCase() + bccpManifestId)
+                .setAction(CcAction.Created)
+                .addContent("PropertyTerm", "", defaultPropertyTerm)
+                .addContent("Den", "", defaultPropertyTerm + ". " + bdt.getDen())
+                .addContent("Bdt", "", bdt.getDataTypeTerm())
+                .addContent("Nillable", "", false)
+                .addContent("Deprecated", "", false)
+                .addContent("NamespaceId", "", null)
+                .execute();
 
         return bccpManifestId.longValue();
     }
@@ -510,14 +538,13 @@ public class CcNodeService {
             updateAccArguments.setOagisComponentType(OagisComponentType.valueOf((int) detail.getOagisComponentType()));
         }
 
-        if (!accRecord.getNamespaceId().equals(ULong.valueOf(detail.getNamespaceId()))) {
-            if (detail.getNamespaceId() == 0) {
-                updateAccArguments.setNamespaceId(null);
-            } else {
-                updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
-            }
+        ULong namespaceId = detail.getNamespaceId() == 0 ? null : ULong.valueOf(detail.getNamespaceId());
+        if (!Objects.equals(accRecord.getNamespaceId(), namespaceId)) {
+            updateAccArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
             insertRevisionArguments.addContent("NamespaceId", accRecord.getNamespaceId(), updateAccArguments.getNamespaceId());
         }
+
+        insertRevisionArguments.setAction(CcAction.DetailModified);
 
         ULong revisionId = insertRevisionArguments
                 .setCreatedBy(userId)
@@ -560,6 +587,8 @@ public class CcNodeService {
 
             updateBccpArguments.setPropertyTerm(detail.getPropertyTerm());
             updateBccpArguments.setRepresentationTerm(bdt.getDataTypeTerm());
+            insertRevisionArguments.addContent("PropertyTerm", bccpRecord.getPropertyTerm(), detail.getPropertyTerm());
+            insertRevisionArguments.addContent("Den", bccpRecord.getDen(), detail.getPropertyTerm() + ". " + updateBccpArguments.getRepresentationTerm());
         }
 
         byte nillable = (byte) (detail.isNillable() ? 1 : 0);
@@ -600,14 +629,13 @@ public class CcNodeService {
             updateBccpArguments.setDefinitionSource(detail.getDefinitionSource());
         }
 
-        if (!Objects.equals(bccpRecord.getNamespaceId(), detail.getNamespaceId())) {
-            if (detail.getNamespaceId() > 0L) {
-                updateBccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
-            } else {
-                updateBccpArguments.setNamespaceId(null);
-            }
-            insertRevisionArguments.addContent("NamespaceId", bccpRecord.getNamespaceId(), detail.getNamespaceId());
+        ULong namespaceId = detail.getNamespaceId() == 0 ? null : ULong.valueOf(detail.getNamespaceId());
+        if (!Objects.equals(bccpRecord.getNamespaceId(), namespaceId)) {
+            updateBccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
+            insertRevisionArguments.addContent("NamespaceId", bccpRecord.getNamespaceId(), updateBccpArguments.getNamespaceId());
         }
+
+        insertRevisionArguments.setAction(CcAction.DetailModified);
 
         ULong revisionId = insertRevisionArguments
                 .setCreatedBy(userId)
@@ -666,14 +694,20 @@ public class CcNodeService {
             updateAsccpArguments.setDefinitionSource(detail.getDefinitionSource());
         }
 
-        if (!Objects.equals(asccpRecord.getNamespaceId(), detail.getNamespaceId())) {
-            if (detail.getNamespaceId() > 0L) {
-                updateAsccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
-            } else {
-                updateAsccpArguments.setNamespaceId(null);
-            }
+        ULong namespaceId = detail.getNamespaceId() == 0 ? null : ULong.valueOf(detail.getNamespaceId());
+        if (!Objects.equals(asccpRecord.getNamespaceId(), namespaceId)) {
+            updateAsccpArguments.setNamespaceId(ULong.valueOf(detail.getNamespaceId()));
             insertRevisionArguments.addContent("NamespaceId", asccpRecord.getNamespaceId(), updateAsccpArguments.getNamespaceId());
         }
+
+        if (!asccpRecord.getPropertyTerm().equals(detail.getPropertyTerm())) {
+            updateAsccpArguments.setPropertyTerm(detail.getPropertyTerm());
+            updateAsccpArguments.setDen(detail.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
+            insertRevisionArguments.addContent("PropertyTerm", asccpRecord.getPropertyTerm(), detail.getPropertyTerm());
+            insertRevisionArguments.addContent("Den", asccpRecord.getDen(), updateAsccpArguments.getDen());
+        }
+
+        insertRevisionArguments.setAction(CcAction.DetailModified);
 
         ULong revisionId = insertRevisionArguments
                 .setCreatedBy(userId)
@@ -701,6 +735,8 @@ public class CcNodeService {
             ccRepository.execute(updateAsccpManifestArguments);
             updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(),  timestamp, revisionId);
         }
+
+        insertRevisionArguments.setAction(CcAction.DetailModified);
 
         return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
     }
