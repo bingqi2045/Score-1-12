@@ -636,7 +636,7 @@ public class BieRepository {
         if ("Date Time".equals(bdtDataTypeTerm)) {
             conds.add(XBT.NAME.eq("date time"));
         } else if ("Date".equals(bdtDataTypeTerm)) {
-            conds.add(XBT.NAME.eq("xbt date"));
+            conds.add(XBT.NAME.eq("date"));
         } else if ("Time".equals(bdtDataTypeTerm)) {
             conds.add(XBT.NAME.eq("time"));
         } else {
@@ -693,7 +693,7 @@ public class BieRepository {
         if ("Date Time".equals(bdtScRepresentationTerm)) {
             conds.add(XBT.NAME.eq("date time"));
         } else if ("Date".equals(bdtScRepresentationTerm)) {
-            conds.add(XBT.NAME.eq("xbt date"));
+            conds.add(XBT.NAME.eq("date"));
         } else if ("Time".equals(bdtScRepresentationTerm)) {
             conds.add(XBT.NAME.eq("time"));
         } else {

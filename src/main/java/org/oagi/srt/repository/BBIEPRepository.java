@@ -7,7 +7,10 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class BBIEPRepository implements SrtRepository<BBIEP> {
@@ -51,6 +54,13 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
     }
 
     public List<BBIEP> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+        if (ownerTopLevelAbieId <= 0L) {
+            return Collections.emptyList();
+        }
+        return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
+    }
+
+    public List<BBIEP> findByOwnerTopLevelAbieIds(List<Long> ownerTopLevelAbieIds) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
                 Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
@@ -63,7 +73,13 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
                 .from(Tables.BBIEP)
-                .where(Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId)))
+                .where(
+                        (ownerTopLevelAbieIds.size() == 1) ?
+                                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                        ULong.valueOf(ownerTopLevelAbieIds.get(0))) :
+                                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                )
                 .fetchInto(BBIEP.class);
     }
 
