@@ -176,18 +176,18 @@ UPDATE `acc`, (
 SET `acc`.`based_acc_id` = t.current_acc_id
 WHERE `acc`.`acc_id` = t.`acc_id`;
 
-INSERT `acc_manifest` (`release_id`, `acc_id`)
+INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `acc`.`acc_id`
+    `acc`.`acc_id`, `acc`.`module_id`
 FROM `acc`
 JOIN (SELECT MAX(`acc_id`) as `acc_id` FROM `acc` GROUP BY `guid`) t ON `acc`.`acc_id` = t.`acc_id`
 ORDER BY `acc`.`acc_id`;
 
-INSERT `acc_manifest` (`release_id`, `acc_id`)
+INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`)
 SELECT
     `release`.`release_id`,
-    `acc`.`acc_id`
+    `acc`.`acc_id`, `acc`.`module_id`
 FROM `acc` JOIN `release` ON `acc`.`release_id` = `release`.`release_id`
 WHERE `acc`.`state` = 'Published';
 
