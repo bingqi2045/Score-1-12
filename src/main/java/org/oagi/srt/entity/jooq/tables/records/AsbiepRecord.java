@@ -4,6 +4,8 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record12;
@@ -12,14 +14,12 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
 
-import java.time.LocalDateTime;
-
 
 /**
- * ASBIEP represents a role in a usage of an ABIE. It is a contextualization
+ * ASBIEP represents a role in a usage of an ABIE. It is a contextualization 
  * of an ASCCP.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record12<ULong, String, ULong, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
     private static final long serialVersionUID = 790799918;
@@ -137,14 +137,14 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record.
+     * Setter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record. 
      */
     public void setLastUpdatedBy(ULong value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record.
+     * Getter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record. 
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(8);

@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row20;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,20 +26,16 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table stores information about a code list. When a code list is derived
- * from another code list, the whole set of code values belonging to the based
+ * This table stores information about a code list. When a code list is derived 
+ * from another code list, the whole set of code values belonging to the based 
  * code list will be copied.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 820716012;
+    private static final long serialVersionUID = -2049866432;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -107,8 +117,8 @@ public class CodeList extends TableImpl<CodeListRecord> {
 
     /**
      * The column <code>oagi.code_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public final TableField<CodeListRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
@@ -131,11 +141,6 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.state</code>. Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.
      */
     public final TableField<CodeListRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(10), this, "Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.");
-
-    /**
-     * The column <code>oagi.code_list.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<CodeListRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.code_list.prev_code_list_id</code>. A self-foreign key to indicate the previous history record.
@@ -202,7 +207,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
 
     @Override
     public List<ForeignKey<CodeListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_REVISION_ID_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
+        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
@@ -219,10 +224,6 @@ public class CodeList extends TableImpl<CodeListRecord> {
 
     public AppUser codeListLastUpdatedByFk() {
         return new AppUser(this, Keys.CODE_LIST_LAST_UPDATED_BY_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.CODE_LIST_REVISION_ID_FK);
     }
 
     public CodeList codeListPrevCodeListIdFk() {
@@ -260,11 +261,11 @@ public class CodeList extends TableImpl<CodeListRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, ULong, String, String, String, String, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, ULong, String, String, String, String, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

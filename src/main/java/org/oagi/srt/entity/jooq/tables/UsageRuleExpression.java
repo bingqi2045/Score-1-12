@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row4;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,16 +25,13 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleExpressionRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * The USAGE_RULE_EXPRESSION provides a representation of a usage rule in
- * a particular syntax indicated by the CONSTRAINT_TYPE column. One of the
+ * The USAGE_RULE_EXPRESSION provides a representation of a usage rule in 
+ * a particular syntax indicated by the CONSTRAINT_TYPE column. One of the 
  * syntaxes can be unstructured, which works a description of the usage rule.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     private static final long serialVersionUID = -99936125;

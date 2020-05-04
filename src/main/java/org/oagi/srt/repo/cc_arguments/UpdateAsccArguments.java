@@ -29,7 +29,6 @@ public class UpdateAsccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
     private ULong prevAsccId;
     private ULong nextAsccId;
 
@@ -54,7 +53,6 @@ public class UpdateAsccArguments {
         this.creationTimestamp = ascc.getCreationTimestamp();
         this.lastUpdateTimestamp = ascc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(ascc.getState());
-        this.revisionId = ascc.getRevisionId();
         this.prevAsccId = ascc.getPrevAsccId();
 
         this._hashCode = this.hashCode();
@@ -213,15 +211,6 @@ public class UpdateAsccArguments {
         return this;
     }
 
-    public ULong getRevisionId() {
-        return revisionId;
-    }
-
-    public UpdateAsccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
-        return this;
-    }
-
     public ULong getPrevAsccId() {
         return prevAsccId;
     }
@@ -257,13 +246,12 @@ public class UpdateAsccArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(prevAsccId, that.prevAsccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toAsccpId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, prevAsccId);
+        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toAsccpId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, prevAsccId);
     }
 
     private boolean isDirty() {

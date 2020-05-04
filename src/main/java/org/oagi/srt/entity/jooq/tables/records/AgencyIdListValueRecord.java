@@ -16,7 +16,7 @@ import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
 /**
  * This table captures the values within an agency identification list.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListValueRecord> implements Record5<ULong, String, String, String, ULong> {
 
     private static final long serialVersionUID = 810272317;

@@ -4,29 +4,87 @@
 package org.oagi.srt.entity.jooq;
 
 
+import org.oagi.srt.entity.jooq.tables.Abie;
+import org.oagi.srt.entity.jooq.tables.Acc;
+import org.oagi.srt.entity.jooq.tables.AccManifest;
+import org.oagi.srt.entity.jooq.tables.AgencyIdList;
+import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
+import org.oagi.srt.entity.jooq.tables.AppGroup;
+import org.oagi.srt.entity.jooq.tables.AppGroupUser;
+import org.oagi.srt.entity.jooq.tables.AppPermission;
+import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
+import org.oagi.srt.entity.jooq.tables.AppUser;
+import org.oagi.srt.entity.jooq.tables.Asbie;
+import org.oagi.srt.entity.jooq.tables.Asbiep;
+import org.oagi.srt.entity.jooq.tables.Ascc;
+import org.oagi.srt.entity.jooq.tables.AsccManifest;
+import org.oagi.srt.entity.jooq.tables.Asccp;
+import org.oagi.srt.entity.jooq.tables.AsccpManifest;
+import org.oagi.srt.entity.jooq.tables.Bbie;
+import org.oagi.srt.entity.jooq.tables.BbieSc;
+import org.oagi.srt.entity.jooq.tables.Bbiep;
+import org.oagi.srt.entity.jooq.tables.Bcc;
+import org.oagi.srt.entity.jooq.tables.BccManifest;
+import org.oagi.srt.entity.jooq.tables.Bccp;
+import org.oagi.srt.entity.jooq.tables.BccpManifest;
+import org.oagi.srt.entity.jooq.tables.BdtPriRestri;
+import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
+import org.oagi.srt.entity.jooq.tables.BieUsageRule;
+import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
+import org.oagi.srt.entity.jooq.tables.BizCtx;
+import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
+import org.oagi.srt.entity.jooq.tables.BizCtxValue;
+import org.oagi.srt.entity.jooq.tables.BlobContent;
+import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
+import org.oagi.srt.entity.jooq.tables.CdtAwdPriXpsTypeMap;
+import org.oagi.srt.entity.jooq.tables.CdtPri;
+import org.oagi.srt.entity.jooq.tables.CdtScAwdPri;
+import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.srt.entity.jooq.tables.Client;
+import org.oagi.srt.entity.jooq.tables.CodeList;
+import org.oagi.srt.entity.jooq.tables.CodeListManifest;
+import org.oagi.srt.entity.jooq.tables.CodeListValue;
+import org.oagi.srt.entity.jooq.tables.CodeListValueManifest;
+import org.oagi.srt.entity.jooq.tables.Comment;
+import org.oagi.srt.entity.jooq.tables.CtxCategory;
+import org.oagi.srt.entity.jooq.tables.CtxScheme;
+import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
+import org.oagi.srt.entity.jooq.tables.Dt;
+import org.oagi.srt.entity.jooq.tables.DtManifest;
+import org.oagi.srt.entity.jooq.tables.DtSc;
+import org.oagi.srt.entity.jooq.tables.DtScManifest;
+import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
-import org.oagi.srt.entity.jooq.tables.*;
+import org.oagi.srt.entity.jooq.tables.ModuleDep;
+import org.oagi.srt.entity.jooq.tables.Namespace;
+import org.oagi.srt.entity.jooq.tables.Release;
+import org.oagi.srt.entity.jooq.tables.Revision;
+import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
+import org.oagi.srt.entity.jooq.tables.UsageRule;
+import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
+import org.oagi.srt.entity.jooq.tables.Xbt;
+import org.oagi.srt.entity.jooq.tables.XbtManifest;
 
 
 /**
  * Convenience access to all tables in oagi
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
 
     /**
      * The ABIE table stores information about an ABIE, which is a contextualized ACC. The context is represented by the BUSINESS_CTX_ID column that refers to a business context. Each ABIE must have a business context and a based ACC.
-     * <p>
-     * It should be noted that, per design document, there is no corresponding ABIE created for an ACC which will not show up in the instance document such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP", etc.
+
+It should be noted that, per design document, there is no corresponding ABIE created for an ACC which will not show up in the instance document such as ACCs of OAGIS_COMPONENT_TYPE "SEMANTIC_GROUP", "USER_EXTENSION_GROUP", etc.
      */
     public static final Abie ABIE = Abie.ABIE;
 
     /**
      * The ACC table holds information about complex data structured concepts. For example, OAGIS's Components, Nouns, and BODs are captured in the ACC table.
-     * <p>
-     * Note that only Extension is supported when deriving ACC from another ACC. (So if there is a restriction needed, maybe that concept should placed higher in the derivation hierarchy rather than lower.)
-     * <p>
-     * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
+
+Note that only Extension is supported when deriving ACC from another ACC. (So if there is a restriction needed, maybe that concept should placed higher in the derivation hierarchy rather than lower.)
+
+In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      */
     public static final Acc ACC = Acc.ACC;
 
@@ -81,7 +139,7 @@ public class Tables {
     public static final Asbiep ASBIEP = Asbiep.ASBIEP;
 
     /**
-     * An ASCC represents a relationship/association between two ACCs through an ASCCP.
+     * An ASCC represents a relationship/association between two ACCs through an ASCCP. 
      */
     public static final Ascc ASCC = Ascc.ASCC;
 
@@ -106,7 +164,7 @@ public class Tables {
     public static final Bbie BBIE = Bbie.BBIE;
 
     /**
-     * Because there is no single table that is a contextualized counterpart of the DT table (which stores both CDT and BDT), The context specific constraints associated with the DT are stored in the BBIE table, while this table stores the constraints associated with the DT's SCs.
+     * Because there is no single table that is a contextualized counterpart of the DT table (which stores both CDT and BDT), The context specific constraints associated with the DT are stored in the BBIE table, while this table stores the constraints associated with the DT's SCs. 
      */
     public static final BbieSc BBIE_SC = BbieSc.BBIE_SC;
 
@@ -116,7 +174,7 @@ public class Tables {
     public static final Bbiep BBIEP = Bbiep.BBIEP;
 
     /**
-     * A BCC represents a relationship/association between an ACC and a BCCP. It creates a data element for an ACC.
+     * A BCC represents a relationship/association between an ACC and a BCCP. It creates a data element for an ACC. 
      */
     public static final Bcc BCC = Bcc.BCC;
 
@@ -142,8 +200,8 @@ public class Tables {
 
     /**
      * This table is similar to the BDT_PRI_RESTRI table but it is for the BDT SC. The allowed primitives are captured by three columns the CDT_SC_AWD_PRI_XPS_TYPE_MAP, CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive by the built-in type of an expression language such as the XML Schema built-in type. The second specifies the primitive, which is a code list, while the last one specifies the primitive which is an agency identification list. Only one column among the three can have a value in a particular record.
-     * <p>
-     * It should be noted that the table does not store the fact about primitive restriction hierarchical relationships. In other words, if a BDT SC is derived from another BDT SC and the derivative BDT SC applies some primitive restrictions, that relationship will not be explicitly stored. The derivative BDT SC points directly to the CDT_AWD_PRI_XPS_TYPE_MAP key rather than the BDT_SC_PRI_RESTRI key.
+
+It should be noted that the table does not store the fact about primitive restriction hierarchical relationships. In other words, if a BDT SC is derived from another BDT SC and the derivative BDT SC applies some primitive restrictions, that relationship will not be explicitly stored. The derivative BDT SC points directly to the CDT_AWD_PRI_XPS_TYPE_MAP key rather than the BDT_SC_PRI_RESTRI key.
      */
     public static final BdtScPriRestri BDT_SC_PRI_RESTRI = BdtScPriRestri.BDT_SC_PRI_RESTRI;
 
@@ -183,11 +241,11 @@ public class Tables {
     public static final CdtAwdPri CDT_AWD_PRI = CdtAwdPri.CDT_AWD_PRI;
 
     /**
-     * This table allows for concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON. At this point, it is not clear whether a separate table will be needed for each expression. The current table holds the map to XML Schema built-in types.
-     * <p>
-     * For each additional expression, a column similar to the XBT_ID column will need to be added to this table for mapping to data types in another expression.
-     * <p>
-     * If we use a separate table for each expression, then we need binding all the way to BDT (or even BBIE) for every new expression. That would be almost like just store a BDT file. But using a column may not work with all kinds of expressions, particulary if it does not map well to the XML schema data types.
+     * This table allows for concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON. At this point, it is not clear whether a separate table will be needed for each expression. The current table holds the map to XML Schema built-in types. 
+
+For each additional expression, a column similar to the XBT_ID column will need to be added to this table for mapping to data types in another expression.
+
+If we use a separate table for each expression, then we need binding all the way to BDT (or even BBIE) for every new expression. That would be almost like just store a BDT file. But using a column may not work with all kinds of expressions, particulary if it does not map well to the XML schema data types. 
      */
     public static final CdtAwdPriXpsTypeMap CDT_AWD_PRI_XPS_TYPE_MAP = CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP;
 
@@ -202,7 +260,7 @@ public class Tables {
     public static final CdtScAwdPri CDT_SC_AWD_PRI = CdtScAwdPri.CDT_SC_AWD_PRI;
 
     /**
-     * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, but it is for the supplementary component (SC). It allows for the concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON.
+     * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, but it is for the supplementary component (SC). It allows for the concrete mapping between the CDT Primitives and types in a particular expression such as XML Schema, JSON. 
      */
     public static final CdtScAwdPriXpsTypeMap CDT_SC_AWD_PRI_XPS_TYPE_MAP = CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP;
 
@@ -262,7 +320,7 @@ public class Tables {
     public static final DtManifest DT_MANIFEST = DtManifest.DT_MANIFEST;
 
     /**
-     * This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it.
+     * This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it. 
      */
     public static final DtSc DT_SC = DtSc.DT_SC;
 

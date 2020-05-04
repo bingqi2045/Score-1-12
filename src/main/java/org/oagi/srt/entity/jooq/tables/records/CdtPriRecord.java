@@ -16,7 +16,7 @@ import org.oagi.srt.entity.jooq.tables.CdtPri;
 /**
  * This table stores the CDT primitives.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtPriRecord extends UpdatableRecordImpl<CdtPriRecord> implements Record2<ULong, String> {
 
     private static final long serialVersionUID = 1111891475;

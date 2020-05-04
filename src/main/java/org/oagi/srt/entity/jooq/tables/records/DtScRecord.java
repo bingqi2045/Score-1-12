@@ -14,12 +14,12 @@ import org.oagi.srt.entity.jooq.tables.DtSc;
 
 
 /**
- * This table represents the supplementary component (SC) of a DT. Revision
- * is not tracked at the supplementary component. It is considered intrinsic
- * part of the DT. In other words, when a new revision of a DT is created
- * a new set of supplementary components is created along with it.
+ * This table represents the supplementary component (SC) of a DT. Revision 
+ * is not tracked at the supplementary component. It is considered intrinsic 
+ * part of the DT. In other words, when a new revision of a DT is created 
+ * a new set of supplementary components is created along with it. 
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> {
 
     private static final long serialVersionUID = -1227360565;

@@ -38,7 +38,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.STATE,
                 Tables.BCCP_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.BCCP.REVISION_ID,
+                Tables.BCCP_MANIFEST.REVISION_ID,
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
@@ -50,7 +50,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 .join(Tables.RELEASE)
                 .on(Tables.BCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.BCCP.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
+                .on(Tables.BCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

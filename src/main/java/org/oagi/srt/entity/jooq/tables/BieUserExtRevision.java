@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row6;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,22 +25,19 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BieUserExtRevisionRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table is a log of events. It keeps track of the User Extension ACC
- * (the specific revision) used by an Extension ABIE. This can be a named
- * extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR
- * flag is designed such that a revision of a User Extension can notify the
- * user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID
- * column makes it more efficient to when opening a top-level ABIE, the user
- * can be notified of any new revision of the extension. A record in this
- * table is created only when there is a user extension to the the OAGIS extension
+ * This table is a log of events. It keeps track of the User Extension ACC 
+ * (the specific revision) used by an Extension ABIE. This can be a named 
+ * extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR 
+ * flag is designed such that a revision of a User Extension can notify the 
+ * user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID 
+ * column makes it more efficient to when opening a top-level ABIE, the user 
+ * can be notified of any new revision of the extension. A record in this 
+ * table is created only when there is a user extension to the the OAGIS extension 
  * component/ACC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
 
     private static final long serialVersionUID = -402962442;
@@ -51,7 +61,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     public final TableField<BieUserExtRevisionRecord, ULong> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE.
+     * The column <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE. 
      */
     public final TableField<BieUserExtRevisionRecord, ULong> TOP_LEVEL_ABIE_ID = createField(DSL.name("top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key pointing to an ABIE record which is a top-level ABIE. ");
 
@@ -66,7 +76,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     public final TableField<BieUserExtRevisionRecord, ULong> EXT_ACC_ID = createField(DSL.name("ext_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This points to an extension ACC on which the ABIE indicated by the EXT_ABIE_ID column is based. E.g. It may point to an ApplicationAreaExtension ACC, AllExtension ACC, ActualLedgerExtension ACC, etc. It should be noted that an ACC record pointed to must have the OAGIS_COMPONENT_TYPE = 2 (Extension).");
 
     /**
-     * The column <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).
+     * The column <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension). 
      */
     public final TableField<BieUserExtRevisionRecord, ULong> USER_EXT_ACC_ID = createField(DSL.name("user_ext_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension). ");
 

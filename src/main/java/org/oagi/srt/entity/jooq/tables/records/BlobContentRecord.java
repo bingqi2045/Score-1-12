@@ -14,10 +14,10 @@ import org.oagi.srt.entity.jooq.tables.BlobContent;
 
 
 /**
- * This table stores schemas whose content is only imported as a whole and
+ * This table stores schemas whose content is only imported as a whole and 
  * is represented in Blob.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record4<ULong, byte[], ULong, ULong> {
 
     private static final long serialVersionUID = 2075966112;

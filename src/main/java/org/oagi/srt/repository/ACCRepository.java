@@ -38,7 +38,7 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.STATE,
                 Tables.ACC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.ACC.REVISION_ID,
+                Tables.ACC_MANIFEST.REVISION_ID,
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
@@ -50,7 +50,7 @@ public class ACCRepository implements SrtRepository<ACC> {
                 .join(Tables.RELEASE)
                 .on(Tables.ACC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.ACC.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
+                .on(Tables.ACC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.ACC_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

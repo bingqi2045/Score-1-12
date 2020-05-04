@@ -4,7 +4,22 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row21;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -13,19 +28,15 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * An BCCP specifies a property concept and data type associated with it.
+ * An BCCP specifies a property concept and data type associated with it. 
  * A BCCP can be then added as a property of an ACC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = -1961762702;
+    private static final long serialVersionUID = 1402145463;
 
     /**
      * The reference instance of <code>oagi.bccp</code>
@@ -51,7 +62,7 @@ public class Bccp extends TableImpl<BccpRecord> {
     public final TableField<BccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID). Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.',");
 
     /**
-     * The column <code>oagi.bccp.property_term</code>. The property concept that the BCCP models.
+     * The column <code>oagi.bccp.property_term</code>. The property concept that the BCCP models. 
      */
     public final TableField<BccpRecord, String> PROPERTY_TERM = createField(DSL.name("property_term"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "The property concept that the BCCP models. ");
 
@@ -91,54 +102,49 @@ public class Bccp extends TableImpl<BccpRecord> {
     public final TableField<BccpRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * The column <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public final TableField<BccpRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. \n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.bccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public final TableField<BccpRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
     /**
-     * The column <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * The column <code>oagi.bccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public final TableField<BccpRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
-     * The column <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created.
-     * <p>
-     * This never change for a revision.
+     * The column <code>oagi.bccp.creation_timestamp</code>. Timestamp when the revision of the BCCP was created. 
+
+This never change for a revision.
      */
     public final TableField<BccpRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the revision of the BCCP was created. \n\nThis never change for a revision.");
 
     /**
      * The column <code>oagi.bccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public final TableField<BccpRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.");
 
     /**
      * The column <code>oagi.bccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<BccpRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
 
     /**
-     * The column <code>oagi.bccp.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<BccpRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
-
-    /**
-     * The column <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification.
+     * The column <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
      */
     public final TableField<BccpRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. ");
 
@@ -222,7 +228,7 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     @Override
     public List<ForeignKey<BccpRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_REVISION_ID_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK);
+        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK);
     }
 
     public Dt dt() {
@@ -243,10 +249,6 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     public AppUser bccpLastUpdatedByFk() {
         return new AppUser(this, Keys.BCCP_LAST_UPDATED_BY_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.BCCP_REVISION_ID_FK);
     }
 
     public Bccp bccpPrevBccpIdFk() {
@@ -284,11 +286,11 @@ public class Bccp extends TableImpl<BccpRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row22 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, String, String, ULong, ULong> fieldsRow() {
-        return (Row22) super.fieldsRow();
+    public Row21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

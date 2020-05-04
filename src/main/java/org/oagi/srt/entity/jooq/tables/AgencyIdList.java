@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row14;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,16 +26,12 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AgencyIdListRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * The AGENCY_ID_LIST table stores information about agency identification
+ * The AGENCY_ID_LIST table stores information about agency identification 
  * lists. The list's values are however kept in the AGENCY_ID_LIST_VALUE.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
     private static final long serialVersionUID = 1745304607;

@@ -4,25 +4,25 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record20;
-import org.jooq.Row20;
+import org.jooq.Record19;
+import org.jooq.Row19;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Ascc;
 
-import java.time.LocalDateTime;
-
 
 /**
- * An ASCC represents a relationship/association between two ACCs through
- * an ASCCP.
+ * An ASCC represents a relationship/association between two ACCs through 
+ * an ASCCP. 
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
-public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> {
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record19<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
-    private static final long serialVersionUID = -117426590;
+    private static final long serialVersionUID = -601558915;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.
@@ -81,14 +81,14 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
+     * Setter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
      */
     public void setSeqKey(Integer value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
+     * Getter for <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
      */
     public Integer getSeqKey() {
         return (Integer) get(4);
@@ -109,28 +109,28 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.
+     * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
      */
     public void setToAsccpId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.
+     * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
      */
     public ULong getToAsccpId() {
         return (ULong) get(6);
     }
 
     /**
-     * Setter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN.
+     * Setter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public void setDen(String value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN.
+     * Getter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public String getDen() {
         return (String) get(7);
@@ -180,8 +180,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Setter for <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
         set(11, value);
@@ -189,8 +189,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Getter for <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
         return (ULong) get(11);
@@ -198,8 +198,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Setter for <code>oagi.ascc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
         set(12, value);
@@ -207,44 +207,44 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Getter for <code>oagi.ascc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
         return (ULong) get(12);
     }
 
     /**
-     * Setter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
         set(13, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(13);
     }
 
     /**
-     * Setter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created.
-     * <p>
-     * This never change for a revision.
+     * Setter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created. 
+
+This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created.
-     * <p>
-     * This never change for a revision.
+     * Getter for <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created. 
+
+This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(14);
@@ -252,8 +252,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Setter for <code>oagi.ascc.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
         set(15, value);
@@ -261,8 +261,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Getter for <code>oagi.ascc.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
         return (LocalDateTime) get(15);
@@ -270,8 +270,8 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Setter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(16, value);
@@ -279,53 +279,39 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     /**
      * Getter for <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(16);
     }
 
     /**
-     * Setter for <code>oagi.ascc.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public void setRevisionId(ULong value) {
-        set(17, value);
-    }
-
-    /**
-     * Getter for <code>oagi.ascc.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public ULong getRevisionId() {
-        return (ULong) get(17);
-    }
-
-    /**
      * Setter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAsccId(ULong value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAsccId() {
-        return (ULong) get(18);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAsccId(ULong value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAsccId() {
-        return (ULong) get(19);
+        return (ULong) get(18);
     }
 
     // -------------------------------------------------------------------------
@@ -338,17 +324,17 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     // -------------------------------------------------------------------------
-    // Record20 type implementation
+    // Record19 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row19<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> valuesRow() {
-        return (Row20) super.valuesRow();
+    public Row19<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
+        return (Row19) super.valuesRow();
     }
 
     @Override
@@ -438,16 +424,11 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     @Override
     public Field<ULong> field18() {
-        return Ascc.ASCC.REVISION_ID;
-    }
-
-    @Override
-    public Field<ULong> field19() {
         return Ascc.ASCC.PREV_ASCC_ID;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field19() {
         return Ascc.ASCC.NEXT_ASCC_ID;
     }
 
@@ -538,16 +519,11 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     @Override
     public ULong component18() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong component19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component19() {
         return getNextAsccId();
     }
 
@@ -638,16 +614,11 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     @Override
     public ULong value18() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong value19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value19() {
         return getNextAsccId();
     }
 
@@ -755,24 +726,18 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 
     @Override
     public AsccRecord value18(ULong value) {
-        setRevisionId(value);
-        return this;
-    }
-
-    @Override
-    public AsccRecord value19(ULong value) {
         setPrevAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value20(ULong value) {
+    public AsccRecord value19(ULong value) {
         setNextAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, ULong value18, ULong value19, ULong value20) {
+    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, ULong value18, ULong value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -792,7 +757,6 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
         value17(value17);
         value18(value18);
         value19(value19);
-        value20(value20);
         return this;
     }
 
@@ -810,7 +774,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong revisionId, ULong prevAsccId, ULong nextAsccId) {
+    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
         super(Ascc.ASCC);
 
         set(0, asccId);
@@ -830,8 +794,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
         set(14, creationTimestamp);
         set(15, lastUpdateTimestamp);
         set(16, state);
-        set(17, revisionId);
-        set(18, prevAsccId);
-        set(19, nextAsccId);
+        set(17, prevAsccId);
+        set(18, nextAsccId);
     }
 }

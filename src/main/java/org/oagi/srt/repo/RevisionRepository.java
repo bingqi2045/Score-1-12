@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.protobuf.DescriptorProtos;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.jooq.impl.DSL.condition;
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 import static org.oagi.srt.entity.jooq.Tables.REVISION;
 
@@ -27,17 +27,21 @@ public class RevisionRepository {
 
     private DSLContext dslContext;
 
+    public RevisionRepository(@Autowired DSLContext dslContext) {
+        this.dslContext = dslContext;
+    }
+
     public List<Revision> getRevisionByReference(String reference) {
         if (reference.isEmpty()) {
             return null;
         }
+
         return dslContext.select(
                 REVISION.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
-                REVISION.REFERENCE,
                 REVISION.REVISION_ACTION,
-                REVISION.BODY,
+                REVISION.SNAPSHOT,
                 REVISION.PREV_REVISION_ID,
                 REVISION.CREATION_TIMESTAMP.as("timestamp"),
                 APP_USER.NAME.as("loginId")
@@ -45,13 +49,9 @@ public class RevisionRepository {
                 .from(REVISION)
                 .join(APP_USER)
                 .on(REVISION.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(REVISION.REFERENCE.eq(reference))
+                .where(condition("snapshop->\"$.guid\" = '" + reference + "'"))
                 .orderBy(REVISION.REVISION_ID.desc())
                 .fetchInto(Revision.class);
-    }
-
-    public RevisionRepository(@Autowired DSLContext dslContext) {
-        this.dslContext = dslContext;
     }
 
     public class InsertRevisionArguments {
@@ -163,10 +163,9 @@ public class RevisionRepository {
             }
 
             return dslContext.insertInto(REVISION)
-                    .set(REVISION.BODY, content  != null ? JSON.valueOf(content.toString()) : null)
+                    .set(REVISION.SNAPSHOT, content  != null ? JSON.valueOf(content.toString()) : null)
                     .set(REVISION.PREV_REVISION_ID, getPrevRevisionId())
                     .set(REVISION.CREATED_BY, getCreatedBy())
-                    .set(REVISION.REFERENCE, getReference())
                     .set(REVISION.CREATION_TIMESTAMP, getCreationTimestamp())
                     .set(REVISION.REVISION_ACTION, getRevisionAction().name())
                     .set(REVISION.REVISION_NUM, getRevisionNum())
@@ -188,9 +187,8 @@ public class RevisionRepository {
                     .where(REVISION.REVISION_ID.eq(revisionId))
                     .fetchOne();
             this.revisionId = revisionRecord.getRevisionId();
-            this.reference = revisionRecord.getReference();
             try {
-                this.content = (ObjectNode) new ObjectMapper().readTree(revisionRecord.getBody().toString());
+                this.content = (ObjectNode) new ObjectMapper().readTree(revisionRecord.getSnapshot().toString());
             } catch (JsonProcessingException e) {
                 this.content = nodeFactory.objectNode();
             }
@@ -222,8 +220,7 @@ public class RevisionRepository {
             }
 
             dslContext.update(REVISION)
-                    .set(REVISION.BODY, content  != null ? JSON.valueOf(content.toString()) : null)
-                    .set(REVISION.REFERENCE, this.reference)
+                    .set(REVISION.SNAPSHOT, content  != null ? JSON.valueOf(content.toString()) : null)
                     .where(REVISION.REVISION_ID.eq(this.revisionId))
                     .returning().fetchOne();
         }

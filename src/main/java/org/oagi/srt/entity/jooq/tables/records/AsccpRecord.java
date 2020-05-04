@@ -4,24 +4,24 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record20;
-import org.jooq.Row20;
+import org.jooq.Record19;
+import org.jooq.Row19;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Asccp;
-
-import java.time.LocalDateTime;
 
 
 /**
  * An ASCCP specifies a role (or property) an ACC may play under another ACC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
-public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record20<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, Byte, ULong, ULong> {
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record19<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 1381538490;
+    private static final long serialVersionUID = -399251685;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.
@@ -122,18 +122,18 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * Setter for <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+     * Getter for <code>oagi.asccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
         return (ULong) get(7);
@@ -141,8 +141,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
         set(8, value);
@@ -150,44 +150,44 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Getter for <code>oagi.asccp.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
         return (ULong) get(8);
     }
 
     /**
-     * Setter for <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
         set(9, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.asccp.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(9);
     }
 
     /**
-     * Setter for <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created.
-     * <p>
-     * This never change for a revision.
+     * Setter for <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created. 
+
+This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created.
-     * <p>
-     * This never change for a revision.
+     * Getter for <code>oagi.asccp.creation_timestamp</code>. Timestamp when the revision of the ASCCP was created. 
+
+This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(10);
@@ -195,8 +195,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
         set(11, value);
@@ -204,8 +204,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Getter for <code>oagi.asccp.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
         return (LocalDateTime) get(11);
@@ -213,8 +213,8 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Setter for <code>oagi.asccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCCP.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(12, value);
@@ -222,109 +222,95 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     /**
      * Getter for <code>oagi.asccp.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCCP.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(12);
     }
 
     /**
-     * Setter for <code>oagi.asccp.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public void setRevisionId(ULong value) {
-        set(13, value);
-    }
-
-    /**
-     * Getter for <code>oagi.asccp.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public ULong getRevisionId() {
-        return (ULong) get(13);
-    }
-
-    /**
      * Setter for <code>oagi.asccp.namespace_id</code>. Foreign key to the Namespace table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
      */
     public void setNamespaceId(ULong value) {
-        set(14, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.namespace_id</code>. Foreign key to the Namespace table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
      */
     public ULong getNamespaceId() {
-        return (ULong) get(14);
+        return (ULong) get(13);
     }
 
     /**
      * Setter for <code>oagi.asccp.reusable_indicator</code>. This indicates whether the ASCCP can be used by more than one ASCC. This maps directly to the XML schema local element declaration.
      */
     public void setReusableIndicator(Byte value) {
-        set(15, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.reusable_indicator</code>. This indicates whether the ASCCP can be used by more than one ASCC. This maps directly to the XML schema local element declaration.
      */
     public Byte getReusableIndicator() {
-        return (Byte) get(15);
+        return (Byte) get(14);
     }
 
     /**
      * Setter for <code>oagi.asccp.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(16);
+        return (Byte) get(15);
     }
 
     /**
      * Setter for <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
      */
     public void setIsNillable(Byte value) {
-        set(17, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
      */
     public Byte getIsNillable() {
-        return (Byte) get(17);
+        return (Byte) get(16);
     }
 
     /**
      * Setter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAsccpId(ULong value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAsccpId() {
-        return (ULong) get(18);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAsccpId(ULong value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAsccpId() {
-        return (ULong) get(19);
+        return (ULong) get(18);
     }
 
     // -------------------------------------------------------------------------
@@ -337,17 +323,17 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     }
 
     // -------------------------------------------------------------------------
-    // Record20 type implementation
+    // Record19 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row19<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, Byte, Byte, Byte, ULong, ULong> valuesRow() {
-        return (Row20) super.valuesRow();
+    public Row19<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> valuesRow() {
+        return (Row19) super.valuesRow();
     }
 
     @Override
@@ -417,36 +403,31 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     @Override
     public Field<ULong> field14() {
-        return Asccp.ASCCP.REVISION_ID;
-    }
-
-    @Override
-    public Field<ULong> field15() {
         return Asccp.ASCCP.NAMESPACE_ID;
     }
 
     @Override
-    public Field<Byte> field16() {
+    public Field<Byte> field15() {
         return Asccp.ASCCP.REUSABLE_INDICATOR;
     }
 
     @Override
-    public Field<Byte> field17() {
+    public Field<Byte> field16() {
         return Asccp.ASCCP.IS_DEPRECATED;
     }
 
     @Override
-    public Field<Byte> field18() {
+    public Field<Byte> field17() {
         return Asccp.ASCCP.IS_NILLABLE;
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<ULong> field18() {
         return Asccp.ASCCP.PREV_ASCCP_ID;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field19() {
         return Asccp.ASCCP.NEXT_ASCCP_ID;
     }
 
@@ -517,36 +498,31 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     @Override
     public ULong component14() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong component15() {
         return getNamespaceId();
     }
 
     @Override
-    public Byte component16() {
+    public Byte component15() {
         return getReusableIndicator();
     }
 
     @Override
-    public Byte component17() {
+    public Byte component16() {
         return getIsDeprecated();
     }
 
     @Override
-    public Byte component18() {
+    public Byte component17() {
         return getIsNillable();
     }
 
     @Override
-    public ULong component19() {
+    public ULong component18() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component19() {
         return getNextAsccpId();
     }
 
@@ -617,36 +593,31 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     @Override
     public ULong value14() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong value15() {
         return getNamespaceId();
     }
 
     @Override
-    public Byte value16() {
+    public Byte value15() {
         return getReusableIndicator();
     }
 
     @Override
-    public Byte value17() {
+    public Byte value16() {
         return getIsDeprecated();
     }
 
     @Override
-    public Byte value18() {
+    public Byte value17() {
         return getIsNillable();
     }
 
     @Override
-    public ULong value19() {
+    public ULong value18() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value19() {
         return getNextAsccpId();
     }
 
@@ -730,48 +701,42 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
 
     @Override
     public AsccpRecord value14(ULong value) {
-        setRevisionId(value);
-        return this;
-    }
-
-    @Override
-    public AsccpRecord value15(ULong value) {
         setNamespaceId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value16(Byte value) {
+    public AsccpRecord value15(Byte value) {
         setReusableIndicator(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value17(Byte value) {
+    public AsccpRecord value16(Byte value) {
         setIsDeprecated(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value18(Byte value) {
+    public AsccpRecord value17(Byte value) {
         setIsNillable(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value19(ULong value) {
+    public AsccpRecord value18(ULong value) {
         setPrevAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value20(ULong value) {
+    public AsccpRecord value19(ULong value) {
         setNextAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, ULong value9, ULong value10, LocalDateTime value11, LocalDateTime value12, String value13, ULong value14, ULong value15, Byte value16, Byte value17, Byte value18, ULong value19, ULong value20) {
+    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, ULong value9, ULong value10, LocalDateTime value11, LocalDateTime value12, String value13, ULong value14, Byte value15, Byte value16, Byte value17, ULong value18, ULong value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -791,7 +756,6 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
         value17(value17);
         value18(value18);
         value19(value19);
-        value20(value20);
         return this;
     }
 
@@ -809,7 +773,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong revisionId, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(ULong asccpId, String guid, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
         super(Asccp.ASCCP);
 
         set(0, asccpId);
@@ -825,12 +789,11 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Rec
         set(10, creationTimestamp);
         set(11, lastUpdateTimestamp);
         set(12, state);
-        set(13, revisionId);
-        set(14, namespaceId);
-        set(15, reusableIndicator);
-        set(16, isDeprecated);
-        set(17, isNillable);
-        set(18, prevAsccpId);
-        set(19, nextAsccpId);
+        set(13, namespaceId);
+        set(14, reusableIndicator);
+        set(15, isDeprecated);
+        set(16, isNillable);
+        set(17, prevAsccpId);
+        set(18, nextAsccpId);
     }
 }

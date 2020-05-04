@@ -28,7 +28,6 @@ public class UpdateAsccpArguments {
     private ULong namespaceId;
     private Boolean reuseableIndicator;
     private Boolean isDeprecated;
-    private ULong revisionId;
     private Boolean isNillable;
     private ULong prevAsccpId;
     private ULong nextAsccpId;
@@ -53,7 +52,6 @@ public class UpdateAsccpArguments {
         this.lastUpdatedBy = asccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = asccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(asccp.getState());
-        this.revisionId = asccp.getRevisionId();
         this.isNillable = asccp.getIsNillable() == 1;
         this.prevAsccpId = asccp.getAsccpId();
         this.nextAsccpId = asccp.getNextAsccpId();
@@ -151,15 +149,6 @@ public class UpdateAsccpArguments {
 
     public UpdateAsccpArguments setState(CcState state) {
         this.state = state;
-        return this;
-    }
-
-    public ULong getRevisionId() {
-        return revisionId;
-    }
-
-    public UpdateAsccpArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
         return this;
     }
 
@@ -266,14 +255,13 @@ public class UpdateAsccpArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(isNillable, that.isNillable) &&
                 Objects.equals(prevAsccpId, that.prevAsccpId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertyTerm, roleOfAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isNillable, reuseableIndicator, prevAsccpId);
+        return Objects.hash(propertyTerm, roleOfAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, isNillable, reuseableIndicator, prevAsccpId);
     }
 
     private boolean isDirty() {

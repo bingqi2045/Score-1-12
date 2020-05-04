@@ -4,6 +4,8 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record9;
@@ -12,13 +14,11 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Release;
 
-import java.time.LocalDateTime;
-
 
 /**
  * The is table store the release information.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer> {
 
     private static final long serialVersionUID = 339903350;
@@ -38,14 +38,14 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc.
+     * Setter for <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
      */
     public void setReleaseNum(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc.
+     * Getter for <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
      */
     public String getReleaseNum() {
         return (String) get(1);

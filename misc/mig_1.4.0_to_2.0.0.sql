@@ -87,17 +87,18 @@ CREATE TABLE `revision` (
     `revision_num` int(10) unsigned NOT NULL DEFAULT '1' COMMENT 'This is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 1, 2, and so on.',
     `revision_tracking_num` int(10) unsigned NOT NULL DEFAULT '1' COMMENT 'This supports the ability to undo changes during a revision (life cycle of a revision is from the component''s WIP state to PUBLISHED state). REVISION_TRACKING_NUM can be 1, 2, and so on.',
     `revision_action` varchar(20) DEFAULT NULL COMMENT 'This indicates the action associated with the record.',
-    `reference` varchar(100) CHARACTER SET ascii NOT NULL,
-    `body` JSON,
+    `snapshot` JSON,
     `prev_revision_id` bigint(20) unsigned DEFAULT NULL,
+    `next_revision_id` bigint(20) unsigned DEFAULT NULL,
     `created_by` bigint(20) unsigned NOT NULL,
     `creation_timestamp` datetime(6) NOT NULL,
     PRIMARY KEY (`revision_id`),
-    KEY `reference` (`reference`),
     KEY `revision_created_by_fk` (`created_by`),
     KEY `revision_prev_revision_id_fk` (`prev_revision_id`),
+    KEY `revision_next_revision_id_fk` (`next_revision_id`),
     CONSTRAINT `revision_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
-    CONSTRAINT `revision_prev_revision_id_fk` FOREIGN KEY (`prev_revision_id`) REFERENCES `revision` (`revision_id`)
+    CONSTRAINT `revision_prev_revision_id_fk` FOREIGN KEY (`prev_revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `revision_next_revision_id_fk` FOREIGN KEY (`next_revision_id`) REFERENCES `revision` (`revision_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Create `comment` table for comments
@@ -155,15 +156,24 @@ CREATE TABLE `acc_manifest` (
     `module_id` bigint(20) unsigned,
     `acc_id` bigint(20) unsigned NOT NULL,
     `based_acc_manifest_id` bigint(20) unsigned,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_acc_manifest_id` bigint(20) unsigned,
+    `next_acc_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`acc_manifest_id`),
     KEY `acc_manifest_acc_id_fk` (`acc_id`),
     KEY `acc_manifest_based_acc_manifest_id_fk` (`based_acc_manifest_id`),
     KEY `acc_manifest_release_id_fk` (`release_id`),
     KEY `acc_manifest_module_id_fk` (`module_id`),
+    KEY `acc_manifest_revision_id_fk` (`revision_id`),
+    KEY `acc_manifest_prev_acc_manifest_id_fk` (`prev_acc_manifest_id`),
+    KEY `acc_manifest_next_acc_manifest_id_fk` (`next_acc_manifest_id`),
     CONSTRAINT `acc_manifest_acc_id_fk` FOREIGN KEY (`acc_id`) REFERENCES `acc` (`acc_id`),
     CONSTRAINT `acc_manifest_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `acc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `acc_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
+    CONSTRAINT `acc_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `acc_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `acc_manifest_prev_acc_manifest_id_fk` FOREIGN KEY (`prev_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
+    CONSTRAINT `acc_manifest_next_acc_manifest_id_fk` FOREIGN KEY (`next_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `based_acc_id`
@@ -184,12 +194,24 @@ FROM `acc`
 JOIN (SELECT MAX(`acc_id`) as `acc_id` FROM `acc` GROUP BY `guid`) t ON `acc`.`acc_id` = t.`acc_id`
 ORDER BY `acc`.`acc_id`;
 
+SET @sql = CONCAT('ALTER TABLE `acc_manifest` AUTO_INCREMENT = ', (SELECT MAX(acc_manifest_id) + 1 FROM acc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`)
 SELECT
     `release`.`release_id`,
     `acc`.`acc_id`, `acc`.`module_id`
 FROM `acc` JOIN `release` ON `acc`.`release_id` = `release`.`release_id`
 WHERE `acc`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `acc_manifest` AUTO_INCREMENT = ', (SELECT MAX(acc_manifest_id) + 1 FROM acc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Updating `based_acc_manifest_id`
 UPDATE `acc_manifest`, (
@@ -232,32 +254,11 @@ ALTER TABLE `acc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
                   MODIFY COLUMN `current_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\\n\\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\\n\\nThe value of this column for the current record should be left NULL.',
                   ADD COLUMN `prev_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                   ADD COLUMN `next_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                   ADD CONSTRAINT `acc_prev_acc_id_fk` FOREIGN KEY (`prev_acc_id`) REFERENCES `acc` (`acc_id`),
-                  ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`),
-                  ADD CONSTRAINT `acc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `acc`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT `acc`.`revision_num`, `acc`.`revision_tracking_num`,
-       (CASE WHEN `acc`.`revision_action` = 1 THEN 'Added' WHEN `acc`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
-       CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference,
-       `acc`.`created_by`, `acc`.`creation_timestamp`
-FROM `acc` JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
-           JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `acc`, `revision`, (
-    SELECT `acc`.`acc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
-    FROM `acc` JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
-               JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `acc`.`revision_id` = `revision`.`revision_id`
-WHERE `acc`.`acc_id` = t.`acc_id` AND `revision`.`reference` = t.`reference`;
+                  ADD CONSTRAINT `acc_next_acc_id_fk` FOREIGN KEY (`next_acc_id`) REFERENCES `acc` (`acc_id`);
 
 -- Add indices
 CREATE INDEX `acc_guid_idx` ON `acc` (`guid`);
-CREATE INDEX `acc_revision_idx` ON `acc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `acc_last_update_timestamp_desc_idx` ON `acc` (`last_update_timestamp` DESC);
 
 
@@ -273,15 +274,24 @@ CREATE TABLE `asccp_manifest` (
     `module_id` bigint(20) unsigned,
     `asccp_id` bigint(20) unsigned NOT NULL,
     `role_of_acc_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_asccp_manifest_id` bigint(20) unsigned,
+    `next_asccp_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`asccp_manifest_id`),
     KEY `asccp_manifest_asccp_id_fk` (`asccp_id`),
     KEY `asccp_manifest_role_of_acc_manifest_id_fk` (`role_of_acc_manifest_id`),
     KEY `asccp_manifest_release_id_fk` (`release_id`),
     KEY `asccp_manifest_module_id_fk` (`module_id`),
+    KEY `asccp_manifest_revision_id_fk` (`revision_id`),
+    KEY `asccp_manifest_prev_asccp_manifest_id_fk` (`prev_asccp_manifest_id`),
+    KEY `asccp_manifest_next_asccp_manifest_id_fk` (`next_asccp_manifest_id`),
     CONSTRAINT `asccp_manifest_asccp_id_fk` FOREIGN KEY (`asccp_id`) REFERENCES `asccp` (`asccp_id`),
     CONSTRAINT `asccp_manifest_role_of_acc_manifest_id_fk` FOREIGN KEY (`role_of_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `asccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `asccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
+    CONSTRAINT `asccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `asccp_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `asccp_manifest_prev_asccp_manifest_id_fk` FOREIGN KEY (`prev_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
+    CONSTRAINT `asccp_manifest_next_asccp_manifest_id_fk` FOREIGN KEY (`next_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `role_of_acc_id`
@@ -306,6 +316,12 @@ JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `asccp`.`asccp_id`;
 
+SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
 SELECT
     `release`.`release_id`, `asccp`.`module_id`,
@@ -315,6 +331,12 @@ JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
 JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
  AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
@@ -336,32 +358,11 @@ ALTER TABLE `asccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL 
                     MODIFY COLUMN `current_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                     ADD COLUMN `prev_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                     ADD COLUMN `next_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                     ADD CONSTRAINT `asccp_prev_asccp_id_fk` FOREIGN KEY (`prev_asccp_id`) REFERENCES `asccp` (`asccp_id`),
-                    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`),
-                    ADD CONSTRAINT `asccp_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `asccp`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT `asccp`.`revision_num`, `asccp`.`revision_tracking_num`,
-       (CASE WHEN `asccp`.`revision_action` = 1 THEN 'Added' WHEN `asccp`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
-       CONCAT('asccp', `asccp_manifest`.`asccp_manifest_id`) as reference,
-       `asccp`.`created_by`, `asccp`.`creation_timestamp`
-FROM `asccp` JOIN `asccp_manifest` ON `asccp`.`asccp_id` = `asccp_manifest`.`asccp_id`
-           JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `asccp`, `revision`, (
-    SELECT `asccp`.`asccp_id`, CONCAT('asccp', `asccp_manifest`.`asccp_manifest_id`) as reference
-    FROM `asccp` JOIN `asccp_manifest` ON `asccp`.`asccp_id` = `asccp_manifest`.`asccp_id`
-               JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `asccp`.`revision_id` = `revision`.`revision_id`
-WHERE `asccp`.`asccp_id` = t.`asccp_id` AND `revision`.`reference` = t.`reference`;
+                    ADD CONSTRAINT `asccp_next_asccp_id_fk` FOREIGN KEY (`next_asccp_id`) REFERENCES `asccp` (`asccp_id`);
 
 -- Add indices
 CREATE INDEX `asccp_guid_idx` ON `asccp` (`guid`);
-CREATE INDEX `asccp_revision_idx` ON `asccp` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `asccp_last_update_timestamp_desc_idx` ON `asccp` (`last_update_timestamp` DESC);
 
 
@@ -370,7 +371,6 @@ ALTER TABLE `dt` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft,
 UPDATE `dt` SET `state` = 'Editing' where `state` = '1';
 UPDATE `dt` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `dt` SET `state` = 'Published' where `state` = '3';
-
 UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
 CREATE TABLE `dt_manifest` (
@@ -378,13 +378,22 @@ CREATE TABLE `dt_manifest` (
     `release_id` bigint(20) unsigned NOT NULL,
     `module_id` bigint(20) unsigned,
     `dt_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_dt_manifest_id` bigint(20) unsigned,
+    `next_dt_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`dt_manifest_id`),
     KEY `dt_manifest_dt_id_fk` (`dt_id`),
     KEY `dt_manifest_release_id_fk` (`release_id`),
     KEY `dt_manifest_module_id_fk` (`module_id`),
+    KEY `dt_manifest_revision_id_fk` (`revision_id`),
+    KEY `dt_manifest_prev_dt_manifest_id_fk` (`prev_dt_manifest_id`),
+    KEY `dt_manifest_next_dt_manifest_id_fk` (`next_dt_manifest_id`),
     CONSTRAINT `dt_manifest_dt_id_fk` FOREIGN KEY (`dt_id`) REFERENCES `dt` (`dt_id`),
     CONSTRAINT `dt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `dt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
+    CONSTRAINT `dt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `dt_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `dt_manifest_prev_dt_manifest_id_fk` FOREIGN KEY (`prev_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
+    CONSTRAINT `dt_manifest_next_dt_manifest_id_fk` FOREIGN KEY (`next_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT `dt_manifest` (`release_id`, `module_id`, `dt_id`)
@@ -394,12 +403,24 @@ SELECT
 FROM `dt` JOIN (SELECT MAX(`dt_id`) as `dt_id` FROM `dt` GROUP BY `guid`) t ON `dt`.`dt_id` = t.`dt_id`
 ORDER BY `dt`.`dt_id`;
 
+SET @sql = CONCAT('ALTER TABLE `dt_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_manifest_id) + 1 FROM dt_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `dt_manifest` (`release_id`, `module_id`, `dt_id`)
 SELECT
     `release`.`release_id`, `dt`.`module_id`,
     `dt`.`dt_id`
 FROM `dt` JOIN `release` ON `dt`.`release_id` = `release`.`release_id`
 WHERE `dt`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `dt_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_manifest_id) + 1 FROM dt_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
@@ -421,32 +442,11 @@ ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COM
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
                  ADD COLUMN `prev_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                  ADD COLUMN `next_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                 ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                  ADD CONSTRAINT `dt_prev_dt_id_fk` FOREIGN KEY (`prev_dt_id`) REFERENCES `dt` (`dt_id`),
-                 ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`),
-                 ADD CONSTRAINT `dt_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `dt`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT `dt`.`revision_num`, `dt`.`revision_tracking_num`,
-       (CASE WHEN `dt`.`revision_action` = 1 THEN 'Added' WHEN `dt`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
-       CONCAT('dt', `dt_manifest`.`dt_manifest_id`) as reference,
-       `dt`.`created_by`, `dt`.`creation_timestamp`
-FROM `dt` JOIN `dt_manifest` ON `dt`.`dt_id` = `dt_manifest`.`dt_id`
-            JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `dt`, `revision`, (
-    SELECT `dt`.`dt_id`, CONCAT('dt', `dt_manifest`.`dt_manifest_id`) as reference
-    FROM `dt` JOIN `dt_manifest` ON `dt`.`dt_id` = `dt_manifest`.`dt_id`
-                JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `dt`.`revision_id` = `revision`.`revision_id`
-WHERE `dt`.`dt_id` = t.`dt_id` AND `revision`.`reference` = t.`reference`;
+                 ADD CONSTRAINT `dt_next_dt_id_fk` FOREIGN KEY (`next_dt_id`) REFERENCES `dt` (`dt_id`);
 
 -- Add indices
 CREATE INDEX `dt_guid_idx` ON `dt` (`guid`);
-CREATE INDEX `dt_revision_idx` ON `dt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `dt_last_update_timestamp_desc_idx` ON `dt` (`last_update_timestamp` DESC);
 
 -- Drop unique index
@@ -459,13 +459,22 @@ CREATE TABLE `dt_sc_manifest` (
     `release_id` bigint(20) unsigned NOT NULL,
     `dt_sc_id` bigint(20) unsigned NOT NULL,
     `owner_dt_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_dt_sc_manifest_id` bigint(20) unsigned,
+    `next_dt_sc_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`dt_sc_manifest_id`),
     KEY `dt_sc_manifest_dt_sc_id_fk` (`dt_sc_id`),
     KEY `dt_sc_manifest_release_id_fk` (`release_id`),
     KEY `dt_sc_manifest_owner_dt_manifest_id_fk` (`owner_dt_manifest_id`),
+    KEY `dt_sc_manifest_revision_id_fk` (`revision_id`),
+    KEY `dt_sc_prev_dt_sc_manifest_id_fk` (`prev_dt_sc_manifest_id`),
+    KEY `dt_sc_next_dt_sc_manifest_id_fk` (`next_dt_sc_manifest_id`),
     CONSTRAINT `dt_sc_manifest_dt_sc_id_fk` FOREIGN KEY (`dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`),
     CONSTRAINT `dt_sc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `dt_sc_manifest_owner_dt_manifest_id_fk` FOREIGN KEY (`owner_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`)
+    CONSTRAINT `dt_sc_manifest_owner_dt_manifest_id_fk` FOREIGN KEY (`owner_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
+    CONSTRAINT `dt_sc_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `dt_sc_prev_dt_sc_manifest_id_fk` FOREIGN KEY (`prev_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`),
+    CONSTRAINT `dt_sc_next_dt_sc_manifest_id_fk` FOREIGN KEY (`next_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT `dt_sc_manifest` (`release_id`, `dt_sc_id`, `owner_dt_manifest_id`)
@@ -475,6 +484,12 @@ SELECT
 FROM `dt_sc` JOIN `dt_manifest` ON `dt_sc`.`owner_dt_id` = `dt_manifest`.`dt_id`
              JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
 ORDER BY `release`.`release_id`;
+
+SET @sql = CONCAT('ALTER TABLE `dt_sc_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_sc_manifest_id) + 1 FROM dt_sc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Add indices
 CREATE INDEX `dt_sc_guid_idx` ON `dt_sc` (`guid`);
@@ -494,15 +509,24 @@ CREATE TABLE `bccp_manifest` (
     `module_id` bigint(20) unsigned,
     `bccp_id` bigint(20) unsigned NOT NULL,
     `bdt_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_bccp_manifest_id` bigint(20) unsigned,
+    `next_bccp_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`bccp_manifest_id`),
     KEY `bccp_manifest_bccp_id_fk` (`bccp_id`),
     KEY `bccp_manifest_bdt_manifest_id_fk` (`bdt_manifest_id`),
     KEY `bccp_manifest_release_id_fk` (`release_id`),
     KEY `bccp_manifest_module_id_fk` (`module_id`),
+    KEY `bccp_manifest_revision_id_fk` (`revision_id`),
+    KEY `bccp_manifest_prev_bccp_manifest_id_fk` (`prev_bccp_manifest_id`),
+    KEY `bccp_manifest_next_bccp_manifest_id_fk` (`next_bccp_manifest_id`),
     CONSTRAINT `bccp_manifest_bccp_id_fk` FOREIGN KEY (`bccp_id`) REFERENCES `bccp` (`bccp_id`),
     CONSTRAINT `bccp_manifest_bdt_manifest_id_fk` FOREIGN KEY (`bdt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
     CONSTRAINT `bccp_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `bccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
+    CONSTRAINT `bccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `bccp_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `bccp_manifest_prev_bccp_manifest_id_fk` FOREIGN KEY (`prev_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
+    CONSTRAINT `bccp_manifest_next_bccp_manifest_id_fk` FOREIGN KEY (`next_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
@@ -514,6 +538,12 @@ JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `bccp`.`bccp_id`;
 
+SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
 SELECT
     `release`.`release_id`, `bccp`.`module_id`,
@@ -522,6 +552,12 @@ FROM `bccp` JOIN `release` ON `bccp`.`release_id` = `release`.`release_id`
 JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
  AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
@@ -543,32 +579,11 @@ ALTER TABLE `bccp` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL C
                    MODIFY COLUMN `current_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                    ADD COLUMN `prev_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                    ADD COLUMN `next_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                   ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                    ADD CONSTRAINT `bccp_prev_bccp_id_fk` FOREIGN KEY (`prev_bccp_id`) REFERENCES `bccp` (`bccp_id`),
-                   ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`),
-                   ADD CONSTRAINT `bccp_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `bccp`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT `bccp`.`revision_num`, `bccp`.`revision_tracking_num`,
-       (CASE WHEN `bccp`.`revision_action` = 1 THEN 'Added' WHEN `bccp`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
-       CONCAT('bccp', `bccp_manifest`.`bccp_manifest_id`) as reference,
-       `bccp`.`created_by`, `bccp`.`creation_timestamp`
-FROM `bccp` JOIN `bccp_manifest` ON `bccp`.`bccp_id` = `bccp_manifest`.`bccp_id`
-             JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `bccp`, `revision`, (
-    SELECT `bccp`.`bccp_id`, CONCAT('bccp', `bccp_manifest`.`bccp_manifest_id`) as reference
-    FROM `bccp` JOIN `bccp_manifest` ON `bccp`.`bccp_id` = `bccp_manifest`.`bccp_id`
-                 JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `bccp`.`revision_id` = `revision`.`revision_id`
-WHERE `bccp`.`bccp_id` = t.`bccp_id` AND `revision`.`reference` = t.`reference`;
+                   ADD CONSTRAINT `bccp_next_bccp_id_fk` FOREIGN KEY (`next_bccp_id`) REFERENCES `bccp` (`bccp_id`);
 
 -- Add indices
 CREATE INDEX `bccp_guid_idx` ON `bccp` (`guid`);
-CREATE INDEX `bccp_revision_idx` ON `bccp` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `bccp_last_update_timestamp_desc_idx` ON `bccp` (`last_update_timestamp` DESC);
 
 
@@ -584,15 +599,24 @@ CREATE TABLE `ascc_manifest` (
     `ascc_id` bigint(20) unsigned NOT NULL,
     `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
     `to_asccp_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_ascc_manifest_id` bigint(20) unsigned,
+    `next_ascc_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`ascc_manifest_id`),
     KEY `ascc_manifest_ascc_id_fk` (`ascc_id`),
     KEY `ascc_manifest_release_id_fk` (`release_id`),
     KEY `ascc_manifest_from_acc_manifest_id_fk` (`from_acc_manifest_id`),
     KEY `ascc_manifest_to_asccp_manifest_id_fk` (`to_asccp_manifest_id`),
+    KEY `ascc_manifest_revision_id_fk` (`revision_id`),
+    KEY `ascc_manifest_prev_ascc_manifest_id_fk` (`prev_ascc_manifest_id`),
+    KEY `ascc_manifest_next_ascc_manifest_id_fk` (`next_ascc_manifest_id`),
     CONSTRAINT `ascc_manifest_ascc_id_fk` FOREIGN KEY (`ascc_id`) REFERENCES `ascc` (`ascc_id`),
     CONSTRAINT `ascc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `ascc_manifest_to_asccp_manifest_id_fk` FOREIGN KEY (`to_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
-    CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `ascc_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `ascc_manifest_prev_ascc_manifest_id_fk` FOREIGN KEY (`prev_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`),
+    CONSTRAINT `ascc_manifest_next_ascc_manifest_id_fk` FOREIGN KEY (`next_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `from_acc_id`
@@ -631,6 +655,12 @@ JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `ascc`.`ascc_id`;
 
+SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
 SELECT
     `release`.`release_id`,
@@ -642,6 +672,12 @@ JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
  AND `asccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `ascc`.`state` = 'Published'
 GROUP BY `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`;
+
+SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
@@ -663,24 +699,11 @@ ALTER TABLE `ascc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL C
                    MODIFY COLUMN `current_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                    ADD COLUMN `prev_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                    ADD COLUMN `next_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                   ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                    ADD CONSTRAINT `ascc_prev_ascc_id_fk` FOREIGN KEY (`prev_ascc_id`) REFERENCES `ascc` (`ascc_id`),
-                   ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`),
-                   ADD CONSTRAINT `ascc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `ascc`.
-UPDATE `ascc`, `revision`, (
-    SELECT `ascc`.`ascc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
-    FROM `ascc` JOIN `ascc_manifest` ON `ascc`.`ascc_id` = `ascc_manifest`.`ascc_id`
-                JOIN `acc_manifest` ON `ascc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`
-                JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `ascc`.`revision_id` = `revision`.`revision_id`
-WHERE `ascc`.`ascc_id` = t.`ascc_id` AND `revision`.`reference` = t.`reference`;
+                   ADD CONSTRAINT `ascc_next_ascc_id_fk` FOREIGN KEY (`next_ascc_id`) REFERENCES `ascc` (`ascc_id`);
 
 -- Add indices
 CREATE INDEX `ascc_guid_idx` ON `ascc` (`guid`);
-CREATE INDEX `ascc_revision_idx` ON `ascc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `ascc_last_update_timestamp_desc_idx` ON `ascc` (`last_update_timestamp` DESC);
 
 
@@ -698,15 +721,24 @@ CREATE TABLE `bcc_manifest` (
     `bcc_id` bigint(20) unsigned NOT NULL,
     `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
     `to_bccp_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_bcc_manifest_id` bigint(20) unsigned,
+    `next_bcc_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`bcc_manifest_id`),
     KEY `bcc_manifest_bcc_id_fk` (`bcc_id`),
     KEY `bcc_manifest_release_id_fk` (`release_id`),
     KEY `bcc_manifest_from_acc_manifest_id_fk` (`from_acc_manifest_id`),
     KEY `bcc_manifest_to_bccp_manifest_id_fk` (`to_bccp_manifest_id`),
+    KEY `bcc_manifest_revision_id_fk` (`revision_id`),
+    KEY `bcc_manifest_prev_bcc_manifest_id_fk` (`prev_bcc_manifest_id`),
+    KEY `bcc_manifest_next_bcc_manifest_id_fk` (`next_bcc_manifest_id`),
     CONSTRAINT `bcc_manifest_bcc_id_fk` FOREIGN KEY (`bcc_id`) REFERENCES `bcc` (`bcc_id`),
     CONSTRAINT `bcc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `bcc_manifest_to_bccp_manifest_id_fk` FOREIGN KEY (`to_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
-    CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `bcc_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `bcc_manifest_prev_bcc_manifest_id_fk` FOREIGN KEY (`prev_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`),
+    CONSTRAINT `bcc_manifest_next_bcc_manifest_id_fk` FOREIGN KEY (`next_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `from_acc_id`
@@ -745,6 +777,12 @@ JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
 ORDER BY `bcc`.`bcc_id`;
 
+SET @sql = CONCAT('ALTER TABLE `bcc_manifest` AUTO_INCREMENT = ', (SELECT MAX(bcc_manifest_id) + 1 FROM bcc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
 SELECT
     `release`.`release_id`,
@@ -756,6 +794,12 @@ JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
  AND `bccp_manifest`.`release_id` = `release`.`release_id`
 WHERE `bcc`.`state` = 'Published'
 GROUP BY `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`;
+
+SET @sql = CONCAT('ALTER TABLE `bcc_manifest` AUTO_INCREMENT = ', (SELECT MAX(bcc_manifest_id) + 1 FROM bcc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
@@ -777,24 +821,11 @@ ALTER TABLE `bcc` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
                   MODIFY COLUMN `current_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.',
                   ADD COLUMN `prev_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
                   ADD COLUMN `next_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
                   ADD CONSTRAINT `bcc_prev_bcc_id_fk` FOREIGN KEY (`prev_bcc_id`) REFERENCES `bcc` (`bcc_id`),
-                  ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`),
-                  ADD CONSTRAINT `bcc_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `bcc`.
-UPDATE `bcc`, `revision`, (
-    SELECT `bcc`.`bcc_id`, CONCAT('acc', `acc_manifest`.`acc_manifest_id`) as reference
-    FROM `bcc` JOIN `bcc_manifest` ON `bcc`.`bcc_id` = `bcc_manifest`.`bcc_id`
-                JOIN `acc_manifest` ON `bcc_manifest`.`from_acc_manifest_id` = `acc_manifest`.`acc_manifest_id`
-                JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `bcc`.`revision_id` = `revision`.`revision_id`
-WHERE `bcc`.`bcc_id` = t.`bcc_id` AND `revision`.`reference` = t.`reference`;
+                  ADD CONSTRAINT `bcc_next_bcc_id_fk` FOREIGN KEY (`next_bcc_id`) REFERENCES `bcc` (`bcc_id`);
 
 -- Add indices
 CREATE INDEX `bcc_guid_idx` ON `bcc` (`guid`);
-CREATE INDEX `bcc_revision_idx` ON `bcc` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `bcc_last_update_timestamp_desc_idx` ON `bcc` (`last_update_timestamp` DESC);
 
 
@@ -804,11 +835,9 @@ ALTER TABLE `code_list`
     ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).' AFTER `extensible_indicator`,
     ADD COLUMN `prev_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     ADD COLUMN `next_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
-    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
     ADD CONSTRAINT `code_list_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_prev_code_list_id_fk` FOREIGN KEY (`prev_code_list_id`) REFERENCES `code_list` (`code_list_id`),
-    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`),
-    ADD CONSTRAINT `code_list_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+    ADD CONSTRAINT `code_list_next_code_list_id_fk` FOREIGN KEY (`next_code_list_id`) REFERENCES `code_list` (`code_list_id`);
 
 UPDATE `code_list` SET `owner_user_id` = `last_updated_by`;
 UPDATE `code_list` SET `state` = 'WIP' WHERE `state` = 'Editing';
@@ -823,15 +852,24 @@ CREATE TABLE `code_list_manifest` (
     `module_id` bigint(20) unsigned DEFAULT NULL,
     `code_list_id` bigint(20) unsigned NOT NULL,
     `based_code_list_manifest_id` bigint(20) unsigned DEFAULT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_code_list_manifest_id` bigint(20) unsigned,
+    `next_code_list_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`code_list_manifest_id`),
     KEY `code_list_manifest_code_list_id_fk` (`code_list_id`),
     KEY `code_list_manifest_based_code_list_manifest_id_fk` (`based_code_list_manifest_id`),
     KEY `code_list_manifest_release_id_fk` (`release_id`),
     KEY `code_list_manifest_module_id_fk` (`module_id`),
+    KEY `code_list_manifest_revision_id_fk` (`revision_id`),
+    KEY `code_list_manifest_prev_code_list_manifest_id_fk` (`prev_code_list_manifest_id`),
+    KEY `code_list_manifest_next_code_list_manifest_id_fk` (`next_code_list_manifest_id`),
     CONSTRAINT `code_list_manifest_code_list_id_fk` FOREIGN KEY (`code_list_id`) REFERENCES `code_list` (`code_list_id`),
     CONSTRAINT `code_list_manifest_based_code_list_manifest_id_fk` FOREIGN KEY (`based_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`),
     CONSTRAINT `code_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
-    CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `code_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `code_list_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `code_list_manifest_prev_code_list_manifest_id_fk` FOREIGN KEY (`prev_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`),
+    CONSTRAINT `code_list_manifest_next_code_list_manifest_id_fk` FOREIGN KEY (`next_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT `code_list_manifest` (`release_id`, `module_id`, `code_list_id`)
@@ -841,6 +879,12 @@ SELECT
     `code_list`.`code_list_id`
 FROM `code_list`, `release`
 ORDER BY `release_id`, `code_list_id`;
+
+SET @sql = CONCAT('ALTER TABLE `code_list_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_manifest_id) + 1 FROM code_list_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Updating `based_code_list_manifest_id`
 UPDATE `code_list_manifest`, (
@@ -852,23 +896,6 @@ UPDATE `code_list_manifest`, (
 SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
 WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
 
--- Insert initial revision records of `code_list`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT 1, 1, 'Added',
-       CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference,
-       `code_list`.`created_by`, `code_list`.`creation_timestamp`
-FROM `code_list` JOIN `code_list_manifest` ON `code_list`.`code_list_id` = `code_list_manifest`.`code_list_id`
-                 JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `code_list`, `revision`, (
-    SELECT `code_list`.`code_list_id`, CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference
-    FROM `code_list` JOIN `code_list_manifest` ON `code_list`.`code_list_id` = `code_list_manifest`.`code_list_id`
-                     JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `code_list`.`revision_id` = `revision`.`revision_id`
-WHERE `code_list`.`code_list_id` = t.`code_list_id` AND `revision`.`reference` = t.`reference`;
-
 
 -- Making relations between `code_list_value` and `release` tables.
 ALTER TABLE `code_list_value`
@@ -877,15 +904,13 @@ ALTER TABLE `code_list_value`
     ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',
     ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was created.',
     ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was last updated.',
-    ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.',
     ADD COLUMN `prev_code_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
     ADD COLUMN `next_code_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
     ADD CONSTRAINT `code_list_value_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
     ADD CONSTRAINT `code_list_value_prev_code_list_value_id_fk` FOREIGN KEY (`prev_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
-    ADD CONSTRAINT `code_list_value_next_code_list_value_id_fk` FOREIGN KEY (`next_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
-    ADD CONSTRAINT `code_list_value_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
+    ADD CONSTRAINT `code_list_value_next_code_list_value_id_fk` FOREIGN KEY (`next_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`);
 
 UPDATE `code_list_value`, `code_list`
 SET `code_list_value`.`created_by` = `code_list`.`created_by`,
@@ -900,13 +925,22 @@ CREATE TABLE `code_list_value_manifest` (
     `release_id` bigint(20) unsigned NOT NULL,
     `code_list_value_id` bigint(20) unsigned NOT NULL,
     `code_list_manifest_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_code_list_value_manifest_id` bigint(20) unsigned,
+    `next_code_list_value_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`code_list_value_manifest_id`),
     KEY `code_list_value_manifest_code_list_value_id_fk` (`code_list_value_id`),
     KEY `code_list_value_manifest_release_id_fk` (`release_id`),
     KEY `code_list_value_manifest_code_list_manifest_id_fk` (`code_list_manifest_id`),
+    KEY `code_list_value_manifest_revision_id_fk` (`revision_id`),
+    KEY `code_list_value_manifest_prev_code_list_value_manifest_id_fk` (`prev_code_list_value_manifest_id`),
+    KEY `code_list_value_manifest_next_code_list_value_manifest_id_fk` (`next_code_list_value_manifest_id`),
     CONSTRAINT `code_list_value_manifest_code_list_value_id_fk` FOREIGN KEY (`code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`),
     CONSTRAINT `code_list_value_manifest_code_list_manifest_id_fk` FOREIGN KEY (`code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`),
-    CONSTRAINT `code_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+    CONSTRAINT `code_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `code_list_value_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `code_list_value_manifest_prev_code_list_value_manifest_id_fk` FOREIGN KEY (`prev_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`),
+    CONSTRAINT `code_list_value_manifest_next_code_list_value_manifest_id_fk` FOREIGN KEY (`next_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `code_list_value_manifest` (`release_id`, `code_list_value_id`, `code_list_manifest_id`)
@@ -915,15 +949,11 @@ SELECT
 FROM
     `code_list_value` JOIN `code_list_manifest` ON `code_list_value`.`code_list_id` = `code_list_manifest`.`code_list_id`;
 
--- Insert initial revision records of `code_list_value`.
-UPDATE `code_list_value`, `revision`, (
-    SELECT `code_list_value`.`code_list_value_id`, CONCAT('code_list', `code_list_manifest`.`code_list_manifest_id`) as reference
-    FROM `code_list_value` JOIN `code_list_value_manifest` ON `code_list_value`.`code_list_value_id` = `code_list_value_manifest`.`code_list_value_id`
-                           JOIN `code_list_manifest` ON `code_list_value_manifest`.`code_list_manifest_id` = `code_list_manifest`.`code_list_manifest_id`
-                           JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `code_list_value`.`revision_id` = `revision`.`revision_id`
-WHERE `code_list_value`.`code_list_value_id` = t.`code_list_value_id` AND `revision`.`reference` = t.`reference`;
+SET @sql = CONCAT('ALTER TABLE `code_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_value_manifest_id) + 1 FROM code_list_value_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 
 -- BIEs
@@ -1012,13 +1042,22 @@ CREATE TABLE `xbt_manifest` (
     `release_id` bigint(20) unsigned NOT NULL,
     `module_id` bigint(20) unsigned,
     `xbt_id` bigint(20) unsigned NOT NULL,
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_xbt_manifest_id` bigint(20) unsigned,
+    `next_xbt_manifest_id` bigint(20) unsigned,
     PRIMARY KEY (`xbt_manifest_id`),
     KEY `xbt_manifest_xbt_id_fk` (`xbt_id`),
     KEY `xbt_manifest_release_id_fk` (`release_id`),
     KEY `xbt_manifest_module_id_fk` (`module_id`),
+    KEY `xbt_manifest_revision_id_fk` (`revision_id`),
+    KEY `xbt_manifest_prev_xbt_manifest_id_fk` (`prev_xbt_manifest_id`),
+    KEY `xbt_manifest_next_xbt_manifest_id_fk` (`next_xbt_manifest_id`),
     CONSTRAINT `xbt_manifest_xbt_id_fk` FOREIGN KEY (`xbt_id`) REFERENCES `xbt` (`xbt_id`),
     CONSTRAINT `xbt_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
-    CONSTRAINT `xbt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`)
+    CONSTRAINT `xbt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `xbt_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `xbt_manifest_prev_xbt_manifest_id_fk` FOREIGN KEY (`prev_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`),
+    CONSTRAINT `xbt_manifest_next_xbt_manifest_id_fk` FOREIGN KEY (`next_xbt_manifest_id`) REFERENCES `xbt_manifest` (`xbt_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Add `guid` into `xbt` table.
@@ -1159,6 +1198,12 @@ SELECT
 FROM `xbt` JOIN (SELECT MAX(`xbt_id`) as `xbt_id` FROM `xbt` GROUP BY `guid`) t ON `xbt`.`xbt_id` = t.`xbt_id`
 ORDER BY `xbt`.`xbt_id`;
 
+SET @sql = CONCAT('ALTER TABLE `xbt_manifest` AUTO_INCREMENT = ', (SELECT MAX(xbt_manifest_id) + 1 FROM xbt_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 INSERT `xbt_manifest` (`release_id`, `module_id`, `xbt_id`)
 SELECT
     `release`.`release_id`, `xbt`.`module_id`,
@@ -1166,35 +1211,20 @@ SELECT
 FROM `xbt` JOIN `release` ON `xbt`.`release_id` = `release`.`release_id`
 WHERE `xbt`.`state` = 3;
 
+SET @sql = CONCAT('ALTER TABLE `xbt_manifest` AUTO_INCREMENT = ', (SELECT MAX(xbt_manifest_id) + 1 FROM xbt_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 UPDATE `xbt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
 -- Add deprecated annotations
 ALTER TABLE `xbt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.',
-                  MODIFY COLUMN `current_xbt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.',
-                  ADD COLUMN `revision_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key pointed to revision for the current record.' AFTER `state`,
-                  ADD CONSTRAINT `xbt_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`);
-
--- Insert initial revision records of `xbt`.
-INSERT INTO `revision` (`revision_num`, `revision_tracking_num`, `revision_action`, `reference`, `created_by`, `creation_timestamp`)
-SELECT `xbt`.`revision_num`, `xbt`.`revision_tracking_num`,
-       (CASE WHEN `xbt`.`revision_action` = 1 THEN 'Added' WHEN `xbt`.`revision_action` = 2 THEN 'Modified' ELSE 'Deleted' END) as revision_action,
-       CONCAT('xbt', `xbt_manifest`.`xbt_manifest_id`) as reference,
-       `xbt`.`created_by`, `xbt`.`creation_timestamp`
-FROM `xbt` JOIN `xbt_manifest` ON `xbt`.`xbt_id` = `xbt_manifest`.`xbt_id`
-            JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
-
-UPDATE `xbt`, `revision`, (
-    SELECT `xbt`.`xbt_id`, CONCAT('xbt', `xbt_manifest`.`xbt_manifest_id`) as reference
-    FROM `xbt` JOIN `xbt_manifest` ON `xbt`.`xbt_id` = `xbt_manifest`.`xbt_id`
-                JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
-) t
-SET `xbt`.`revision_id` = `revision`.`revision_id`
-WHERE `xbt`.`xbt_id` = t.`xbt_id` AND `revision`.`reference` = t.`reference`;
+                  MODIFY COLUMN `current_xbt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.';
 
 -- Add indices
 CREATE INDEX `xbt_guid_idx` ON `xbt` (`guid`);
-CREATE INDEX `xbt_revision_idx` ON `xbt` (`revision_num`, `revision_tracking_num`);
 CREATE INDEX `xbt_last_update_timestamp_desc_idx` ON `xbt` (`last_update_timestamp` DESC);
 
 -- Add columns and constraints on `agency_id_list` table.

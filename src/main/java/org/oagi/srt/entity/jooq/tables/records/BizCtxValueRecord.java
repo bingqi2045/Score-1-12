@@ -14,11 +14,11 @@ import org.oagi.srt.entity.jooq.tables.BizCtxValue;
 
 
 /**
- * This table represents business context values for business contexts. It
- * provides the associations between a business context and a context scheme
+ * This table represents business context values for business contexts. It 
+ * provides the associations between a business context and a context scheme 
  * value.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<ULong, ULong, ULong> {
 
     private static final long serialVersionUID = 2037157589;

@@ -2,10 +2,12 @@ package org.oagi.srt.gateway.http.api.cc_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CcBccpCreateRequest {
 
-    private long releaseId;
-    private long bdtManifestId;
+    private BigInteger releaseId;
+    private BigInteger bdtManifestId;
 
 }

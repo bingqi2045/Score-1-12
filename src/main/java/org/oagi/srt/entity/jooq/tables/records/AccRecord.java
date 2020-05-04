@@ -4,32 +4,32 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record21;
-import org.jooq.Row21;
+import org.jooq.Record20;
+import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Acc;
 
-import java.time.LocalDateTime;
-
 
 /**
- * The ACC table holds information about complex data structured concepts.
- * For example, OAGIS's Components, Nouns, and BODs are captured in the ACC
+ * The ACC table holds information about complex data structured concepts. 
+ * For example, OAGIS's Components, Nouns, and BODs are captured in the ACC 
  * table.
- * <p>
- * Note that only Extension is supported when deriving ACC from another ACC.
- * (So if there is a restriction needed, maybe that concept should placed
+ * 
+ * Note that only Extension is supported when deriving ACC from another ACC. 
+ * (So if there is a restriction needed, maybe that concept should placed 
  * higher in the derivation hierarchy rather than lower.)
- * <p>
+ * 
  * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
-public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, ULong> {
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record20<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1581987624;
+    private static final long serialVersionUID = -1855032391;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -130,28 +130,28 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     /**
-     * Setter for <code>oagi.acc.object_class_qualifier</code>. This column stores the qualifier of an ACC, particularly when it has a based ACC.
+     * Setter for <code>oagi.acc.object_class_qualifier</code>. This column stores the qualifier of an ACC, particularly when it has a based ACC. 
      */
     public void setObjectClassQualifier(String value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.object_class_qualifier</code>. This column stores the qualifier of an ACC, particularly when it has a based ACC.
+     * Getter for <code>oagi.acc.object_class_qualifier</code>. This column stores the qualifier of an ACC, particularly when it has a based ACC. 
      */
     public String getObjectClassQualifier() {
         return (String) get(7);
     }
 
     /**
-     * Setter for <code>oagi.acc.oagis_component_type</code>. The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains "Base" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains "Extension" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS.
+     * Setter for <code>oagi.acc.oagis_component_type</code>. The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains "Base" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains "Extension" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS. 
      */
     public void setOagisComponentType(Integer value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.oagis_component_type</code>. The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains "Base" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains "Extension" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS.
+     * Getter for <code>oagi.acc.oagis_component_type</code>. The value can be 0 = BASE, 1 = SEMANTICS, 2 = EXTENSION, 3 = SEMANTIC_GROUP, 4 = USER_EXTENSION_GROUP, 5 = EMBEDDED. Generally, BASE is assigned when the OBJECT_CLASS_TERM contains "Base" at the end. EXTENSION is assigned with the OBJECT_CLASS_TERM contains "Extension" at the end. SEMANTIC_GROUP is assigned when an ACC is imported from an XSD Group. USER_EXTENSION_GROUP is a wrapper ACC (a virtual ACC) for segregating user's extension content. EMBEDDED is used for an ACC whose content is not explicitly defined in the database, for example, the Any Structured Content ACC that corresponds to the xsd:any.  Other cases are assigned SEMANTICS. 
      */
     public Integer getOagisComponentType() {
         return (Integer) get(8);
@@ -186,14 +186,14 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     /**
-     * Setter for <code>oagi.acc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * Setter for <code>oagi.acc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * Getter for <code>oagi.acc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
         return (ULong) get(11);
@@ -243,8 +243,8 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Setter for <code>oagi.acc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(15, value);
@@ -252,81 +252,67 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
 
     /**
      * Getter for <code>oagi.acc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(15);
     }
 
     /**
-     * Setter for <code>oagi.acc.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public void setRevisionId(ULong value) {
-        set(16, value);
-    }
-
-    /**
-     * Getter for <code>oagi.acc.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public ULong getRevisionId() {
-        return (ULong) get(16);
-    }
-
-    /**
      * Setter for <code>oagi.acc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
      */
     public void setIsDeprecated(Byte value) {
-        set(17, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.acc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(17);
+        return (Byte) get(16);
     }
 
     /**
      * Setter for <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
      */
     public void setIsAbstract(Byte value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
      */
     public Byte getIsAbstract() {
-        return (Byte) get(18);
+        return (Byte) get(17);
     }
 
     /**
      * Setter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAccId(ULong value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAccId() {
-        return (ULong) get(19);
+        return (ULong) get(18);
     }
 
     /**
      * Setter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAccId(ULong value) {
-        set(20, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAccId() {
-        return (ULong) get(20);
+        return (ULong) get(19);
     }
 
     // -------------------------------------------------------------------------
@@ -339,17 +325,17 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     // -------------------------------------------------------------------------
-    // Record21 type implementation
+    // Record20 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, ULong> valuesRow() {
-        return (Row21) super.valuesRow();
+    public Row20<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> valuesRow() {
+        return (Row20) super.valuesRow();
     }
 
     @Override
@@ -433,27 +419,22 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public Field<ULong> field17() {
-        return Acc.ACC.REVISION_ID;
-    }
-
-    @Override
-    public Field<Byte> field18() {
+    public Field<Byte> field17() {
         return Acc.ACC.IS_DEPRECATED;
     }
 
     @Override
-    public Field<Byte> field19() {
+    public Field<Byte> field18() {
         return Acc.ACC.IS_ABSTRACT;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field19() {
         return Acc.ACC.PREV_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<ULong> field20() {
         return Acc.ACC.NEXT_ACC_ID;
     }
 
@@ -538,27 +519,22 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong component17() {
-        return getRevisionId();
-    }
-
-    @Override
-    public Byte component18() {
+    public Byte component17() {
         return getIsDeprecated();
     }
 
     @Override
-    public Byte component19() {
+    public Byte component18() {
         return getIsAbstract();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component19() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong component21() {
+    public ULong component20() {
         return getNextAccId();
     }
 
@@ -643,27 +619,22 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public ULong value17() {
-        return getRevisionId();
-    }
-
-    @Override
-    public Byte value18() {
+    public Byte value17() {
         return getIsDeprecated();
     }
 
     @Override
-    public Byte value19() {
+    public Byte value18() {
         return getIsAbstract();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value19() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong value21() {
+    public ULong value20() {
         return getNextAccId();
     }
 
@@ -764,37 +735,31 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     @Override
-    public AccRecord value17(ULong value) {
-        setRevisionId(value);
-        return this;
-    }
-
-    @Override
-    public AccRecord value18(Byte value) {
+    public AccRecord value17(Byte value) {
         setIsDeprecated(value);
         return this;
     }
 
     @Override
-    public AccRecord value19(Byte value) {
+    public AccRecord value18(Byte value) {
         setIsAbstract(value);
         return this;
     }
 
     @Override
-    public AccRecord value20(ULong value) {
+    public AccRecord value19(ULong value) {
         setPrevAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord value21(ULong value) {
+    public AccRecord value20(ULong value) {
         setNextAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, Integer value9, ULong value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, String value16, ULong value17, Byte value18, Byte value19, ULong value20, ULong value21) {
+    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, Integer value9, ULong value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, String value16, Byte value17, Byte value18, ULong value19, ULong value20) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -815,7 +780,6 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
         value18(value18);
         value19(value19);
         value20(value20);
-        value21(value21);
         return this;
     }
 
@@ -833,7 +797,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong revisionId, Byte isDeprecated, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
+    public AccRecord(ULong accId, String guid, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
         super(Acc.ACC);
 
         set(0, accId);
@@ -852,10 +816,9 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
         set(13, creationTimestamp);
         set(14, lastUpdateTimestamp);
         set(15, state);
-        set(16, revisionId);
-        set(17, isDeprecated);
-        set(18, isAbstract);
-        set(19, prevAccId);
-        set(20, nextAccId);
+        set(16, isDeprecated);
+        set(17, isAbstract);
+        set(18, prevAccId);
+        set(19, nextAccId);
     }
 }

@@ -32,7 +32,6 @@ public class UpdateBccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
     private ULong prevBccId;
     private ULong nextBccId;
 
@@ -60,7 +59,6 @@ public class UpdateBccArguments {
         this.creationTimestamp = bcc.getCreationTimestamp();
         this.lastUpdateTimestamp = bcc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(bcc.getState());
-        this.revisionId = bcc.getRevisionId();
         this.prevBccId = bcc.getPrevBccId();
 
         this._hashCode = this.hashCode();
@@ -246,15 +244,6 @@ public class UpdateBccArguments {
         return this;
     }
 
-    public ULong getRevisionId() {
-        return revisionId;
-    }
-
-    public UpdateBccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
-        return this;
-    }
-
     public ULong getPrevBccId() {
         return prevBccId;
     }
@@ -293,13 +282,12 @@ public class UpdateBccArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(prevBccId, that.prevBccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toBccpId, entitiyType, defaultValue, fixedValue, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, prevBccId);
+        return Objects.hash(cardinalityMax, cardinalityMin, seqKey, definition, definitionSource, fromAccId, toBccpId, entitiyType, defaultValue, fixedValue, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, prevBccId);
     }
 
     private boolean isDirty() {

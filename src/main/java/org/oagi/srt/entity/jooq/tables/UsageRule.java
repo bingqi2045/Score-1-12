@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row3;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,17 +25,14 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table captures a usage rule information. A usage rule may be expressed
- * in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION
- * table. To capture a description of a usage rule, create a usage rule expression
+ * This table captures a usage rule information. A usage rule may be expressed 
+ * in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION 
+ * table. To capture a description of a usage rule, create a usage rule expression 
  * with the unstructured constraint type.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRule extends TableImpl<UsageRuleRecord> {
 
     private static final long serialVersionUID = -1816187947;

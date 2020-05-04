@@ -29,7 +29,6 @@ public class UpdateAccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
     private Boolean isDeprecated;
     private Boolean isAbstract;
     private ULong prevAccId;
@@ -54,7 +53,6 @@ public class UpdateAccArguments {
         this.creationTimestamp = acc.getCreationTimestamp();
         this.lastUpdateTimestamp = acc.getLastUpdateTimestamp();
         this.state = CcState.valueOf(acc.getState());
-        this.revisionId = acc.getRevisionId();
         this.isDeprecated = acc.getIsDeprecated() == 1;
         this.isAbstract = acc.getIsAbstract() == 1;
         this.prevAccId = acc.getPrevAccId();
@@ -206,15 +204,6 @@ public class UpdateAccArguments {
         return this;
     }
 
-    public ULong getRevisionId() {
-        return revisionId;
-    }
-
-    public UpdateAccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
-        return this;
-    }
-
     public Boolean getDeprecated() {
         return isDeprecated;
     }
@@ -261,13 +250,12 @@ public class UpdateAccArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(prevAccId, that.prevAccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(objectClassTerm, basedAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isAbstract, prevAccId);
+        return Objects.hash(objectClassTerm, basedAccId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, isAbstract, prevAccId);
     }
 
     private boolean isDirty() {

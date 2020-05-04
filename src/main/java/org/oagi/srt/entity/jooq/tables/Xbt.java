@@ -4,7 +4,22 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row16;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -13,20 +28,16 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.XbtRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table stores XML schema built-in types and OAGIS built-in types. OAGIS
- * built-in types are those types defined in the XMLSchemaBuiltinType and
+ * This table stores XML schema built-in types and OAGIS built-in types. OAGIS 
+ * built-in types are those types defined in the XMLSchemaBuiltinType and 
  * the XMLSchemaBuiltinType Patterns schemas.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = -394609608;
+    private static final long serialVersionUID = -1307588089;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -90,11 +101,6 @@ public class Xbt extends TableImpl<XbtRecord> {
      * The column <code>oagi.xbt.state</code>.
      */
     public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
-     * The column <code>oagi.xbt.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<XbtRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.xbt.created_by</code>.
@@ -186,15 +192,11 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public List<ForeignKey<XbtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_REVISION_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<XbtRecord, ?>>asList(Keys.XBT_SUBTYPE_OF_XBT_ID_FK, Keys.XBT_CREATED_BY_FK, Keys.XBT_OWNER_USER_ID_FK, Keys.XBT_LAST_UPDATED_BY_FK);
     }
 
     public Xbt xbt() {
         return new Xbt(this, Keys.XBT_SUBTYPE_OF_XBT_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.XBT_REVISION_ID_FK);
     }
 
     public AppUser xbtCreatedByFk() {
@@ -236,11 +238,11 @@ public class Xbt extends TableImpl<XbtRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }

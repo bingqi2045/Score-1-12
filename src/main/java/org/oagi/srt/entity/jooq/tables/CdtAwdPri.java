@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row4;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,16 +25,13 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CdtAwdPriRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table capture allowed primitives of the CDT?s Content Component.
- * The information in this table is captured from the Allowed Primitive column
+ * This table capture allowed primitives of the CDT?s Content Component.  
+ * The information in this table is captured from the Allowed Primitive column 
  * in each of the CDT Content Component section/table in CCTS DTC3.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
 
     private static final long serialVersionUID = -866204407;
@@ -50,7 +60,7 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
     public final TableField<CdtAwdPriRecord, ULong> CDT_ID = createField(DSL.name("cdt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
 
     /**
-     * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column.
+     * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. 
      */
     public final TableField<CdtAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. ");
 

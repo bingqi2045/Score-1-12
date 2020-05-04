@@ -44,7 +44,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 Tables.ASCC.STATE,
                 Tables.ASCC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.ASCC.REVISION_ID,
+                Tables.ASCC_MANIFEST.REVISION_ID,
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ASCC.IS_DEPRECATED.as("deprecated"))
@@ -54,7 +54,7 @@ public class ASCCRepository implements SrtRepository<ASCC> {
                 .join(Tables.RELEASE)
                 .on(Tables.ASCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.ASCC.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
+                .on(Tables.ASCC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
     }
 
     @Override

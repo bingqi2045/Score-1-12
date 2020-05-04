@@ -14,10 +14,10 @@ import org.oagi.srt.entity.jooq.tables.Client;
 
 
 /**
- * This table captures a client organization. It is used, for example, to
+ * This table captures a client organization. It is used, for example, to 
  * indicate the customer, for which the BIE was generated.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ClientRecord extends UpdatableRecordImpl<ClientRecord> implements Record2<ULong, String> {
 
     private static final long serialVersionUID = -1140241819;

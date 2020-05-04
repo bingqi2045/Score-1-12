@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row9;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,15 +26,11 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
  * The is table store the release information.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
     private static final long serialVersionUID = -1963452311;
@@ -44,7 +54,7 @@ public class Release extends TableImpl<ReleaseRecord> {
     public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
 
     /**
-     * The column <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc.
+     * The column <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
      */
     public final TableField<ReleaseRecord, String> RELEASE_NUM = createField(DSL.name("release_num"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Release number such has 10.0, 10.1, etc. ");
 

@@ -14,17 +14,17 @@ import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
 
 
 /**
- * This table is a log of events. It keeps track of the User Extension ACC
- * (the specific revision) used by an Extension ABIE. This can be a named
- * extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR
- * flag is designed such that a revision of a User Extension can notify the
- * user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID
- * column makes it more efficient to when opening a top-level ABIE, the user
- * can be notified of any new revision of the extension. A record in this
- * table is created only when there is a user extension to the the OAGIS extension
+ * This table is a log of events. It keeps track of the User Extension ACC 
+ * (the specific revision) used by an Extension ABIE. This can be a named 
+ * extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR 
+ * flag is designed such that a revision of a User Extension can notify the 
+ * user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID 
+ * column makes it more efficient to when opening a top-level ABIE, the user 
+ * can be notified of any new revision of the extension. A record in this 
+ * table is created only when there is a user extension to the the OAGIS extension 
  * component/ACC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, Byte> {
 
     private static final long serialVersionUID = 730041658;
@@ -44,14 +44,14 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     /**
-     * Setter for <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE.
+     * Setter for <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE. 
      */
     public void setTopLevelAbieId(ULong value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE.
+     * Getter for <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE. 
      */
     public ULong getTopLevelAbieId() {
         return (ULong) get(1);
@@ -86,14 +86,14 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     }
 
     /**
-     * Setter for <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).
+     * Setter for <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension). 
      */
     public void setUserExtAccId(ULong value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension).
+     * Getter for <code>oagi.bie_user_ext_revision.user_ext_acc_id</code>. This column points to the specific revision of a User Extension ACC (this is an ACC whose OAGIS_COMPONENT_TYPE = 4) currently used by the ABIE as indicated by the EXT_ABIE_ID or the by the TOP_LEVEL_ABIE_ID (in case of the AllExtension). 
      */
     public ULong getUserExtAccId() {
         return (ULong) get(4);

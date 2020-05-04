@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,22 +26,17 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * A BBIE represents a relationship/association between an ABIE and a BBIEP.
- * It is a contextualization of a BCC. The BBIE table also stores some information
- * about the specific constraints related to the BDT associated with the BBIEP.
- * In particular, the three columns including the BDT_PRI_RESTRI_ID, CODE_LIST_ID,
- * and AGENCY_ID_LIST_ID allows for capturing of the specific primitive to
- * be used in the context. Only one column among the three can have a value
+ * A BBIE represents a relationship/association between an ABIE and a BBIEP. 
+ * It is a contextualization of a BCC. The BBIE table also stores some information 
+ * about the specific constraints related to the BDT associated with the BBIEP. 
+ * In particular, the three columns including the BDT_PRI_RESTRI_ID, CODE_LIST_ID, 
+ * and AGENCY_ID_LIST_ID allows for capturing of the specific primitive to 
+ * be used in the context. Only one column among the three can have a value 
  * in a particular record.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
     private static final long serialVersionUID = -723746217;
@@ -136,7 +145,7 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the BBIE. The creator of the BBIE is also its owner by default. BBIEs created as children of another ABIE have the same CREATED_BY.");
 
     /**
-     * The column <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record.
+     * The column <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public final TableField<BbieRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who has last updated the ASBIE record. ");
 

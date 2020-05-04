@@ -21,6 +21,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigInteger;
+
 import static junit.framework.TestCase.fail;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -64,25 +66,25 @@ public class CcNodeControllerTest {
         ccAccCreateRequest.setReleaseId(releaseId);
         MvcResult accMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse ccAccResponse = objectMapping(accMvcResult, CcCreateResponse.class);
-        if (ccAccResponse.getManifestId() <= 0L) {
+        if (ccAccResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
             fail("Create Acc fail: " + ccAccResponse.getManifestId());
         }
         // create Asccp
         CcAsccpCreateRequest ccAsccpCreateRequest = new CcAsccpCreateRequest();
         ccAsccpCreateRequest.setReleaseId(releaseId);
-        ccAsccpCreateRequest.setRoleOfAccManifestId(ccAccResponse.getManifestId());
+        ccAsccpCreateRequest.setRoleOfAccManifestId(ccAccResponse.getManifestId().longValue());
         MvcResult asccpMvcResult = this.callApi("/core_component/asccp", ccAsccpCreateRequest, METHOD_POST);
         CcCreateResponse ccAsccpResponse = objectMapping(asccpMvcResult, CcCreateResponse.class);
-        if (ccAsccpResponse.getManifestId() <= 0L) {
+        if (ccAsccpResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
             fail("Create Asccp fail: " + ccAsccpResponse.getManifestId());
         }
         // create bccp
         CcBccpCreateRequest ccBccpCreateRequest = new CcBccpCreateRequest();
-        ccBccpCreateRequest.setReleaseId(this.releaseId);
-        ccBccpCreateRequest.setBdtManifestId(this.bdtId);
+        ccBccpCreateRequest.setReleaseId(BigInteger.valueOf(this.releaseId));
+        ccBccpCreateRequest.setBdtManifestId(BigInteger.valueOf(this.bdtId));
         MvcResult bccpMvcResult = this.callApi("/core_component/bccp", ccBccpCreateRequest, METHOD_POST);
         CcCreateResponse ccBccpResponse = objectMapping(bccpMvcResult, CcCreateResponse.class);
-        if (ccBccpResponse.getManifestId() <= 0L) {
+        if (ccBccpResponse.getManifestId().compareTo(BigInteger.ZERO) <= -1) {
             fail("Create Bccp fail: " + ccBccpResponse.getManifestId());
         }
     }
@@ -96,15 +98,15 @@ public class CcNodeControllerTest {
         ccAccCreateRequest.setReleaseId(releaseId);
         MvcResult accMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse ccAccResponse = objectMapping(accMvcResult, CcCreateResponse.class);
-        long accManifestId = ccAccResponse.getManifestId();
-        if (accManifestId <= 0L) {
+        BigInteger accManifestId = ccAccResponse.getManifestId();
+        if (accManifestId.compareTo(BigInteger.ZERO) <= -1) {
             fail("Create Acc fail: " + accManifestId);
         }
 
         MvcResult baseAccMvcResult = this.callApi("/core_component/acc", ccAccCreateRequest, METHOD_POST);
         CcCreateResponse baseCcAccResponse = objectMapping(baseAccMvcResult, CcCreateResponse.class);
-        long baseAccManifestId = baseCcAccResponse.getManifestId();
-        if (baseAccManifestId <= 0L) {
+        BigInteger baseAccManifestId = baseCcAccResponse.getManifestId();
+        if (baseAccManifestId.compareTo(BigInteger.ZERO) <= -1) {
             fail("Create Base Acc fail: " + accManifestId);
         }
 
@@ -116,7 +118,7 @@ public class CcNodeControllerTest {
 
         // set baseAcc
         CcAccRequest ccAccRequest = new CcAccRequest();
-        ccAccRequest.setBasedAccManifestId(baseAccManifestId);
+        ccAccRequest.setBasedAccManifestId(baseAccManifestId.longValue());
         MvcResult setBaseAccMvcResult = this.callApi("/core_component/node/acc/" + accManifestId + "/base", ccAccRequest, METHOD_POST);
         CcAccNode accNode = objectMapping(setBaseAccMvcResult, CcAccNode.class);
 
@@ -132,14 +134,14 @@ public class CcNodeControllerTest {
         // create Asccp
         CcAsccpCreateRequest ccAsccpCreateRequest = new CcAsccpCreateRequest();
         ccAsccpCreateRequest.setReleaseId(releaseId);
-        ccAsccpCreateRequest.setRoleOfAccManifestId(ccAccResponse.getManifestId());
+        ccAsccpCreateRequest.setRoleOfAccManifestId(ccAccResponse.getManifestId().longValue());
         MvcResult asccpMvcResult = this.callApi("/core_component/asccp", ccAsccpCreateRequest, METHOD_POST);
         CcCreateResponse ccAsccpResponse = objectMapping(asccpMvcResult, CcCreateResponse.class);
 
         // append Asccp
         CcAppendRequest ccAppendAsccpRequest = new CcAppendRequest();
-        ccAppendAsccpRequest.setAccManifestId(accManifestId);
-        ccAppendAsccpRequest.setAsccpManifestId(ccAsccpResponse.getManifestId());
+        ccAppendAsccpRequest.setAccManifestId(accManifestId.longValue());
+        ccAppendAsccpRequest.setAsccpManifestId(ccAsccpResponse.getManifestId().longValue());
         this.callApi("/core_component/node/append", ccAppendAsccpRequest, METHOD_POST);
         MvcResult afterAppendAsccpMvcResult = this.callApi("/core_component/node/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode afterAppendAsccpNode = objectMapping(afterAppendAsccpMvcResult, CcAccNode.class);
@@ -148,15 +150,15 @@ public class CcNodeControllerTest {
 
         // create bccp
         CcBccpCreateRequest ccBccpCreateRequest = new CcBccpCreateRequest();
-        ccBccpCreateRequest.setReleaseId(this.releaseId);
-        ccBccpCreateRequest.setBdtManifestId(this.bdtId);
+        ccBccpCreateRequest.setReleaseId(BigInteger.valueOf(this.releaseId));
+        ccBccpCreateRequest.setBdtManifestId(BigInteger.valueOf(this.bdtId));
         MvcResult bccpMvcResult = this.callApi("/core_component/bccp", ccBccpCreateRequest, METHOD_POST);
         CcCreateResponse ccBccpResponse = objectMapping(bccpMvcResult, CcCreateResponse.class);
 
         // append bccp
         CcAppendRequest ccAppendBccpRequest = new CcAppendRequest();
-        ccAppendAsccpRequest.setAccManifestId(accManifestId);
-        ccAppendAsccpRequest.setBccpManifestId(ccBccpResponse.getManifestId());
+        ccAppendAsccpRequest.setAccManifestId(accManifestId.longValue());
+        ccAppendAsccpRequest.setBccpManifestId(ccBccpResponse.getManifestId().longValue());
         this.callApi("/core_component/node/append", ccAppendBccpRequest, METHOD_POST);
         MvcResult afterAppendBccpMvcResult = this.callApi("/core_component/node/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode afterAppendBccpAccNode = objectMapping(afterAppendBccpMvcResult, CcAccNode.class);

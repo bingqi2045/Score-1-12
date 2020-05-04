@@ -4,6 +4,8 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
@@ -12,14 +14,12 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.BizCtx;
 
-import java.time.LocalDateTime;
-
 
 /**
- * This table represents a business context. A business context is a combination
+ * This table represents a business context. A business context is a combination 
  * of one or more business context values.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
     private static final long serialVersionUID = 1645936985;
@@ -67,14 +67,14 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
+     * Setter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
      */
     public void setCreatedBy(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity.
+     * Getter for <code>oagi.biz_ctx.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
      */
     public ULong getCreatedBy() {
         return (ULong) get(3);
@@ -95,14 +95,14 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when the business context record was first created.
+     * Setter for <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when the business context record was first created. 
      */
     public void setCreationTimestamp(LocalDateTime value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when the business context record was first created.
+     * Getter for <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when the business context record was first created. 
      */
     public LocalDateTime getCreationTimestamp() {
         return (LocalDateTime) get(5);

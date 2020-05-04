@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -13,19 +27,15 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.DtRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * The DT table stores both CDT and BDT. The two types of DTs are differentiated
+ * The DT table stores both CDT and BDT. The two types of DTs are differentiated 
  * by the TYPE column.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1395065059;
+    private static final long serialVersionUID = -1046855651;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -66,12 +76,12 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, ULong> PREVIOUS_VERSION_DT_ID = createField(DSL.name("previous_version_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foregin key to the DT table itself. It identifies the previous version.");
 
     /**
-     * The column <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank.
+     * The column <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public final TableField<DtRecord, String> DATA_TYPE_TERM = createField(DSL.name("data_type_term"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. ");
 
     /**
-     * The column <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs".
+     * The column <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs". 
      */
     public final TableField<DtRecord, String> QUALIFIER = createField(DSL.name("qualifier"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these \"unqualified BDTs\". ");
 
@@ -81,7 +91,7 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, ULong> BASED_DT_ID = createField(DSL.name("based_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key pointing to the DT table itself. This column must be blank when the DT_TYPE is CDT. This column must not be blank when the DT_TYPE is BDT.");
 
     /**
-     * The column <code>oagi.dt.den</code>. Dictionary Entry Name of the data type.
+     * The column <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public final TableField<DtRecord, String> DEN = createField(DSL.name("den"), org.jooq.impl.SQLDataType.VARCHAR(200).nullable(false), this, "Dictionary Entry Name of the data type. ");
 
@@ -112,15 +122,10 @@ public class Dt extends TableImpl<DtRecord> {
 
     /**
      * The column <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<DtRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
-
-    /**
-     * The column <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<DtRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
@@ -128,28 +133,28 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this DT.");
 
     /**
-     * The column <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * The column <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public final TableField<DtRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
-     * The column <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * The column <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public final TableField<DtRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\\n\\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
 
     /**
-     * The column <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created.
-     * <p>
-     * This never change for a revision.
+     * The column <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created. 
+
+This never change for a revision.
      */
     public final TableField<DtRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the revision of the DT was created. \n\nThis never change for a revision.");
 
     /**
      * The column <code>oagi.dt.last_update_timestamp</code>. Timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public final TableField<DtRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.");
 
@@ -228,7 +233,7 @@ public class Dt extends TableImpl<DtRecord> {
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_REVISION_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
     public Dt dtPreviousVersionDtIdFk() {
@@ -237,10 +242,6 @@ public class Dt extends TableImpl<DtRecord> {
 
     public Dt dtBasedDtIdFk() {
         return new Dt(this, Keys.DT_BASED_DT_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.DT_REVISION_ID_FK);
     }
 
     public AppUser dtCreatedByFk() {

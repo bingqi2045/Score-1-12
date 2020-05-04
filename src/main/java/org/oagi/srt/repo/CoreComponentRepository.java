@@ -7,11 +7,16 @@ import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
+import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.cc_arguments.*;
+import org.oagi.srt.repo.domain.CreateBccpRepositoryRequest;
+import org.oagi.srt.repo.domain.CreateBccpRepositoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,9 @@ public class CoreComponentRepository {
 
     @Autowired
     private DSLContext dslContext;
+
+    @Autowired
+    private SessionService sessionService;
 
     public AccManifestRecord getAccManifestByManifestId(ULong manifestId) {
         if (manifestId == null || manifestId.longValue() <= 0L) {
@@ -236,7 +244,6 @@ public class CoreComponentRepository {
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
                 BCCP.STATE,
-                BCCP.REVISION_ID,
                 BCCP.BDT_ID,
                 BCCP.OWNER_USER_ID,
                 BCCP.PREV_BCCP_ID,
@@ -374,7 +381,6 @@ public class CoreComponentRepository {
                 .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_ID, arguments.getRevisionId())
                 .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1 : 0)
                 .set(ACC.PREV_ACC_ID, arguments.getPrevAccId())
@@ -399,7 +405,6 @@ public class CoreComponentRepository {
                 .set(ASCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCC.STATE, arguments.getState().name())
-                .set(ASCC.REVISION_ID, arguments.getRevisionId())
                 .set(ASCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ASCC.PREV_ASCC_ID, arguments.getPrevAsccId())
                 .set(ASCC.NEXT_ASCC_ID, arguments.getNextAsccId()).returning(ASCC.ASCC_ID).fetchOne().getAsccId();
@@ -424,7 +429,6 @@ public class CoreComponentRepository {
                 .set(BCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCC.STATE, arguments.getState().name())
-                .set(BCC.REVISION_ID, arguments.getRevisionId())
                 .set(BCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(BCC.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(BCC.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -478,7 +482,6 @@ public class CoreComponentRepository {
                 .set(BCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_ID, arguments.getRevisionId())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -514,7 +517,6 @@ public class CoreComponentRepository {
                 .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCCP.STATE, arguments.getState().name())
-                .set(ASCCP.REVISION_ID, arguments.getRevisionId())
                 .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())
@@ -549,7 +551,6 @@ public class CoreComponentRepository {
                 .set(ACC.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(ACC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ACC.STATE, arguments.getState().name())
-                .set(ACC.REVISION_ID, arguments.getRevisionId())
                 .set(ACC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ACC.IS_ABSTRACT, arguments.getAbstract() ? (byte) 1 : 0)
                 .set(ACC.PREV_ACC_ID, arguments.getAccId())
@@ -590,7 +591,6 @@ public class CoreComponentRepository {
                 .set(ASCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCC.STATE, arguments.getState().name())
-                .set(ASCC.REVISION_ID, arguments.getRevisionId())
                 .set(ASCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ASCC.PREV_ASCC_ID, arguments.getPrevAsccId())
                 .set(ASCC.NEXT_ASCC_ID, arguments.getNextAsccId()).returning(ASCC.ASCC_ID).fetchOne().getAsccId();
@@ -632,7 +632,6 @@ public class CoreComponentRepository {
                 .set(BCC.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(BCC.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCC.STATE, arguments.getState().name())
-                .set(BCC.REVISION_ID, arguments.getRevisionId())
                 .set(BCC.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(BCC.PREV_BCC_ID, arguments.getPrevBccId())
                 .set(BCC.NEXT_BCC_ID, arguments.getNextBccId()).returning(BCC.BCC_ID).fetchOne().getBccId();
@@ -670,7 +669,6 @@ public class CoreComponentRepository {
                 .set(BCCP.LAST_UPDATED_BY, arguments.getLastUpdatedBy())
                 .set(BCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(BCCP.STATE, arguments.getState().name())
-                .set(BCCP.REVISION_ID, arguments.getRevisionId())
                 .set(BCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(BCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(BCCP.DEFAULT_VALUE, arguments.getDefaultValue())
@@ -702,7 +700,6 @@ public class CoreComponentRepository {
                 .set(ASCCP.CREATION_TIMESTAMP, arguments.getCreationTimestamp())
                 .set(ASCCP.LAST_UPDATE_TIMESTAMP, arguments.getLastUpdateTimestamp())
                 .set(ASCCP.STATE, arguments.getState().name())
-                .set(ASCCP.REVISION_ID, arguments.getRevisionId())
                 .set(ASCCP.IS_DEPRECATED, arguments.getDeprecated() ? (byte) 1 : 0)
                 .set(ASCCP.IS_NILLABLE, arguments.getNillable() ? (byte) 1 : 0)
                 .set(ASCCP.PREV_ASCCP_ID, arguments.getPrevAsccpId())
@@ -735,5 +732,49 @@ public class CoreComponentRepository {
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(arguments.getAsccpManifestId()))
                 .execute();
+    }
+
+    public CreateBccpRepositoryResponse createBccp(CreateBccpRepositoryRequest request) {
+        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        DtManifestRecord bdtManifest = getBdtManifestByManifestId(
+                ULong.valueOf(request.getBdtManifestId()));
+        DtRecord bdt = getBdtById(bdtManifest.getDtId());
+
+        BccpRecord bccp = new BccpRecord();
+        bccp.setGuid(SrtGuid.randomGuid());
+        bccp.setPropertyTerm(request.getInitialPropertyTerm());
+        bccp.setRepresentationTerm(bdt.getDataTypeTerm());
+        bccp.setDen(bccp.getPropertyTerm() + ". " + bccp.getRepresentationTerm());
+        bccp.setBdtId(bdt.getDtId());
+        bccp.setState(CcState.WIP.name());
+        bccp.setIsDeprecated((byte) 0);
+        bccp.setIsNillable((byte) 0);
+        bccp.setNamespaceId(null);
+        bccp.setCreatedBy(userId);
+        bccp.setLastUpdatedBy(userId);
+        bccp.setOwnerUserId(userId);
+        bccp.setCreationTimestamp(timestamp);
+        bccp.setLastUpdateTimestamp(timestamp);
+
+        bccp.setBccpId(
+                dslContext.insertInto(BCCP)
+                        .set(bccp)
+                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
+        );
+
+        BccpManifestRecord bccpManifest = new BccpManifestRecord();
+        bccpManifest.setBccpId(bccp.getBccpId());
+        bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
+        bccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+
+        bccpManifest.setBccpManifestId(
+                dslContext.insertInto(BCCP_MANIFEST)
+                        .set(bccpManifest)
+                        .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId()
+        );
+
+        return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId().toBigInteger());
     }
 }

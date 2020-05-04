@@ -14,10 +14,10 @@ import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
 
 
 /**
- * This table stores the context scheme values for a particular context scheme
+ * This table stores the context scheme values for a particular context scheme 
  * in the CTX_SCHEME table.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueRecord> implements Record5<ULong, String, String, String, ULong> {
 
     private static final long serialVersionUID = -763708456;

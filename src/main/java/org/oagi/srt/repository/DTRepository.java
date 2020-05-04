@@ -36,7 +36,7 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.STATE,
                 Tables.DT_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.DT.REVISION_ID,
+                Tables.DT_MANIFEST.REVISION_ID,
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.DT_MANIFEST.MODULE_ID,
@@ -53,7 +53,7 @@ public class DTRepository implements SrtRepository<DT> {
                 .join(Tables.RELEASE)
                 .on(Tables.DT_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.DT.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
+                .on(Tables.DT_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
                 .leftJoin(Tables.MODULE).on(Tables.DT_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
     }
 

@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row6;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,20 +25,17 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BdtPriRestriRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table captures the allowed primitives for a BDT. The allowed primitives
- * are captured by three columns the CDT_AWD_PRI_XPS_TYPE_MAP_ID, CODE_LIST_ID,
- * and AGENCY_ID_LIST_ID. The first column specifies the primitive by the
- * built-in type of an expression language such as the XML Schema built-in
- * type. The second specifies the primitive, which is a code list, while the
- * last one specifies the primitive which is an agency identification list.
+ * This table captures the allowed primitives for a BDT. The allowed primitives 
+ * are captured by three columns the CDT_AWD_PRI_XPS_TYPE_MAP_ID, CODE_LIST_ID, 
+ * and AGENCY_ID_LIST_ID. The first column specifies the primitive by the 
+ * built-in type of an expression language such as the XML Schema built-in 
+ * type. The second specifies the primitive, which is a code list, while the 
+ * last one specifies the primitive which is an agency identification list. 
  * Only one column among the three can have a value in a particular record.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
 
     private static final long serialVersionUID = 892495825;

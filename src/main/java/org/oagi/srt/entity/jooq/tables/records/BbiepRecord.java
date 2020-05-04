@@ -4,6 +4,8 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record11;
@@ -12,14 +14,12 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bbiep;
 
-import java.time.LocalDateTime;
-
 
 /**
- * BBIEP represents the usage of basic property in a specific business context.
+ * BBIEP represents the usage of basic property in a specific business context. 
  * It is a contextualization of a BCCP.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record11<ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
     private static final long serialVersionUID = -1883157432;
@@ -123,14 +123,14 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record.
+     * Setter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record. 
      */
     public void setLastUpdatedBy(ULong value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record.
+     * Getter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record. 
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(7);

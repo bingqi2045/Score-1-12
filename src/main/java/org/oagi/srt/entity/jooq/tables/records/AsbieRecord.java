@@ -4,6 +4,9 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record17;
@@ -12,15 +15,12 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Asbie;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 
 /**
- * An ASBIE represents a relationship/association between two ABIEs through
+ * An ASBIE represents a relationship/association between two ABIEs through 
  * an ASBIEP. It is a contextualization of an ASCC.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record17<ULong, String, ULong, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
     private static final long serialVersionUID = -2011829454;
@@ -180,14 +180,14 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record.
+     * Setter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(ULong value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record.
+     * Getter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(11);

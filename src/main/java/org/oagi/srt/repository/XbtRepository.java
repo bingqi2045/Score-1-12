@@ -29,8 +29,8 @@ public class XbtRepository implements SrtRepository<Xbt> {
                 REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM, XBT.SCHEMA_DEFINITION,
                 XBT.STATE)
                 .from(XBT)
-                .join(REVISION).on(XBT.REVISION_ID.eq(REVISION.REVISION_ID))
-                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID));
+                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
+                .join(REVISION).on(XBT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
     @Override

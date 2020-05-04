@@ -11,7 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class CcNodeController {
@@ -205,7 +209,7 @@ public class CcNodeController {
             }
         }
         CcCreateResponse response = new CcCreateResponse();
-        response.setManifestId(manifestId);
+        response.setManifestId(BigInteger.valueOf(manifestId));
         return response;
     }
 
@@ -227,7 +231,7 @@ public class CcNodeController {
         long manifestId = service.createAcc(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
-        resp.setManifestId(manifestId);
+        resp.setManifestId(BigInteger.valueOf(manifestId));
         return resp;
     }
 
@@ -238,7 +242,7 @@ public class CcNodeController {
         long manifestId = service.createAsccp(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
-        resp.setManifestId(manifestId);
+        resp.setManifestId(BigInteger.valueOf(manifestId));
         return resp;
     }
 
@@ -246,7 +250,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createBccp(@AuthenticationPrincipal User user,
                                        @RequestBody CcBccpCreateRequest request) {
-        long manifestId = service.createBccp(user, request);
+        BigInteger manifestId = service.createBccp(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
         resp.setManifestId(manifestId);

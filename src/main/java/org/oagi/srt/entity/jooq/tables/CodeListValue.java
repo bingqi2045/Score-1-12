@@ -4,7 +4,21 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row16;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,24 +26,20 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * Each record in this table stores a code list value of a code list. A code
- * list value may be inherited from another code list on which it is based.
- * However, inherited value may be restricted (i.e., disabled and cannot be
- * used) in this code list, i.e., the USED_INDICATOR = false. If the value
- * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE,
- * because the USED_INDICATOR of such code list value is FALSE by default
+ * Each record in this table stores a code list value of a code list. A code 
+ * list value may be inherited from another code list on which it is based. 
+ * However, inherited value may be restricted (i.e., disabled and cannot be 
+ * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
+ * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, 
+ * because the USED_INDICATOR of such code list value is FALSE by default 
  * and can no longer be changed.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
-    private static final long serialVersionUID = 822918406;
+    private static final long serialVersionUID = -1185807401;
 
     /**
      * The reference instance of <code>oagi.code_list_value</code>
@@ -96,8 +106,8 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     /**
      * The column <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public final TableField<CodeListValueRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
 
@@ -115,11 +125,6 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * The column <code>oagi.code_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
      */
     public final TableField<CodeListValueRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the code list was last updated.");
-
-    /**
-     * The column <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<CodeListValueRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
@@ -186,7 +191,7 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     @Override
     public List<ForeignKey<CodeListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_REVISION_ID_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
+        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     public CodeList codeList() {
@@ -203,10 +208,6 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
     public AppUser codeListValueLastUpdatedByFk() {
         return new AppUser(this, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.CODE_LIST_VALUE_REVISION_ID_FK);
     }
 
     public CodeListValue codeListValuePrevCodeListValueIdFk() {
@@ -244,11 +245,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row16<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }

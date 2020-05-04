@@ -26,7 +26,6 @@ public class UpdateBccpArguments {
     private ULong lastUpdatedBy;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
     private Boolean isNillable;
     private String defaultValue;
     private String fixedValue;
@@ -51,7 +50,6 @@ public class UpdateBccpArguments {
         this.lastUpdatedBy = bccp.getLastUpdatedBy();
         this.lastUpdateTimestamp = bccp.getLastUpdateTimestamp();
         this.state = CcState.valueOf(bccp.getState());
-        this.revisionId = bccp.getRevisionId();
         this.isNillable = bccp.getIsNillable() == 1;
         this.defaultValue = bccp.getDefaultValue();
         this.fixedValue = bccp.getFixedValue();
@@ -189,15 +187,6 @@ public class UpdateBccpArguments {
         return this;
     }
 
-    public ULong getRevisionId() {
-        return revisionId;
-    }
-
-    public UpdateBccpArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
-        return this;
-    }
-
     public Boolean getDeprecated() {
         return isDeprecated;
     }
@@ -241,7 +230,6 @@ public class UpdateBccpArguments {
                 Objects.equals(lastUpdatedBy, that.lastUpdatedBy) &&
                 Objects.equals(lastUpdateTimestamp, that.lastUpdateTimestamp) &&
                 state == that.state &&
-                Objects.equals(revisionId, that.revisionId) &&
                 Objects.equals(isNillable, that.isNillable) &&
                 Objects.equals(defaultValue, that.defaultValue) &&
                 Objects.equals(fixedValue, that.fixedValue) &&
@@ -250,7 +238,7 @@ public class UpdateBccpArguments {
 
     @Override
     public int hashCode() {
-        return Objects.hash(propertyTerm, representationTerm, bdtId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, revisionId, isNillable, defaultValue, fixedValue, prevBccpId);
+        return Objects.hash(propertyTerm, representationTerm, bdtId, definition, definitionSource, namespaceId, isDeprecated, ownerUserId, lastUpdatedBy, lastUpdateTimestamp, state, isNillable, defaultValue, fixedValue, prevBccpId);
     }
 
     private boolean isDirty() {

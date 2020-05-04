@@ -4,22 +4,22 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Dt;
 
-import java.time.LocalDateTime;
-
 
 /**
- * The DT table stores both CDT and BDT. The two types of DTs are differentiated
+ * The DT table stores both CDT and BDT. The two types of DTs are differentiated 
  * by the TYPE column.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -937599080;
+    private static final long serialVersionUID = 145765868;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -92,28 +92,28 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     }
 
     /**
-     * Setter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank.
+     * Setter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public void setDataTypeTerm(String value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank.
+     * Getter for <code>oagi.dt.data_type_term</code>. This is the data type term assigned to the DT. The allowed set of data type terms are defined in the DTC specification. This column is derived from the Based_DT_ID when the column is not blank. 
      */
     public String getDataTypeTerm() {
         return (String) get(5);
     }
 
     /**
-     * Setter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs".
+     * Setter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs". 
      */
     public void setQualifier(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs".
+     * Getter for <code>oagi.dt.qualifier</code>. This column shall be blank when the DT_TYPE is CDT. When the DT_TYPE is BDT, this is optional. If the column is not blank it is a qualified BDT. If blank then the row may be a default BDT or an unqualified BDT. Default BDT is OAGIS concrete implementation of the CDT, these are the DT with numbers in the name, e.g., CodeType_1E7368 (DEN is 'Code_1E7368. Type'). Default BDTs are almost like permutation of the CDT options into concrete data types. Unqualified BDT is a BDT that OAGIS model schema generally used for its canonical. A handful of default BDTs were selected; and each of them is wrapped with another type definition that has a simpler name such as CodeType and NormalizedString type - we call these "unqualified BDTs". 
      */
     public String getQualifier() {
         return (String) get(6);
@@ -134,14 +134,14 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     }
 
     /**
-     * Setter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type.
+     * Setter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public void setDen(String value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type.
+     * Getter for <code>oagi.dt.den</code>. Dictionary Entry Name of the data type. 
      */
     public String getDen() {
         return (String) get(8);
@@ -219,8 +219,8 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
     /**
      * Setter for <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
         set(14, value);
@@ -228,149 +228,135 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
     /**
      * Getter for <code>oagi.dt.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
         return (String) get(14);
     }
 
     /**
-     * Setter for <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public void setRevisionId(ULong value) {
-        set(15, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public ULong getRevisionId() {
-        return (ULong) get(15);
-    }
-
-    /**
      * Setter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public void setCreatedBy(ULong value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public ULong getCreatedBy() {
+        return (ULong) get(15);
+    }
+
+    /**
+     * Setter for <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     */
+    public void setLastUpdatedBy(ULong value) {
+        set(16, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     */
+    public ULong getLastUpdatedBy() {
         return (ULong) get(16);
     }
 
     /**
-     * Setter for <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
-    public void setLastUpdatedBy(ULong value) {
+    public void setOwnerUserId(ULong value) {
         set(17, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
-    public ULong getLastUpdatedBy() {
+    public ULong getOwnerUserId() {
         return (ULong) get(17);
     }
 
     /**
-     * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     * Setter for <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created. 
+
+This never change for a revision.
      */
-    public void setOwnerUserId(ULong value) {
+    public void setCreationTimestamp(LocalDateTime value) {
         set(18, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.
-     */
-    public ULong getOwnerUserId() {
-        return (ULong) get(18);
-    }
+     * Getter for <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created. 
 
-    /**
-     * Setter for <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created.
-     * <p>
-     * This never change for a revision.
-     */
-    public void setCreationTimestamp(LocalDateTime value) {
-        set(19, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt.creation_timestamp</code>. Timestamp when the revision of the DT was created.
-     * <p>
-     * This never change for a revision.
+This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(19);
+        return (LocalDateTime) get(18);
     }
 
     /**
      * Setter for <code>oagi.dt.last_update_timestamp</code>. Timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(20, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.dt.last_update_timestamp</code>. Timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(20);
+        return (LocalDateTime) get(19);
     }
 
     /**
      * Setter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(21, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(21);
+        return (Byte) get(20);
     }
 
     /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtId(ULong value) {
-        set(22, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtId() {
-        return (ULong) get(22);
+        return (ULong) get(21);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtId(ULong value) {
-        set(23, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtId() {
-        return (ULong) get(23);
+        return (ULong) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -396,7 +382,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, String state, ULong revisionId, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, Integer type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -414,14 +400,13 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
         set(12, contentComponentDefinition);
         set(13, revisionDoc);
         set(14, state);
-        set(15, revisionId);
-        set(16, createdBy);
-        set(17, lastUpdatedBy);
-        set(18, ownerUserId);
-        set(19, creationTimestamp);
-        set(20, lastUpdateTimestamp);
-        set(21, isDeprecated);
-        set(22, prevDtId);
-        set(23, nextDtId);
+        set(15, createdBy);
+        set(16, lastUpdatedBy);
+        set(17, ownerUserId);
+        set(18, creationTimestamp);
+        set(19, lastUpdateTimestamp);
+        set(20, isDeprecated);
+        set(21, prevDtId);
+        set(22, nextDtId);
     }
 }

@@ -39,7 +39,7 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.STATE,
                 Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.BCC.REVISION_ID,
+                Tables.BCC_MANIFEST.REVISION_ID,
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
@@ -50,7 +50,7 @@ public class BCCRepository implements SrtRepository<BCC> {
                 .join(Tables.RELEASE)
                 .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.BCC.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
+                .on(Tables.BCC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
     }
 
     @Override

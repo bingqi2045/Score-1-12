@@ -4,30 +4,30 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record17;
-import org.jooq.Row17;
+import org.jooq.Record16;
+import org.jooq.Row16;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.CodeListValue;
 
-import java.time.LocalDateTime;
-
 
 /**
- * Each record in this table stores a code list value of a code list. A code
- * list value may be inherited from another code list on which it is based.
- * However, inherited value may be restricted (i.e., disabled and cannot be
- * used) in this code list, i.e., the USED_INDICATOR = false. If the value
- * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE,
- * because the USED_INDICATOR of such code list value is FALSE by default
+ * Each record in this table stores a code list value of a code list. A code 
+ * list value may be inherited from another code list on which it is based. 
+ * However, inherited value may be restricted (i.e., disabled and cannot be 
+ * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
+ * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, 
+ * because the USED_INDICATOR of such code list value is FALSE by default 
  * and can no longer be changed.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
-public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> {
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record16<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = 1899580582;
+    private static final long serialVersionUID = -50000030;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.
@@ -171,8 +171,8 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Setter for <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
         set(10, value);
@@ -180,8 +180,8 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     /**
      * Getter for <code>oagi.code_list_value.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
         return (ULong) get(10);
@@ -230,45 +230,31 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     /**
-     * Setter for <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public void setRevisionId(ULong value) {
-        set(14, value);
-    }
-
-    /**
-     * Getter for <code>oagi.code_list_value.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public ULong getRevisionId() {
-        return (ULong) get(14);
-    }
-
-    /**
      * Setter for <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevCodeListValueId(ULong value) {
-        set(15, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.prev_code_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevCodeListValueId() {
-        return (ULong) get(15);
+        return (ULong) get(14);
     }
 
     /**
      * Setter for <code>oagi.code_list_value.next_code_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextCodeListValueId(ULong value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.code_list_value.next_code_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextCodeListValueId() {
-        return (ULong) get(16);
+        return (ULong) get(15);
     }
 
     // -------------------------------------------------------------------------
@@ -281,17 +267,17 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     // -------------------------------------------------------------------------
-    // Record17 type implementation
+    // Record16 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row16<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 
     @Override
-    public Row17<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong, ULong> valuesRow() {
-        return (Row17) super.valuesRow();
+    public Row16<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+        return (Row16) super.valuesRow();
     }
 
     @Override
@@ -366,16 +352,11 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public Field<ULong> field15() {
-        return CodeListValue.CODE_LIST_VALUE.REVISION_ID;
-    }
-
-    @Override
-    public Field<ULong> field16() {
         return CodeListValue.CODE_LIST_VALUE.PREV_CODE_LIST_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field17() {
+    public Field<ULong> field16() {
         return CodeListValue.CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID;
     }
 
@@ -451,16 +432,11 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public ULong component15() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong component16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong component17() {
+    public ULong component16() {
         return getNextCodeListValueId();
     }
 
@@ -536,16 +512,11 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public ULong value15() {
-        return getRevisionId();
-    }
-
-    @Override
-    public ULong value16() {
         return getPrevCodeListValueId();
     }
 
     @Override
-    public ULong value17() {
+    public ULong value16() {
         return getNextCodeListValueId();
     }
 
@@ -635,24 +606,18 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
 
     @Override
     public CodeListValueRecord value15(ULong value) {
-        setRevisionId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListValueRecord value16(ULong value) {
         setPrevCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord value17(ULong value) {
+    public CodeListValueRecord value16(ULong value) {
         setNextCodeListValueId(value);
         return this;
     }
 
     @Override
-    public CodeListValueRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, Byte value7, Byte value8, Byte value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, ULong value15, ULong value16, ULong value17) {
+    public CodeListValueRecord values(ULong value1, ULong value2, String value3, String value4, String value5, String value6, Byte value7, Byte value8, Byte value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, ULong value15, ULong value16) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -669,7 +634,6 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
         value14(value14);
         value15(value15);
         value16(value16);
-        value17(value17);
         return this;
     }
 
@@ -687,7 +651,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong revisionId, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         set(0, codeListValueId);
@@ -704,8 +668,7 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
         set(11, lastUpdatedBy);
         set(12, creationTimestamp);
         set(13, lastUpdateTimestamp);
-        set(14, revisionId);
-        set(15, prevCodeListValueId);
-        set(16, nextCodeListValueId);
+        set(14, prevCodeListValueId);
+        set(15, nextCodeListValueId);
     }
 }

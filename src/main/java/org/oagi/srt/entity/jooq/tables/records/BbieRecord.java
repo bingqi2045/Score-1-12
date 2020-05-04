@@ -4,25 +4,25 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bbie;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 
 /**
- * A BBIE represents a relationship/association between an ABIE and a BBIEP.
- * It is a contextualization of a BCC. The BBIE table also stores some information
- * about the specific constraints related to the BDT associated with the BBIEP.
- * In particular, the three columns including the BDT_PRI_RESTRI_ID, CODE_LIST_ID,
- * and AGENCY_ID_LIST_ID allows for capturing of the specific primitive to
- * be used in the context. Only one column among the three can have a value
+ * A BBIE represents a relationship/association between an ABIE and a BBIEP. 
+ * It is a contextualization of a BCC. The BBIE table also stores some information 
+ * about the specific constraints related to the BDT associated with the BBIEP. 
+ * In particular, the three columns including the BDT_PRI_RESTRI_ID, CODE_LIST_ID, 
+ * and AGENCY_ID_LIST_ID allows for capturing of the specific primitive to 
+ * be used in the context. Only one column among the three can have a value 
  * in a particular record.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
     private static final long serialVersionUID = -1825973308;
@@ -280,14 +280,14 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record.
+     * Setter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(ULong value) {
         set(18, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record.
+     * Getter for <code>oagi.bbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public ULong getLastUpdatedBy() {
         return (ULong) get(18);

@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row3;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,26 +25,23 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CdtAwdPriXpsTypeMapRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * This table allows for concrete mapping between the CDT Primitives and types
- * in a particular expression such as XML Schema, JSON. At this point, it
- * is not clear whether a separate table will be needed for each expression.
- * The current table holds the map to XML Schema built-in types.
- * <p>
- * For each additional expression, a column similar to the XBT_ID column will
+ * This table allows for concrete mapping between the CDT Primitives and types 
+ * in a particular expression such as XML Schema, JSON. At this point, it 
+ * is not clear whether a separate table will be needed for each expression. 
+ * The current table holds the map to XML Schema built-in types. 
+ * 
+ * For each additional expression, a column similar to the XBT_ID column will 
  * need to be added to this table for mapping to data types in another expression.
- * <p>
- * If we use a separate table for each expression, then we need binding all
- * the way to BDT (or even BBIE) for every new expression. That would be almost
- * like just store a BDT file. But using a column may not work with all kinds
- * of expressions, particulary if it does not map well to the XML schema data
- * types.
+ * 
+ * If we use a separate table for each expression, then we need binding all 
+ * the way to BDT (or even BBIE) for every new expression. That would be almost 
+ * like just store a BDT file. But using a column may not work with all kinds 
+ * of expressions, particulary if it does not map well to the XML schema data 
+ * types. 
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPriXpsTypeMap extends TableImpl<CdtAwdPriXpsTypeMapRecord> {
 
     private static final long serialVersionUID = 456722227;

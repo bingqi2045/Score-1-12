@@ -4,7 +4,22 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row19;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -13,19 +28,15 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * An ASCC represents a relationship/association between two ACCs through
- * an ASCCP.
+ * An ASCC represents a relationship/association between two ACCs through 
+ * an ASCCP. 
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = 845451761;
+    private static final long serialVersionUID = -564315038;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
@@ -61,7 +72,7 @@ public class Ascc extends TableImpl<AsccRecord> {
     public final TableField<AsccRecord, Integer> CARDINALITY_MAX = createField(DSL.name("cardinality_max"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "Maximum cardinality of the TO_ASCCP_ID. A valid value is integer -1 and up. Specifically, -1 means unbounded. 0 means prohibited or not to use.");
 
     /**
-     * The column <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
+     * The column <code>oagi.ascc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
      */
     public final TableField<AsccRecord, Integer> SEQ_KEY = createField(DSL.name("seq_key"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. ");
 
@@ -71,12 +82,12 @@ public class Ascc extends TableImpl<AsccRecord> {
     public final TableField<AsccRecord, ULong> FROM_ACC_ID = createField(DSL.name("from_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.");
 
     /**
-     * The column <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID.
+     * The column <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
      */
     public final TableField<AsccRecord, ULong> TO_ASCCP_ID = createField(DSL.name("to_asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. ");
 
     /**
-     * The column <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN.
+     * The column <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public final TableField<AsccRecord, String> DEN = createField(DSL.name("den"), org.jooq.impl.SQLDataType.VARCHAR(200).nullable(false), this, "DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + \"_ \" + OBJECT_CLASS_TERM + \". \" + DEN. ");
 
@@ -97,50 +108,45 @@ public class Ascc extends TableImpl<AsccRecord> {
 
     /**
      * The column <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
-     * <p>
-     * This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
+
+This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public final TableField<AsccRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the APP_USER table referring to the user who creates the entity.\n\nThis column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.");
 
     /**
      * The column <code>oagi.ascc.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
-     * <p>
-     * The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public final TableField<AsccRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. ");
 
     /**
-     * The column <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record.
-     * <p>
-     * In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
+     * The column <code>oagi.ascc.last_updated_by</code>. A foreign key to the APP_USER table referring to the last user who has updated the record. 
+
+In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public final TableField<AsccRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the APP_USER table referring to the last user who has updated the record. \n\nIn the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).");
 
     /**
-     * The column <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created.
-     * <p>
-     * This never change for a revision.
+     * The column <code>oagi.ascc.creation_timestamp</code>. Timestamp when the revision of the ASCC was created. 
+
+This never change for a revision.
      */
     public final TableField<AsccRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the revision of the ASCC was created. \n\nThis never change for a revision.");
 
     /**
      * The column <code>oagi.ascc.last_update_timestamp</code>. The timestamp when the record was last updated.
-     * <p>
-     * The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
+
+The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public final TableField<AsccRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.\n\nThe value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.");
 
     /**
      * The column <code>oagi.ascc.state</code>. Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.
-     * <p>
-     * State change can't be undone. But the history record can still keep the records of when the state was changed.
+
+State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<AsccRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
-
-    /**
-     * The column <code>oagi.ascc.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<AsccRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
@@ -212,7 +218,7 @@ public class Ascc extends TableImpl<AsccRecord> {
 
     @Override
     public List<ForeignKey<AsccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_REVISION_ID_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
+        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
     }
 
     public Acc acc() {
@@ -233,10 +239,6 @@ public class Ascc extends TableImpl<AsccRecord> {
 
     public AppUser asccLastUpdatedByFk() {
         return new AppUser(this, Keys.ASCC_LAST_UPDATED_BY_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.ASCC_REVISION_ID_FK);
     }
 
     public Ascc asccPrevAsccIdFk() {
@@ -274,11 +276,11 @@ public class Ascc extends TableImpl<AsccRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row19<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

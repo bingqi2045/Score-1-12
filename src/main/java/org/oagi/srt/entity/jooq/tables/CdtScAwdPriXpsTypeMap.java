@@ -4,7 +4,20 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row3;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,17 +25,14 @@ import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.CdtScAwdPriXpsTypeMapRecord;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 /**
- * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP,
- * but it is for the supplementary component (SC). It allows for the concrete
- * mapping between the CDT Primitives and types in a particular expression
- * such as XML Schema, JSON.
+ * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, 
+ * but it is for the supplementary component (SC). It allows for the concrete 
+ * mapping between the CDT Primitives and types in a particular expression 
+ * such as XML Schema, JSON. 
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord> {
 
     private static final long serialVersionUID = -1778692740;
