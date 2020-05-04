@@ -51,7 +51,7 @@ public class CcInfoService {
 
         Map<CcState, Integer> numberOfMyBieByStates =
                 summaryCcExtList.stream()
-                        .filter(e -> e.getOwnerUserId() == requester.getAppUserId())
+                        .filter(e -> e.getOwnerUserId().equals(requester.getAppUserId()))
                         .collect(Collectors.toMap(SummaryCcExt::getState, (e) -> 1, Integer::sum));
         info.setNumberOfMyCcExtByStates(numberOfMyBieByStates);
 

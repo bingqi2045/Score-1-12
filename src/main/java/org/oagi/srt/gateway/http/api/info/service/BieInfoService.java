@@ -48,7 +48,7 @@ public class BieInfoService {
 
         Map<BieState, Integer> numberOfMyBieByStates =
                 summaryBieList.stream()
-                        .filter(e -> e.getOwnerUserId() == requester.getAppUserId())
+                        .filter(e -> e.getOwnerUserId().equals(requester.getAppUserId()))
                         .collect(Collectors.toMap(SummaryBie::getState, (e) -> 1, Integer::sum));
         info.setNumberOfMyBieByStates(numberOfMyBieByStates);
 

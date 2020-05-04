@@ -9,9 +9,12 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
 import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
+import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,8 +30,12 @@ public class RevisionRepository {
 
     private DSLContext dslContext;
 
-    public RevisionRepository(@Autowired DSLContext dslContext) {
+    private RevisionSerializer serializer;
+
+    public RevisionRepository(@Autowired DSLContext dslContext,
+                              @Autowired RevisionSerializer serializer) {
         this.dslContext = dslContext;
+        this.serializer = serializer;
     }
 
     public List<Revision> getRevisionByReference(String reference) {
@@ -235,5 +242,58 @@ public class RevisionRepository {
 
     public RevisionRecord getRevisionById(ULong revisionId) {
         return dslContext.selectFrom(REVISION).where(REVISION.REVISION_ID.eq(revisionId)).fetchOne();
+    }
+
+    public RevisionRecord insertBccpRevision(BccpRecord bccpRecord,
+                                             RevisionAction revisionAction,
+                                             ULong requesterId,
+                                             LocalDateTime timestamp) {
+        return insertBccpRevision(bccpRecord, null, revisionAction, requesterId, timestamp);
+    }
+
+    public RevisionRecord insertBccpRevision(BccpRecord bccpRecord,
+                                             ULong prevRevisionId,
+                                             RevisionAction revisionAction,
+                                             ULong requesterId,
+                                             LocalDateTime timestamp) {
+
+        RevisionRecord prevRevisionRecord = null;
+        if (prevRevisionId != null) {
+            prevRevisionRecord = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(prevRevisionId))
+                    .fetchOne();
+        }
+
+        RevisionRecord revisionRecord = new RevisionRecord();
+        if (RevisionAction.Revised.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else {
+            if (prevRevisionRecord != null) {
+                revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
+                revisionRecord.setRevisionTrackingNum(prevRevisionRecord.getRevisionTrackingNum().add(1));
+            } else {
+                revisionRecord.setRevisionNum(UInteger.valueOf(1));
+                revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            }
+        }
+        revisionRecord.setRevisionAction(revisionAction.name());
+        revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+        revisionRecord.setCreatedBy(requesterId);
+        revisionRecord.setCreationTimestamp(timestamp);
+        if (prevRevisionRecord != null) {
+            revisionRecord.setPrevRevisionId(prevRevisionRecord.getRevisionId());
+        }
+
+        revisionRecord.setRevisionId(dslContext.insertInto(REVISION)
+                .set(revisionRecord)
+                .returning(REVISION.REVISION_ID).fetchOne().getRevisionId());
+        if (prevRevisionRecord != null) {
+            prevRevisionRecord.setNextRevisionId(revisionRecord.getRevisionId());
+            prevRevisionRecord.update(REVISION.NEXT_REVISION_ID);
+        }
+
+        return revisionRecord;
     }
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -11,11 +12,11 @@ import java.util.List;
 @Data
 public class SummaryBie {
 
-    private long topLevelAbieId;
+    private BigInteger topLevelAbieId;
     private LocalDateTime lastUpdateTimestamp;
     private BieState state;
 
-    private long ownerUserId;
+    private BigInteger ownerUserId;
     private String ownerUsername;
 
     private String propertyTerm;

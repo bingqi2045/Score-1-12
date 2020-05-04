@@ -31,7 +31,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
                             @PathVariable("type") String type,
-                            @PathVariable("manifestId") long manifestId) {
+                            @PathVariable("manifestId") BigInteger manifestId) {
         switch (type) {
             case "acc":
                 return getAccNode(user, manifestId);
@@ -76,7 +76,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode updateState(@AuthenticationPrincipal User user,
                               @PathVariable("type") String type,
-                              @PathVariable("manifestId") long manifestId,
+                              @PathVariable("manifestId") BigInteger manifestId,
                               @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
         switch (type) {
             case "acc":
@@ -96,7 +96,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode makeNewRevision(@AuthenticationPrincipal User user,
                                   @PathVariable("type") String type,
-                                  @PathVariable("manifestId") long manifestId) {
+                                  @PathVariable("manifestId") BigInteger manifestId) {
         switch (type) {
             case "acc":
                 return service.makeNewRevisionForAcc(user, manifestId);
@@ -110,15 +110,15 @@ public class CcNodeController {
         }
     }
 
-    private CcAccNode getAccNode(User user, long manifestId) {
+    private CcAccNode getAccNode(User user, BigInteger manifestId) {
         return service.getAccNode(user, manifestId);
     }
 
-    private CcAsccpNode getAsccpNode(User user, long manifestId) {
+    private CcAsccpNode getAsccpNode(User user, BigInteger manifestId) {
         return service.getAsccpNode(user, manifestId);
     }
 
-    private CcBccpNode getBccpNode(User user, long manifestId) {
+    private CcBccpNode getBccpNode(User user, BigInteger manifestId) {
         return service.getBccpNode(user, manifestId);
     }
 
@@ -217,7 +217,7 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode setBasedNode(@AuthenticationPrincipal User user,
-                               @PathVariable("manifestId") long manifestId,
+                               @PathVariable("manifestId") BigInteger manifestId,
                                @RequestBody CcAccRequest ccAccRequest) {
         if (ccAccRequest.getBasedAccManifestId() == null) {
             return service.discardAccBasedId(user, manifestId);
@@ -261,14 +261,14 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
                                                 @PathVariable("type") String type,
-                                                @PathVariable("manifestId") long manifestId) {
+                                                @PathVariable("manifestId") BigInteger manifestId) {
         switch (type) {
             case "acc":
-                return service.getAccNoddRevision(user, manifestId);
-            case "bccp":
-                return service.getBccpNoddRevision(user, manifestId);
+                return service.getAccNodeRevision(user, manifestId);
             case "asccp":
-                return service.getAsccpNoddRevision(user, manifestId);
+                return service.getAsccpNodeRevision(user, manifestId);
+            case "bccp":
+                return service.getBccpNodeRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();
         }

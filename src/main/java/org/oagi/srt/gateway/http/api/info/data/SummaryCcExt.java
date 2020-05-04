@@ -4,13 +4,13 @@ import lombok.Data;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class SummaryCcExt {
 
-    private long accId;
+    private BigInteger accId;
     private String guid;
     private String objectClassTerm;
     private CcState state;
@@ -18,9 +18,9 @@ public class SummaryCcExt {
     private String lastUpdateUser;
 
     private String ownerUsername;
-    private long ownerUserId;
+    private BigInteger ownerUserId;
 
-    private long topLevelAbieId;
+    private BigInteger topLevelAbieId;
     private BieState bieState;
     private String propertyTerm;
     private String associationPropertyTerm;

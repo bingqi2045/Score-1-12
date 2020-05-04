@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 @RestController
@@ -69,7 +70,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateExtensionState(@AuthenticationPrincipal User user,
-                                               @PathVariable("manifestId") long manifestId,
+                                               @PathVariable("manifestId") BigInteger manifestId,
                                                @RequestBody Map<String, Object> body) {
         CcState state = CcState.valueOf((String) body.get("state"));
         service.updateState(user, manifestId, state);

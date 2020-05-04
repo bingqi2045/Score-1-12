@@ -13,12 +13,11 @@ import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.redis.event.EventHandler;
-import org.oagi.srt.repo.*;
+import org.oagi.srt.repo.CoreComponentRepository;
+import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.RevisionRepository.InsertRevisionArguments;
 import org.oagi.srt.repo.cc_arguments.*;
-import org.oagi.srt.repo.domain.CreateBccpRepositoryRequest;
-import org.oagi.srt.repo.domain.CreateBccpRepositoryResponse;
-import org.oagi.srt.repo.domain.CreatedBccpEvent;
+import org.oagi.srt.repo.domain.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -60,17 +59,17 @@ public class CcNodeService extends EventHandler {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    public CcAccNode getAccNode(User user, long manifestId) {
+    public CcAccNode getAccNode(User user, BigInteger manifestId) {
         AccManifestRecord accManifestRecord =
                 manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
         return repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
     }
 
-    public CcAsccpNode getAsccpNode(User user, long manifestId) {
+    public CcAsccpNode getAsccpNode(User user, BigInteger manifestId) {
         return repository.getAsccpNodeByAsccpManifestId(user, manifestId);
     }
 
-    public CcBccpNode getBccpNode(User user, long manifestId) {
+    public CcBccpNode getBccpNode(User user, BigInteger manifestId) {
         return repository.getBccpNodeByBccpManifestId(user, manifestId);
     }
 
@@ -689,7 +688,7 @@ public class CcNodeService extends EventHandler {
 
         insertRevisionArguments.setAction(CcAction.DetailModified);
 
-        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
+        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     @Transactional
@@ -848,7 +847,7 @@ public class CcNodeService extends EventHandler {
 
         updateAsccByToAsccp(userId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
 
-        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
+        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     @Transactional
@@ -884,11 +883,11 @@ public class CcNodeService extends EventHandler {
 
         updateBccByToBccp(userId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
 
-        return repository.getBccpNodeByBccpManifestId(user, bccpManifestRecord.getBccpManifestId().longValue());
+        return repository.getBccpNodeByBccpManifestId(user, bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
 
     @Transactional
-    public CcAccNode updateAccState(User user, long accManifestId, String state) {
+    public CcAccNode updateAccState(User user, BigInteger accManifestId, String state) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
         CcState ccState = getStateCode(state);
@@ -927,7 +926,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAsccpNode updateAsccpState(User user, long asccpManifestId, String state) {
+    public CcAsccpNode updateAsccpState(User user, BigInteger asccpManifestId, String state) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
         CcState ccState = getStateCode(state);
@@ -966,7 +965,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcBccpNode updateBccpState(User user, long bccpManifestId, String state) {
+    public CcBccpNode updateBccpState(User user, BigInteger bccpManifestId, String state) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
         CcState ccState = getStateCode(state);
@@ -1005,7 +1004,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAccNode makeNewRevisionForAcc(User user, long accManifestId) {
+    public CcAccNode makeNewRevisionForAcc(User user, BigInteger accManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1049,7 +1048,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAsccpNode makeNewRevisionForAsccp(User user, long asccpManifestId) {
+    public CcAsccpNode makeNewRevisionForAsccp(User user, BigInteger asccpManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1086,60 +1085,25 @@ public class CcNodeService extends EventHandler {
                 .setAsccpId(asccpId)
                 .execute();
 
-        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().longValue());
+        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     @Transactional
-    public CcBccpNode makeNewRevisionForBccp(User user, long bccpManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        ULong userId = ULong.valueOf(sessionService.userId(user));
+    public CcBccpNode makeNewRevisionForBccp(User user, BigInteger bccpManifestId) {
+        ReviseBccpRepositoryRequest repositoryRequest =
+                new ReviseBccpRepositoryRequest(user, bccpManifestId);
 
-        BccpManifestRecord bccpManifestRecord =
-                ccRepository.getBccpManifestByManifestId(ULong.valueOf(bccpManifestId));
-        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
-        if (CcState.valueOf(bccpRecord.getState()) != CcState.Published) {
-            throw new IllegalArgumentException("Creating new revision only allowed for the component in 'Published' state.");
-        }
+        ReviseBccpRepositoryResponse repositoryResponse =
+                ccRepository.reviseBccp(repositoryRequest);
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(userId)
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("bccp" + bccpManifestRecord.getBccpManifestId())
-                .setPrevRevisionId(bccpManifestRecord.getRevisionId())
-                .execute();
+        fireEvent(new RevisedBccpEvent());
 
-
-        ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
-                .setLastUpdatedBy(userId)
-                .setLastUpdateTimestamp(timestamp)
-                .setState(CcState.WIP)
-                .setPrevBccpId(bccpRecord.getBccpId())
-                .execute();
-
-        Release workingRelease = releaseRepository.getWorkingRelease();
-        ULong workingReleaseId = ULong.valueOf(workingRelease.getReleaseId());
-
-        if (bccpManifestRecord.getReleaseId().equals(workingReleaseId)) {
-            ccRepository.updateBccpManifestArguments(bccpManifestRecord)
-                    .setBccpId(bccpId)
-                    .execute();
-        } else {
-            DtManifestRecord dtManifestRecord = ccRepository.getBdtManifestByManifestId(bccpManifestRecord.getBdtManifestId());
-            DtManifestRecord dtWorkingManifestRecord = ccRepository.getBdtManifestByBdtId(dtManifestRecord.getDtId(), workingReleaseId);
-            bccpManifestId = ccRepository.insertBccpManifest()
-                    .setBdtManifestId(dtWorkingManifestRecord.getDtManifestId())
-                    .setBccpId(bccpId)
-                    .setReleaseId(workingReleaseId)
-                    .execute().longValue();
-
-        }
-        return getBccpNode(user, bccpManifestId);
+        return getBccpNode(user, repositoryResponse.getBccpManifestId());
     }
 
     @Transactional
-    public CcAccNode updateAccBasedId(User user, long accManifestId, long basedAccManifestId) {
-        if (accManifestId == basedAccManifestId) {
+    public CcAccNode updateAccBasedId(User user, BigInteger accManifestId, BigInteger basedAccManifestId) {
+        if (accManifestId.equals(basedAccManifestId)) {
             throw new IllegalArgumentException("Cannot choose itself as a based ACC.");
         }
 
@@ -1176,7 +1140,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAccNode discardAccBasedId(User user, long accManifestId) {
+    public CcAccNode discardAccBasedId(User user, BigInteger accManifestId) {
 
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
@@ -1273,7 +1237,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    public CcRevisionResponse getAccNoddRevision(User user, long manifestId) {
+    public CcRevisionResponse getAccNodeRevision(User user, BigInteger manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
         Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1307,7 +1271,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getBccpNoddRevision(User user, long manifestId) {
+    public CcRevisionResponse getBccpNodeRevision(User user, BigInteger manifestId) {
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
         Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), BCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -1324,7 +1288,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getAsccpNoddRevision(User user, long manifestId) {
+    public CcRevisionResponse getAsccpNodeRevision(User user, BigInteger manifestId) {
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
         Long lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), ASCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();

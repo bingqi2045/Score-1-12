@@ -2,10 +2,12 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class AppUser {
 
-    private long appUserId;
+    private BigInteger appUserId;
     private String loginId;
     private String password;
     private String name;

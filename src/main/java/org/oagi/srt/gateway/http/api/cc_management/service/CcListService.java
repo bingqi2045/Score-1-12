@@ -4,14 +4,16 @@ import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
+import org.oagi.srt.data.BieState;
+import org.oagi.srt.data.OagisComponentType;
+import org.oagi.srt.data.Release;
+import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
-import org.oagi.srt.data.*;
-import org.oagi.srt.entity.jooq.Tables;
-import org.oagi.srt.gateway.http.api.cc_management.data.*;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -240,15 +242,15 @@ public class CcListService {
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).longValue());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).longValue());
-                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
+                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE).intValue()));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
@@ -285,15 +287,15 @@ public class CcListService {
                 .where(ACC.ACC_ID.in(uegIds))
                 .fetchStream().map(e -> {
                     SummaryCcExt item = new SummaryCcExt();
-                    item.setAccId(e.get(Tables.ACC.ACC_ID).longValue());
+                    item.setAccId(e.get(Tables.ACC.ACC_ID).toBigInteger());
                     item.setGuid(e.get(Tables.ACC.GUID));
                     item.setObjectClassTerm(e.get(Tables.ACC.OBJECT_CLASS_TERM));
                     item.setState(CcState.valueOf(e.get(Tables.ACC.STATE)));
                     item.setLastUpdateTimestamp(e.get(Tables.ACC.LAST_UPDATE_TIMESTAMP));
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
-                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).longValue());
-                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
+                    item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
+                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
                     item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE).intValue()));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(BCCP.PROPERTY_TERM));
@@ -307,7 +309,7 @@ public class CcListService {
 
         List<SummaryCcExt> result = new ArrayList(set);
         result.sort((o1, o2) -> {
-            int compFirst = Long.compare(o1.getAccId(), o2.getAccId());
+            int compFirst = o1.getAccId().compareTo(o2.getAccId());
             if (compFirst == 0) {
                 return Integer.compare(o1.getSeqKey(), o2.getSeqKey());
             }

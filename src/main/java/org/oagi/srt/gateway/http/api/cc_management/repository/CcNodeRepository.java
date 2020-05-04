@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -150,7 +151,7 @@ public class CcNodeRepository {
         return bccCount > 0;
     }
 
-    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, long manifestId) {
+    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, BigInteger manifestId) {
         CcAsccpNode asccpNode = dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
@@ -244,7 +245,7 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public CcBccpNode getBccpNodeByBccpManifestId(User user, long manifestId) {
+    public CcBccpNode getBccpNodeByBccpManifestId(User user, BigInteger manifestId) {
         CcBccpNode bccpNode = dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
@@ -368,14 +369,14 @@ public class CcNodeRepository {
         }
 
         return asccNodes.stream().map(asccNode -> {
-            long manifestId =
+            ULong manifestId =
                     dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                             .from(ASCCP_MANIFEST)
                             .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccNode.getToAsccpManifestId())))
-                            .fetchOneInto(Long.class);
+                            .fetchOneInto(ULong.class);
 
             CcAsccpNode asccpNode =
-                    getAsccpNodeByAsccpManifestId(user, manifestId);
+                    getAsccpNodeByAsccpManifestId(user, manifestId.toBigInteger());
             asccpNode.setSeqKey(asccNode.getSeqKey());
             asccpNode.setAsccId(asccNode.getAsccId());
             asccpNode.setAsccManifestId(asccNode.getManifestId());
@@ -411,13 +412,13 @@ public class CcNodeRepository {
         }
 
         return bccNodes.stream().map(bccNode -> {
-            long manifestId =
+            ULong manifestId =
                     dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                             .from(BCCP_MANIFEST)
                             .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq((ULong.valueOf(bccNode.getToBccpManifestId()))))
-                            .fetchOneInto(Long.class);
+                            .fetchOneInto(ULong.class);
 
-            CcBccpNode bccpNode = getBccpNodeByBccpManifestId(user, manifestId);
+            CcBccpNode bccpNode = getBccpNodeByBccpManifestId(user, manifestId.toBigInteger());
             bccpNode.setSeqKey(bccNode.getSeqKey());
             bccpNode.setAttribute(BCCEntityType.valueOf(bccNode.getEntityType()) == Attribute);
             bccpNode.setBccId(bccNode.getBccId());

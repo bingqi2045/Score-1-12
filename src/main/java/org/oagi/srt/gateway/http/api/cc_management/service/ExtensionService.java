@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class ExtensionService {
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-                CcAccNode acc = ccNodeService.updateAccState(user, accManifest.getAccManifestId().longValue(), CcState.Production.name());
+                CcAccNode acc = ccNodeService.updateAccState(user, accManifest.getAccManifestId().toBigInteger(), CcState.Production.name());
                 return acc.getManifestId();
             } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
@@ -327,7 +328,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void updateState(User user, long manifestId, CcState state) {
+    public void updateState(User user, BigInteger manifestId, CcState state) {
         ccNodeService.updateAccState(user, manifestId, state.name());
     }
 

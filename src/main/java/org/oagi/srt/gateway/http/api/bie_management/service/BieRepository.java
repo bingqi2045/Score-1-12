@@ -50,10 +50,10 @@ public class BieRepository {
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .fetchStream().map(e -> {
             SummaryBie item = new SummaryBie();
-            item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).longValue());
+            item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
             item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP));
             item.setState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
-            item.setOwnerUserId(e.get(TOP_LEVEL_ABIE.OWNER_USER_ID).longValue());
+            item.setOwnerUserId(e.get(TOP_LEVEL_ABIE.OWNER_USER_ID).toBigInteger());
             item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
             item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
             return item;
