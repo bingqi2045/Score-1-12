@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,6 @@ public class CcNodeController {
                 return service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState());
             case "bccp":
                 return service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState());
-
             default:
                 throw new UnsupportedOperationException();
         }
@@ -94,20 +94,37 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/revision",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode makeNewRevision(@AuthenticationPrincipal User user,
-                                  @PathVariable("type") String type,
-                                  @PathVariable("manifestId") BigInteger manifestId) {
+    public CcMakeNewRevisionResponse makeNewRevision(@AuthenticationPrincipal User user,
+                                                     @PathVariable("type") String type,
+                                                     @PathVariable("manifestId") BigInteger manifestId) {
+
+        CcMakeNewRevisionResponse resp = new CcMakeNewRevisionResponse();
+        resp.setType(type);
+
         switch (type) {
             case "acc":
-                return service.makeNewRevisionForAcc(user, manifestId);
+                resp.setManifestId(
+                        service.makeNewRevisionForAcc(user, manifestId)
+                );
+                break;
             case "asccp":
-                return service.makeNewRevisionForAsccp(user, manifestId);
+                resp.setManifestId(
+                        service.makeNewRevisionForAsccp(user, manifestId)
+                );
+                break;
             case "bccp":
-                return service.makeNewRevisionForBccp(user, manifestId);
-
+                resp.setManifestId(
+                        service.makeNewRevisionForBccp(user, manifestId)
+                );
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
+
+        resp.setState(CcState.WIP.name());
+        resp.setAccess(AccessPrivilege.CanEdit.name());
+
+        return resp;
     }
 
     private CcAccNode getAccNode(User user, BigInteger manifestId) {

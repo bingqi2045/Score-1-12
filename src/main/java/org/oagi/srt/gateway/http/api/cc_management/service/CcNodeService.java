@@ -1004,7 +1004,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAccNode makeNewRevisionForAcc(User user, BigInteger accManifestId) {
+    public BigInteger makeNewRevisionForAcc(User user, BigInteger accManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1044,11 +1044,11 @@ public class CcNodeService extends EventHandler {
 
         updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp, revisionId);
 
-        return repository.getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
+        return null;
     }
 
     @Transactional
-    public CcAsccpNode makeNewRevisionForAsccp(User user, BigInteger asccpManifestId) {
+    public BigInteger makeNewRevisionForAsccp(User user, BigInteger asccpManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
@@ -1085,11 +1085,11 @@ public class CcNodeService extends EventHandler {
                 .setAsccpId(asccpId)
                 .execute();
 
-        return repository.getAsccpNodeByAsccpManifestId(user, asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        return null;
     }
 
     @Transactional
-    public CcBccpNode makeNewRevisionForBccp(User user, BigInteger bccpManifestId) {
+    public BigInteger makeNewRevisionForBccp(User user, BigInteger bccpManifestId) {
         ReviseBccpRepositoryRequest repositoryRequest =
                 new ReviseBccpRepositoryRequest(user, bccpManifestId);
 
@@ -1098,7 +1098,7 @@ public class CcNodeService extends EventHandler {
 
         fireEvent(new RevisedBccpEvent());
 
-        return getBccpNode(user, repositoryResponse.getBccpManifestId());
+        return repositoryResponse.getBccpManifestId();
     }
 
     @Transactional
