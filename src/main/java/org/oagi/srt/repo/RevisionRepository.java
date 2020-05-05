@@ -9,7 +9,7 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
@@ -244,6 +244,65 @@ public class RevisionRepository {
         return dslContext.selectFrom(REVISION).where(REVISION.REVISION_ID.eq(revisionId)).fetchOne();
     }
 
+    /*
+     * Begins ASCCP
+     */
+    public RevisionRecord insertAsccpRevision(AsccpRecord asccpRecord,
+                                              RevisionAction revisionAction,
+                                              ULong requesterId,
+                                              LocalDateTime timestamp) {
+        return insertAsccpRevision(asccpRecord, null, revisionAction, requesterId, timestamp);
+    }
+
+    public RevisionRecord insertAsccpRevision(AsccpRecord asccpRecord,
+                                              ULong prevRevisionId,
+                                              RevisionAction revisionAction,
+                                              ULong requesterId,
+                                              LocalDateTime timestamp) {
+
+        RevisionRecord prevRevisionRecord = null;
+        if (prevRevisionId != null) {
+            prevRevisionRecord = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(prevRevisionId))
+                    .fetchOne();
+        }
+
+        RevisionRecord revisionRecord = new RevisionRecord();
+        if (RevisionAction.Revised.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else {
+            if (prevRevisionRecord != null) {
+                revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
+                revisionRecord.setRevisionTrackingNum(prevRevisionRecord.getRevisionTrackingNum().add(1));
+            } else {
+                revisionRecord.setRevisionNum(UInteger.valueOf(1));
+                revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            }
+        }
+        revisionRecord.setRevisionAction(revisionAction.name());
+        revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
+        revisionRecord.setCreatedBy(requesterId);
+        revisionRecord.setCreationTimestamp(timestamp);
+        if (prevRevisionRecord != null) {
+            revisionRecord.setPrevRevisionId(prevRevisionRecord.getRevisionId());
+        }
+
+        revisionRecord.setRevisionId(dslContext.insertInto(REVISION)
+                .set(revisionRecord)
+                .returning(REVISION.REVISION_ID).fetchOne().getRevisionId());
+        if (prevRevisionRecord != null) {
+            prevRevisionRecord.setNextRevisionId(revisionRecord.getRevisionId());
+            prevRevisionRecord.update(REVISION.NEXT_REVISION_ID);
+        }
+
+        return revisionRecord;
+    }
+
+    /*
+     * Begins BCCP
+     */
     public RevisionRecord insertBccpRevision(BccpRecord bccpRecord,
                                              RevisionAction revisionAction,
                                              ULong requesterId,

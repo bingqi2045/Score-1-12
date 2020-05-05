@@ -2,6 +2,8 @@ package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CcAsccpNodeDetail implements CcNodeDetail {
 
@@ -25,12 +27,12 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Asccp {
-        private long manifestId;
-        private long asccpId;
+        private BigInteger manifestId;
+        private BigInteger asccpId;
         private String guid;
         private String propertyTerm;
         private String den;
-        private long namespaceId;
+        private BigInteger namespaceId;
         private boolean reusable;
         private boolean deprecated;
         private boolean nillable;

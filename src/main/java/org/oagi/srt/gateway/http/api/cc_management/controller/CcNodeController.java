@@ -291,10 +291,10 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse createAsccp(@AuthenticationPrincipal User user,
                                         @RequestBody CcAsccpCreateRequest request) {
-        long manifestId = service.createAsccp(user, request);
+        BigInteger manifestId = service.createAsccp(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
-        resp.setManifestId(BigInteger.valueOf(manifestId));
+        resp.setManifestId(manifestId);
         return resp;
     }
 
