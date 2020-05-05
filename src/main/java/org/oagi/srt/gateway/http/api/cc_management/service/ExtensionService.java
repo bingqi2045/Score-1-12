@@ -130,8 +130,8 @@ public class ExtensionService {
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-                CcAccNode acc = ccNodeService.updateAccState(user, accManifest.getAccManifestId().toBigInteger(), CcState.Production.name());
-                return acc.getManifestId();
+                BigInteger accManifestId = ccNodeService.updateAccState(user, accManifest.getAccManifestId().toBigInteger(), CcState.Production.name());
+                return accManifestId.longValue();
             } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().longValue();

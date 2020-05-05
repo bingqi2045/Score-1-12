@@ -1,12 +1,12 @@
-package org.oagi.srt.repo.domain;
+package org.oagi.srt.repo.component.bccp;
 
 import java.math.BigInteger;
 
-public class CreateBccpRepositoryResponse {
+public class UpdateBccpStateRepositoryResponse {
 
     private final BigInteger bccpManifestId;
 
-    public CreateBccpRepositoryResponse(BigInteger bccpManifestId) {
+    public UpdateBccpStateRepositoryResponse(BigInteger bccpManifestId) {
         this.bccpManifestId = bccpManifestId;
     }
 

@@ -56,49 +56,84 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode updateCcNodeManifest(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal User user,
                                        @PathVariable("type") String type,
-                                       @PathVariable("manifestId") long manifestId,
+                                       @PathVariable("manifestId") BigInteger manifestId,
                                        @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
+
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
+        resp.setType(type);
+
         switch (type) {
             case "asccp":
-                return service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
+                resp.setManifestId(
+                        service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId())
+                );
+                break;
 
             case "bccp":
-                return service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
+                resp.setManifestId(
+                        service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId())
+                );
+                break;
 
             default:
                 throw new UnsupportedOperationException();
         }
+
+        resp.setState(CcState.WIP.name());
+        resp.setAccess(AccessPrivilege.CanEdit.name());
+
+        return resp;
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode updateState(@AuthenticationPrincipal User user,
-                              @PathVariable("type") String type,
-                              @PathVariable("manifestId") BigInteger manifestId,
-                              @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
+    public CcNodeUpdateResponse updateState(@AuthenticationPrincipal User user,
+                                            @PathVariable("type") String type,
+                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
+
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
+        resp.setType(type);
+
         switch (type) {
             case "acc":
-                return service.updateAccState(user, manifestId, ccUpdateStateRequest.getState());
+                resp.setManifestId(
+                        service.updateAccState(user, manifestId, ccUpdateStateRequest.getState())
+                );
+                break;
             case "asccp":
-                return service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState());
+                resp.setManifestId(
+                        service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState())
+                );
+                break;
             case "bccp":
-                return service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState());
+                resp.setManifestId(
+                        service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState())
+                );
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
+
+        resp.setState(ccUpdateStateRequest.getState());
+        resp.setAccess(
+                ((CcState.WIP == CcState.valueOf(resp.getState())) ? AccessPrivilege.CanEdit : AccessPrivilege.CanMove).name()
+        );
+
+        return resp;
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/revision",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcMakeNewRevisionResponse makeNewRevision(@AuthenticationPrincipal User user,
-                                                     @PathVariable("type") String type,
-                                                     @PathVariable("manifestId") BigInteger manifestId) {
+    public CcNodeUpdateResponse makeNewRevision(@AuthenticationPrincipal User user,
+                                                @PathVariable("type") String type,
+                                                @PathVariable("manifestId") BigInteger manifestId) {
 
-        CcMakeNewRevisionResponse resp = new CcMakeNewRevisionResponse();
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
         resp.setType(type);
 
         switch (type) {
@@ -144,7 +179,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
                                        @PathVariable("type") String type,
-                                       @PathVariable("manifestId") long manifestId) {
+                                       @PathVariable("manifestId") BigInteger manifestId) {
         switch (type) {
             case "acc":
                 service.deleteAcc(user, manifestId);

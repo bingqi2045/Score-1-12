@@ -38,7 +38,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String den;
         private boolean nillable;
         private boolean deprecated;
-        private long namespaceId;
+        private BigInteger namespaceId;
         private String defaultValue;
         private String fixedValue;
         private String definition;

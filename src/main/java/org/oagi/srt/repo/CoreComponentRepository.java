@@ -2,25 +2,17 @@ package org.oagi.srt.repo;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.cc_arguments.*;
-import org.oagi.srt.repo.domain.CreateBccpRepositoryRequest;
-import org.oagi.srt.repo.domain.CreateBccpRepositoryResponse;
-import org.oagi.srt.repo.domain.ReviseBccpRepositoryRequest;
-import org.oagi.srt.repo.domain.ReviseBccpRepositoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -739,143 +731,5 @@ public class CoreComponentRepository {
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(arguments.getAsccpManifestId()))
                 .execute();
-    }
-
-    public CreateBccpRepositoryResponse createBccp(CreateBccpRepositoryRequest request) {
-        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
-        LocalDateTime timestamp = request.getLocalDateTime();
-
-        DtManifestRecord bdtManifest = getBdtManifestByManifestId(
-                ULong.valueOf(request.getBdtManifestId()));
-        DtRecord bdt = getBdtById(bdtManifest.getDtId());
-
-        BccpRecord bccp = new BccpRecord();
-        bccp.setGuid(SrtGuid.randomGuid());
-        bccp.setPropertyTerm(request.getInitialPropertyTerm());
-        bccp.setRepresentationTerm(bdt.getDataTypeTerm());
-        bccp.setDen(bccp.getPropertyTerm() + ". " + bccp.getRepresentationTerm());
-        bccp.setBdtId(bdt.getDtId());
-        bccp.setState(CcState.WIP.name());
-        bccp.setIsDeprecated((byte) 0);
-        bccp.setIsNillable((byte) 0);
-        bccp.setNamespaceId(null);
-        bccp.setCreatedBy(userId);
-        bccp.setLastUpdatedBy(userId);
-        bccp.setOwnerUserId(userId);
-        bccp.setCreationTimestamp(timestamp);
-        bccp.setLastUpdateTimestamp(timestamp);
-
-        bccp.setBccpId(
-                dslContext.insertInto(BCCP)
-                        .set(bccp)
-                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
-        );
-
-        BccpManifestRecord bccpManifest = new BccpManifestRecord();
-        bccpManifest.setBccpId(bccp.getBccpId());
-        bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
-        bccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-
-        RevisionRecord revisionRecord =
-                revisionRepository.insertBccpRevision(
-                        bccp,
-                        RevisionAction.Added,
-                        userId, timestamp);
-        bccpManifest.setRevisionId(revisionRecord.getRevisionId());
-
-        bccpManifest.setBccpManifestId(
-                dslContext.insertInto(BCCP_MANIFEST)
-                        .set(bccpManifest)
-                        .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId()
-        );
-
-        return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId().toBigInteger());
-    }
-
-    public ReviseBccpRepositoryResponse reviseBccp(ReviseBccpRepositoryRequest request) {
-        AppUser user = sessionService.getAppUser(request.getUser());
-        ULong userId = ULong.valueOf(user.getAppUserId());
-        LocalDateTime timestamp = request.getLocalDateTime();
-
-        BccpManifestRecord prevBccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
-                        ULong.valueOf(request.getBccpManifestId())
-                ))
-                .fetchOne();
-
-        BccpRecord prevBccpRecord = dslContext.selectFrom(BCCP)
-                .where(BCCP.BCCP_ID.eq(prevBccpManifestRecord.getBccpId()))
-                .fetchOne();
-
-        if (!CcState.Published.equals(CcState.valueOf(prevBccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
-        }
-
-        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
-                .from(RELEASE)
-                .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchOneInto(ULong.class);
-
-        ULong targetReleaseId = prevBccpManifestRecord.getReleaseId();
-        if (user.isDeveloper()) {
-            if (!targetReleaseId.equals(workingReleaseId)) {
-                throw new IllegalArgumentException("It only allows to revise the component in 'Working' branch for developers.");
-            }
-        } else {
-            if (targetReleaseId.equals(workingReleaseId)) {
-                throw new IllegalArgumentException("It only allows to revise the component in non-'Working' branch for end-users.");
-            }
-        }
-
-        boolean ownerIsDeveloper = dslContext.select(APP_USER.IS_DEVELOPER)
-                .from(APP_USER)
-                .where(APP_USER.APP_USER_ID.eq(prevBccpRecord.getOwnerUserId()))
-                .fetchOneInto(Boolean.class);
-
-        if (user.isDeveloper() != ownerIsDeveloper) {
-            throw new IllegalArgumentException("It only allows to revise the component for users in the same roles.");
-        }
-
-        // creates new bccp for revised record.
-        BccpRecord nextBccpRecord = prevBccpRecord.copy();
-        nextBccpRecord.setState(CcState.WIP.name());
-        nextBccpRecord.setCreatedBy(userId);
-        nextBccpRecord.setLastUpdatedBy(userId);
-        nextBccpRecord.setOwnerUserId(userId);
-        nextBccpRecord.setCreationTimestamp(timestamp);
-        nextBccpRecord.setLastUpdateTimestamp(timestamp);
-        nextBccpRecord.setPrevBccpId(prevBccpRecord.getBccpId());
-        nextBccpRecord.setBccpId(
-                dslContext.insertInto(BCCP)
-                        .set(nextBccpRecord)
-                        .returning(BCCP.BCCP_ID).fetchOne().getBccpId()
-        );
-
-        prevBccpRecord.setNextBccpId(nextBccpRecord.getBccpId());
-        prevBccpRecord.update(BCCP.NEXT_BCCP_ID);
-
-        // creates new revision for revised record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertBccpRevision(
-                        nextBccpRecord, prevBccpManifestRecord.getRevisionId(),
-                        RevisionAction.Revised,
-                        userId, timestamp);
-
-        // creates new bccp manifest for revised record.
-        BccpManifestRecord nextBccpManifestRecord = prevBccpManifestRecord.copy();
-        nextBccpManifestRecord.setBccpId(nextBccpRecord.getBccpId());
-        nextBccpManifestRecord.setReleaseId(targetReleaseId);
-        nextBccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        nextBccpManifestRecord.setPrevBccpManifestId(prevBccpManifestRecord.getBccpManifestId());
-        nextBccpManifestRecord.setBccpManifestId(
-                dslContext.insertInto(BCCP_MANIFEST)
-                        .set(nextBccpManifestRecord)
-                        .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId()
-        );
-
-        prevBccpManifestRecord.setNextBccpManifestId(nextBccpManifestRecord.getBccpManifestId());
-        prevBccpManifestRecord.update(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
-
-        return new ReviseBccpRepositoryResponse(nextBccpManifestRecord.getBccpManifestId().toBigInteger());
     }
 }

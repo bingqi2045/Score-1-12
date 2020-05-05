@@ -1,4 +1,4 @@
-package org.oagi.srt.repo.domain;
+package org.oagi.srt.repo.component.bccp;
 
 import org.oagi.srt.data.RepositoryRequest;
 import org.springframework.security.core.userdetails.User;

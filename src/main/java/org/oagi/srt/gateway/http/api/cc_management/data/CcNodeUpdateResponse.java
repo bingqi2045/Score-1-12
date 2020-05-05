@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public class CcMakeNewRevisionResponse {
+public class CcNodeUpdateResponse {
 
     private String type;
     private BigInteger manifestId;

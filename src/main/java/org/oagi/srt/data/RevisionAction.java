@@ -4,5 +4,6 @@ public enum RevisionAction {
     Added,
     Revised,
     Modified,
-    Deleted
+    Deleted,
+    Restored
 }
