@@ -9,9 +9,7 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccpRecord;
-import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
 import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.repo.domain.RevisionSerializer;
@@ -22,8 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.jooq.impl.DSL.condition;
-import static org.oagi.srt.entity.jooq.Tables.APP_USER;
-import static org.oagi.srt.entity.jooq.Tables.REVISION;
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
 public class RevisionRepository {
@@ -242,6 +239,71 @@ public class RevisionRepository {
 
     public RevisionRecord getRevisionById(ULong revisionId) {
         return dslContext.selectFrom(REVISION).where(REVISION.REVISION_ID.eq(revisionId)).fetchOne();
+    }
+
+    /*
+     * Begins ACC
+     */
+    public RevisionRecord insertAccRevision(AccRecord accRecord,
+                                            RevisionAction revisionAction,
+                                            ULong requesterId,
+                                            LocalDateTime timestamp) {
+        return insertAccRevision(accRecord, null, revisionAction, requesterId, timestamp);
+    }
+
+    public RevisionRecord insertAccRevision(AccRecord accRecord,
+                                            ULong prevRevisionId,
+                                            RevisionAction revisionAction,
+                                            ULong requesterId,
+                                            LocalDateTime timestamp) {
+
+        RevisionRecord prevRevisionRecord = null;
+        if (prevRevisionId != null) {
+            prevRevisionRecord = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(prevRevisionId))
+                    .fetchOne();
+        }
+
+        RevisionRecord revisionRecord = new RevisionRecord();
+        if (RevisionAction.Revised.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else {
+            if (prevRevisionRecord != null) {
+                revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
+                revisionRecord.setRevisionTrackingNum(prevRevisionRecord.getRevisionTrackingNum().add(1));
+            } else {
+                revisionRecord.setRevisionNum(UInteger.valueOf(1));
+                revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            }
+        }
+
+        List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        List<BccRecord> bccRecords = dslContext.selectFrom(BCC)
+                .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        revisionRecord.setRevisionAction(revisionAction.name());
+        revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(accRecord, asccRecords, bccRecords)));
+        revisionRecord.setCreatedBy(requesterId);
+        revisionRecord.setCreationTimestamp(timestamp);
+        if (prevRevisionRecord != null) {
+            revisionRecord.setPrevRevisionId(prevRevisionRecord.getRevisionId());
+        }
+
+        revisionRecord.setRevisionId(dslContext.insertInto(REVISION)
+                .set(revisionRecord)
+                .returning(REVISION.REVISION_ID).fetchOne().getRevisionId());
+        if (prevRevisionRecord != null) {
+            prevRevisionRecord.setNextRevisionId(revisionRecord.getRevisionId());
+            prevRevisionRecord.update(REVISION.NEXT_REVISION_ID);
+        }
+
+        return revisionRecord;
     }
 
     /*

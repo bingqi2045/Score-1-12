@@ -79,12 +79,12 @@ public class CcNodeRepository {
                         ))
                         .fetchOne();
 
-        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
+        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId().toBigInteger());
     }
 
-    public CcAccNode getAccNodeByAccManifestId(User user, ULong accManifestId) {
+    public CcAccNode getAccNodeByAccManifestId(User user, BigInteger accManifestId) {
         CcAccNode accNode = getSelectJoinStepForAccNode()
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestId))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(user, accNode);
     }
@@ -112,7 +112,7 @@ public class CcNodeRepository {
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(asccNode.getFromAccManifestId())))
                 .fetchOneInto(AccManifestRecord.class);
 
-        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId());
+        return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     private CcAccNode arrangeAccNode(User user, CcAccNode accNode) {
@@ -299,7 +299,7 @@ public class CcNodeRepository {
         Long releaseId = accNode.getReleaseId();
 
         if (accManifestRecord.getBasedAccManifestId() != null) {
-            CcAccNode basedAccNode = getAccNodeByAccManifestId(user, accManifestRecord.getBasedAccManifestId());
+            CcAccNode basedAccNode = getAccNodeByAccManifestId(user, accManifestRecord.getBasedAccManifestId().toBigInteger());
             descendants.add(basedAccNode);
         }
         List<SeqKeySupportable> seqKeySupportableList = new ArrayList();
@@ -873,7 +873,7 @@ public class CcNodeRepository {
             }
         }
 
-        CcAccNode accNode = getAccNodeByAccManifestId(user, accManifest.getAccManifestId());
+        CcAccNode accNode = getAccNodeByAccManifestId(user, accManifest.getAccManifestId().toBigInteger());
         OagisComponentType oagisComponentType = getOagisComponentTypeByAccId(accNode.getAccId());
         if (oagisComponentType.isGroup()) {
             CcAsccpNode roleByAsccpNode = getAsccpNodeByRoleOfAccId(accNode.getAccId(), accManifest.getReleaseId());

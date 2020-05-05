@@ -57,9 +57,9 @@ public class CcNodeController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal User user,
-                                       @PathVariable("type") String type,
-                                       @PathVariable("manifestId") BigInteger manifestId,
-                                       @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
+                                                     @PathVariable("type") String type,
+                                                     @PathVariable("manifestId") BigInteger manifestId,
+                                                     @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
         resp.setType(type);
@@ -268,22 +268,27 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/node/acc/{manifestId}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode setBasedNode(@AuthenticationPrincipal User user,
-                               @PathVariable("manifestId") BigInteger manifestId,
-                               @RequestBody CcAccRequest ccAccRequest) {
-        if (ccAccRequest.getBasedAccManifestId() == null) {
-            return service.discardAccBasedId(user, manifestId);
-        }
-        return service.updateAccBasedId(user, manifestId, ccAccRequest.getBasedAccManifestId());
+    public CcNodeUpdateResponse setBasedNode(@AuthenticationPrincipal User user,
+                                             @PathVariable("manifestId") BigInteger manifestId,
+                                             @RequestBody CcAccRequest ccAccRequest) {
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
+        resp.setType("acc");
+        resp.setManifestId(
+                service.updateAccBasedAcc(user, manifestId, ccAccRequest.getBasedAccManifestId())
+        );
+        resp.setState(CcState.WIP.name());
+        resp.setAccess(AccessPrivilege.CanEdit.name());
+
+        return resp;
     }
 
     @RequestMapping(value = "/core_component/acc", method = RequestMethod.POST)
     public CcCreateResponse createAcc(@AuthenticationPrincipal User user,
                                       @RequestBody CcAccCreateRequest request) {
-        long manifestId = service.createAcc(user, request);
+        BigInteger manifestId = service.createAcc(user, request);
 
         CcCreateResponse resp = new CcCreateResponse();
-        resp.setManifestId(BigInteger.valueOf(manifestId));
+        resp.setManifestId(manifestId);
         return resp;
     }
 
