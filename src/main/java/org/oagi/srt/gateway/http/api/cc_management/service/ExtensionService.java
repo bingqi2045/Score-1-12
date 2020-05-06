@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.ULong;
+import org.oagi.srt.cache.impl.ACCCachingRepository;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
@@ -55,6 +56,9 @@ public class ExtensionService {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private ACCCachingRepository accRepository;
 
 
     public CcAccNode getExtensionNode(User user, long extensionId, long releaseId) {
@@ -1241,7 +1245,9 @@ public class ExtensionService {
         history.setCreationTimestamp(timestamp);
         history.setLastUpdateTimestamp(timestamp);
         history.setOwnerUserId(targetAppUserId);
-        dslContext.insertInto(Tables.ACC).set(history).execute();
+        long accId = dslContext.insertInto(Tables.ACC).set(history).returning().fetchOne().getAccId().longValue();
+        // update Cache after transferOwnership of Extension.
+        accRepository.findById(accId);
     }
 
     private void updateAsccOwnerUserId(long extensionId, Long releaseId, ULong targetAppUserId,
