@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtScManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = 1734014077;
+    private static final long serialVersionUID = -1230914505;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -66,6 +66,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
      * The column <code>oagi.dt_sc_manifest.owner_dt_manifest_id</code>.
      */
     public final TableField<DtScManifestRecord, ULong> OWNER_DT_MANIFEST_ID = createField(DSL.name("owner_dt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.dt_sc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     */
+    public final TableField<DtScManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.dt_sc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
@@ -137,7 +142,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
     @Override
     public List<ForeignKey<DtScManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_REVISION_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_MANIFEST_REVISION_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -153,7 +158,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     }
 
     public Revision revision() {
-        return new Revision(this, Keys.DT_SC_REVISION_ID_FK);
+        return new Revision(this, Keys.DT_SC_MANIFEST_REVISION_ID_FK);
     }
 
     public DtScManifest dtScPrevDtScManifestIdFk() {
@@ -191,11 +196,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

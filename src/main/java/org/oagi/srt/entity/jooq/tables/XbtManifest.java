@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.XbtManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
-    private static final long serialVersionUID = 1963047682;
+    private static final long serialVersionUID = -810331557;
 
     /**
      * The reference instance of <code>oagi.xbt_manifest</code>
@@ -66,6 +66,11 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
      * The column <code>oagi.xbt_manifest.xbt_id</code>.
      */
     public final TableField<XbtManifestRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.xbt_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     */
+    public final TableField<XbtManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.xbt_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
@@ -191,11 +196,11 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
-    private static final long serialVersionUID = 1821181388;
+    private static final long serialVersionUID = 1755523648;
 
     /**
      * The reference instance of <code>oagi.code_list_manifest</code>
@@ -71,6 +71,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
      * The column <code>oagi.code_list_manifest.based_code_list_manifest_id</code>.
      */
     public final TableField<CodeListManifestRecord, ULong> BASED_CODE_LIST_MANIFEST_ID = createField(DSL.name("based_code_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+
+    /**
+     * The column <code>oagi.code_list_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
+     */
+    public final TableField<CodeListManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.code_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
@@ -200,11 +205,11 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, ULong, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
