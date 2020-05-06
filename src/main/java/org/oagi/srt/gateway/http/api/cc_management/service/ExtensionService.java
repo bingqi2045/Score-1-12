@@ -64,7 +64,6 @@ public class ExtensionService {
 
     public CcAccNode getExtensionNode(User user, long manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
-
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
         if (asccpNode == null) {
