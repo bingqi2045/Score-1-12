@@ -121,28 +121,14 @@ CREATE TABLE `comment` (
     CONSTRAINT `comment_prev_comment_id_fk` FOREIGN KEY (`prev_comment_id`) REFERENCES `comment` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Increase `release_id` to put 'Working' release at first on.
-UPDATE `release` SET `release_id` = `release_id` + 1;
-UPDATE `acc` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `ascc` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `asccp` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `bcc` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `bccp` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `blob_content` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `dt` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `module` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `top_level_abie` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-UPDATE `xbt` SET `release_id` = 1;
-UPDATE `xbt` SET `release_id` = `release_id` + 1 WHERE `release_id` IS NOT NULL;
-
 -- Update `namespace_id` = NULL for all user extension groups.
 UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
 
 -- Adding `Working` release.
-INSERT INTO `release` (`release_id`, `release_num`, `release_note`, `namespace_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `state`)
+INSERT INTO `release` (`release_num`, `release_note`, `namespace_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `state`)
 VALUES
-(1, 'Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 2);
+('Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 2);
 
 -- Making relations between `acc` and `release` tables.
 ALTER TABLE `acc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
@@ -177,29 +163,11 @@ CREATE TABLE `acc_manifest` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `based_acc_id`
-UPDATE `acc`, (
-    SELECT `acc`.`acc_id`, `acc`.`guid`, `acc`.`based_acc_id`, current.`acc_id` current_acc_id
-    FROM `acc` as base
-    JOIN `acc` ON base.`acc_id` = `acc`.`based_acc_id`
-    JOIN `acc` current ON base.`acc_id` = current.`current_acc_id`
-) t
-SET `acc`.`based_acc_id` = t.current_acc_id
-WHERE `acc`.`acc_id` = t.`acc_id`;
+UPDATE `acc`, `acc` as base, `acc` as current
+SET `acc`.`based_acc_id` = current.`acc_id`
+WHERE `acc`.`based_acc_id` = base.`acc_id` AND base.`acc_id` = current.`current_acc_id`;
 
-INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`)
-SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `acc`.`acc_id`, `acc`.`module_id`
-FROM `acc`
-JOIN (SELECT MAX(`acc_id`) as `acc_id` FROM `acc` GROUP BY `guid`) t ON `acc`.`acc_id` = t.`acc_id`
-ORDER BY `acc`.`acc_id`;
-
-SET @sql = CONCAT('ALTER TABLE `acc_manifest` AUTO_INCREMENT = ', (SELECT MAX(acc_manifest_id) + 1 FROM acc_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Inserting initial acc_manifest records for 10.x release
 INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`)
 SELECT
     `release`.`release_id`,
@@ -213,17 +181,7 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- Updating `based_acc_manifest_id`
-UPDATE `acc_manifest`, (
-    SELECT
-        `acc_manifest`.`acc_manifest_id`, b.`acc_manifest_id` as `based_acc_manifest_id`
-    FROM `acc_manifest`
-    JOIN `acc` ON `acc_manifest`.`acc_id` = `acc`.`acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-    JOIN `acc_manifest` AS b ON `acc`.`based_acc_id` = b.`acc_id` AND  b.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-) t
-SET `acc_manifest`.`based_acc_manifest_id` = t.`based_acc_manifest_id`
-WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
-
+-- Updating `based_acc_manifest_id` for 10.x release
 UPDATE `acc_manifest`, (
     SELECT
         `acc_manifest`.`acc_manifest_id`, b.`acc_manifest_id` as `based_acc_manifest_id`
@@ -234,6 +192,21 @@ UPDATE `acc_manifest`, (
 SET `acc_manifest`.`based_acc_manifest_id` = t.`based_acc_manifest_id`
 WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
 
+-- Copying acc_manifest records for 'Working' release from 10.x release
+INSERT `acc_manifest` (`release_id`, `acc_id`, `module_id`, `based_acc_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `acc_manifest`.`acc_id`, `acc_manifest`.`module_id`, `acc_manifest`.`based_acc_manifest_id`
+FROM `acc_manifest` JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `acc_manifest` AUTO_INCREMENT = ', (SELECT MAX(acc_manifest_id) + 1 FROM acc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Updating core component states' names.
 UPDATE `acc`
 	JOIN `app_user` ON `acc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `acc`.`state` = IF(`acc`.`revision_num` = 1 AND `acc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -295,41 +268,18 @@ CREATE TABLE `asccp_manifest` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `role_of_acc_id`
-UPDATE `asccp`, (
-    SELECT `asccp`.`asccp_id`, `asccp`.`role_of_acc_id`, max(current.`acc_id`) current_acc_id
-    FROM `asccp`
-    JOIN `acc` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id`
-    JOIN `acc` current ON `asccp`.`role_of_acc_id` = current.`current_acc_id`
-    GROUP BY
-        `asccp`.`asccp_id`
-) t
-SET `asccp`.`role_of_acc_id` = t.current_acc_id
-WHERE `asccp`.`asccp_id` = t.asccp_id;
+UPDATE `asccp`, `acc`, `acc` as current
+SET `asccp`.`role_of_acc_id` = current.`acc_id`
+WHERE `acc`.`acc_id` = `asccp`.`role_of_acc_id` AND `acc`.`acc_id` = current.`current_acc_id`;
 
-INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
-SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `asccp`.`module_id`,
-    `asccp`.`asccp_id`, `acc_manifest`.`acc_manifest_id`
-FROM `asccp`
-JOIN (SELECT MAX(`asccp_id`) as `asccp_id` FROM `asccp` GROUP BY `guid`) t ON `asccp`.`asccp_id` = t.`asccp_id`
-JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
- AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-ORDER BY `asccp`.`asccp_id`;
-
-SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Inserting initial asccp_manifest records for 10.x release
 INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
 SELECT
     `release`.`release_id`, `asccp`.`module_id`,
     `asccp`.`asccp_id`, `acc_manifest`.`acc_manifest_id`
 FROM `asccp`
 JOIN `release` ON `asccp`.`release_id` = `release`.`release_id`
-JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id`
- AND `acc_manifest`.`release_id` = `release`.`release_id`
+JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id` AND `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `asccp`.`state` = 'Published';
 
 SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
@@ -338,6 +288,21 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Copying asccp_manifest records for 'Working' release from 10.x release
+INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `asccp_manifest`.`module_id`, `asccp_manifest`.`asccp_id`, `asccp_manifest`.`role_of_acc_manifest_id`
+FROM `asccp_manifest` JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Updating core component states' names.
 UPDATE `asccp`
 	JOIN `app_user` ON `asccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `asccp`.`state` = IF(`asccp`.`revision_num` = 1 AND `asccp`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -396,19 +361,7 @@ CREATE TABLE `dt_manifest` (
     CONSTRAINT `dt_manifest_next_dt_manifest_id_fk` FOREIGN KEY (`next_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT `dt_manifest` (`release_id`, `module_id`, `dt_id`)
-SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `dt`.`module_id`,
-    `dt`.`dt_id`
-FROM `dt` JOIN (SELECT MAX(`dt_id`) as `dt_id` FROM `dt` GROUP BY `guid`) t ON `dt`.`dt_id` = t.`dt_id`
-ORDER BY `dt`.`dt_id`;
-
-SET @sql = CONCAT('ALTER TABLE `dt_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_manifest_id) + 1 FROM dt_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Inserting initial dt_manifest records for 10.x release
 INSERT `dt_manifest` (`release_id`, `module_id`, `dt_id`)
 SELECT
     `release`.`release_id`, `dt`.`module_id`,
@@ -422,6 +375,21 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Copying dt_manifest records for 'Working' release from 10.x release
+INSERT `dt_manifest` (`release_id`, `module_id`, `dt_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `dt_manifest`.`module_id`, `dt_manifest`.`dt_id`
+FROM `dt_manifest` JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `dt_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_manifest_id) + 1 FROM dt_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Updating core component states' names.
 UPDATE `dt`
 	JOIN `app_user` ON `dt`.`owner_user_id` = `app_user`.`app_user_id`
 SET `dt`.`state` = IF(`dt`.`revision_num` = 1 AND `dt`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -477,13 +445,29 @@ CREATE TABLE `dt_sc_manifest` (
     CONSTRAINT `dt_sc_next_dt_sc_manifest_id_fk` FOREIGN KEY (`next_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Inserting initial dt_sc_manifest records for 10.x release
 INSERT `dt_sc_manifest` (`release_id`, `dt_sc_id`, `owner_dt_manifest_id`)
 SELECT
     `release`.`release_id`,
     `dt_sc`.`dt_sc_id`, `dt_manifest`.`dt_manifest_id`
 FROM `dt_sc` JOIN `dt_manifest` ON `dt_sc`.`owner_dt_id` = `dt_manifest`.`dt_id`
              JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working'
 ORDER BY `release`.`release_id`;
+
+SET @sql = CONCAT('ALTER TABLE `dt_sc_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_sc_manifest_id) + 1 FROM dt_sc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying dt_sc_manifest records for 'Working' release from 10.x release
+INSERT `dt_sc_manifest` (`release_id`, `dt_sc_id`, `owner_dt_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `dt_sc_manifest`.`dt_sc_id`, `dt_sc_manifest`.`owner_dt_manifest_id`
+FROM `dt_sc_manifest` JOIN `release` ON `dt_sc_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
 
 SET @sql = CONCAT('ALTER TABLE `dt_sc_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_sc_manifest_id) + 1 FROM dt_sc_manifest));
 
@@ -496,6 +480,7 @@ CREATE INDEX `dt_sc_guid_idx` ON `dt_sc` (`guid`);
 
 -- Drop unique index
 ALTER TABLE `dt_sc` DROP INDEX `dt_sc_uk1`;
+
 
 -- Making relations between `bccp` and `release` tables.
 ALTER TABLE `bccp` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCCP.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
@@ -529,28 +514,14 @@ CREATE TABLE `bccp_manifest` (
     CONSTRAINT `bccp_manifest_next_bccp_manifest_id_fk` FOREIGN KEY (`next_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
-SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `bccp`.`module_id`,
-    `bccp`.`bccp_id`, `dt_manifest`.`dt_manifest_id`
-FROM `bccp` JOIN (SELECT MAX(`bccp_id`) as `bccp_id` FROM `bccp` GROUP BY `guid`) t ON `bccp`.`bccp_id` = t.`bccp_id`
-JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
- AND `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-ORDER BY `bccp`.`bccp_id`;
-
-SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Inserting initial bccp_manifest records for 10.x release
 INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
 SELECT
     `release`.`release_id`, `bccp`.`module_id`,
     `bccp`.`bccp_id`, `dt_manifest`.`dt_manifest_id`
 FROM `bccp` JOIN `release` ON `bccp`.`release_id` = `release`.`release_id`
-JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
- AND `dt_manifest`.`release_id` = `release`.`release_id`
+            JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id`
+    AND `dt_manifest`.`release_id` = `release`.`release_id`
 WHERE `bccp`.`state` = 'Published';
 
 SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
@@ -559,6 +530,21 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Copying bccp_manifest records for 'Working' release from 10.x release
+INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `bccp_manifest`.`module_id`, `bccp_manifest`.`bccp_id`, `bccp_manifest`.`bdt_manifest_id`
+FROM `bccp_manifest` JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Updating core component states' names.
 UPDATE `bccp`
 	JOIN `app_user` ON `bccp`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bccp`.`state` = IF(`bccp`.`revision_num` = 1 AND `bccp`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -620,40 +606,43 @@ CREATE TABLE `ascc_manifest` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `from_acc_id`
-UPDATE `ascc`, (
-    SELECT `ascc`.`ascc_id`, `ascc`.`from_acc_id`, MAX(current.`acc_id`) current_acc_id
-    FROM `ascc`
-    JOIN `acc` ON `acc`.`acc_id` = `ascc`.`from_acc_id`
-    JOIN `acc` current ON `ascc`.`from_acc_id` = current.`current_acc_id`
-    GROUP BY `ascc`.`ascc_id`
-) t
-SET `ascc`.`from_acc_id` = t.current_acc_id
-WHERE `ascc`.`ascc_id` = t.ascc_id;
+UPDATE `ascc`, `acc`, `acc` as current
+SET `ascc`.`from_acc_id` = current.`acc_id`
+WHERE `acc`.`acc_id` = `ascc`.`from_acc_id` AND `acc`.`acc_id` = current.`current_acc_id`;
 
 -- Updating `to_asccp_id`
-UPDATE `ascc`, (
-    SELECT `ascc`.`ascc_id`, `ascc`.`to_asccp_id`, MAX(current.`asccp_id`) current_asccp_id
-    FROM `ascc`
-    JOIN `asccp` ON `asccp`.`asccp_id` = `ascc`.`to_asccp_id`
-    JOIN `asccp` current ON `asccp`.`asccp_id` = current.`current_asccp_id`
-    GROUP BY `ascc`.`ascc_id`
-) t
-SET `ascc`.`to_asccp_id` = t.current_asccp_id
-WHERE `ascc`.`ascc_id` = t.ascc_id;
+UPDATE `ascc`, `asccp`, `asccp` as current
+SET `ascc`.`to_asccp_id` = current.`asccp_id`
+WHERE `asccp`.`asccp_id` = `ascc`.`to_asccp_id` AND `asccp`.`asccp_id` = current.`current_asccp_id`;
 
+-- Inserting initial ascc_manifest records for 10.x release
+INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
+SELECT
+    r1.`release_id`,
+    `ascc`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
+FROM `ascc`
+JOIN `release` as r1 ON r1.`release_num` != 'Working' AND `ascc`.`release_id` = r1.`release_id`
+JOIN `acc` ON `ascc`.`from_acc_id` = `acc`.`acc_id`
+JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
+JOIN `release` as r2 ON r2.`release_num` != 'Working' AND `acc_manifest`.`release_id` = r2.`release_id`
+JOIN `asccp` ON `ascc`.`to_asccp_id` = `asccp`.`asccp_id`
+JOIN `asccp_manifest` ON `asccp`.`asccp_id` = `asccp_manifest`.`asccp_id`
+JOIN `release` as r3 ON r3.`release_num` != 'Working' AND `asccp_manifest`.`release_id` = r3.`release_id`
+WHERE `ascc`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying ascc_manifest records for 'Working' release from 10.x release
 INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `ascc`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
-FROM `ascc`
-JOIN (SELECT MAX(`ascc_id`) as `ascc_id`
-      FROM `ascc`
-      GROUP BY `guid`) t ON `ascc`.`ascc_id` = t.`ascc_id`
-JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
- AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
- AND `asccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-ORDER BY `ascc`.`ascc_id`;
+    `ascc_manifest`.`ascc_id`, `ascc_manifest`.`from_acc_manifest_id`, `ascc_manifest`.`to_asccp_manifest_id`
+FROM `ascc_manifest` JOIN `release` ON `ascc_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
 
 SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
 
@@ -661,24 +650,7 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
-INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
-SELECT
-    `release`.`release_id`,
-    MAX(`ascc`.`ascc_id`) `ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
-FROM `ascc` JOIN `release` ON `ascc`.`release_id` = `release`.`release_id`
-JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id`
- AND `acc_manifest`.`release_id` = `release`.`release_id`
-JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id`
- AND `asccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `ascc`.`state` = 'Published'
-GROUP BY `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`;
-
-SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Updating core component states' names.
 UPDATE `ascc`
 	JOIN `app_user` ON `ascc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `ascc`.`state` = IF(`ascc`.`revision_num` = 1 AND `ascc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -742,65 +714,45 @@ CREATE TABLE `bcc_manifest` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Updating `from_acc_id`
-UPDATE `bcc`, (
-    SELECT `bcc`.`bcc_id`, `bcc`.`from_acc_id`, MAX(current.`acc_id`) current_acc_id
-    FROM `bcc`
-    JOIN `acc` ON `acc`.`acc_id` = `bcc`.`from_acc_id`
-    JOIN `acc` current ON `bcc`.`from_acc_id` = current.`current_acc_id`
-    GROUP BY `bcc`.`bcc_id`
-) t
-SET `bcc`.`from_acc_id` = t.current_acc_id
-WHERE `bcc`.`bcc_id` = t.bcc_id;
+UPDATE `bcc`, `acc`, `acc` as current
+SET `bcc`.`from_acc_id` = current.`acc_id`
+WHERE `acc`.`acc_id` = `bcc`.`from_acc_id` AND `acc`.`acc_id` = current.`current_acc_id`;
 
 -- Updating `to_bccp_id`
-UPDATE `bcc`, (
-    SELECT `bcc`.`bcc_id`, `bcc`.`to_bccp_id`, MAX(current.`bccp_id`) current_bccp_id
-    FROM `bcc`
-    JOIN `bccp` ON `bccp`.`bccp_id` = `bcc`.`to_bccp_id`
-    JOIN `bccp` current ON `bccp`.`bccp_id` = current.`current_bccp_id`
-    GROUP BY `bcc`.`bcc_id`
-) t
-SET `bcc`.`to_bccp_id` = t.current_bccp_id
-WHERE `bcc`.`bcc_id` = t.bcc_id;
+UPDATE `bcc`, `bccp`, `bccp` as current
+SET `bcc`.`to_bccp_id` = current.`bccp_id`
+WHERE `bccp`.`bccp_id` = `bcc`.`to_bccp_id` AND `bccp`.`bccp_id` = current.`current_bccp_id`;
 
+-- Inserting initial bcc_manifest records for 10.x release
+INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
+SELECT
+    r1.`release_id`,
+    `bcc`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
+FROM `bcc`
+JOIN `release` as r1 ON r1.`release_num` != 'Working' AND `bcc`.`release_id` = r1.`release_id`
+JOIN `acc` ON `bcc`.`from_acc_id` = `acc`.`acc_id`
+JOIN `acc_manifest` ON `acc`.`acc_id` = `acc_manifest`.`acc_id`
+JOIN `release` as r2 ON r2.`release_num` != 'Working' AND `acc_manifest`.`release_id` = r2.`release_id`
+JOIN `bccp` ON `bcc`.`to_bccp_id` = `bccp`.`bccp_id`
+JOIN `bccp_manifest` ON `bccp`.`bccp_id` = `bccp_manifest`.`bccp_id`
+JOIN `release` as r3 ON r3.`release_num` != 'Working' AND `bccp_manifest`.`release_id` = r3.`release_id`
+WHERE `bcc`.`state` = 'Published';
+
+SET @sql = CONCAT('ALTER TABLE `bcc_manifest` AUTO_INCREMENT = ', (SELECT MAX(bcc_manifest_id) + 1 FROM bcc_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying bcc_manifest records for 'Working' release from 10.x release
 INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `bcc`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
-FROM `bcc`
-JOIN (SELECT MAX(`bcc_id`) as `bcc_id`
-      FROM `bcc`
-      GROUP BY `guid`) t ON `bcc`.`bcc_id` = t.`bcc_id`
-JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
- AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
- AND `bccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
-ORDER BY `bcc`.`bcc_id`;
+    `bcc_manifest`.`bcc_id`, `bcc_manifest`.`from_acc_manifest_id`, `bcc_manifest`.`to_bccp_manifest_id`
+FROM `bcc_manifest` JOIN `release` ON `bcc_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
 
-SET @sql = CONCAT('ALTER TABLE `bcc_manifest` AUTO_INCREMENT = ', (SELECT MAX(bcc_manifest_id) + 1 FROM bcc_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
-SELECT
-    `release`.`release_id`,
-    MAX(`bcc`.`bcc_id`) as `bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
-FROM `bcc` JOIN `release` ON `bcc`.`release_id` = `release`.`release_id`
-JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id`
- AND `acc_manifest`.`release_id` = `release`.`release_id`
-JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id`
- AND `bccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `bcc`.`state` = 'Published'
-GROUP BY `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`;
-
-SET @sql = CONCAT('ALTER TABLE `bcc_manifest` AUTO_INCREMENT = ', (SELECT MAX(bcc_manifest_id) + 1 FROM bcc_manifest));
-
-PREPARE stmt from @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
+-- Updating core component states' names.
 UPDATE `bcc`
 	JOIN `app_user` ON `bcc`.`owner_user_id` = `app_user`.`app_user_id`
 SET `bcc`.`state` = IF(`bcc`.`revision_num` = 1 AND `bcc`.`revision_tracking_num` = 1, 'Published', 'Candidate')
@@ -872,12 +824,14 @@ CREATE TABLE `code_list_manifest` (
     CONSTRAINT `code_list_manifest_next_code_list_manifest_id_fk` FOREIGN KEY (`next_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Inserting initial code_list_manifest records for 10.x release
 INSERT `code_list_manifest` (`release_id`, `module_id`, `code_list_id`)
 SELECT
     `release`.`release_id`,
     `code_list`.`module_id`,
     `code_list`.`code_list_id`
 FROM `code_list`, `release`
+WHERE `release`.`release_num` != 'Working'
 ORDER BY `release_id`, `code_list_id`;
 
 SET @sql = CONCAT('ALTER TABLE `code_list_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_manifest_id) + 1 FROM code_list_manifest));
@@ -895,6 +849,20 @@ UPDATE `code_list_manifest`, (
 ) t
 SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
 WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
+
+-- Copying code_list_manifest records for 'Working' release from 10.x release
+INSERT `code_list_manifest` (`release_id`, `module_id`, `code_list_id`, `based_code_list_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `code_list_manifest`.`module_id`, `code_list_manifest`.`code_list_id`, `code_list_manifest`.`based_code_list_manifest_id`
+FROM `code_list_manifest` JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `code_list_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_manifest_id) + 1 FROM code_list_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 
 -- Making relations between `code_list_value` and `release` tables.
@@ -943,11 +911,28 @@ CREATE TABLE `code_list_value_manifest` (
     CONSTRAINT `code_list_value_manifest_next_code_list_value_manifest_id_fk` FOREIGN KEY (`next_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Inserting initial code_list_value_manifest records for 10.x release
 INSERT INTO `code_list_value_manifest` (`release_id`, `code_list_value_id`, `code_list_manifest_id`)
 SELECT
     `code_list_manifest`.`release_id`, `code_list_value`.`code_list_value_id`, `code_list_manifest`.`code_list_manifest_id`
-FROM
-    `code_list_value` JOIN `code_list_manifest` ON `code_list_value`.`code_list_id` = `code_list_manifest`.`code_list_id`;
+FROM `code_list_value`
+JOIN `code_list_manifest` ON `code_list_value`.`code_list_id` = `code_list_manifest`.`code_list_id`
+JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `code_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_value_manifest_id) + 1 FROM code_list_value_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying code_list_value_manifest records for 'Working' release from 10.x release
+INSERT `code_list_value_manifest` (`release_id`, `code_list_value_id`, `code_list_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `code_list_value_manifest`.`code_list_value_id`, `code_list_value_manifest`.`code_list_manifest_id`
+FROM `code_list_value_manifest` JOIN `release` ON `code_list_value_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
 
 SET @sql = CONCAT('ALTER TABLE `code_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_value_manifest_id) + 1 FROM code_list_value_manifest));
 
@@ -1191,12 +1176,13 @@ UPDATE `xbt` SET `guid` = 'oagis-id-6aba2f0c928d426384417bc1a2b0d300' WHERE `nam
 
 ALTER TABLE `xbt` MODIFY COLUMN `guid` varchar(41) NOT NULL COMMENT 'A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.';
 
+-- Inserting initial xbt_manifest records for 10.x release
 INSERT `xbt_manifest` (`release_id`, `module_id`, `xbt_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`, `xbt`.`module_id`,
-    `xbt`.`xbt_id`
-FROM `xbt` JOIN (SELECT MAX(`xbt_id`) as `xbt_id` FROM `xbt` GROUP BY `guid`) t ON `xbt`.`xbt_id` = t.`xbt_id`
-ORDER BY `xbt`.`xbt_id`;
+    (SELECT `release_id` FROM `release` WHERE `release_num` != 'Working') as `release_id`,
+    `xbt`.`module_id`, `xbt`.`xbt_id`
+FROM `xbt`
+WHERE `xbt`.`state` = 3;
 
 SET @sql = CONCAT('ALTER TABLE `xbt_manifest` AUTO_INCREMENT = ', (SELECT MAX(xbt_manifest_id) + 1 FROM xbt_manifest));
 
@@ -1204,12 +1190,13 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Copying xbt_manifest records for 'Working' release from 10.x release
 INSERT `xbt_manifest` (`release_id`, `module_id`, `xbt_id`)
 SELECT
-    `release`.`release_id`, `xbt`.`module_id`,
-    `xbt`.`xbt_id`
-FROM `xbt` JOIN `release` ON `xbt`.`release_id` = `release`.`release_id`
-WHERE `xbt`.`state` = 3;
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `xbt_manifest`.`module_id`, `xbt_manifest`.`xbt_id`
+FROM `xbt_manifest` JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
 
 SET @sql = CONCAT('ALTER TABLE `xbt_manifest` AUTO_INCREMENT = ', (SELECT MAX(xbt_manifest_id) + 1 FROM xbt_manifest));
 

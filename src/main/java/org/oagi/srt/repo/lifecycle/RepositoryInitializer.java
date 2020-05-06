@@ -49,12 +49,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initAccRevision() {
         // For 'Non-Working' releases.
-        List<AccManifestRecord> accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST)
+        List<AccManifestRecord> accManifestRecordList = dslContext.select(ACC_MANIFEST.fields())
+                .from(ACC_MANIFEST).join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         ACC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AccManifestRecord.class);
 
         for (AccManifestRecord accManifestRecord : accManifestRecordList) {
             AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -88,12 +89,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        accManifestRecordList = dslContext.selectFrom(ACC_MANIFEST)
+        accManifestRecordList = dslContext.select(ACC_MANIFEST.fields())
+                .from(ACC_MANIFEST).join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         ACC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AccManifestRecord.class);
 
         for (AccManifestRecord nextAccManifestRecord : accManifestRecordList) {
             AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
@@ -114,12 +116,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initAsccRevision() {
         // For 'Non-Working' releases.
-        List<AsccManifestRecord> asccManifestRecordList = dslContext.selectFrom(ASCC_MANIFEST)
+        List<AsccManifestRecord> asccManifestRecordList = dslContext.select(ASCC_MANIFEST.fields())
+                .from(ASCC_MANIFEST).join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ASCC_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         ASCC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AsccManifestRecord.class);
 
         for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
             ULong revisionId = dslContext.select(REVISION.REVISION_ID)
@@ -133,12 +136,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        asccManifestRecordList = dslContext.selectFrom(ASCC_MANIFEST)
+        asccManifestRecordList = dslContext.select(ASCC_MANIFEST.fields())
+                .from(ASCC_MANIFEST).join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ASCC_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         ASCC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AsccManifestRecord.class);
 
         for (AsccManifestRecord nextAsccManifestRecord : asccManifestRecordList) {
             AsccManifestRecord prevAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -159,12 +163,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initBccRevision() {
         // For 'Non-Working' releases.
-        List<BccManifestRecord> bccManifestRecordList = dslContext.selectFrom(BCC_MANIFEST)
+        List<BccManifestRecord> bccManifestRecordList = dslContext.select(BCC_MANIFEST.fields())
+                .from(BCC_MANIFEST).join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        BCC_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         BCC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(BccManifestRecord.class);
 
         for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
             ULong revisionId = dslContext.select(REVISION.REVISION_ID)
@@ -178,12 +183,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        bccManifestRecordList = dslContext.selectFrom(BCC_MANIFEST)
+        bccManifestRecordList = dslContext.select(BCC_MANIFEST.fields())
+                .from(BCC_MANIFEST).join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        BCC_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         BCC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(BccManifestRecord.class);
 
         for (BccManifestRecord nextBccManifestRecord : bccManifestRecordList) {
             BccManifestRecord prevBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -204,12 +210,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initAsccpRevision() {
         // For 'Non-Working' releases.
-        List<AsccpManifestRecord> asccpManifestRecordList = dslContext.selectFrom(ASCCP_MANIFEST)
+        List<AsccpManifestRecord> asccpManifestRecordList = dslContext.select(ASCCP_MANIFEST.fields())
+                .from(ASCCP_MANIFEST).join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ASCCP_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         ASCCP_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AsccpManifestRecord.class);
 
         for (AsccpManifestRecord asccpManifestRecord : asccpManifestRecordList) {
             AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -233,12 +240,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        asccpManifestRecordList = dslContext.selectFrom(ASCCP_MANIFEST)
+        asccpManifestRecordList = dslContext.select(ASCCP_MANIFEST.fields())
+                .from(ASCCP_MANIFEST).join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        ASCCP_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         ASCCP_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(AsccpManifestRecord.class);
 
         for (AsccpManifestRecord nextAsccpManifestRecord : asccpManifestRecordList) {
             AsccpManifestRecord prevAsccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
@@ -259,12 +267,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initBccpRevision() {
         // For 'Non-Working' releases.
-        List<BccpManifestRecord> bccpManifestRecordList = dslContext.selectFrom(BCCP_MANIFEST)
+        List<BccpManifestRecord> bccpManifestRecordList = dslContext.select(BCCP_MANIFEST.fields())
+                .from(BCCP_MANIFEST).join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        BCCP_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         BCCP_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(BccpManifestRecord.class);
 
         for (BccpManifestRecord bccpManifestRecord : bccpManifestRecordList) {
             BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
@@ -288,12 +297,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        bccpManifestRecordList = dslContext.selectFrom(BCCP_MANIFEST)
+        bccpManifestRecordList = dslContext.select(BCCP_MANIFEST.fields())
+                .from(BCCP_MANIFEST).join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        BCCP_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         BCCP_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(BccpManifestRecord.class);
 
         for (BccpManifestRecord nextBccpManifestRecord : bccpManifestRecordList) {
             BccpManifestRecord prevBccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
@@ -314,12 +324,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initCodeListRevision() {
         // For 'Non-Working' releases.
-        List<CodeListManifestRecord> codeListManifestRecordList = dslContext.selectFrom(CODE_LIST_MANIFEST)
+        List<CodeListManifestRecord> codeListManifestRecordList = dslContext.select(CODE_LIST_MANIFEST.fields())
+                .from(CODE_LIST_MANIFEST).join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        CODE_LIST_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         CODE_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(CodeListManifestRecord.class);
 
         for (CodeListManifestRecord codeListManifestRecord : codeListManifestRecordList) {
             CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
@@ -350,12 +361,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        codeListManifestRecordList = dslContext.selectFrom(CODE_LIST_MANIFEST)
+        codeListManifestRecordList = dslContext.select(CODE_LIST_MANIFEST.fields())
+                .from(CODE_LIST_MANIFEST).join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        CODE_LIST_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         CODE_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(CodeListManifestRecord.class);
 
         for (CodeListManifestRecord nextCodeListManifestRecord : codeListManifestRecordList) {
             CodeListManifestRecord prevCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
@@ -376,12 +388,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initCodeListValueRevision() {
         // For 'Non-Working' releases.
-        List<CodeListValueManifestRecord> codeListValueManifestRecordList = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+        List<CodeListValueManifestRecord> codeListValueManifestRecordList = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                .from(CODE_LIST_VALUE_MANIFEST).join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        CODE_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         CODE_LIST_VALUE_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(CodeListValueManifestRecord.class);
 
         for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecordList) {
             ULong revisionId = dslContext.select(REVISION.REVISION_ID)
@@ -395,12 +408,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        codeListValueManifestRecordList = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+        codeListValueManifestRecordList = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                .from(CODE_LIST_VALUE_MANIFEST).join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        CODE_LIST_VALUE_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         CODE_LIST_VALUE_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(CodeListValueManifestRecord.class);
 
         for (CodeListValueManifestRecord nextCodeListValueManifestRecord : codeListValueManifestRecordList) {
             CodeListValueManifestRecord prevCodeListValueManifestRecord = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
@@ -421,12 +435,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initDtRevision() {
         // For 'Non-Working' releases.
-        List<DtManifestRecord> dtManifestRecordList = dslContext.selectFrom(DT_MANIFEST)
+        List<DtManifestRecord> dtManifestRecordList = dslContext.select(DT_MANIFEST.fields())
+                .from(DT_MANIFEST).join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        DT_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         DT_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(DtManifestRecord.class);
 
         for (DtManifestRecord dtManifestRecord : dtManifestRecordList) {
             DtRecord dtRecord = dslContext.selectFrom(DT)
@@ -457,12 +472,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        dtManifestRecordList = dslContext.selectFrom(DT_MANIFEST)
+        dtManifestRecordList = dslContext.select(DT_MANIFEST.fields())
+                .from(DT_MANIFEST).join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        DT_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         DT_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(DtManifestRecord.class);
 
         for (DtManifestRecord nextDtManifestRecord : dtManifestRecordList) {
             DtManifestRecord prevDtManifestRecord = dslContext.selectFrom(DT_MANIFEST)
@@ -483,12 +499,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initDtScRevision() {
         // For 'Non-Working' releases.
-        List<DtScManifestRecord> dtScValueManifestRecordList = dslContext.selectFrom(DT_SC_MANIFEST)
+        List<DtScManifestRecord> dtScValueManifestRecordList = dslContext.select(DT_SC_MANIFEST.fields())
+                .from(DT_SC_MANIFEST).join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        DT_SC_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         DT_SC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(DtScManifestRecord.class);
 
         for (DtScManifestRecord dtScValueManifestRecord : dtScValueManifestRecordList) {
             ULong revisionId = dslContext.select(REVISION.REVISION_ID)
@@ -502,12 +519,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        dtScValueManifestRecordList = dslContext.selectFrom(DT_SC_MANIFEST)
+        dtScValueManifestRecordList = dslContext.select(DT_SC_MANIFEST.fields())
+                .from(DT_SC_MANIFEST).join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        DT_SC_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         DT_SC_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(DtScManifestRecord.class);
 
         for (DtScManifestRecord nextDtScManifestRecord : dtScValueManifestRecordList) {
             DtScManifestRecord prevDtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
@@ -528,12 +546,13 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initXbtRevision() {
         // For 'Non-Working' releases.
-        List<XbtManifestRecord> xbtManifestRecordList = dslContext.selectFrom(XBT_MANIFEST)
+        List<XbtManifestRecord> xbtManifestRecordList = dslContext.select(XBT_MANIFEST.fields())
+                .from(XBT_MANIFEST).join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        XBT_MANIFEST.RELEASE_ID.notEqual(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
                         XBT_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(XbtManifestRecord.class);
 
         for (XbtManifestRecord xbtManifestRecord : xbtManifestRecordList) {
             XbtRecord xbtRecord = dslContext.selectFrom(XBT)
@@ -557,12 +576,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
 
         // For 'Working' release.
-        xbtManifestRecordList = dslContext.selectFrom(XBT_MANIFEST)
+        xbtManifestRecordList = dslContext.select(XBT_MANIFEST.fields())
+                .from(XBT_MANIFEST).join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
-                        XBT_MANIFEST.RELEASE_ID.equal(ULong.valueOf(1L)),
+                        RELEASE.RELEASE_NUM.equal("Working"),
                         XBT_MANIFEST.REVISION_ID.isNull()
                 ))
-                .fetch();
+                .fetchInto(XbtManifestRecord.class);
 
         for (XbtManifestRecord nextXbtManifestRecord : xbtManifestRecordList) {
             XbtManifestRecord prevXbtManifestRecord = dslContext.selectFrom(XBT_MANIFEST)
