@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Asccp.ASCCP;
 import static org.oagi.srt.entity.jooq.tables.AsccpManifest.ASCCP_MANIFEST;
@@ -166,7 +168,7 @@ public class AsccpCUDRepository {
         if (user.isDeveloper()) {
             asccpManifestRecord.setAsccpId(nextAsccpRecord.getAsccpId());
             asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-            asccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID);
+            asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID);
 
             responseAsccpManifestId = asccpManifestRecord.getAsccpManifestId();
         } else {
@@ -187,6 +189,18 @@ public class AsccpCUDRepository {
 
             responseAsccpManifestId = nextAsccpManifestRecord.getAsccpManifestId();
         }
+
+        // update `conflict` for ascc_manifests' to_asccp_manifest_id which indicates given asccp manifest.
+        dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID, responseAsccpManifestId)
+                .set(ASCC_MANIFEST.CONFLICT, (byte) 1)
+                .where(and(
+                        ASCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.in(Arrays.asList(
+                                asccpManifestRecord.getAsccpManifestId(),
+                                asccpManifestRecord.getPrevAsccpManifestId()))
+                ))
+                .execute();
 
         return new ReviseAsccpRepositoryResponse(responseAsccpManifestId.toBigInteger());
     }

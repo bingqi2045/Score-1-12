@@ -5,10 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AccRecord;
-import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -17,9 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.entity.jooq.Tables.ASCC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
@@ -149,6 +147,10 @@ public class AccCUDRepository {
         prevAccRecord.setNextAccId(nextAccRecord.getAccId());
         prevAccRecord.update(ACC.NEXT_ACC_ID);
 
+        // create new associations for revised record.
+        createNewAsccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
+        createNewBccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
+
         // creates new revision for revised record.
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
@@ -162,7 +164,7 @@ public class AccCUDRepository {
         if (user.isDeveloper()) {
             accManifestRecord.setAccId(nextAccRecord.getAccId());
             accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-            accManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID);
+            accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID);
 
             responseAccManifestId = accManifestRecord.getAccManifestId();
         } else {
@@ -184,7 +186,125 @@ public class AccCUDRepository {
             responseAccManifestId = nextAccManifestRecord.getAccManifestId();
         }
 
+        // update `conflict` for asccp_manifests' role_of_acc_manifest_id which indicates given acc manifest.
+        dslContext.update(ASCCP_MANIFEST)
+                .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, responseAccManifestId)
+                .set(ASCCP_MANIFEST.CONFLICT, (byte) 1)
+                .where(and(
+                        ASCCP_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.in(Arrays.asList(
+                                accManifestRecord.getAccManifestId(),
+                                accManifestRecord.getPrevAccManifestId()))
+                ))
+                .execute();
+
+        // update `conflict` for acc_manifests' based_acc_manifest_id which indicates given acc manifest.
+        dslContext.update(ACC_MANIFEST)
+                .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, responseAccManifestId)
+                .set(ACC_MANIFEST.CONFLICT, (byte) 1)
+                .where(and(
+                        ACC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        ACC_MANIFEST.BASED_ACC_MANIFEST_ID.in(Arrays.asList(
+                                accManifestRecord.getAccManifestId(),
+                                accManifestRecord.getPrevAccManifestId()))
+                ))
+                .execute();
+
         return new ReviseAccRepositoryResponse(responseAccManifestId.toBigInteger());
+    }
+
+    private void createNewAsccListForRevisedRecord(
+            AccManifestRecord accManifestRecord,
+            AccRecord nextAccRecord,
+            ULong targetReleaseId,
+            ULong userId,
+            LocalDateTime timestamp) {
+        for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
+                .where(and(
+                        ASCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())
+                ))
+                .fetch()) {
+
+            AsccRecord prevAsccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                    .fetchOne();
+
+            AsccRecord nextAsccRecord = prevAsccRecord.copy();
+            nextAsccRecord.setFromAccId(nextAccRecord.getAccId());
+            nextAsccRecord.setToAsccpId(
+                    dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
+                            .from(ASCCP_MANIFEST)
+                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                            .fetchOneInto(ULong.class)
+            );
+            nextAsccRecord.setState(CcState.WIP.name());
+            nextAsccRecord.setCreatedBy(userId);
+            nextAsccRecord.setLastUpdatedBy(userId);
+            nextAsccRecord.setOwnerUserId(userId);
+            nextAsccRecord.setCreationTimestamp(timestamp);
+            nextAsccRecord.setLastUpdateTimestamp(timestamp);
+            nextAsccRecord.setPrevAsccId(prevAsccRecord.getAsccId());
+            nextAsccRecord.setAsccId(
+                    dslContext.insertInto(ASCC)
+                            .set(nextAsccRecord)
+                            .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
+            );
+
+            prevAsccRecord.setNextAsccId(nextAsccRecord.getAsccId());
+            prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
+
+            asccManifestRecord.setAsccId(nextAsccRecord.getAsccId());
+            asccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+        }
+    }
+
+    private void createNewBccListForRevisedRecord(
+            AccManifestRecord accManifestRecord,
+            AccRecord nextAccRecord,
+            ULong targetReleaseId,
+            ULong userId,
+            LocalDateTime timestamp) {
+        for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
+                .where(and(
+                        BCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())
+                ))
+                .fetch()) {
+
+            BccRecord prevBccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                    .fetchOne();
+
+            BccRecord nextBccRecord = prevBccRecord.copy();
+            nextBccRecord.setFromAccId(nextAccRecord.getAccId());
+            nextBccRecord.setToBccpId(
+                    dslContext.select(BCCP_MANIFEST.BCCP_ID)
+                            .from(BCCP_MANIFEST)
+                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                            .fetchOneInto(ULong.class)
+            );
+            nextBccRecord.setState(CcState.WIP.name());
+            nextBccRecord.setCreatedBy(userId);
+            nextBccRecord.setLastUpdatedBy(userId);
+            nextBccRecord.setOwnerUserId(userId);
+            nextBccRecord.setCreationTimestamp(timestamp);
+            nextBccRecord.setLastUpdateTimestamp(timestamp);
+            nextBccRecord.setPrevBccId(prevBccRecord.getBccId());
+            nextBccRecord.setBccId(
+                    dslContext.insertInto(BCC)
+                            .set(nextBccRecord)
+                            .returning(BCC.BCC_ID).fetchOne().getBccId()
+            );
+
+            prevBccRecord.setNextBccId(nextBccRecord.getBccId());
+            prevBccRecord.update(BCC.NEXT_BCC_ID);
+
+            bccManifestRecord.setBccId(nextBccRecord.getBccId());
+            bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+        }
     }
 
     public UpdateAccPropertiesRepositoryResponse updateAccProperties(UpdateAccPropertiesRepositoryRequest request) {

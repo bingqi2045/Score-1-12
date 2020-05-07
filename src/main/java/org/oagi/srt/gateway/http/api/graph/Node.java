@@ -27,6 +27,7 @@ public class Node {
     private ULong manifestId;
     private ULong basedManifestId;
     private ULong linkedManifestId;
+    private ULong prevManifestId;
 
     private Map<String, Object> properties = new HashMap();
 
@@ -65,6 +66,14 @@ public class Node {
 
     public void setLinkedManifestId(ULong linkedManifestId) {
         this.linkedManifestId = linkedManifestId;
+    }
+
+    public ULong getPrevManifestId() {
+        return prevManifestId;
+    }
+
+    public void setPrevManifestId(ULong prevManifestId) {
+        this.prevManifestId = prevManifestId;
     }
 
     public String getTypeAsString() {

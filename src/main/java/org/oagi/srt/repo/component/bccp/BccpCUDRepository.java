@@ -16,8 +16,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
@@ -188,6 +190,18 @@ public class BccpCUDRepository {
 
             responseBccpManifestId = nextBccpManifestRecord.getBccpManifestId();
         }
+
+        // update `conflict` for bcc_manifests' to_bccp_manifest_id which indicates given bccp manifest.
+        dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.TO_BCCP_MANIFEST_ID, responseBccpManifestId)
+                .set(BCC_MANIFEST.CONFLICT, (byte) 1)
+                .where(and(
+                        BCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.in(Arrays.asList(
+                                bccpManifestRecord.getBccpManifestId(),
+                                bccpManifestRecord.getPrevBccpManifestId()))
+                ))
+                .execute();
 
         return new ReviseBccpRepositoryResponse(responseBccpManifestId.toBigInteger());
     }
