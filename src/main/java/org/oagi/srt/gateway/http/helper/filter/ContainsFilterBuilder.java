@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.helper.filter;
 
 import org.jooq.Condition;
+import org.jooq.Field;
 import org.jooq.TableField;
 import org.springframework.util.StringUtils;
 
@@ -54,7 +55,7 @@ public class ContainsFilterBuilder {
                 .collect(Collectors.toList());
     }
 
-    public static Collection<Condition> contains(String s, TableField field) {
+    public static Collection<Condition> contains(String s, Field<String> field) {
         String q = s.trim();
         if (isQuoted(q)) {
             return Arrays.asList(field.containsIgnoreCase(unquote(q)));

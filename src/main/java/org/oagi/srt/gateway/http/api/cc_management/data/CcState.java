@@ -11,4 +11,31 @@ public enum CcState {
     ReleaseDraft,
     Published;
 
+    public boolean canMove(CcState to) {
+        switch (this) {
+            case Deleted:
+                return (to == WIP);
+
+            case WIP:
+                return (to == Draft || to == QA);
+
+            case Draft:
+                return (to == WIP || to == Candidate);
+
+            case QA:
+                return (to == WIP || to == Production);
+
+            case Candidate:
+                return (to == WIP || to == Draft || to == ReleaseDraft);
+
+            case ReleaseDraft:
+                return (to == Candidate);
+
+            case Production:
+            case Published:
+            default:
+                return false;
+        }
+    }
+
 }

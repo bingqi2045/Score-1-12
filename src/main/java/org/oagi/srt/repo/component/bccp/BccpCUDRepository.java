@@ -10,7 +10,6 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
-import org.oagi.srt.repo.component.acc.AccCUDRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
@@ -35,9 +33,6 @@ public class BccpCUDRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
-
-    @Autowired
-    private AccCUDRepository accCUDRepository;
 
     public CreateBccpRepositoryResponse createBccp(CreateBccpRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
@@ -341,19 +336,18 @@ public class BccpCUDRepository {
                 .fetchOne();
 
         CcState prevState = CcState.valueOf(bccpRecord.getState());
-        if (CcState.Published.equals(prevState)) {
-            throw new IllegalArgumentException("Only the core component not in 'Published' state can be modified.");
-        }
+        CcState nextState = request.getState();
 
-        // @TODO: Add assertions by state transition model.
-        // e.g. Draft -> Published would not allow.
+        if (!prevState.canMove(nextState)) {
+            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
+        }
 
         if (!bccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update bccp state.
-        bccpRecord.setState(request.getState().name());
+        bccpRecord.setState(nextState.name());
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setLastUpdateTimestamp(timestamp);
         bccpRecord.update(BCCP.STATE,
