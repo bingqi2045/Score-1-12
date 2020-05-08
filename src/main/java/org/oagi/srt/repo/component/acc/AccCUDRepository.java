@@ -186,6 +186,8 @@ public class AccCUDRepository {
             responseAccManifestId = nextAccManifestRecord.getAccManifestId();
         }
 
+        updateRevisionForAssociations(accManifestRecord, revisionRecord);
+
         // update `conflict` for asccp_manifests' role_of_acc_manifest_id which indicates given acc manifest.
         dslContext.update(ASCCP_MANIFEST)
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, responseAccManifestId)
@@ -331,6 +333,10 @@ public class AccCUDRepository {
         }
 
         // update acc record.
+        boolean denNeedsToUpdate = false;
+        if (!accRecord.getObjectClassTerm().equals(request.getObjectClassTerm())) {
+            denNeedsToUpdate = true;
+        }
         accRecord.setObjectClassTerm(request.getObjectClassTerm());
         accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
         accRecord.setDefinition(request.getDefinition());
@@ -348,6 +354,42 @@ public class AccCUDRepository {
                 ACC.NAMESPACE_ID,
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
 
+        if (denNeedsToUpdate) {
+            for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
+                    .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch()) {
+
+                AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                        .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                        .fetchOne();
+
+                String asccpDen = dslContext.select(ASCCP.DEN)
+                        .from(ASCCP)
+                        .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                        .fetchOneInto(String.class);
+
+                asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + asccpDen);
+                asccRecord.update(ASCC.DEN);
+            }
+
+            for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
+                    .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch()) {
+
+                BccRecord bccRecord = dslContext.selectFrom(BCC)
+                        .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                        .fetchOne();
+
+                String bccpDen = dslContext.select(BCCP.DEN)
+                        .from(BCCP)
+                        .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                        .fetchOneInto(String.class);
+
+                bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpDen);
+                bccRecord.update(BCC.DEN);
+            }
+        }
+
         // creates new revision for updated record.
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
@@ -357,6 +399,8 @@ public class AccCUDRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+
+        updateRevisionForAssociations(accManifestRecord, revisionRecord);
 
         return new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -415,6 +459,8 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
+        updateRevisionForAssociations(accManifestRecord, revisionRecord);
+
         return new UpdateAccBasedAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
@@ -434,23 +480,26 @@ public class AccCUDRepository {
                 .fetchOne();
 
         CcState prevState = CcState.valueOf(accRecord.getState());
-        if (CcState.Published.equals(prevState)) {
-            throw new IllegalArgumentException("Only the core component not in 'Published' state can be modified.");
-        }
+        CcState nextState = request.getState();
 
-        // @TODO: Add assertions by state transition model.
-        // e.g. Draft -> Published would not allow.
+        if (!prevState.canMove(nextState)) {
+            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
+        }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update acc state.
-        accRecord.setState(request.getState().name());
+        accRecord.setState(nextState.name());
         accRecord.setLastUpdatedBy(userId);
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.update(ACC.STATE,
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+
+        // update associations' state.
+        updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
+        updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
 
         // creates new revision for updated record.
         RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getState())
@@ -464,7 +513,67 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
+        updateRevisionForAssociations(accManifestRecord, revisionRecord);
+
         return new UpdateAccStateRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
+
+    private void updateAsccListForStateUpdatedRecord(
+            AccManifestRecord accManifestRecord,
+            AccRecord nextAccRecord,
+            CcState nextState,
+            ULong userId,
+            LocalDateTime timestamp) {
+        for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch()) {
+
+            AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                    .fetchOne();
+
+            asccRecord.setFromAccId(nextAccRecord.getAccId());
+            asccRecord.setToAsccpId(
+                    dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
+                            .from(ASCCP_MANIFEST)
+                            .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
+                            .fetchOneInto(ULong.class)
+            );
+            asccRecord.setState(nextState.name());
+            asccRecord.setLastUpdatedBy(userId);
+            asccRecord.setLastUpdateTimestamp(timestamp);
+            asccRecord.update(ASCC.FROM_ACC_ID, ASCC.TO_ASCCP_ID, ASCC.STATE,
+                    ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP);
+        }
+    }
+
+    private void updateBccListForStateUpdatedRecord(
+            AccManifestRecord accManifestRecord,
+            AccRecord nextAccRecord,
+            CcState nextState,
+            ULong userId,
+            LocalDateTime timestamp) {
+        for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch()) {
+
+            BccRecord bccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                    .fetchOne();
+
+            bccRecord.setFromAccId(nextAccRecord.getAccId());
+            bccRecord.setToBccpId(
+                    dslContext.select(BCCP_MANIFEST.BCCP_ID)
+                            .from(BCCP_MANIFEST)
+                            .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                            .fetchOneInto(ULong.class)
+            );
+            bccRecord.setState(nextState.name());
+            bccRecord.setLastUpdatedBy(userId);
+            bccRecord.setLastUpdateTimestamp(timestamp);
+            bccRecord.update(BCC.FROM_ACC_ID, BCC.TO_BCCP_ID, BCC.STATE,
+                    BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
+        }
     }
 
     public DeleteAccRepositoryResponse deleteAcc(DeleteAccRepositoryRequest request) {
@@ -497,6 +606,10 @@ public class AccCUDRepository {
         accRecord.update(ACC.STATE,
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
 
+        // delete associations.
+        updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
+        updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
+
         // creates new revision for deleted record.
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
@@ -507,6 +620,21 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
+        updateRevisionForAssociations(accManifestRecord, revisionRecord);
+
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
+
+    private void updateRevisionForAssociations(AccManifestRecord accManifestRecord,
+                                               RevisionRecord revisionRecord) {
+        dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
+
+        dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .execute();
     }
 }

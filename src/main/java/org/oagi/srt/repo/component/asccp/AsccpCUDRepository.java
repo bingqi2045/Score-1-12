@@ -326,19 +326,18 @@ public class AsccpCUDRepository {
                 .fetchOne();
 
         CcState prevState = CcState.valueOf(asccpRecord.getState());
-        if (CcState.Published.equals(prevState)) {
-            throw new IllegalArgumentException("Only the core component not in 'Published' state can be modified.");
-        }
+        CcState nextState = request.getState();
 
-        // @TODO: Add assertions by state transition model.
-        // e.g. Draft -> Published would not allow.
+        if (!prevState.canMove(nextState)) {
+            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
+        }
 
         if (!asccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update asccp state.
-        asccpRecord.setState(request.getState().name());
+        asccpRecord.setState(nextState.name());
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.update(ASCCP.STATE,
