@@ -323,8 +323,9 @@ public class ExtensionService {
                         .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                         .fetchOne();
 
-        ccNodeService.appendBccp(user, extensionAcc.getAccManifestId().longValue(),
-                bccpManifestRecord.getBccpManifestId().longValue());
+        ccNodeService.appendBccp(user, bccpManifestRecord.getReleaseId().toBigInteger(),
+                extensionAcc.getAccManifestId().toBigInteger(),
+                bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
 
     @Transactional

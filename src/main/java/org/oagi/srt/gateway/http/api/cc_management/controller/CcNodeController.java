@@ -260,10 +260,10 @@ public class CcNodeController {
                         ccAppendRequest.getAsccpManifestId());
             }
             if (ccAppendRequest.getBccpManifestId() != null) {
-//                manifestId = service.appendBccp(user,
-//                        ccAppendRequest.getReleaseId(),
-//                        ccAppendRequest.getAccManifestId(),
-//                        ccAppendRequest.getBccpManifestId());
+                manifestId = service.appendBccp(user,
+                        ccAppendRequest.getReleaseId(),
+                        ccAppendRequest.getAccManifestId(),
+                        ccAppendRequest.getBccpManifestId());
             }
         }
         CcCreateResponse response = new CcCreateResponse();
