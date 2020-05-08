@@ -236,7 +236,7 @@ public class AsccpCUDRepository {
         asccpRecord.setReusableIndicator((byte) ((request.isReusable()) ? 1 : 0));
         asccpRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
         asccpRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
-        asccpRecord.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
+        asccpRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.update(ASCCP.PROPERTY_TERM, ASCCP.DEN,

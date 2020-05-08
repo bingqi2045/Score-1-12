@@ -140,8 +140,8 @@ public class CcNodeControllerTest {
 
         // append Asccp
         CcAppendRequest ccAppendAsccpRequest = new CcAppendRequest();
-        ccAppendAsccpRequest.setAccManifestId(accManifestId.longValue());
-        ccAppendAsccpRequest.setAsccpManifestId(ccAsccpResponse.getManifestId().longValue());
+        ccAppendAsccpRequest.setAccManifestId(accManifestId);
+        ccAppendAsccpRequest.setAsccpManifestId(ccAsccpResponse.getManifestId());
         this.callApi("/core_component/node/append", ccAppendAsccpRequest, METHOD_POST);
         MvcResult afterAppendAsccpMvcResult = this.callApi("/core_component/node/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode afterAppendAsccpNode = objectMapping(afterAppendAsccpMvcResult, CcAccNode.class);
@@ -157,8 +157,8 @@ public class CcNodeControllerTest {
 
         // append bccp
         CcAppendRequest ccAppendBccpRequest = new CcAppendRequest();
-        ccAppendAsccpRequest.setAccManifestId(accManifestId.longValue());
-        ccAppendAsccpRequest.setBccpManifestId(ccBccpResponse.getManifestId().longValue());
+        ccAppendAsccpRequest.setAccManifestId(accManifestId);
+        ccAppendAsccpRequest.setBccpManifestId(ccBccpResponse.getManifestId());
         this.callApi("/core_component/node/append", ccAppendBccpRequest, METHOD_POST);
         MvcResult afterAppendBccpMvcResult = this.callApi("/core_component/node/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode afterAppendBccpAccNode = objectMapping(afterAppendBccpMvcResult, CcAccNode.class);

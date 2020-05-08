@@ -15,6 +15,7 @@ import org.oagi.srt.redis.event.EventHandler;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.component.acc.*;
+import org.oagi.srt.repo.component.ascc.*;
 import org.oagi.srt.repo.component.asccp.*;
 import org.oagi.srt.repo.component.bccp.*;
 import org.oagi.srt.repository.ReleaseRepository;
@@ -50,6 +51,12 @@ public class CcNodeService extends EventHandler {
 
     @Autowired
     private BccpCUDRepository bccpCUDRepository;
+
+    @Autowired
+    private AsccCUDRepository asccCUDRepository;
+
+//    @Autowired
+//    private BccCUDRepository bccCUDRepository;
 
     @Autowired
     private RevisionRepository revisionRepository;
@@ -367,64 +374,14 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public long appendAsccp(User user, long accManifestId, long asccpManifestId) {
-        long userId = sessionService.userId(user);
+    public long appendAsccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger asccpManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
+        CreateAsccRepositoryRequest request =
+                new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
 
-        AccManifestRecord accManifest = ccRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
-        AsccpManifestRecord asccpManifestRecord
-                = ccRepository.getAsccpManifestByManifestId(ULong.valueOf(asccpManifestId));
-
-        repository.duplicateAssociationValidate(user, accManifest.getAccManifestId(),
-                asccpManifestRecord.getAsccpManifestId(), null);
-
-        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
-        AccRecord accRecord = ccRepository.getAccById(accManifest.getAccId());
-
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestId)
-                .setPrevRevisionId(accManifest.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifest)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(ULong.valueOf(userId), accManifest.getAccManifestId(), timestamp, revisionId);
-
-
-        int seqKey = ccRepository.getNextSeqKey(accManifest.getAccManifestId());
-
-        ULong asccId = ccRepository.insertAsccArguments()
-                .setGuid(SrtGuid.randomGuid())
-                .setCardinalityMin(0)
-                .setCardinalityMax(-1)
-                .setSeqKey(seqKey)
-                .setDeprecated(false)
-                .setFromAccId(accRecord.getAccId())
-                .setToAsccpId(asccpManifestRecord.getAsccpId())
-                .setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getPropertyTerm())
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setLastUpdatedBy(ULong.valueOf(userId))
-                .setLastUpdateTimestamp(timestamp)
-                .setOwnerUserId(ULong.valueOf(userId))
-                .setState(CcState.valueOf(accRecord.getState()))
-                .setRevisionId(revisionId)
-                .execute();
-
-        return ccRepository.insertAsccManifestArguments()
-                .setReleaseId(accManifest.getReleaseId())
-                .setAsccId(asccId)
-                .setFromAccManifestId(accManifest.getAccManifestId())
-                .setToAsccpManifestId(asccpManifestRecord.getAsccpManifestId())
-                .execute().longValue();
+        CreateAsccRepositoryResponse response = asccCUDRepository.createAscc(request);
+        fireEvent(new CreatedAsccEvent());
+        return response.getAsccManifestId().longValue();
     }
 
     @Transactional

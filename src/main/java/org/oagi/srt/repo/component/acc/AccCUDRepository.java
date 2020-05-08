@@ -338,7 +338,7 @@ public class AccCUDRepository {
         accRecord.setOagisComponentType(request.getComponentType().getValue());
         accRecord.setIsAbstract((byte) ((request.isAbstract()) ? 1 : 0));
         accRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        accRecord.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
+        accRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
         accRecord.setLastUpdatedBy(userId);
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.update(ACC.OBJECT_CLASS_TERM, ACC.DEN,

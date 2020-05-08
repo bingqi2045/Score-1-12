@@ -9,6 +9,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.graph.Node;
 
 import java.util.*;
@@ -180,6 +181,7 @@ public class GraphContext {
                         ASCC_MANIFEST.RELEASE_ID, ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                        .where(ASCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> new AsccManifest(
                                 record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
                                 record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID),
@@ -202,6 +204,7 @@ public class GraphContext {
                         BCC_MANIFEST.RELEASE_ID, BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                        .where(BCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> new BccManifest(
                                 record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
                                 record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID),

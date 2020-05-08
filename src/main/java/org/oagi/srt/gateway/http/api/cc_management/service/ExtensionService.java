@@ -310,8 +310,9 @@ public class ExtensionService {
                         .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                         .fetchOne();
 
-        ccNodeService.appendAsccp(user, extensionAcc.getAccManifestId().longValue(),
-                asccpManifestRecord.getAsccpManifestId().longValue());
+        ccNodeService.appendAsccp(user, asccpManifestRecord.getReleaseId().toBigInteger(),
+                extensionAcc.getAccManifestId().toBigInteger(),
+                asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
     @Transactional

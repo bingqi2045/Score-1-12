@@ -248,7 +248,7 @@ public class BccpCUDRepository {
         bccpRecord.setDefinitionSource(request.getDefinitionSource());
         bccpRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
         bccpRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
-        bccpRecord.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
+        bccpRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setLastUpdateTimestamp(timestamp);
         bccpRecord.update(BCCP.PROPERTY_TERM, BCCP.DEN,

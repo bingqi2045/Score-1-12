@@ -254,10 +254,16 @@ public class CcNodeController {
         long manifestId = 0L;
         if (ccAppendRequest.getAccManifestId() != null) {
             if (ccAppendRequest.getAsccpManifestId() != null) {
-                manifestId = service.appendAsccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getAsccpManifestId());
+                manifestId = service.appendAsccp(user,
+                        ccAppendRequest.getReleaseId(),
+                        ccAppendRequest.getAccManifestId(),
+                        ccAppendRequest.getAsccpManifestId());
             }
             if (ccAppendRequest.getBccpManifestId() != null) {
-                manifestId = service.appendBccp(user, ccAppendRequest.getAccManifestId(), ccAppendRequest.getBccpManifestId());
+//                manifestId = service.appendBccp(user,
+//                        ccAppendRequest.getReleaseId(),
+//                        ccAppendRequest.getAccManifestId(),
+//                        ccAppendRequest.getBccpManifestId());
             }
         }
         CcCreateResponse response = new CcCreateResponse();
