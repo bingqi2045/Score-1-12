@@ -7,6 +7,8 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -22,13 +24,19 @@ public class BizCtxValueRepository implements SrtRepository<BusinessContextValue
     }
 
     @Override
-    public BusinessContextValue findById(long id) {
+    public BusinessContextValue findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.BIZ_CTX_VALUE.fields()).from(Tables.BIZ_CTX_VALUE)
                 .where(Tables.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(BusinessContextValue.class);
     }
 
-    public List<BusinessContextValue> findByBizCtxId(long bizCtxId) {
+    public List<BusinessContextValue> findByBizCtxId(BigInteger bizCtxId) {
+        if (bizCtxId == null || bizCtxId.longValue() <= 0L) {
+            return Collections.emptyList();
+        }
         return dslContext.select(Tables.BIZ_CTX_VALUE.fields()).from(Tables.BIZ_CTX_VALUE)
                 .where(Tables.BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .fetchInto(BusinessContextValue.class);

@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,10 +20,10 @@ public class UserRepository implements SrtRepository<AppUser> {
     @Autowired
     private DSLContext dslContext;
 
-    public Map<Long, String> getUsernameMap() {
+    public Map<BigInteger, String> getUsernameMap() {
         return dslContext.select(Tables.APP_USER.APP_USER_ID, Tables.APP_USER.LOGIN_ID)
                 .from(Tables.APP_USER)
-                .fetchStream().collect(Collectors.toMap(e -> e.value1().longValue(), e -> e.value2()));
+                .fetchStream().collect(Collectors.toMap(e -> e.value1().toBigInteger(), e -> e.value2()));
     }
 
     private SelectJoinStep<Record6<ULong, String, String, String, String, Byte>> getSelectJoinStep() {
@@ -42,8 +43,8 @@ public class UserRepository implements SrtRepository<AppUser> {
     }
 
     @Override
-    public AppUser findById(long id) {
-        if (id <= 0L) {
+    public AppUser findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectJoinStep()

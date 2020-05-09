@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,8 +52,8 @@ public class ABIERepository implements SrtRepository<ABIE> {
     }
 
     @Override
-    public ABIE findById(long id) {
-        if (id <= 0L) {
+    public ABIE findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectJoinStep()
@@ -60,14 +61,14 @@ public class ABIERepository implements SrtRepository<ABIE> {
                 .fetchOneInto(ABIE.class);
     }
 
-    public List<ABIE> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId <= 0L) {
+    public List<ABIE> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
+        if (ownerTopLevelAbieId.longValue() <= 0L) {
             return Collections.emptyList();
         }
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<ABIE> findByOwnerTopLevelAbieIds(List<Long> ownerTopLevelAbieIds) {
+    public List<ABIE> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
         if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
             return Collections.emptyList();
         }

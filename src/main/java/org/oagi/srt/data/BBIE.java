@@ -2,20 +2,22 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class BBIE implements BIE {
-    private long bbieId;
+
+    private BigInteger bbieId = BigInteger.ZERO;
     private String guid;
-    private long basedBccManifestId;
-    private long fromAbieId;
-    private long toBbiepId;
-    private Long bdtPriRestriId;
-    private Long codeListId;
-    private Long agencyIdListId;
+    private BigInteger basedBccManifestId = BigInteger.ZERO;
+    private BigInteger fromAbieId = BigInteger.ZERO;
+    private BigInteger toBbiepId = BigInteger.ZERO;
+    private BigInteger bdtPriRestriId = BigInteger.ZERO;
+    private BigInteger codeListId = BigInteger.ZERO;
+    private BigInteger agencyIdListId = BigInteger.ZERO;
     private int cardinalityMin;
-    private Integer cardinalityMax;
+    private int cardinalityMax;
     private String defaultValue;
     private boolean nillable;
     private String fixedValue;
@@ -23,11 +25,11 @@ public class BBIE implements BIE {
     private String definition;
     private String remark;
     private String example;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private long ownerTopLevelAbieId;
+    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
 }

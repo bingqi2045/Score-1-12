@@ -11,6 +11,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,22 +43,21 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
     }
 
     @Override
-    public BizCtx findById(long id) {
-        if (id <= 0L) {
+    public BizCtx findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
-
         return getSelectBizCtx()
                 .where(Tables.BIZ_CTX.BIZ_CTX_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(BizCtx.class);
     }
 
     public List<BizCtx> findByTopLevelAbie(TopLevelAbie topLevelAbie) {
-        List<Long> bizCtxIds = dslContext.select(
+        List<BigInteger> bizCtxIds = dslContext.select(
                 Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
                 .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
-                .fetchInto(Long.class);
+                .fetchInto(BigInteger.class);
 
         return bizCtxIds.stream().map(bizCtxId -> findById(bizCtxId)).collect(Collectors.toList());
     }

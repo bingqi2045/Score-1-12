@@ -6,6 +6,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAgencyI
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditCodeList;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,9 +26,9 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
     private String bizTerm;
     private String remark;
 
-    private Long dtScPriRestriId;
-    private Long codeListId;
-    private Long agencyIdListId;
+    private BigInteger dtScPriRestriId = BigInteger.ZERO;
+    private BigInteger codeListId = BigInteger.ZERO;
+    private BigInteger agencyIdListId = BigInteger.ZERO;
 
     private List<BieEditXbt> xbtList = Collections.emptyList();
     private List<BieEditCodeList> codeLists = Collections.emptyList();

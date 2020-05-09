@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,10 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
     }
 
     @Override
-    public BBIEP findById(long id) {
+    public BBIEP findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
                 Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
@@ -53,14 +57,14 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 .fetchOneInto(BBIEP.class);
     }
 
-    public List<BBIEP> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId <= 0L) {
+    public List<BBIEP> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
+        if (ownerTopLevelAbieId.longValue() <= 0L) {
             return Collections.emptyList();
         }
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<BBIEP> findByOwnerTopLevelAbieIds(List<Long> ownerTopLevelAbieIds) {
+    public List<BBIEP> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
                 Tables.BBIEP.BASED_BCCP_MANIFEST_ID,

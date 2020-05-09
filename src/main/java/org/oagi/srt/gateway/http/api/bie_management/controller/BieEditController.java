@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
@@ -32,12 +33,12 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BieEditNode getRootNode(@AuthenticationPrincipal User user,
-                                   @PathVariable("id") long topLevelAbieId) {
+                                   @PathVariable("id") BigInteger topLevelAbieId) {
         BieEditAbieNode rootNode = service.getRootNode(user, topLevelAbieId);
         BieState state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState());
         rootNode.setTopLevelAbieState(state.toString());
 
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
         AccessPrivilege accessPrivilege = Prohibited;
         switch (state) {
             case Initiating:
@@ -75,7 +76,7 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal User user,
-                            @PathVariable("id") long topLevelAbieId,
+                            @PathVariable("id") BigInteger topLevelAbieId,
                             @RequestBody Map<String, Object> body) {
         BieState state = BieState.valueOf((String) body.get("state"));
         service.updateState(user, topLevelAbieId, state);
@@ -84,7 +85,7 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/bcc/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BccForBie getBcc(@AuthenticationPrincipal User user,
-                            @PathVariable("id") long bccId) {
+                            @PathVariable("id") BigInteger bccId) {
         return service.getBcc(user, bccId);
     }
 

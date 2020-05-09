@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,8 +56,8 @@ public class BBIERepository implements SrtRepository<BBIE> {
     }
 
     @Override
-    public BBIE findById(long id) {
-        if (id <= 0L) {
+    public BBIE findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectOnConditionStep()
@@ -64,11 +65,11 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 .fetchOptionalInto(BBIE.class).orElse(null);
     }
 
-    public List<BBIE> findByOwnerTopLevelAbieIdAndUsed(long ownerTopLevelAbieId, boolean used) {
+    public List<BBIE> findByOwnerTopLevelAbieIdAndUsed(BigInteger ownerTopLevelAbieId, boolean used) {
         return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAbieId), used);
     }
 
-    public List<BBIE> findByOwnerTopLevelAbieIdsAndUsed(List<Long> ownerTopLevelAbieIds, boolean used) {
+    public List<BBIE> findByOwnerTopLevelAbieIdsAndUsed(List<BigInteger> ownerTopLevelAbieIds, boolean used) {
         return getSelectOnConditionStep()
                 .where(and(
                         (ownerTopLevelAbieIds.size() == 1) ?

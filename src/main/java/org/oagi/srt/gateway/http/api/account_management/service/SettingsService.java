@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
+
 import static org.jooq.impl.DSL.row;
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 
@@ -30,7 +32,7 @@ public class SettingsService {
 
     @Transactional
     public void updatePassword(User user, UpdatePasswordRequest request) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
 
         String oldPassword = validate(request.getOldPassword());
         if (!matches(userId, oldPassword)) {
@@ -58,14 +60,14 @@ public class SettingsService {
         return password;
     }
 
-    private boolean matches(long userId, String oldPassword) {
+    private boolean matches(BigInteger userId, String oldPassword) {
         return passwordEncoder.matches(oldPassword,
                 dslContext.select(APP_USER.PASSWORD).from(APP_USER)
                         .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
                         .fetchOneInto(String.class));
     }
 
-    private void update(long userId, String newPassword) {
+    private void update(BigInteger userId, String newPassword) {
         dslContext.update(APP_USER)
                 .set(row(APP_USER.PASSWORD), row(passwordEncoder.encode(newPassword)))
                 .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class BusinessInformationEntityRepository {
         private BieState bieState = WIP;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertTopLevelAbieArguments setReleaseId(long releaseId) {
+        public InsertTopLevelAbieArguments setReleaseId(BigInteger releaseId) {
             return setReleaseId(ULong.valueOf(releaseId));
         }
 
@@ -50,7 +51,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertTopLevelAbieArguments setUserId(long userId) {
+        public InsertTopLevelAbieArguments setUserId(BigInteger userId) {
             return setUserId(ULong.valueOf(userId));
         }
 
@@ -117,7 +118,7 @@ public class BusinessInformationEntityRepository {
         private ULong topLevelAbieId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertAbieArguments setUserId(long userId) {
+        public InsertAbieArguments setUserId(BigInteger userId) {
             return setUserId(ULong.valueOf(userId));
         }
 
@@ -126,7 +127,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAbieArguments setAccManifestId(long accManifestId) {
+        public InsertAbieArguments setAccManifestId(BigInteger accManifestId) {
             return setAccManifestId(ULong.valueOf(accManifestId));
         }
 
@@ -135,7 +136,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAbieArguments setTopLevelAbieId(long topLevelAbieId) {
+        public InsertAbieArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
             return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
         }
 
@@ -200,7 +201,7 @@ public class BusinessInformationEntityRepository {
         private ULong topLevelAbieId;
         private List<ULong> bizCtxIds = Collections.emptyList();
 
-        public InsertBizCtxAssignmentArguments setTopLevelAbieId(long topLevelAbieId) {
+        public InsertBizCtxAssignmentArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
             return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
         }
 
@@ -209,7 +210,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertBizCtxAssignmentArguments setBizCtxIds(List<Long> bizCtxIds) {
+        public InsertBizCtxAssignmentArguments setBizCtxIds(List<BigInteger> bizCtxIds) {
             if (bizCtxIds != null && !bizCtxIds.isEmpty()) {
                 this.bizCtxIds = bizCtxIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList());
             }
@@ -250,7 +251,7 @@ public class BusinessInformationEntityRepository {
         private ULong userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertAsbiepArguments setAsccpManifestId(long asccpManifestId) {
+        public InsertAsbiepArguments setAsccpManifestId(BigInteger asccpManifestId) {
             return setAsccpManifestId(ULong.valueOf(asccpManifestId));
         }
 
@@ -259,7 +260,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAsbiepArguments setRoleOfAbieId(long roleOfAbieId) {
+        public InsertAsbiepArguments setRoleOfAbieId(BigInteger roleOfAbieId) {
             return setRoleOfAbieId(ULong.valueOf(roleOfAbieId));
         }
 
@@ -268,7 +269,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAsbiepArguments setTopLevelAbieId(long topLevelAbieId) {
+        public InsertAsbiepArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
             return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
         }
 
@@ -277,7 +278,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAsbiepArguments setUserId(long userId) {
+        public InsertAsbiepArguments setUserId(BigInteger userId) {
             return setUserId(ULong.valueOf(userId));
         }
 
@@ -346,7 +347,7 @@ public class BusinessInformationEntityRepository {
         private ULong abieId;
         private ULong topLevelAbieId;
 
-        public UpdateTopLevelAbieArguments setAbieId(long abieId) {
+        public UpdateTopLevelAbieArguments setAbieId(BigInteger abieId) {
             return setAbieId(ULong.valueOf(abieId));
         }
 
@@ -355,7 +356,7 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public UpdateTopLevelAbieArguments setTopLevelAbieId(long topLevelAbieId) {
+        public UpdateTopLevelAbieArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
             return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
         }
 

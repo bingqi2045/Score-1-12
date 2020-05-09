@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,8 +54,8 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
     }
 
     @Override
-    public BBIESC findById(long id) {
-        if (id <= 0L) {
+    public BBIESC findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectJoinStep()
@@ -62,11 +63,11 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
                 .fetchOptionalInto(BBIESC.class).orElse(null);
     }
 
-    public List<BBIESC> findByOwnerTopLevelAbieIdAndUsed(long ownerTopLevelAbieId, boolean used) {
+    public List<BBIESC> findByOwnerTopLevelAbieIdAndUsed(BigInteger ownerTopLevelAbieId, boolean used) {
         return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAbieId), used);
     }
 
-    public List<BBIESC> findByOwnerTopLevelAbieIdsAndUsed(List<Long> ownerTopLevelAbieIds, boolean used) {
+    public List<BBIESC> findByOwnerTopLevelAbieIdsAndUsed(List<BigInteger> ownerTopLevelAbieIds, boolean used) {
         return getSelectJoinStep()
                 .where(and(
                         (ownerTopLevelAbieIds.size() == 1) ?

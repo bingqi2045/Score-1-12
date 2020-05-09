@@ -30,6 +30,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CodeListForList> getCodeLists(
+            @AuthenticationPrincipal User user,
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "states", required = false) String states,
@@ -86,13 +87,14 @@ public class CodeListController {
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
 
-        return service.getCodeLists(request);
+        return service.getCodeLists(user, request);
     }
 
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CodeList getCodeList(@PathVariable("manifestId") long manifestId) {
-        return service.getCodeList(manifestId);
+    public CodeList getCodeList(@AuthenticationPrincipal User user,
+                                @PathVariable("manifestId") BigInteger manifestId) {
+        return service.getCodeList(user, manifestId);
     }
 
     @RequestMapping(value = "/code_list", method = RequestMethod.PUT)

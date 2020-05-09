@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,8 +57,8 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     }
 
     @Override
-    public ASCC findById(long id) {
-        if (id <= 0L) {
+    public ASCC findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectJoinStep()

@@ -7,6 +7,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditCodeLis
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditXbt;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,12 +29,12 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String bizTerm;
     private String remark;
 
-    private long bdtId;
+    private BigInteger bdtId;
     private String bdtDen;
 
-    private Long bdtPriRestriId;
-    private Long codeListId;
-    private Long agencyIdListId;
+    private BigInteger bdtPriRestriId;
+    private BigInteger codeListId;
+    private BigInteger agencyIdListId;
 
     private List<BieEditXbt> xbtList = Collections.emptyList();
     private List<BieEditCodeList> codeLists = Collections.emptyList();

@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,10 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
     }
 
     @Override
-    public ASBIEP findById(long id) {
+    public ASBIEP findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 Tables.ASBIEP.ASBIEP_ID,
                 Tables.ASBIEP.ROLE_OF_ABIE_ID,
@@ -55,14 +59,14 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
                 .fetchOneInto(ASBIEP.class);
     }
 
-    public List<ASBIEP> findByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId <= 0L) {
+    public List<ASBIEP> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
+        if (ownerTopLevelAbieId.longValue() <= 0L) {
             return Collections.emptyList();
         }
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<ASBIEP> findByOwnerTopLevelAbieIds(List<Long> ownerTopLevelAbieIds) {
+    public List<ASBIEP> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
         if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
             return Collections.emptyList();
         }

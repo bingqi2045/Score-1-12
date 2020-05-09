@@ -2,22 +2,25 @@ package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.oagi.srt.data.BCCEntityType;
+
+import java.math.BigInteger;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CcBccNode extends CcNode {
 
     private int seqKey;
-    private long bccId;
-    private long manifestId;
-    private long fromAccManifestId;
-    private long toBccpManifestId;
-    private int entityType;
-    private long cardinalityMin;
-    private long cardinalityMax;
+    private BigInteger bccId = BigInteger.ZERO;
+    private BigInteger manifestId = BigInteger.ZERO;
+    private BigInteger fromAccManifestId = BigInteger.ZERO;
+    private BigInteger toBccpManifestId = BigInteger.ZERO;
+    private BCCEntityType entityType;
+    private BigInteger cardinalityMin = BigInteger.ZERO;
+    private BigInteger cardinalityMax = BigInteger.ZERO;
 
     @Override
-    public long getId() {
+    public BigInteger getId() {
         return bccId;
     }
 }

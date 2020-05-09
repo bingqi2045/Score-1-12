@@ -2,15 +2,18 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class AgencyIdList {
-    private long agencyIdListId;
+
+    private BigInteger agencyIdListId = BigInteger.ZERO;
     private String guid;
     private String enumTypeGuid;
     private String name;
     private String listId;
-    private Long agencyIdListValueId;
+    private BigInteger agencyIdListValueId = BigInteger.ZERO;
     private String versionId;
-    private Long moduleId;
+    private BigInteger moduleId = BigInteger.ZERO;
     private String definition;
 }

@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -22,7 +23,10 @@ public class CtxSchemeValueRepository implements SrtRepository<ContextSchemeValu
     }
 
     @Override
-    public ContextSchemeValue findById(long id) {
+    public ContextSchemeValue findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.CTX_SCHEME_VALUE.fields()).from(Tables.CTX_SCHEME_VALUE)
                 .where(Tables.CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(ContextSchemeValue.class);

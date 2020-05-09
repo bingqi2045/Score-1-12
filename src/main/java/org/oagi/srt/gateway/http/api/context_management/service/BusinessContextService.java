@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,7 @@ public class BusinessContextService {
 
     @Transactional
     public void update(User user, BusinessContext bizCtx) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         repository.updateBusinessContext()

@@ -114,7 +114,7 @@ public class CcNodeControllerTest {
         LinkedMultiValueMap params = new LinkedMultiValueMap();
         MvcResult currentAccMvcResult = this.callApi("/core_component/node/acc/" + accManifestId, params, METHOD_GET);
         CcAccNode currentAccNode = objectMapping(currentAccMvcResult, CcAccNode.class);
-        long lastAccId = currentAccNode.getAccId();
+        BigInteger lastAccId = currentAccNode.getAccId();
 
         // set baseAcc
         CcAccRequest ccAccRequest = new CcAccRequest();
@@ -185,8 +185,8 @@ public class CcNodeControllerTest {
         return objectMapper.readValue(response, valueType);
     }
 
-    private void checkCcIdStack(long originCcId, long newCcId) {
-        if (originCcId == newCcId) {
+    private void checkCcIdStack(BigInteger originCcId, BigInteger newCcId) {
+        if (originCcId.equals(newCcId)) {
             fail("CcId not changed (given: " + originCcId + ", " + newCcId + ")");
         }
     }

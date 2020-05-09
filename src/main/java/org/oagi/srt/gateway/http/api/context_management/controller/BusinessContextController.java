@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class BusinessContextController {
     public PageResponse<BusinessContext> getBusinessContextList(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "bizCtxIds", required = false) String bizCtxIds,
-            @RequestParam(name = "topLevelAbieId", required = false) Long topLevelAbieId,
+            @RequestParam(name = "topLevelAbieId", required = false) BigInteger topLevelAbieId,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,

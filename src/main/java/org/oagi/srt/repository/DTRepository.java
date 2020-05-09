@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -63,8 +64,8 @@ public class DTRepository implements SrtRepository<DT> {
     }
 
     @Override
-    public DT findById(long id) {
-        if (id <= 0L) {
+    public DT findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectOnConditionStep()

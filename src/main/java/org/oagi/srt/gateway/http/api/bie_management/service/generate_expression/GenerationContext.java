@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -110,37 +111,37 @@ public class GenerationContext implements InitializingBean {
     @Autowired
     private ReleaseRepository releaseRepository;
     // Prepared Datas
-    private Map<Long, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
-    private Map<Long, BdtPriRestri> findBdtPriRestriMap;
-    private Map<Long, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
-    private Map<Long, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
-    private Map<Long, BdtScPriRestri> findBdtScPriRestriMap;
-    private Map<Long, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
-    private Map<Long, Xbt> findXbtMap;
-    private Map<Long, CodeList> findCodeListMap;
-    private Map<Long, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
-    private Map<Long, ACC> findACCMap;
-    private Map<Long, BCC> findBCCMap;
-    private Map<Long, BCCP> findBCCPMap;
-    private Map<Long, ASCC> findASCCMap;
-    private Map<Long, ASCCP> findASCCPMap;
-    private Map<Long, DT> findDTMap;
-    private Map<Long, DTSC> findDtScMap;
-    private Map<Long, AgencyIdList> findAgencyIdListMap;
-    private Map<Long, AgencyIdListValue> findAgencyIdListValueMap;
-    private Map<Long, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
-    private Map<Long, ABIE> findAbieMap;
-    private Map<Long, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
-    private Map<Long, List<BBIESC>>
+    private Map<BigInteger, BdtPriRestri> findBdtPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<BigInteger, BdtPriRestri> findBdtPriRestriMap;
+    private Map<BigInteger, CdtAwdPriXpsTypeMap> findCdtAwdPriXpsTypeMapMap;
+    private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriByBdtIdAndDefaultIsTrueMap;
+    private Map<BigInteger, BdtScPriRestri> findBdtScPriRestriMap;
+    private Map<BigInteger, CdtScAwdPriXpsTypeMap> findCdtScAwdPriXpsTypeMapMap;
+    private Map<BigInteger, Xbt> findXbtMap;
+    private Map<BigInteger, CodeList> findCodeListMap;
+    private Map<BigInteger, List<CodeListValue>> findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap;
+    private Map<BigInteger, ACC> findACCMap;
+    private Map<BigInteger, BCC> findBCCMap;
+    private Map<BigInteger, BCCP> findBCCPMap;
+    private Map<BigInteger, ASCC> findASCCMap;
+    private Map<BigInteger, ASCCP> findASCCPMap;
+    private Map<BigInteger, DT> findDTMap;
+    private Map<BigInteger, DTSC> findDtScMap;
+    private Map<BigInteger, AgencyIdList> findAgencyIdListMap;
+    private Map<BigInteger, AgencyIdListValue> findAgencyIdListValueMap;
+    private Map<BigInteger, List<AgencyIdListValue>> findAgencyIdListValueByOwnerListIdMap;
+    private Map<BigInteger, ABIE> findAbieMap;
+    private Map<BigInteger, List<BBIE>> findBbieByFromAbieIdAndUsedIsTrueMap;
+    private Map<BigInteger, List<BBIESC>>
             findBbieScByBbieIdAndUsedIsTrueMap;
-    private Map<Long, List<ASBIE>> findAsbieByFromAbieIdMap;
-    private Map<Long, ASBIEP> findASBIEPMap;
-    private Map<Long, ASBIEP> findAsbiepByRoleOfAbieIdMap;
-    private Map<Long, BBIEP> findBBIEPMap;
-    private Map<Long, String> findUserNameMap;
-    private Map<Long, String> findReleaseNumberMap;
-    private Map<Long, ContextScheme> findContextSchemeMap;
-    private Map<Long, ContextCategory> findContextCategoryMap;
+    private Map<BigInteger, List<ASBIE>> findAsbieByFromAbieIdMap;
+    private Map<BigInteger, ASBIEP> findASBIEPMap;
+    private Map<BigInteger, ASBIEP> findAsbiepByRoleOfAbieIdMap;
+    private Map<BigInteger, BBIEP> findBBIEPMap;
+    private Map<BigInteger, String> findUserNameMap;
+    private Map<BigInteger, String> findReleaseNumberMap;
+    private Map<BigInteger, ContextScheme> findContextSchemeMap;
+    private Map<BigInteger, ContextCategory> findContextCategoryMap;
 
     public GenerationContext(TopLevelAbie topLevelAbie) {
         this(Arrays.asList(topLevelAbie));
@@ -156,7 +157,7 @@ public class GenerationContext implements InitializingBean {
             throw new IllegalStateException("'topLevelAbies' parameter must not be null.");
         }
 
-        Set<Long> releaseIdSet =
+        Set<BigInteger> releaseIdSet =
                 topLevelAbies.stream().map(e -> e.getReleaseId()).collect(Collectors.toSet());
         if (releaseIdSet.size() != 1) {
             throw new UnsupportedOperationException("`releaseId` for all `topLevelAbies` parameter must be same.");
@@ -165,7 +166,7 @@ public class GenerationContext implements InitializingBean {
         init(topLevelAbies, releaseIdSet.iterator().next());
     }
 
-    private void init(List<TopLevelAbie> topLevelAbies, Long releaseId) {
+    private void init(List<TopLevelAbie> topLevelAbies, BigInteger releaseId) {
         List<BdtPriRestri> bdtPriRestriList = bdtPriRestriRepository.findAll();
         findBdtPriRestriByBdtIdAndDefaultIsTrueMap = bdtPriRestriList.stream()
                 .filter(e -> e.isDefault())
@@ -246,7 +247,7 @@ public class GenerationContext implements InitializingBean {
         findAgencyIdListValueByOwnerListIdMap = agencyIdListValues.stream()
                 .collect(Collectors.groupingBy(e -> e.getOwnerListId()));
 
-        List<Long> topLevelAbieIds = topLevelAbies.stream()
+        List<BigInteger> topLevelAbieIds = topLevelAbies.stream()
                 .map(e -> e.getTopLevelAbieId()).collect(Collectors.toList());
 
         List<ABIE> abieList = abieRepository.findByOwnerTopLevelAbieIds(topLevelAbieIds);
@@ -292,128 +293,128 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toMap(e -> e.getCtxCategoryId(), Function.identity()));
     }
 
-    public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(long bdtId) {
-        return (bdtId > 0L) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
+    public BdtPriRestri findBdtPriRestriByBdtIdAndDefaultIsTrue(BigInteger bdtId) {
+        return (bdtId != null && bdtId.longValue() > 0L) ? findBdtPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtId) : null;
     }
 
-    public BdtPriRestri findBdtPriRestri(Long bdtPriRestriId) {
-        return (bdtPriRestriId != null && bdtPriRestriId > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
+    public BdtPriRestri findBdtPriRestri(BigInteger bdtPriRestriId) {
+        return (bdtPriRestriId != null && bdtPriRestriId.longValue() > 0L) ? findBdtPriRestriMap.get(bdtPriRestriId) : null;
     }
 
-    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(Long cdtAwdPriXpsTypeMapId) {
-        return (cdtAwdPriXpsTypeMapId != null && cdtAwdPriXpsTypeMapId > 0L) ?
+    public CdtAwdPriXpsTypeMap findCdtAwdPriXpsTypeMap(BigInteger cdtAwdPriXpsTypeMapId) {
+        return (cdtAwdPriXpsTypeMapId != null && cdtAwdPriXpsTypeMapId.longValue() > 0L) ?
                 findCdtAwdPriXpsTypeMapMap.get(cdtAwdPriXpsTypeMapId) : null;
     }
 
-    public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(long bdtScId) {
-        return (bdtScId > 0L) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
+    public BdtScPriRestri findBdtScPriRestriByBdtScIdAndDefaultIsTrue(BigInteger bdtScId) {
+        return (bdtScId != null && bdtScId.longValue() > 0L) ? findBdtScPriRestriByBdtIdAndDefaultIsTrueMap.get(bdtScId) : null;
     }
 
-    public BdtScPriRestri findBdtScPriRestri(Long bdtScPriRestriId) {
-        return (bdtScPriRestriId != null && bdtScPriRestriId > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
+    public BdtScPriRestri findBdtScPriRestri(BigInteger bdtScPriRestriId) {
+        return (bdtScPriRestriId != null && bdtScPriRestriId.longValue() > 0L) ? findBdtScPriRestriMap.get(bdtScPriRestriId) : null;
     }
 
-    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(Long cdtScAwdPriXpsTypeMapId) {
-        return (cdtScAwdPriXpsTypeMapId != null && cdtScAwdPriXpsTypeMapId > 0L) ?
+    public CdtScAwdPriXpsTypeMap findCdtScAwdPriXpsTypeMap(BigInteger cdtScAwdPriXpsTypeMapId) {
+        return (cdtScAwdPriXpsTypeMapId != null && cdtScAwdPriXpsTypeMapId.longValue() > 0L) ?
                 findCdtScAwdPriXpsTypeMapMap.get(cdtScAwdPriXpsTypeMapId) : null;
     }
 
-    public Xbt findXbt(long xbtId) {
-        return (xbtId > 0L) ? findXbtMap.get(xbtId) : null;
+    public Xbt findXbt(BigInteger xbtId) {
+        return (xbtId.longValue() > 0L) ? findXbtMap.get(xbtId) : null;
     }
 
-    public CodeList findCodeList(Long codeListId) {
-        return (codeListId != null && codeListId > 0L) ? findCodeListMap.get(codeListId) : null;
+    public CodeList findCodeList(BigInteger codeListId) {
+        return (codeListId != null && codeListId.longValue() > 0L) ? findCodeListMap.get(codeListId) : null;
     }
 
-    public List<CodeListValue> findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(long codeListId) {
+    public List<CodeListValue> findCodeListValueByCodeListIdAndUsedIndicatorIsTrue(BigInteger codeListId) {
         return findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap.containsKey(codeListId) ?
                 findCodeListValueByCodeListIdAndUsedIndicatorIsTrueMap.get(codeListId) :
                 Collections.emptyList();
     }
 
-    public ACC findACC(long accId) {
-        return (accId > 0L) ? findACCMap.get(accId) : null;
+    public ACC findACC(BigInteger accId) {
+        return (accId != null && accId.longValue() > 0L) ? findACCMap.get(accId) : null;
     }
 
-    public BCC findBCC(long bccId) {
-        return (bccId > 0L) ? findBCCMap.get(bccId) : null;
+    public BCC findBCC(BigInteger bccId) {
+        return (bccId != null && bccId.longValue() > 0L) ? findBCCMap.get(bccId) : null;
     }
 
-    public BCCP findBCCP(long bccpId) {
-        return (bccpId > 0L) ? findBCCPMap.get(bccpId) : null;
+    public BCCP findBCCP(BigInteger bccpId) {
+        return (bccpId != null && bccpId.longValue() > 0L) ? findBCCPMap.get(bccpId) : null;
     }
 
-    public ASCC findASCC(long asccId) {
-        return (asccId > 0L) ? findASCCMap.get(asccId) : null;
+    public ASCC findASCC(BigInteger asccId) {
+        return (asccId != null && asccId.longValue() > 0L) ? findASCCMap.get(asccId) : null;
     }
 
-    public ASCCP findASCCP(long asccpId) {
-        return (asccpId > 0L) ? findASCCPMap.get(asccpId) : null;
+    public ASCCP findASCCP(BigInteger asccpId) {
+        return (asccpId != null && asccpId.longValue() > 0L) ? findASCCPMap.get(asccpId) : null;
     }
 
-    public DT findDT(long dtId) {
-        return (dtId > 0L) ? findDTMap.get(dtId) : null;
+    public DT findDT(BigInteger dtId) {
+        return (dtId != null && dtId.longValue() > 0L) ? findDTMap.get(dtId) : null;
     }
 
-    public DTSC findDtSc(long dtScId) {
-        return (dtScId > 0L) ? findDtScMap.get(dtScId) : null;
+    public DTSC findDtSc(BigInteger dtScId) {
+        return (dtScId != null && dtScId.longValue() > 0L) ? findDtScMap.get(dtScId) : null;
     }
 
-    public AgencyIdList findAgencyIdList(Long agencyIdListId) {
-        return (agencyIdListId != null && agencyIdListId > 0L) ? findAgencyIdListMap.get(agencyIdListId) : null;
+    public AgencyIdList findAgencyIdList(BigInteger agencyIdListId) {
+        return (agencyIdListId != null && agencyIdListId.longValue() > 0L) ? findAgencyIdListMap.get(agencyIdListId) : null;
     }
 
-    public AgencyIdListValue findAgencyIdListValue(Long agencyIdListValueId) {
-        return (agencyIdListValueId != null && agencyIdListValueId > 0L) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
+    public AgencyIdListValue findAgencyIdListValue(BigInteger agencyIdListValueId) {
+        return (agencyIdListValueId != null && agencyIdListValueId.longValue() > 0L) ? findAgencyIdListValueMap.get(agencyIdListValueId) : null;
     }
 
-    public List<AgencyIdListValue> findAgencyIdListValueByOwnerListId(long ownerListId) {
+    public List<AgencyIdListValue> findAgencyIdListValueByOwnerListId(BigInteger ownerListId) {
         return findAgencyIdListValueByOwnerListIdMap.containsKey(ownerListId) ?
                 findAgencyIdListValueByOwnerListIdMap.get(ownerListId) :
                 Collections.emptyList();
     }
 
-    public ABIE findAbie(long abieId) {
-        return (abieId > 0L) ? findAbieMap.get(abieId) : null;
+    public ABIE findAbie(BigInteger abieId) {
+        return (abieId != null && abieId.longValue() > 0L) ? findAbieMap.get(abieId) : null;
     }
 
-    public List<BBIE> findBbieByFromAbieIdAndUsedIsTrue(long fromAbieId) {
+    public List<BBIE> findBbieByFromAbieIdAndUsedIsTrue(BigInteger fromAbieId) {
         return findBbieByFromAbieIdAndUsedIsTrueMap.containsKey(fromAbieId) ?
                 findBbieByFromAbieIdAndUsedIsTrueMap.get(fromAbieId) :
                 Collections.emptyList();
     }
 
-    public List<BBIESC> findBbieScByBbieIdAndUsedIsTrue(long bbieId) {
+    public List<BBIESC> findBbieScByBbieIdAndUsedIsTrue(BigInteger bbieId) {
         return findBbieScByBbieIdAndUsedIsTrueMap.containsKey(bbieId) ?
                 findBbieScByBbieIdAndUsedIsTrueMap.get(bbieId) :
                 Collections.emptyList();
     }
 
-    public List<ASBIE> findAsbieByFromAbieId(long fromAbieId) {
+    public List<ASBIE> findAsbieByFromAbieId(BigInteger fromAbieId) {
         return findAsbieByFromAbieIdMap.containsKey(fromAbieId) ?
                 findAsbieByFromAbieIdMap.get(fromAbieId) :
                 Collections.emptyList();
     }
 
-    public ASBIEP findASBIEP(long asbiepId) {
-        return (asbiepId > 0L) ? findASBIEPMap.get(asbiepId) : null;
+    public ASBIEP findASBIEP(BigInteger asbiepId) {
+        return (asbiepId != null && asbiepId.longValue() > 0L) ? findASBIEPMap.get(asbiepId) : null;
     }
 
-    public ASBIEP findAsbiepByRoleOfAbieId(long roleOfAbieId) {
-        return (roleOfAbieId > 0L) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
+    public ASBIEP findAsbiepByRoleOfAbieId(BigInteger roleOfAbieId) {
+        return (roleOfAbieId != null && roleOfAbieId.longValue() > 0L) ? findAsbiepByRoleOfAbieIdMap.get(roleOfAbieId) : null;
     }
 
-    public BBIEP findBBIEP(long bbiepId) {
-        return (bbiepId > 0L) ? findBBIEPMap.get(bbiepId) : null;
+    public BBIEP findBBIEP(BigInteger bbiepId) {
+        return (bbiepId != null && bbiepId.longValue() > 0L) ? findBBIEPMap.get(bbiepId) : null;
     }
 
-    public String findUserName(long userId) {
-        return (userId > 0L) ? findUserNameMap.get(userId) : null;
+    public String findUserName(BigInteger userId) {
+        return (userId != null && userId.longValue() > 0L) ? findUserNameMap.get(userId) : null;
     }
 
-    public String findReleaseNumber(long releaseId) {
-        return (releaseId > 0L) ? findReleaseNumberMap.get(releaseId) : null;
+    public String findReleaseNumber(BigInteger releaseId) {
+        return (releaseId != null && releaseId.longValue() > 0L) ? findReleaseNumberMap.get(releaseId) : null;
     }
 
     public ACC queryBasedACC(ABIE abie) {
@@ -611,7 +612,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public BizCtx findBusinessContext(TopLevelAbie topLevelAbie) {
-        long bizCtxId = (topLevelAbie != null) ? bizCtxRepository.findByTopLevelAbie(topLevelAbie).get(0).getBizCtxId() : 0L;
+        BigInteger bizCtxId = (topLevelAbie != null) ? bizCtxRepository.findByTopLevelAbie(topLevelAbie).get(0).getBizCtxId() : BigInteger.ZERO;
         //return the first one of the list
         return bizCtxRepository.findById(bizCtxId);
     }
@@ -630,12 +631,12 @@ public class GenerationContext implements InitializingBean {
                 .collect(Collectors.toList());
     }
 
-    public ContextScheme findContextScheme(long ctxSchemeId) {
-        return (ctxSchemeId > 0L) ? findContextSchemeMap.get(ctxSchemeId) : null;
+    public ContextScheme findContextScheme(BigInteger ctxSchemeId) {
+        return (ctxSchemeId != null && ctxSchemeId.longValue() > 0L) ? findContextSchemeMap.get(ctxSchemeId) : null;
     }
 
-    public ContextCategory findContextCategory(long ctxCategoryId) {
-        return (ctxCategoryId > 0L) ? findContextCategoryMap.get(ctxCategoryId) : null;
+    public ContextCategory findContextCategory(BigInteger ctxCategoryId) {
+        return (ctxCategoryId != null && ctxCategoryId.longValue() > 0L) ? findContextCategoryMap.get(ctxCategoryId) : null;
     }
 
     public AgencyIdList findAgencyIdList(ContextScheme contextScheme) {

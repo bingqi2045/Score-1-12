@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -13,7 +14,7 @@ public class CodeList {
     private BigInteger codeListManifestId;
     private String codeListName;
     private String guid;
-    private Long basedCodeListManifestId;
+    private BigInteger basedCodeListManifestId;
     private String basedCodeListName;
 
     private BigInteger agencyId;
@@ -27,7 +28,9 @@ public class CodeList {
 
     private boolean extensible;
     private boolean deprecated;
+    private BigInteger ownerId;
     private String state;
+    private AccessPrivilege access;
 
     private List<CodeListValue> codeListValues = Collections.emptyList();
 

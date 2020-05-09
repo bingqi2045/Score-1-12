@@ -205,7 +205,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") long id) {
+    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") BigInteger id) {
         return service.getAsccp(id);
     }
 

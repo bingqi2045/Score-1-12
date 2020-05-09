@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class BieGenerateController {
                                                         @RequestParam("data") String data) throws IOException {
 
         Map<String, Object> params = convertValue(data);
-        List<Long> topLevelAbieIds = popTopLevelAbieIds(params);
+        List<BigInteger> topLevelAbieIds = popTopLevelAbieIds(params);
         GenerateExpressionOption option =
                 objectMapper.convertValue(params, GenerateExpressionOption.class);
 
@@ -57,13 +58,13 @@ public class BieGenerateController {
         return params;
     }
 
-    private List<Long> popTopLevelAbieIds(Map<String, Object> params) {
+    private List<BigInteger> popTopLevelAbieIds(Map<String, Object> params) {
         Object obj = params.remove("topLevelAbieIds");
         if (obj == null) {
             return Collections.emptyList();
         }
 
         return Arrays.asList(((String) obj).split(",")).stream()
-                .map(s -> Long.parseLong(s)).collect(Collectors.toList());
+                .map(s -> new BigInteger(s)).collect(Collectors.toList());
     }
 }

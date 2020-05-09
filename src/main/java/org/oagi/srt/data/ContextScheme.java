@@ -3,20 +3,22 @@ package org.oagi.srt.data;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class ContextScheme implements Serializable {
-    private long ctxSchemeId;
+
+    private BigInteger ctxSchemeId = BigInteger.ZERO;
     private String guid;
     private String schemeId;
     private String schemeName;
     private String description;
     private String schemeAgencyId;
     private String schemeVersionId;
-    private long ctxCategoryId;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger ctxCategoryId = BigInteger.ZERO;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
 }

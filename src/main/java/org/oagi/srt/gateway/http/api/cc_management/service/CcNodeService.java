@@ -1,8 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
-import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -120,8 +118,9 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void deleteAscc(User user, BigInteger asccManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        DeleteAsccRepositoryRequest request = new DeleteAsccRepositoryRequest(user, timestamp, asccManifestId);
+        DeleteAsccRepositoryRequest request =
+                new DeleteAsccRepositoryRequest(user, asccManifestId);
+
         asccCUDRepository.deleteAscc(request);
 
         fireEvent(new DeletedAsccEvent());
@@ -129,8 +128,9 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void deleteBcc(User user, BigInteger bccManifestId) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        DeleteBccRepositoryRequest request = new DeleteBccRepositoryRequest(user, timestamp, bccManifestId);
+        DeleteBccRepositoryRequest request =
+                new DeleteBccRepositoryRequest(user, bccManifestId);
+
         bccCUDRepository.deleteBcc(request);
 
         fireEvent(new DeletedBccEvent());
@@ -152,7 +152,7 @@ public class CcNodeService extends EventHandler {
         return repository.getBdtScNodeDetail(user, bdtScNode);
     }
 
-    public CcAsccpNodeDetail.Asccp getAsccp(long asccpId) {
+    public CcAsccpNodeDetail.Asccp getAsccp(BigInteger asccpId) {
         return repository.getAsccp(asccpId);
     }
 
@@ -317,7 +317,7 @@ public class CcNodeService extends EventHandler {
         request.setCardinalityMax(detail.getCardinalityMax());
         request.setDefinition(detail.getDefinition());
         request.setDefinitionSource(detail.getDefinitionSource());
-        request.setEntityType(BCCEntityType.valueOf(detail.getEntityType()));
+        request.setEntityType(detail.getEntityType());
         request.setDeprecated(detail.isDeprecated());
         request.setNillable(detail.isNillable());
 
@@ -550,7 +550,7 @@ public class CcNodeService extends EventHandler {
         return null;
     }
 
-    private void decreaseSeqKeyGreaterThan(long userId, ULong accManifestId, int seqKey, LocalDateTime timestamp, ULong revisionId) {
+    private void decreaseSeqKeyGreaterThan(BigInteger userId, ULong accManifestId, int seqKey, LocalDateTime timestamp, ULong revisionId) {
         if (seqKey == 0) {
             return;
         }
@@ -597,7 +597,7 @@ public class CcNodeService extends EventHandler {
 
     public CcRevisionResponse getAccNodeRevision(User user, BigInteger manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(lastPublishedCcId));
@@ -611,7 +611,7 @@ public class CcNodeService extends EventHandler {
                     = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
             List<String> associationKeys = new ArrayList<>();
             for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
-                Long lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().longValue(), CcType.ASCC);
+                BigInteger lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().toBigInteger(), CcType.ASCC);
                 if (lastAsccId != null) {
                     associationKeys.add(CcType.ASCCP.toString().toLowerCase() + asccManifestRecord.getToAsccpManifestId());
                 }
@@ -619,7 +619,7 @@ public class CcNodeService extends EventHandler {
             List<BccManifestRecord> bccManifestRecordList
                     = ccRepository.getBccManifestByFromAccManifestId(ULong.valueOf(manifestId));
             for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
-                Long lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().longValue(), CcType.BCC);
+                BigInteger lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().toBigInteger(), CcType.BCC);
                 if (lastBccId != null) {
                     associationKeys.add(CcType.BCCP.toString().toLowerCase() + bccManifestRecord.getToBccpManifestId());
                 }
@@ -631,7 +631,7 @@ public class CcNodeService extends EventHandler {
 
     public CcRevisionResponse getBccpNodeRevision(User user, BigInteger manifestId) {
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), BCCP);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), BCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(lastPublishedCcId));
@@ -648,7 +648,7 @@ public class CcNodeService extends EventHandler {
 
     public CcRevisionResponse getAsccpNodeRevision(User user, BigInteger manifestId) {
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
-        Long lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), ASCCP);
+        BigInteger lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), ASCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
         if (lastPublishedCcId != null) {
             AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(lastPublishedCcId));
@@ -662,7 +662,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    private Long getLastPublishedCcId(Long ccId, CcType type) {
+    private BigInteger getLastPublishedCcId(BigInteger ccId, CcType type) {
         if (ccId == null) {
             return null;
         }
@@ -675,7 +675,7 @@ public class CcNodeService extends EventHandler {
                 if (accRecord.getPrevAccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(accRecord.getPrevAccId().longValue(), CcType.ACC);
+                return getLastPublishedCcId(accRecord.getPrevAccId().toBigInteger(), CcType.ACC);
             case ASCC:
                 AsccRecord asccRecord = ccRepository.getAsccById(ULong.valueOf(ccId));
                 if (asccRecord.getState().equals(CcState.Published.name())) {
@@ -684,7 +684,7 @@ public class CcNodeService extends EventHandler {
                 if (asccRecord.getPrevAsccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(asccRecord.getPrevAsccId().longValue(), CcType.ASCC);
+                return getLastPublishedCcId(asccRecord.getPrevAsccId().toBigInteger(), CcType.ASCC);
             case BCC:
                 BccRecord bccRecord = ccRepository.getBccById(ULong.valueOf(ccId));
                 if (bccRecord.getState().equals(CcState.Published.name())) {
@@ -693,7 +693,7 @@ public class CcNodeService extends EventHandler {
                 if (bccRecord.getPrevBccId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccRecord.getPrevBccId().longValue(), CcType.BCC);
+                return getLastPublishedCcId(bccRecord.getPrevBccId().toBigInteger(), CcType.BCC);
             case ASCCP:
                 AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(ccId));
                 if (asccpRecord.getState().equals(CcState.Published.name())) {
@@ -702,7 +702,7 @@ public class CcNodeService extends EventHandler {
                 if (asccpRecord.getPrevAsccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().longValue(), CcType.ASCCP);
+                return getLastPublishedCcId(asccpRecord.getPrevAsccpId().toBigInteger(), CcType.ASCCP);
             case BCCP:
                 BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
                 if (bccpRecord.getState().equals(CcState.Published.name())) {
@@ -711,7 +711,7 @@ public class CcNodeService extends EventHandler {
                 if (bccpRecord.getPrevBccpId() == null) {
                     return null;
                 }
-                return getLastPublishedCcId(bccpRecord.getPrevBccpId().longValue(), CcType.BCCP);
+                return getLastPublishedCcId(bccpRecord.getPrevBccpId().toBigInteger(), CcType.BCCP);
 
             case BDT:
                 return null;

@@ -6,22 +6,24 @@ import org.oagi.srt.data.Cardinality;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 
+import java.math.BigInteger;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAscc extends TrackableImpl implements SeqKeySupportable, Cardinality {
 
-    private long asccId;
-    private long asccManifestId;
+    private BigInteger asccId;
+    private BigInteger asccManifestId;
     private String guid;
-    private long fromAccManifestId;
-    private long toAsccpManifestId;
+    private BigInteger fromAccManifestId;
+    private BigInteger toAsccpManifestId;
     private int seqKey;
 
     private int cardinalityMin;
     private int cardinalityMax;
 
     @Override
-    public long getId() {
+    public BigInteger getId() {
         return asccId;
     }
 

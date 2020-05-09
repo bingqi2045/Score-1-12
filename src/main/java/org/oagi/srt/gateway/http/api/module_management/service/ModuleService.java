@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,10 +61,10 @@ public class ModuleService {
                 .on(Tables.MODULE.LAST_UPDATED_BY.eq(U2.APP_USER_ID))
                 .fetchInto(ModuleList.class);
 
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
 
         moduleLists.stream().forEach(moduleList -> {
-            moduleList.setCanEdit(moduleList.getOwnerUserId() == userId);
+            moduleList.setCanEdit(moduleList.getOwnerUserId().equals(userId));
         });
 
         return moduleLists;

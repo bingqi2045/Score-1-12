@@ -2,9 +2,12 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CdtAwdPriXpsTypeMap {
-    private long cdtAwdPriXpsTypeMapId;
-    private long cdtAwdPriId;
-    private long xbtId;
+
+    private BigInteger cdtAwdPriXpsTypeMapId = BigInteger.ZERO;
+    private BigInteger cdtAwdPriId = BigInteger.ZERO;
+    private BigInteger xbtId = BigInteger.ZERO;
 }

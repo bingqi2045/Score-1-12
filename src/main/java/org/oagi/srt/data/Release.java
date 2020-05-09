@@ -2,17 +2,18 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class Release {
 
-    private long releaseId;
+    private BigInteger releaseId = BigInteger.ZERO;
     private String releaseNum;
     private String releaseNote;
-    private long namespaceId;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger namespaceId = BigInteger.ZERO;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private Integer state;

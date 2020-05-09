@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
@@ -78,9 +79,9 @@ public class BieCopyService implements InitializingBean {
 
     @Transactional
     public void copyBie(User user, BieCopyRequest request) {
-        long sourceTopLevelAbieId = request.getTopLevelAbieId();
-        List<Long> bizCtxIds = request.getBizCtxIds();
-        long userId = sessionService.userId(user);
+        BigInteger sourceTopLevelAbieId = request.getTopLevelAbieId();
+        List<BigInteger> bizCtxIds = request.getBizCtxIds();
+        BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
 
         TopLevelAbie sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
@@ -92,7 +93,7 @@ public class BieCopyService implements InitializingBean {
                 .execute();
 
         BieCopyRequestEvent bieCopyRequestEvent = new BieCopyRequestEvent(
-                sourceTopLevelAbieId, copiedTopLevelAbieId.longValue(), bizCtxIds, userId
+                sourceTopLevelAbieId, copiedTopLevelAbieId.toBigInteger(), bizCtxIds, userId
         );
 
         /*
@@ -123,7 +124,7 @@ public class BieCopyService implements InitializingBean {
         }
     }
 
-    private List<BieCopyAbie> getAbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyAbie> getAbieByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 ABIE.ABIE_ID,
                 ABIE.GUID,
@@ -139,7 +140,7 @@ public class BieCopyService implements InitializingBean {
                 .fetchInto(BieCopyAbie.class);
     }
 
-    private List<BieCopyAsbie> getAsbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyAsbie> getAsbieByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 ASBIE.ASBIE_ID,
                 ASBIE.GUID,
@@ -158,7 +159,7 @@ public class BieCopyService implements InitializingBean {
                 .fetchInto(BieCopyAsbie.class);
     }
 
-    private List<BieCopyBbie> getBbieByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyBbie> getBbieByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 BBIE.BBIE_ID,
                 BBIE.GUID,
@@ -184,7 +185,7 @@ public class BieCopyService implements InitializingBean {
                 .fetchInto(BieCopyBbie.class);
     }
 
-    private List<BieCopyAsbiep> getAsbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyAsbiep> getAsbiepByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 ASBIEP.ASBIEP_ID,
                 ASBIEP.GUID,
@@ -198,7 +199,7 @@ public class BieCopyService implements InitializingBean {
                 .fetchInto(BieCopyAsbiep.class);
     }
 
-    private List<BieCopyBbiep> getBbiepByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyBbiep> getBbiepByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
                 BBIEP.GUID,
@@ -211,7 +212,7 @@ public class BieCopyService implements InitializingBean {
                 .fetchInto(BieCopyBbiep.class);
     }
 
-    private List<BieCopyBbieSc> getBbieScByOwnerTopLevelAbieId(long ownerTopLevelAbieId) {
+    private List<BieCopyBbieSc> getBbieScByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.GUID,
@@ -237,9 +238,9 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyAbie {
 
-        private long abieId;
+        private BigInteger abieId;
         private String guid;
-        private long basedAccManifestId;
+        private BigInteger basedAccManifestId;
         private String definition;
         private Long clientId;
         private String version;
@@ -252,11 +253,11 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyAsbie {
 
-        private long asbieId;
+        private BigInteger asbieId;
         private String guid;
-        private long fromAbieId;
-        private long toAsbiepId;
-        private long basedAsccManifestId;
+        private BigInteger fromAbieId;
+        private BigInteger toAsbiepId;
+        private BigInteger basedAsccManifestId;
         private String definition;
         private int cardinalityMin;
         private int cardinalityMax;
@@ -270,11 +271,11 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyBbie {
 
-        private long bbieId;
+        private BigInteger bbieId;
         private String guid;
-        private long basedBccManifestId;
-        private long fromAbieId;
-        private long toBbiepId;
+        private BigInteger basedBccManifestId;
+        private BigInteger fromAbieId;
+        private BigInteger toBbiepId;
         private Long bdtPriRestriId;
         private Long codeListId;
         private Long agencyIdListId;
@@ -295,10 +296,10 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyAsbiep {
 
-        private long asbiepId;
+        private BigInteger asbiepId;
         private String guid;
-        private long basedAsccpManifestId;
-        private long roleOfAbieId;
+        private BigInteger basedAsccpManifestId;
+        private BigInteger roleOfAbieId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -308,9 +309,9 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyBbiep {
 
-        private long bbiepId;
+        private BigInteger bbiepId;
         private String guid;
-        private long basedBccpManifestId;
+        private BigInteger basedBccpManifestId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -320,10 +321,10 @@ public class BieCopyService implements InitializingBean {
     @Data
     public static class BieCopyBbieSc {
 
-        private long bbieScId;
+        private BigInteger bbieScId;
         private String guid;
-        private long bbieId;
-        private long basedDtScManifestId;
+        private BigInteger bbieId;
+        private BigInteger basedDtScManifestId;
         private Long dtScPriRestriId;
         private Long codeListId;
         private Long agencyIdListId;
@@ -343,8 +344,8 @@ public class BieCopyService implements InitializingBean {
 
         private TopLevelAbie sourceTopLevelAbie;
         private TopLevelAbie copiedTopLevelAbie;
-        private List<Long> bizCtxIds;
-        private long userId;
+        private List<BigInteger> bizCtxIds;
+        private BigInteger userId;
 
         private Timestamp timestamp;
 
@@ -352,26 +353,26 @@ public class BieCopyService implements InitializingBean {
         private List<BieCopyAbie> abieList;
 
         private List<BieCopyAsbiep> asbiepList;
-        private Map<Long, List<BieCopyAsbiep>> roleOfAbieToAsbiepMap;
+        private Map<BigInteger, List<BieCopyAsbiep>> roleOfAbieToAsbiepMap;
 
         private List<BieCopyBbiep> bbiepList;
 
         private List<BieCopyAsbie> asbieList;
-        private Map<Long, List<BieCopyAsbie>> fromAbieToAsbieMap;
-        private Map<Long, List<BieCopyAsbie>> toAsbiepToAsbieMap;
+        private Map<BigInteger, List<BieCopyAsbie>> fromAbieToAsbieMap;
+        private Map<BigInteger, List<BieCopyAsbie>> toAsbiepToAsbieMap;
 
         private List<BieCopyBbie> bbieList;
-        private Map<Long, List<BieCopyBbie>> fromAbieToBbieMap;
-        private Map<Long, List<BieCopyBbie>> toBbiepToBbieMap;
+        private Map<BigInteger, List<BieCopyBbie>> fromAbieToBbieMap;
+        private Map<BigInteger, List<BieCopyBbie>> toBbiepToBbieMap;
 
         private List<BieCopyBbieSc> bbieScList;
-        private Map<Long, List<BieCopyBbieSc>> bbieToBbieScMap;
+        private Map<BigInteger, List<BieCopyBbieSc>> bbieToBbieScMap;
 
         public BieCopyContext(BieCopyRequestEvent bieCopyRequestEvent) {
-            long sourceTopLevelAbieId = bieCopyRequestEvent.getSourceTopLevelAbieId();
+            BigInteger sourceTopLevelAbieId = bieCopyRequestEvent.getSourceTopLevelAbieId();
             sourceTopLevelAbie = topLevelAbieRepository.findById(sourceTopLevelAbieId);
 
-            long copiedTopLevelAbieId = bieCopyRequestEvent.getCopiedTopLevelAbieId();
+            BigInteger copiedTopLevelAbieId = bieCopyRequestEvent.getCopiedTopLevelAbieId();
             copiedTopLevelAbie = topLevelAbieRepository.findById(copiedTopLevelAbieId);
 
             bizCtxIds = bieCopyRequestEvent.getBizCtxIds();
@@ -407,8 +408,8 @@ public class BieCopyService implements InitializingBean {
                     .execute();
 
             for (BieCopyAbie abie : abieList) {
-                long previousAbieId = abie.getAbieId();
-                long nextAbieId = insertAbie(abie);
+                BigInteger previousAbieId = abie.getAbieId();
+                BigInteger nextAbieId = insertAbie(abie);
 
                 fireChangeEvent("abie", previousAbieId, nextAbieId);
             }
@@ -419,36 +420,36 @@ public class BieCopyService implements InitializingBean {
                     .execute();
 
             for (BieCopyAsbiep asbiep : asbiepList) {
-                long previousAsbiepId = asbiep.getAsbiepId();
-                long nextAsbiepId = insertAsbiep(asbiep);
+                BigInteger previousAsbiepId = asbiep.getAsbiepId();
+                BigInteger nextAsbiepId = insertAsbiep(asbiep);
 
                 fireChangeEvent("asbiep", previousAsbiepId, nextAsbiepId);
             }
 
             for (BieCopyBbiep bbiep : bbiepList) {
-                long previousBbiepId = bbiep.getBbiepId();
-                long nextBbiepId = insertBbiep(bbiep);
+                BigInteger previousBbiepId = bbiep.getBbiepId();
+                BigInteger nextBbiepId = insertBbiep(bbiep);
 
                 fireChangeEvent("bbiep", previousBbiepId, nextBbiepId);
             }
 
             for (BieCopyAsbie asbie : asbieList) {
-                long previousAsbieId = asbie.getAsbieId();
-                long nextAsbieId = insertAsbie(asbie);
+                BigInteger previousAsbieId = asbie.getAsbieId();
+                BigInteger nextAsbieId = insertAsbie(asbie);
 
                 fireChangeEvent("asbie", previousAsbieId, nextAsbieId);
             }
 
             for (BieCopyBbie bbie : bbieList) {
-                long previousBbieId = bbie.getBbieId();
-                long nextBbieId = insertBbie(bbie);
+                BigInteger previousBbieId = bbie.getBbieId();
+                BigInteger nextBbieId = insertBbie(bbie);
 
                 fireChangeEvent("bbie", previousBbieId, nextBbieId);
             }
 
             for (BieCopyBbieSc bbieSc : bbieScList) {
-                long previousBbieScId = bbieSc.getBbieId();
-                long nextBbieScId = insertBbieSc(bbieSc);
+                BigInteger previousBbieScId = bbieSc.getBbieId();
+                BigInteger nextBbieScId = insertBbieSc(bbieSc);
 
                 fireChangeEvent("bbie_sc", previousBbieScId, nextBbieScId);
             }
@@ -460,10 +461,10 @@ public class BieCopyService implements InitializingBean {
         }
 
 
-        private void fireChangeEvent(String type, long previousVal, long nextVal) {
+        private void fireChangeEvent(String type, BigInteger previousVal, BigInteger nextVal) {
             switch (type) {
                 case "abie":
-                    if (sourceTopLevelAbie.getAbieId() == previousVal) {
+                    if (sourceTopLevelAbie.getAbieId().equals(previousVal)) {
                         copiedTopLevelAbie.setAbieId(nextVal);
                     }
 
@@ -503,7 +504,7 @@ public class BieCopyService implements InitializingBean {
         }
 
 
-        private long insertAbie(BieCopyAbie abie) {
+        private BigInteger insertAbie(BieCopyAbie abie) {
 
             return dslContext.insertInto(ABIE)
                     .set(ABIE.GUID, SrtGuid.randomGuid())
@@ -520,10 +521,10 @@ public class BieCopyService implements InitializingBean {
                     .set(ABIE.REMARK, abie.getRemark())
                     .set(ABIE.BIZ_TERM, abie.getBizTerm())
                     .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(ABIE.ABIE_ID).fetchOne().getValue(ABIE.ABIE_ID).longValue();
+                    .returning(ABIE.ABIE_ID).fetchOne().getValue(ABIE.ABIE_ID).toBigInteger();
         }
 
-        private long insertAsbiep(BieCopyAsbiep asbiep) {
+        private BigInteger insertAsbiep(BieCopyAsbiep asbiep) {
 
             return dslContext.insertInto(ASBIEP)
                     .set(ASBIEP.GUID, SrtGuid.randomGuid())
@@ -537,10 +538,10 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIEP.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).longValue();
+                    .returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).toBigInteger();
         }
 
-        private long insertBbiep(BieCopyBbiep bbiep) {
+        private BigInteger insertBbiep(BieCopyBbiep bbiep) {
 
             return dslContext.insertInto(BBIEP)
                     .set(BBIEP.GUID, SrtGuid.randomGuid())
@@ -553,10 +554,10 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIEP.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(BBIEP.BBIEP_ID).fetchOne().getValue(BBIEP.BBIEP_ID).longValue();
+                    .returning(BBIEP.BBIEP_ID).fetchOne().getValue(BBIEP.BBIEP_ID).toBigInteger();
         }
 
-        private long insertAsbie(BieCopyAsbie asbie) {
+        private BigInteger insertAsbie(BieCopyAsbie asbie) {
 
             return dslContext.insertInto(ASBIE)
                     .set(ASBIE.GUID, SrtGuid.randomGuid())
@@ -575,10 +576,10 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(ASBIE.ASBIE_ID).fetchOne().getValue(ASBIE.ASBIE_ID).longValue();
+                    .returning(ASBIE.ASBIE_ID).fetchOne().getValue(ASBIE.ASBIE_ID).toBigInteger();
         }
 
-        private long insertBbie(BieCopyBbie bbie) {
+        private BigInteger insertBbie(BieCopyBbie bbie) {
 
             return dslContext.insertInto(BBIE)
                     .set(BBIE.GUID, SrtGuid.randomGuid())
@@ -604,10 +605,10 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(BBIE.BBIE_ID).fetchOne().getValue(BBIE.BBIE_ID).longValue();
+                    .returning(BBIE.BBIE_ID).fetchOne().getValue(BBIE.BBIE_ID).toBigInteger();
         }
 
-        private long insertBbieSc(BieCopyBbieSc bbieSc) {
+        private BigInteger insertBbieSc(BieCopyBbieSc bbieSc) {
 
             return dslContext.insertInto(BBIE_SC)
                     .set(BBIE_SC.GUID, SrtGuid.randomGuid())
@@ -626,7 +627,7 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
                     .set(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).longValue();
+                    .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();
         }
     }
 

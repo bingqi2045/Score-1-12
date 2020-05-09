@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +31,7 @@ public class CcListController {
     @RequestMapping(value = "/core_component", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CcList> getCcList(
-            @RequestParam(name = "releaseId") long releaseId,
+            @RequestParam(name = "releaseId") BigInteger releaseId,
             @RequestParam(name = "den", required = false) String den,
             @RequestParam(name = "definition", required = false) String definition,
             @RequestParam(name = "module", required = false) String module,
@@ -102,7 +103,7 @@ public class CcListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
                                             @PathVariable("type") String type,
-                                            @PathVariable("manifestId") long manifestId,
+                                            @PathVariable("manifestId") BigInteger manifestId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
         service.transferOwnership(user, type, manifestId, targetLoginId);

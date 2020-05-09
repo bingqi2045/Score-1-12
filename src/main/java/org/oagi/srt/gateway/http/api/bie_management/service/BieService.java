@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
 import org.oagi.srt.data.TopLevelAbie;
@@ -29,6 +30,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +75,7 @@ public class BieService {
             throw new IllegalArgumentException();
         }
 
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
 
         ULong topLevelAbieId = bieRepository.insertTopLevelAbie()
@@ -114,7 +116,7 @@ public class BieService {
 
     public PageResponse<BieList> getBieList(User user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
-        long userId = sessionService.userId(user);
+        AppUser requester = sessionService.getAppUser(user);
 
         PaginationResponse<BieList> result = bieRepository.selectBieLists()
                 .setPropertyTerm(request.getPropertyTerm())
@@ -123,7 +125,7 @@ public class BieService {
                 .setOwnerLoginIds(request.getOwnerLoginIds())
                 .setUpdaterLoginIds(request.getUpdaterLoginIds())
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
-                .setAccess(ULong.valueOf(userId), request.getAccess())
+                .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
                 .fetchInto(BieList.class);
@@ -135,7 +137,9 @@ public class BieService {
                     .setName(request.getBusinessContext())
                     .fetchInto(BusinessContext.class).getResult());
 
-            bieList.setAccess(getAccessPrivilege(bieList, userId).name());
+            bieList.setAccess(
+                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), bieList.getState())
+            );
         });
 
         PageResponse<BieList> response = new PageResponse();
@@ -146,43 +150,8 @@ public class BieService {
         return response;
     }
 
-    private AccessPrivilege getAccessPrivilege(BieList bieList, long userId) {
-        BieState state = BieState.valueOf(bieList.getRawState());
-        bieList.setState(state);
-
-        AccessPrivilege accessPrivilege = Prohibited;
-        switch (state) {
-            case Initiating:
-                accessPrivilege = Unprepared;
-                break;
-
-            case WIP:
-                if (userId == bieList.getOwnerUserId()) {
-                    accessPrivilege = CanEdit;
-                } else {
-                    accessPrivilege = Prohibited;
-                }
-                break;
-
-            case QA:
-                if (userId == bieList.getOwnerUserId()) {
-                    accessPrivilege = CanEdit;
-                } else {
-                    accessPrivilege = CanView;
-                }
-
-                break;
-
-            case Production:
-                accessPrivilege = CanView;
-                break;
-        }
-
-        return accessPrivilege;
-    }
-
-    public BizCtx findBizCtxByAbieId(long abieId) {
-        long topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
+    public BizCtx findBizCtxByAbieId(BigInteger abieId) {
+        BigInteger topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
         // return the first biz ctx of the specific topLevelAbieId
         TopLevelAbie top = new TopLevelAbie();
         top.setTopLevelAbieId(topLevelAbieId);
@@ -190,7 +159,7 @@ public class BieService {
     }
 
     @Transactional
-    public void deleteBieList(User requester, List<Long> topLevelAbieIds) {
+    public void deleteBieList(User requester, List<BigInteger> topLevelAbieIds) {
         if (topLevelAbieIds == null || topLevelAbieIds.isEmpty()) {
             return;
         }
@@ -216,7 +185,7 @@ public class BieService {
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
 
-    private void ensureProperDeleteBieRequest(User requester, List<Long> topLevelAbieIds) {
+    private void ensureProperDeleteBieRequest(User requester, List<BigInteger> topLevelAbieIds) {
         Result<Record2<Integer, ULong>> result =
                 dslContext.select(TOP_LEVEL_ABIE.STATE, TOP_LEVEL_ABIE.OWNER_USER_ID)
                         .from(TOP_LEVEL_ABIE)
@@ -225,21 +194,21 @@ public class BieService {
                         ))
                         .fetch();
 
-        long requesterUserId = sessionService.userId(requester);
+        BigInteger requesterUserId = sessionService.userId(requester);
         for (Record2<Integer, ULong> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
             if (bieState == BieState.Production) {
                 throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");
             }
 
-            if (requesterUserId != record.value2().longValue()) {
+            if (!requesterUserId.equals(record.value2().toBigInteger())) {
                 throw new DataAccessForbiddenException("Only allowed to delete the BIE by the owner.");
             }
         }
     }
 
     @Transactional
-    public void transferOwnership(User user, long topLevelAbieId, String targetLoginId) {
+    public void transferOwnership(User user, BigInteger topLevelAbieId, String targetLoginId) {
         long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
@@ -266,7 +235,7 @@ public class BieService {
     }
 
     @Transactional
-    public List<BizCtxAssignment> getAssignBizCtx(long topLevelAbieId) {
+    public List<BizCtxAssignment> getAssignBizCtx(BigInteger topLevelAbieId) {
         return dslContext.select(
                 BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID,
                 BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
@@ -277,7 +246,7 @@ public class BieService {
     }
 
     @Transactional
-    public void assignBizCtx(User user, long topLevelAbieId, Collection<Long> biz_ctx_list) {
+    public void assignBizCtx(User user, BigInteger topLevelAbieId, Collection<Long> biz_ctx_list) {
         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
         //remove all records of previous assignment if not in the current assignment
         dslContext.delete(BIZ_CTX_ASSIGNMENT)

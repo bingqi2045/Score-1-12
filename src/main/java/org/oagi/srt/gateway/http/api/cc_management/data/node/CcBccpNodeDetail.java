@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
+import org.oagi.srt.data.BCCEntityType;
 
 import java.math.BigInteger;
 
@@ -14,11 +15,11 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Bcc {
-        private BigInteger bccId;
-        private BigInteger manifestId;
+        private BigInteger bccId = BigInteger.ZERO;
+        private BigInteger manifestId = BigInteger.ZERO;
         private String guid;
         private String den;
-        private int entityType;
+        private BCCEntityType entityType;
         private int cardinalityMin;
         private int cardinalityMax;
         private boolean deprecated;
@@ -32,14 +33,14 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Bccp {
-        private long bccpId;
-        private BigInteger manifestId;
+        private BigInteger bccpId = BigInteger.ZERO;
+        private BigInteger manifestId = BigInteger.ZERO;
         private String guid;
         private String propertyTerm;
         private String den;
         private boolean nillable;
         private boolean deprecated;
-        private BigInteger namespaceId;
+        private BigInteger namespaceId = BigInteger.ZERO;
         private String defaultValue;
         private String fixedValue;
         private String definition;
@@ -48,7 +49,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Bdt {
-        private long bdtId;
+        private BigInteger bdtId = BigInteger.ZERO;
         private String guid;
         private String dataTypeTerm;
         private String qualifier;

@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -23,7 +24,10 @@ public class AgencyIdListValueRepository implements SrtRepository<AgencyIdListVa
     }
 
     @Override
-    public AgencyIdListValue findById(long id) {
+    public AgencyIdListValue findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID, Tables.AGENCY_ID_LIST_VALUE.NAME,
                 Tables.AGENCY_ID_LIST_VALUE.OWNER_LIST_ID, Tables.AGENCY_ID_LIST_VALUE.DEFINITION,
                 Tables.AGENCY_ID_LIST_VALUE.VALUE).from(Tables.AGENCY_ID_LIST_VALUE)

@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 
 @Service
@@ -17,14 +19,14 @@ public class SessionService {
     @Autowired
     private DSLContext dslContext;
 
-    public long userId(User user) {
+    public BigInteger userId(User user) {
         if (user == null) {
-            return 0L;
+            return BigInteger.ZERO;
         }
         return dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
-                .fetchOptional(APP_USER.APP_USER_ID).orElse(ULong.valueOf(0L)).longValue();
+                .fetchOptional(APP_USER.APP_USER_ID).orElse(ULong.valueOf(0L)).toBigInteger();
     }
 
     public AppUser getAppUser(String username) {

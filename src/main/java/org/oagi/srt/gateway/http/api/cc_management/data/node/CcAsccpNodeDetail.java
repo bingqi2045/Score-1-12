@@ -13,8 +13,8 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Ascc {
-        private BigInteger manifestId;
-        private BigInteger asccId;
+        private BigInteger manifestId = BigInteger.ZERO;
+        private BigInteger asccId = BigInteger.ZERO;
         private String guid;
         private String den;
         private int cardinalityMin;
@@ -27,12 +27,12 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Asccp {
-        private BigInteger manifestId;
-        private BigInteger asccpId;
+        private BigInteger manifestId = BigInteger.ZERO;
+        private BigInteger asccpId = BigInteger.ZERO;
         private String guid;
         private String propertyTerm;
         private String den;
-        private BigInteger namespaceId;
+        private BigInteger namespaceId = BigInteger.ZERO;
         private boolean reusable;
         private boolean deprecated;
         private boolean nillable;

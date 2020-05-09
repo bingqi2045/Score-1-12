@@ -9,6 +9,7 @@ import org.oagi.srt.data.Xbt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,7 +41,10 @@ public class XbtRepository implements SrtRepository<Xbt> {
     }
 
     @Override
-    public Xbt findById(long id) {
+    public Xbt findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return getSelectJoinStep()
                 .where(XBT.XBT_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(Xbt.class);

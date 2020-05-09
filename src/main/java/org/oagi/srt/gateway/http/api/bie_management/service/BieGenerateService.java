@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class BieGenerateService {
     private DSLContext dslContext;
 
     public BieGenerateExpressionResult generate(
-            User user, List<Long> topLevelAbieIds,
+            User user, List<BigInteger> topLevelAbieIds,
             GenerateExpressionOption option) throws BieGenerateFailureException {
 
         List<TopLevelAbie> topLevelAbies = topLevelAbieRepository.findByIdIn(topLevelAbieIds);
@@ -90,7 +91,7 @@ public class BieGenerateService {
                 return generateSchemaForAll(topLevelAbies, option);
 
             case "EACH":
-                Map<Long, File> files = generateSchemaForEach(topLevelAbies, option);
+                Map<BigInteger, File> files = generateSchemaForEach(topLevelAbies, option);
                 if (files.size() == 1) {
                     return files.values().iterator().next();
                 }
@@ -131,9 +132,9 @@ public class BieGenerateService {
         return schemaExpressionFile;
     }
 
-    public Map<Long, File> generateSchemaForEach(List<TopLevelAbie> topLevelAbies,
-                                                 GenerateExpressionOption option) throws BieGenerateFailureException {
-        Map<Long, File> targetFiles = new HashMap();
+    public Map<BigInteger, File> generateSchemaForEach(List<TopLevelAbie> topLevelAbies,
+                                                       GenerateExpressionOption option) throws BieGenerateFailureException {
+        Map<BigInteger, File> targetFiles = new HashMap();
         BieGenerateExpression generateExpression = createBieGenerateExpression(option);
         GenerationContext generationContext = generateExpression.generateContext(topLevelAbies, option);
 
@@ -162,15 +163,15 @@ public class BieGenerateService {
         /*
          * Issue 566
          */
-        long rootAbieId = topLevelAbie.getAbieId();
-        long asccpId = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
+        BigInteger rootAbieId = topLevelAbie.getAbieId();
+        BigInteger asccpId = dslContext.select(ASCCP_MANIFEST.ASCCP_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .where(and(ASBIEP.ROLE_OF_ABIE_ID
                                 .eq(ULong.valueOf(rootAbieId)),
                         ASBIEP.OWNER_TOP_LEVEL_ABIE_ID
                                 .eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId()))))
-                .fetchOneInto(Long.class);
+                .fetchOneInto(BigInteger.class);
 
         String propertyTerm = dslContext.select(ASCCP.PROPERTY_TERM)
                 .from(ASCCP)

@@ -29,6 +29,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -143,14 +144,14 @@ public class CcListService {
         return pageResponse;
     }
 
-    public ACC getAcc(long id) {
+    public ACC getAcc(BigInteger id) {
         return dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(ACC.class);
     }
 
     @Transactional
-    public void transferOwnership(User user, String type, long manifestId, String targetLoginId) {
+    public void transferOwnership(User user, String type, BigInteger manifestId, String targetLoginId) {
         long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
@@ -197,7 +198,7 @@ public class CcListService {
     }
 
     public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(User user) {
-        long requesterId = sessionService.userId(user);
+        BigInteger requesterId = sessionService.userId(user);
 
         Release workingRelease = releaseRepository.getWorkingRelease();
 
