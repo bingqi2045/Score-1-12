@@ -887,6 +887,35 @@ SET `code_list_value`.`created_by` = `code_list`.`created_by`,
     `code_list_value`.`last_update_timestamp` = `code_list`.`last_update_timestamp`
 WHERE `code_list_value`.`code_list_id` = `code_list`.`code_list_id`;
 
+-- Updating prev/next code_list_value_id
+UPDATE `code_list_value`, (
+    SELECT
+        `code_list_value`.`code_list_value_id`, `code_list_value`.`value`, `code_list`.`code_list_id`,
+        base_value.`code_list_value_id` as base_value_id, base_value.`value` as base_value, base.`code_list_id` as base_id
+    FROM `code_list_value`
+    JOIN `code_list` ON `code_list_value`.`code_list_id` = `code_list`.`code_list_id`
+     AND `code_list`.`based_code_list_id` is not null
+    JOIN `code_list` AS base ON `code_list`.`based_code_list_id` = base.`code_list_id`
+    JOIN `code_list_value` AS base_value ON base_value.`code_list_id` = base.`code_list_id`
+     AND `code_list_value`.`value` = base_value.`value`
+) t
+SET `code_list_value`.`prev_code_list_value_id` = t.`base_value_id`
+WHERE `code_list_value`.`code_list_value_id` = t.`code_list_value_id`;
+
+UPDATE `code_list_value`, (
+    SELECT
+        `code_list_value`.`code_list_value_id`, `code_list_value`.`value`, `code_list`.`code_list_id`,
+        base_value.`code_list_value_id` as base_value_id, base_value.`value` as base_value, base.`code_list_id` as base_id
+    FROM `code_list_value`
+    JOIN `code_list` ON `code_list_value`.`code_list_id` = `code_list`.`code_list_id`
+     AND `code_list`.`based_code_list_id` is not null
+    JOIN `code_list` AS base ON `code_list`.`based_code_list_id` = base.`code_list_id`
+    JOIN `code_list_value` AS base_value ON base_value.`code_list_id` = base.`code_list_id`
+     AND `code_list_value`.`value` = base_value.`value`
+) t
+SET `code_list_value`.`next_code_list_value_id` = t.`code_list_value_id`
+WHERE `code_list_value`.`code_list_value_id` = t.`base_value_id`;
+
 CREATE TABLE `code_list_value_manifest` (
     `code_list_value_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
