@@ -278,6 +278,7 @@ public class RevisionRepository {
                 revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             }
         }
+        revisionRecord.setRevisionAction(revisionAction.name());
 
         List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
                 .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
@@ -287,7 +288,6 @@ public class RevisionRepository {
                 .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
                 .fetch();
 
-        revisionRecord.setRevisionAction(revisionAction.name());
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(accRecord, asccRecords, bccRecords)));
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
@@ -401,6 +401,67 @@ public class RevisionRepository {
         }
         revisionRecord.setRevisionAction(revisionAction.name());
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+        revisionRecord.setCreatedBy(requesterId);
+        revisionRecord.setCreationTimestamp(timestamp);
+        if (prevRevisionRecord != null) {
+            revisionRecord.setPrevRevisionId(prevRevisionRecord.getRevisionId());
+        }
+
+        revisionRecord.setRevisionId(dslContext.insertInto(REVISION)
+                .set(revisionRecord)
+                .returning(REVISION.REVISION_ID).fetchOne().getRevisionId());
+        if (prevRevisionRecord != null) {
+            prevRevisionRecord.setNextRevisionId(revisionRecord.getRevisionId());
+            prevRevisionRecord.update(REVISION.NEXT_REVISION_ID);
+        }
+
+        return revisionRecord;
+    }
+
+    /*
+     * Begins Code List
+     */
+    public RevisionRecord insertCodeListRevision(CodeListRecord codeListRecord,
+                                                 RevisionAction revisionAction,
+                                                 ULong requesterId,
+                                                 LocalDateTime timestamp) {
+        return insertCodeListRevision(codeListRecord, null, revisionAction, requesterId, timestamp);
+    }
+
+    public RevisionRecord insertCodeListRevision(CodeListRecord codeListRecord,
+                                                 ULong prevRevisionId,
+                                                 RevisionAction revisionAction,
+                                                 ULong requesterId,
+                                                 LocalDateTime timestamp) {
+
+        RevisionRecord prevRevisionRecord = null;
+        if (prevRevisionId != null) {
+            prevRevisionRecord = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(prevRevisionId))
+                    .fetchOne();
+        }
+
+        RevisionRecord revisionRecord = new RevisionRecord();
+        if (RevisionAction.Revised.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else {
+            if (prevRevisionRecord != null) {
+                revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
+                revisionRecord.setRevisionTrackingNum(prevRevisionRecord.getRevisionTrackingNum().add(1));
+            } else {
+                revisionRecord.setRevisionNum(UInteger.valueOf(1));
+                revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            }
+        }
+        revisionRecord.setRevisionAction(revisionAction.name());
+
+        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
+                .fetch();
+
+        revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(codeListRecord, codeListValueRecords)));
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
         if (prevRevisionRecord != null) {

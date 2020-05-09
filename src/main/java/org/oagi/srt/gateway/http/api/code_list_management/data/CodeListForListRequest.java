@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 
 import java.util.Collections;
@@ -12,7 +13,7 @@ public class CodeListForListRequest {
 
     private long releaseId;
     private String name;
-    private List<String> states = Collections.emptyList();
+    private List<CcState> states = Collections.emptyList();
     private Boolean deprecated;
     private Boolean extensible;
 

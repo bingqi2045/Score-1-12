@@ -2,25 +2,28 @@ package org.oagi.srt.gateway.http.api.code_list_management.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.code_list_management.data.*;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.redis.event.EventHandler;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.component.code_list.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -29,12 +32,11 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.api.code_list_management.data.CodeListState.WIP;
 import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Service
 @Transactional(readOnly = true)
-public class CodeListService {
+public class CodeListService extends EventHandler {
 
     @Autowired
     private DSLContext dslContext;
@@ -43,12 +45,16 @@ public class CodeListService {
     private SessionService sessionService;
 
     @Autowired
+    private CodeListCUDRepository codeListCUDRepository;
+
+    @Autowired
     private RevisionRepository revisionRepository;
 
-    private SelectOnConditionStep<
-            Record15<ULong, String, String, ULong, String,
-                    String, ULong, String, String, LocalDateTime,
-                    String, String, Byte, String, Byte>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record16<
+            ULong, String, String, ULong, String,
+            String, ULong, String, String, LocalDateTime,
+            String, String, Byte, String, Byte,
+            UInteger>> getSelectOnConditionStep() {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.GUID,
@@ -64,11 +70,13 @@ public class CodeListService {
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
                 CODE_LIST.STATE,
-                CODE_LIST.IS_DEPRECATED)
+                CODE_LIST.IS_DEPRECATED,
+                REVISION.REVISION_NUM.as("revision"))
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(APP_USER.as("owner")).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(CODE_LIST.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .join(REVISION).on(CODE_LIST_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .leftJoin(CODE_LIST_MANIFEST.as("based")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID))
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID));
@@ -76,9 +84,10 @@ public class CodeListService {
 
     public PageResponse<CodeListForList> getCodeLists(CodeListForListRequest request) {
         SelectOnConditionStep<
-                Record15<ULong, String, String, ULong, String,
+                Record16<ULong, String, String, ULong, String,
                         String, ULong, String, String, LocalDateTime,
-                        String, String, Byte, String, Byte>> step = getSelectOnConditionStep();
+                        String, String, Byte, String, Byte,
+                        UInteger>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
@@ -87,7 +96,8 @@ public class CodeListService {
             conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
         }
         if (!request.getStates().isEmpty()) {
-            conditions.add(CODE_LIST.STATE.in(request.getStates()));
+            conditions.add(CODE_LIST.STATE.in(
+                    request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
         if (request.getDeprecated() != null) {
             conditions.add(CODE_LIST.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
@@ -108,9 +118,10 @@ public class CodeListService {
             conditions.add(CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        SelectConnectByStep<Record15<ULong, String, String, ULong, String,
+        SelectConnectByStep<Record16<ULong, String, String, ULong, String,
                 String, ULong, String, String, LocalDateTime,
-                String, String, Byte, String, Byte>> conditionStep = step;
+                String, String, Byte, String, Byte,
+                UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
             conditionStep = step.where(conditions);
         }
@@ -141,9 +152,10 @@ public class CodeListService {
         }
 
 
-        SelectWithTiesAfterOffsetStep<Record15<ULong, String, String, ULong, String,
+        SelectWithTiesAfterOffsetStep<Record16<ULong, String, String, ULong, String,
                 String, ULong, String, String, LocalDateTime,
-                String, String, Byte, String, Byte>> offsetStep = null;
+                String, String, Byte, String, Byte,
+                UInteger>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -228,59 +240,20 @@ public class CodeListService {
     }
 
     @Transactional
-    public void insert(User user, CodeList codeList) {
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        LocalDateTime timestamp = LocalDateTime.now();
+    public BigInteger createCodeList(User user, BigInteger releaseId) {
+        CreateCodeListRepositoryRequest repositoryRequest =
+                new CreateCodeListRepositoryRequest(user, releaseId);
 
-        CodeListRecord codeListRecord = dslContext.insertInto(CODE_LIST,
-                CODE_LIST.GUID,
-                CODE_LIST.NAME,
-                CODE_LIST.LIST_ID,
-                CODE_LIST.AGENCY_ID,
-                CODE_LIST.VERSION_ID,
-                CODE_LIST.REMARK,
-                CODE_LIST.DEFINITION,
-                CODE_LIST.DEFINITION_SOURCE,
-                CODE_LIST.EXTENSIBLE_INDICATOR,
-                CODE_LIST.STATE,
-                CODE_LIST.IS_DEPRECATED,
-                CODE_LIST.CREATED_BY,
-                CODE_LIST.OWNER_USER_ID,
-                CODE_LIST.LAST_UPDATED_BY,
-                CODE_LIST.CREATION_TIMESTAMP,
-                CODE_LIST.LAST_UPDATE_TIMESTAMP).values(
-                SrtGuid.randomGuid(),
-                codeList.getCodeListName(),
-                codeList.getListId(),
-                ULong.valueOf(codeList.getAgencyId()),
-                codeList.getVersionId(),
-                codeList.getRemark(),
-                codeList.getDefinition(),
-                codeList.getDefinitionSource(),
-                (byte) ((codeList.isExtensible()) ? 1 : 0),
-                WIP.name(),
-                (byte) 0,
-                userId, userId, userId, timestamp, timestamp)
-                .returning().fetchOne();
+        CreateCodeListRepositoryResponse repositoryResponse =
+                codeListCUDRepository.createCodeList(repositoryRequest);
 
-        CodeListManifestRecord manifestRecord = new CodeListManifestRecord();
-        manifestRecord.setReleaseId(ULong.valueOf(codeList.getReleaseId()));
-        manifestRecord.setCodeListId(codeListRecord.getCodeListId());
-        if (codeList.getBasedCodeListManifestId() != null) {
-            manifestRecord.setBasedCodeListManifestId(ULong.valueOf(codeList.getBasedCodeListManifestId()));
-        }
+        fireEvent(new CreatedCodeListEvent());
 
-        manifestRecord = dslContext.insertInto(CODE_LIST_MANIFEST)
-                .set(manifestRecord)
-                .returning().fetchOne();
-
-        for (CodeListValue codeListValue : codeList.getCodeListValues()) {
-            insert(codeListRecord, manifestRecord, codeListValue);
-        }
+        return repositoryResponse.getCodeListManifestId();
     }
 
-    private void insert(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
-                        CodeListValue codeListValue) {
+    private void createCodeList(CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
+                                CodeListValue codeListValue) {
 
         boolean locked = codeListValue.isLocked();
         boolean used = codeListValue.isUsed();
@@ -328,84 +301,34 @@ public class CodeListService {
 
     @Transactional
     public void update(User user, CodeList codeList) {
-        String state = codeList.getState();
-        CodeListManifestRecord manifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeList.getCodeListManifestId())))
-                .fetchOne();
-        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
-                .where(CODE_LIST.CODE_LIST_ID.eq(manifestRecord.getCodeListId()))
-                .fetchOne();
+        if (!StringUtils.isEmpty(codeList.getState())) {
+            UpdateCodeListStateRepositoryRequest request =
+                    new UpdateCodeListStateRepositoryRequest(user, codeList.getCodeListManifestId(),
+                            CcState.valueOf(codeList.getState()));
 
-        ULong requesterId = ULong.valueOf(sessionService.userId(user));
-        if (!codeListRecord.getOwnerUserId().equals(requesterId)) {
-            throw new DataAccessForbiddenException("'" + user.getUsername() +
-                    "' doesn't have an access privilege.");
-        }
+            UpdateCodeListStateRepositoryResponse response =
+                    codeListCUDRepository.updateCodeListState(request);
 
-        LocalDateTime timestamp = LocalDateTime.now();
-        ULong prevCodeListId = codeListRecord.getCodeListId();
-
-        if (!StringUtils.isEmpty(state)) {
-            codeListRecord.setState(state);
+            fireEvent(new UpdatedCodeListStateEvent());
         } else {
-            if (!StringUtils.equals(codeListRecord.getName(), codeList.getCodeListName())) {
-                codeListRecord.setName(codeList.getCodeListName());
-            }
-            if (!StringUtils.equals(codeListRecord.getListId(), codeList.getListId())) {
-                codeListRecord.setListId(codeList.getListId());
-            }
-            if (codeListRecord.getAgencyId().longValue() != codeList.getAgencyId()) {
-                codeListRecord.setAgencyId(ULong.valueOf(codeList.getAgencyId()));
-            }
-            if (!StringUtils.equals(codeListRecord.getVersionId(), codeList.getVersionId())) {
-                codeListRecord.setVersionId(codeList.getVersionId());
-            }
-            if (!StringUtils.equals(codeListRecord.getDefinition(), codeList.getDefinition())) {
-                codeListRecord.setDefinition(codeList.getDefinition());
-            }
-            if (!StringUtils.equals(codeListRecord.getRemark(), codeList.getRemark())) {
-                codeListRecord.setRemark(codeList.getRemark());
-            }
-            if (!StringUtils.equals(codeListRecord.getDefinitionSource(), codeList.getDefinitionSource())) {
-                codeListRecord.setDefinitionSource(codeList.getDefinitionSource());
-            }
-            if (codeList.isExtensible() != ((codeListRecord.getExtensibleIndicator() == 1) ? true : false)) {
-                codeListRecord.setExtensibleIndicator((byte) ((codeList.isExtensible()) ? 1 : 0));
-            }
+            UpdateCodeListPropertiesRepositoryRequest request =
+                    new UpdateCodeListPropertiesRepositoryRequest(user, codeList.getCodeListManifestId());
+
+            request.setCodeListName(codeList.getCodeListName());
+            request.setAgencyId(codeList.getAgencyId());
+            request.setVersionId(codeList.getVersionId());
+            request.setListId(codeList.getListId());
+            request.setDefinition(codeList.getDefinition());
+            request.setDefinitionSource(codeList.getDefinitionSource());
+            request.setRemark(codeList.getRemark());
+            request.setExtensible(codeList.isExtensible());
+            request.setDeprecated(codeList.isDeprecated());
+
+            UpdateCodeListPropertiesRepositoryResponse response =
+                    codeListCUDRepository.updateCodeListProperties(request);
+
+            fireEvent(new UpdatedCodeListPropertiesEvent());
         }
-
-        codeListRecord.setCodeListId(null);
-        codeListRecord.setCreatedBy(requesterId);
-        codeListRecord.setOwnerUserId(requesterId);
-        codeListRecord.setLastUpdatedBy(requesterId);
-        codeListRecord.setCreationTimestamp(timestamp);
-        codeListRecord.setLastUpdateTimestamp(timestamp);
-        codeListRecord.setPrevCodeListId(prevCodeListId);
-
-        CodeListRecord nextCodeList = dslContext.insertInto(CODE_LIST)
-                .set(codeListRecord)
-                .returning().fetchOne();
-
-        dslContext.update(CODE_LIST)
-                .set(CODE_LIST.NEXT_CODE_LIST_ID, nextCodeList.getCodeListId())
-                .where(CODE_LIST.CODE_LIST_ID.eq(prevCodeListId))
-                .execute();
-
-        dslContext.update(CODE_LIST_MANIFEST)
-                .set(CODE_LIST_MANIFEST.CODE_LIST_ID, nextCodeList.getCodeListId())
-                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(manifestRecord.getCodeListManifestId()))
-                .execute();
-
-        List<CodeListValue> codeListValues = codeList.getCodeListValues();
-        if (CodeListState.Published.name().equals(state)) {
-            codeListValues.stream().forEach(e -> {
-                if (!e.isUsed()) {
-                    e.setLocked(true);
-                }
-            });
-        }
-
-        update(user, nextCodeList, manifestRecord, codeListValues);
     }
 
     @Transactional
@@ -557,41 +480,27 @@ public class CodeListService {
     }
 
     @Transactional
-    public void delete(long codeListId) {
-        ensureProperDeleteCodeListRequest(ULong.valueOf(codeListId));
+    public void deleteCodeList(User user, BigInteger codeListId) {
+        DeleteCodeListRepositoryRequest repositoryRequest =
+                new DeleteCodeListRepositoryRequest(user, codeListId);
 
-        dslContext.deleteFrom(CODE_LIST_VALUE)
-                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(ULong.valueOf(codeListId)))
-                .execute();
+        DeleteCodeListRepositoryResponse repositoryResponse =
+                codeListCUDRepository.deleteCodeList(repositoryRequest);
 
-        dslContext.deleteFrom(CODE_LIST)
-                .where(CODE_LIST.CODE_LIST_ID.eq(ULong.valueOf(codeListId)))
-                .execute();
+        fireEvent(new DeletedCodeListEvent());
     }
 
     @Transactional
-    public void delete(List<Long> codeListIds) {
-        codeListIds.stream().forEach(e -> delete(e));
-    }
-
-    private void ensureProperDeleteCodeListRequest(ULong codeListId) {
-        String state = dslContext.select(CODE_LIST.STATE)
-                .from(CODE_LIST)
-                .where(CODE_LIST.CODE_LIST_ID.eq(codeListId))
-                .fetchOptionalInto(String.class).orElse(null);
-
-        if (state == null) {
-            throw new IllegalArgumentException();
-        }
-        CodeListState codeListState = CodeListState.valueOf(state);
-        if (WIP != codeListState) {
-            throw new DataAccessForbiddenException("Not allowed to delete the code list in '" + codeListState + "' state.");
-        }
+    public void deleteCodeList(User user, List<BigInteger> codeListIds) {
+        codeListIds.stream().forEach(e -> deleteCodeList(user, e));
     }
 
     public boolean hasSameCodeList(SameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())));
+        conditions.add(and(
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST.STATE.notEqual(CcState.Deleted.name())
+        ));
 
         if (params.getCodeListManifestId() != null) {
             conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getCodeListManifestId())));
@@ -610,7 +519,10 @@ public class CodeListService {
 
     public boolean hasSameNameCodeList(SameNameCodeListParams params) {
         List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())));
+        conditions.add(and(
+                CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(params.getReleaseId())),
+                CODE_LIST.STATE.notEqual(CcState.Deleted.name())
+        ));
 
         if (params.getCodeListManifestId() != null) {
             conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.ne(ULong.valueOf(params.getCodeListManifestId())));

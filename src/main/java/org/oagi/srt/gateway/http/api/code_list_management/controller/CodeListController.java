@@ -1,5 +1,7 @@
 package org.oagi.srt.gateway.http.api.code_list_management.controller;
 
+import org.oagi.srt.gateway.http.api.cc_management.data.CcCreateResponse;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.code_list_management.data.*;
 import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -12,11 +14,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Deleted;
 
 @RestController
 public class CodeListController {
@@ -45,8 +48,13 @@ public class CodeListController {
 
         request.setReleaseId(releaseId);
         request.setName(name);
-        request.setStates(StringUtils.isEmpty(states) ? Collections.emptyList() :
-                Arrays.asList(states.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        if (!StringUtils.isEmpty(states)) {
+            List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
+            request.setStates(stateStrings.stream()
+                    .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
+        } else {
+            request.setStates(Stream.of(CcState.values()).filter(e -> e != Deleted).collect(Collectors.toList()));
+        }
         if (!StringUtils.isEmpty(deprecated)) {
             if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
                 request.setDeprecated(true);
@@ -88,16 +96,19 @@ public class CodeListController {
     }
 
     @RequestMapping(value = "/code_list", method = RequestMethod.PUT)
-    public ResponseEntity create(
+    public CcCreateResponse create(
             @AuthenticationPrincipal User user,
             @RequestBody CodeList codeList) {
-        service.insert(user, codeList);
-        return ResponseEntity.noContent().build();
+        BigInteger manifestId = service.createCodeList(user, codeList.getReleaseId());
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
     }
 
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("manifestId") long manifestId,
+            @PathVariable("manifestId") BigInteger manifestId,
             @AuthenticationPrincipal User user,
             @RequestBody CodeList codeList) {
         codeList.setCodeListManifestId(manifestId);
@@ -107,14 +118,16 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @PathVariable("manifestId") long manifestId) {
-        service.delete(manifestId);
+            @AuthenticationPrincipal User user,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        service.deleteCodeList(user, manifestId);
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/code_list/delete", method = RequestMethod.POST)
-    public ResponseEntity deletes(@RequestBody DeleteCodeListRequest request) {
-        service.delete(request.getCodeListIds());
+    public ResponseEntity deletes(@AuthenticationPrincipal User user,
+                                  @RequestBody DeleteCodeListRequest request) {
+        service.deleteCodeList(user, request.getCodeListIds());
         return ResponseEntity.noContent().build();
     }
 

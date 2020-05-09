@@ -16,10 +16,12 @@ public class CodeListForList {
     private String listId;
     private String agencyIdName;
     private String versionId;
-    private Date lastUpdateTimestamp;
-    private String lastUpdateUser;
     private boolean extensible;
-    private String state;
     private boolean deprecated;
+    private String revision;
+    private String state;
+    private String owner;
+    private String lastUpdateUser;
+    private Date lastUpdateTimestamp;
 
 }

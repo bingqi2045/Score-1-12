@@ -54,7 +54,7 @@ public class CcListController {
         request.setTypes(CcListTypes.fromString(types));
         if (!StringUtils.isEmpty(states)) {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
-            request.setStates(stateStrings.stream().filter(e -> !"Deprecated".equals(e))
+            request.setStates(stateStrings.stream()
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
         } else {
             request.setStates(Stream.of(CcState.values()).filter(e -> e != Deleted).collect(Collectors.toList()));
