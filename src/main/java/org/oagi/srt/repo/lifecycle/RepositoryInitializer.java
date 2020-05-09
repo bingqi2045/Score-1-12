@@ -36,10 +36,7 @@ public class RepositoryInitializer implements InitializingBean {
         initBccpRevision();
 
         initCodeListRevision();
-        initCodeListValueRevision();
-
         initDtRevision();
-        initDtScRevision();
 
         initXbtRevision();
     }
@@ -289,53 +286,6 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initCodeListValueRevision() {
-        // For 'Non-Working' releases.
-        List<CodeListValueManifestRecord> codeListValueManifestRecordList = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
-                .from(CODE_LIST_VALUE_MANIFEST).join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.notEqual("Working"),
-                        CODE_LIST_VALUE_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(CodeListValueManifestRecord.class);
-
-        for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecordList) {
-            ULong revisionId = dslContext.select(REVISION.REVISION_ID)
-                    .from(REVISION)
-                    .join(CODE_LIST_MANIFEST).on(CODE_LIST_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                    .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListValueManifestRecord.getCodeListManifestId()))
-                    .fetchOne().get(REVISION.REVISION_ID);
-
-            codeListValueManifestRecord.setRevisionId(revisionId);
-            codeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.REVISION_ID);
-        }
-
-        // For 'Working' release.
-        codeListValueManifestRecordList = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
-                .from(CODE_LIST_VALUE_MANIFEST).join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.equal("Working"),
-                        CODE_LIST_VALUE_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(CodeListValueManifestRecord.class);
-
-        for (CodeListValueManifestRecord nextCodeListValueManifestRecord : codeListValueManifestRecordList) {
-            CodeListValueManifestRecord prevCodeListValueManifestRecord = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
-                    .where(and(
-                            CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.equal(nextCodeListValueManifestRecord.getCodeListValueId()),
-                            CODE_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(nextCodeListValueManifestRecord.getReleaseId())
-                    ))
-                    .fetchOne();
-
-            prevCodeListValueManifestRecord.setNextCodeListValueManifestId(nextCodeListValueManifestRecord.getCodeListValueManifestId());
-            prevCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID);
-
-            nextCodeListValueManifestRecord.setPrevCodeListValueManifestId(prevCodeListValueManifestRecord.getCodeListValueManifestId());
-            nextCodeListValueManifestRecord.setRevisionId(prevCodeListValueManifestRecord.getRevisionId());
-            nextCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID, CODE_LIST_VALUE_MANIFEST.REVISION_ID);
-        }
-    }
-
     private void initDtRevision() {
         // For 'Non-Working' releases.
         List<DtManifestRecord> dtManifestRecordList = dslContext.select(DT_MANIFEST.fields())
@@ -397,53 +347,6 @@ public class RepositoryInitializer implements InitializingBean {
             nextDtManifestRecord.setPrevDtManifestId(prevDtManifestRecord.getDtManifestId());
             nextDtManifestRecord.setRevisionId(prevDtManifestRecord.getRevisionId());
             nextDtManifestRecord.update(DT_MANIFEST.PREV_DT_MANIFEST_ID, DT_MANIFEST.REVISION_ID);
-        }
-    }
-
-    private void initDtScRevision() {
-        // For 'Non-Working' releases.
-        List<DtScManifestRecord> dtScValueManifestRecordList = dslContext.select(DT_SC_MANIFEST.fields())
-                .from(DT_SC_MANIFEST).join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.notEqual("Working"),
-                        DT_SC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(DtScManifestRecord.class);
-
-        for (DtScManifestRecord dtScValueManifestRecord : dtScValueManifestRecordList) {
-            ULong revisionId = dslContext.select(REVISION.REVISION_ID)
-                    .from(REVISION)
-                    .join(DT_MANIFEST).on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                    .where(DT_MANIFEST.DT_MANIFEST_ID.eq(dtScValueManifestRecord.getOwnerDtManifestId()))
-                    .fetchOne().get(REVISION.REVISION_ID);
-
-            dtScValueManifestRecord.setRevisionId(revisionId);
-            dtScValueManifestRecord.update(DT_SC_MANIFEST.REVISION_ID);
-        }
-
-        // For 'Working' release.
-        dtScValueManifestRecordList = dslContext.select(DT_SC_MANIFEST.fields())
-                .from(DT_SC_MANIFEST).join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.equal("Working"),
-                        DT_SC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(DtScManifestRecord.class);
-
-        for (DtScManifestRecord nextDtScManifestRecord : dtScValueManifestRecordList) {
-            DtScManifestRecord prevDtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
-                    .where(and(
-                            DT_SC_MANIFEST.DT_SC_ID.equal(nextDtScManifestRecord.getDtScId()),
-                            DT_SC_MANIFEST.RELEASE_ID.notEqual(nextDtScManifestRecord.getReleaseId())
-                    ))
-                    .fetchOne();
-
-            prevDtScManifestRecord.setNextDtScManifestId(nextDtScManifestRecord.getDtScManifestId());
-            prevDtScManifestRecord.update(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID);
-
-            nextDtScManifestRecord.setPrevDtScManifestId(prevDtScManifestRecord.getDtScManifestId());
-            nextDtScManifestRecord.setRevisionId(prevDtScManifestRecord.getRevisionId());
-            nextDtScManifestRecord.update(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID, DT_SC_MANIFEST.REVISION_ID);
         }
     }
 

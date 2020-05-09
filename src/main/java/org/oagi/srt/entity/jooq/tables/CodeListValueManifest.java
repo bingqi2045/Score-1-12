@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListValueManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord> {
 
-    private static final long serialVersionUID = -984215506;
+    private static final long serialVersionUID = 1246475266;
 
     /**
      * The reference instance of <code>oagi.code_list_value_manifest</code>
@@ -71,11 +71,6 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
      * The column <code>oagi.code_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
     public final TableField<CodeListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
-
-    /**
-     * The column <code>oagi.code_list_value_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<CodeListValueManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
@@ -142,7 +137,7 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
 
     @Override
     public List<ForeignKey<CodeListValueManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueManifestRecord, ?>>asList(Keys.CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_REVISION_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<CodeListValueManifestRecord, ?>>asList(Keys.CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK, Keys.CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -155,10 +150,6 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
 
     public CodeListManifest codeListManifest() {
         return new CodeListManifest(this, Keys.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.CODE_LIST_VALUE_MANIFEST_REVISION_ID_FK);
     }
 
     public CodeListValueManifest codeListValueManifestPrevCodeListValueManifestIdFk() {
@@ -196,11 +187,11 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row7<ULong, ULong, ULong, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
