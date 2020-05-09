@@ -15,6 +15,8 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
     private String definition;
     private String definitionSource;
     private boolean deprecated;
+    private String defaultValue;
+    private String fixedValue;
 
     public UpdateBccPropertiesRepositoryRequest(User user,
                                                 BigInteger bccManifestId) {
@@ -71,5 +73,21 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getFixedValue() {
+        return fixedValue;
+    }
+
+    public void setFixedValue(String fixedValue) {
+        this.fixedValue = fixedValue;
     }
 }

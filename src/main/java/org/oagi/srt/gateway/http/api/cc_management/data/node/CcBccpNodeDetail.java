@@ -14,8 +14,8 @@ public class CcBccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Bcc {
-        private long bccId;
-        private long manifestId;
+        private BigInteger bccId;
+        private BigInteger manifestId;
         private String guid;
         private String den;
         private int entityType;

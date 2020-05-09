@@ -169,12 +169,15 @@ public class BccCUDRepository {
         bccRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
         bccRecord.setCardinalityMin(request.getCardinalityMin());
         bccRecord.setCardinalityMax(request.getCardinalityMax());
+        bccRecord.setDefaultValue(request.getDefaultValue());
+        bccRecord.setFixedValue(request.getFixedValue());
         bccRecord.setLastUpdatedBy(userId);
         bccRecord.setLastUpdateTimestamp(timestamp);
         bccRecord.update(BCC.DEFINITION, BCC.DEFINITION_SOURCE,
                 BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX,
-                ACC.IS_DEPRECATED,
-                ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+                BCC.IS_DEPRECATED,
+                BCC.DEFAULT_VALUE, BCC.FIXED_VALUE,
+                BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId())).fetchOne();

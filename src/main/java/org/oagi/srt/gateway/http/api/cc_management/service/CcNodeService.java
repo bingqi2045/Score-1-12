@@ -10,17 +10,13 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.redis.event.EventHandler;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.component.acc.*;
 import org.oagi.srt.repo.component.ascc.*;
 import org.oagi.srt.repo.component.asccp.*;
-import org.oagi.srt.repo.component.bcc.BccCUDRepository;
-import org.oagi.srt.repo.component.bcc.CreateBccRepositoryRequest;
-import org.oagi.srt.repo.component.bcc.CreateBccRepositoryResponse;
-import org.oagi.srt.repo.component.bcc.CreatedBccEvent;
+import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.oagi.srt.data.BCCEntityType.Element;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcType.*;
 
 @Service
@@ -299,7 +294,12 @@ public class CcNodeService extends EventHandler {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcAsccpNodeDetail> updatedAsccpNodeDetails = new ArrayList<>();
         for (CcAsccpNodeDetail detail : asccpNodeDetails) {
-            CcAsccpNode ccAsccpNode = updateAsccpDetail(user, timestamp, detail.getAsccp());
+            if (detail.getAscc() != null) {
+                updateAsccDetail(user, timestamp, detail.getAscc());
+            } else {
+                updateAsccpDetail(user, timestamp, detail.getAsccp());
+            }
+            CcAsccpNode ccAsccpNode = getAsccpNode(user, detail.getAsccp().getManifestId());
             updatedAsccpNodeDetails.add(getAsccpNodeDetail(user, ccAsccpNode));
         }
         return updatedAsccpNodeDetails;
@@ -310,7 +310,12 @@ public class CcNodeService extends EventHandler {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
         for (CcBccpNodeDetail detail : bccpNodeDetails) {
-            CcBccpNode ccBccpNode = updateBccpDetail(user, timestamp, detail.getBccp());
+            if(detail.getBcc() != null) {
+                updateBccDetail(user, timestamp, detail.getBcc());
+            } else {
+                updateBccpDetail(user, timestamp, detail.getBccp());
+            }
+            CcBccpNode ccBccpNode = getBccpNode(user, detail.getBccp().getManifestId());
             updatedBccpNodeDetails.add(getBccpNodeDetail(user, ccBccpNode));
         }
         return updatedBccpNodeDetails;
@@ -354,6 +359,46 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAsccpPropertiesEvent());
 
         return repository.getAsccpNodeByAsccpManifestId(user, response.getAsccpManifestId());
+    }
+
+    private void updateAsccDetail(User user, LocalDateTime timestamp, CcAsccpNodeDetail.Ascc detail) {
+        UpdateAsccPropertiesRepositoryRequest request =
+                new UpdateAsccPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
+
+        request.setCardinalityMin(detail.getCardinalityMin());
+        request.setCardinalityMax(detail.getCardinalityMax());
+        request.setDefinition(detail.getDefinition());
+        request.setDefinitionSource(detail.getDefinitionSource());
+        request.setDeprecated(detail.isDeprecated());
+
+        asccCUDRepository.updateAsccProperties(request);
+
+        fireEvent(new UpdatedAsccPropertiesEvent());
+    }
+
+    private void updateBccDetail(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bcc detail) {
+        UpdateBccPropertiesRepositoryRequest request =
+                new UpdateBccPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
+
+        request.setCardinalityMin(detail.getCardinalityMin());
+        request.setCardinalityMax(detail.getCardinalityMax());
+        request.setDefinition(detail.getDefinition());
+        request.setDefinitionSource(detail.getDefinitionSource());
+        request.setDeprecated(detail.isDeprecated());
+        if (detail.getDefaultValue() != null) {
+            request.setDefaultValue(detail.getDefaultValue());
+            request.setFixedValue(null);
+        } else if (detail.getFixedValue() != null) {
+            request.setDefaultValue(null);
+            request.setFixedValue(detail.getFixedValue());
+        } else {
+            request.setDefaultValue(null);
+            request.setFixedValue(null);
+        }
+
+        bccCUDRepository.updateBccProperties(request);
+
+        fireEvent(new UpdatedBccPropertiesEvent());
     }
 
     private CcBccpNode updateBccpDetail(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {

@@ -346,7 +346,7 @@ public class ExtensionService {
                 .collect(Collectors.toList());
 
         for (CcAsccpNodeDetail.Ascc ascc : asccList) {
-            response.getAsccResults().put(ascc.getAsccId(),
+            response.getAsccResults().put(ascc.getAsccId().longValue(),
                     updateAscc(extensionAcc, ascc, userId, timestamp)
             );
         }
@@ -356,7 +356,7 @@ public class ExtensionService {
                 .collect(Collectors.toList());
 
         for (CcBccpNodeDetail.Bcc bcc : bccList) {
-            response.getBccResults().put(bcc.getBccId(),
+            response.getBccResults().put(bcc.getBccId().longValue(),
                     updateBcc(extensionAcc, bcc, userId, timestamp)
             );
         }

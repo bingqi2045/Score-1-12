@@ -170,8 +170,8 @@ public class AsccCUDRepository {
         asccRecord.setLastUpdateTimestamp(timestamp);
         asccRecord.update(ASCC.DEFINITION, ASCC.DEFINITION_SOURCE,
                 ASCC.CARDINALITY_MIN, ASCC.CARDINALITY_MAX,
-                ACC.IS_DEPRECATED,
-                ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+                ASCC.IS_DEPRECATED,
+                ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP);
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccManifestRecord.getFromAccManifestId())).fetchOne();

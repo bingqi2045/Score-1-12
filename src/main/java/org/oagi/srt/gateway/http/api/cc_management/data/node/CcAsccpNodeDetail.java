@@ -13,8 +13,8 @@ public class CcAsccpNodeDetail implements CcNodeDetail {
 
     @Data
     public static class Ascc {
-        private long manifestId;
-        private long asccId;
+        private BigInteger manifestId;
+        private BigInteger asccId;
         private String guid;
         private String den;
         private int cardinalityMin;
