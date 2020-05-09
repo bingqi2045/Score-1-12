@@ -120,88 +120,20 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void deleteAscc(User user, BigInteger asccManifestId) {
-        long userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
-        AsccManifestRecord asccManifestRecord = ccRepository.getAsccManifestByManifestId(ULong.valueOf(asccManifestId));
-        AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
-        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(asccManifestRecord.getFromAccManifestId());
-        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-        RevisionRecord revisionRecord = revisionRepository.getRevisionById(accManifestRecord.getRevisionId());
-        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
-            throw new IllegalArgumentException("The target ASCC can not be Delete.");
-        }
+        DeleteAsccRepositoryRequest request = new DeleteAsccRepositoryRequest(user, timestamp, asccManifestId);
+        asccCUDRepository.deleteAscc(request);
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accManifestRecord.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
-
-        ULong asccId = ccRepository.updateAsccArguments(asccRecord)
-                .setLastUpdateTimestamp(timestamp)
-                .setLastUpdatedBy(ULong.valueOf(userId))
-                .setState(CcState.Deleted)
-                .execute();
-
-        ccRepository.updateAsccManifestArguments(asccManifestRecord)
-                .setAsccId(asccId)
-                .execute();
-
-        decreaseSeqKeyGreaterThan(userId, asccManifestRecord.getFromAccManifestId(), asccRecord.getSeqKey(), timestamp, revisionId);
+        fireEvent(new DeletedAsccEvent());
     }
 
     @Transactional
     public void deleteBcc(User user, BigInteger bccManifestId) {
-        long userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
-        BccManifestRecord bccManifestRecord = ccRepository.getBccManifestByManifestId(ULong.valueOf(bccManifestId));
-        BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
-        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(bccManifestRecord.getFromAccManifestId());
-        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-        RevisionRecord revisionRecord = revisionRepository.getRevisionById(accManifestRecord.getRevisionId());
-        if (!revisionRecord.getRevisionNum().equals(UInteger.valueOf(1))) {
-            throw new IllegalArgumentException("The target Bcc can not be Delete.");
-        }
+        DeleteBccRepositoryRequest request = new DeleteBccRepositoryRequest(user, timestamp, bccManifestId);
+        bccCUDRepository.deleteBcc(request);
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(ULong.valueOf(userId))
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accManifestRecord.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(ULong.valueOf(userId), accManifestRecord.getAccManifestId(), timestamp, revisionId);
-
-        ULong bccId = ccRepository.updateBccArguments(bccRecord)
-                .setLastUpdateTimestamp(timestamp)
-                .setLastUpdatedBy(ULong.valueOf(userId))
-                .setState(CcState.Deleted)
-                .execute();
-
-        ccRepository.updateBccManifestArguments(bccManifestRecord)
-                .setBccId(bccId)
-                .execute();
-
-        decreaseSeqKeyGreaterThan(userId, bccManifestRecord.getFromAccManifestId(), bccRecord.getSeqKey(), timestamp, revisionId);
+        fireEvent(new DeletedBccEvent());
     }
 
     public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {

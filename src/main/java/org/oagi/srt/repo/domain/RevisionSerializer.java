@@ -117,6 +117,7 @@ public class RevisionSerializer {
         properties.put("definition", asccRecord.getDefinition());
         properties.put("definitionSource", asccRecord.getDefinitionSource());
         properties.put("deprecated", ((byte) 1 == asccRecord.getIsDeprecated()) ? true : false);
+        properties.put("state", asccRecord.getState());
 
         properties.put("toAsccpId", (asccRecord.getToAsccpId() != null) ? asccRecord.getToAsccpId().toBigInteger() : null);
 
@@ -138,6 +139,7 @@ public class RevisionSerializer {
         properties.put("fixedValue", bccRecord.getFixedValue());
         properties.put("deprecated", ((byte) 1 == bccRecord.getIsDeprecated()) ? true : false);
         properties.put("nillable", ((byte) 1 == bccRecord.getIsNillable()) ? true : false);
+        properties.put("state", bccRecord.getState());
 
         properties.put("toBccpId", (bccRecord.getToBccpId() != null) ? bccRecord.getToBccpId().toBigInteger() : null);
 

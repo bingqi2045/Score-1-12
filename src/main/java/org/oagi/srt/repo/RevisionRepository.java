@@ -53,7 +53,7 @@ public class RevisionRepository {
                 .from(REVISION)
                 .join(APP_USER)
                 .on(REVISION.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(condition("snapshop->\"$.guid\" = '" + reference + "'"))
+                .where(condition("snapshot->\"$.guid\" = '" + reference + "'"))
                 .orderBy(REVISION.REVISION_ID.desc())
                 .fetchInto(Revision.class);
     }
