@@ -331,7 +331,6 @@ public class Keys {
     public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = ForeignKeys0.ASCC_MANIFEST_ASCC_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK;
-    public static final ForeignKey<AsccManifestRecord, RevisionRecord> ASCC_MANIFEST_REVISION_ID_FK = ForeignKeys0.ASCC_MANIFEST_REVISION_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = ForeignKeys0.ASCCP_ROLE_OF_ACC_ID_FK;
@@ -378,7 +377,6 @@ public class Keys {
     public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = ForeignKeys0.BCC_MANIFEST_BCC_ID_FK;
     public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK;
-    public static final ForeignKey<BccManifestRecord, RevisionRecord> BCC_MANIFEST_REVISION_ID_FK = ForeignKeys0.BCC_MANIFEST_REVISION_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK;
     public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = ForeignKeys0.BCCP_BDT_ID_FK;
@@ -708,7 +706,6 @@ public class Keys {
         public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_ascc_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.ASCC_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_from_acc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_to_asccp_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID }, true);
-        public static final ForeignKey<AsccManifestRecord, RevisionRecord> ASCC_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_revision_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.REVISION_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_prev_ascc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_next_ascc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Asccp.ASCCP, "asccp_role_of_acc_id_fk", new TableField[] { Asccp.ASCCP.ROLE_OF_ACC_ID }, true);
@@ -755,7 +752,6 @@ public class Keys {
         public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_bcc_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.BCC_ID }, true);
         public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_from_acc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_to_bccp_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.TO_BCCP_MANIFEST_ID }, true);
-        public static final ForeignKey<BccManifestRecord, RevisionRecord> BCC_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_revision_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.REVISION_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_prev_bcc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.PREV_BCC_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_next_bcc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.NEXT_BCC_MANIFEST_ID }, true);
         public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Bccp.BCCP, "bccp_bdt_id_fk", new TableField[] { Bccp.BCCP.BDT_ID }, true);

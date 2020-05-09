@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record;
+import org.jooq.Record22;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCC;
@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,7 +18,12 @@ public class BCCRepository implements SrtRepository<BCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record> getSelectJoinStep() {
+    private SelectOnConditionStep<Record22<
+            ULong, String, Integer, Integer, Integer,
+            Integer, ULong, ULong, String, String,
+            String, String, ULong, ULong, ULong,
+            LocalDateTime, LocalDateTime, String, ULong, String,
+            Byte, Byte>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BCC.BCC_ID,
                 Tables.BCC.GUID,
@@ -39,18 +45,13 @@ public class BCCRepository implements SrtRepository<BCC> {
                 Tables.BCC.STATE,
                 Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.BCC_MANIFEST.REVISION_ID,
-                Tables.REVISION.REVISION_NUM,
-                Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
                 Tables.BCC.IS_NILLABLE.as("nillable"))
                 .from(Tables.BCC)
                 .join(Tables.BCC_MANIFEST)
                 .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID))
                 .join(Tables.RELEASE)
-                .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
-                .join(Tables.REVISION)
-                .on(Tables.BCC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
+                .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID));
     }
 
     @Override

@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.DTType.BDT;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
@@ -207,8 +208,13 @@ public class CcListRepository {
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID).and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(ACC_MANIFEST)
+                .on(and(
+                        ASCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
+                ))
                 .join(REVISION)
-                .on(ASCC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -294,8 +300,13 @@ public class CcListRepository {
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID).and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(ACC_MANIFEST)
+                .on(and(
+                        BCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
+                ))
                 .join(REVISION)
-                .on(BCC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)

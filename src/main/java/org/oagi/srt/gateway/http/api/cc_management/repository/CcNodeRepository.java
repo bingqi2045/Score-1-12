@@ -94,7 +94,6 @@ public class CcNodeRepository {
                 ASCC.ASCC_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 ASCC.SEQ_KEY,
-                ASCC_MANIFEST.REVISION_ID,
                 ASCC_MANIFEST.RELEASE_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
@@ -353,14 +352,10 @@ public class CcNodeRepository {
                 ASCC.GUID,
                 ASCC.SEQ_KEY,
                 ASCC.STATE.as("raw_state"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
                 ASCC_MANIFEST.RELEASE_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                .join(REVISION)
-                .on(ASCC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
                 .fetchInto(CcAsccNode.class);
 
@@ -394,14 +389,10 @@ public class CcNodeRepository {
                 BCC.SEQ_KEY,
                 BCC.ENTITY_TYPE,
                 BCC.STATE.as("raw_state"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
                 BCC_MANIFEST.RELEASE_ID)
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                .join(REVISION)
-                .on(BCC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(BCCP_MANIFEST)
                 .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))

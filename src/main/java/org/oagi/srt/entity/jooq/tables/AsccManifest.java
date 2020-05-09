@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsccManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
-    private static final long serialVersionUID = -762884836;
+    private static final long serialVersionUID = -1981996724;
 
     /**
      * The reference instance of <code>oagi.ascc_manifest</code>
@@ -76,11 +76,6 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
      * The column <code>oagi.ascc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
     public final TableField<AsccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
-
-    /**
-     * The column <code>oagi.ascc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<AsccManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.ascc_manifest.prev_ascc_manifest_id</code>.
@@ -147,7 +142,7 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
     @Override
     public List<ForeignKey<AsccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccManifestRecord, ?>>asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_REVISION_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AsccManifestRecord, ?>>asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -164,10 +159,6 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
     public AsccpManifest asccpManifest() {
         return new AsccpManifest(this, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.ASCC_MANIFEST_REVISION_ID_FK);
     }
 
     public AsccManifest asccManifestPrevAsccManifestIdFk() {
@@ -205,11 +196,11 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

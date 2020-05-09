@@ -137,21 +137,6 @@ public class AsccCUDRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-
-        dslContext.update(ASCC_MANIFEST)
-                .set(ASCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
-                .where(and(
-                        ASCC_MANIFEST.RELEASE_ID.eq(releaseId),
-                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())
-                ))
-                .execute();
-        dslContext.update(BCC_MANIFEST)
-                .set(BCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
-                .where(and(
-                        BCC_MANIFEST.RELEASE_ID.eq(releaseId),
-                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())
-                ))
-                .execute();
     }
 
     private Integer getNextSeqKey(ULong accManifestId) {

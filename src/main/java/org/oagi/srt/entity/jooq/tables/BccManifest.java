@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifest extends TableImpl<BccManifestRecord> {
 
-    private static final long serialVersionUID = 593782548;
+    private static final long serialVersionUID = -1881016790;
 
     /**
      * The reference instance of <code>oagi.bcc_manifest</code>
@@ -76,11 +76,6 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
      * The column <code>oagi.bcc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
     public final TableField<BccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
-
-    /**
-     * The column <code>oagi.bcc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
-     */
-    public final TableField<BccManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
      * The column <code>oagi.bcc_manifest.prev_bcc_manifest_id</code>.
@@ -147,7 +142,7 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     @Override
     public List<ForeignKey<BccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_MANIFEST_REVISION_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -164,10 +159,6 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     public BccpManifest bccpManifest() {
         return new BccpManifest(this, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.BCC_MANIFEST_REVISION_ID_FK);
     }
 
     public BccManifest bccManifestPrevBccManifestIdFk() {
@@ -205,11 +196,11 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

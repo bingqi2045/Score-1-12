@@ -186,8 +186,6 @@ public class AccCUDRepository {
             responseAccManifestId = nextAccManifestRecord.getAccManifestId();
         }
 
-        updateRevisionForAssociations(accManifestRecord, revisionRecord);
-
         // update `conflict` for asccp_manifests' role_of_acc_manifest_id which indicates given acc manifest.
         dslContext.update(ASCCP_MANIFEST)
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, responseAccManifestId)
@@ -400,8 +398,6 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
-        updateRevisionForAssociations(accManifestRecord, revisionRecord);
-
         return new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
@@ -459,8 +455,6 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
-        updateRevisionForAssociations(accManifestRecord, revisionRecord);
-
         return new UpdateAccBasedAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
@@ -512,8 +506,6 @@ public class AccCUDRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-
-        updateRevisionForAssociations(accManifestRecord, revisionRecord);
 
         return new UpdateAccStateRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -620,21 +612,6 @@ public class AccCUDRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
-        updateRevisionForAssociations(accManifestRecord, revisionRecord);
-
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-    }
-
-    private void updateRevisionForAssociations(AccManifestRecord accManifestRecord,
-                                               RevisionRecord revisionRecord) {
-        dslContext.update(ASCC_MANIFEST)
-                .set(ASCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
-                .execute();
-
-        dslContext.update(BCC_MANIFEST)
-                .set(BCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
-                .execute();
     }
 }

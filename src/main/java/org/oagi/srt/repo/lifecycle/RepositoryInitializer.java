@@ -32,9 +32,6 @@ public class RepositoryInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         initAccRevision();
-        initAsccRevision();
-        initBccRevision();
-
         initAsccpRevision();
         initBccpRevision();
 
@@ -111,100 +108,6 @@ public class RepositoryInitializer implements InitializingBean {
             nextAccManifestRecord.setPrevAccManifestId(prevAccManifestRecord.getAccManifestId());
             nextAccManifestRecord.setRevisionId(prevAccManifestRecord.getRevisionId());
             nextAccManifestRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
-        }
-    }
-
-    private void initAsccRevision() {
-        // For 'Non-Working' releases.
-        List<AsccManifestRecord> asccManifestRecordList = dslContext.select(ASCC_MANIFEST.fields())
-                .from(ASCC_MANIFEST).join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.notEqual("Working"),
-                        ASCC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(AsccManifestRecord.class);
-
-        for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
-            ULong revisionId = dslContext.select(REVISION.REVISION_ID)
-                    .from(REVISION)
-                    .join(ACC_MANIFEST).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(asccManifestRecord.getFromAccManifestId()))
-                    .fetchOne().get(REVISION.REVISION_ID);
-
-            asccManifestRecord.setRevisionId(revisionId);
-            asccManifestRecord.update(ASCC_MANIFEST.REVISION_ID);
-        }
-
-        // For 'Working' release.
-        asccManifestRecordList = dslContext.select(ASCC_MANIFEST.fields())
-                .from(ASCC_MANIFEST).join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.equal("Working"),
-                        ASCC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(AsccManifestRecord.class);
-
-        for (AsccManifestRecord nextAsccManifestRecord : asccManifestRecordList) {
-            AsccManifestRecord prevAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
-                    .where(and(
-                            ASCC_MANIFEST.ASCC_ID.equal(nextAsccManifestRecord.getAsccId()),
-                            ASCC_MANIFEST.RELEASE_ID.notEqual(nextAsccManifestRecord.getReleaseId())
-                    ))
-                    .fetchOne();
-
-            prevAsccManifestRecord.setNextAsccManifestId(nextAsccManifestRecord.getAsccManifestId());
-            prevAsccManifestRecord.update(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
-
-            nextAsccManifestRecord.setPrevAsccManifestId(prevAsccManifestRecord.getAsccManifestId());
-            nextAsccManifestRecord.setRevisionId(prevAsccManifestRecord.getRevisionId());
-            nextAsccManifestRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.REVISION_ID);
-        }
-    }
-
-    private void initBccRevision() {
-        // For 'Non-Working' releases.
-        List<BccManifestRecord> bccManifestRecordList = dslContext.select(BCC_MANIFEST.fields())
-                .from(BCC_MANIFEST).join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.notEqual("Working"),
-                        BCC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(BccManifestRecord.class);
-
-        for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
-            ULong revisionId = dslContext.select(REVISION.REVISION_ID)
-                    .from(REVISION)
-                    .join(ACC_MANIFEST).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId()))
-                    .fetchOne().get(REVISION.REVISION_ID);
-
-            bccManifestRecord.setRevisionId(revisionId);
-            bccManifestRecord.update(BCC_MANIFEST.REVISION_ID);
-        }
-
-        // For 'Working' release.
-        bccManifestRecordList = dslContext.select(BCC_MANIFEST.fields())
-                .from(BCC_MANIFEST).join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.equal("Working"),
-                        BCC_MANIFEST.REVISION_ID.isNull()
-                ))
-                .fetchInto(BccManifestRecord.class);
-
-        for (BccManifestRecord nextBccManifestRecord : bccManifestRecordList) {
-            BccManifestRecord prevBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
-                    .where(and(
-                            BCC_MANIFEST.BCC_ID.equal(nextBccManifestRecord.getBccId()),
-                            BCC_MANIFEST.RELEASE_ID.notEqual(nextBccManifestRecord.getReleaseId())
-                    ))
-                    .fetchOne();
-
-            prevBccManifestRecord.setNextBccManifestId(nextBccManifestRecord.getBccManifestId());
-            prevBccManifestRecord.update(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
-
-            nextBccManifestRecord.setPrevBccManifestId(prevBccManifestRecord.getBccManifestId());
-            nextBccManifestRecord.setRevisionId(prevBccManifestRecord.getRevisionId());
-            nextBccManifestRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID, BCC_MANIFEST.REVISION_ID);
         }
     }
 
