@@ -1,5 +1,6 @@
 package org.oagi.srt.repo.component.bcc;
 
+import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.RepositoryRequest;
 import org.springframework.security.core.userdetails.User;
 
@@ -14,7 +15,9 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
     private Integer cardinalityMax;
     private String definition;
     private String definitionSource;
+    private BCCEntityType entityType;
     private boolean deprecated;
+    private boolean nillable;
     private String defaultValue;
     private String fixedValue;
 
@@ -67,12 +70,28 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
         this.definitionSource = definitionSource;
     }
 
+    public BCCEntityType getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(BCCEntityType entityType) {
+        this.entityType = entityType;
+    }
+
     public boolean isDeprecated() {
         return deprecated;
     }
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    public boolean isNillable() {
+        return nillable;
+    }
+
+    public void setNillable(boolean nillable) {
+        this.nillable = nillable;
     }
 
     public String getDefaultValue() {

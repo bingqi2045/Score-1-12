@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -384,7 +385,10 @@ public class CcNodeService extends EventHandler {
         request.setCardinalityMax(detail.getCardinalityMax());
         request.setDefinition(detail.getDefinition());
         request.setDefinitionSource(detail.getDefinitionSource());
+        request.setEntityType(BCCEntityType.valueOf(detail.getEntityType()));
         request.setDeprecated(detail.isDeprecated());
+        request.setNillable(detail.isNillable());
+
         if (detail.getDefaultValue() != null) {
             request.setDefaultValue(detail.getDefaultValue());
             request.setFixedValue(null);

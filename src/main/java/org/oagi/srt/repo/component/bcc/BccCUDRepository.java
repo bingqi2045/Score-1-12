@@ -9,17 +9,20 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
-import org.oagi.srt.repo.component.bcc.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
+import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
 import static org.oagi.srt.data.BCCEntityType.Element;
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.BCCP;
+import static org.oagi.srt.entity.jooq.Tables.BCCP_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.srt.entity.jooq.tables.Ascc.ASCC;
+import static org.oagi.srt.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Bcc.BCC;
 import static org.oagi.srt.entity.jooq.tables.BccManifest.BCC_MANIFEST;
 
@@ -40,28 +43,44 @@ public class BccCUDRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())))
+                .fetchOne();
 
         if (accManifestRecord == null) {
-            throw new IllegalArgumentException("ACC Manifest(" + request.getAccManifestId() + ") dose NOT exist.");
+            throw new IllegalArgumentException("Source ACC does not exist.");
         }
 
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())))
+                .fetchOne();
 
         if (bccpManifestRecord == null) {
-            throw new IllegalArgumentException("BCCP Manifest(" + request.getBccpManifestId() + ") dose NOT exist.");
+            throw new IllegalArgumentException("Target BCCP does not exist.");
+        }
+
+        if (dslContext.selectCount()
+                .from(BCC_MANIFEST)
+                .where(and(
+                        BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))
+                ))
+                .fetchOneInto(Integer.class) > 0) {
+            throw new IllegalArgumentException("Target BCCP has already included.");
         }
 
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
 
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
 
         BccRecord bcc = new BccRecord();
         bcc.setGuid(SrtGuid.randomGuid());
-        bcc.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getPropertyTerm());
+        bcc.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getDen());
         bcc.setCardinalityMin(0);
         bcc.setCardinalityMax(-1);
         bcc.setSeqKey(getNextSeqKey(accManifestRecord.getAccManifestId()));
@@ -70,45 +89,66 @@ public class BccCUDRepository {
         bcc.setEntityType(Element.getValue());
         bcc.setState(CcState.WIP.name());
         bcc.setIsDeprecated((byte) 0);
+        bcc.setIsNillable((byte) 0);
         bcc.setCreatedBy(userId);
         bcc.setLastUpdatedBy(userId);
         bcc.setOwnerUserId(userId);
         bcc.setCreationTimestamp(timestamp);
         bcc.setLastUpdateTimestamp(timestamp);
-
         bcc.setBccId(
                 dslContext.insertInto(BCC)
                         .set(bcc)
                         .returning(BCC.BCC_ID).fetchOne().getBccId()
         );
 
-        BccManifestRecord bccManifest = new BccManifestRecord();
-        bccManifest.setBccId(bcc.getBccId());
-        bccManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-        bccManifest.setFromAccManifestId(accManifestRecord.getAccManifestId());
-        bccManifest.setToBccpManifestId(bccpManifestRecord.getBccpManifestId());
+        BccManifestRecord bccManifestRecord = new BccManifestRecord();
+        bccManifestRecord.setBccId(bcc.getBccId());
+        bccManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+        bccManifestRecord.setToBccpManifestId(bccpManifestRecord.getBccpManifestId());
+        bccManifestRecord.setBccManifestId(
+                dslContext.insertInto(BCC_MANIFEST)
+                        .set(bccManifestRecord)
+                        .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId()
+        );
 
+        upsertRevisionIntoAccAndAssociations(
+                accRecord, accManifestRecord,
+                ULong.valueOf(request.getReleaseId()),
+                userId, timestamp
+        );
+
+        return new CreateBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+    }
+
+    private void upsertRevisionIntoAccAndAssociations(AccRecord accRecord,
+                                                      AccManifestRecord accManifestRecord,
+                                                      ULong releaseId,
+                                                      ULong userId, LocalDateTime timestamp) {
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
                         accRecord,
                         accManifestRecord.getRevisionId(),
-                        RevisionAction.AssociateModified,
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        // Update Acc revision Id too
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-        bccManifest.setRevisionId(revisionRecord.getRevisionId());
 
-        bccManifest.setBccManifestId(
-                dslContext.insertInto(BCC_MANIFEST)
-                        .set(bccManifest)
-                        .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId()
-        );
-
-
-
-        return new CreateBccRepositoryResponse(bccManifest.getBccManifestId().toBigInteger());
+        dslContext.update(ASCC_MANIFEST)
+                .set(ASCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
+                .where(and(
+                        ASCC_MANIFEST.RELEASE_ID.eq(releaseId),
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())
+                ))
+                .execute();
+        dslContext.update(BCC_MANIFEST)
+                .set(BCC_MANIFEST.REVISION_ID, revisionRecord.getRevisionId())
+                .where(and(
+                        BCC_MANIFEST.RELEASE_ID.eq(releaseId),
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())
+                ))
+                .execute();
     }
 
     private Integer getNextSeqKey(ULong accManifestId) {
@@ -121,23 +161,16 @@ public class BccCUDRepository {
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOneInto(Integer.class);
-        if (asccMaxSeqKey == null) {
-            asccMaxSeqKey = 0;
-        }
+                .fetchOptionalInto(Integer.class).orElse(0);
 
         Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOneInto(Integer.class);
+                .fetchOptionalInto(Integer.class).orElse(0);
 
-        if (bccMaxSeqKey == null) {
-            bccMaxSeqKey = 0;
-        }
-
-        return Math.max(bccMaxSeqKey, bccMaxSeqKey) + 1;
+        return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
     public UpdateBccPropertiesRepositoryResponse updateBccProperties(UpdateBccPropertiesRepositoryRequest request) {
@@ -155,49 +188,52 @@ public class BccCUDRepository {
                 .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
                 .fetchOne();
 
-        if (!CcState.WIP.equals(CcState.valueOf(bccRecord.getState()))) {
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId()))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
             throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
-        if (!bccRecord.getOwnerUserId().equals(userId)) {
+        if (!accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update bcc record.
+        bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + dslContext.select(BCCP.DEN)
+                .from(BCCP)
+                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
+                .fetchOneInto(String.class)
+        );
         bccRecord.setDefinition(request.getDefinition());
         bccRecord.setDefinitionSource(request.getDefinitionSource());
+        bccRecord.setEntityType(request.getEntityType().getValue());
         bccRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
+        bccRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
         bccRecord.setCardinalityMin(request.getCardinalityMin());
         bccRecord.setCardinalityMax(request.getCardinalityMax());
         bccRecord.setDefaultValue(request.getDefaultValue());
         bccRecord.setFixedValue(request.getFixedValue());
         bccRecord.setLastUpdatedBy(userId);
         bccRecord.setLastUpdateTimestamp(timestamp);
-        bccRecord.update(BCC.DEFINITION, BCC.DEFINITION_SOURCE,
+        bccRecord.update(BCC.DEN,
+                BCC.DEFINITION, BCC.DEFINITION_SOURCE,
                 BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX,
-                BCC.IS_DEPRECATED,
+                BCC.ENTITY_TYPE, BCC.IS_DEPRECATED, BCC.IS_NILLABLE,
                 BCC.DEFAULT_VALUE, BCC.FIXED_VALUE,
                 BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
 
-        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId())).fetchOne();
-
-        AccRecord accRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-
-        // creates new revision for updated record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAccRevision(
-                        accRecord, accManifestRecord.getRevisionId(),
-                        RevisionAction.AssociateModified,
-                        userId, timestamp);
-
-        // Update Acc RevisionId too.
-        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-
-        bccManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        bccManifestRecord.update(BCC_MANIFEST.REVISION_ID);
+        upsertRevisionIntoAccAndAssociations(
+                accRecord, accManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
 
         return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
@@ -217,11 +253,17 @@ public class BccCUDRepository {
                 .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
                 .fetchOne();
 
-        if (!CcState.WIP.equals(CcState.valueOf(bccRecord.getState()))) {
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId())).fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
             throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
         }
 
-        if (!bccRecord.getOwnerUserId().equals(userId)) {
+        if (!accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
@@ -232,25 +274,11 @@ public class BccCUDRepository {
         bccRecord.update(BCC.STATE,
                 BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
 
-        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(bccManifestRecord.getFromAccManifestId())).fetchOne();
-
-        AccRecord accRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-
-        // creates new revision for deleted record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAccRevision(
-                        accRecord, accManifestRecord.getRevisionId(),
-                        RevisionAction.AssociateModified,
-                        userId, timestamp);
-
-        // Update Acc revisionId too.
-        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-
-        bccManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        bccManifestRecord.update(BCC_MANIFEST.REVISION_ID);
+        upsertRevisionIntoAccAndAssociations(
+                accRecord, accManifestRecord,
+                accManifestRecord.getReleaseId(),
+                userId, timestamp
+        );
 
         return new DeleteBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }

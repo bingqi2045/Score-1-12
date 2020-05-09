@@ -6,5 +6,5 @@ public enum RevisionAction {
     Modified,
     Deleted,
     Restored,
-    AssociateModified,
+    Associated,
 }
