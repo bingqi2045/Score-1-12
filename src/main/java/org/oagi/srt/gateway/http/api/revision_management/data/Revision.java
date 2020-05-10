@@ -11,8 +11,7 @@ public class Revision {
     private long revisionNum;
     private long revisionTrackingNum;
     private RevisionAction revisionAction;
-    private String reference;
-    private String body;
+    private String snapshot;
     private String loginId;
     private LocalDateTime timestamp;
     private Long prevRevisionId;

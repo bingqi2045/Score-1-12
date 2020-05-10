@@ -39,7 +39,6 @@ public class RevisionRepository {
         if (reference.isEmpty()) {
             return null;
         }
-
         return dslContext.select(
                 REVISION.REVISION_ID,
                 REVISION.REVISION_NUM,
