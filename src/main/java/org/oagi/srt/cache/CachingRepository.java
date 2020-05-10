@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
         });
     }
 
-    public T findById(long id) {
+    public T findById(BigInteger id) {
         return execute(connection -> {
             String checksumFromDatabase = getChecksumFromDatabase(id);
             String checksumFromRedis = checksumFromRedis(connection, id);
@@ -72,13 +73,13 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
         });
     }
 
-    private String getChecksumFromDatabase(long id) {
+    private String getChecksumFromDatabase(BigInteger id) {
         StringBuilder query = new StringBuilder(getChecksumByIdQuery());
         Record record = dslContext.fetchOne(query.toString(), id);
         return record.getValue("checksum").toString();
     }
 
-    private String checksumFromRedis(RedisConnection connection, long id) {
+    private String checksumFromRedis(RedisConnection connection, BigInteger id) {
         return (String) getValue(connection, getTableName() + ":checksum", "" + id);
     }
 

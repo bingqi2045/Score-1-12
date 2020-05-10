@@ -83,8 +83,8 @@ public class BieCreateControllerTest {
     @WithMockUser(username = "oagis")
     public void shouldCreateBie() throws Exception {
         BieCreateRequest request = new BieCreateRequest();
-        request.setAsccpManifestId(testAsccpManifestId.longValue());
-        request.setBizCtxIds(Arrays.asList(testBizCtxId.longValue()));
+        request.setAsccpManifestId(testAsccpManifestId.toBigInteger());
+        request.setBizCtxIds(Arrays.asList(testBizCtxId.toBigInteger()));
 
         BieCreateResponse response =
                 mapper.readValue(

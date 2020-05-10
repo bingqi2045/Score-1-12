@@ -105,6 +105,68 @@ public class RepositoryInitializer implements InitializingBean {
             nextAccManifestRecord.setPrevAccManifestId(prevAccManifestRecord.getAccManifestId());
             nextAccManifestRecord.setRevisionId(prevAccManifestRecord.getRevisionId());
             nextAccManifestRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
+
+            // update prev/next ascc_manifest_id
+            for (AsccManifestRecord prevAsccManifestRecord :
+                    dslContext.select(ASCC_MANIFEST.fields())
+                            .from(ASCC_MANIFEST)
+                            .join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId())
+                            ))
+                            .fetchInto(AsccManifestRecord.class)) {
+
+                AsccManifestRecord nextAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
+                        .where(and(
+                                ASCC_MANIFEST.RELEASE_ID.notEqual(
+                                        prevAsccManifestRecord.getReleaseId()),
+                                ASCC_MANIFEST.ASCC_ID.equal(
+                                        prevAsccManifestRecord.getAsccId()),
+                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.equal(
+                                        prevAsccManifestRecord.getFromAccManifestId())
+                        ))
+                        .fetchOne();
+
+                prevAsccManifestRecord.setNextAsccManifestId(
+                        nextAsccManifestRecord.getAsccManifestId());
+                prevAsccManifestRecord.update(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
+
+                nextAsccManifestRecord.setPrevAsccManifestId(
+                        prevAsccManifestRecord.getAsccManifestId());
+                nextAsccManifestRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
+            }
+
+            // update prev/next bcc_manifest_id
+            for (BccManifestRecord prevBccManifestRecord :
+                    dslContext.select(BCC_MANIFEST.fields())
+                            .from(BCC_MANIFEST)
+                            .join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId())
+                            ))
+                            .fetchInto(BccManifestRecord.class)) {
+
+                BccManifestRecord nextBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
+                        .where(and(
+                                BCC_MANIFEST.RELEASE_ID.notEqual(
+                                        prevBccManifestRecord.getReleaseId()),
+                                BCC_MANIFEST.BCC_ID.equal(
+                                        prevBccManifestRecord.getBccId()),
+                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.equal(
+                                        prevBccManifestRecord.getFromAccManifestId())
+                        ))
+                        .fetchOne();
+
+                prevBccManifestRecord.setNextBccManifestId(
+                        nextBccManifestRecord.getBccManifestId());
+                prevBccManifestRecord.update(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
+
+                nextBccManifestRecord.setPrevBccManifestId(
+                        prevBccManifestRecord.getBccManifestId());
+                nextBccManifestRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
+            }
         }
     }
 
@@ -283,6 +345,37 @@ public class RepositoryInitializer implements InitializingBean {
             nextCodeListManifestRecord.setPrevCodeListManifestId(prevCodeListManifestRecord.getCodeListManifestId());
             nextCodeListManifestRecord.setRevisionId(prevCodeListManifestRecord.getRevisionId());
             nextCodeListManifestRecord.update(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.REVISION_ID);
+
+            // update prev/next code_list_value_manifest_id
+            for (CodeListValueManifestRecord prevCodeListValueManifestRecord :
+                    dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                            .from(CODE_LIST_VALUE_MANIFEST)
+                            .join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(prevCodeListManifestRecord.getCodeListManifestId())
+                            ))
+                            .fetchInto(CodeListValueManifestRecord.class)) {
+
+                CodeListValueManifestRecord nextCodeListValueManifestRecord = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                        .where(and(
+                                CODE_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(
+                                        prevCodeListValueManifestRecord.getReleaseId()),
+                                CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.equal(
+                                        prevCodeListValueManifestRecord.getCodeListValueId()),
+                                CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.equal(
+                                        prevCodeListValueManifestRecord.getCodeListManifestId())
+                        ))
+                        .fetchOne();
+
+                prevCodeListValueManifestRecord.setNextCodeListValueManifestId(
+                        nextCodeListValueManifestRecord.getCodeListValueManifestId());
+                prevCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID);
+
+                nextCodeListValueManifestRecord.setPrevCodeListValueManifestId(
+                        prevCodeListValueManifestRecord.getCodeListValueManifestId());
+                nextCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID);
+            }
         }
     }
 
@@ -347,6 +440,37 @@ public class RepositoryInitializer implements InitializingBean {
             nextDtManifestRecord.setPrevDtManifestId(prevDtManifestRecord.getDtManifestId());
             nextDtManifestRecord.setRevisionId(prevDtManifestRecord.getRevisionId());
             nextDtManifestRecord.update(DT_MANIFEST.PREV_DT_MANIFEST_ID, DT_MANIFEST.REVISION_ID);
+
+            // update prev/next code_list_value_manifest_id
+            for (DtScManifestRecord prevDtScManifestRecord :
+                    dslContext.select(DT_SC_MANIFEST.fields())
+                            .from(DT_SC_MANIFEST)
+                            .join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(prevDtManifestRecord.getDtManifestId())
+                            ))
+                            .fetchInto(DtScManifestRecord.class)) {
+
+                DtScManifestRecord nextDtScManifestRecord = dslContext.selectFrom(DT_SC_MANIFEST)
+                        .where(and(
+                                DT_SC_MANIFEST.RELEASE_ID.notEqual(
+                                        prevDtScManifestRecord.getReleaseId()),
+                                DT_SC_MANIFEST.DT_SC_ID.equal(
+                                        prevDtScManifestRecord.getDtScId()),
+                                DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.equal(
+                                        prevDtScManifestRecord.getOwnerDtManifestId())
+                        ))
+                        .fetchOne();
+
+                prevDtScManifestRecord.setNextDtScManifestId(
+                        nextDtScManifestRecord.getDtScManifestId());
+                prevDtScManifestRecord.update(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID);
+
+                nextDtScManifestRecord.setPrevDtScManifestId(
+                        prevDtScManifestRecord.getDtScManifestId());
+                nextDtScManifestRecord.update(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID);
+            }
         }
     }
 

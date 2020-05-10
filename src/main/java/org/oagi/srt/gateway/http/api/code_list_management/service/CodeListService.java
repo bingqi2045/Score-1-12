@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 import org.oagi.srt.entity.jooq.tables.records.CodeListValueManifestRecord;
@@ -11,6 +12,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.code_list_management.data.*;
+import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -50,11 +52,11 @@ public class CodeListService extends EventHandler {
     @Autowired
     private RevisionRepository revisionRepository;
 
-    private SelectOnConditionStep<Record16<
+    private SelectOnConditionStep<Record17<
             ULong, String, String, ULong, String,
             String, ULong, String, String, LocalDateTime,
-            String, String, Byte, String, Byte,
-            UInteger>> getSelectOnConditionStep() {
+            ULong, String, String, Byte, String,
+            Byte, UInteger>> getSelectOnConditionStep() {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.GUID,
@@ -66,11 +68,12 @@ public class CodeListService extends EventHandler {
                 AGENCY_ID_LIST_VALUE.NAME.as("agency_id_name"),
                 CODE_LIST.VERSION_ID,
                 CODE_LIST.LAST_UPDATE_TIMESTAMP,
+                APP_USER.as("owner").APP_USER_ID.as("owner_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner"),
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
                 CODE_LIST.STATE,
-                CODE_LIST.IS_DEPRECATED,
+                CODE_LIST.IS_DEPRECATED.as("deprecated"),
                 REVISION.REVISION_NUM.as("revision"))
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
@@ -82,12 +85,12 @@ public class CodeListService extends EventHandler {
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID));
     }
 
-    public PageResponse<CodeListForList> getCodeLists(CodeListForListRequest request) {
+    public PageResponse<CodeListForList> getCodeLists(User user, CodeListForListRequest request) {
         SelectOnConditionStep<
-                Record16<ULong, String, String, ULong, String,
+                Record17<ULong, String, String, ULong, String,
                         String, ULong, String, String, LocalDateTime,
-                        String, String, Byte, String, Byte,
-                        UInteger>> step = getSelectOnConditionStep();
+                        ULong, String, String, Byte, String,
+                        Byte, UInteger>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
@@ -118,10 +121,10 @@ public class CodeListService extends EventHandler {
             conditions.add(CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        SelectConnectByStep<Record16<ULong, String, String, ULong, String,
+        SelectConnectByStep<Record17<ULong, String, String, ULong, String,
                 String, ULong, String, String, LocalDateTime,
-                String, String, Byte, String, Byte,
-                UInteger>> conditionStep = step;
+                ULong, String, String, Byte, String,
+                Byte, UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
             conditionStep = step.where(conditions);
         }
@@ -152,10 +155,10 @@ public class CodeListService extends EventHandler {
         }
 
 
-        SelectWithTiesAfterOffsetStep<Record16<ULong, String, String, ULong, String,
+        SelectWithTiesAfterOffsetStep<Record17<ULong, String, String, ULong, String,
                 String, ULong, String, String, LocalDateTime,
-                String, String, Byte, String, Byte,
-                UInteger>> offsetStep = null;
+                ULong, String, String, Byte, String,
+                Byte, UInteger>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -168,6 +171,14 @@ public class CodeListService extends EventHandler {
 
         List<CodeListForList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(CodeListForList.class) : conditionStep.fetchInto(CodeListForList.class);
+
+        AppUser requester = sessionService.getAppUser(user);
+        result.stream().forEach(e -> {
+            e.setAccess(
+                    AccessPrivilege.toAccessPrivilege(requester, e.getOwnerId(), CcState.valueOf(e.getState()))
+            );
+            e.setOwnerId(null); // hide sensitive information
+        });
 
         PageResponse<CodeListForList> response = new PageResponse();
         response.setList(result);
@@ -184,7 +195,7 @@ public class CodeListService extends EventHandler {
         return response;
     }
 
-    public CodeList getCodeList(long manifestId) {
+    public CodeList getCodeList(User user, BigInteger manifestId) {
         CodeList codeList = dslContext.select(
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
@@ -200,9 +211,14 @@ public class CodeListService extends EventHandler {
                 CODE_LIST.DEFINITION_SOURCE,
                 CODE_LIST.REMARK,
                 CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
-                CODE_LIST.STATE)
+                APP_USER.as("owner").APP_USER_ID.as("owner_id"),
+                CODE_LIST.STATE,
+                CODE_LIST.IS_DEPRECATED.as("deprecated"),
+                REVISION.REVISION_NUM.as("revision"))
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .join(REVISION).on(CODE_LIST_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(APP_USER.as("owner")).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .leftJoin(CODE_LIST_MANIFEST.as("based")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID))
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
@@ -212,6 +228,12 @@ public class CodeListService extends EventHandler {
         if (codeList == null) {
             throw new EmptyResultDataAccessException(1);
         }
+
+        AppUser requester = sessionService.getAppUser(user);
+        codeList.setAccess(
+                AccessPrivilege.toAccessPrivilege(requester, codeList.getOwnerId(), CcState.valueOf(codeList.getState()))
+        );
+        codeList.setOwnerId(null); // hide sensitive information
 
         boolean isPublished = CodeListState.Published.name().equals(codeList.getState());
 

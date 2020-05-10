@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -60,8 +61,8 @@ public class ACCRepository implements SrtRepository<ACC> {
     }
 
     @Override
-    public ACC findById(long id) {
-        if (id <= 0L) {
+    public ACC findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
             return null;
         }
         return getSelectOnConditionStep()

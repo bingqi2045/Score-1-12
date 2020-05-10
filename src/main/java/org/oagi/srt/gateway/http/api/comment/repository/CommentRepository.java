@@ -11,6 +11,7 @@ import org.oagi.srt.gateway.http.api.comment.data.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,7 +119,7 @@ public class CommentRepository {
             return this;
         }
 
-        public InsertCommentArguments setCreatedBy(long createdBy) {
+        public InsertCommentArguments setCreatedBy(BigInteger createdBy) {
             return setCreatedBy(ULong.valueOf(createdBy));
         }
 
@@ -155,11 +156,11 @@ public class CommentRepository {
                 .returning().fetchOne().getCommentId().longValue();
     }
 
-    public Long getOwnerIdByCommentId(long commentId) {
+    public BigInteger getOwnerIdByCommentId(long commentId) {
         return dslContext.select(COMMENT.CREATED_BY)
                 .from(COMMENT)
                 .where(COMMENT.COMMENT_ID.eq(ULong.valueOf(commentId)))
-                .fetchOptionalInto(Long.class).orElse(null);
+                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
     @Data
@@ -172,7 +173,7 @@ public class CommentRepository {
         private Boolean hide;
         private Boolean delete;
 
-        public UpdateCommentArguments(long userId) {
+        public UpdateCommentArguments(BigInteger userId) {
             this(ULong.valueOf(userId));
         }
 
@@ -222,7 +223,7 @@ public class CommentRepository {
         }
     }
 
-    public UpdateCommentArguments updateComment(long userId) {
+    public UpdateCommentArguments updateComment(BigInteger userId) {
         return new UpdateCommentArguments(userId);
     }
 

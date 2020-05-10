@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.context_management.data;
 import lombok.Data;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class BusinessContextListRequest {
 
     private String name;
-    private Long topLevelAbieId;
+    private BigInteger topLevelAbieId = BigInteger.ZERO;
     private List<Long> bizCtxIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
     private Date updateStartDate;

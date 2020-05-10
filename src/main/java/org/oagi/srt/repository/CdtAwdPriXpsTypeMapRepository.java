@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -23,7 +24,10 @@ public class CdtAwdPriXpsTypeMapRepository implements SrtRepository<CdtAwdPriXps
     }
 
     @Override
-    public CdtAwdPriXpsTypeMap findById(long id) {
+    public CdtAwdPriXpsTypeMap findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID,
                 Tables.CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID, Tables.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID)
                 .from(Tables.CDT_AWD_PRI_XPS_TYPE_MAP)

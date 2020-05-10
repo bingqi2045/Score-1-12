@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class BusinessContextRepository {
         private int offset = -1;
         private int numberOfRows = -1;
 
-        public SelectBusinessContextArguments setTopLevelAbieId(Long topLevelAbieId) {
+        public SelectBusinessContextArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
             if (topLevelAbieId != null) {
                 return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
             }
@@ -489,7 +490,7 @@ public class BusinessContextRepository {
 
         private ULong businessContextId;
 
-        public UpdateBusinessContextArguments setUserId(long userId) {
+        public UpdateBusinessContextArguments setUserId(BigInteger userId) {
             return setUserId(ULong.valueOf(userId));
         }
 

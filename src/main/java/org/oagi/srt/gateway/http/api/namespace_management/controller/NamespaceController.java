@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,7 @@ public class NamespaceController {
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Namespace getNamespace(@AuthenticationPrincipal User user,
-                                  @PathVariable("id") long namespaceId) {
+                                  @PathVariable("id") BigInteger namespaceId) {
         return service.getNamespace(user, namespaceId);
     }
 
@@ -48,7 +49,7 @@ public class NamespaceController {
 
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createNamespace(@PathVariable("id") long namespaceId,
+    public ResponseEntity createNamespace(@PathVariable("id") BigInteger namespaceId,
                                           @AuthenticationPrincipal User user,
                                           @RequestBody Namespace namespace) {
         namespace.setNamespaceId(namespaceId);

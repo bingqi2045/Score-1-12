@@ -4,6 +4,8 @@ import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
+
 class Helper {
 
     private static final String CODE_LIST_NAME_PREFIX = "cl";
@@ -16,7 +18,7 @@ class Helper {
     static boolean isAnyProperty(ASBIE asbie,
                                  GenerationContext generationContext) {
         ASBIEP asbiep = generationContext.queryAssocToASBIEP(asbie);
-        long asccpManifestId = asbiep.getBasedAsccpManifestId();
+        BigInteger asccpManifestId = asbiep.getBasedAsccpManifestId();
         ASCCP asccp = generationContext.findASCCP(asccpManifestId);
         if (!"AnyProperty".equals(Utility.first(asccp.getDen(), true))) {
             return false;

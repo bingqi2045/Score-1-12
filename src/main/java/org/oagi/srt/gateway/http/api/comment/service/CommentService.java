@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class CommentService {
 
     @Transactional
     public void postComments(User user, PostCommentRequest request) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
 
         long commentId = repository.insertComment()
                 .setReference(request.getReference())
@@ -64,13 +65,13 @@ public class CommentService {
 
     @Transactional
     public void updateComments(User user, UpdateCommentRequest request) {
-        long userId = sessionService.userId(user);
-        Long ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
-        if (ownerId == null) {
+        BigInteger userId = sessionService.userId(user);
+        BigInteger ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
+        if (ownerId.equals(BigInteger.ZERO)) {
             throw new EmptyResultDataAccessException(1);
         }
 
-        if (ownerId != userId) {
+        if (!ownerId.equals(userId)) {
             throw new DataAccessForbiddenException("Only allowed to modify the comment by the owner.");
         }
 

@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Repository
@@ -25,7 +26,10 @@ public class CodeListValueRepository implements SrtRepository<CodeListValue> {
     }
 
     @Override
-    public CodeListValue findById(long id) {
+    public CodeListValue findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.CODE_LIST_VALUE.CODE_LIST_ID, Tables.CODE_LIST_VALUE.CODE_LIST_VALUE_ID,
                 Tables.CODE_LIST_VALUE.LOCKED_INDICATOR, Tables.CODE_LIST_VALUE.DEFINITION,
                 Tables.CODE_LIST_VALUE.DEFINITION_SOURCE, Tables.CODE_LIST_VALUE.EXTENSION_INDICATOR,

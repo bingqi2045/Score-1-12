@@ -4,21 +4,23 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.srt.data.SeqKeySupportable;
 
+import java.math.BigInteger;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CcAsccpNode extends CcNode implements SeqKeySupportable {
 
     private String type = "asccp";
 
-    private long asccpId;
-    private long asccId;
-    private int roleOfAccId;
+    private BigInteger asccpId = BigInteger.ZERO;
+    private BigInteger asccId = BigInteger.ZERO;
+    private BigInteger roleOfAccId = BigInteger.ZERO;
     private int seqKey;
-    private long manifestId;
-    private long asccManifestId;
+    private BigInteger manifestId = BigInteger.ZERO;
+    private BigInteger asccManifestId = BigInteger.ZERO;
 
     @Override
-    public long getId() {
+    public BigInteger getId() {
         return asccpId;
     }
 }

@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.data;
 import lombok.Data;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
 @Data
 public class CcListRequest {
 
-    private long releaseId;
+    private BigInteger releaseId = BigInteger.ZERO;
     private CcListTypes types;
     private List<CcState> states;
     private Boolean deprecated;
@@ -27,5 +28,5 @@ public class CcListRequest {
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
-    private Map<Long, String> usernameMap;
+    private Map<BigInteger, String> usernameMap;
 }

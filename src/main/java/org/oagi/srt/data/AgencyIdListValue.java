@@ -2,11 +2,14 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class AgencyIdListValue {
-    private long agencyIdListValueId;
+
+    private BigInteger agencyIdListValueId = BigInteger.ZERO;
     private String value;
     private String name;
     private String definition;
-    private long ownerListId;
+    private BigInteger ownerListId = BigInteger.ZERO;
 }

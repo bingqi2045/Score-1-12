@@ -1,15 +1,16 @@
 package org.oagi.srt.data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 public interface Trackable extends Serializable {
 
-    long getId();
+    BigInteger getId();
 
-    long getReleaseId();
+    BigInteger getReleaseId();
     String getReleaseNum();
 
-    long getRevisionId();
+    BigInteger getRevisionId();
     int getRevisionNum();
     int getRevisionTrackingNum();
 

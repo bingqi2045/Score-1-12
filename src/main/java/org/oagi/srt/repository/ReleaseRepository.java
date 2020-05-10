@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -27,7 +28,10 @@ public class ReleaseRepository implements SrtRepository<Release> {
     }
 
     @Override
-    public Release findById(long id) {
+    public Release findById(BigInteger id) {
+        if (id == null || id.longValue() <= 0L) {
+            return null;
+        }
         return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.LAST_UPDATED_BY,
                 Tables.RELEASE.NAMESPACE_ID, Tables.RELEASE.CREATED_BY, Tables.RELEASE.STATE,
                 Tables.RELEASE.LAST_UPDATE_TIMESTAMP, Tables.RELEASE.CREATION_TIMESTAMP, Tables.RELEASE.RELEASE_NOTE)
@@ -51,7 +55,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
         return releases.get(0);
     }
 
-    public ReleaseRecord create(long userId, String releaseNum, String releaseNote, long namespaceId) {
+    public ReleaseRecord create(BigInteger userId, String releaseNum, String releaseNote, long namespaceId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return dslContext.insertInto(Tables.RELEASE)
                 .set(Tables.RELEASE.RELEASE_NUM, releaseNum)

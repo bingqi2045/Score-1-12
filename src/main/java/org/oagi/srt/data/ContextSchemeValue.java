@@ -3,12 +3,14 @@ package org.oagi.srt.data;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Data
 public class ContextSchemeValue implements Serializable {
-    private long ctxSchemeValueId;
+
+    private BigInteger ctxSchemeValueId = BigInteger.ZERO;
     private String guid;
     private String value;
     private String meaning;
-    private long ownerCtxSchemeId;
+    private BigInteger ownerCtxSchemeId = BigInteger.ZERO;
 }

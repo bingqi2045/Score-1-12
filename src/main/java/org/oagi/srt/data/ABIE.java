@@ -2,24 +2,26 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class ABIE implements BIE {
-    private long abieId;
+
+    private BigInteger abieId = BigInteger.ZERO;
     private String guid;
-    private long basedAccManifestId;
+    private BigInteger basedAccManifestId = BigInteger.ZERO;
     private String definition;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private Integer state;
-    private Long clientId;
+    private BigInteger clientId = BigInteger.ZERO;
     private String version;
     private String status;
     private String remark;
     private String bizTerm;
-    private long ownerTopLevelAbieId;
+    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
 
 }

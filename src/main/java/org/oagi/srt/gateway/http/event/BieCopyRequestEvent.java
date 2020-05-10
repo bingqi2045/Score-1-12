@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.oagi.srt.redis.event.Event;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -12,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 public class BieCopyRequestEvent implements Event {
 
-    private long sourceTopLevelAbieId;
-    private long copiedTopLevelAbieId;
-    private List<Long> bizCtxIds;
-    private long userId;
+    private BigInteger sourceTopLevelAbieId;
+    private BigInteger copiedTopLevelAbieId;
+    private List<BigInteger> bizCtxIds;
+    private BigInteger userId;
 
 }

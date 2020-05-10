@@ -2,15 +2,18 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class BBIESC implements BIE {
-    private long bbieScId;
+
+    private BigInteger bbieScId = BigInteger.ZERO;
     private String guid;
-    private long bbieId;
-    private long basedDtScManifestId;
-    private Long dtScPriRestriId;
-    private Long codeListId;
-    private Long agencyIdListId;
+    private BigInteger bbieId = BigInteger.ZERO;
+    private BigInteger basedDtScManifestId = BigInteger.ZERO;
+    private BigInteger dtScPriRestriId = BigInteger.ZERO;
+    private BigInteger codeListId = BigInteger.ZERO;
+    private BigInteger agencyIdListId = BigInteger.ZERO;
     private int cardinalityMin;
     private int cardinalityMax;
     private String defaultValue;
@@ -20,5 +23,5 @@ public class BBIESC implements BIE {
     private String bizTerm;
     private String example;
     private boolean used;
-    private long ownerTopLevelAbieId;
+    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
 }

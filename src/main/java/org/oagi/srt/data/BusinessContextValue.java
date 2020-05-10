@@ -2,9 +2,12 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class BusinessContextValue {
-    private long bizCtxValueId;
-    private long bizCtxId;
-    private long ctxSchemeValueId;
+
+    private BigInteger bizCtxValueId = BigInteger.ZERO;
+    private BigInteger bizCtxId = BigInteger.ZERO;
+    private BigInteger ctxSchemeValueId = BigInteger.ZERO;
 }

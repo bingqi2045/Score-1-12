@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -175,7 +176,7 @@ public class ReleaseService {
 
     @Transactional
     public ReleaseResponse createRelease(User user, ReleaseDetail releaseDetail) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
         ReleaseResponse response = new ReleaseResponse();
         if (!repository.findByReleaseNum(releaseDetail.getReleaseNum()).isEmpty()) {
             response.setStatus("Fail");

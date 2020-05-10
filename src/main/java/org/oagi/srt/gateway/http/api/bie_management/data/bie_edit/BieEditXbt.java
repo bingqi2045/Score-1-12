@@ -2,12 +2,14 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class BieEditXbt {
 
-    private long priRestriId;
+    private BigInteger priRestriId;
     private boolean isDefault;
-    private long xbtId;
+    private BigInteger xbtId;
     private String xbtName;
 
 }

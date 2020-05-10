@@ -2,15 +2,16 @@ package org.oagi.srt.gateway.http.api.namespace_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class NamespaceList {
 
-    private long namespaceId;
+    private BigInteger namespaceId = BigInteger.ZERO;
     private String uri;
     private String prefix;
-    private long ownerUserId;
+    private BigInteger ownerUserId = BigInteger.ZERO;;
     private String owner;
     private String description;
     private Date lastUpdateTimestamp;

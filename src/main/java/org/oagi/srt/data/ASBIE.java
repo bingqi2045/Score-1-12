@@ -2,25 +2,27 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class ASBIE implements BIE {
-    private long asbieId;
+
+    private BigInteger asbieId = BigInteger.ZERO;
     private String guid;
-    private long fromAbieId;
-    private long toAsbiepId;
-    private long basedAsccManifestId;
+    private BigInteger fromAbieId = BigInteger.ZERO;
+    private BigInteger toAsbiepId = BigInteger.ZERO;
+    private BigInteger basedAsccManifestId = BigInteger.ZERO;
     private String definition;
     private int cardinalityMin;
     private int cardinalityMax;
     private boolean nillable;
     private String remark;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private long ownerTopLevelAbieId;
+    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
 }

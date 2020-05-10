@@ -2,15 +2,17 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
 public class BizCtx {
-    private long bizCtxId;
+
+    private BigInteger bizCtxId = BigInteger.ZERO;
     private String guid;
     private String name;
-    private long createdBy;
-    private long lastUpdatedBy;
+    private BigInteger createdBy = BigInteger.ZERO;
+    private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
 }

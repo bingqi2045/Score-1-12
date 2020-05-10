@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
@@ -54,7 +55,7 @@ public class BieEditService {
         return getTreeController(user, node.getTopLevelAbieId());
     }
 
-    private BieEditTreeController getTreeController(User user, long topLevelAbieId) {
+    private BieEditTreeController getTreeController(User user, BigInteger topLevelAbieId) {
         DefaultBieEditTreeController bieEditTreeController =
                 applicationContext.getBean(DefaultBieEditTreeController.class);
 
@@ -65,13 +66,13 @@ public class BieEditService {
     }
 
     @Transactional
-    public BieEditAbieNode getRootNode(User user, long topLevelAbieId) {
+    public BieEditAbieNode getRootNode(User user, BigInteger topLevelAbieId) {
         BieEditTreeController treeController = getTreeController(user, topLevelAbieId);
         return treeController.getRootNode(topLevelAbieId);
     }
 
     @Transactional
-    public BccForBie getBcc(User user, long bccId) {
+    public BccForBie getBcc(User user, BigInteger bccId) {
         return bieRepository.getBcc(bccId);
     }
 
@@ -88,7 +89,7 @@ public class BieEditService {
     }
 
     @Transactional
-    public void updateState(User user, long topLevelAbieId, BieState state) {
+    public void updateState(User user, BigInteger topLevelAbieId, BieState state) {
         BieEditTreeController treeController = getTreeController(user, topLevelAbieId);
         treeController.updateState(state);
     }
@@ -96,7 +97,7 @@ public class BieEditService {
 
     @Transactional
     public BieEditUpdateResponse updateDetails(User user, BieEditUpdateRequest request) {
-        long topLevelAbieId = request.getTopLevelAbieId();
+        BigInteger topLevelAbieId = request.getTopLevelAbieId();
         BieEditTreeController treeController = getTreeController(user, topLevelAbieId);
 
         BieEditUpdateResponse response = new BieEditUpdateResponse();
@@ -127,9 +128,9 @@ public class BieEditService {
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
-        long asccpId = extension.getAsccpId();
-        long releaseId = extension.getReleaseId();
-        long roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
+        BigInteger asccpId = extension.getAsccpId();
+        BigInteger releaseId = extension.getReleaseId();
+        BigInteger roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
 
@@ -146,7 +147,7 @@ public class BieEditService {
             } else if (ueAcc.getState() == CcState.Draft) {
                 response.setCanView(true);
             }
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user).equals(latestUeAcc.getOwnerUserId());
             if (isSameBetweenRequesterAndOwner) {
                 response.setCanEdit(true);
                 response.setCanView(true);
@@ -162,8 +163,8 @@ public class BieEditService {
 
     @Transactional
     public CreateExtensionResponse createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
-        long releaseId = extension.getReleaseId();
-        long roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
+        BigInteger releaseId = extension.getReleaseId();
+        BigInteger roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
                 .from(Tables.ACC)
                 .join(Tables.ACC_MANIFEST)
                 .on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
@@ -171,7 +172,7 @@ public class BieEditService {
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
                         Tables.ACC.STATE.eq(CcState.Candidate.name())))
-                .fetchOneInto(Long.class);
+                .fetchOneInto(BigInteger.class);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
@@ -187,7 +188,7 @@ public class BieEditService {
             } else if (ueAcc.getState() == CcState.Draft) {
                 response.setCanView(true);
             }
-            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user) == latestUeAcc.getOwnerUserId();
+            boolean isSameBetweenRequesterAndOwner = sessionService.userId(user).equals(latestUeAcc.getOwnerUserId());
             if (isSameBetweenRequesterAndOwner) {
                 response.setCanEdit(true);
                 response.setCanView(true);
@@ -200,16 +201,16 @@ public class BieEditService {
         return response;
     }
 
-    private long createAbieExtension(User user, long roleOfAccId, long releaseId) {
+    private BigInteger createAbieExtension(User user, BigInteger roleOfAccId, BigInteger releaseId) {
         BieEditAcc eAcc = bieRepository.getAccByAccId(roleOfAccId, releaseId);
         ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
 
-        long manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
+        BigInteger manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return manifestId;
     }
 
     @Transactional
-    public void updateTopLevelAbieLastUpdated(User user, long topLevelAbieId) {
+    public void updateTopLevelAbieLastUpdated(User user, BigInteger topLevelAbieId) {
         topLevelAbieRepository.updateTopLevelAbieLastUpdated(sessionService.userId(user), topLevelAbieId);
     }
 }

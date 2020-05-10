@@ -4,15 +4,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 
+import java.math.BigInteger;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBbiepNode extends BieEditNode {
 
-    private long bbieId;
-    private long bccId;
-    private long bbiepId;
-    private long bccpId;
-    private long bdtId;
+    private BigInteger bbieId = BigInteger.ZERO;
+    private BigInteger bccId = BigInteger.ZERO;
+    private BigInteger bbiepId = BigInteger.ZERO;
+    private BigInteger bccpId = BigInteger.ZERO;
+    private BigInteger bdtId = BigInteger.ZERO;
     private boolean attribute;
 
 }

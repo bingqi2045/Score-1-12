@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
+import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -32,7 +33,6 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,13 +56,13 @@ public class ExtensionService {
     @Autowired
     private CcNodeService ccNodeService;
 
-    private AccManifestRecord getExtensionAcc(long manifestId) {
+    private AccManifestRecord getExtensionAcc(BigInteger manifestId) {
         return dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOptional().orElse(null);
     }
 
-    public CcAccNode getExtensionNode(User user, long manifestId) {
+    public CcAccNode getExtensionNode(User user, BigInteger manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
@@ -72,39 +72,16 @@ public class ExtensionService {
         CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
         eAcc.setState(ueAcc.getState());
 
-        long userId = sessionService.userId(user);
-        long ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(Long.class);
+        AppUser requester = sessionService.getAppUser(user);
+        BigInteger ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
+                .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(BigInteger.class);
 
-        AccessPrivilege accessPrivilege = Prohibited;
-        switch (eAcc.getState()) {
-            case WIP:
-                if (userId == ownerUserId) {
-                    accessPrivilege = CanEdit;
-                } else {
-                    accessPrivilege = Prohibited;
-                }
-                break;
-
-            case Draft:
-                if (userId == ownerUserId) {
-                    accessPrivilege = CanEdit;
-                } else {
-                    accessPrivilege = CanView;
-                }
-
-                break;
-
-            case Candidate:
-                accessPrivilege = CanView;
-                break;
-        }
-
-        eAcc.setAccess(accessPrivilege.name());
+        AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, ownerUserId, eAcc.getState());
+        eAcc.setAccess(accessPrivilege);
         return eAcc;
     }
 
-    public ACC getExistsUserExtension(long accId, long releaseId) {
+    public ACC getExistsUserExtension(BigInteger accId, BigInteger releaseId) {
         ACC ueAcc =
                 dslContext.select(ACC.fields())
                         .from(ACC.as("eAcc"))
@@ -124,16 +101,16 @@ public class ExtensionService {
     }
 
     @Transactional
-    public long appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
-                                    long releaseId, User user) {
+    public BigInteger appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
+                                    BigInteger releaseId, User user) {
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 BigInteger accManifestId = ccNodeService.updateAccState(user, accManifest.getAccManifestId().toBigInteger(), CcState.Production.name());
-                return accManifestId.longValue();
+                return accManifestId;
             } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-                return ueAccManifest.getAccManifestId().longValue();
+                return ueAccManifest.getAccManifestId().toBigInteger();
             } else {
                 throw new IllegalArgumentException("Invalid State.");
             }
@@ -142,7 +119,7 @@ public class ExtensionService {
         }
     }
 
-    private long createNewUserExtensionGroupACC(ACC eAcc, long releaseId, User user) {
+    private BigInteger createNewUserExtensionGroupACC(ACC eAcc, BigInteger releaseId, User user) {
         AccRecord ueAcc = createACCForExtension(eAcc, user);
         AccManifestRecord ueAccManifest = createACCManifestForExtension(ueAcc, releaseId);
 
@@ -158,7 +135,7 @@ public class ExtensionService {
                 )).fetchOne();
         createASCCManifestForExtension(ueAscc, eAccManifest, ueAsccpManifest, releaseId);
 
-        return ueAccManifest.getAccManifestId().longValue();
+        return ueAccManifest.getAccManifestId().toBigInteger();
     }
 
     private AccRecord createACCForExtension(ACC eAcc, User user) {
@@ -192,7 +169,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AccManifestRecord createACCManifestForExtension(AccRecord ueAcc, long releaseId) {
+    private AccManifestRecord createACCManifestForExtension(AccRecord ueAcc, BigInteger releaseId) {
         return dslContext.insertInto(ACC_MANIFEST,
                 ACC_MANIFEST.ACC_ID,
                 ACC_MANIFEST.RELEASE_ID
@@ -239,7 +216,7 @@ public class ExtensionService {
     }
 
     private AsccpManifestRecord createASCCPManifestForExtension(
-            AsccpRecord ueAsccp, AccManifestRecord ueAccManifest, long releaseId) {
+            AsccpRecord ueAsccp, AccManifestRecord ueAccManifest, BigInteger releaseId) {
         return dslContext.insertInto(ASCCP_MANIFEST,
                 ASCCP_MANIFEST.ASCCP_ID,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
@@ -288,7 +265,7 @@ public class ExtensionService {
     }
 
     private void createASCCManifestForExtension(
-            AsccRecord ueAscc, AccManifestRecord eAccManifest, AsccpManifestRecord ueAsccpManifest, long releaseId) {
+            AsccRecord ueAscc, AccManifestRecord eAccManifest, AsccpManifestRecord ueAsccpManifest, BigInteger releaseId) {
         dslContext.insertInto(ASCC_MANIFEST,
                 ASCC_MANIFEST.ASCC_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
@@ -303,7 +280,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void appendAsccp(User user, long manifestId, long asccpManifestId) {
+    public void appendAsccp(User user, BigInteger manifestId, BigInteger asccpManifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         AsccpManifestRecord asccpManifestRecord =
                 dslContext.selectFrom(ASCCP_MANIFEST)
@@ -316,7 +293,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void appendBccp(User user, long manifestId, long bccpManifestId) {
+    public void appendBccp(User user, BigInteger manifestId, BigInteger bccpManifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         BccpManifestRecord bccpManifestRecord =
                 dslContext.selectFrom(BCCP_MANIFEST)
@@ -419,7 +396,9 @@ public class ExtensionService {
                 .fetchOne();
 
         history.setBccId(null);
-        history.setEntityType(bcc.getEntityType());
+        if (bcc.getEntityType() != null) {
+            history.setEntityType(bcc.getEntityType().getValue());
+        }
         history.setCardinalityMin(bcc.getCardinalityMin());
         history.setCardinalityMax(bcc.getCardinalityMax());
         history.setIsDeprecated((byte) ((bcc.isDeprecated()) ? 1 : 0));
@@ -567,7 +546,7 @@ public class ExtensionService {
         }
     }
 
-    public CcNode getLastRevisionCc(User user, String type, long manifestId) {
+    public CcNode getLastRevisionCc(User user, String type, BigInteger manifestId) {
 
         if (type.equals("ascc")) {
             AsccManifestRecord asccManifest = manifestRepository.getAsccManifestById(manifestId);

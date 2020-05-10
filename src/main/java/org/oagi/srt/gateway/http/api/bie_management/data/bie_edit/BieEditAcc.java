@@ -4,17 +4,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 
+import java.math.BigInteger;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAcc extends TrackableImpl {
 
-    private long accId;
+    private BigInteger accId;
     private String guid;
     private int oagisComponentType;
-    private Long basedAccId;
+    private BigInteger basedAccId;
 
     @Override
-    public long getId() {
+    public BigInteger getId() {
         return accId;
     }
 }

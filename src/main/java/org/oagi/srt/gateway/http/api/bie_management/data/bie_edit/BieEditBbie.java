@@ -3,13 +3,15 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
 import lombok.Data;
 import org.oagi.srt.data.Cardinality;
 
+import java.math.BigInteger;
+
 @Data
 public class BieEditBbie implements Cardinality {
 
-    private long bbieId;
-    private long fromAbieId;
-    private long toBbiepId;
-    private long basedBccId;
+    private BigInteger bbieId;
+    private BigInteger fromAbieId;
+    private BigInteger toBbiepId;
+    private BigInteger basedBccId;
     private boolean used;
 
     private int cardinalityMin;

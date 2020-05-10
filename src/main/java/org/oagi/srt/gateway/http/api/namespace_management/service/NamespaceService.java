@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class NamespaceService {
     }
 
     public List<NamespaceList> getNamespaceList(User user) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
 
         List<NamespaceList> namespaceLists = dslContext.select(Tables.NAMESPACE.fields())
                 .select(Tables.APP_USER.LOGIN_ID.as("owner"))
@@ -41,34 +42,34 @@ public class NamespaceService {
                 .on(Tables.NAMESPACE.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID))
                 .fetchInto(NamespaceList.class);
         namespaceLists.stream().forEach(namespaceList -> {
-            namespaceList.setCanEdit(namespaceList.getOwnerUserId() == userId);
+            namespaceList.setCanEdit(namespaceList.getOwnerUserId().equals(userId));
         });
 
         return namespaceLists;
     }
 
-    public Namespace getNamespace(User user, long namespaceId) {
-        long userId = sessionService.userId(user);
+    public Namespace getNamespace(User user, BigInteger namespaceId) {
+        BigInteger userId = sessionService.userId(user);
 
         Namespace namespace =
                 dslContext.select(Tables.NAMESPACE.fields()).from(Tables.NAMESPACE)
                         .where(Tables.NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
                         .fetchOneInto(Namespace.class);
-        if (namespace.getOwnerUserId() != userId) {
+        if (!namespace.getOwnerUserId().equals(userId)) {
             throw new AccessDeniedException("Access is denied");
         }
         return namespace;
     }
 
-    public long getNamespaceIdByUri(String uri) {
+    public BigInteger getNamespaceIdByUri(String uri) {
         return dslContext.select(Tables.NAMESPACE.NAMESPACE_ID).from(Tables.NAMESPACE)
                 .where(Tables.NAMESPACE.URI.eq(uri))
-                .fetchOneInto(long.class);
+                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
     @Transactional
     public void create(User user, Namespace namespace) {
-        long userId = sessionService.userId(user);
+        BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
         dslContext.insertInto(Tables.NAMESPACE,

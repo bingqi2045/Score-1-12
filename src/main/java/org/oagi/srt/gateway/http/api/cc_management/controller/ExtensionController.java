@@ -26,7 +26,7 @@ public class ExtensionController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
-                            @PathVariable("manifestId") long manifestId) {
+                            @PathVariable("manifestId") BigInteger manifestId) {
         return service.getExtensionNode(user, manifestId);
     }
 
@@ -34,7 +34,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
-                                            @PathVariable("manifestId") long manifestId,
+                                            @PathVariable("manifestId") BigInteger manifestId,
                                             @RequestBody CcActionRequest actionRequest) {
 
         switch (actionRequest.getAction()) {
@@ -82,7 +82,7 @@ public class ExtensionController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal User user,
-                                                 @PathVariable("manifestId") long manifestId,
+                                                 @PathVariable("manifestId") BigInteger manifestId,
                                                  @RequestBody ExtensionUpdateRequest request) {
         request.setManifestId(manifestId);
         return service.updateDetails(user, request);
@@ -93,7 +93,7 @@ public class ExtensionController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getLastCcNode(@AuthenticationPrincipal User user,
                                 @PathVariable("type") String type,
-                                @PathVariable("manifestId") long manifestId) {
+                                @PathVariable("manifestId") BigInteger manifestId) {
         return service.getLastRevisionCc(user, type, manifestId);
     }
 }

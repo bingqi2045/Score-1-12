@@ -2,10 +2,13 @@ package org.oagi.srt.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CodeListValue {
-    private long codeListValueId;
-    private long codeListId;
+
+    private BigInteger codeListValueId = BigInteger.ZERO;
+    private BigInteger codeListId = BigInteger.ZERO;
     private String value;
     private String name;
     private String definition;

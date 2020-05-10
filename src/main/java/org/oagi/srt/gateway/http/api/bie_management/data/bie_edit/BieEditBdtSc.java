@@ -3,14 +3,16 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
 import lombok.Data;
 import org.oagi.srt.gateway.http.helper.Utility;
 
+import java.math.BigInteger;
+
 @Data
 public class BieEditBdtSc {
 
-    private long dtScManifestId;
+    private BigInteger dtScManifestId;
     private String guid;
     private String propertyTerm;
     private String representationTerm;
-    private long ownerDtId;
+    private BigInteger ownerDtId;
 
     public String getName() {
         String name;
