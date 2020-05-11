@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -39,7 +39,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListValueRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
-    private static final long serialVersionUID = -1185807401;
+    private static final long serialVersionUID = -1449824651;
 
     /**
      * The reference instance of <code>oagi.code_list_value</code>
@@ -58,6 +58,11 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
      * The column <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.
      */
     public final TableField<CodeListValueRecord, ULong> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+
+    /**
+     * The column <code>oagi.code_list_value.guid</code>. GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     */
+    public final TableField<CodeListValueRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "GUID of the code list. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
      * The column <code>oagi.code_list_value.code_list_id</code>. Foreign key to the CODE_LIST table. It indicates the code list this code value belonging to.
@@ -245,11 +250,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<ULong, String, ULong, String, String, String, String, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

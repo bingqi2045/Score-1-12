@@ -866,6 +866,7 @@ DEALLOCATE PREPARE stmt;
 
 -- Making relations between `code_list_value` and `release` tables.
 ALTER TABLE `code_list_value`
+    ADD COLUMN `guid` varchar(41) NOT NULL COMMENT 'GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.' AFTER `code_list_value_id`,
     ADD COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.',
     ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
     ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',

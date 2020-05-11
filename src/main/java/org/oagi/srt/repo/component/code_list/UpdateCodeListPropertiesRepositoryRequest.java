@@ -108,4 +108,8 @@ public class UpdateCodeListPropertiesRepositoryRequest extends RepositoryRequest
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
     }
+
+    public void addCodeListValueRequest() {
+
+    }
 }

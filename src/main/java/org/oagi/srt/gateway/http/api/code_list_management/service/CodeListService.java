@@ -323,34 +323,76 @@ public class CodeListService extends EventHandler {
 
     @Transactional
     public void update(User user, CodeList codeList) {
+        LocalDateTime timestamp = LocalDateTime.now();
         if (!StringUtils.isEmpty(codeList.getState())) {
-            UpdateCodeListStateRepositoryRequest request =
-                    new UpdateCodeListStateRepositoryRequest(user, codeList.getCodeListManifestId(),
-                            CcState.valueOf(codeList.getState()));
-
-            UpdateCodeListStateRepositoryResponse response =
-                    codeListCUDRepository.updateCodeListState(request);
-
-            fireEvent(new UpdatedCodeListStateEvent());
+            updateCodeListState(user, timestamp, codeList);
         } else {
-            UpdateCodeListPropertiesRepositoryRequest request =
-                    new UpdateCodeListPropertiesRepositoryRequest(user, codeList.getCodeListManifestId());
-
-            request.setCodeListName(codeList.getCodeListName());
-            request.setAgencyId(codeList.getAgencyId());
-            request.setVersionId(codeList.getVersionId());
-            request.setListId(codeList.getListId());
-            request.setDefinition(codeList.getDefinition());
-            request.setDefinitionSource(codeList.getDefinitionSource());
-            request.setRemark(codeList.getRemark());
-            request.setExtensible(codeList.isExtensible());
-            request.setDeprecated(codeList.isDeprecated());
-
-            UpdateCodeListPropertiesRepositoryResponse response =
-                    codeListCUDRepository.updateCodeListProperties(request);
-
-            fireEvent(new UpdatedCodeListPropertiesEvent());
+            updateCodeListProperties(user, timestamp, codeList);
+            updateCodeListValues(user, timestamp, codeList);
         }
+    }
+
+    private void updateCodeListState(User user, LocalDateTime timestamp, CodeList codeList) {
+        UpdateCodeListStateRepositoryRequest request =
+                new UpdateCodeListStateRepositoryRequest(user, timestamp, codeList.getCodeListManifestId(),
+                        CcState.valueOf(codeList.getState()));
+
+        UpdateCodeListStateRepositoryResponse response =
+                codeListCUDRepository.updateCodeListState(request);
+
+        fireEvent(new UpdatedCodeListStateEvent());
+    }
+
+    private void updateCodeListProperties(User user, LocalDateTime timestamp, CodeList codeList) {
+        UpdateCodeListPropertiesRepositoryRequest request =
+                new UpdateCodeListPropertiesRepositoryRequest(user, timestamp, codeList.getCodeListManifestId());
+
+        request.setCodeListName(codeList.getCodeListName());
+        request.setAgencyId(codeList.getAgencyId());
+        request.setVersionId(codeList.getVersionId());
+        request.setListId(codeList.getListId());
+        request.setDefinition(codeList.getDefinition());
+        request.setDefinitionSource(codeList.getDefinitionSource());
+        request.setRemark(codeList.getRemark());
+        request.setExtensible(codeList.isExtensible());
+        request.setDeprecated(codeList.isDeprecated());
+
+        UpdateCodeListPropertiesRepositoryResponse response =
+                codeListCUDRepository.updateCodeListProperties(request);
+
+        fireEvent(new UpdatedCodeListPropertiesEvent());
+    }
+
+    private void updateCodeListValues(User user, LocalDateTime timestamp, CodeList codeList) {
+        ModifyCodeListValuesRepositoryRequest request =
+                new ModifyCodeListValuesRepositoryRequest(user, timestamp,
+                        codeList.getCodeListManifestId());
+
+        request.setCodeListValueList(
+                codeList.getCodeListValues().stream().map(e -> {
+                    ModifyCodeListValuesRepositoryRequest.CodeListValue codeListValue =
+                            new ModifyCodeListValuesRepositoryRequest.CodeListValue();
+
+                    codeListValue.setName(e.getName());
+                    codeListValue.setValue(e.getValue());
+                    codeListValue.setDefinition(e.getDefinition());
+                    codeListValue.setDefinitionSource(e.getDefinitionSource());
+
+                    if (codeListValue.isLocked()) {
+                        codeListValue.setUsed(false);
+                        codeListValue.setExtension(false);
+                    }
+
+                    codeListValue.setLocked(codeListValue.isLocked());
+                    codeListValue.setUsed(codeListValue.isUsed());
+                    codeListValue.setExtension(codeListValue.isExtension());
+
+                    return codeListValue;
+                }).collect(Collectors.toList())
+        );
+
+        ModifyCodeListValuesRepositoryResponse response =
+                codeListCUDRepository.modifyCodeListValues(request);
     }
 
     @Transactional

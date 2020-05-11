@@ -6,6 +6,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -31,6 +35,8 @@ public class RepositoryInitializer implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        initCodeListValueGuid();
+
         initAccRevision();
         initAsccpRevision();
         initBccpRevision();
@@ -39,6 +45,29 @@ public class RepositoryInitializer implements InitializingBean {
         initDtRevision();
 
         initXbtRevision();
+    }
+
+    private void initCodeListValueGuid() {
+        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE).fetch();
+
+        codeListValueRecords.stream()
+                .filter(e -> e.getPrevCodeListValueId() == null)
+                .forEach(e -> {
+                    e.setGuid(SrtGuid.randomGuid());
+                    e.update(CODE_LIST_VALUE.GUID);
+                });
+
+        Map<ULong, CodeListValueRecord> codeListValueRecordMapById = codeListValueRecords.stream()
+                .collect(Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
+
+        codeListValueRecords.stream()
+                .filter(e -> e.getPrevCodeListValueId() != null)
+                .forEach(e -> {
+                    CodeListValueRecord prevCodeListValueRecord =
+                            codeListValueRecordMapById.get(e.getPrevCodeListValueId());
+                    e.setGuid(prevCodeListValueRecord.getGuid());
+                    e.update(CODE_LIST_VALUE.GUID);
+                });
     }
 
     private void initAccRevision() {

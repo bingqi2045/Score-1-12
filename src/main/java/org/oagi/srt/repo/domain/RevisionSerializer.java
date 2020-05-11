@@ -275,6 +275,7 @@ public class RevisionSerializer {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "codeListValue");
+        properties.put("guid", codeListValueRecord.getGuid());
         properties.put("value", codeListValueRecord.getValue());
         properties.put("name", codeListValueRecord.getName());
         properties.put("definition", codeListValueRecord.getDefinition());
