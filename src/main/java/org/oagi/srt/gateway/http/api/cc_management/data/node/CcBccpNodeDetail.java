@@ -19,7 +19,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private BigInteger manifestId = BigInteger.ZERO;
         private String guid;
         private String den;
-        private BCCEntityType entityType;
+        private Integer entityType;
         private int cardinalityMin;
         private int cardinalityMax;
         private boolean deprecated;

@@ -363,7 +363,7 @@ public class AccCUDRepository {
 
                 String asccpDen = dslContext.select(ASCCP.DEN)
                         .from(ASCCP)
-                        .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                        .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                         .fetchOneInto(String.class);
 
                 asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + asccpDen);
@@ -380,7 +380,7 @@ public class AccCUDRepository {
 
                 String bccpDen = dslContext.select(BCCP.DEN)
                         .from(BCCP)
-                        .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                        .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                         .fetchOneInto(String.class);
 
                 bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpDen);
