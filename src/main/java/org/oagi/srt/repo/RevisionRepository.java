@@ -11,9 +11,12 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
+import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
 import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -35,11 +38,20 @@ public class RevisionRepository {
         this.serializer = serializer;
     }
 
-    public List<Revision> getRevisionByReference(String reference) {
-        if (reference.isEmpty()) {
+    public PageResponse<Revision> getRevisionByReference(RevisionListRequest request) {
+        if (request.getReference().isEmpty()) {
             return null;
         }
-        return dslContext.select(
+        PageResponse response = new PageResponse<Revision>();
+
+
+
+        Integer length = dslContext.selectCount()
+                .from(REVISION)
+                .where(condition("snapshot->\"$.guid\" = '" + request.getReference() + "'"))
+                .fetchOptionalInto(Integer.class).orElse(0);
+
+        List<Revision> list = dslContext.select(
                 REVISION.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
@@ -52,9 +64,17 @@ public class RevisionRepository {
                 .from(REVISION)
                 .join(APP_USER)
                 .on(REVISION.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(condition("snapshot->\"$.guid\" = '" + reference + "'"))
+                .where(condition("snapshot->\"$.guid\" = '" + request.getReference() + "'"))
                 .orderBy(REVISION.REVISION_ID.desc())
+                .offset(request.getPageRequest().getOffset())
+                .limit(request.getPageRequest().getPageSize())
                 .fetchInto(Revision.class);
+
+        response.setList(list);
+        response.setPage(request.getPageRequest().getPageIndex());
+        response.setLength(length);
+
+        return response;
     }
 
     public class InsertRevisionArguments {
