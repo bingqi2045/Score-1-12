@@ -397,7 +397,7 @@ public class ExtensionService {
 
         history.setBccId(null);
         if (bcc.getEntityType() != null) {
-            history.setEntityType(bcc.getEntityType().getValue());
+            history.setEntityType(bcc.getEntityType());
         }
         history.setCardinalityMin(bcc.getCardinalityMin());
         history.setCardinalityMax(bcc.getCardinalityMax());
