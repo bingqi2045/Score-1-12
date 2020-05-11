@@ -16,7 +16,6 @@ import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
 import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;

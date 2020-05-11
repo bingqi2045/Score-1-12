@@ -7,6 +7,7 @@ import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.DTType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 public class RevisionSerializer {
 
     private Gson gson;
+
+    @Autowired
+    private RevisionSnapshotResolver resolver;
 
     public RevisionSerializer() {
         this.gson = new Gson();
@@ -30,6 +34,7 @@ public class RevisionSerializer {
         properties.put("component", "acc");
         properties.put("guid", accRecord.getGuid());
         properties.put("objectClassTerm", accRecord.getObjectClassTerm());
+        properties.put("den", accRecord.getDen());
         properties.put("definition", accRecord.getDefinition());
         properties.put("definitionSource", accRecord.getDefinitionSource());
         properties.put("objectClassQualifier", accRecord.getObjectClassQualifier());
@@ -38,9 +43,12 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == accRecord.getIsDeprecated()) ? true : false);
         properties.put("abstract", ((byte) 1 == accRecord.getIsAbstract()) ? true : false);
 
-        properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ? accRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("basedAccId", (accRecord.getBasedAccId() != null) ? accRecord.getBasedAccId().toBigInteger() : null);
-        properties.put("namespaceId", (accRecord.getNamespaceId() != null) ? accRecord.getNamespaceId().toBigInteger() : null);
+        properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ?
+                resolver.getUserLoginId(accRecord.getOwnerUserId()) : null);
+        properties.put("basedAcc", (accRecord.getBasedAccId() != null) ?
+                resolver.getAccObjectClass(accRecord.getBasedAccId()) : null);
+        properties.put("namespace", (accRecord.getNamespaceId() != null) ?
+                        resolver.getNamespaceUrl(accRecord.getNamespaceId()) : null);
 
         List<Map<String, Object>> associations = new ArrayList();
         properties.put("associations", associations);
@@ -112,6 +120,7 @@ public class RevisionSerializer {
 
         properties.put("component", "ascc");
         properties.put("guid", asccRecord.getGuid());
+        properties.put("den", asccRecord.getDen());
         properties.put("cardinalityMin", asccRecord.getCardinalityMin());
         properties.put("cardinalityMax", asccRecord.getCardinalityMax());
         properties.put("definition", asccRecord.getDefinition());
@@ -130,6 +139,7 @@ public class RevisionSerializer {
 
         properties.put("component", "bcc");
         properties.put("guid", bccRecord.getGuid());
+        properties.put("den", bccRecord.getDen());
         properties.put("cardinalityMin", bccRecord.getCardinalityMin());
         properties.put("cardinalityMax", bccRecord.getCardinalityMax());
         properties.put("entityType", BCCEntityType.valueOf(bccRecord.getEntityType()).name());
@@ -160,9 +170,12 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == asccpRecord.getIsDeprecated()) ? true : false);
         properties.put("nillable", ((byte) 1 == asccpRecord.getIsNillable()) ? true : false);
 
-        properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ? asccpRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("roleOfAccId", (asccpRecord.getRoleOfAccId() != null) ? asccpRecord.getRoleOfAccId().toBigInteger() : null);
-        properties.put("namespaceId", (asccpRecord.getNamespaceId() != null) ? asccpRecord.getNamespaceId().toBigInteger() : null);
+        properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ?
+                resolver.getUserLoginId(asccpRecord.getOwnerUserId()) : null);
+        properties.put("roleOfAcc", (asccpRecord.getRoleOfAccId() != null) ?
+                resolver.getAccObjectClass(asccpRecord.getRoleOfAccId()) : null);
+        properties.put("namespace", (asccpRecord.getNamespaceId() != null) ?
+                resolver.getNamespaceUrl(asccpRecord.getNamespaceId()) : null);
 
         return gson.toJson(properties, HashMap.class);
     }
@@ -183,9 +196,12 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == bccpRecord.getIsDeprecated()) ? true : false);
         properties.put("nillable", ((byte) 1 == bccpRecord.getIsNillable()) ? true : false);
 
-        properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ? bccpRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("bdtId", (bccpRecord.getBdtId() != null) ? bccpRecord.getBdtId().toBigInteger() : null);
-        properties.put("namespaceId", (bccpRecord.getNamespaceId() != null) ? bccpRecord.getNamespaceId().toBigInteger() : null);
+        properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ?
+                resolver.getUserLoginId(bccpRecord.getOwnerUserId()) : null);
+        properties.put("bdt", (bccpRecord.getBdtId() != null) ?
+                resolver.getDtDataTypeTerm(bccpRecord.getBdtId()) : null);
+        properties.put("namespace", (bccpRecord.getNamespaceId() != null) ?
+                resolver.getNamespaceUrl(bccpRecord.getNamespaceId()) : null);
 
         return gson.toJson(properties, HashMap.class);
     }
