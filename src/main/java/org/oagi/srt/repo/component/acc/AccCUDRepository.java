@@ -1,6 +1,8 @@
 package org.oagi.srt.repo.component.acc;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
@@ -332,25 +335,54 @@ public class AccCUDRepository {
 
         // update acc record.
         boolean denNeedsToUpdate = false;
-        if (!accRecord.getObjectClassTerm().equals(request.getObjectClassTerm())) {
+        UpdateSetFirstStep<AccRecord> firstStep = dslContext.update(ACC);
+        UpdateSetMoreStep<AccRecord> moreStep = null;
+        if (compare(accRecord.getObjectClassTerm(), request.getObjectClassTerm()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.OBJECT_CLASS_TERM, request.getObjectClassTerm())
+                    .set(ACC.DEN, request.getObjectClassTerm() + ". Details");
             denNeedsToUpdate = true;
         }
-        accRecord.setObjectClassTerm(request.getObjectClassTerm());
-        accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
-        accRecord.setDefinition(request.getDefinition());
-        accRecord.setDefinitionSource(request.getDefinitionSource());
-        accRecord.setOagisComponentType(request.getComponentType().getValue());
-        accRecord.setIsAbstract((byte) ((request.isAbstract()) ? 1 : 0));
-        accRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        accRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
-        accRecord.setLastUpdatedBy(userId);
-        accRecord.setLastUpdateTimestamp(timestamp);
-        accRecord.update(ACC.OBJECT_CLASS_TERM, ACC.DEN,
-                ACC.DEFINITION, ACC.DEFINITION_SOURCE,
-                ACC.OAGIS_COMPONENT_TYPE,
-                ACC.IS_ABSTRACT, ACC.IS_DEPRECATED,
-                ACC.NAMESPACE_ID,
-                ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+        if (compare(accRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.DEFINITION, request.getDefinition());
+        }
+        if (compare(accRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+        if (request.getComponentType() != null) {
+            if (accRecord.getOagisComponentType() != request.getComponentType().getValue()) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(ACC.OAGIS_COMPONENT_TYPE, request.getComponentType().getValue());
+            }
+        }
+        if ((accRecord.getIsAbstract() == 1 ? true : false) != request.isAbstract()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.IS_ABSTRACT, (byte) ((request.isAbstract()) ? 1 : 0));
+        }
+        if ((accRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(ACC.NAMESPACE_ID);
+        } else {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ACC.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+        }
+
+        if (moreStep != null) {
+            moreStep.set(ACC.LAST_UPDATED_BY, userId)
+                    .set(ACC.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(ACC.ACC_ID.eq(accRecord.getAccId()))
+                    .execute();
+
+            accRecord = dslContext.selectFrom(ACC)
+                    .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                    .fetchOne();
+        }
 
         if (denNeedsToUpdate) {
             for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
@@ -388,15 +420,17 @@ public class AccCUDRepository {
             }
         }
 
-        // creates new revision for updated record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAccRevision(
-                        accRecord, accManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
-                        userId, timestamp);
+        if (moreStep != null) {
+            // creates new revision for updated record.
+            RevisionRecord revisionRecord =
+                    revisionRepository.insertAccRevision(
+                            accRecord, accManifestRecord.getRevisionId(),
+                            RevisionAction.Modified,
+                            userId, timestamp);
 
-        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+            accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+            accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+        }
 
         return new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
