@@ -175,7 +175,8 @@ public class CodeListService extends EventHandler {
         AppUser requester = sessionService.getAppUser(user);
         result.stream().forEach(e -> {
             e.setAccess(
-                    AccessPrivilege.toAccessPrivilege(requester, e.getOwnerId(), CcState.valueOf(e.getState()))
+                    AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(e.getOwnerId()),
+                            CcState.valueOf(e.getState()))
             );
             e.setOwnerId(null); // hide sensitive information
         });
@@ -231,7 +232,8 @@ public class CodeListService extends EventHandler {
 
         AppUser requester = sessionService.getAppUser(user);
         codeList.setAccess(
-                AccessPrivilege.toAccessPrivilege(requester, codeList.getOwnerId(), CcState.valueOf(codeList.getState()))
+                AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(codeList.getOwnerId()),
+                        CcState.valueOf(codeList.getState()))
         );
         codeList.setOwnerId(null); // hide sensitive information
 

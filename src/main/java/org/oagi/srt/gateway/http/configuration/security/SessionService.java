@@ -41,6 +41,18 @@ public class SessionService {
                 .fetchOneInto(AppUser.class);
     }
 
+    public AppUser getAppUser(BigInteger appUserId) {
+        return dslContext.select(
+                APP_USER.APP_USER_ID,
+                APP_USER.LOGIN_ID,
+                APP_USER.NAME,
+                APP_USER.IS_DEVELOPER.as("developer"),
+                APP_USER.ORGANIZATION
+        ).from(APP_USER)
+                .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)))
+                .fetchOneInto(AppUser.class);
+    }
+
     public AppUser getAppUser(User user) {
         return getAppUser(user.getUsername());
     }
