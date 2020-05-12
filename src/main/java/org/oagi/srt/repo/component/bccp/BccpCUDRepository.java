@@ -410,4 +410,44 @@ public class BccpCUDRepository {
 
         return new DeleteBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
+
+    public UpdateBccpOwnerRepositoryResponse updateBccpOwner(UpdateBccpOwnerRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getBccpManifestId())
+                ))
+                .fetchOne();
+
+        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(bccpRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
+
+        if (!bccpRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        bccpRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        bccpRecord.setLastUpdatedBy(userId);
+        bccpRecord.setLastUpdateTimestamp(timestamp);
+        bccpRecord.update(BCCP.OWNER_USER_ID, BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
+
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
+                        userId, timestamp);
+
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
+
+        return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+    }
 }

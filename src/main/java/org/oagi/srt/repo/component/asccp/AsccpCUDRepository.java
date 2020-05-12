@@ -400,4 +400,44 @@ public class AsccpCUDRepository {
 
         return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
+
+    public UpdateAsccpOwnerRepositoryResponse updateAsccpOwner(UpdateAsccpOwnerRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAsccpManifestId())
+                ))
+                .fetchOne();
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(asccpRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
+
+        if (!asccpRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        asccpRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        asccpRecord.setLastUpdatedBy(userId);
+        asccpRecord.setLastUpdateTimestamp(timestamp);
+        asccpRecord.update(ASCCP.OWNER_USER_ID, ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
+
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAsccpRevision(
+                        asccpRecord, asccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
+                        userId, timestamp);
+
+        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+
+        return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+    }
 }

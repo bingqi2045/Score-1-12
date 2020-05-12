@@ -878,82 +878,28 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    public ULong updateAccOwnerUserId(ULong accManifestId, ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
+    public void updateAccOwnerUserId(User user, BigInteger accManifestId, BigInteger ownerUserId) {
+        UpdateAccOwnerRepositoryRequest request =
+                new UpdateAccOwnerRepositoryRequest(user, accManifestId, ownerUserId);
+        accCUDRepository.updateAccOwner(request);
 
-        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(accManifestId);
-        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(requesterUserId)
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accManifestRecord.getRevisionId())
-                .execute();
-
-        ULong accId = ccRepository.updateAccArguments(accRecord)
-                .setLastUpdateTimestamp(timestamp)
-                .setLastUpdatedBy(requesterUserId)
-                .setOwnerUserId(ownerUserId)
-                .execute();
-
-        ccRepository.updateAccManifestArguments(accManifestRecord)
-                .setAccId(accId)
-                .execute();
-
-        updateAccChain(requesterUserId, accManifestId, timestamp, revisionId);
-
-        return accId;
+        fireEvent(new UpdatedAccOwnerEvent());
     }
 
-    public void updateAsccpOwnerUserId(ULong accManifestId, ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
-        AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(accManifestId);
-        AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
+    public void updateAsccpOwnerUserId(User user, BigInteger asccpManifestId, BigInteger ownerUserId) {
+        UpdateAsccpOwnerRepositoryRequest request =
+                new UpdateAsccpOwnerRepositoryRequest(user, asccpManifestId, ownerUserId);
+        asccpCUDRepository.updateAsccpOwner(request);
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(requesterUserId)
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("asccp" + asccpManifestRecord.getAsccpManifestId())
-                .setPrevRevisionId(asccpManifestRecord.getRevisionId())
-                .execute();
-
-        ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
-                .setOwnerUserId(ownerUserId)
-                .setLastUpdatedBy(requesterUserId)
-                .setLastUpdateTimestamp(timestamp)
-                .execute();
-
-        ccRepository.updateAsccpManifestArguments(asccpManifestRecord)
-                .setAsccpId(asccpId)
-                .execute();
-
-        updateAsccByToAsccp(requesterUserId, asccpManifestRecord.getAsccpManifestId(), timestamp, revisionId);
+        fireEvent(new UpdatedAsccpOwnerEvent());
     }
 
-    public void updateBccpOwnerUserId(ULong accManifestId, ULong ownerUserId, ULong requesterUserId, LocalDateTime timestamp) {
-        BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(accManifestId);
-        BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
+    public void updateBccpOwnerUserId(User user, BigInteger bccpManifestId, BigInteger ownerUserId) {
+        UpdateBccpOwnerRepositoryRequest request =
+                new UpdateBccpOwnerRepositoryRequest(user, bccpManifestId, ownerUserId);
+        bccpCUDRepository.updateBccpOwner(request);
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
-                .setCreatedBy(requesterUserId)
-                .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
-                .setReference("bccp" + bccpManifestRecord.getBccpManifestId())
-                .setPrevRevisionId(bccpManifestRecord.getRevisionId())
-                .execute();
-
-        ULong bccpId = ccRepository.updateBccpArguments(bccpRecord)
-                .setOwnerUserId(ownerUserId)
-                .setLastUpdatedBy(requesterUserId)
-                .setLastUpdateTimestamp(timestamp)
-                .execute();
-
-        ccRepository.updateBccpManifestArguments(bccpManifestRecord)
-                .setBccpId(bccpId)
-                .execute();
-
-        updateBccByToBccp(requesterUserId, bccpManifestRecord.getBccpManifestId(), timestamp, revisionId);
+        fireEvent(new UpdatedBccpOwnerEvent());
     }
 }
 

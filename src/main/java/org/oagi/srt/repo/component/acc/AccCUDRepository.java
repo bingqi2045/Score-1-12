@@ -648,4 +648,68 @@ public class AccCUDRepository {
 
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
+
+    public UpdateAccOwnerRepositoryResponse updateAccOwner(UpdateAccOwnerRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAccManifestId())
+                ))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        }
+
+        if (!accRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        accRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        accRecord.setLastUpdatedBy(userId);
+        accRecord.setLastUpdateTimestamp(timestamp);
+        accRecord.update(ACC.OWNER_USER_ID, ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+
+        for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch()) {
+
+            AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                    .fetchOne();
+
+            asccRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+            asccRecord.update(ASCC.OWNER_USER_ID);
+        }
+
+        for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch()) {
+
+            BccRecord bccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                    .fetchOne();
+
+            bccRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+            bccRecord.update(BCC.OWNER_USER_ID);
+        }
+
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
+                        userId, timestamp);
+
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+
+        return new UpdateAccOwnerRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
 }

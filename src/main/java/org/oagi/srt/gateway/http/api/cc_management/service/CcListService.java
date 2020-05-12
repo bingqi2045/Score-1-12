@@ -3,10 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ACC;
-import org.oagi.srt.data.BieState;
-import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.data.Release;
+import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
@@ -152,17 +149,10 @@ public class CcListService {
 
     @Transactional
     public void transferOwnership(User user, String type, BigInteger manifestId, String targetLoginId) {
-        long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
-                .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
-                .fetchOptionalInto(Long.class).orElse(0L);
-        if (targetAppUserId == 0L) {
+        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+        if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
-
-        ULong target = ULong.valueOf(targetAppUserId);
-        ULong userId = ULong.valueOf(sessionService.userId(user));
-        LocalDateTime timestamp = LocalDateTime.now();
 
         switch (type) {
             case "ACC":
@@ -171,7 +161,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ACC.");
                 }
 
-                ccNodeService.updateAccOwnerUserId(accManifest.getAccManifestId(), target, userId, timestamp);
+                ccNodeService.updateAccOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
 
             case "ASCCP":
@@ -180,7 +170,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                ccNodeService.updateAsccpOwnerUserId(asccpManifest.getAsccpManifestId(), target, userId, timestamp);
+                ccNodeService.updateAsccpOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
 
             case "BCCP":
@@ -189,7 +179,7 @@ public class CcListService {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
                 }
 
-                ccNodeService.updateBccpOwnerUserId(bccpManifest.getBccpManifestId(), target, userId, timestamp);
+                ccNodeService.updateBccpOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
 
             default:
