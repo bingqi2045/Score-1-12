@@ -16,10 +16,14 @@ import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
 import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.jooq.impl.DSL.condition;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -41,11 +45,10 @@ public class RevisionRepository {
         if (request.getReference().isEmpty()) {
             return null;
         }
+
         PageResponse response = new PageResponse<Revision>();
 
-
-
-        Integer length = dslContext.selectCount()
+        int length = dslContext.selectCount()
                 .from(REVISION)
                 .where(condition("snapshot->\"$.guid\" = '" + request.getReference() + "'"))
                 .fetchOptionalInto(Integer.class).orElse(0);
@@ -55,7 +58,6 @@ public class RevisionRepository {
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
                 REVISION.REVISION_ACTION,
-                REVISION.SNAPSHOT,
                 REVISION.PREV_REVISION_ID,
                 REVISION.CREATION_TIMESTAMP.as("timestamp"),
                 APP_USER.NAME.as("loginId")
@@ -74,6 +76,19 @@ public class RevisionRepository {
         response.setLength(length);
 
         return response;
+    }
+
+    public String getSnapshotById(User user, BigInteger revisionId) {
+        if (revisionId == null || revisionId.longValue() <= 0L) {
+            return "{}";
+        }
+
+        return serializer.deserialize(
+                dslContext.select(REVISION.SNAPSHOT)
+                        .from(REVISION)
+                        .where(REVISION.REVISION_ID.eq(ULong.valueOf(revisionId)))
+                        .fetchOptionalInto(String.class).orElse(null)
+        ).toString();
     }
 
     public class InsertRevisionArguments {

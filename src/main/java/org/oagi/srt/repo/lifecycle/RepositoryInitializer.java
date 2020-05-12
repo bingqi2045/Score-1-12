@@ -48,7 +48,9 @@ public class RepositoryInitializer implements InitializingBean {
     }
 
     private void initCodeListValueGuid() {
-        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE).fetch();
+        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.GUID.isNull())
+                .fetch();
 
         codeListValueRecords.stream()
                 .filter(e -> e.getPrevCodeListValueId() == null)

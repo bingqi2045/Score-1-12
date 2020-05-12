@@ -1,15 +1,21 @@
 package org.oagi.srt.repo.domain;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
+import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.DTType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +40,6 @@ public class RevisionSerializer {
         properties.put("component", "acc");
         properties.put("guid", accRecord.getGuid());
         properties.put("objectClassTerm", accRecord.getObjectClassTerm());
-        properties.put("den", accRecord.getDen());
         properties.put("definition", accRecord.getDefinition());
         properties.put("definitionSource", accRecord.getDefinitionSource());
         properties.put("objectClassQualifier", accRecord.getObjectClassQualifier());
@@ -43,12 +48,9 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == accRecord.getIsDeprecated()) ? true : false);
         properties.put("abstract", ((byte) 1 == accRecord.getIsAbstract()) ? true : false);
 
-        properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ?
-                resolver.getUserLoginId(accRecord.getOwnerUserId()) : null);
-        properties.put("basedAcc", (accRecord.getBasedAccId() != null) ?
-                resolver.getAccObjectClass(accRecord.getBasedAccId()) : null);
-        properties.put("namespace", (accRecord.getNamespaceId() != null) ?
-                        resolver.getNamespaceUrl(accRecord.getNamespaceId()) : null);
+        properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ? accRecord.getOwnerUserId() : null);
+        properties.put("basedAccId", (accRecord.getBasedAccId() != null) ? accRecord.getBasedAccId() : null);
+        properties.put("namespaceId", (accRecord.getNamespaceId() != null) ? accRecord.getNamespaceId() : null);
 
         List<Map<String, Object>> associations = new ArrayList();
         properties.put("associations", associations);
@@ -63,6 +65,43 @@ public class RevisionSerializer {
         }
 
         return gson.toJson(properties, HashMap.class);
+    }
+
+    private void accAddProperties(JsonObject properties) {
+        properties.addProperty("den",
+                properties.get("objectClassTerm").getAsString() + ". Details"
+        );
+
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("basedAccId")) {
+            BigInteger basedAccId = properties.get("basedAccId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("basedAccObjectClassTerm",
+                    resolver.getAccObjectClassTerm(ULong.valueOf(basedAccId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
+
+        if (properties.has("associations")) {
+            for (JsonElement element : properties.getAsJsonArray("associations")) {
+                JsonObject association = element.getAsJsonObject();
+                String component = association.get("component").getAsString();
+                if ("ascc".equals(component)) {
+                    asccAddProperties(properties, association);
+                } else if ("bcc".equals(component)) {
+                    bccAddProperties(properties, association);
+                }
+            }
+        }
     }
 
     private List<AssocRecord> sort(List<AsccRecord> asccRecords, List<BccRecord> bccRecords) {
@@ -120,7 +159,6 @@ public class RevisionSerializer {
 
         properties.put("component", "ascc");
         properties.put("guid", asccRecord.getGuid());
-        properties.put("den", asccRecord.getDen());
         properties.put("cardinalityMin", asccRecord.getCardinalityMin());
         properties.put("cardinalityMax", asccRecord.getCardinalityMax());
         properties.put("definition", asccRecord.getDefinition());
@@ -133,13 +171,28 @@ public class RevisionSerializer {
         return properties;
     }
 
+    private void asccAddProperties(JsonObject accProperties,
+                                   JsonObject properties) {
+
+        properties.addProperty("den",
+                accProperties.get("objectClassTerm").getAsString() + ". " +
+                        resolver.getAsccpDen(
+                                ULong.valueOf(properties.get("toAsccpId").getAsBigInteger())
+                        )
+        );
+        properties.addProperty("toAsccpPropertyTerm",
+                resolver.getAsccpPropertyTerm(
+                        ULong.valueOf(properties.get("toAsccpId").getAsBigInteger())
+                )
+        );
+    }
+
     @SneakyThrows(JsonIOException.class)
     public Map<String, Object> serialize(BccRecord bccRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "bcc");
         properties.put("guid", bccRecord.getGuid());
-        properties.put("den", bccRecord.getDen());
         properties.put("cardinalityMin", bccRecord.getCardinalityMin());
         properties.put("cardinalityMax", bccRecord.getCardinalityMax());
         properties.put("entityType", BCCEntityType.valueOf(bccRecord.getEntityType()).name());
@@ -156,6 +209,22 @@ public class RevisionSerializer {
         return properties;
     }
 
+    private void bccAddProperties(JsonObject accProperties,
+                                  JsonObject properties) {
+
+        properties.addProperty("den",
+                accProperties.get("objectClassTerm").getAsString() + ". " +
+                        resolver.getBccpDen(
+                                ULong.valueOf(properties.get("toBccpId").getAsBigInteger())
+                        )
+        );
+        properties.addProperty("toBccpPropertyTerm",
+                resolver.getBccpPropertyTerm(
+                        ULong.valueOf(properties.get("toBccpId").getAsBigInteger())
+                )
+        );
+    }
+
     @SneakyThrows(JsonIOException.class)
     public String serialize(AsccpRecord asccpRecord) {
         Map<String, Object> properties = new HashMap();
@@ -170,14 +239,37 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == asccpRecord.getIsDeprecated()) ? true : false);
         properties.put("nillable", ((byte) 1 == asccpRecord.getIsNillable()) ? true : false);
 
-        properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ?
-                resolver.getUserLoginId(asccpRecord.getOwnerUserId()) : null);
-        properties.put("roleOfAcc", (asccpRecord.getRoleOfAccId() != null) ?
-                resolver.getAccObjectClass(asccpRecord.getRoleOfAccId()) : null);
-        properties.put("namespace", (asccpRecord.getNamespaceId() != null) ?
-                resolver.getNamespaceUrl(asccpRecord.getNamespaceId()) : null);
+        properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ? asccpRecord.getOwnerUserId() : null);
+        properties.put("roleOfAccId", (asccpRecord.getRoleOfAccId() != null) ? asccpRecord.getRoleOfAccId() : null);
+        properties.put("namespaceId", (asccpRecord.getNamespaceId() != null) ? asccpRecord.getNamespaceId() : null);
 
         return gson.toJson(properties, HashMap.class);
+    }
+
+    private void asccpAddProperties(JsonObject properties) {
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("roleOfAccId")) {
+            BigInteger roleOfAccId = properties.get("roleOfAccId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("roleOfAccObjectClassTerm",
+                    resolver.getAccObjectClassTerm(ULong.valueOf(roleOfAccId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
+
+        properties.addProperty("den",
+                properties.get("propertyTerm").getAsString() + ". " +
+                        properties.get("roleOfAccObjectClassTerm").getAsString()
+        );
     }
 
     @SneakyThrows(JsonIOException.class)
@@ -196,14 +288,37 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == bccpRecord.getIsDeprecated()) ? true : false);
         properties.put("nillable", ((byte) 1 == bccpRecord.getIsNillable()) ? true : false);
 
-        properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ?
-                resolver.getUserLoginId(bccpRecord.getOwnerUserId()) : null);
-        properties.put("bdt", (bccpRecord.getBdtId() != null) ?
-                resolver.getDtDataTypeTerm(bccpRecord.getBdtId()) : null);
-        properties.put("namespace", (bccpRecord.getNamespaceId() != null) ?
-                resolver.getNamespaceUrl(bccpRecord.getNamespaceId()) : null);
+        properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ? bccpRecord.getOwnerUserId() : null);
+        properties.put("bdtId", (bccpRecord.getBdtId() != null) ? bccpRecord.getBdtId() : null);
+        properties.put("namespaceId", (bccpRecord.getNamespaceId() != null) ? bccpRecord.getNamespaceId() : null);
 
         return gson.toJson(properties, HashMap.class);
+    }
+
+    private void bccpAddProperties(JsonObject properties) {
+        properties.addProperty("den",
+                properties.get("propertyTerm").getAsString() + ". " +
+                        properties.get("representationTerm").getAsString()
+        );
+
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("bdtId")) {
+            BigInteger bdtId = properties.get("bdtId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("bdtDataTypeTerm",
+                    resolver.getAccObjectClassTerm(ULong.valueOf(bdtId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
     }
 
     @SneakyThrows(JsonIOException.class)
@@ -323,5 +438,26 @@ public class RevisionSerializer {
 
         return gson.toJson(properties, HashMap.class);
     }
-    
+
+    @SneakyThrows()
+    public JsonObject deserialize(String snapshot) {
+        if (StringUtils.isEmpty(snapshot)) {
+            return null;
+        }
+
+        JsonObject properties = this.gson.fromJson(snapshot, JsonObject.class);
+        String component = properties.get("component").getAsString();
+        if (StringUtils.isEmpty(component)) {
+            return properties;
+        }
+
+        try {
+            Method method = this.getClass().getDeclaredMethod(component + "AddProperties", JsonObject.class);
+            method.invoke(this, properties);
+        } catch (NoSuchMethodException ignore) {
+        }
+
+        return properties;
+    }
+
 }

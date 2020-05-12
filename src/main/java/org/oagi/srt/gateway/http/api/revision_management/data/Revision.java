@@ -3,16 +3,16 @@ package org.oagi.srt.gateway.http.api.revision_management.data;
 import lombok.Data;
 import org.oagi.srt.data.RevisionAction;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Data
 public class Revision {
-    private long revisionId;
-    private long revisionNum;
-    private long revisionTrackingNum;
+    private BigInteger revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
     private RevisionAction revisionAction;
-    private String snapshot;
     private String loginId;
     private LocalDateTime timestamp;
-    private Long prevRevisionId;
+    private BigInteger prevRevisionId;
 }
