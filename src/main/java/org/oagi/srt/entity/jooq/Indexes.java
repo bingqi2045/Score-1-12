@@ -18,6 +18,7 @@ import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
 import org.oagi.srt.entity.jooq.tables.Comment;
 import org.oagi.srt.entity.jooq.tables.Dt;
 import org.oagi.srt.entity.jooq.tables.DtSc;
+import org.oagi.srt.entity.jooq.tables.Revision;
 import org.oagi.srt.entity.jooq.tables.Xbt;
 
 
@@ -49,6 +50,7 @@ public class Indexes {
     public static final Index DT_DT_GUID_IDX = Indexes0.DT_DT_GUID_IDX;
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index DT_SC_DT_SC_GUID_IDX = Indexes0.DT_SC_DT_SC_GUID_IDX;
+    public static final Index REVISION_REFERENCE = Indexes0.REVISION_REFERENCE;
     public static final Index XBT_XBT_GUID_IDX = Indexes0.XBT_XBT_GUID_IDX;
     public static final Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX;
 
@@ -75,6 +77,7 @@ public class Indexes {
         public static Index DT_DT_GUID_IDX = Internal.createIndex("dt_guid_idx", Dt.DT, new OrderField[] { Dt.DT.GUID }, false);
         public static Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("dt_last_update_timestamp_desc_idx", Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
         public static Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex("dt_sc_guid_idx", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
+        public static Index REVISION_REFERENCE = Internal.createIndex("reference", Revision.REVISION, new OrderField[] { Revision.REVISION.REFERENCE }, false);
         public static Index XBT_XBT_GUID_IDX = Internal.createIndex("xbt_guid_idx", Xbt.XBT, new OrderField[] { Xbt.XBT.GUID }, false);
         public static Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("xbt_last_update_timestamp_desc_idx", Xbt.XBT, new OrderField[] { Xbt.XBT.LAST_UPDATE_TIMESTAMP }, false);
     }

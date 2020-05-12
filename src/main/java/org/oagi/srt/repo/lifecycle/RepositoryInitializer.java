@@ -96,6 +96,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(accRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
@@ -217,6 +218,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(asccpRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
@@ -274,6 +276,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(bccpRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
@@ -336,6 +339,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(codeListRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
@@ -431,6 +435,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(dtRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
@@ -521,6 +526,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetchOne();
 
             RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(xbtRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());

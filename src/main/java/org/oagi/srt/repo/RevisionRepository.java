@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
@@ -11,6 +12,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcAction;
+import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
@@ -21,9 +23,8 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.jooq.impl.DSL.condition;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -46,11 +47,14 @@ public class RevisionRepository {
             return null;
         }
 
+        PageRequest pageRequest = request.getPageRequest();
         PageResponse response = new PageResponse<Revision>();
+        List<Condition> conditions = new ArrayList();
+        conditions.add(REVISION.REFERENCE.eq(request.getReference()));
 
         int length = dslContext.selectCount()
                 .from(REVISION)
-                .where(condition("snapshot->\"$.guid\" = '" + request.getReference() + "'"))
+                .where(conditions)
                 .fetchOptionalInto(Integer.class).orElse(0);
 
         List<Revision> list = dslContext.select(
@@ -65,14 +69,14 @@ public class RevisionRepository {
                 .from(REVISION)
                 .join(APP_USER)
                 .on(REVISION.CREATED_BY.eq(APP_USER.APP_USER_ID))
-                .where(condition("snapshot->\"$.guid\" = '" + request.getReference() + "'"))
+                .where(conditions)
                 .orderBy(REVISION.REVISION_ID.desc())
-                .offset(request.getPageRequest().getOffset())
-                .limit(request.getPageRequest().getPageSize())
+                .limit(pageRequest.getOffset(), pageRequest.getPageSize())
                 .fetchInto(Revision.class);
 
         response.setList(list);
-        response.setPage(request.getPageRequest().getPageIndex());
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
         response.setLength(length);
 
         return response;
@@ -322,6 +326,7 @@ public class RevisionRepository {
                 .fetch();
 
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(accRecord, asccRecords, bccRecords)));
+        revisionRecord.setReference(accRecord.getGuid());
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
         if (prevRevisionRecord != null) {
@@ -378,6 +383,7 @@ public class RevisionRepository {
         }
         revisionRecord.setRevisionAction(revisionAction.name());
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
+        revisionRecord.setReference(asccpRecord.getGuid());
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
         if (prevRevisionRecord != null) {
@@ -434,6 +440,7 @@ public class RevisionRepository {
         }
         revisionRecord.setRevisionAction(revisionAction.name());
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+        revisionRecord.setReference(bccpRecord.getGuid());
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
         if (prevRevisionRecord != null) {
@@ -495,6 +502,7 @@ public class RevisionRepository {
                 .fetch();
 
         revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(codeListRecord, codeListValueRecords)));
+        revisionRecord.setReference(codeListRecord.getGuid());
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
         if (prevRevisionRecord != null) {

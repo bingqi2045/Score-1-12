@@ -11,10 +11,11 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.JSON;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -24,6 +25,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
@@ -35,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Revision extends TableImpl<RevisionRecord> {
 
-    private static final long serialVersionUID = -774759073;
+    private static final long serialVersionUID = 1505502107;
 
     /**
      * The reference instance of <code>oagi.revision</code>
@@ -69,6 +71,11 @@ public class Revision extends TableImpl<RevisionRecord> {
      * The column <code>oagi.revision.revision_action</code>. This indicates the action associated with the record.
      */
     public final TableField<RevisionRecord, String> REVISION_ACTION = createField(DSL.name("revision_action"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "This indicates the action associated with the record.");
+
+    /**
+     * The column <code>oagi.revision.reference</code>.
+     */
+    public final TableField<RevisionRecord, String> REFERENCE = createField(DSL.name("reference"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>oagi.revision.snapshot</code>.
@@ -134,6 +141,11 @@ public class Revision extends TableImpl<RevisionRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.REVISION_REFERENCE);
+    }
+
+    @Override
     public Identity<RevisionRecord, ULong> getIdentity() {
         return Keys.IDENTITY_REVISION;
     }
@@ -192,11 +204,11 @@ public class Revision extends TableImpl<RevisionRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, UInteger, UInteger, String, JSON, ULong, ULong, ULong, LocalDateTime> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<ULong, UInteger, UInteger, String, String, JSON, ULong, ULong, ULong, LocalDateTime> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }
