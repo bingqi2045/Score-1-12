@@ -103,8 +103,14 @@ public class AccCUDRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        if (!CcState.Published.equals(CcState.valueOf(prevAccRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
+        if (user.isDeveloper()) {
+            if (!CcState.Published.equals(CcState.valueOf(prevAccRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
+            }
+        } else {
+            if (!CcState.Production.equals(CcState.valueOf(prevAccRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Production' state can be revised.");
+            }
         }
 
         ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)

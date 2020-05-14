@@ -108,8 +108,14 @@ public class AsccpCUDRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
-        if (!CcState.Published.equals(CcState.valueOf(prevAsccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
+        if (user.isDeveloper()) {
+            if (!CcState.Published.equals(CcState.valueOf(prevAsccpRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
+            }
+        } else {
+            if (!CcState.Production.equals(CcState.valueOf(prevAsccpRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Production' state can be revised.");
+            }
         }
 
         ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
