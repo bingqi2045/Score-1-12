@@ -3,28 +3,29 @@ package org.oagi.srt.repo.component.bcc;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
+import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.max;
+import static org.oagi.srt.data.BCCEntityType.Attribute;
 import static org.oagi.srt.data.BCCEntityType.Element;
-import static org.oagi.srt.entity.jooq.Tables.BCCP;
-import static org.oagi.srt.entity.jooq.Tables.BCCP_MANIFEST;
+import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
-import static org.oagi.srt.entity.jooq.tables.Ascc.ASCC;
-import static org.oagi.srt.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Bcc.BCC;
 import static org.oagi.srt.entity.jooq.tables.BccManifest.BCC_MANIFEST;
+import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
+import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST_OF_ATTR;
 
 @Repository
 public class BccCUDRepository {
@@ -83,7 +84,7 @@ public class BccCUDRepository {
         bcc.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getDen());
         bcc.setCardinalityMin(0);
         bcc.setCardinalityMax(-1);
-        bcc.setSeqKey(getNextSeqKey(accManifestRecord.getAccManifestId()));
+        bcc.setSeqKey(0); // @deprecated
         bcc.setFromAccId(accRecord.getAccId());
         bcc.setToBccpId(bccpRecord.getBccpId());
         bcc.setEntityType(Element.getValue());
@@ -100,6 +101,7 @@ public class BccCUDRepository {
                         .set(bcc)
                         .returning(BCC.BCC_ID).fetchOne().getBccId()
         );
+        new SeqKeyHandler(dslContext, bcc).moveTo(LAST);
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
@@ -134,28 +136,6 @@ public class BccCUDRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-    }
-
-    private Integer getNextSeqKey(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
-            return null;
-        }
-
-        Integer asccMaxSeqKey = dslContext.select(max(ASCC.SEQ_KEY))
-                .from(ASCC)
-                .join(ASCC_MANIFEST)
-                .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOptionalInto(Integer.class).orElse(0);
-
-        Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
-                .from(BCC)
-                .join(BCC_MANIFEST)
-                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOptionalInto(Integer.class).orElse(0);
-
-        return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
     public UpdateBccPropertiesRepositoryResponse updateBccProperties(UpdateBccPropertiesRepositoryRequest request) {
@@ -198,9 +178,16 @@ public class BccCUDRepository {
         );
         bccRecord.setDefinition(request.getDefinition());
         bccRecord.setDefinitionSource(request.getDefinitionSource());
-        bccRecord.setEntityType(request.getEntityType().getValue());
-        bccRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        bccRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
+        if (request.getEntityType().getValue() != bccRecord.getEntityType()) {
+            bccRecord.setEntityType(request.getEntityType().getValue());
+            if (request.getEntityType() == Element) {
+                new SeqKeyHandler(dslContext, bccRecord).moveTo(LAST);
+            } else if (request.getEntityType() == Attribute) {
+                new SeqKeyHandler(dslContext, bccRecord).moveTo(LAST_OF_ATTR);
+            }
+        }
+        bccRecord.setIsDeprecated((byte) (request.isDeprecated() ? 1 : 0));
+        bccRecord.setIsNillable((byte) (request.isNillable() ? 1 : 0));
         bccRecord.setCardinalityMin(request.getCardinalityMin());
         bccRecord.setCardinalityMax(request.getCardinalityMax());
         bccRecord.setDefaultValue(request.getDefaultValue());
@@ -221,6 +208,32 @@ public class BccCUDRepository {
         );
 
         return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+    }
+
+    private void setBccSeqKeyByEntityType(BccRecord bccRecord,
+                                          BCCEntityType source, BCCEntityType target) {
+
+        dslContext.selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.FROM_ACC_ID.eq(bccRecord.getFromAccId()))
+                .fetch();
+
+        SeqKeyRecord thisSeqKeyRecord = dslContext.selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(bccRecord.getSeqKeyId()))
+                .fetchOne();
+        SeqKeyRecord prevSeqKeyRecord = (thisSeqKeyRecord.getPrevSeqKeyId() != null) ?
+                dslContext.selectFrom(SEQ_KEY)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(thisSeqKeyRecord.getPrevSeqKeyId()))
+                        .fetchOne() : null;
+        SeqKeyRecord nextSeqKeyRecord = (thisSeqKeyRecord.getNextSeqKeyId() != null) ?
+                dslContext.selectFrom(SEQ_KEY)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(thisSeqKeyRecord.getNextSeqKeyId()))
+                        .fetchOne() : null;
+
+        if (source == Element && target == Attribute) {
+
+        } else if (source == Attribute && target == Element) {
+
+        }
     }
 
     public DeleteBccRepositoryResponse deleteBcc(DeleteBccRepositoryRequest request) {

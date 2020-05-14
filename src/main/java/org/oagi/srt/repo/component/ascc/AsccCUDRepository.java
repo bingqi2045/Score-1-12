@@ -4,26 +4,25 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.max;
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.ASCCP;
+import static org.oagi.srt.entity.jooq.Tables.ASCCP_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Ascc.ASCC;
 import static org.oagi.srt.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
-import static org.oagi.srt.entity.jooq.tables.Bcc.BCC;
-import static org.oagi.srt.entity.jooq.tables.BccManifest.BCC_MANIFEST;
+import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
 
 @Repository
 public class AsccCUDRepository {
@@ -88,7 +87,7 @@ public class AsccCUDRepository {
         ascc.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getDen());
         ascc.setCardinalityMin(0);
         ascc.setCardinalityMax(-1);
-        ascc.setSeqKey(getNextSeqKey(accManifestRecord.getAccManifestId()));
+        ascc.setSeqKey(0); // @deprecated
         ascc.setFromAccId(accRecord.getAccId());
         ascc.setToAsccpId(asccpRecord.getAsccpId());
         ascc.setState(CcState.WIP.name());
@@ -103,6 +102,7 @@ public class AsccCUDRepository {
                         .set(ascc)
                         .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
         );
+        new SeqKeyHandler(dslContext, ascc).moveTo(LAST);
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());
@@ -137,28 +137,6 @@ public class AsccCUDRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-    }
-
-    private Integer getNextSeqKey(ULong accManifestId) {
-        if (accManifestId == null || accManifestId.longValue() <= 0L) {
-            return null;
-        }
-
-        Integer asccMaxSeqKey = dslContext.select(max(Tables.ASCC.SEQ_KEY))
-                .from(Tables.ASCC)
-                .join(ASCC_MANIFEST)
-                .on(Tables.ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOptionalInto(Integer.class).orElse(0);
-
-        Integer bccMaxSeqKey = dslContext.select(max(BCC.SEQ_KEY))
-                .from(BCC)
-                .join(BCC_MANIFEST)
-                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId))
-                .fetchOptionalInto(Integer.class).orElse(0);
-
-        return Math.max(asccMaxSeqKey, bccMaxSeqKey) + 1;
     }
 
     public UpdateAsccPropertiesRepositoryResponse updateAsccProperties(UpdateAsccPropertiesRepositoryRequest request) {
