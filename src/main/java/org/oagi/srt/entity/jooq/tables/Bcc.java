@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = -1082746931;
+    private static final long serialVersionUID = 1623477764;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -85,9 +85,14 @@ Note that for the BCC history records, this column always points to the ACC_ID o
     public final TableField<BccRecord, ULong> FROM_ACC_ID = createField(DSL.name("from_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_BCCP_ID. \n\nNote that for the BCC history records, this column always points to the ACC_ID of the current record of an ACC.");
 
     /**
-     * The column <code>oagi.bcc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
+     * The column <code>oagi.bcc.seq_key</code>. @deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
-    public final TableField<BccRecord, Integer> SEQ_KEY = createField(DSL.name("seq_key"), org.jooq.impl.SQLDataType.INTEGER, this, "This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. ");
+    public final TableField<BccRecord, Integer> SEQ_KEY = createField(DSL.name("seq_key"), org.jooq.impl.SQLDataType.INTEGER, this, "@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.");
+
+    /**
+     * The column <code>oagi.bcc.seq_key_id</code>.
+     */
+    public final TableField<BccRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.bcc.entity_type</code>. This is a code list: 0 = ATTRIBUTE and 1 = ELEMENT. An expression generator may or may not use this information. This column is necessary because some of the BCCs are xsd:attribute and some are xsd:element in the OAGIS 10.x. 
@@ -243,7 +248,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
+        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_SEQ_KEY_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
     }
 
     public Bccp bccp() {
@@ -252,6 +257,10 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     public Acc acc() {
         return new Acc(this, Keys.BCC_FROM_ACC_ID_FK);
+    }
+
+    public SeqKey seqKey() {
+        return new SeqKey(this, Keys.BCC_SEQ_KEY_ID_FK);
     }
 
     public AppUser bccCreatedByFk() {

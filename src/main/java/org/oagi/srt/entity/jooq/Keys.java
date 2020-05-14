@@ -65,6 +65,7 @@ import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
 import org.oagi.srt.entity.jooq.tables.Revision;
+import org.oagi.srt.entity.jooq.tables.SeqKey;
 import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
 import org.oagi.srt.entity.jooq.tables.UsageRule;
 import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
@@ -125,6 +126,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 import org.oagi.srt.entity.jooq.tables.records.NamespaceRecord;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.entity.jooq.tables.records.SeqKeyRecord;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleExpressionRecord;
 import org.oagi.srt.entity.jooq.tables.records.UsageRuleRecord;
@@ -196,6 +198,7 @@ public class Keys {
     public static final Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Identities0.IDENTITY_NAMESPACE;
     public static final Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Identities0.IDENTITY_RELEASE;
     public static final Identity<RevisionRecord, ULong> IDENTITY_REVISION = Identities0.IDENTITY_REVISION;
+    public static final Identity<SeqKeyRecord, ULong> IDENTITY_SEQ_KEY = Identities0.IDENTITY_SEQ_KEY;
     public static final Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Identities0.IDENTITY_TOP_LEVEL_ABIE;
     public static final Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Identities0.IDENTITY_USAGE_RULE;
     public static final Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Identities0.IDENTITY_USAGE_RULE_EXPRESSION;
@@ -270,6 +273,7 @@ public class Keys {
     public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = UniqueKeys0.KEY_NAMESPACE_PRIMARY;
     public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = UniqueKeys0.KEY_RELEASE_PRIMARY;
     public static final UniqueKey<RevisionRecord> KEY_REVISION_PRIMARY = UniqueKeys0.KEY_REVISION_PRIMARY;
+    public static final UniqueKey<SeqKeyRecord> KEY_SEQ_KEY_PRIMARY = UniqueKeys0.KEY_SEQ_KEY_PRIMARY;
     public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = UniqueKeys0.KEY_TOP_LEVEL_ABIE_PRIMARY;
     public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_PRIMARY;
     public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_EXPRESSION_PRIMARY;
@@ -320,6 +324,7 @@ public class Keys {
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = ForeignKeys0.ASBIEP_CREATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = ForeignKeys0.ASBIEP_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK;
+    public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = ForeignKeys0.ASCC_SEQ_KEY_ID_FK;
     public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = ForeignKeys0.ASCC_FROM_ACC_ID_FK;
     public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = ForeignKeys0.ASCC_TO_ASCCP_ID_FK;
     public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = ForeignKeys0.ASCC_CREATED_BY_FK;
@@ -368,6 +373,7 @@ public class Keys {
     public static final ForeignKey<BbiepRecord, TopLevelAbieRecord> BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = ForeignKeys0.BCC_TO_BCCP_ID_FK;
     public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = ForeignKeys0.BCC_FROM_ACC_ID_FK;
+    public static final ForeignKey<BccRecord, SeqKeyRecord> BCC_SEQ_KEY_ID_FK = ForeignKeys0.BCC_SEQ_KEY_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = ForeignKeys0.BCC_CREATED_BY_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = ForeignKeys0.BCC_OWNER_USER_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = ForeignKeys0.BCC_LAST_UPDATED_BY_FK;
@@ -499,6 +505,9 @@ public class Keys {
     public static final ForeignKey<RevisionRecord, RevisionRecord> REVISION_PREV_REVISION_ID_FK = ForeignKeys0.REVISION_PREV_REVISION_ID_FK;
     public static final ForeignKey<RevisionRecord, RevisionRecord> REVISION_NEXT_REVISION_ID_FK = ForeignKeys0.REVISION_NEXT_REVISION_ID_FK;
     public static final ForeignKey<RevisionRecord, AppUserRecord> REVISION_CREATED_BY_FK = ForeignKeys0.REVISION_CREATED_BY_FK;
+    public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = ForeignKeys0.SEQ_KEY_FROM_ACC_ID_FK;
+    public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_PREV_SEQ_KEY_ID_FK;
+    public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_NEXT_SEQ_KEY_ID_FK;
     public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_ABIE_ID_FK;
     public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_OWNER_USER_ID_FK;
     public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = ForeignKeys0.TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK;
@@ -573,6 +582,7 @@ public class Keys {
         public static Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Internal.createIdentity(Namespace.NAMESPACE, Namespace.NAMESPACE.NAMESPACE_ID);
         public static Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Internal.createIdentity(Release.RELEASE, Release.RELEASE.RELEASE_ID);
         public static Identity<RevisionRecord, ULong> IDENTITY_REVISION = Internal.createIdentity(Revision.REVISION, Revision.REVISION.REVISION_ID);
+        public static Identity<SeqKeyRecord, ULong> IDENTITY_SEQ_KEY = Internal.createIdentity(SeqKey.SEQ_KEY, SeqKey.SEQ_KEY.SEQ_KEY_ID);
         public static Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Internal.createIdentity(TopLevelAbie.TOP_LEVEL_ABIE, TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID);
         public static Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Internal.createIdentity(UsageRule.USAGE_RULE, UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Internal.createIdentity(UsageRuleExpression.USAGE_RULE_EXPRESSION, UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
@@ -645,6 +655,7 @@ public class Keys {
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_PRIMARY", new TableField[] { Namespace.NAMESPACE.NAMESPACE_ID }, true);
         public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = Internal.createUniqueKey(Release.RELEASE, "KEY_release_PRIMARY", new TableField[] { Release.RELEASE.RELEASE_ID }, true);
         public static final UniqueKey<RevisionRecord> KEY_REVISION_PRIMARY = Internal.createUniqueKey(Revision.REVISION, "KEY_revision_PRIMARY", new TableField[] { Revision.REVISION.REVISION_ID }, true);
+        public static final UniqueKey<SeqKeyRecord> KEY_SEQ_KEY_PRIMARY = Internal.createUniqueKey(SeqKey.SEQ_KEY, "KEY_seq_key_PRIMARY", new TableField[] { SeqKey.SEQ_KEY.SEQ_KEY_ID }, true);
         public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = Internal.createUniqueKey(TopLevelAbie.TOP_LEVEL_ABIE, "KEY_top_level_abie_PRIMARY", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID }, true);
         public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = Internal.createUniqueKey(UsageRule.USAGE_RULE, "KEY_usage_rule_PRIMARY", new TableField[] { UsageRule.USAGE_RULE.USAGE_RULE_ID }, true);
         public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = Internal.createUniqueKey(UsageRuleExpression.USAGE_RULE_EXPRESSION, "KEY_usage_rule_expression_PRIMARY", new TableField[] { UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID }, true);
@@ -693,6 +704,7 @@ public class Keys {
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_created_by_fk", new TableField[] { Asbiep.ASBIEP.CREATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_last_updated_by_fk", new TableField[] { Asbiep.ASBIEP.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, Asbiep.ASBIEP, "asbiep_owner_top_level_abie_id_fk", new TableField[] { Asbiep.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID }, true);
+        public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, Ascc.ASCC, "ascc_seq_key_id_fk", new TableField[] { Ascc.ASCC.SEQ_KEY_ID }, true);
         public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Ascc.ASCC, "ascc_from_acc_id_fk", new TableField[] { Ascc.ASCC.FROM_ACC_ID }, true);
         public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, Ascc.ASCC, "ascc_to_asccp_id_fk", new TableField[] { Ascc.ASCC.TO_ASCCP_ID }, true);
         public static final ForeignKey<AsccRecord, AppUserRecord> ASCC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Ascc.ASCC, "ascc_created_by_fk", new TableField[] { Ascc.ASCC.CREATED_BY }, true);
@@ -741,6 +753,7 @@ public class Keys {
         public static final ForeignKey<BbiepRecord, TopLevelAbieRecord> BBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, Bbiep.BBIEP, "bbiep_owner_top_level_abie_id_fk", new TableField[] { Bbiep.BBIEP.OWNER_TOP_LEVEL_ABIE_ID }, true);
         public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, Bcc.BCC, "bcc_to_bccp_id_fk", new TableField[] { Bcc.BCC.TO_BCCP_ID }, true);
         public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Bcc.BCC, "bcc_from_acc_id_fk", new TableField[] { Bcc.BCC.FROM_ACC_ID }, true);
+        public static final ForeignKey<BccRecord, SeqKeyRecord> BCC_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, Bcc.BCC, "bcc_seq_key_id_fk", new TableField[] { Bcc.BCC.SEQ_KEY_ID }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_created_by_fk", new TableField[] { Bcc.BCC.CREATED_BY }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_owner_user_id_fk", new TableField[] { Bcc.BCC.OWNER_USER_ID }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_last_updated_by_fk", new TableField[] { Bcc.BCC.LAST_UPDATED_BY }, true);
@@ -872,6 +885,9 @@ public class Keys {
         public static final ForeignKey<RevisionRecord, RevisionRecord> REVISION_PREV_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, Revision.REVISION, "revision_prev_revision_id_fk", new TableField[] { Revision.REVISION.PREV_REVISION_ID }, true);
         public static final ForeignKey<RevisionRecord, RevisionRecord> REVISION_NEXT_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, Revision.REVISION, "revision_next_revision_id_fk", new TableField[] { Revision.REVISION.NEXT_REVISION_ID }, true);
         public static final ForeignKey<RevisionRecord, AppUserRecord> REVISION_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Revision.REVISION, "revision_created_by_fk", new TableField[] { Revision.REVISION.CREATED_BY }, true);
+        public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, SeqKey.SEQ_KEY, "seq_key_from_acc_id_fk", new TableField[] { SeqKey.SEQ_KEY.FROM_ACC_ID }, true);
+        public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_prev_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.PREV_SEQ_KEY_ID }, true);
+        public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_next_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.NEXT_SEQ_KEY_ID }, true);
         public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_ABIE_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_abie_id_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.ABIE_ID }, true);
         public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_owner_user_id_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.OWNER_USER_ID }, true);
         public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_last_updated_by_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.LAST_UPDATED_BY }, true);

@@ -5,6 +5,7 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.enums.SeqKeyType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
@@ -13,8 +14,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class RepositoryInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         initCodeListValueGuid();
+        initSeqKey();
 
         initAccRevision();
         initAsccpRevision();
@@ -70,6 +72,158 @@ public class RepositoryInitializer implements InitializingBean {
                     e.setGuid(prevCodeListValueRecord.getGuid());
                     e.update(CODE_LIST_VALUE.GUID);
                 });
+    }
+
+    private void initSeqKey() {
+        Set<ULong> distinctFromAccIds = new HashSet();
+        distinctFromAccIds.addAll(dslContext.selectDistinct(ASCC.FROM_ACC_ID)
+                .from(ASCC)
+                .where(ASCC.SEQ_KEY_ID.isNull())
+                .fetch(ASCC.FROM_ACC_ID));
+        distinctFromAccIds.addAll(dslContext.selectDistinct(BCC.FROM_ACC_ID)
+                .from(BCC)
+                .where(BCC.SEQ_KEY_ID.isNull())
+                .fetch(BCC.FROM_ACC_ID));
+
+        List<ULong> fromAccIds = new ArrayList(distinctFromAccIds);
+        Collections.sort(fromAccIds);
+
+        for (ULong fromAccId : fromAccIds) {
+            upsertSeqKey(fromAccId);
+        }
+    }
+
+    private void upsertSeqKey(ULong fromAccId) {
+        // cleaning data up at first.
+        dslContext.deleteFrom(SEQ_KEY)
+                .where(SEQ_KEY.FROM_ACC_ID.eq(fromAccId))
+                .execute();
+
+        List<SeqKeyWrapper> seqKeyWrappers = new ArrayList();
+
+        seqKeyWrappers.addAll(dslContext.select(ASCC.ASCC_ID, ASCC.SEQ_KEY, ASCC.CREATION_TIMESTAMP)
+                .from(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(fromAccId))
+                .fetchInto(AsccRecord.class).stream().map(e -> new SeqKeyWrapper(e))
+                .collect(Collectors.toList()));
+        seqKeyWrappers.addAll(dslContext.select(BCC.BCC_ID, BCC.SEQ_KEY, BCC.CREATION_TIMESTAMP)
+                .from(BCC)
+                .where(BCC.FROM_ACC_ID.eq(fromAccId))
+                .fetchInto(BccRecord.class).stream().map(e -> new SeqKeyWrapper(e))
+                .collect(Collectors.toList()));
+
+        Collections.sort(seqKeyWrappers, (o1, o2) -> {
+            if (o1.getSeqKey() == o2.getSeqKey()) {
+                return o1.getTimestamp().compareTo(o2.getTimestamp());
+            }
+            return Integer.compare(o1.getSeqKey(), o2.getSeqKey());
+        });
+
+        for (int i = 0, len = seqKeyWrappers.size(); i < len; ++i) {
+            SeqKeyWrapper seqKeyWrapper = seqKeyWrappers.get(i);
+
+            SeqKeyRecord seqKeyRecord = new SeqKeyRecord();
+            seqKeyRecord.setFromAccId(fromAccId);
+            seqKeyRecord.setType(seqKeyWrapper.getSeqKeyType());
+            seqKeyRecord.setCcId(seqKeyWrapper.getId());
+
+            seqKeyWrapper.setSeqKeyRecord(seqKeyRecord);
+            seqKeyWrapper.setPrev(
+                    (i == 0) ? null : seqKeyWrappers.get(i - 1)
+            );
+            seqKeyWrapper.setNext(
+                    (i + 1 == len) ? null : seqKeyWrappers.get(i + 1)
+            );
+
+            seqKeyRecord.setSeqKeyId(
+                    dslContext.insertInto(SEQ_KEY)
+                            .set(seqKeyRecord)
+                            .returning(SEQ_KEY.SEQ_KEY_ID)
+                            .fetchOne().getSeqKeyId()
+            );
+        }
+
+        for (SeqKeyWrapper seqKeyWrapper : seqKeyWrappers) {
+            seqKeyWrapper.updatePrevNext();
+        }
+    }
+
+    private class SeqKeyWrapper {
+        private int seqKey;
+        private LocalDateTime timestamp;
+        private SeqKeyType seqKeyType;
+        private ULong id;
+
+        private SeqKeyRecord seqKeyRecord;
+
+        private SeqKeyWrapper prev;
+        private SeqKeyWrapper next;
+
+        SeqKeyWrapper(AsccRecord delegate) {
+            this.seqKey = delegate.getSeqKey();
+            this.timestamp = delegate.getCreationTimestamp();
+            this.seqKeyType = SeqKeyType.ascc;
+            this.id = delegate.getAsccId();
+        }
+
+        SeqKeyWrapper(BccRecord delegate) {
+            this.seqKey = delegate.getSeqKey();
+            this.timestamp = delegate.getCreationTimestamp();
+            this.seqKeyType = SeqKeyType.bcc;
+            this.id = delegate.getBccId();
+        }
+
+        public int getSeqKey() {
+            return seqKey;
+        }
+
+        public LocalDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        public SeqKeyType getSeqKeyType() {
+            return this.seqKeyType;
+        }
+
+        public ULong getId() {
+            return this.id;
+        }
+
+        public void setSeqKeyRecord(SeqKeyRecord seqKeyRecord) {
+            this.seqKeyRecord = seqKeyRecord;
+        }
+
+        public void setPrev(SeqKeyWrapper prev) {
+            this.prev = prev;
+        }
+
+        public void setNext(SeqKeyWrapper next) {
+            this.next = next;
+        }
+
+        public void updatePrevNext() {
+            dslContext.update(SEQ_KEY)
+                    .set(SEQ_KEY.PREV_SEQ_KEY_ID, (prev != null) ? prev.seqKeyRecord.getSeqKeyId() : null)
+                    .set(SEQ_KEY.NEXT_SEQ_KEY_ID, (next != null) ? next.seqKeyRecord.getSeqKeyId() : null)
+                    .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId()))
+                    .execute();
+
+            switch (this.seqKeyType) {
+                case ascc:
+                    dslContext.update(ASCC)
+                            .set(ASCC.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                            .where(ASCC.ASCC_ID.eq(this.id))
+                            .execute();
+                    break;
+
+                case bcc:
+                    dslContext.update(BCC)
+                            .set(BCC.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                            .where(BCC.BCC_ID.eq(this.id))
+                            .execute();
+                    break;
+            }
+        }
     }
 
     private void initAccRevision() {

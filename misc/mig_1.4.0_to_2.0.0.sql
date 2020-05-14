@@ -123,6 +123,23 @@ CREATE TABLE `comment` (
     CONSTRAINT `comment_prev_comment_id_fk` FOREIGN KEY (`prev_comment_id`) REFERENCES `comment` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- This table purposes to replace `seq_key` column on `ascc` and `bcc` tables.
+CREATE TABLE `seq_key` (
+    `seq_key_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `from_acc_id` bigint(20) unsigned NOT NULL,
+    `type` enum('ascc','bcc') DEFAULT NULL,
+    `cc_id` bigint(20) unsigned NOT NULL,
+    `prev_seq_key_id` bigint(20) unsigned DEFAULT NULL,
+    `next_seq_key_id` bigint(20) unsigned DEFAULT NULL,
+    PRIMARY KEY (`seq_key_id`),
+    KEY `seq_key_from_acc_id` (`from_acc_id`),
+    KEY `seq_key_prev_seq_key_id_fk` (`prev_seq_key_id`),
+    KEY `seq_key_next_seq_key_id_fk` (`next_seq_key_id`),
+    CONSTRAINT `seq_key_from_acc_id_fk` FOREIGN KEY (`from_acc_id`) REFERENCES `acc` (`acc_id`),
+    CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
+    CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Update `namespace_id` = NULL for all user extension groups.
 UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
@@ -578,7 +595,10 @@ CREATE INDEX `bccp_last_update_timestamp_desc_idx` ON `bccp` (`last_update_times
 
 
 -- Making relations between `ascc` and `release` tables.
-ALTER TABLE `ascc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ASCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+ALTER TABLE `ascc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.',
+                   MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.',
+                   ADD COLUMN `seq_key_id` bigint(20) unsigned AFTER `seq_key`,
+                   ADD CONSTRAINT `ascc_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
 UPDATE `ascc` SET `state` = 'Editing' where `state` = '1';
 UPDATE `ascc` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `ascc` SET `state` = 'Published' where `state` = '3';
@@ -682,7 +702,10 @@ CREATE INDEX `ascc_last_update_timestamp_desc_idx` ON `ascc` (`last_update_times
 
 
 -- Making relations between `bcc` and `release` tables.
-ALTER TABLE `bcc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';
+ALTER TABLE `bcc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.',
+                  MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.',
+                  ADD COLUMN `seq_key_id` bigint(20) unsigned AFTER `seq_key`,
+                  ADD CONSTRAINT `bcc_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
 UPDATE `bcc` SET `state` = 'Editing' where `state` = '1';
 UPDATE `bcc` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `bcc` SET `state` = 'Published' where `state` = '3';

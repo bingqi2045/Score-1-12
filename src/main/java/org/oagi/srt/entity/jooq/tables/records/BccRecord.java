@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1722230481;
+    private static final long serialVersionUID = 853714729;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -114,73 +114,87 @@ Note that for the BCC history records, this column always points to the ACC_ID o
     }
 
     /**
-     * Setter for <code>oagi.bcc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
+     * Setter for <code>oagi.bcc.seq_key</code>. @deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
     public void setSeqKey(Integer value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.seq_key</code>. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again. 
+     * Getter for <code>oagi.bcc.seq_key</code>. @deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
     public Integer getSeqKey() {
         return (Integer) get(6);
     }
 
     /**
+     * Setter for <code>oagi.bcc.seq_key_id</code>.
+     */
+    public void setSeqKeyId(ULong value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.seq_key_id</code>.
+     */
+    public ULong getSeqKeyId() {
+        return (ULong) get(7);
+    }
+
+    /**
      * Setter for <code>oagi.bcc.entity_type</code>. This is a code list: 0 = ATTRIBUTE and 1 = ELEMENT. An expression generator may or may not use this information. This column is necessary because some of the BCCs are xsd:attribute and some are xsd:element in the OAGIS 10.x. 
      */
     public void setEntityType(Integer value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.entity_type</code>. This is a code list: 0 = ATTRIBUTE and 1 = ELEMENT. An expression generator may or may not use this information. This column is necessary because some of the BCCs are xsd:attribute and some are xsd:element in the OAGIS 10.x. 
      */
     public Integer getEntityType() {
-        return (Integer) get(7);
+        return (Integer) get(8);
     }
 
     /**
      * Setter for <code>oagi.bcc.den</code>. DEN (dictionary entry name) of the BCC. This column can be derived from QUALIFIER and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_BCCP_ID as QUALIFIER + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public void setDen(String value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.den</code>. DEN (dictionary entry name) of the BCC. This column can be derived from QUALIFIER and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_BCCP_ID as QUALIFIER + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public String getDen() {
-        return (String) get(8);
+        return (String) get(9);
     }
 
     /**
      * Setter for <code>oagi.bcc.definition</code>. This is a documentation or description of the BCC. Since BCC is business context independent, this is a business context independent description of the BCC. Since there are definitions also in the BCCP (as referenced by TO_BCCP_ID column) and the BDT under that BCCP, the definition in the BCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the BCCP.
      */
     public void setDefinition(String value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.definition</code>. This is a documentation or description of the BCC. Since BCC is business context independent, this is a business context independent description of the BCC. Since there are definitions also in the BCCP (as referenced by TO_BCCP_ID column) and the BDT under that BCCP, the definition in the BCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the BCCP.
      */
     public String getDefinition() {
-        return (String) get(9);
+        return (String) get(10);
     }
 
     /**
      * Setter for <code>oagi.bcc.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public void setDefinitionSource(String value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public String getDefinitionSource() {
-        return (String) get(10);
+        return (String) get(11);
     }
 
     /**
@@ -189,7 +203,7 @@ Note that for the BCC history records, this column always points to the ACC_ID o
 This column never change between the history and the current record. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
@@ -198,7 +212,7 @@ This column never change between the history and the current record. The history
 This column never change between the history and the current record. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(11);
+        return (ULong) get(12);
     }
 
     /**
@@ -207,7 +221,7 @@ This column never change between the history and the current record. The history
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
@@ -216,7 +230,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
@@ -225,7 +239,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
@@ -234,7 +248,7 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(13);
+        return (ULong) get(14);
     }
 
     /**
@@ -243,7 +257,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
@@ -252,7 +266,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(14);
+        return (LocalDateTime) get(15);
     }
 
     /**
@@ -261,7 +275,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
@@ -270,7 +284,7 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(15);
+        return (LocalDateTime) get(16);
     }
 
     /**
@@ -279,7 +293,7 @@ The value of this column in the latest history record should be the same as that
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
@@ -288,21 +302,21 @@ State change can't be undone. But the history record can still keep the records 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
-        return (String) get(16);
+        return (String) get(17);
     }
 
     /**
      * Setter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(17);
+        return (Byte) get(18);
     }
 
     /**
@@ -311,7 +325,7 @@ State change can't be undone. But the history record can still keep the records 
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
@@ -320,63 +334,63 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(18);
+        return (Byte) get(19);
     }
 
     /**
      * Setter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public void setDefaultValue(String value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public String getDefaultValue() {
-        return (String) get(19);
+        return (String) get(20);
     }
 
     /**
      * Setter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setFixedValue(String value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getFixedValue() {
-        return (String) get(20);
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevBccId(ULong value) {
-        set(21, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevBccId() {
-        return (ULong) get(21);
+        return (ULong) get(22);
     }
 
     /**
      * Setter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextBccId(ULong value) {
-        set(22, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextBccId() {
-        return (ULong) get(22);
+        return (ULong) get(23);
     }
 
     // -------------------------------------------------------------------------
@@ -402,7 +416,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, ULong seqKeyId, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -412,21 +426,22 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
         set(4, toBccpId);
         set(5, fromAccId);
         set(6, seqKey);
-        set(7, entityType);
-        set(8, den);
-        set(9, definition);
-        set(10, definitionSource);
-        set(11, createdBy);
-        set(12, ownerUserId);
-        set(13, lastUpdatedBy);
-        set(14, creationTimestamp);
-        set(15, lastUpdateTimestamp);
-        set(16, state);
-        set(17, isDeprecated);
-        set(18, isNillable);
-        set(19, defaultValue);
-        set(20, fixedValue);
-        set(21, prevBccId);
-        set(22, nextBccId);
+        set(7, seqKeyId);
+        set(8, entityType);
+        set(9, den);
+        set(10, definition);
+        set(11, definitionSource);
+        set(12, createdBy);
+        set(13, ownerUserId);
+        set(14, lastUpdatedBy);
+        set(15, creationTimestamp);
+        set(16, lastUpdateTimestamp);
+        set(17, state);
+        set(18, isDeprecated);
+        set(19, isNillable);
+        set(20, defaultValue);
+        set(21, fixedValue);
+        set(22, prevBccId);
+        set(23, nextBccId);
     }
 }
