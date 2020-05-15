@@ -20,6 +20,7 @@ import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcType.*;
 
@@ -210,6 +212,19 @@ public class CcNodeService extends EventHandler {
                 updateBccpDetail(user, ccUpdateRequest.getBccpNodeDetails()));
 
         return ccUpdateResponse;
+    }
+
+    @Transactional
+    public void updateCcSeq(User user,
+                            BigInteger accManifestId,
+                            List<CcSeqUpdateRequest> requests) {
+
+        UpdateSeqKeyRequest request = new UpdateSeqKeyRequest(user, accManifestId,
+                requests.stream()
+                        .map(e -> Pair.of(e.getItem(), e.getAfter()))
+                        .collect(Collectors.toList()));
+
+        accCUDRepository.moveSeq(request);
     }
 
     @Transactional

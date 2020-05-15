@@ -13,10 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class CcNodeController {
@@ -51,6 +48,15 @@ public class CcNodeController {
     public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal User user,
                                                 @RequestBody CcUpdateRequest ccUpdateRequest) {
         return service.updateCcDetails(user, ccUpdateRequest);
+    }
+
+    @RequestMapping(value = "/core_component/node/acc/{manifestId:[\\d]+}/seq_key",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateCcSeq(@AuthenticationPrincipal User user,
+                            @PathVariable("manifestId") BigInteger manifestId,
+                            @RequestBody List<CcSeqUpdateRequest> requests) {
+        service.updateCcSeq(user, manifestId, requests);
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",

@@ -28,6 +28,30 @@ public class SeqKeyHandler {
     private SeqKeyRecord tail;
     private SeqKeyRecord current;
 
+    public SeqKeyHandler(DSLContext dslContext, String type, BigInteger manifestId) {
+        this.dslContext = dslContext;
+
+        switch (type.toLowerCase()) {
+            case "ascc":
+                init(dslContext.select(ASCC.fields())
+                        .from(ASCC)
+                        .join(ASCC_MANIFEST)
+                        .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(AsccRecord.class));
+                break;
+
+            case "bcc":
+                init(dslContext.select(BCC.fields())
+                        .from(BCC)
+                        .join(BCC_MANIFEST)
+                        .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(BccRecord.class));
+                break;
+        }
+    }
+
     public SeqKeyHandler(DSLContext dslContext, AsccRecord asccRecord) {
         this.dslContext = dslContext;
         init(asccRecord);
