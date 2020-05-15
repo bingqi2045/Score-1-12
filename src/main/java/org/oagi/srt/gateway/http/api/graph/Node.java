@@ -81,7 +81,7 @@ public class Node {
     }
 
     public String getKey() {
-        return getTypeAsString() + getManifestId();
+        return getTypeAsString() + "-" + getManifestId();
     }
 
     public void put(String key, Object value) {

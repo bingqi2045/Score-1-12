@@ -10,6 +10,7 @@ import org.oagi.srt.entity.jooq.tables.records.SeqKeyRecord;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -211,16 +212,17 @@ public class SeqKeyHandler {
     }
 
     public static List<SeqKeySupportable> sort(List<SeqKeySupportable> seqKeyList) {
-        Map<ULong, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
+        if (seqKeyList == null || seqKeyList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<BigInteger, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
                 .collect(Collectors.toMap(
                         SeqKeySupportable::getSeqKeyId, Function.identity()));
 
         SeqKeySupportable head = seqKeyMap.values().stream()
-                .filter(e -> e.getNextSeqKeyId() == null)
+                .filter(e -> e.getPrevSeqKeyId() == null)
                 .findFirst().orElse(null);
-        if (head == null) {
-            throw new IllegalArgumentException();
-        }
 
         List<SeqKeySupportable> sorted = new ArrayList();
         SeqKeySupportable current = head;

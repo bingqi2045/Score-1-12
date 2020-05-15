@@ -1,11 +1,11 @@
 package org.oagi.srt.repo.component.seqkey;
 
-import org.jooq.types.ULong;
+import java.math.BigInteger;
 
 public interface SeqKeySupportable {
 
-    ULong getSeqKeyId();
-    ULong getPrevSeqKeyId();
-    ULong getNextSeqKeyId();
+    BigInteger getSeqKeyId();
+    BigInteger getPrevSeqKeyId();
+    BigInteger getNextSeqKeyId();
 
 }

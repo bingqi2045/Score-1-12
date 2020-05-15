@@ -14,6 +14,7 @@ import org.oagi.srt.gateway.http.api.graph.Node;
 import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
 import org.oagi.srt.repo.component.seqkey.SeqKeySupportable;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,9 +82,9 @@ public class GraphContext {
         private ULong releaseId;
         private ULong prevAsccManifestId;
 
-        private ULong seqKeyId;
-        private ULong prevSeqKeyId;
-        private ULong nextSeqKeyId;
+        private BigInteger seqKeyId;
+        private BigInteger prevSeqKeyId;
+        private BigInteger nextSeqKeyId;
     }
 
     @Data
@@ -98,9 +99,9 @@ public class GraphContext {
         private ULong releaseId;
         private ULong prevBccManifestId;
 
-        private ULong seqKeyId;
-        private ULong prevSeqKeyId;
-        private ULong nextSeqKeyId;
+        private BigInteger seqKeyId;
+        private BigInteger prevSeqKeyId;
+        private BigInteger nextSeqKeyId;
     }
 
     @Data
@@ -187,19 +188,24 @@ public class GraphContext {
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                         .join(SEQ_KEY).on(ASCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(ASCC.STATE.notEqual(CcState.Deleted.name()))
-                        .fetch(record -> new AsccManifest(
-                                record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
-                                record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID),
-                                record.get(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID),
-                                record.get(ASCC.CARDINALITY_MIN),
-                                record.get(ASCC.CARDINALITY_MAX),
-                                record.get(ASCC.STATE),
-                                record.get(ASCC_MANIFEST.RELEASE_ID),
-                                record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID),
-                                record.get(SEQ_KEY.SEQ_KEY_ID),
-                                record.get(SEQ_KEY.PREV_SEQ_KEY_ID),
-                                record.get(SEQ_KEY.NEXT_SEQ_KEY_ID)
-                        )).stream()
+                        .fetch(record -> {
+                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+
+                            return new AsccManifest(
+                                    record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
+                                    record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID),
+                                    record.get(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID),
+                                    record.get(ASCC.CARDINALITY_MIN),
+                                    record.get(ASCC.CARDINALITY_MAX),
+                                    record.get(ASCC.STATE),
+                                    record.get(ASCC_MANIFEST.RELEASE_ID),
+                                    record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID),
+                                    seqKeyId.toBigInteger(),
+                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                        }).stream()
                         .collect(groupingBy(AsccManifest::getFromAccManifestId));
         bccManifestMap =
                 dslContext.select(
@@ -213,19 +219,24 @@ public class GraphContext {
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                         .join(SEQ_KEY).on(BCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(BCC.STATE.notEqual(CcState.Deleted.name()))
-                        .fetch(record -> new BccManifest(
-                                record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
-                                record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID),
-                                record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID),
-                                record.get(BCC.CARDINALITY_MIN),
-                                record.get(BCC.CARDINALITY_MAX),
-                                record.get(BCC.STATE),
-                                record.get(BCC_MANIFEST.RELEASE_ID),
-                                record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
-                                record.get(SEQ_KEY.SEQ_KEY_ID),
-                                record.get(SEQ_KEY.PREV_SEQ_KEY_ID),
-                                record.get(SEQ_KEY.NEXT_SEQ_KEY_ID)
-                        )).stream()
+                        .fetch(record -> {
+                            ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
+                            ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
+                            ULong nextSeqKeyId = record.get(SEQ_KEY.NEXT_SEQ_KEY_ID);
+
+                            return new BccManifest(
+                                    record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
+                                    record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID),
+                                    record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID),
+                                    record.get(BCC.CARDINALITY_MIN),
+                                    record.get(BCC.CARDINALITY_MAX),
+                                    record.get(BCC.STATE),
+                                    record.get(BCC_MANIFEST.RELEASE_ID),
+                                    record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
+                                    seqKeyId.toBigInteger(),
+                                    (prevSeqKeyId != null) ? prevSeqKeyId.toBigInteger() : null,
+                                    (nextSeqKeyId != null) ? nextSeqKeyId.toBigInteger() : null);
+                        }).stream()
                         .collect(groupingBy(BccManifest::getFromAccManifestId));
         dtManifestMap =
                 dslContext.select(DT_MANIFEST.DT_MANIFEST_ID, DT.DATA_TYPE_TERM, DT.QUALIFIER, DT.STATE,
