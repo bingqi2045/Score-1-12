@@ -17,7 +17,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.nullif;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 public class SeqKeyHandler {
@@ -87,6 +86,27 @@ public class SeqKeyHandler {
         switch (to) {
             case FIRST:
                 if (this.head != null) {
+                    // broke links between prev and next in current.
+                    if (this.current.getPrevSeqKeyId() != null) {
+                        SeqKeyRecord currentPrevSeqKeyRecord =
+                                dslContext.selectFrom(SEQ_KEY)
+                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getPrevSeqKeyId()))
+                                .fetchOne();
+
+                        currentPrevSeqKeyRecord.setNextSeqKeyId(this.current.getNextSeqKeyId());
+                        currentPrevSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                    }
+
+                    if (this.current.getNextSeqKeyId() != null) {
+                        SeqKeyRecord currentNextSeqKeyRecord =
+                                dslContext.selectFrom(SEQ_KEY)
+                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getNextSeqKeyId()))
+                                        .fetchOne();
+
+                        currentNextSeqKeyRecord.setPrevSeqKeyId(this.current.getPrevSeqKeyId());
+                        currentNextSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                    }
+
                     this.current.setPrevSeqKeyId(null);
                     this.current.setNextSeqKeyId(this.head.getSeqKeyId());
                     dslContext.update(SEQ_KEY)
@@ -96,22 +116,12 @@ public class SeqKeyHandler {
                             .execute();
 
                     this.head.setPrevSeqKeyId(this.current.getSeqKeyId());
-                    // swap case
-                    if (this.head.getPrevSeqKeyId().equals(this.head.getNextSeqKeyId())) {
-                        dslContext.update(SEQ_KEY)
-                                .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
-                                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
-                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
-                                .execute();
-                    } else {
-                        dslContext.update(SEQ_KEY)
-                                .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
-                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
-                                .execute();
-
-                    }
-
+                    dslContext.update(SEQ_KEY)
+                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
+                            .execute();
                 }
+
                 break;
 
             case LAST_OF_ATTR:
@@ -144,6 +154,27 @@ public class SeqKeyHandler {
 
             case LAST:
                 if (this.tail != null) {
+                    // broke links between prev and next in current.
+                    if (this.current.getPrevSeqKeyId() != null) {
+                        SeqKeyRecord currentPrevSeqKeyRecord =
+                                dslContext.selectFrom(SEQ_KEY)
+                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getPrevSeqKeyId()))
+                                        .fetchOne();
+
+                        currentPrevSeqKeyRecord.setNextSeqKeyId(this.current.getNextSeqKeyId());
+                        currentPrevSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                    }
+
+                    if (this.current.getNextSeqKeyId() != null) {
+                        SeqKeyRecord currentNextSeqKeyRecord =
+                                dslContext.selectFrom(SEQ_KEY)
+                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getNextSeqKeyId()))
+                                        .fetchOne();
+
+                        currentNextSeqKeyRecord.setPrevSeqKeyId(this.current.getPrevSeqKeyId());
+                        currentNextSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
+                    }
+
                     this.current.setPrevSeqKeyId(this.tail.getSeqKeyId());
                     this.current.setNextSeqKeyId(null);
                     dslContext.update(SEQ_KEY)
@@ -154,19 +185,10 @@ public class SeqKeyHandler {
 
 
                     this.tail.setNextSeqKeyId(this.current.getSeqKeyId());
-                    // swap case
-                    if (this.tail.getNextSeqKeyId().equals(this.tail.getPrevSeqKeyId())) {
-                        dslContext.update(SEQ_KEY)
-                                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
-                                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
-                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
-                                .execute();
-                    } else {
-                        dslContext.update(SEQ_KEY)
-                                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
-                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
-                                .execute();
-                    }
+                    dslContext.update(SEQ_KEY)
+                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
+                            .execute();
                 }
                 break;
         }
