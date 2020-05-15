@@ -92,10 +92,24 @@ public class CcListService {
     private Comparator<CcList> getComparator(PageRequest pageRequest) {
         Comparator<CcList> comparator = null;
         switch (pageRequest.getSortActive()) {
+            case "type":
+                comparator = Comparator.comparing(CcList::getType);
+                break;
+            case "state":
+                comparator = Comparator.comparing(CcList::getState);
+                break;
             case "den":
                 comparator = Comparator.comparing(CcList::getDen);
                 break;
-
+            case "revision":
+                comparator = Comparator.comparing(CcList::getRevision);
+                break;
+            case "owner":
+                comparator = Comparator.comparing(CcList::getOwner);
+                break;
+            case "module":
+                comparator = Comparator.comparing(CcList::getModule);
+                break;
             case "lastUpdateTimestamp":
                 comparator = Comparator.comparing(CcList::getLastUpdateTimestamp);
                 break;

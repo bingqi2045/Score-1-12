@@ -34,12 +34,12 @@ public class BieInfoService {
     private SessionService sessionService;
 
     public SummaryBieInfo getSummaryBieInfo(User user) {
-        if (user == null) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (user == null || requester == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");
         }
 
         List<SummaryBie> summaryBieList = repository.getSummaryBieList();
-        AppUser requester = sessionService.getAppUser(user);
 
         SummaryBieInfo info = new SummaryBieInfo();
         Map<BieState, Integer> numberOfTotalBieByStates =

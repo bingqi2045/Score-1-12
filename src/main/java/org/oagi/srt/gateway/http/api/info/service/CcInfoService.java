@@ -32,12 +32,12 @@ public class CcInfoService {
     private SessionService sessionService;
 
     public SummaryCcExtInfo getSummaryCcExtInfo(User user) {
-        if (user == null) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (user == null || requester == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");
         }
 
         List<SummaryCcExt> summaryCcExtList = ccRepository.getSummaryCcExtList();
-        AppUser requester = sessionService.getAppUser(user);
 
         SummaryCcExtInfo info = new SummaryCcExtInfo();
         Map<CcState, Integer> numberOfCcExtByStates =

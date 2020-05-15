@@ -8,6 +8,8 @@ import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.entity.jooq.tables.records.SeqKeyRecord;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -206,6 +208,27 @@ public class SeqKeyHandler {
                     .where(SEQ_KEY.SEQ_KEY_ID.eq(after.getSeqKeyId()))
                     .execute();
         }
+    }
+
+    public static List<SeqKeySupportable> sort(List<SeqKeySupportable> seqKeyList) {
+        Map<ULong, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
+                .collect(Collectors.toMap(
+                        SeqKeySupportable::getSeqKeyId, Function.identity()));
+
+        SeqKeySupportable head = seqKeyMap.values().stream()
+                .filter(e -> e.getNextSeqKeyId() == null)
+                .findFirst().orElse(null);
+        if (head == null) {
+            throw new IllegalArgumentException();
+        }
+
+        List<SeqKeySupportable> sorted = new ArrayList();
+        SeqKeySupportable current = head;
+        while (current != null) {
+            sorted.add(current);
+            current = seqKeyMap.get(current.getNextSeqKeyId());
+        }
+        return sorted;
     }
 
 }

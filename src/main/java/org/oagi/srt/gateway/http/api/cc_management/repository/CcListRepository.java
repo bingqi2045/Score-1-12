@@ -130,8 +130,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ACC");
-                    ccList.setManifestId(row.getValue(ACC_MANIFEST.ACC_MANIFEST_ID).longValue());
-                    ccList.setId(row.getValue(ACC.ACC_ID).longValue());
+                    ccList.setManifestId(row.getValue(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(ACC.ACC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ACC.GUID));
                     ccList.setDen(row.getValue(ACC.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION)));
@@ -193,6 +193,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 ASCC_MANIFEST.ASCC_MANIFEST_ID,
+                ASCC.ASCC_ID,
                 ASCC.GUID,
                 ASCC.DEN,
                 ASCC.DEFINITION,
@@ -225,7 +226,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCC");
-                    ccList.setManifestId(row.getValue(ASCC_MANIFEST.ASCC_MANIFEST_ID).longValue());
+                    ccList.setManifestId(row.getValue(ASCC_MANIFEST.ASCC_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(ASCC.ASCC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ASCC.GUID));
                     ccList.setDen(row.getValue(ASCC.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION)));
@@ -285,6 +287,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 BCC_MANIFEST.BCC_MANIFEST_ID,
+                BCC.BCC_ID,
                 BCC.GUID,
                 BCC.DEN,
                 BCC.DEFINITION,
@@ -317,7 +320,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCC");
-                    ccList.setManifestId(row.getValue(BCC_MANIFEST.BCC_MANIFEST_ID).longValue());
+                    ccList.setManifestId(row.getValue(BCC_MANIFEST.BCC_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(BCC.BCC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(BCC.GUID));
                     ccList.setDen(row.getValue(BCC.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION)));
@@ -380,6 +384,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
+                ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
@@ -410,7 +415,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("ASCCP");
-                    ccList.setManifestId(row.getValue(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).longValue());
+                    ccList.setManifestId(row.getValue(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(ASCCP.ASCCP_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ASCCP.GUID));
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
@@ -473,6 +479,7 @@ public class CcListRepository {
 
         return dslContext.select(
                 BCCP_MANIFEST.BCCP_MANIFEST_ID,
+                BCCP.BCCP_ID,
                 BCCP.GUID,
                 BCCP.DEN,
                 BCCP.DEFINITION,
@@ -503,7 +510,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BCCP");
-                    ccList.setManifestId(row.getValue(BCCP_MANIFEST.BCCP_MANIFEST_ID).longValue());
+                    ccList.setManifestId(row.getValue(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(BCCP.BCCP_ID).toBigInteger());
                     ccList.setGuid(row.getValue(BCCP.GUID));
                     ccList.setDen(row.getValue(BCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION)));
@@ -594,8 +602,8 @@ public class CcListRepository {
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
                     ccList.setType("BDT");
-                    ccList.setManifestId(row.getValue(DT_MANIFEST.DT_MANIFEST_ID).longValue());
-                    ccList.setId(row.getValue(DT.DT_ID).longValue());
+                    ccList.setManifestId(row.getValue(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
+                    ccList.setId(row.getValue(DT.DT_ID).toBigInteger());
                     ccList.setGuid(row.getValue(DT.GUID));
                     String den = row.getValue(DT.DEN);
                     if (!StringUtils.isEmpty(den)) {

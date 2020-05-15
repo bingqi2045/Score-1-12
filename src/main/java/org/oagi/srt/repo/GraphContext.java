@@ -11,6 +11,8 @@ import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.graph.Node;
+import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
+import org.oagi.srt.repo.component.seqkey.SeqKeySupportable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -67,36 +69,38 @@ public class GraphContext {
         private ULong prevBccpManifestId;
     }
 
-    private interface Assoc {
-        int getSeqKey();
-    }
-
     @Data
     @AllArgsConstructor
-    public class AsccManifest implements Assoc {
+    public class AsccManifest implements SeqKeySupportable {
         private ULong asccManifestId;
         private ULong fromAccManifestId;
         private ULong toAsccpManifestId;
-        private int seqKey;
         private int cardinalityMin;
         private int cardinalityMax;
         private String state;
         private ULong releaseId;
         private ULong prevAsccManifestId;
+
+        private ULong seqKeyId;
+        private ULong prevSeqKeyId;
+        private ULong nextSeqKeyId;
     }
 
     @Data
     @AllArgsConstructor
-    public class BccManifest implements Assoc {
+    public class BccManifest implements SeqKeySupportable {
         private ULong bccManifestId;
         private ULong fromAccManifestId;
         private ULong toBccpManifestId;
-        private int seqKey;
         private int cardinalityMin;
         private int cardinalityMax;
         private String state;
         private ULong releaseId;
         private ULong prevBccManifestId;
+
+        private ULong seqKeyId;
+        private ULong prevSeqKeyId;
+        private ULong nextSeqKeyId;
     }
 
     @Data
@@ -177,21 +181,24 @@ public class GraphContext {
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                         ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                         ASCC.CARDINALITY_MIN, ASCC.CARDINALITY_MAX,
-                        ASCC.SEQ_KEY, ASCC.STATE,
-                        ASCC_MANIFEST.RELEASE_ID, ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
+                        SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
+                        ASCC.STATE, ASCC_MANIFEST.RELEASE_ID, ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                        .join(SEQ_KEY).on(ASCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(ASCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> new AsccManifest(
                                 record.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
                                 record.get(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID),
                                 record.get(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID),
-                                record.get(ASCC.SEQ_KEY),
                                 record.get(ASCC.CARDINALITY_MIN),
                                 record.get(ASCC.CARDINALITY_MAX),
                                 record.get(ASCC.STATE),
                                 record.get(ASCC_MANIFEST.RELEASE_ID),
-                                record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
+                                record.get(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID),
+                                record.get(SEQ_KEY.SEQ_KEY_ID),
+                                record.get(SEQ_KEY.PREV_SEQ_KEY_ID),
+                                record.get(SEQ_KEY.NEXT_SEQ_KEY_ID)
                         )).stream()
                         .collect(groupingBy(AsccManifest::getFromAccManifestId));
         bccManifestMap =
@@ -200,21 +207,24 @@ public class GraphContext {
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                         BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
                         BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX,
-                        BCC.SEQ_KEY, BCC.STATE,
-                        BCC_MANIFEST.RELEASE_ID, BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
+                        SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
+                        BCC.STATE, BCC_MANIFEST.RELEASE_ID, BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                        .join(SEQ_KEY).on(BCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .where(BCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> new BccManifest(
                                 record.get(BCC_MANIFEST.BCC_MANIFEST_ID),
                                 record.get(BCC_MANIFEST.FROM_ACC_MANIFEST_ID),
                                 record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID),
-                                record.get(BCC.SEQ_KEY),
                                 record.get(BCC.CARDINALITY_MIN),
                                 record.get(BCC.CARDINALITY_MAX),
                                 record.get(BCC.STATE),
                                 record.get(BCC_MANIFEST.RELEASE_ID),
-                                record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
+                                record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
+                                record.get(SEQ_KEY.SEQ_KEY_ID),
+                                record.get(SEQ_KEY.PREV_SEQ_KEY_ID),
+                                record.get(SEQ_KEY.NEXT_SEQ_KEY_ID)
                         )).stream()
                         .collect(groupingBy(BccManifest::getFromAccManifestId));
         dtManifestMap =
@@ -257,14 +267,14 @@ public class GraphContext {
                     children.add(toNode(basedAccManifest));
                 }
 
-                List<Assoc> assocs = new ArrayList();
+                List<SeqKeySupportable> assocs = new ArrayList();
                 assocs.addAll(asccManifestMap.getOrDefault(node.getManifestId(),
                         asccManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
                         .stream().filter(e -> e.getReleaseId().equals(releaseId)).collect(Collectors.toList()));
                 assocs.addAll(bccManifestMap.getOrDefault(node.getManifestId(),
                         bccManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
                         .stream().filter(e -> e.getReleaseId().equals(releaseId)).collect(Collectors.toList()));
-                Collections.sort(assocs, Comparator.comparing(Assoc::getSeqKey));
+                assocs = SeqKeyHandler.sort(assocs);
                 children.addAll(
                         assocs.stream().map(e -> {
                             if (e instanceof AsccManifest) {
