@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.nullif;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 public class SeqKeyHandler {
@@ -28,43 +29,19 @@ public class SeqKeyHandler {
     private SeqKeyRecord tail;
     private SeqKeyRecord current;
 
-    public SeqKeyHandler(DSLContext dslContext, String type, BigInteger manifestId) {
-        this.dslContext = dslContext;
-
-        switch (type.toLowerCase()) {
-            case "ascc":
-                init(dslContext.select(ASCC.fields())
-                        .from(ASCC)
-                        .join(ASCC_MANIFEST)
-                        .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
-                        .fetchOneInto(AsccRecord.class));
-                break;
-
-            case "bcc":
-                init(dslContext.select(BCC.fields())
-                        .from(BCC)
-                        .join(BCC_MANIFEST)
-                        .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
-                        .fetchOneInto(BccRecord.class));
-                break;
-        }
-    }
-
     public SeqKeyHandler(DSLContext dslContext, AsccRecord asccRecord) {
         this.dslContext = dslContext;
-        init(asccRecord);
+        init(asccRecord.getFromAccId(), asccRecord.getSeqKeyId(), SeqKeyType.ascc, asccRecord.getAsccId());
     }
 
     public SeqKeyHandler(DSLContext dslContext, BccRecord bccRecord) {
         this.dslContext = dslContext;
-        init(bccRecord);
+        init(bccRecord.getFromAccId(), bccRecord.getSeqKeyId(), SeqKeyType.bcc, bccRecord.getBccId());
     }
 
-    private void init(AsccRecord asccRecord) {
+    private void init(ULong fromAccId, ULong seqKeyId, SeqKeyType type, ULong associationId) {
         seqKeyRecordMap = dslContext.selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(asccRecord.getFromAccId()))
+                .where(SEQ_KEY.FROM_ACC_ID.eq(fromAccId))
                 .fetch().stream().collect(
                         Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
 
@@ -75,16 +52,16 @@ public class SeqKeyHandler {
             if (seqKeyRecord.getNextSeqKeyId() == null) {
                 this.tail = seqKeyRecord;
             }
-            if (seqKeyRecord.getSeqKeyId() == asccRecord.getSeqKeyId()) {
+            if (seqKeyRecord.getSeqKeyId().equals(seqKeyId)) {
                 this.current = seqKeyRecord;
             }
         }
 
         if (this.current == null) {
             this.current = new SeqKeyRecord();
-            this.current.setFromAccId(asccRecord.getFromAccId());
-            this.current.setType(SeqKeyType.ascc);
-            this.current.setCcId(asccRecord.getAsccId());
+            this.current.setFromAccId(fromAccId);
+            this.current.setType(type);
+            this.current.setCcId(associationId);
             this.current.setSeqKeyId(
                     dslContext.insertInto(SEQ_KEY)
                             .set(this.current)
@@ -92,49 +69,17 @@ public class SeqKeyHandler {
                             .fetchOne().getSeqKeyId()
             );
 
-            asccRecord.setSeqKeyId(this.current.getSeqKeyId());
-            dslContext.update(ASCC)
-                    .set(ASCC.SEQ_KEY_ID, asccRecord.getSeqKeyId())
-                    .where(ASCC.ASCC_ID.eq(asccRecord.getAsccId()))
-                    .execute();
-        }
-    }
-
-    private void init(BccRecord bccRecord) {
-        seqKeyRecordMap = dslContext.selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(bccRecord.getFromAccId()))
-                .fetch().stream().collect(
-                        Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
-
-        for (SeqKeyRecord seqKeyRecord : seqKeyRecordMap.values()) {
-            if (seqKeyRecord.getPrevSeqKeyId() == null) {
-                this.head = seqKeyRecord;
+            if (type.equals(SeqKeyType.ascc)) {
+                dslContext.update(ASCC)
+                        .set(ASCC.SEQ_KEY_ID, this.current.getSeqKeyId())
+                        .where(ASCC.ASCC_ID.eq(associationId))
+                        .execute();
+            } else {
+                dslContext.update(BCC)
+                        .set(BCC.SEQ_KEY_ID, this.current.getSeqKeyId())
+                        .where(BCC.BCC_ID.eq(associationId))
+                        .execute();
             }
-            if (seqKeyRecord.getNextSeqKeyId() == null) {
-                this.tail = seqKeyRecord;
-            }
-            if (seqKeyRecord.getSeqKeyId() == bccRecord.getSeqKeyId()) {
-                this.current = seqKeyRecord;
-            }
-        }
-
-        if (this.current == null) {
-            this.current = new SeqKeyRecord();
-            this.current.setFromAccId(bccRecord.getFromAccId());
-            this.current.setType(SeqKeyType.bcc);
-            this.current.setCcId(bccRecord.getBccId());
-            this.current.setSeqKeyId(
-                    dslContext.insertInto(SEQ_KEY)
-                            .set(this.current)
-                            .returning(SEQ_KEY.SEQ_KEY_ID)
-                            .fetchOne().getSeqKeyId()
-            );
-
-            bccRecord.setSeqKeyId(this.current.getSeqKeyId());
-            dslContext.update(BCC)
-                    .set(BCC.SEQ_KEY_ID, bccRecord.getSeqKeyId())
-                    .where(BCC.BCC_ID.eq(bccRecord.getBccId()))
-                    .execute();
         }
     }
 
@@ -151,10 +96,21 @@ public class SeqKeyHandler {
                             .execute();
 
                     this.head.setPrevSeqKeyId(this.current.getSeqKeyId());
-                    dslContext.update(SEQ_KEY)
-                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
-                            .execute();
+                    // swap case
+                    if (this.head.getPrevSeqKeyId().equals(this.head.getNextSeqKeyId())) {
+                        dslContext.update(SEQ_KEY)
+                                .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
+                                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
+                                .execute();
+                    } else {
+                        dslContext.update(SEQ_KEY)
+                                .set(SEQ_KEY.PREV_SEQ_KEY_ID, this.current.getSeqKeyId())
+                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.head.getSeqKeyId()))
+                                .execute();
+
+                    }
+
                 }
                 break;
 
@@ -196,11 +152,21 @@ public class SeqKeyHandler {
                             .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getSeqKeyId()))
                             .execute();
 
+
                     this.tail.setNextSeqKeyId(this.current.getSeqKeyId());
-                    dslContext.update(SEQ_KEY)
-                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
-                            .execute();
+                    // swap case
+                    if (this.tail.getNextSeqKeyId().equals(this.tail.getPrevSeqKeyId())) {
+                        dslContext.update(SEQ_KEY)
+                                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
+                                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
+                                .execute();
+                    } else {
+                        dslContext.update(SEQ_KEY)
+                                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, this.current.getSeqKeyId())
+                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.tail.getSeqKeyId()))
+                                .execute();
+                    }
                 }
                 break;
         }
@@ -208,6 +174,11 @@ public class SeqKeyHandler {
 
     public void moveAfter(SeqKeyRecord after) {
         if (after == null) {
+            return;
+        }
+
+        if (after.getNextSeqKeyId() == null) {
+            this.moveTo(MoveTo.LAST);
             return;
         }
 

@@ -55,7 +55,7 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateCcSeq(@AuthenticationPrincipal User user,
                             @PathVariable("manifestId") BigInteger manifestId,
-                            @RequestBody List<CcSeqUpdateRequest> requests) {
+                            @RequestBody CcSeqUpdateRequest requests) {
         service.updateCcSeq(user, manifestId, requests);
     }
 

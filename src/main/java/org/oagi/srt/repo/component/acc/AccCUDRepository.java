@@ -13,11 +13,13 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.component.seqkey.MoveTo;
 import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -747,9 +749,8 @@ public class AccCUDRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        for (Pair<CcId, CcId> itemAfterPair : request.getItemAfterPairs()) {
-            moveSeq(userId, accRecord, itemAfterPair.getFirst(), itemAfterPair.getSecond());
-        }
+        moveSeq(userId, accRecord, request.getAccManifestId(),
+                request.getSeqUpdateRequest().getItem(), request.getSeqUpdateRequest().getAfter());
 
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
@@ -761,17 +762,17 @@ public class AccCUDRepository {
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
     }
 
-    public void moveSeq(ULong userId, AccRecord accRecord, CcId item, CcId after) {
+    public void moveSeq(ULong userId, AccRecord accRecord, BigInteger accManifestId, CcId item, CcId after) {
         SeqKeyHandler seqKeyHandler;
 
         switch (item.getType().toLowerCase()) {
-            case "ascc":
-                AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, after);
+            case "asccp":
+                AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
                 seqKeyHandler = new SeqKeyHandler(dslContext, asccRecord);
                 break;
 
-            case "bcc":
-                BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, after);
+            case "bccp":
+                BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
                 seqKeyHandler = new SeqKeyHandler(dslContext, bccRecord);
                 break;
 
@@ -779,36 +780,42 @@ public class AccCUDRepository {
                 throw new IllegalArgumentException();
         }
 
-        SeqKeyRecord seqKeyRecord;
-        switch (after.getType().toLowerCase()) {
-            case "ascc":
-                AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, after);
-                seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(asccRecord.getSeqKeyId()))
-                        .fetchOne();
-                break;
+        if (after == null) {
+            seqKeyHandler.moveTo(MoveTo.FIRST);
+        } else {
+            SeqKeyRecord seqKeyRecord;
+            switch (after.getType().toLowerCase()) {
+                case "asccp":
+                    AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
+                    seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(asccRecord.getSeqKeyId()))
+                            .fetchOne();
+                    break;
 
-            case "bcc":
-                BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, after);
-                seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(bccRecord.getSeqKeyId()))
-                        .fetchOne();
-                break;
+                case "bccp":
+                    BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
+                    seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(bccRecord.getSeqKeyId()))
+                            .fetchOne();
+                    break;
 
-            default:
-                throw new IllegalArgumentException();
+                default:
+                    throw new IllegalArgumentException();
+            }
+            seqKeyHandler.moveAfter(seqKeyRecord);
         }
-
-        seqKeyHandler.moveAfter(seqKeyRecord);
     }
 
-    private AsccRecord getAsccRecordForUpdateSeq(ULong userId, AccRecord accRecord, CcId ccId) {
+    private AsccRecord getAsccRecordForUpdateSeq(ULong userId, AccRecord accRecord, BigInteger accManidestId, CcId ccId) {
         AsccRecord asccRecord = dslContext
                 .select(ASCC.ASCC_ID, ASCC.SEQ_KEY_ID, ASCC.FROM_ACC_ID, ASCC.OWNER_USER_ID)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
                 .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId())))
+                .where(
+                        and(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId())),
+                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManidestId)))
+                )
                 .fetchOneInto(AsccRecord.class);
 
         if (!asccRecord.getOwnerUserId().equals(userId)) {
@@ -821,13 +828,15 @@ public class AccCUDRepository {
         return asccRecord;
     }
 
-    private BccRecord getBccRecordForUpdateSeq(ULong userId, AccRecord accRecord, CcId ccId) {
+    private BccRecord getBccRecordForUpdateSeq(ULong userId, AccRecord accRecord, BigInteger accManidestId, CcId ccId) {
         BccRecord bccRecord = dslContext
                 .select(BCC.BCC_ID, BCC.SEQ_KEY_ID, BCC.FROM_ACC_ID, BCC.OWNER_USER_ID)
                 .from(BCC)
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId())))
+                .where(
+                        and(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId()))),
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManidestId)))
                 .fetchOneInto(BccRecord.class);
 
         if (!bccRecord.getOwnerUserId().equals(userId)) {

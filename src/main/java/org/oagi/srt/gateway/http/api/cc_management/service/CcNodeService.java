@@ -217,12 +217,9 @@ public class CcNodeService extends EventHandler {
     @Transactional
     public void updateCcSeq(User user,
                             BigInteger accManifestId,
-                            List<CcSeqUpdateRequest> requests) {
+                            CcSeqUpdateRequest requests) {
 
-        UpdateSeqKeyRequest request = new UpdateSeqKeyRequest(user, accManifestId,
-                requests.stream()
-                        .map(e -> Pair.of(e.getItem(), e.getAfter()))
-                        .collect(Collectors.toList()));
+        UpdateSeqKeyRequest request = new UpdateSeqKeyRequest(user, accManifestId, requests);
 
         accCUDRepository.moveSeq(request);
     }
