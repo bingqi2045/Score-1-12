@@ -1,6 +1,8 @@
 package org.oagi.srt.repo.component.seqkey;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.entity.jooq.enums.SeqKeyType;
@@ -86,26 +88,7 @@ public class SeqKeyHandler {
         switch (to) {
             case FIRST:
                 if (this.head != null) {
-                    // broke links between prev and next in current.
-                    if (this.current.getPrevSeqKeyId() != null) {
-                        SeqKeyRecord currentPrevSeqKeyRecord =
-                                dslContext.selectFrom(SEQ_KEY)
-                                .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getPrevSeqKeyId()))
-                                .fetchOne();
-
-                        currentPrevSeqKeyRecord.setNextSeqKeyId(this.current.getNextSeqKeyId());
-                        currentPrevSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
-                    }
-
-                    if (this.current.getNextSeqKeyId() != null) {
-                        SeqKeyRecord currentNextSeqKeyRecord =
-                                dslContext.selectFrom(SEQ_KEY)
-                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getNextSeqKeyId()))
-                                        .fetchOne();
-
-                        currentNextSeqKeyRecord.setPrevSeqKeyId(this.current.getPrevSeqKeyId());
-                        currentNextSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
-                    }
+                    brokeLinks(this.current);
 
                     this.current.setPrevSeqKeyId(null);
                     this.current.setNextSeqKeyId(this.head.getSeqKeyId());
@@ -154,26 +137,7 @@ public class SeqKeyHandler {
 
             case LAST:
                 if (this.tail != null) {
-                    // broke links between prev and next in current.
-                    if (this.current.getPrevSeqKeyId() != null) {
-                        SeqKeyRecord currentPrevSeqKeyRecord =
-                                dslContext.selectFrom(SEQ_KEY)
-                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getPrevSeqKeyId()))
-                                        .fetchOne();
-
-                        currentPrevSeqKeyRecord.setNextSeqKeyId(this.current.getNextSeqKeyId());
-                        currentPrevSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
-                    }
-
-                    if (this.current.getNextSeqKeyId() != null) {
-                        SeqKeyRecord currentNextSeqKeyRecord =
-                                dslContext.selectFrom(SEQ_KEY)
-                                        .where(SEQ_KEY.SEQ_KEY_ID.eq(this.current.getNextSeqKeyId()))
-                                        .fetchOne();
-
-                        currentNextSeqKeyRecord.setPrevSeqKeyId(this.current.getPrevSeqKeyId());
-                        currentNextSeqKeyRecord.update(SEQ_KEY.NEXT_SEQ_KEY_ID);
-                    }
+                    brokeLinks(this.current);
 
                     this.current.setPrevSeqKeyId(this.tail.getSeqKeyId());
                     this.current.setNextSeqKeyId(null);
@@ -194,38 +158,82 @@ public class SeqKeyHandler {
         }
     }
 
+    private void brokeLinks(SeqKeyRecord record) {
+        if (record.getPrevSeqKeyId() != null) {
+            SeqKeyRecord currentPrevSeqKeyRecord =
+                    dslContext.selectFrom(SEQ_KEY)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(record.getPrevSeqKeyId()))
+                            .fetchOne();
+
+            currentPrevSeqKeyRecord.setNextSeqKeyId(record.getNextSeqKeyId());
+            UpdateSetFirstStep<SeqKeyRecord> step = dslContext.update(SEQ_KEY);
+            if (currentPrevSeqKeyRecord.getNextSeqKeyId() == null) {
+                step.setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(currentPrevSeqKeyRecord.getSeqKeyId()))
+                        .execute();
+            } else {
+                step.set(SEQ_KEY.NEXT_SEQ_KEY_ID, currentPrevSeqKeyRecord.getNextSeqKeyId())
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(currentPrevSeqKeyRecord.getSeqKeyId()))
+                        .execute();
+            }
+        }
+
+        if (record.getNextSeqKeyId() != null) {
+            SeqKeyRecord currentNextSeqKeyRecord =
+                    dslContext.selectFrom(SEQ_KEY)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(record.getNextSeqKeyId()))
+                            .fetchOne();
+
+            currentNextSeqKeyRecord.setPrevSeqKeyId(record.getPrevSeqKeyId());
+            UpdateSetFirstStep<SeqKeyRecord> step = dslContext.update(SEQ_KEY);
+            if (currentNextSeqKeyRecord.getPrevSeqKeyId() == null) {
+                step.setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(currentNextSeqKeyRecord.getSeqKeyId()))
+                        .execute();
+            } else {
+                step.set(SEQ_KEY.PREV_SEQ_KEY_ID, currentNextSeqKeyRecord.getPrevSeqKeyId())
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(currentNextSeqKeyRecord.getSeqKeyId()))
+                        .execute();
+            }
+        }
+    }
+
     public void moveAfter(SeqKeyRecord after) {
         if (after == null) {
             return;
         }
 
-        if (after.getNextSeqKeyId() == null) {
-            this.moveTo(MoveTo.LAST);
-            return;
-        }
+        brokeLinks(this.current);
+
+        // DO NOT change orders of executions.
 
         current.setPrevSeqKeyId(after.getSeqKeyId());
         current.setNextSeqKeyId(after.getNextSeqKeyId());
-        dslContext.update(SEQ_KEY)
-                .set(SEQ_KEY.PREV_SEQ_KEY_ID, current.getPrevSeqKeyId())
-                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, current.getNextSeqKeyId())
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(current.getSeqKeyId()))
+
+        UpdateSetMoreStep<SeqKeyRecord> step = dslContext.update(SEQ_KEY)
+                .set(SEQ_KEY.PREV_SEQ_KEY_ID, current.getPrevSeqKeyId());
+        if (current.getNextSeqKeyId() == null) {
+            step = step.setNull(SEQ_KEY.NEXT_SEQ_KEY_ID);
+        } else {
+            step = step.set(SEQ_KEY.NEXT_SEQ_KEY_ID, current.getNextSeqKeyId());
+        }
+        step.where(SEQ_KEY.SEQ_KEY_ID.eq(current.getSeqKeyId()))
                 .execute();
 
-        SeqKeyRecord afterNext = seqKeyRecordMap.get(after.getNextSeqKeyId());
-        if (afterNext != null) {
-            afterNext.setPrevSeqKeyId(current.getSeqKeyId());
-            dslContext.update(SEQ_KEY)
-                    .set(SEQ_KEY.PREV_SEQ_KEY_ID, afterNext.getPrevSeqKeyId())
-                    .where(SEQ_KEY.SEQ_KEY_ID.eq(afterNext.getSeqKeyId()))
-                    .execute();
-
-            after.setNextSeqKeyId(current.getSeqKeyId());
-            dslContext.update(SEQ_KEY)
-                    .set(SEQ_KEY.NEXT_SEQ_KEY_ID, after.getNextSeqKeyId())
-                    .where(SEQ_KEY.SEQ_KEY_ID.eq(after.getSeqKeyId()))
-                    .execute();
+        SeqKeyRecord afterNextSeqKeyRecord =
+                dslContext.selectFrom(SEQ_KEY)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(after.getNextSeqKeyId()))
+                        .fetchOne();
+        if (afterNextSeqKeyRecord != null) {
+            afterNextSeqKeyRecord.setPrevSeqKeyId(this.current.getSeqKeyId());
+            afterNextSeqKeyRecord.update(SEQ_KEY.PREV_SEQ_KEY_ID);
         }
+
+        after.setNextSeqKeyId(this.current.getSeqKeyId());
+        dslContext.update(SEQ_KEY)
+                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, after.getNextSeqKeyId())
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(after.getSeqKeyId()))
+                .execute();
     }
 
     public static List<SeqKeySupportable> sort(List<SeqKeySupportable> seqKeyList) {
