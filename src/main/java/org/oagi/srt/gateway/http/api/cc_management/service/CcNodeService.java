@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
@@ -20,7 +21,6 @@ import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
 import org.oagi.srt.repository.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package org.oagi.srt.repo.component.acc;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.oagi.srt.data.RepositoryRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcId;
-import org.springframework.data.util.Pair;
 import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
@@ -35,10 +35,10 @@ public class UpdateSeqKeyRequest extends RepositoryRequest {
     }
 
     public CcId getItem() {
-        return this.itemAfterPair.getFirst();
+        return this.itemAfterPair.getLeft();
     }
 
     public CcId getAfter() {
-        return this.itemAfterPair.getSecond();
+        return this.itemAfterPair.getRight();
     }
 }
