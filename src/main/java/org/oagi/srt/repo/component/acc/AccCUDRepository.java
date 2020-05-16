@@ -16,7 +16,6 @@ import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.component.seqkey.MoveTo;
 import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -750,7 +749,7 @@ public class AccCUDRepository {
         }
 
         moveSeq(userId, accRecord, request.getAccManifestId(),
-                request.getSeqUpdateRequest().getItem(), request.getSeqUpdateRequest().getAfter());
+                request.getItem(), request.getAfter());
 
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
@@ -762,7 +761,8 @@ public class AccCUDRepository {
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
     }
 
-    public void moveSeq(ULong userId, AccRecord accRecord, BigInteger accManifestId, CcId item, CcId after) {
+    public void moveSeq(ULong userId, AccRecord accRecord, BigInteger accManifestId,
+                        CcId item, CcId after) {
         SeqKeyHandler seqKeyHandler;
 
         switch (item.getType().toLowerCase()) {

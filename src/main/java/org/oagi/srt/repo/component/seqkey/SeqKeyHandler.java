@@ -160,10 +160,7 @@ public class SeqKeyHandler {
 
     private void brokeLinks(SeqKeyRecord record) {
         if (record.getPrevSeqKeyId() != null) {
-            SeqKeyRecord currentPrevSeqKeyRecord =
-                    dslContext.selectFrom(SEQ_KEY)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(record.getPrevSeqKeyId()))
-                            .fetchOne();
+            SeqKeyRecord currentPrevSeqKeyRecord = getSeqKeyRecordById(record.getPrevSeqKeyId());
 
             currentPrevSeqKeyRecord.setNextSeqKeyId(record.getNextSeqKeyId());
             UpdateSetFirstStep<SeqKeyRecord> step = dslContext.update(SEQ_KEY);
@@ -179,10 +176,7 @@ public class SeqKeyHandler {
         }
 
         if (record.getNextSeqKeyId() != null) {
-            SeqKeyRecord currentNextSeqKeyRecord =
-                    dslContext.selectFrom(SEQ_KEY)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(record.getNextSeqKeyId()))
-                            .fetchOne();
+            SeqKeyRecord currentNextSeqKeyRecord = getSeqKeyRecordById(record.getNextSeqKeyId());
 
             currentNextSeqKeyRecord.setPrevSeqKeyId(record.getPrevSeqKeyId());
             UpdateSetFirstStep<SeqKeyRecord> step = dslContext.update(SEQ_KEY);
@@ -220,10 +214,7 @@ public class SeqKeyHandler {
         step.where(SEQ_KEY.SEQ_KEY_ID.eq(current.getSeqKeyId()))
                 .execute();
 
-        SeqKeyRecord afterNextSeqKeyRecord =
-                dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(after.getNextSeqKeyId()))
-                        .fetchOne();
+        SeqKeyRecord afterNextSeqKeyRecord = getSeqKeyRecordById(after.getNextSeqKeyId());
         if (afterNextSeqKeyRecord != null) {
             afterNextSeqKeyRecord.setPrevSeqKeyId(this.current.getSeqKeyId());
             afterNextSeqKeyRecord.update(SEQ_KEY.PREV_SEQ_KEY_ID);
@@ -236,6 +227,12 @@ public class SeqKeyHandler {
                 .execute();
     }
 
+    private SeqKeyRecord getSeqKeyRecordById(ULong seqKeyId) {
+        return dslContext.selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyId))
+                .fetchOne();
+    }
+
     public static List<SeqKeySupportable> sort(List<SeqKeySupportable> seqKeyList) {
         if (seqKeyList == null || seqKeyList.isEmpty()) {
             return Collections.emptyList();
@@ -244,6 +241,16 @@ public class SeqKeyHandler {
         Map<BigInteger, SeqKeySupportable> seqKeyMap = seqKeyList.stream()
                 .collect(Collectors.toMap(
                         SeqKeySupportable::getSeqKeyId, Function.identity()));
+
+        /*
+         * To ensure that every CC has different next seq_key id.
+         * If not, it would cause a circular reference.
+         */
+        if (seqKeyMap.size() != seqKeyMap.values().stream()
+                .map(e -> e.getNextSeqKeyId())
+                .collect(Collectors.toSet()).size()) {
+            throw new IllegalStateException();
+        }
 
         SeqKeySupportable head = seqKeyMap.values().stream()
                 .filter(e -> e.getPrevSeqKeyId() == null)

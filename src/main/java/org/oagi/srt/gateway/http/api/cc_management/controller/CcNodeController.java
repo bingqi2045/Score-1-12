@@ -6,6 +6,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,7 +14,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class CcNodeController {
@@ -55,8 +59,9 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateCcSeq(@AuthenticationPrincipal User user,
                             @PathVariable("manifestId") BigInteger manifestId,
-                            @RequestBody CcSeqUpdateRequest requests) {
-        service.updateCcSeq(user, manifestId, requests);
+                            @RequestBody CcSeqUpdateRequest request) {
+        service.updateCcSeq(user, manifestId,
+                Pair.of(request.getItem(), request.getAfter()));
     }
 
     @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
