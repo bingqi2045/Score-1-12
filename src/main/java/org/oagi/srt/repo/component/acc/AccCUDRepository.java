@@ -430,6 +430,18 @@ public class AccCUDRepository {
                 bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + bccpDen);
                 bccRecord.update(BCC.DEN);
             }
+
+            for (AsccpManifestRecord asccpManifestRecord: dslContext.selectFrom(ASCCP_MANIFEST)
+                    .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch()) {
+
+                AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                        .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                        .fetchOne();
+
+                asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
+                asccpRecord.update(ASCCP.DEN);
+            }
         }
 
         if (moreStep != null) {
