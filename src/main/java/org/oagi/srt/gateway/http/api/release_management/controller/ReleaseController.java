@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class ReleaseController {
 
     @RequestMapping(value = "/simple_release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public SimpleRelease getSimpleRelease(@PathVariable("id") long releaseId) {
+    public SimpleRelease getSimpleRelease(@PathVariable("id") BigInteger releaseId) {
         return service.getSimpleReleaseByReleaseId(releaseId);
     }
 
@@ -110,5 +111,30 @@ public class ReleaseController {
     public ReleaseResponse createRelease(@AuthenticationPrincipal User user,
                                          @RequestBody ReleaseDetail releaseDetail) {
         return service.createRelease(user, releaseDetail);
+    }
+
+    @RequestMapping(value = "/release/{id}/assign", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public AssignComponents getAssignComponents(@AuthenticationPrincipal User user,
+                                                @PathVariable("id") BigInteger releaseId) {
+        return service.getAssignComponents(releaseId);
+    }
+
+    @RequestMapping(value = "/release/{id}/assign", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void assignComponents(@AuthenticationPrincipal User user,
+                                 @PathVariable("id") BigInteger releaseId,
+                                 @RequestBody AssignComponentsRequest request) {
+        request.setReleaseId(releaseId);
+        service.assignComponents(user, request);
+    }
+
+    @RequestMapping(value = "/release/{id}/unassign", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void unassignComponents(@AuthenticationPrincipal User user,
+                                   @PathVariable("id") BigInteger releaseId,
+                                   @RequestBody UnassignComponentsRequest request) {
+        request.setReleaseId(releaseId);
+        service.unassignComponents(user, request);
     }
 }

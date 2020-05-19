@@ -12,6 +12,6 @@ import java.math.BigInteger;
 @AllArgsConstructor
 public class ReleaseCreateRequestEvent implements Event {
 
-    private BigInteger targetReleaseId;
+    private BigInteger releaseId;
 
 }

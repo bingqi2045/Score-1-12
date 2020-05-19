@@ -4,12 +4,11 @@ import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
-import org.oagi.srt.gateway.http.api.bie_management.service.BieCopyService;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
 import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
 import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.repository.ReleaseRepository;
@@ -30,9 +29,11 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.APP_USER;
+import static org.oagi.srt.entity.jooq.Tables.RELEASE;
 
 @Service
 @Transactional(readOnly = true)
@@ -83,7 +84,7 @@ public class ReleaseService implements InitializingBean {
                 });
     }
 
-    public SimpleRelease getSimpleReleaseByReleaseId(long releaseId) {
+    public SimpleRelease getSimpleReleaseByReleaseId(BigInteger releaseId) {
         return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM)
                 .from(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -274,9 +275,36 @@ public class ReleaseService implements InitializingBean {
         try {
             logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
 
-            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getTargetReleaseId());
+            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId());
         } finally {
             lock.unlock();
         }
+    }
+
+    public AssignComponents getAssignComponents(BigInteger releaseId) {
+        return repository.getAssignComponents(releaseId);
+    }
+
+    @Transactional
+    public void assignComponents(User user,
+                                 AssignComponentsRequest request) {
+
+        repository.copyWorkingManifestsTo(request.getReleaseId(),
+                Arrays.asList(CcState.Candidate),
+                request.getAccManifestIds(),
+                request.getAsccpManifestIds(),
+                request.getBccpManifestIds()
+        );
+    }
+
+    @Transactional
+    public void unassignComponents(User user,
+                                   UnassignComponentsRequest request) {
+
+        repository.unassignManifests(request.getReleaseId(),
+                request.getAccManifestIds(),
+                request.getAsccpManifestIds(),
+                request.getBccpManifestIds()
+        );
     }
 }

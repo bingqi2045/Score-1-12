@@ -1,23 +1,27 @@
 package org.oagi.srt.repository;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Record3;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
 import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.release_management.data.AssignComponents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Candidate;
 
 @Repository
 public class ReleaseRepository implements SrtRepository<Release> {
@@ -76,31 +80,50 @@ public class ReleaseRepository implements SrtRepository<Release> {
         return releaseRecord;
     }
 
-    public void copyWorkingManifestsTo(BigInteger targetReleaseId) {
+    public void copyWorkingManifestsTo(BigInteger releaseId) {
+        copyWorkingManifestsTo(
+                releaseId, Arrays.asList(CcState.Published),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList()
+        );
+    }
+
+    public void copyWorkingManifestsTo(
+            BigInteger releaseId,
+            List<CcState> states,
+            List<BigInteger> accManifestIds,
+            List<BigInteger> asccpManifestIds,
+            List<BigInteger> bccpManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(targetReleaseId)))
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .fetchOne();
 
         try {
             // copying manifests from 'Working' release
-            List<AccManifestRecord> accManifestRecords = getAccManifestRecordsInWorking();
+            List<AccManifestRecord> accManifestRecords = getAccManifestRecordsInWorking(
+                    states, accManifestIds);
             Map<ULong, ULong> prevNextAccManifestIdMap = copyAccManifests(
                     releaseRecord, accManifestRecords);
 
-            List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking();
+            List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking(
+                    states, asccpManifestIds);
             Map<ULong, ULong> prevNextAsccpManifestIdMap = copyAsccpManifests(
                     releaseRecord, asccpManifestRecords, prevNextAccManifestIdMap);
 
-            List<BccpManifestRecord> bccpManifestRecords = getBccpManifestRecordsInWorking();
+            List<BccpManifestRecord> bccpManifestRecords = getBccpManifestRecordsInWorking(
+                    states, bccpManifestIds);
             Map<ULong, ULong> prevNextBccpManifestIdMap = copyBccpManifests(
                     releaseRecord, bccpManifestRecords);
 
-            List<AsccManifestRecord> asccManifestRecords = getAsccManifestRecordsInWorking();
+            List<AsccManifestRecord> asccManifestRecords = getAsccManifestRecordsInWorking(
+                    states, accManifestIds);
             copyAsccManifests(releaseRecord, asccManifestRecords,
                     prevNextAccManifestIdMap, prevNextAsccpManifestIdMap);
 
-            List<BccManifestRecord> bccManifestRecords = getBccManifestRecordsInWorking();
+            List<BccManifestRecord> bccManifestRecords = getBccManifestRecordsInWorking(
+                    states, accManifestIds);
             copyBccManifests(releaseRecord, bccManifestRecords,
                     prevNextAccManifestIdMap, prevNextBccpManifestIdMap);
 
@@ -113,63 +136,90 @@ public class ReleaseRepository implements SrtRepository<Release> {
         }
     }
 
-    private List<AccManifestRecord> getAccManifestRecordsInWorking() {
+    private List<AccManifestRecord> getAccManifestRecordsInWorking(List<CcState> states,
+                                                                   List<BigInteger> accManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (accManifestIds != null && accManifestIds.size() > 0) {
+            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
+        }
+
         return dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.eq("Working"),
-                        ACC.STATE.in(Arrays.asList(CcState.Candidate.name(), CcState.Published.name()))
-                ))
+                .where(conditions)
                 .fetchInto(AccManifestRecord.class);
     }
 
-    private List<AsccManifestRecord> getAsccManifestRecordsInWorking() {
+    private List<AsccManifestRecord> getAsccManifestRecordsInWorking(List<CcState> states,
+                                                                     List<BigInteger> accManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (accManifestIds != null && accManifestIds.size() > 0) {
+            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
+        }
+
         return dslContext.select(ASCC_MANIFEST.fields())
                 .from(ASCC_MANIFEST)
+                .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.eq("Working"),
-                        ASCC.STATE.in(Arrays.asList(CcState.Candidate.name(), CcState.Published.name()))
-                ))
+                .where(conditions)
                 .fetchInto(AsccManifestRecord.class);
     }
 
-    private List<BccManifestRecord> getBccManifestRecordsInWorking() {
+    private List<BccManifestRecord> getBccManifestRecordsInWorking(List<CcState> states,
+                                                                   List<BigInteger> accManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (accManifestIds != null && accManifestIds.size() > 0) {
+            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
+        }
+
         return dslContext.select(BCC_MANIFEST.fields())
                 .from(BCC_MANIFEST)
+                .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.eq("Working"),
-                        BCC.STATE.in(Arrays.asList(CcState.Candidate.name(), CcState.Published.name()))
-                ))
+                .where(conditions)
                 .fetchInto(BccManifestRecord.class);
     }
 
-    private List<AsccpManifestRecord> getAsccpManifestRecordsInWorking() {
+    private List<AsccpManifestRecord> getAsccpManifestRecordsInWorking(List<CcState> states,
+                                                                       List<BigInteger> asccpManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(ASCCP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (asccpManifestIds != null && asccpManifestIds.size() > 0) {
+            conditions.add(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds));
+        }
+
         return dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCCP_MANIFEST)
                 .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.eq("Working"),
-                        ASCCP.STATE.in(Arrays.asList(CcState.Candidate.name(), CcState.Published.name()))
-                ))
+                .where(conditions)
                 .fetchInto(AsccpManifestRecord.class);
     }
 
-    private List<BccpManifestRecord> getBccpManifestRecordsInWorking() {
+    private List<BccpManifestRecord> getBccpManifestRecordsInWorking(List<CcState> states,
+                                                                     List<BigInteger> bccpManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(BCCP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (bccpManifestIds != null && bccpManifestIds.size() > 0) {
+            conditions.add(BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds));
+        }
+
         return dslContext.select(BCCP_MANIFEST.fields())
                 .from(BCCP_MANIFEST)
                 .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
-                .where(and(
-                        RELEASE.RELEASE_NUM.eq("Working"),
-                        BCCP.STATE.in(Arrays.asList(CcState.Candidate.name(), CcState.Published.name()))
-                ))
+                .where(conditions)
                 .fetchInto(BccpManifestRecord.class);
     }
 
@@ -313,5 +363,203 @@ public class ReleaseRepository implements SrtRepository<Release> {
         });
 
         return prevNextBccManifestIdMap;
+    }
+
+    public void unassignManifests(
+            BigInteger releaseId,
+            List<BigInteger> accManifestIds,
+            List<BigInteger> asccpManifestIds,
+            List<BigInteger> bccpManifestIds) {
+
+        // ensure all manifests in given request are in 'Candidate' state.
+        // check ACCs
+        dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.STATE)
+                .from(ACC)
+                .join(ACC_MANIFEST)
+                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .where(and(
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)
+                ))
+                .fetchStream().forEach(e -> {
+            CcState ccState = CcState.valueOf(e.value2());
+            if (ccState != Candidate) {
+                throw new IllegalArgumentException(e.value1() + " is an invalid manifest ID.");
+            }
+        });
+
+        // check ASCCPs
+        dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.STATE)
+                .from(ASCCP)
+                .join(ASCCP_MANIFEST)
+                .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .where(and(
+                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)
+                ))
+                .fetchStream().forEach(e -> {
+            CcState ccState = CcState.valueOf(e.value2());
+            if (ccState != Candidate) {
+                throw new IllegalArgumentException(e.value1() + " is an invalid manifest ID.");
+            }
+        });
+
+        // check BCCPs
+        dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.STATE)
+                .from(BCCP)
+                .join(BCCP_MANIFEST)
+                .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .where(and(
+                        BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds)
+                ))
+                .fetchStream().forEach(e -> {
+            CcState ccState = CcState.valueOf(e.value2());
+            if (ccState != Candidate) {
+                throw new IllegalArgumentException(e.value1() + " is an invalid manifest ID.");
+            }
+        });
+
+        deleteManifests(releaseId, accManifestIds, asccpManifestIds, bccpManifestIds);
+    }
+
+    private void deleteManifests(
+            BigInteger releaseId,
+            List<BigInteger> accManifestIds,
+            List<BigInteger> asccpManifestIds,
+            List<BigInteger> bccpManifestIds) {
+
+        if (accManifestIds != null && !accManifestIds.isEmpty()) {
+            dslContext.deleteFrom(ASCC_MANIFEST)
+                    .where(and(
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)
+                    ))
+                    .execute();
+
+            dslContext.deleteFrom(BCC_MANIFEST)
+                    .where(and(
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)
+                    ))
+                    .execute();
+        }
+
+        if (bccpManifestIds != null && !bccpManifestIds.isEmpty()) {
+            dslContext.deleteFrom(BCCP_MANIFEST)
+                    .where(and(
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds)
+                    ))
+                    .execute();
+        }
+
+        if (asccpManifestIds != null && !asccpManifestIds.isEmpty()) {
+            dslContext.deleteFrom(ASCCP_MANIFEST)
+                    .where(and(
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)
+                    ))
+                    .execute();
+        }
+
+        if (accManifestIds != null && !accManifestIds.isEmpty()) {
+            dslContext.deleteFrom(ACC_MANIFEST)
+                    .where(and(
+                            RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                            ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)
+                    ))
+                    .execute();
+        }
+    }
+
+    public AssignComponents getAssignComponents(BigInteger releaseId) {
+        AssignComponents assignComponents = new AssignComponents();
+
+        // ACCs
+        Map<ULong, List<Record3<ULong, String, String>>> map = dslContext.select(
+                ACC_MANIFEST.ACC_MANIFEST_ID, ACC.OBJECT_CLASS_TERM, RELEASE.RELEASE_NUM)
+                .from(ACC_MANIFEST)
+                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .where(and(
+                        or(
+                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ),
+                        ACC.STATE.eq(Candidate.name())
+                ))
+                .fetchStream()
+                .collect(groupingBy(e -> e.value1()));
+
+        map.values().forEach(e -> {
+           if (e.size() == 2) { // manifest are located at both sides.
+               assignComponents.addUnassignableAccManifest(
+                       e.get(0).value1().toBigInteger(), e.get(0).value2());
+           }
+           // manifest is only located at 'Working' release side.
+           else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+               assignComponents.addAssignableAccManifest(
+                       e.get(0).value1().toBigInteger(), e.get(0).value2());
+           }
+        });
+
+        // ASCCPs
+        map = dslContext.select(
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM)
+                .from(ASCCP_MANIFEST)
+                .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(and(
+                        or(
+                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ),
+                        ASCCP.STATE.eq(Candidate.name())
+                ))
+                .fetchStream()
+                .collect(groupingBy(e -> e.value1()));
+
+        map.values().forEach(e -> {
+            if (e.size() == 2) { // manifest are located at both sides.
+                assignComponents.addUnassignableAsccpManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
+            // manifest is only located at 'Working' release side.
+            else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+                assignComponents.addAssignableAsccpManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
+        });
+
+        // BCCPs
+        map = dslContext.select(
+                BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM)
+                .from(BCCP_MANIFEST)
+                .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .where(and(
+                        or(
+                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ),
+                        BCCP.STATE.eq(Candidate.name())
+                ))
+                .fetchStream()
+                .collect(groupingBy(e -> e.value1()));
+
+        map.values().forEach(e -> {
+            if (e.size() == 2) { // manifest are located at both sides.
+                assignComponents.addUnassignableBccpManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
+            // manifest is only located at 'Working' release side.
+            else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+                assignComponents.addAssignableBccpManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
+        });
+
+        return assignComponents;
     }
 }
