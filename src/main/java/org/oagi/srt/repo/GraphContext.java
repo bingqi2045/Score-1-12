@@ -187,7 +187,6 @@ public class GraphContext {
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                         .join(SEQ_KEY).on(ASCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
-                        .where(ASCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
@@ -218,7 +217,6 @@ public class GraphContext {
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                         .join(SEQ_KEY).on(BCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
-                        .where(BCC.STATE.notEqual(CcState.Deleted.name()))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);

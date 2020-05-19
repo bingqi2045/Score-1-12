@@ -9,6 +9,7 @@ import org.oagi.srt.entity.jooq.enums.SeqKeyType;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.entity.jooq.tables.records.SeqKeyRecord;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -259,7 +260,9 @@ public class SeqKeyHandler {
         List<SeqKeySupportable> sorted = new ArrayList();
         SeqKeySupportable current = head;
         while (current != null) {
-            sorted.add(current);
+            if (!current.getState().equals(CcState.Deleted.name())) {
+                sorted.add(current);
+            }
             current = seqKeyMap.get(current.getNextSeqKeyId());
         }
         return sorted;
