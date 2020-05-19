@@ -144,10 +144,15 @@ CREATE TABLE `seq_key` (
 UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
 
+-- Modify `state` column using ENUM.
+ALTER TABLE `release` MODIFY COLUMN `state` enum('WIP','Draft','Approved','Published') DEFAULT 'WIP' COMMENT 'This indicates the revision life cycle state of the Release.';
+-- Update `state` to 'Published' for current release.
+UPDATE `release` SET `state` = 'Published';
+
 -- Adding `Working` release.
 INSERT INTO `release` (`release_num`, `release_note`, `namespace_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `state`)
 VALUES
-('Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 2);
+('Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 'Published');
 
 -- Making relations between `acc` and `release` tables.
 ALTER TABLE `acc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';

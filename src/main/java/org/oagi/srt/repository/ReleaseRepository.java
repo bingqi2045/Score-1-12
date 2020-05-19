@@ -3,8 +3,8 @@ package org.oagi.srt.repository;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
-import org.oagi.srt.data.ReleaseState;
 import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -64,7 +64,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .set(Tables.RELEASE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                 .set(Tables.RELEASE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(Tables.RELEASE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
-                .set(Tables.RELEASE.STATE, ReleaseState.Draft.getValue())
+                .set(Tables.RELEASE.STATE, ReleaseState.WIP)
                 .set(Tables.RELEASE.NAMESPACE_ID, ULong.valueOf(namespaceId)).returning().fetchOne();
     }
 }

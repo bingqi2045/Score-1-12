@@ -12,6 +12,7 @@ import org.jooq.Record9;
 import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.Release;
 
 
@@ -19,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Release;
  * The is table store the release information.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer> {
+public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ReleaseState> {
 
-    private static final long serialVersionUID = 339903350;
+    private static final long serialVersionUID = -1082118835;
 
     /**
      * Setter for <code>oagi.release.release_id</code>. RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.
@@ -136,17 +137,17 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.release.state</code>. 1 = DRAFT, 2 = FINAL. This the revision life cycle state of the Release.
+     * Setter for <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public void setState(Integer value) {
+    public void setState(ReleaseState value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.release.state</code>. 1 = DRAFT, 2 = FINAL. This the revision life cycle state of the Release.
+     * Getter for <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public Integer getState() {
-        return (Integer) get(8);
+    public ReleaseState getState() {
+        return (ReleaseState) get(8);
     }
 
     // -------------------------------------------------------------------------
@@ -163,12 +164,12 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer> fieldsRow() {
+    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ReleaseState> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer> valuesRow() {
+    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ReleaseState> valuesRow() {
         return (Row9) super.valuesRow();
     }
 
@@ -213,7 +214,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     @Override
-    public Field<Integer> field9() {
+    public Field<ReleaseState> field9() {
         return Release.RELEASE.STATE;
     }
 
@@ -258,7 +259,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     @Override
-    public Integer component9() {
+    public ReleaseState component9() {
         return getState();
     }
 
@@ -303,7 +304,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     @Override
-    public Integer value9() {
+    public ReleaseState value9() {
         return getState();
     }
 
@@ -356,13 +357,13 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     @Override
-    public ReleaseRecord value9(Integer value) {
+    public ReleaseRecord value9(ReleaseState value) {
         setState(value);
         return this;
     }
 
     @Override
-    public ReleaseRecord values(ULong value1, String value2, String value3, ULong value4, ULong value5, ULong value6, LocalDateTime value7, LocalDateTime value8, Integer value9) {
+    public ReleaseRecord values(ULong value1, String value2, String value3, ULong value4, ULong value5, ULong value6, LocalDateTime value7, LocalDateTime value8, ReleaseState value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -389,7 +390,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     /**
      * Create a detached, initialised ReleaseRecord
      */
-    public ReleaseRecord(ULong releaseId, String releaseNum, String releaseNote, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state) {
+    public ReleaseRecord(ULong releaseId, String releaseNum, String releaseNote, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ReleaseState state) {
         super(Release.RELEASE);
 
         set(0, releaseId);

@@ -1,7 +1,7 @@
 package org.oagi.srt.gateway.http.api.release_management.data;
 
 import lombok.Data;
-import org.oagi.srt.data.ReleaseState;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 
 @Data
 public class SimpleRelease {

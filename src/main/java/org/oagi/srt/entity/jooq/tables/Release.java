@@ -24,6 +24,7 @@ import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 
 
@@ -33,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
-    private static final long serialVersionUID = -1963452311;
+    private static final long serialVersionUID = 636556483;
 
     /**
      * The reference instance of <code>oagi.release</code>
@@ -89,9 +90,9 @@ public class Release extends TableImpl<ReleaseRecord> {
     public final TableField<ReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
 
     /**
-     * The column <code>oagi.release.state</code>. 1 = DRAFT, 2 = FINAL. This the revision life cycle state of the Release.
+     * The column <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public final TableField<ReleaseRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "1 = DRAFT, 2 = FINAL. This the revision life cycle state of the Release.");
+    public final TableField<ReleaseRecord, ReleaseState> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(9).defaultValue(org.jooq.impl.DSL.inline("WIP", org.jooq.impl.SQLDataType.VARCHAR)).asEnumDataType(org.oagi.srt.entity.jooq.enums.ReleaseState.class), this, "This indicates the revision life cycle state of the Release.");
 
     /**
      * Create a <code>oagi.release</code> table reference
@@ -194,7 +195,7 @@ public class Release extends TableImpl<ReleaseRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Integer> fieldsRow() {
+    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ReleaseState> fieldsRow() {
         return (Row9) super.fieldsRow();
     }
 }

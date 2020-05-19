@@ -1,6 +1,7 @@
 package org.oagi.srt.data;
 
 import lombok.Data;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -16,6 +17,6 @@ public class Release {
     private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private Integer state;
+    private ReleaseState state;
 
 }

@@ -2,8 +2,7 @@ package org.oagi.srt.gateway.http.api.release_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.ReleaseState;
-import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -21,7 +20,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.oagi.srt.entity.jooq.Tables.*;
 
@@ -39,64 +37,65 @@ public class ReleaseService {
     private ReleaseRepository repository;
 
     public List<SimpleRelease> getSimpleReleases() {
-        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM, Tables.RELEASE.STATE)
-                .from(Tables.RELEASE)
-                .where(Tables.RELEASE.STATE.eq(ReleaseState.Published.getValue()))
+        return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
+                .from(RELEASE)
+                .where(RELEASE.STATE.eq(ReleaseState.Published))
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).longValue());
                     simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
+                    simpleRelease.setState(row.getValue(RELEASE.STATE));
                     return simpleRelease;
                 });
     }
 
     public SimpleRelease getSimpleReleaseByReleaseId(long releaseId) {
-        return dslContext.select(Tables.RELEASE.RELEASE_ID, Tables.RELEASE.RELEASE_NUM)
-                .from(Tables.RELEASE)
-                .where(Tables.RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+        return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM)
+                .from(RELEASE)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .fetchOneInto(SimpleRelease.class);
     }
 
     public List<ReleaseList> getReleaseList(User user) {
-        List<ReleaseList> releaseLists = dslContext.select(Tables.RELEASE.RELEASE_ID,
-                Tables.RELEASE.RELEASE_NUM,
-                Tables.RELEASE.LAST_UPDATE_TIMESTAMP,
-                Tables.RELEASE.STATE.as("raw_state"),
-                Tables.NAMESPACE.URI.as("namespace"),
-                Tables.APP_USER.LOGIN_ID.as("last_updated_by"))
-                .from(Tables.RELEASE)
-                .join(Tables.NAMESPACE)
-                .on(Tables.RELEASE.NAMESPACE_ID.eq(Tables.NAMESPACE.NAMESPACE_ID))
-                .join(Tables.APP_USER)
-                .on(Tables.RELEASE.LAST_UPDATED_BY.eq(Tables.APP_USER.APP_USER_ID))
-                .fetchInto(ReleaseList.class);
-
-        releaseLists.forEach(releaseList -> {
-            releaseList.setState(ReleaseState.valueOf(releaseList.getRawState()).name());
-        });
-        return releaseLists;
-    }
-
-    private SelectOnConditionStep<Record6<
-            ULong, String, Integer, String, String,
-            LocalDateTime>> getSelectOnConditionStep() {
-        return dslContext.select(
+        List<ReleaseList> releaseLists = dslContext.select(
                 RELEASE.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                RELEASE.STATE.as("raw_state"),
-                NAMESPACE.URI.as("namespace"),
+                RELEASE.STATE,
+                APP_USER.as("creator").LOGIN_ID.as("created_by"),
+                RELEASE.CREATION_TIMESTAMP,
                 APP_USER.as("updater").LOGIN_ID.as("last_updated_by"),
                 RELEASE.LAST_UPDATE_TIMESTAMP)
                 .from(RELEASE)
-                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(RELEASE.LAST_UPDATED_BY))
-                .leftJoin(NAMESPACE).on(RELEASE.NAMESPACE_ID.eq(NAMESPACE.NAMESPACE_ID));
+                .join(APP_USER.as("creator"))
+                .on(RELEASE.CREATED_BY.eq(APP_USER.APP_USER_ID))
+                .join(APP_USER.as("updater"))
+                .on(RELEASE.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID))
+                .fetchInto(ReleaseList.class);
+        return releaseLists;
+    }
+
+    private SelectOnConditionStep<Record7<
+            ULong, String, ReleaseState, String, LocalDateTime,
+            String, LocalDateTime>> getSelectOnConditionStep() {
+        return dslContext.select(
+                RELEASE.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                RELEASE.STATE,
+                APP_USER.as("creator").LOGIN_ID.as("created_by"),
+                RELEASE.CREATION_TIMESTAMP,
+                APP_USER.as("updater").LOGIN_ID.as("last_updated_by"),
+                RELEASE.LAST_UPDATE_TIMESTAMP)
+                .from(RELEASE)
+                .join(APP_USER.as("creator"))
+                .on(RELEASE.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
+                .join(APP_USER.as("updater"))
+                .on(RELEASE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
     }
 
     public PageResponse<ReleaseList> getReleases(User user, ReleaseListRequest request) {
-        SelectOnConditionStep<Record6<
-                ULong, String, Integer, String, String,
-                LocalDateTime>> step = getSelectOnConditionStep();
+        SelectOnConditionStep<Record7<
+                ULong, String, ReleaseState, String, LocalDateTime,
+                String, LocalDateTime>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getReleaseNum())) {
@@ -105,11 +104,17 @@ public class ReleaseService {
         if (!request.getExcludes().isEmpty()) {
             conditions.add(RELEASE.RELEASE_NUM.notIn(request.getExcludes()));
         }
-        if (!StringUtils.isEmpty(request.getNamespace())) {
-            conditions.add(NAMESPACE.URI.containsIgnoreCase(request.getNamespace().trim()));
-        }
         if (!request.getStates().isEmpty()) {
-            conditions.add(RELEASE.STATE.in(request.getStates().stream().map(e -> e.getValue()).collect(Collectors.toList())));
+            conditions.add(RELEASE.STATE.in(request.getStates()));
+        }
+        if (!request.getCreatorLoginIds().isEmpty()) {
+            conditions.add(APP_USER.as("creator").LOGIN_ID.in(request.getCreatorLoginIds()));
+        }
+        if (request.getCreateStartDate() != null) {
+            conditions.add(RELEASE.CREATION_TIMESTAMP.greaterOrEqual(new Timestamp(request.getCreateStartDate().getTime()).toLocalDateTime()));
+        }
+        if (request.getCreateEndDate() != null) {
+            conditions.add(RELEASE.CREATION_TIMESTAMP.lessThan(new Timestamp(request.getCreateEndDate().getTime()).toLocalDateTime()));
         }
         if (!request.getUpdaterLoginIds().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(request.getUpdaterLoginIds()));
@@ -121,9 +126,9 @@ public class ReleaseService {
             conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        SelectConnectByStep<Record6<
-                ULong, String, Integer, String, String,
-                LocalDateTime>> conditionStep = step.where(conditions);
+        SelectConnectByStep<Record7<
+                ULong, String, ReleaseState, String, LocalDateTime,
+                String, LocalDateTime>> conditionStep = step.where(conditions);
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
@@ -133,6 +138,24 @@ public class ReleaseService {
                     sortField = RELEASE.RELEASE_NUM.asc();
                 } else if ("desc".equals(sortDirection)) {
                     sortField = RELEASE.RELEASE_NUM.desc();
+                }
+
+                break;
+
+            case "state":
+                if ("asc".equals(sortDirection)) {
+                    sortField = RELEASE.STATE.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = RELEASE.STATE.desc();
+                }
+
+                break;
+
+            case "creationTimestamp":
+                if ("asc".equals(sortDirection)) {
+                    sortField = RELEASE.CREATION_TIMESTAMP.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = RELEASE.CREATION_TIMESTAMP.desc();
                 }
 
                 break;
@@ -147,9 +170,9 @@ public class ReleaseService {
                 break;
         }
         int pageCount = dslContext.fetchCount(conditionStep);
-        SelectWithTiesAfterOffsetStep<Record6<
-                ULong, String, Integer, String, String,
-                LocalDateTime>> offsetStep = null;
+        SelectWithTiesAfterOffsetStep<Record7<
+                ULong, String, ReleaseState, String, LocalDateTime,
+                String, LocalDateTime>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -162,9 +185,6 @@ public class ReleaseService {
 
         List<ReleaseList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(ReleaseList.class) : conditionStep.fetchInto(ReleaseList.class);
-        result.forEach(releaseList -> {
-            releaseList.setState(ReleaseState.valueOf(releaseList.getRawState()).name());
-        });
 
         PageResponse<ReleaseList> response = new PageResponse();
         response.setList(result);
