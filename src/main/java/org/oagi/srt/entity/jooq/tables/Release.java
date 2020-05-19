@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
-    private static final long serialVersionUID = 636556483;
+    private static final long serialVersionUID = -439040966;
 
     /**
      * The reference instance of <code>oagi.release</code>
@@ -92,7 +92,7 @@ public class Release extends TableImpl<ReleaseRecord> {
     /**
      * The column <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public final TableField<ReleaseRecord, ReleaseState> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(9).defaultValue(org.jooq.impl.DSL.inline("WIP", org.jooq.impl.SQLDataType.VARCHAR)).asEnumDataType(org.oagi.srt.entity.jooq.enums.ReleaseState.class), this, "This indicates the revision life cycle state of the Release.");
+    public final TableField<ReleaseRecord, ReleaseState> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(13).defaultValue(org.jooq.impl.DSL.inline("WIP", org.jooq.impl.SQLDataType.VARCHAR)).asEnumDataType(org.oagi.srt.entity.jooq.enums.ReleaseState.class), this, "This indicates the revision life cycle state of the Release.");
 
     /**
      * Create a <code>oagi.release</code> table reference

@@ -102,7 +102,6 @@ public class BieCopyService implements InitializingBean {
         redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, bieCopyRequestEvent);
     }
 
-
     /**
      * This method is invoked by 'bieCopyRequestEvent' channel subscriber.
      *

@@ -4,12 +4,23 @@ import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieCopyService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.event.BieCopyRequestEvent;
+import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
+import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.repository.ReleaseRepository;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +36,9 @@ import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
-public class ReleaseService {
+public class ReleaseService implements InitializingBean {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -36,10 +49,31 @@ public class ReleaseService {
     @Autowired
     private ReleaseRepository repository;
 
-    public List<SimpleRelease> getSimpleReleases() {
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Autowired
+    private EventListenerContainer eventListenerContainer;
+
+    private String INTERESTED_EVENT_NAME = "releaseCreateRequestEvent";
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        eventListenerContainer.addMessageListener(this, "onEventReceived",
+                new ChannelTopic(INTERESTED_EVENT_NAME));
+    }
+
+    public List<SimpleRelease> getSimpleReleases(SimpleReleasesRequest request) {
+        List<Condition> conditions = new ArrayList();
+        if (!request.getStates().isEmpty()) {
+            conditions.add(RELEASE.STATE.in(request.getStates()));
+        }
         return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
                 .from(RELEASE)
-                .where(RELEASE.STATE.eq(ReleaseState.Published))
+                .where(conditions)
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).longValue());
@@ -208,6 +242,14 @@ public class ReleaseService {
         ReleaseRecord releaseRecord = repository.create(userId, releaseDetail.getReleaseNum(),
                 releaseDetail.getReleaseNote(), releaseDetail.getNamespaceId());
 
+        ReleaseCreateRequestEvent releaseCreateRequestEvent = new ReleaseCreateRequestEvent(
+                releaseRecord.getReleaseId().toBigInteger());
+
+        /*
+         * Message Publishing
+         */
+        redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, releaseCreateRequestEvent);
+
         response.setStatus("success");
         response.setStatusMessage("");
         releaseDetail.setReleaseId(releaseRecord.getReleaseId().longValue());
@@ -216,5 +258,25 @@ public class ReleaseService {
         releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().longValue());
         response.setReleaseDetail(releaseDetail);
         return response;
+    }
+
+    /**
+     * This method is invoked by 'bieCopyRequestEvent' channel subscriber.
+     *
+     * @param releaseCreateRequestEvent
+     */
+    @Transactional
+    public void onEventReceived(ReleaseCreateRequestEvent releaseCreateRequestEvent) {
+        RLock lock = redissonClient.getLock("ReleaseCreateRequestEvent:" + releaseCreateRequestEvent.hashCode());
+        if (!lock.tryLock()) {
+            return;
+        }
+        try {
+            logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
+
+            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getTargetReleaseId());
+        } finally {
+            lock.unlock();
+        }
     }
 }

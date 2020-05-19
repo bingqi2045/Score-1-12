@@ -145,7 +145,7 @@ UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
 
 -- Modify `state` column using ENUM.
-ALTER TABLE `release` MODIFY COLUMN `state` enum('WIP','Draft','Approved','Published') DEFAULT 'WIP' COMMENT 'This indicates the revision life cycle state of the Release.';
+ALTER TABLE `release` MODIFY COLUMN `state` enum('Instantiating','Failure','WIP','Draft','Approved','Published') DEFAULT 'WIP' COMMENT 'This indicates the revision life cycle state of the Release.';
 -- Update `state` to 'Published' for current release.
 UPDATE `release` SET `state` = 'Published';
 

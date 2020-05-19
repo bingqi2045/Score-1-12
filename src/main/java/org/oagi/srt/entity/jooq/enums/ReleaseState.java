@@ -15,6 +15,10 @@ import org.jooq.Schema;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public enum ReleaseState implements EnumType {
 
+    Instantiating("Instantiating"),
+
+    Failure("Failure"),
+
     WIP("WIP"),
 
     Draft("Draft"),

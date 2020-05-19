@@ -23,8 +23,14 @@ public class ReleaseController {
 
     @RequestMapping(value = "/simple_releases", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleRelease> getSimpleReleases() {
-        return service.getSimpleReleases();
+    public List<SimpleRelease> getSimpleReleases(@RequestParam(name = "states", required = false) String states) {
+        SimpleReleasesRequest request = new SimpleReleasesRequest();
+
+        request.setStates(!StringUtils.isEmpty(states) ?
+                Arrays.asList(states.split(",")).stream()
+                        .map(e -> ReleaseState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
+
+        return service.getSimpleReleases(request);
     }
 
     @RequestMapping(value = "/simple_release/{id}", method = RequestMethod.GET,
@@ -101,7 +107,8 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release/create", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReleaseResponse createRelease(@AuthenticationPrincipal User user, @RequestBody ReleaseDetail releaseDetail) {
+    public ReleaseResponse createRelease(@AuthenticationPrincipal User user,
+                                         @RequestBody ReleaseDetail releaseDetail) {
         return service.createRelease(user, releaseDetail);
     }
 }
