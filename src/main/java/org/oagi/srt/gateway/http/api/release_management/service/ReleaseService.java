@@ -307,4 +307,11 @@ public class ReleaseService implements InitializingBean {
                 request.getBccpManifestIds()
         );
     }
+
+    @Transactional
+    public void transitState(User user,
+                             TransitStateRequest request) {
+
+        repository.transitState(user, request);
+    }
 }

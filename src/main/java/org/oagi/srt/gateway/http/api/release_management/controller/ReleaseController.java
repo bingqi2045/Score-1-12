@@ -137,4 +137,13 @@ public class ReleaseController {
         request.setReleaseId(releaseId);
         service.unassignComponents(user, request);
     }
+
+    @RequestMapping(value = "/release/{id}/state", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void transitState(@AuthenticationPrincipal User user,
+                             @PathVariable("id") BigInteger releaseId,
+                             @RequestBody TransitStateRequest request) {
+        request.setReleaseId(releaseId);
+        service.transitState(user, request);
+    }
 }
