@@ -7,6 +7,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
+import org.oagi.srt.entity.jooq.enums.SeqKeyType;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcId;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -163,6 +166,7 @@ public class AccCUDRepository {
         // create new associations for revised record.
         createNewAsccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
         createNewBccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
+        linkSeqKeys(nextAccRecord);
 
         // creates new revision for revised record.
         RevisionRecord revisionRecord =
@@ -267,6 +271,15 @@ public class AccCUDRepository {
             prevAsccRecord.setNextAsccId(nextAsccRecord.getAsccId());
             prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
 
+            ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
+                    .set(SEQ_KEY.FROM_ACC_ID, nextAccRecord.getAccId())
+                    .set(SEQ_KEY.TYPE, SeqKeyType.ascc)
+                    .set(SEQ_KEY.CC_ID, nextAsccRecord.getAsccId())
+                    .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
+
+            nextAsccRecord.setSeqKeyId(seqKeyId);
+            nextAsccRecord.update(ASCC.SEQ_KEY_ID);
+
             asccManifestRecord.setAsccId(nextAsccRecord.getAsccId());
             asccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
             asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID);
@@ -314,9 +327,79 @@ public class AccCUDRepository {
             prevBccRecord.setNextBccId(nextBccRecord.getBccId());
             prevBccRecord.update(BCC.NEXT_BCC_ID);
 
+            ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
+                    .set(SEQ_KEY.FROM_ACC_ID, nextAccRecord.getAccId())
+                    .set(SEQ_KEY.TYPE, SeqKeyType.bcc)
+                    .set(SEQ_KEY.CC_ID, nextBccRecord.getBccId())
+                    .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
+
+            nextBccRecord.setSeqKeyId(seqKeyId);
+            nextBccRecord.update(BCC.SEQ_KEY_ID);
+
             bccManifestRecord.setBccId(nextBccRecord.getBccId());
             bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
             bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+        }
+    }
+
+    private void linkSeqKeys(AccRecord accRecord) {
+        SeqKeyRecord prevHead = dslContext.selectFrom(SEQ_KEY)
+                .where(and(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getPrevAccId()),
+                        SEQ_KEY.PREV_SEQ_KEY_ID.isNull())).fetchOne();
+        List<ULong> orderedSeqIds = new ArrayList<>();
+        if (prevHead != null) {
+            while (prevHead.getNextSeqKeyId() != null) {
+                orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accRecord));
+                prevHead = dslContext.selectFrom(SEQ_KEY)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(prevHead.getNextSeqKeyId()))
+                        .fetchOne();
+            }
+            orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accRecord));
+
+            if (orderedSeqIds.size() < 2) {
+                return;
+            }
+            for (ULong seqKey : orderedSeqIds) {
+                ULong prev = orderedSeqIds.indexOf(seqKey) < 1 ? null : orderedSeqIds.get(orderedSeqIds.indexOf(seqKey) - 1);
+                ULong next = orderedSeqIds.indexOf(seqKey) == orderedSeqIds.size() - 1 ? null : orderedSeqIds.get(orderedSeqIds.indexOf(seqKey) + 1);
+
+                if (prev == null) {
+                    dslContext.update(SEQ_KEY)
+                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, next)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
+                } else if (next == null) {
+                    dslContext.update(SEQ_KEY)
+                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, prev)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
+                } else {
+                    dslContext.update(SEQ_KEY)
+                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, next)
+                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, prev)
+                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
+                }
+            }
+        }
+    }
+
+    private ULong getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccRecord accRecord) {
+        if (seqKeyRecord.getType().equals(SeqKeyType.ascc)) {
+            return dslContext.select(ASCC.as("next").SEQ_KEY_ID)
+                    .from(ASCC.as("prev"))
+                    .join(ASCC.as("next"))
+                    .on(ASCC.as("prev").ASCC_ID.eq(ASCC.as("next").PREV_ASCC_ID))
+                    .where(and(ASCC.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
+                            ASCC.as("prev").FROM_ACC_ID.eq(accRecord.getPrevAccId()),
+                            ASCC.as("next").FROM_ACC_ID.eq(accRecord.getAccId()))
+                    .fetchOneInto(ULong.class);
+        } else {
+            return dslContext.select(BCC.as("next").SEQ_KEY_ID)
+                    .from(BCC.as("prev"))
+                    .join(BCC.as("next"))
+                    .on(BCC.as("prev").BCC_ID.eq(BCC.as("next").PREV_BCC_ID))
+                    .where(and(BCC.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
+                            BCC.as("prev").FROM_ACC_ID.eq(accRecord.getPrevAccId()),
+                            BCC.as("next").FROM_ACC_ID.eq(accRecord.getAccId()))
+                    .fetchOneInto(ULong.class);
         }
     }
 

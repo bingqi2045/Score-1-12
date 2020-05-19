@@ -627,7 +627,7 @@ public class CcNodeService extends EventHandler {
             for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
                 BigInteger lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().toBigInteger(), CcType.ASCC);
                 if (lastAsccId != null) {
-                    associationKeys.add(CcType.ASCCP.toString().toLowerCase() + asccManifestRecord.getToAsccpManifestId());
+                    associationKeys.add(CcType.ASCCP.toString().toLowerCase() + "-" + asccManifestRecord.getToAsccpManifestId());
                 }
             }
             List<BccManifestRecord> bccManifestRecordList
@@ -635,7 +635,7 @@ public class CcNodeService extends EventHandler {
             for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
                 BigInteger lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().toBigInteger(), CcType.BCC);
                 if (lastBccId != null) {
-                    associationKeys.add(CcType.BCCP.toString().toLowerCase() + bccManifestRecord.getToBccpManifestId());
+                    associationKeys.add(CcType.BCCP.toString().toLowerCase() + "-" + bccManifestRecord.getToBccpManifestId());
                 }
             }
             ccRevisionResponse.setAssociationKeys(associationKeys);
