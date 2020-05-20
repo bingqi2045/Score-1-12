@@ -19,7 +19,7 @@ import org.oagi.srt.repo.component.ascc.*;
 import org.oagi.srt.repo.component.asccp.*;
 import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
-import org.oagi.srt.repository.ReleaseRepository;
+import org.oagi.srt.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
@@ -30,7 +30,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcType.*;
 

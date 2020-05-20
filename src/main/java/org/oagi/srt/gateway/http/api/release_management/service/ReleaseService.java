@@ -3,7 +3,6 @@ package org.oagi.srt.gateway.http.api.release_management.service;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
-import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -12,7 +11,7 @@ import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
 import org.oagi.srt.redis.event.EventListenerContainer;
-import org.oagi.srt.repository.ReleaseRepository;
+import org.oagi.srt.repo.component.release.ReleaseRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -78,9 +77,9 @@ public class ReleaseService implements InitializingBean {
                 .where(conditions)
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
-                    simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).longValue());
+                    simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).toBigInteger());
                     simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    simpleRelease.setState(row.getValue(RELEASE.STATE));
+                    simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
                     return simpleRelease;
                 });
     }
@@ -95,7 +94,10 @@ public class ReleaseService implements InitializingBean {
     public List<ReleaseList> getReleaseList(User user) {
         List<ReleaseList> releaseLists = dslContext.select(
                 RELEASE.RELEASE_ID,
+                RELEASE.GUID,
                 RELEASE.RELEASE_NUM,
+                RELEASE.RELEASE_NOTE,
+                RELEASE.RELEASE_LICENSE,
                 RELEASE.STATE,
                 APP_USER.as("creator").LOGIN_ID.as("created_by"),
                 RELEASE.CREATION_TIMESTAMP,
@@ -110,12 +112,15 @@ public class ReleaseService implements InitializingBean {
         return releaseLists;
     }
 
-    private SelectOnConditionStep<Record7<
-            ULong, String, ReleaseState, String, LocalDateTime,
-            String, LocalDateTime>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record10<
+            ULong, String, String, String, String,
+            String, String, LocalDateTime, String, LocalDateTime>> getSelectOnConditionStep() {
         return dslContext.select(
                 RELEASE.RELEASE_ID,
+                RELEASE.GUID,
                 RELEASE.RELEASE_NUM,
+                RELEASE.RELEASE_NOTE,
+                RELEASE.RELEASE_LICENSE,
                 RELEASE.STATE,
                 APP_USER.as("creator").LOGIN_ID.as("created_by"),
                 RELEASE.CREATION_TIMESTAMP,
@@ -129,9 +134,9 @@ public class ReleaseService implements InitializingBean {
     }
 
     public PageResponse<ReleaseList> getReleases(User user, ReleaseListRequest request) {
-        SelectOnConditionStep<Record7<
-                ULong, String, ReleaseState, String, LocalDateTime,
-                String, LocalDateTime>> step = getSelectOnConditionStep();
+        SelectOnConditionStep<Record10<
+                ULong, String, String, String, String,
+                String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getReleaseNum())) {
@@ -162,9 +167,9 @@ public class ReleaseService implements InitializingBean {
             conditions.add(RELEASE.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        SelectConnectByStep<Record7<
-                ULong, String, ReleaseState, String, LocalDateTime,
-                String, LocalDateTime>> conditionStep = step.where(conditions);
+        SelectConnectByStep<Record10<
+                ULong, String, String, String, String,
+                String, String, LocalDateTime, String, LocalDateTime>> conditionStep = step.where(conditions);
         PageRequest pageRequest = request.getPageRequest();
         String sortDirection = pageRequest.getSortDirection();
         SortField sortField = null;
@@ -206,9 +211,9 @@ public class ReleaseService implements InitializingBean {
                 break;
         }
         int pageCount = dslContext.fetchCount(conditionStep);
-        SelectWithTiesAfterOffsetStep<Record7<
-                ULong, String, ReleaseState, String, LocalDateTime,
-                String, LocalDateTime>> offsetStep = null;
+        SelectWithTiesAfterOffsetStep<Record10<
+                ULong, String, String, String, String,
+                String, String, LocalDateTime, String, LocalDateTime>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -241,35 +246,35 @@ public class ReleaseService implements InitializingBean {
             return response;
         }
 
-        ReleaseRecord releaseRecord = repository.create(userId, releaseDetail.getReleaseNum(),
-                releaseDetail.getReleaseNote(), releaseDetail.getNamespaceId());
-
-        ReleaseCreateRequestEvent releaseCreateRequestEvent = new ReleaseCreateRequestEvent(
-                releaseRecord.getReleaseId().toBigInteger());
-
-        /*
-         * Message Publishing
-         */
-        redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, releaseCreateRequestEvent);
+        ReleaseRecord releaseRecord = repository.create(userId,
+                releaseDetail.getReleaseNum(),
+                releaseDetail.getReleaseNote(),
+                releaseDetail.getReleaseLicense(),
+                releaseDetail.getNamespaceId());
 
         response.setStatus("success");
         response.setStatusMessage("");
-        releaseDetail.setReleaseId(releaseRecord.getReleaseId().longValue());
+
+        releaseDetail.setReleaseId(releaseRecord.getReleaseId().toBigInteger());
+        releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().toBigInteger());
         releaseDetail.setReleaseNum(releaseRecord.getReleaseNum());
         releaseDetail.setReleaseNote(releaseRecord.getReleaseNote());
-        releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().longValue());
+        releaseDetail.setReleaseLicense(releaseRecord.getReleaseLicense());
+        releaseDetail.setState(releaseRecord.getState());
         response.setReleaseDetail(releaseDetail);
+
         return response;
     }
 
     public ReleaseDetail getReleaseDetail(User user, BigInteger releaseId) {
         Release release = repository.findById(releaseId);
         ReleaseDetail detail = new ReleaseDetail();
-        detail.setReleaseId(release.getReleaseId().longValue());
-        detail.setNamespaceId(release.getNamespaceId().longValue());
-        detail.setReleaseNote(release.getReleaseNote());
+        detail.setReleaseId(release.getReleaseId());
+        detail.setNamespaceId(release.getNamespaceId());
         detail.setReleaseNum(release.getReleaseNum());
-        detail.setState(release.getState().toString());
+        detail.setReleaseNote(release.getReleaseNote());
+        detail.setReleaseLicense(release.getReleaseLicense());
+        detail.setState(release.getState());
         return detail;
     }
 

@@ -2,11 +2,15 @@ package org.oagi.srt.gateway.http.api.release_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class ReleaseDetail {
-    private long releaseId;
+    private BigInteger releaseId;
+    private String guid;
     private String releaseNum;
     private String releaseNote;
-    private long namespaceId;
+    private String releaseLicense;
+    private BigInteger namespaceId;
     private String state;
 }

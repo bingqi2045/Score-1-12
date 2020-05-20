@@ -11,7 +11,7 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.RevisionRepository;
-import org.oagi.srt.repository.ReleaseRepository;
+import org.oagi.srt.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;

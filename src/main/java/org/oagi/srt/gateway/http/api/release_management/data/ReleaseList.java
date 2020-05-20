@@ -1,7 +1,6 @@
 package org.oagi.srt.gateway.http.api.release_management.data;
 
 import lombok.Data;
-import org.oagi.srt.entity.jooq.enums.ReleaseState;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -10,7 +9,9 @@ import java.util.Date;
 public class ReleaseList {
 
     private BigInteger releaseId;
+    private String guid;
     private String releaseNum;
+    private String releaseNote;
     private ReleaseState state;
 
     private String createdBy;

@@ -145,14 +145,18 @@ UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
 
 -- Modify `state` column using ENUM.
-ALTER TABLE `release` MODIFY COLUMN `state` enum('Instantiating','Failure','WIP','Draft','Approved','Published') DEFAULT 'WIP' COMMENT 'This indicates the revision life cycle state of the Release.';
+ALTER TABLE `release` MODIFY COLUMN `state` varchar(20) DEFAULT 'Initialized' COMMENT 'This indicates the revision life cycle state of the Release.',
+                      ADD COLUMN `guid` varchar(36) CHARACTER SET ascii NOT NULL COMMENT 'GUID of the release.' AFTER `release_id`,
+                      ADD COLUMN `release_license` longtext COMMENT 'License associated with the release.' AFTER `release_note`;
+
 -- Update `state` to 'Published' for current release.
 UPDATE `release` SET `state` = 'Published';
+UPDATE `release` SET `guid` = '67e8f19b-17a1-46cf-a808-7201c6319431';
 
 -- Adding `Working` release.
-INSERT INTO `release` (`release_num`, `release_note`, `namespace_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `state`)
+INSERT INTO `release` (`release_num`, `guid`, `release_note`, `namespace_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`, `state`)
 VALUES
-('Working', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 'Published');
+('Working', '5ef5c4d1-1860-4845-88bf-aab79259a186', NULL, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), 'Published');
 
 -- Making relations between `acc` and `release` tables.
 ALTER TABLE `acc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the ACC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.';

@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -24,7 +24,6 @@ import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
-import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 
 
@@ -34,7 +33,7 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
-    private static final long serialVersionUID = -439040966;
+    private static final long serialVersionUID = -1073374952;
 
     /**
      * The reference instance of <code>oagi.release</code>
@@ -55,6 +54,11 @@ public class Release extends TableImpl<ReleaseRecord> {
     public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
 
     /**
+     * The column <code>oagi.release.guid</code>. GUID of the release.
+     */
+    public final TableField<ReleaseRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "GUID of the release.");
+
+    /**
      * The column <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
      */
     public final TableField<ReleaseRecord, String> RELEASE_NUM = createField(DSL.name("release_num"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Release number such has 10.0, 10.1, etc. ");
@@ -63,6 +67,11 @@ public class Release extends TableImpl<ReleaseRecord> {
      * The column <code>oagi.release.release_note</code>. Description or note associated with the release.
      */
     public final TableField<ReleaseRecord, String> RELEASE_NOTE = createField(DSL.name("release_note"), org.jooq.impl.SQLDataType.CLOB, this, "Description or note associated with the release.");
+
+    /**
+     * The column <code>oagi.release.release_license</code>. License associated with the release.
+     */
+    public final TableField<ReleaseRecord, String> RELEASE_LICENSE = createField(DSL.name("release_license"), org.jooq.impl.SQLDataType.CLOB, this, "License associated with the release.");
 
     /**
      * The column <code>oagi.release.namespace_id</code>. Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.
@@ -92,7 +101,7 @@ public class Release extends TableImpl<ReleaseRecord> {
     /**
      * The column <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public final TableField<ReleaseRecord, ReleaseState> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(13).defaultValue(org.jooq.impl.DSL.inline("WIP", org.jooq.impl.SQLDataType.VARCHAR)).asEnumDataType(org.oagi.srt.entity.jooq.enums.ReleaseState.class), this, "This indicates the revision life cycle state of the Release.");
+    public final TableField<ReleaseRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20).defaultValue(org.jooq.impl.DSL.inline("Initialized", org.jooq.impl.SQLDataType.VARCHAR)), this, "This indicates the revision life cycle state of the Release.");
 
     /**
      * Create a <code>oagi.release</code> table reference
@@ -191,11 +200,11 @@ public class Release extends TableImpl<ReleaseRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ReleaseState> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row11<ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

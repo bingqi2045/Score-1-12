@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.generate_expression;
 
 import org.oagi.srt.data.*;
+import org.oagi.srt.repo.component.release.ReleaseRepository;
 import org.oagi.srt.repository.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
