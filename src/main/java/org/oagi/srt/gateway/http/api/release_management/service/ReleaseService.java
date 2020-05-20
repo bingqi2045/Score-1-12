@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.release_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.Release;
 import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -259,6 +260,17 @@ public class ReleaseService implements InitializingBean {
         releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().longValue());
         response.setReleaseDetail(releaseDetail);
         return response;
+    }
+
+    public ReleaseDetail getReleaseDetail(User user, BigInteger releaseId) {
+        Release release = repository.findById(releaseId);
+        ReleaseDetail detail = new ReleaseDetail();
+        detail.setReleaseId(release.getReleaseId().longValue());
+        detail.setNamespaceId(release.getNamespaceId().longValue());
+        detail.setReleaseNote(release.getReleaseNote());
+        detail.setReleaseNum(release.getReleaseNum());
+        detail.setState(release.getState().toString());
+        return detail;
     }
 
     /**

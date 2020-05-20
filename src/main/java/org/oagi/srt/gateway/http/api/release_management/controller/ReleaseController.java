@@ -113,14 +113,22 @@ public class ReleaseController {
         return service.createRelease(user, releaseDetail);
     }
 
-    @RequestMapping(value = "/release/{id}/assign", method = RequestMethod.GET,
+    @RequestMapping(value = "/release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AssignComponents getAssignComponents(@AuthenticationPrincipal User user,
+    public ReleaseDetail getReleaseDetail(@AuthenticationPrincipal User user,
                                                 @PathVariable("id") BigInteger releaseId) {
+        return service.getReleaseDetail(user, releaseId);
+    }
+
+    @RequestMapping(value = "/release/{id}/assignable", method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public AssignComponents assignComponents(@AuthenticationPrincipal User user,
+                                 @PathVariable("id") BigInteger releaseId) {
         return service.getAssignComponents(releaseId);
     }
 
-    @RequestMapping(value = "/release/{id}/assign", method = RequestMethod.POST,
+    @RequestMapping(value = "/release/{id}/" +
+            "", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void assignComponents(@AuthenticationPrincipal User user,
                                  @PathVariable("id") BigInteger releaseId,

@@ -8,4 +8,5 @@ public class ReleaseDetail {
     private String releaseNum;
     private String releaseNote;
     private long namespaceId;
+    private String state;
 }
