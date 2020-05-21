@@ -535,7 +535,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
         // ACCs
         Map<ULong, List<Record8<ULong, String, String, LocalDateTime, String, String, UInteger, UInteger>>> map
-                = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.OBJECT_CLASS_TERM, RELEASE.RELEASE_NUM,
+                = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
                 ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
                 REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(ACC_MANIFEST)
@@ -548,7 +548,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        ACC.STATE.eq(Candidate.name())
+                        ACC.STATE.notEqual(Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
@@ -556,11 +556,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
             node.setManifestId(e.get(0).value1().toBigInteger());
-            node.setDisplayName(e.get(0).value2());
+            node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
             node.setState(CcState.valueOf(e.get(0).value6()));
-            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setRevision(e.get(0).value7().toBigInteger());
             node.setType(CcType.ACC);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableAccManifest(
@@ -575,7 +575,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
         // ASCCPs
         map = dslContext.select(
-                ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM,
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.DEN, RELEASE.RELEASE_NUM,
                 ASCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ASCCP.STATE,
                 REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(ASCCP_MANIFEST)
@@ -588,7 +588,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        ASCCP.STATE.eq(Candidate.name())
+                        ASCCP.STATE.notEqual(Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
@@ -596,11 +596,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
             node.setManifestId(e.get(0).value1().toBigInteger());
-            node.setDisplayName(e.get(0).value2());
+            node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
             node.setState(CcState.valueOf(e.get(0).value6()));
-            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setRevision(e.get(0).value7().toBigInteger());
             node.setType(CcType.ASCCP);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableAsccpManifest(
@@ -615,7 +615,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
         // BCCPs
         map = dslContext.select(
-                BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM,
+                BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.DEN, RELEASE.RELEASE_NUM,
                 BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,
                 REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(BCCP_MANIFEST)
@@ -628,7 +628,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        BCCP.STATE.eq(Candidate.name())
+                        BCCP.STATE.notEqual(Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
@@ -636,11 +636,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();
             node.setManifestId(e.get(0).value1().toBigInteger());
-            node.setDisplayName(e.get(0).value2());
+            node.setDen(e.get(0).value2());
             node.setTimestamp(e.get(0).value4());
             node.setOwnerUserId(e.get(0).value5());
             node.setState(CcState.valueOf(e.get(0).value6()));
-            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setRevision(e.get(0).value7().toBigInteger());
             node.setType(CcType.BCCP);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableBccpManifest(

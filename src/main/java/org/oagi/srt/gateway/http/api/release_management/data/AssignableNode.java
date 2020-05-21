@@ -12,8 +12,8 @@ public class AssignableNode {
     private BigInteger manifestId;
     private CcType type;
     private CcState state;
-    private String displayName;
+    private String den;
     private String ownerUserId;
     private LocalDateTime timestamp;
-    private String revision;
+    private BigInteger revision;
 }
