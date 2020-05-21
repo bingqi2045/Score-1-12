@@ -144,8 +144,9 @@ CREATE TABLE `seq_key` (
 UPDATE `acc` SET `namespace_id` = NULL WHERE `acc`.`oagis_component_type` = 4;
 UPDATE `asccp`, (SELECT `asccp`.`asccp_id` FROM `acc` JOIN `asccp` ON `acc`.`acc_id` = `asccp`.`role_of_acc_id` WHERE `acc`.`oagis_component_type` = 4) AS t SET `asccp`.`namespace_id` = NULL WHERE `asccp`.`asccp_id` = t.`asccp_id`;
 
--- Modify `state` column using ENUM.
+-- Modify `release` table.
 ALTER TABLE `release` MODIFY COLUMN `state` varchar(20) DEFAULT 'Initialized' COMMENT 'This indicates the revision life cycle state of the Release.',
+                      MODIFY COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.',
                       ADD COLUMN `guid` varchar(36) CHARACTER SET ascii NOT NULL COMMENT 'GUID of the release.' AFTER `release_id`,
                       ADD COLUMN `release_license` longtext COMMENT 'License associated with the release.' AFTER `release_note`;
 

@@ -239,12 +239,6 @@ public class ReleaseService implements InitializingBean {
     public ReleaseResponse createRelease(User user, ReleaseDetail releaseDetail) {
         BigInteger userId = sessionService.userId(user);
         ReleaseResponse response = new ReleaseResponse();
-        if (!repository.findByReleaseNum(releaseDetail.getReleaseNum()).isEmpty()) {
-            response.setStatus("Fail");
-            response.setStatusMessage("'" + releaseDetail.getReleaseNum() + "' is already exist.");
-            response.setReleaseDetail(releaseDetail);
-            return response;
-        }
 
         ReleaseRecord releaseRecord = repository.create(userId,
                 releaseDetail.getReleaseNum(),
@@ -256,7 +250,9 @@ public class ReleaseService implements InitializingBean {
         response.setStatusMessage("");
 
         releaseDetail.setReleaseId(releaseRecord.getReleaseId().toBigInteger());
-        releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().toBigInteger());
+        if (releaseRecord.getNamespaceId() != null) {
+            releaseDetail.setNamespaceId(releaseRecord.getNamespaceId().toBigInteger());
+        }
         releaseDetail.setReleaseNum(releaseRecord.getReleaseNum());
         releaseDetail.setReleaseNote(releaseRecord.getReleaseNote());
         releaseDetail.setReleaseLicense(releaseRecord.getReleaseLicense());
@@ -264,6 +260,18 @@ public class ReleaseService implements InitializingBean {
         response.setReleaseDetail(releaseDetail);
 
         return response;
+    }
+
+    @Transactional
+    public void updateRelease(User user, ReleaseDetail releaseDetail) {
+        BigInteger userId = sessionService.userId(user);
+
+        repository.update(userId,
+                releaseDetail.getReleaseId(),
+                releaseDetail.getReleaseNum(),
+                releaseDetail.getReleaseNote(),
+                releaseDetail.getReleaseLicense(),
+                releaseDetail.getNamespaceId());
     }
 
     public ReleaseDetail getReleaseDetail(User user, BigInteger releaseId) {

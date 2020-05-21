@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,26 +78,64 @@ public class ReleaseRepository implements SrtRepository<Release> {
         return releases.get(0);
     }
 
+    private void ensureUniqueReleaseNum(BigInteger releaseId, String releaseNum) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq(releaseNum));
+        if (releaseId != null) {
+            conditions.add(RELEASE.RELEASE_ID.ne(ULong.valueOf(releaseId)));
+        }
+        if (dslContext.selectCount()
+                .from(RELEASE)
+                .where(conditions)
+                .fetchOptionalInto(Integer.class).orElse(0) > 0) {
+            throw new IllegalArgumentException("'" + releaseNum + "' is already exist.");
+        }
+    }
+
     public ReleaseRecord create(BigInteger userId,
                                 String releaseNum,
                                 String releaseNote,
                                 String releaseLicense,
                                 BigInteger namespaceId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        ensureUniqueReleaseNum(null, releaseNum);
+
+        LocalDateTime timestamp = LocalDateTime.now();
         ReleaseRecord releaseRecord = dslContext.insertInto(RELEASE)
                 .set(RELEASE.GUID, UUID.randomUUID().toString())
                 .set(RELEASE.RELEASE_NUM, releaseNum)
                 .set(RELEASE.RELEASE_NOTE, releaseNote)
                 .set(RELEASE.RELEASE_LICENSE, releaseLicense)
-                .set(RELEASE.NAMESPACE_ID, ULong.valueOf(namespaceId))
+                .set(RELEASE.NAMESPACE_ID, (namespaceId != null) ? ULong.valueOf(namespaceId) : null)
                 .set(RELEASE.STATE, Initialized.name())
                 .set(RELEASE.CREATED_BY, ULong.valueOf(userId))
-                .set(RELEASE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                .set(RELEASE.CREATION_TIMESTAMP, timestamp)
                 .set(RELEASE.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .set(RELEASE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
+                .set(RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .returning().fetchOne();
 
         return releaseRecord;
+    }
+
+    public void update(BigInteger userId,
+                       BigInteger releaseId,
+                       String releaseNum,
+                       String releaseNote,
+                       String releaseLicense,
+                       BigInteger namespaceId) {
+
+        ensureUniqueReleaseNum(releaseId, releaseNum);
+
+        LocalDateTime timestamp = LocalDateTime.now();
+        dslContext.update(RELEASE)
+                .set(RELEASE.RELEASE_NUM, releaseNum)
+                .set(RELEASE.RELEASE_NOTE, releaseNote)
+                .set(RELEASE.RELEASE_LICENSE, releaseLicense)
+                .set(RELEASE.NAMESPACE_ID, (namespaceId != null) ? ULong.valueOf(namespaceId) : null)
+                .set(RELEASE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
     }
 
     public void copyWorkingManifestsTo(BigInteger releaseId) {
@@ -513,15 +550,15 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .collect(groupingBy(e -> e.value1()));
 
         map.values().forEach(e -> {
-           if (e.size() == 2) { // manifest are located at both sides.
-               assignComponents.addUnassignableAccManifest(
-                       e.get(0).value1().toBigInteger(), e.get(0).value2());
-           }
-           // manifest is only located at 'Working' release side.
-           else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
-               assignComponents.addAssignableAccManifest(
-                       e.get(0).value1().toBigInteger(), e.get(0).value2());
-           }
+            if (e.size() == 2) { // manifest are located at both sides.
+                assignComponents.addUnassignableAccManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
+            // manifest is only located at 'Working' release side.
+            else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+                assignComponents.addAssignableAccManifest(
+                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+            }
         });
 
         // ASCCPs
