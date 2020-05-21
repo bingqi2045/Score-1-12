@@ -9,35 +9,35 @@ import java.util.Map;
 @Data
 public class AssignComponents {
 
-    private Map<BigInteger, String> assignableAccManifestMap = new HashMap();
-    private Map<BigInteger, String> assignableAsccpManifestMap = new HashMap();
-    private Map<BigInteger, String> assignableBccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> assignableAccManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> assignableAsccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> assignableBccpManifestMap = new HashMap();
 
-    private Map<BigInteger, String> unassignableAccManifestMap = new HashMap();
-    private Map<BigInteger, String> unassignableAsccpManifestMap = new HashMap();
-    private Map<BigInteger, String> unassignableBccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> unassignableAccManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> unassignableAsccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> unassignableBccpManifestMap = new HashMap();
 
-    public void addAssignableAccManifest(BigInteger accManifestId, String accDisplayName) {
-        assignableAccManifestMap.put(accManifestId, accDisplayName);
+    public void addAssignableAccManifest(BigInteger accManifestId, AssignableNode node) {
+        assignableAccManifestMap.put(accManifestId, node);
     }
 
-    public void addAssignableAsccpManifest(BigInteger asccpManifestId, String asccpDisplayName) {
-        assignableAsccpManifestMap.put(asccpManifestId, asccpDisplayName);
+    public void addAssignableAsccpManifest(BigInteger asccpManifestId, AssignableNode node) {
+        assignableAsccpManifestMap.put(asccpManifestId, node);
     }
 
-    public void addAssignableBccpManifest(BigInteger bccpManifestId, String bccpDisplayName) {
-        assignableBccpManifestMap.put(bccpManifestId, bccpDisplayName);
+    public void addAssignableBccpManifest(BigInteger bccpManifestId, AssignableNode node) {
+        assignableBccpManifestMap.put(bccpManifestId, node);
     }
 
-    public void addUnassignableAccManifest(BigInteger accManifestId, String accDisplayName) {
-        unassignableAccManifestMap.put(accManifestId, accDisplayName);
+    public void addUnassignableAccManifest(BigInteger accManifestId, AssignableNode node) {
+        unassignableAccManifestMap.put(accManifestId, node);
     }
 
-    public void addUnassignableAsccpManifest(BigInteger asccpManifestId, String asccpDisplayName) {
-        unassignableAsccpManifestMap.put(asccpManifestId, asccpDisplayName);
+    public void addUnassignableAsccpManifest(BigInteger asccpManifestId, AssignableNode node) {
+        unassignableAsccpManifestMap.put(asccpManifestId, node);
     }
 
-    public void addUnassignableBccpManifest(BigInteger bccpManifestId, String bccpDisplayName) {
-        unassignableBccpManifestMap.put(bccpManifestId, bccpDisplayName);
+    public void addUnassignableBccpManifest(BigInteger bccpManifestId, AssignableNode node) {
+        unassignableBccpManifestMap.put(bccpManifestId, node);
     }
 }

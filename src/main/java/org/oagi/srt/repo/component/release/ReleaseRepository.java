@@ -1,14 +1,15 @@
 package org.oagi.srt.repo.component.release;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Record3;
+import org.jooq.*;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.Release;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.api.release_management.data.AssignComponents;
+import org.oagi.srt.gateway.http.api.release_management.data.AssignableNode;
 import org.oagi.srt.gateway.http.api.release_management.data.ReleaseState;
 import org.oagi.srt.gateway.http.api.release_management.data.TransitStateRequest;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -23,8 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.or;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
@@ -534,11 +534,15 @@ public class ReleaseRepository implements SrtRepository<Release> {
         AssignComponents assignComponents = new AssignComponents();
 
         // ACCs
-        Map<ULong, List<Record3<ULong, String, String>>> map = dslContext.select(
-                ACC_MANIFEST.ACC_MANIFEST_ID, ACC.OBJECT_CLASS_TERM, RELEASE.RELEASE_NUM)
+        Map<ULong, List<Record8<ULong, String, String, LocalDateTime, String, String, UInteger, UInteger>>> map
+                = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.OBJECT_CLASS_TERM, RELEASE.RELEASE_NUM,
+                ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
+                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(ACC_MANIFEST)
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(REVISION).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -550,23 +554,35 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .collect(groupingBy(e -> e.value1()));
 
         map.values().forEach(e -> {
+            AssignableNode node = new AssignableNode();
+            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setDisplayName(e.get(0).value2());
+            node.setTimestamp(e.get(0).value4());
+            node.setOwnerUserId(e.get(0).value5());
+            node.setState(CcState.valueOf(e.get(0).value6()));
+            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setType(CcType.ACC);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableAccManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
             // manifest is only located at 'Working' release side.
             else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
                 assignComponents.addAssignableAccManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
         });
 
         // ASCCPs
         map = dslContext.select(
-                ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM)
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM,
+                ASCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ASCCP.STATE,
+                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(ASCCP_MANIFEST)
                 .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(APP_USER).on(ASCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(REVISION).on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -578,23 +594,35 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .collect(groupingBy(e -> e.value1()));
 
         map.values().forEach(e -> {
+            AssignableNode node = new AssignableNode();
+            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setDisplayName(e.get(0).value2());
+            node.setTimestamp(e.get(0).value4());
+            node.setOwnerUserId(e.get(0).value5());
+            node.setState(CcState.valueOf(e.get(0).value6()));
+            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setType(CcType.ASCCP);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableAsccpManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
             // manifest is only located at 'Working' release side.
             else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
                 assignComponents.addAssignableAsccpManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
         });
 
         // BCCPs
         map = dslContext.select(
-                BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM)
+                BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.PROPERTY_TERM, RELEASE.RELEASE_NUM,
+                BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,
+                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
                 .from(BCCP_MANIFEST)
                 .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .join(APP_USER).on(BCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(REVISION).on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -606,14 +634,22 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .collect(groupingBy(e -> e.value1()));
 
         map.values().forEach(e -> {
+            AssignableNode node = new AssignableNode();
+            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setDisplayName(e.get(0).value2());
+            node.setTimestamp(e.get(0).value4());
+            node.setOwnerUserId(e.get(0).value5());
+            node.setState(CcState.valueOf(e.get(0).value6()));
+            node.setRevision(e.get(0).value7() + "." + e.get(0).value8());
+            node.setType(CcType.BCCP);
             if (e.size() == 2) { // manifest are located at both sides.
                 assignComponents.addUnassignableBccpManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
             // manifest is only located at 'Working' release side.
             else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
                 assignComponents.addAssignableBccpManifest(
-                        e.get(0).value1().toBigInteger(), e.get(0).value2());
+                        node.getManifestId(), node);
             }
         });
 
