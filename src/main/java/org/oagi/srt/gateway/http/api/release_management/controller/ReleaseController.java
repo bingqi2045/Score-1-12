@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.release_management.controller;
 
-import org.oagi.srt.entity.jooq.enums.ReleaseState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
