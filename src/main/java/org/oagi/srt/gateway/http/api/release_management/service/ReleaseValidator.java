@@ -158,14 +158,15 @@ public class ReleaseValidator {
             ULong accId = accManifestRecord.getAccId();
             AccRecord accRecord = accRecordMap.get(accId);
             CcState state = CcState.valueOf(accRecord.getState());
-            if (state != Published || !assignedAccComponentManifestIds.contains(accId.toBigInteger())) {
+            if (state != Published && !assignedAccComponentManifestIds.contains(
+                    accManifestRecord.getAccManifestId().toBigInteger())) {
                 continue;
             }
 
             // check ASCCPs whose `roleOfAcc` is this acc.
             asccpManifestRecords.stream().filter(e -> e.getRoleOfAccManifestId().equals(accId))
                     .forEach(asccpManifestRecord -> {
-                        AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpManifestId());
+                        AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
                         if (asccpState == WIP || asccpState == Draft) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
@@ -211,7 +212,8 @@ public class ReleaseValidator {
             ULong asccpId = asccpManifestRecord.getAsccpId();
             AsccpRecord asccpRecord = asccpRecordMap.get(asccpId);
             CcState state = CcState.valueOf(asccpRecord.getState());
-            if (state != Published || !assignedAsccpComponentManifestIds.contains(asccpId.toBigInteger())) {
+            if (state != Published && !assignedAsccpComponentManifestIds.contains(
+                    asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
                 continue;
             }
 
@@ -230,7 +232,7 @@ public class ReleaseValidator {
                     });
 
             // check ACCs whose `roleOfAcc` is this acc.
-            accManifestRecords.stream().filter(e -> e.getAccManifestId().equals(asccpManifestRecord.getAsccpManifestId()))
+            accManifestRecords.stream().filter(e -> e.getAccManifestId().equals(asccpManifestRecord.getRoleOfAccManifestId()))
                     .forEach(accManifestRecord -> {
                         AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
                         CcState accState = CcState.valueOf(accRecord.getState());
@@ -249,7 +251,8 @@ public class ReleaseValidator {
             ULong bccpId = bccpManifestRecord.getBccpId();
             BccpRecord bccpRecord = bccpRecordMap.get(bccpId);
             CcState state = CcState.valueOf(bccpRecord.getState());
-            if (state != Published || !assignedBccpComponentManifestIds.contains(bccpId.toBigInteger())) {
+            if (state != Published && !assignedBccpComponentManifestIds.contains(
+                    bccpManifestRecord.getBccpManifestId().toBigInteger())) {
                 continue;
             }
 
