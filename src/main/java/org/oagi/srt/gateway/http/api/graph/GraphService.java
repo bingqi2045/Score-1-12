@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -29,7 +30,7 @@ public class GraphService {
     @Autowired
     private DSLContext dslContext;
 
-    public Graph getAccGraph(long accManifestId) {
+    public Graph getAccGraph(BigInteger accManifestId) {
         AccManifestRecord accManifest =
                 coreComponentRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
         if (accManifest == null) {
@@ -41,7 +42,7 @@ public class GraphService {
         return buildGraph(graphContext, graphContext.toNode(accManifest));
     }
 
-    public Graph getAsccpGraph(long asccpManifestId) {
+    public Graph getAsccpGraph(BigInteger asccpManifestId) {
         AsccpManifestRecord asccpManifest =
                 coreComponentRepository.getAsccpManifestByManifestId(ULong.valueOf(asccpManifestId));
         if (asccpManifest == null) {
@@ -53,7 +54,7 @@ public class GraphService {
         return buildGraph(graphContext, graphContext.toNode(asccpManifest));
     }
 
-    public Graph getBccpGraph(long bccpManifestId) {
+    public Graph getBccpGraph(BigInteger bccpManifestId) {
         BccpManifestRecord bccpManifest =
                 coreComponentRepository.getBccpManifestByManifestId(ULong.valueOf(bccpManifestId));
         if (bccpManifest == null) {

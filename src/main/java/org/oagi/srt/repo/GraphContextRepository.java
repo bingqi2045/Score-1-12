@@ -7,21 +7,27 @@ import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+
 @Repository
 public class GraphContextRepository {
 
     @Autowired
     private DSLContext dslContext;
 
+    public GraphContext buildGraphContext(BigInteger releaseId) {
+        return new GraphContext(dslContext, releaseId);
+    }
+
     public GraphContext buildGraphContext(AccManifestRecord accManifest) {
-        return new GraphContext(dslContext, accManifest.getReleaseId());
+        return buildGraphContext(accManifest.getReleaseId().toBigInteger());
     }
 
     public GraphContext buildGraphContext(AsccpManifestRecord asccpManifest) {
-        return new GraphContext(dslContext, asccpManifest.getReleaseId());
+        return buildGraphContext(asccpManifest.getReleaseId().toBigInteger());
     }
 
     public GraphContext buildGraphContext(BccpManifestRecord bccpManifest) {
-        return new GraphContext(dslContext, bccpManifest.getReleaseId());
+        return buildGraphContext(bccpManifest.getReleaseId().toBigInteger());
     }
 }

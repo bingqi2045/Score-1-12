@@ -7,6 +7,7 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
+import org.oagi.srt.gateway.http.api.graph.GraphService;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
@@ -20,10 +21,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -49,6 +52,9 @@ public class ReleaseService implements InitializingBean {
 
     @Autowired
     private ReleaseRepository repository;
+
+    @Autowired
+    private GraphService graphService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -338,5 +344,15 @@ public class ReleaseService implements InitializingBean {
                              TransitStateRequest request) {
 
         repository.transitState(user, request);
+    }
+
+    public ReleaseValidationResponse validate(@AuthenticationPrincipal User user,
+                                              @RequestBody ReleaseValidationRequest request) {
+
+        ReleaseValidator validator = new ReleaseValidator(dslContext);
+        validator.setAssignedAccComponentManifestIds(request.getAssignedAccComponentManifestIds());
+        validator.setAssignedAsccpComponentManifestIds(request.getAssignedAsccpComponentManifestIds());
+        validator.setAssignedBccpComponentManifestIds(request.getAssignedBccpComponentManifestIds());
+        return validator.validate();
     }
 }

@@ -162,4 +162,11 @@ public class ReleaseController {
         request.setReleaseId(releaseId);
         service.transitState(user, request);
     }
+
+    @RequestMapping(value = "/release/validate", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReleaseValidationResponse validate(@AuthenticationPrincipal User user,
+                                              @RequestBody ReleaseValidationRequest request) {
+        return service.validate(user, request);
+    }
 }

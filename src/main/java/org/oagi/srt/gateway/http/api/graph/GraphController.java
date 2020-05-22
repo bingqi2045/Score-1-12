@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,7 @@ public class GraphController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getGraph(@AuthenticationPrincipal User user,
                                         @PathVariable("type") String type,
-                                        @PathVariable("manifestId") long manifestId,
+                                        @PathVariable("manifestId") BigInteger manifestId,
                                         @RequestParam(value = "q", required = false) String query) {
         Graph graph;
         switch (type) {

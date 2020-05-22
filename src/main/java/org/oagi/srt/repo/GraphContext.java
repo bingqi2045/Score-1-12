@@ -122,13 +122,14 @@ public class GraphContext {
         private ULong ownerDtManifestId;
         private String propertyTerm;
         private String representationTerm;
+        private String State;
         private ULong releaseId;
         private ULong prevDtScManifestId;
     }
 
-    public GraphContext(DSLContext dslContext, ULong releaseId) {
+    public GraphContext(DSLContext dslContext, BigInteger releaseId) {
         this.dslContext = dslContext;
-        this.releaseId = releaseId;
+        this.releaseId = ULong.valueOf(releaseId);
 
         accManifestMap =
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
@@ -252,15 +253,17 @@ public class GraphContext {
                         .collect(Collectors.toMap(DtManifest::getDtManifestId, Function.identity()));
         dtScManifestMap =
                 dslContext.select(DT_SC_MANIFEST.DT_SC_MANIFEST_ID, DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
-                        DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM,
+                        DT_SC.PROPERTY_TERM, DT_SC.REPRESENTATION_TERM, DT.STATE,
                         DT_SC_MANIFEST.RELEASE_ID, DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID)
                         .from(DT_SC_MANIFEST)
                         .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                        .join(DT).on(DT_SC.OWNER_DT_ID.eq(DT.DT_ID))
                         .fetch(record -> new DtScManifest(
                                 record.get(DT_SC_MANIFEST.DT_SC_MANIFEST_ID),
                                 record.get(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID),
                                 record.get(DT_SC.PROPERTY_TERM),
                                 record.get(DT_SC.REPRESENTATION_TERM),
+                                record.get(DT.STATE),
                                 record.get(DT_SC_MANIFEST.RELEASE_ID),
                                 record.get(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID)
                         )).stream()
@@ -365,8 +368,37 @@ public class GraphContext {
                 record.getReleaseId(), record.getPrevBccpManifestId()));
     }
 
+    public Collection<Node> getNodes() {
+        Set<Node> nodes = new HashSet();
+
+        this.getAccManifestMap().values().stream().forEach(e -> {
+            nodes.add(toNode(e));
+        });
+        this.getAsccManifestMap().values().stream().forEach(e -> {
+            nodes.addAll(e.stream().map(e1 -> toNode(e1)).collect(Collectors.toSet()));
+        });
+        this.getBccManifestMap().values().stream().forEach(e -> {
+            nodes.addAll(e.stream().map(e1 -> toNode(e1)).collect(Collectors.toSet()));
+        });
+        this.getAsccpManifestMap().values().stream().forEach(e -> {
+            nodes.add(toNode(e));
+        });
+        this.getBccpManifestMap().values().stream().forEach(e -> {
+            nodes.add(toNode(e));
+        });
+        this.getDtManifestMap().values().stream().forEach(e -> {
+            nodes.add(toNode(e));
+        });
+        this.getDtScManifestMap().values().stream().forEach(e -> {
+            nodes.addAll(e.stream().map(e1 -> toNode(e1)).collect(Collectors.toSet()));
+        });
+
+        return nodes;
+    }
+
     private Node toNode(AccManifest accManifest) {
-        Node node = Node.toNode(Node.NodeType.ACC, accManifest.getAccManifestId());
+        Node node = Node.toNode(Node.NodeType.ACC, accManifest.getAccManifestId(),
+                CcState.valueOf(accManifest.getState()));
         node.setBasedManifestId(accManifest.getBasedAccManifestId());
         node.setPrevManifestId(accManifest.getPrevAccManifestId());
         node.put("state", accManifest.getState());
@@ -375,7 +407,8 @@ public class GraphContext {
     }
 
     private Node toNode(AsccpManifest asccpManifest) {
-        Node node = Node.toNode(Node.NodeType.ASCCP, asccpManifest.getAsccpManifestId());
+        Node node = Node.toNode(Node.NodeType.ASCCP, asccpManifest.getAsccpManifestId(),
+                CcState.valueOf(asccpManifest.getState()));
         node.setLinkedManifestId(asccpManifest.getRoleOfAccManifestId());
         node.setPrevManifestId(asccpManifest.getPrevAsccpManifestId());
         node.put("state", asccpManifest.getState());
@@ -384,7 +417,8 @@ public class GraphContext {
     }
 
     private Node toNode(BccpManifest bccpManifest) {
-        Node node = Node.toNode(Node.NodeType.BCCP, bccpManifest.getBccpManifestId());
+        Node node = Node.toNode(Node.NodeType.BCCP, bccpManifest.getBccpManifestId(),
+                CcState.valueOf(bccpManifest.getState()));
         node.setLinkedManifestId(bccpManifest.getBdtManifestId());
         node.setPrevManifestId(bccpManifest.getPrevBccpManifestId());
         node.put("state", bccpManifest.getState());
@@ -393,7 +427,8 @@ public class GraphContext {
     }
 
     private Node toNode(AsccManifest asccManifest) {
-        Node node = Node.toNode(Node.NodeType.ASCC, asccManifest.getAsccManifestId());
+        Node node = Node.toNode(Node.NodeType.ASCC, asccManifest.getAsccManifestId(),
+                CcState.valueOf(asccManifest.getState()));
         node.setLinkedManifestId(asccManifest.getToAsccpManifestId());
         node.setPrevManifestId(asccManifest.getPrevAsccManifestId());
         node.put("state", asccManifest.getState());
@@ -403,7 +438,8 @@ public class GraphContext {
     }
 
     private Node toNode(BccManifest bccManifest) {
-        Node node = Node.toNode(Node.NodeType.BCC, bccManifest.getBccManifestId());
+        Node node = Node.toNode(Node.NodeType.BCC, bccManifest.getBccManifestId(),
+                CcState.valueOf(bccManifest.getState()));
         node.setLinkedManifestId(bccManifest.getToBccpManifestId());
         node.setPrevManifestId(bccManifest.getPrevBccManifestId());
         node.put("state", bccManifest.getState());
@@ -413,7 +449,8 @@ public class GraphContext {
     }
 
     private Node toNode(DtManifest dtManifest) {
-        Node node = Node.toNode(Node.NodeType.BDT, dtManifest.getDtManifestId());
+        Node node = Node.toNode(Node.NodeType.BDT, dtManifest.getDtManifestId(),
+                CcState.valueOf(dtManifest.getState()));
         node.setPrevManifestId(dtManifest.getPrevDtManifestId());
         node.put("state", dtManifest.getState());
         node.put("dataTypeTerm", dtManifest.getDataTypeTerm());
@@ -422,7 +459,8 @@ public class GraphContext {
     }
 
     private Node toNode(DtScManifest dtScManifest) {
-        Node node = Node.toNode(Node.NodeType.BDT_SC, dtScManifest.getDtScManifestId());
+        Node node = Node.toNode(Node.NodeType.BDT_SC, dtScManifest.getDtScManifestId(),
+                CcState.valueOf(dtScManifest.getState()));
         node.setPrevManifestId(dtScManifest.getPrevDtScManifestId());
         node.put("propertyTerm", dtScManifest.getPropertyTerm());
         node.put("representationTerm", dtScManifest.getRepresentationTerm());

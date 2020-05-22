@@ -2,9 +2,12 @@ package org.oagi.srt.gateway.http.api.graph;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonSerialize(using = NodeSerializer.class)
 public class Node {
@@ -25,15 +28,18 @@ public class Node {
 
     private NodeType type;
     private ULong manifestId;
+    private CcState state;
+
     private ULong basedManifestId;
     private ULong linkedManifestId;
     private ULong prevManifestId;
 
     private Map<String, Object> properties = new HashMap();
 
-    public Node(NodeType type, ULong manifestId) {
+    public Node(NodeType type, ULong manifestId, CcState state) {
         setType(type);
         setManifestId(manifestId);
+        setState(state);
     }
 
     public NodeType getType() {
@@ -50,6 +56,14 @@ public class Node {
 
     public void setManifestId(ULong manifestId) {
         this.manifestId = manifestId;
+    }
+
+    public CcState getState() {
+        return state;
+    }
+
+    public void setState(CcState state) {
+        this.state = state;
     }
 
     public ULong getBasedManifestId() {
@@ -84,6 +98,10 @@ public class Node {
         return getTypeAsString() + "-" + getManifestId();
     }
 
+    public static String toKey(NodeType type, BigInteger manifestId) {
+        return type.toString() + "-" + manifestId;
+    }
+
     public void put(String key, Object value) {
         this.properties.put(key, value);
     }
@@ -92,8 +110,8 @@ public class Node {
         return this.properties;
     }
 
-    public static Node toNode(NodeType type, ULong manifestId) {
-        return new Node(type, manifestId);
+    public static Node toNode(NodeType type, ULong manifestId, CcState state) {
+        return new Node(type, manifestId, state);
     }
 
     public boolean hasTerm(String query) {
@@ -111,5 +129,31 @@ public class Node {
 
     public boolean isAssociation() {
         return getType() == NodeType.ASCC || getType() == NodeType.BCC || getType() == NodeType.BDT;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return type == node.type &&
+                manifestId.equals(node.manifestId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, manifestId);
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "type=" + type +
+                ", manifestId=" + manifestId +
+                ", basedManifestId=" + basedManifestId +
+                ", linkedManifestId=" + linkedManifestId +
+                ", prevManifestId=" + prevManifestId +
+                ", properties=" + properties +
+                '}';
     }
 }

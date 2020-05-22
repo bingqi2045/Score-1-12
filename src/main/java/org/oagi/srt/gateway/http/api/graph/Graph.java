@@ -7,6 +7,7 @@ import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 
 import javax.xml.bind.annotation.XmlTransient;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,11 @@ public class Graph {
         nodeManifestIds.get(node.getType()).add(node.getManifestId());
 
         return true;
+    }
+
+    public Node getNode(Node.NodeType type, BigInteger manifestId) {
+        String key = Node.toKey(type, manifestId);
+        return nodes.get(key);
     }
 
     public void addEdges(Node source, List<Node> children) {
