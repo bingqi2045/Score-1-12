@@ -15,6 +15,12 @@ public class ReleaseValidationResponse {
     private Map<BigInteger, Set<String>> statusMapForAsccp = new HashMap();
     private Map<BigInteger, Set<String>> statusMapForBccp = new HashMap();
 
+    public boolean isSucceed() {
+        return statusMapForAcc.isEmpty() &&
+                statusMapForAsccp.isEmpty() &&
+                statusMapForBccp.isEmpty();
+    }
+
     public void addMessageForAcc(BigInteger manifestId, String message) {
         addMessage(statusMapForAcc, manifestId, message);
     }

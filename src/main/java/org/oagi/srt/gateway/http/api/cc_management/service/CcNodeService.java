@@ -19,7 +19,6 @@ import org.oagi.srt.repo.component.ascc.*;
 import org.oagi.srt.repo.component.asccp.*;
 import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
-import org.oagi.srt.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.userdetails.User;
@@ -66,9 +65,6 @@ public class CcNodeService extends EventHandler {
 
     @Autowired
     private SessionService sessionService;
-
-    @Autowired
-    private ReleaseRepository releaseRepository;
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;

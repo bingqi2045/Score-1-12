@@ -164,13 +164,18 @@ public class ReleaseValidator {
             }
 
             // check ASCCPs whose `roleOfAcc` is this acc.
-            asccpManifestRecords.stream().filter(e -> e.getRoleOfAccManifestId().equals(accId))
+            asccpManifestRecords.stream().filter(e -> e.getRoleOfAccManifestId().equals(accManifestRecord.getAccManifestId()))
                     .forEach(asccpManifestRecord -> {
                         AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
                         if (asccpState == WIP || asccpState == Draft) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     "'" + asccpRecord.getDen() + "' should be in '" + Candidate + "'.");
+                            response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                                    "'" + asccpRecord.getDen() + "' is required");
+                        } else if (asccpState == Candidate &&
+                                !assignedAsccpComponentManifestIds.contains(
+                                        asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
                                     "'" + asccpRecord.getDen() + "' is required");
                         }
@@ -187,6 +192,11 @@ public class ReleaseValidator {
                                     "'" + asccpRecord.getDen() + "' should be in '" + Candidate + "'.");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
                                     "'" + asccpRecord.getDen() + "' is required");
+                        } else if (asccpState == Candidate &&
+                                !assignedAsccpComponentManifestIds.contains(
+                                        asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
+                            response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                                    "'" + asccpRecord.getDen() + "' is required");
                         }
                     });
 
@@ -199,6 +209,11 @@ public class ReleaseValidator {
                         if (bccpState == WIP || bccpState == Draft) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     "'" + bccpRecord.getDen() + "' should be in '" + Candidate + "'.");
+                            response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                                    "'" + bccpRecord.getDen() + "' is required");
+                        } else if (bccpState == Candidate &&
+                                !assignedBccpComponentManifestIds.contains(
+                                        bccpManifestRecord.getBccpManifestId().toBigInteger())) {
                             response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
                                     "'" + bccpRecord.getDen() + "' is required");
                         }
@@ -228,6 +243,11 @@ public class ReleaseValidator {
                                     "'" + accRecord.getDen() + "' is required");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
                                     "'" + accRecord.getDen() + "' should be in '" + Candidate + "'.");
+                        } else if (accState == Candidate &&
+                                !assignedAccComponentManifestIds.contains(
+                                        accManifestRecord.getAccManifestId().toBigInteger())) {
+                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    "'" + accRecord.getDen() + "' is required");
                         }
                     });
 
@@ -241,6 +261,11 @@ public class ReleaseValidator {
                                     "'" + accRecord.getDen() + "' is required");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
                                     "'" + accRecord.getDen() + "' should be in '" + Candidate + "'.");
+                        } else if (accState == Candidate &&
+                                !assignedAccComponentManifestIds.contains(
+                                        accManifestRecord.getAccManifestId().toBigInteger())) {
+                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    "'" + accRecord.getDen() + "' is required");
                         }
                     });
         }
@@ -267,6 +292,11 @@ public class ReleaseValidator {
                                     "'" + accRecord.getDen() + "' is required");
                             response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
                                     "'" + accRecord.getDen() + "' should be in '" + Candidate + "'.");
+                        } else if (accState == Candidate &&
+                                !assignedAccComponentManifestIds.contains(
+                                        accManifestRecord.getAccManifestId().toBigInteger())) {
+                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    "'" + accRecord.getDen() + "' is required");
                         }
                     });
         }

@@ -1,6 +1,8 @@
 package org.oagi.srt.repo.component.release;
 
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record8;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
@@ -8,10 +10,8 @@ import org.oagi.srt.data.Release;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
-import org.oagi.srt.gateway.http.api.release_management.data.AssignComponents;
-import org.oagi.srt.gateway.http.api.release_management.data.AssignableNode;
-import org.oagi.srt.gateway.http.api.release_management.data.ReleaseState;
-import org.oagi.srt.gateway.http.api.release_management.data.TransitStateRequest;
+import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
+import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.SrtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
@@ -38,6 +39,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private CcNodeService ccNodeService;
 
     @Override
     public List<Release> findAll() {
@@ -136,6 +140,27 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .set(RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .execute();
+    }
+
+    public void discard(ReleaseRepositoryDiscardRequest request) {
+        ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())))
+                .fetchOne();
+
+        if ("Working".equals(releaseRecord.getReleaseNum())) {
+            throw new IllegalArgumentException("'Working' release cannot be discarded.");
+        }
+
+        if (Initialized != ReleaseState.valueOf(releaseRecord.getState())) {
+            throw new IllegalArgumentException("Only the release in '" + Initialized + "' can discard.");
+        }
+
+        AppUser user = sessionService.getAppUser(request.getUser());
+        if (!user.isDeveloper()) {
+            throw new IllegalArgumentException("It only allows to discard the release for developers.");
+        }
+
+        releaseRecord.delete();
     }
 
     public void copyWorkingManifestsTo(BigInteger releaseId) {
@@ -672,18 +697,25 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 if (requestState != Draft) {
                     throw new IllegalArgumentException("The release in '" + releaseRecord.getState() + "' state cannot transit to '" + requestState + "' state.");
                 }
+
+                requestState = Processing;
                 fromCcState = Candidate;
                 toCcState = ReleaseDraft;
                 break;
 
             case Draft:
-                if (requestState != Initialized || requestState != Published) {
+                if (requestState != Initialized && requestState != Published) {
                     throw new IllegalArgumentException("The release in '" + releaseRecord.getState() + "' state cannot transit to '" + requestState + "' state.");
                 }
+
                 if (requestState == Initialized) {
                     fromCcState = ReleaseDraft;
                     toCcState = Candidate;
+                } else if (requestState == Published) {
+                    fromCcState = ReleaseDraft;
+                    toCcState = CcState.Published;
                 }
+
                 break;
 
             case Processing:
@@ -706,103 +738,83 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
         // update CCs' states by transited release state.
         if (fromCcState != null && toCcState != null) {
-            AssignComponents assignComponents = getAssignComponents(request.getReleaseId());
+            if (toCcState == ReleaseDraft) {
+                ReleaseValidationRequest validationRequest = request.getValidationRequest();
+                for (BigInteger accManifestId : validationRequest.getAssignedAccComponentManifestIds()) {
+                    ccNodeService.updateAccState(user, accManifestId, toCcState.name());
+                }
+                for (BigInteger asccpManifestId : validationRequest.getAssignedAsccpComponentManifestIds()) {
+                    ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
+                }
+                for (BigInteger bccpManifestId : validationRequest.getAssignedBccpComponentManifestIds()) {
+                    ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
+                }
+            } else if (toCcState == Candidate) {
+                for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                        .from(ACC_MANIFEST)
+                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                        .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                        .where(and(
+                                ACC.STATE.eq(ReleaseDraft.name()),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ))
+                        .fetchInto(BigInteger.class)) {
+                    ccNodeService.updateAccState(user, accManifestId, toCcState.name());
+                }
+                for (BigInteger asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                        .from(ASCCP_MANIFEST)
+                        .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                        .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                        .where(and(
+                                ASCCP.STATE.eq(ReleaseDraft.name()),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ))
+                        .fetchInto(BigInteger.class)) {
+                    ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
+                }
+                for (BigInteger bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                        .from(BCCP_MANIFEST)
+                        .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                        .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                        .where(and(
+                                BCCP.STATE.eq(ReleaseDraft.name()),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ))
+                        .fetchInto(BigInteger.class)) {
+                    ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
+                }
 
-            Collection<BigInteger> accManifestIds = assignComponents.getUnassignableAccManifestMap().keySet();
-            dslContext.update(ACC)
-                    .set(ACC.STATE, toCcState.name())
-                    .where(and(
-                            ACC.STATE.eq(fromCcState.name()),
-                            ACC.ACC_ID.in(
-                                    dslContext.select(ACC.ACC_ID)
-                                            .from(ACC)
-                                            .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                                            .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                                            .where(and(
-                                                    RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                                    ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)
-                                            )).fetchStream().collect(Collectors.toList())
-                            )
-                    ))
-                    .execute();
+                dslContext.deleteFrom(BCC_MANIFEST)
+                        .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(BCCP_MANIFEST)
+                        .where(BCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(ASCC_MANIFEST)
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(ASCCP_MANIFEST)
+                        .where(ASCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(ACC_MANIFEST)
+                        .where(ACC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
 
-            dslContext.update(ASCC)
-                    .set(ASCC.STATE, toCcState.name())
-                    .where(and(
-                            ASCC.STATE.eq(fromCcState.name()),
-                            ASCC.ASCC_ID.in(
-                                    dslContext.select(ASCC.ASCC_ID)
-                                            .from(ASCC)
-                                            .join(ASCC_MANIFEST).on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
-                                            .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                                            .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                                            .where(and(
-                                                    RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                                    ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)
-                                            )).fetchStream().collect(Collectors.toList())
-                            )
-                    ))
-                    .execute();
-
-            dslContext.update(BCC)
-                    .set(BCC.STATE, toCcState.name())
-                    .where(and(
-                            BCC.STATE.eq(fromCcState.name()),
-                            BCC.BCC_ID.in(
-                                    dslContext.select(BCC.BCC_ID)
-                                            .from(BCC)
-                                            .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
-                                            .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                                            .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                                            .where(and(
-                                                    RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                                    ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)
-                                            )).fetchStream().collect(Collectors.toList())
-                            )
-                    ))
-                    .execute();
-
-            Collection<BigInteger> asccpManifestIds = assignComponents.getUnassignableAsccpManifestMap().keySet();
-            dslContext.update(ASCCP)
-                    .set(ASCCP.STATE, toCcState.name())
-                    .where(and(
-                            ASCCP.STATE.eq(fromCcState.name()),
-                            ASCCP.ASCCP_ID.in(
-                                    dslContext.select(ASCCP.ASCCP_ID)
-                                            .from(ASCCP)
-                                            .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                                            .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                                            .where(and(
-                                                    RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                                    ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)
-                                            )).fetchStream().collect(Collectors.toList())
-                            )
-                    ))
-                    .execute();
-
-            Collection<BigInteger> bccpManifestIds = assignComponents.getUnassignableBccpManifestMap().keySet();
-            dslContext.update(BCCP)
-                    .set(BCCP.STATE, toCcState.name())
-                    .where(and(
-                            BCCP.STATE.eq(fromCcState.name()),
-                            BCCP.BCCP_ID.in(
-                                    dslContext.select(BCCP.BCCP_ID)
-                                            .from(BCCP)
-                                            .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
-                                            .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                                            .where(and(
-                                                    RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                                    BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds)
-                                            )).fetchStream().collect(Collectors.toList())
-                            )
-                    ))
-                    .execute();
-
-            if (toCcState == CcState.Published) {
+            } else if (toCcState == CcState.Published) {
                 ensureReleaseIntegrity(request.getReleaseId());
                 cleanUp(request.getReleaseId());
             }
         }
+    }
+
+    public boolean isThereAnyDraftRelease(BigInteger releaseId) {
+        return dslContext.selectCount()
+                .from(RELEASE)
+                .where(and(
+                        RELEASE.STATE.in(Draft.name(), Processing.name()),
+                        RELEASE.RELEASE_ID.ne(ULong.valueOf(releaseId))
+                ))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0;
     }
 
     private void ensureReleaseIntegrity(BigInteger releaseId) {

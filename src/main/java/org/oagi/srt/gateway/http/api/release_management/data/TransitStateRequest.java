@@ -9,4 +9,6 @@ public class TransitStateRequest {
 
     private BigInteger releaseId;
     private String state;
+
+    private ReleaseValidationRequest validationRequest;
 }

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import org.oagi.srt.redis.event.Event;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,5 +15,9 @@ import java.math.BigInteger;
 public class ReleaseCreateRequestEvent implements Event {
 
     private BigInteger releaseId;
+
+    private List<BigInteger> accManifestIds = Collections.emptyList();
+    private List<BigInteger> asccpManifestIds = Collections.emptyList();
+    private List<BigInteger> bccpManifestIds = Collections.emptyList();
 
 }

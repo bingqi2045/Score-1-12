@@ -7,12 +7,12 @@ import org.oagi.srt.entity.jooq.tables.records.ReleaseRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.graph.GraphService;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
 import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.repo.component.release.ReleaseRepository;
+import org.oagi.srt.repo.component.release.ReleaseRepositoryDiscardRequest;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -54,9 +54,6 @@ public class ReleaseService implements InitializingBean {
     private ReleaseRepository repository;
 
     @Autowired
-    private GraphService graphService;
-
-    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
@@ -81,6 +78,7 @@ public class ReleaseService implements InitializingBean {
         return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
                 .from(RELEASE)
                 .where(conditions)
+                .orderBy(RELEASE.RELEASE_NUM)
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).toBigInteger());
@@ -307,8 +305,22 @@ public class ReleaseService implements InitializingBean {
             logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
 
             repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId());
+            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId(),
+                    Arrays.asList(CcState.ReleaseDraft),
+                    releaseCreateRequestEvent.getAccManifestIds(),
+                    releaseCreateRequestEvent.getAsccpManifestIds(),
+                    releaseCreateRequestEvent.getBccpManifestIds()
+            );
         } finally {
             lock.unlock();
+        }
+    }
+
+    @Transactional
+    public void discard(User user, List<BigInteger> releaseIds) {
+        for (BigInteger releaseId : releaseIds) {
+            ReleaseRepositoryDiscardRequest request = new ReleaseRepositoryDiscardRequest(user, releaseId);
+            repository.discard(request);
         }
     }
 
@@ -346,13 +358,47 @@ public class ReleaseService implements InitializingBean {
         repository.transitState(user, request);
     }
 
-    public ReleaseValidationResponse validate(@AuthenticationPrincipal User user,
-                                              @RequestBody ReleaseValidationRequest request) {
+    public ReleaseValidationResponse validate(User user,
+                                              ReleaseValidationRequest request) {
 
         ReleaseValidator validator = new ReleaseValidator(dslContext);
         validator.setAssignedAccComponentManifestIds(request.getAssignedAccComponentManifestIds());
         validator.setAssignedAsccpComponentManifestIds(request.getAssignedAsccpComponentManifestIds());
         validator.setAssignedBccpComponentManifestIds(request.getAssignedBccpComponentManifestIds());
         return validator.validate();
+    }
+
+    @Transactional
+    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal User user,
+                                                 BigInteger releaseId,
+                                                 @RequestBody ReleaseValidationRequest request) {
+        if (repository.isThereAnyDraftRelease(releaseId)) {
+            throw new IllegalArgumentException("It cannot make any release to 'Draft' due to a release restriction.");
+        }
+
+        ReleaseValidationResponse response = this.validate(user, request);
+        if (response.isSucceed()) {
+            // update state to 'Release Draft' for assigned CCs
+            TransitStateRequest transitStateRequest = new TransitStateRequest();
+            transitStateRequest.setReleaseId(releaseId);
+            transitStateRequest.setState(ReleaseState.Draft.name());
+            transitStateRequest.setValidationRequest(request);
+
+            this.transitState(user, transitStateRequest);
+
+            // fire the create release draft event.
+            ReleaseCreateRequestEvent releaseCreateRequestEvent = new ReleaseCreateRequestEvent(
+                    releaseId,
+                    request.getAssignedAccComponentManifestIds(),
+                    request.getAssignedAsccpComponentManifestIds(),
+                    request.getAssignedBccpComponentManifestIds());
+
+            /*
+             * Message Publishing
+             */
+            redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, releaseCreateRequestEvent);
+        }
+
+        return response;
     }
 }

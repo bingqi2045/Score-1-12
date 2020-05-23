@@ -128,30 +128,26 @@ public class ReleaseController {
         return service.getReleaseDetail(user, releaseId);
     }
 
+    @RequestMapping(value = "/release/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void discard(@AuthenticationPrincipal User user,
+                        @PathVariable("id") BigInteger releaseId) {
+        service.discard(user, Arrays.asList(releaseId));
+    }
+
+    @RequestMapping(value = "/release", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void discard(@AuthenticationPrincipal User user,
+                        @RequestParam(name = "releaseIds") String releaseIds) {
+        service.discard(user, Arrays.asList(releaseIds.split(",")).stream()
+                .map(e -> new BigInteger(e)).collect(Collectors.toList()));
+    }
+
     @RequestMapping(value = "/release/{id}/assignable", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AssignComponents assignComponents(@AuthenticationPrincipal User user,
                                              @PathVariable("id") BigInteger releaseId) {
         return service.getAssignComponents(releaseId);
-    }
-
-    @RequestMapping(value = "/release/{id}/" +
-            "", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void assignComponents(@AuthenticationPrincipal User user,
-                                 @PathVariable("id") BigInteger releaseId,
-                                 @RequestBody AssignComponentsRequest request) {
-        request.setReleaseId(releaseId);
-        service.assignComponents(user, request);
-    }
-
-    @RequestMapping(value = "/release/{id}/unassign", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public void unassignComponents(@AuthenticationPrincipal User user,
-                                   @PathVariable("id") BigInteger releaseId,
-                                   @RequestBody UnassignComponentsRequest request) {
-        request.setReleaseId(releaseId);
-        service.unassignComponents(user, request);
     }
 
     @RequestMapping(value = "/release/{id}/state", method = RequestMethod.POST,
@@ -168,5 +164,13 @@ public class ReleaseController {
     public ReleaseValidationResponse validate(@AuthenticationPrincipal User user,
                                               @RequestBody ReleaseValidationRequest request) {
         return service.validate(user, request);
+    }
+
+    @RequestMapping(value = "/release/{id}/draft", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal User user,
+                                                 @PathVariable("id") BigInteger releaseId,
+                                                 @RequestBody ReleaseValidationRequest request) {
+        return service.createDraft(user, releaseId, request);
     }
 }
