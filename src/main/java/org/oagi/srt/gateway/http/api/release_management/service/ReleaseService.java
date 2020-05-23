@@ -357,29 +357,6 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public void assignComponents(User user,
-                                 AssignComponentsRequest request) {
-
-        repository.copyWorkingManifestsTo(request.getReleaseId(),
-                Arrays.asList(CcState.Candidate),
-                request.getAccManifestIds(),
-                request.getAsccpManifestIds(),
-                request.getBccpManifestIds()
-        );
-    }
-
-    @Transactional
-    public void unassignComponents(User user,
-                                   UnassignComponentsRequest request) {
-
-        repository.unassignManifests(request.getReleaseId(),
-                request.getAccManifestIds(),
-                request.getAsccpManifestIds(),
-                request.getBccpManifestIds()
-        );
-    }
-
-    @Transactional
     public void transitState(User user,
                              TransitStateRequest request) {
 

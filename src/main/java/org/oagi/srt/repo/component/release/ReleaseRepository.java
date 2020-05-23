@@ -728,6 +728,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                     fromCcState = ReleaseDraft;
                     toCcState = Candidate;
                 } else if (requestState == Published) {
+                    requestState = Processing;
                     fromCcState = ReleaseDraft;
                     toCcState = CcState.Published;
                 }
@@ -786,7 +787,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             } else if (toCcState == CcState.Published) {
                 updateCCStates(user, fromCcState, toCcState);
-                cleanUp(releaseRecord.getReleaseId().toBigInteger());
             }
         }
     }
