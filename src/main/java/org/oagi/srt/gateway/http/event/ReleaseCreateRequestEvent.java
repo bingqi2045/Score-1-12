@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ReleaseCreateRequestEvent implements Event {
 
+    private BigInteger userId;
     private BigInteger releaseId;
 
     private List<BigInteger> accManifestIds = Collections.emptyList();

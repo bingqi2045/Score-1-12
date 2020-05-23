@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -163,6 +164,23 @@ public class ReleaseRepository implements SrtRepository<Release> {
         releaseRecord.delete();
     }
 
+    public void updateState(BigInteger userId,
+                            BigInteger releaseId,
+                            ReleaseState releaseState) {
+        AppUser appUser = sessionService.getAppUser(userId);
+        if (!appUser.isDeveloper()) {
+            throw new IllegalArgumentException("It only allows to update the state of the release for developers.");
+        }
+
+        LocalDateTime timestamp = LocalDateTime.now();
+        dslContext.update(RELEASE)
+                .set(RELEASE.STATE, releaseState.name())
+                .set(RELEASE.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .set(RELEASE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+    }
+
     public void copyWorkingManifestsTo(BigInteger releaseId) {
         copyWorkingManifestsTo(
                 releaseId, Arrays.asList(CcState.Published),
@@ -210,11 +228,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
             copyBccManifests(releaseRecord, bccManifestRecords,
                     prevNextAccManifestIdMap, prevNextBccpManifestIdMap);
 
-            releaseRecord.setState(Draft.name());
-            releaseRecord.update(RELEASE.STATE);
         } catch (Exception e) {
             releaseRecord.setReleaseNote(e.getMessage());
-            releaseRecord.update(RELEASE.STATE);
+            releaseRecord.update(RELEASE.RELEASE_NOTE);
         }
     }
 
@@ -750,39 +766,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                     ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
                 }
             } else if (toCcState == Candidate) {
-                for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
-                        .from(ACC_MANIFEST)
-                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                        .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                        .where(and(
-                                ACC.STATE.eq(ReleaseDraft.name()),
-                                RELEASE.RELEASE_NUM.eq("Working")
-                        ))
-                        .fetchInto(BigInteger.class)) {
-                    ccNodeService.updateAccState(user, accManifestId, toCcState.name());
-                }
-                for (BigInteger asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
-                        .from(ASCCP_MANIFEST)
-                        .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                        .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                        .where(and(
-                                ASCCP.STATE.eq(ReleaseDraft.name()),
-                                RELEASE.RELEASE_NUM.eq("Working")
-                        ))
-                        .fetchInto(BigInteger.class)) {
-                    ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
-                }
-                for (BigInteger bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
-                        .from(BCCP_MANIFEST)
-                        .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
-                        .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                        .where(and(
-                                BCCP.STATE.eq(ReleaseDraft.name()),
-                                RELEASE.RELEASE_NUM.eq("Working")
-                        ))
-                        .fetchInto(BigInteger.class)) {
-                    ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
-                }
+                updateCCStates(user, fromCcState, toCcState);
 
                 dslContext.deleteFrom(BCC_MANIFEST)
                         .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
@@ -801,9 +785,45 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         .execute();
 
             } else if (toCcState == CcState.Published) {
-                ensureReleaseIntegrity(request.getReleaseId());
-                cleanUp(request.getReleaseId());
+                updateCCStates(user, fromCcState, toCcState);
+                cleanUp(releaseRecord.getReleaseId().toBigInteger());
             }
+        }
+    }
+
+    private void updateCCStates(User user, CcState fromCcState, CcState toCcState) {
+        for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        ACC.STATE.eq(fromCcState.name()),
+                        RELEASE.RELEASE_NUM.eq("Working")
+                ))
+                .fetchInto(BigInteger.class)) {
+            ccNodeService.updateAccState(user, accManifestId, toCcState.name());
+        }
+        for (BigInteger asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                .from(ASCCP_MANIFEST)
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        ASCCP.STATE.eq(fromCcState.name()),
+                        RELEASE.RELEASE_NUM.eq("Working")
+                ))
+                .fetchInto(BigInteger.class)) {
+            ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
+        }
+        for (BigInteger bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                .from(BCCP_MANIFEST)
+                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        BCCP.STATE.eq(fromCcState.name()),
+                        RELEASE.RELEASE_NUM.eq("Working")
+                ))
+                .fetchInto(BigInteger.class)) {
+            ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
         }
     }
 
@@ -817,11 +837,198 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .fetchOptionalInto(Integer.class).orElse(0) > 0;
     }
 
-    private void ensureReleaseIntegrity(BigInteger releaseId) {
-        throw new UnsupportedOperationException();
-    }
+    public void cleanUp(BigInteger releaseId) {
+        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
+                .from(RELEASE)
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchOneInto(ULong.class);
+        ULong currentReleaseId = ULong.valueOf(releaseId);
 
-    private void cleanUp(BigInteger releaseId) {
-        throw new UnsupportedOperationException();
+        // ACCs
+        dslContext.selectFrom(ACC_MANIFEST)
+                .fetchStream().collect(groupingBy(AccManifestRecord::getAccId))
+                .values().forEach(accManifestRecords -> {
+
+            AccManifestRecord workingRecord = null;
+            AccManifestRecord currentRecord = null;
+            List<AccManifestRecord> restOfRecords = new ArrayList();
+            for (AccManifestRecord accManifestRecord : accManifestRecords) {
+                if (workingReleaseId.equals(accManifestRecord.getReleaseId())) {
+                    workingRecord = accManifestRecord;
+                } else if (currentReleaseId.equals(accManifestRecord.getReleaseId())) {
+                    currentRecord = accManifestRecord;
+                } else {
+                    restOfRecords.add(accManifestRecord);
+                }
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevAccManifestId(workingRecord.getPrevAccManifestId());
+            currentRecord.setNextAccManifestId(workingRecord.getAccManifestId());
+            currentRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
+
+            workingRecord.setPrevAccManifestId(currentRecord.getAccManifestId());
+            workingRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID);
+
+            for (AccManifestRecord record : restOfRecords) {
+                if (workingRecord.getAccManifestId().equals(record.getNextAccManifestId())) {
+                    record.setNextAccManifestId(currentRecord.getAccManifestId());
+                    record.update(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
+                }
+            }
+        });
+
+        // ASCCs
+        dslContext.selectFrom(ASCC_MANIFEST)
+                .fetchStream().collect(groupingBy(AsccManifestRecord::getAsccId))
+                .values().forEach(asccManifestRecords -> {
+
+            AsccManifestRecord workingRecord = null;
+            AsccManifestRecord currentRecord = null;
+            List<AsccManifestRecord> restOfRecords = new ArrayList();
+            for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
+                if (workingReleaseId.equals(asccManifestRecord.getReleaseId())) {
+                    workingRecord = asccManifestRecord;
+                } else if (currentReleaseId.equals(asccManifestRecord.getReleaseId())) {
+                    currentRecord = asccManifestRecord;
+                } else {
+                    restOfRecords.add(asccManifestRecord);
+                }
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevAsccManifestId(workingRecord.getPrevAsccManifestId());
+            currentRecord.setNextAsccManifestId(workingRecord.getAsccManifestId());
+            currentRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
+
+            workingRecord.setPrevAsccManifestId(currentRecord.getAsccManifestId());
+            workingRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
+
+            for (AsccManifestRecord record : restOfRecords) {
+                if (workingRecord.getAsccManifestId().equals(record.getNextAsccManifestId())) {
+                    record.setNextAsccManifestId(currentRecord.getAsccManifestId());
+                    record.update(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
+                }
+            }
+        });
+
+        // BCCs
+        dslContext.selectFrom(BCC_MANIFEST)
+                .fetchStream().collect(groupingBy(BccManifestRecord::getBccId))
+                .values().forEach(bccManifestRecords -> {
+
+            BccManifestRecord workingRecord = null;
+            BccManifestRecord currentRecord = null;
+            List<BccManifestRecord> restOfRecords = new ArrayList();
+            for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
+                if (workingReleaseId.equals(bccManifestRecord.getReleaseId())) {
+                    workingRecord = bccManifestRecord;
+                } else if (currentReleaseId.equals(bccManifestRecord.getReleaseId())) {
+                    currentRecord = bccManifestRecord;
+                } else {
+                    restOfRecords.add(bccManifestRecord);
+                }
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevBccManifestId(workingRecord.getPrevBccManifestId());
+            currentRecord.setNextBccManifestId(workingRecord.getBccManifestId());
+            currentRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID, BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
+
+            workingRecord.setPrevBccManifestId(currentRecord.getBccManifestId());
+            workingRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
+
+            for (BccManifestRecord record : restOfRecords) {
+                if (workingRecord.getBccManifestId().equals(record.getNextBccManifestId())) {
+                    record.setNextBccManifestId(currentRecord.getBccManifestId());
+                    record.update(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
+                }
+            }
+        });
+
+        // ASCCPs
+        dslContext.selectFrom(ASCCP_MANIFEST)
+                .fetchStream().collect(groupingBy(AsccpManifestRecord::getAsccpId))
+                .values().forEach(asccpManifestRecords -> {
+
+            AsccpManifestRecord workingRecord = null;
+            AsccpManifestRecord currentRecord = null;
+            List<AsccpManifestRecord> restOfRecords = new ArrayList();
+            for (AsccpManifestRecord asccpManifestRecord : asccpManifestRecords) {
+                if (workingReleaseId.equals(asccpManifestRecord.getReleaseId())) {
+                    workingRecord = asccpManifestRecord;
+                } else if (currentReleaseId.equals(asccpManifestRecord.getReleaseId())) {
+                    currentRecord = asccpManifestRecord;
+                } else {
+                    restOfRecords.add(asccpManifestRecord);
+                }
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevAsccpManifestId(workingRecord.getPrevAsccpManifestId());
+            currentRecord.setNextAsccpManifestId(workingRecord.getAsccpManifestId());
+            currentRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
+
+            workingRecord.setPrevAsccpManifestId(currentRecord.getAsccpManifestId());
+            workingRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID);
+
+            for (AsccpManifestRecord record : restOfRecords) {
+                if (workingRecord.getAsccpManifestId().equals(record.getNextAsccpManifestId())) {
+                    record.setNextAsccpManifestId(currentRecord.getAsccpManifestId());
+                    record.update(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
+                }
+            }
+        });
+
+        // BCCPs
+        dslContext.selectFrom(BCCP_MANIFEST)
+                .fetchStream().collect(groupingBy(BccpManifestRecord::getBccpId))
+                .values().forEach(bccpManifestRecords -> {
+
+            BccpManifestRecord workingRecord = null;
+            BccpManifestRecord currentRecord = null;
+            List<BccpManifestRecord> restOfRecords = new ArrayList();
+            for (BccpManifestRecord bccpManifestRecord : bccpManifestRecords) {
+                if (workingReleaseId.equals(bccpManifestRecord.getReleaseId())) {
+                    workingRecord = bccpManifestRecord;
+                } else if (currentReleaseId.equals(bccpManifestRecord.getReleaseId())) {
+                    currentRecord = bccpManifestRecord;
+                } else {
+                    restOfRecords.add(bccpManifestRecord);
+                }
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevBccpManifestId(workingRecord.getPrevBccpManifestId());
+            currentRecord.setNextBccpManifestId(workingRecord.getBccpManifestId());
+            currentRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
+
+            workingRecord.setPrevBccpManifestId(currentRecord.getBccpManifestId());
+            workingRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID);
+
+            for (BccpManifestRecord record : restOfRecords) {
+                if (workingRecord.getBccpManifestId().equals(record.getNextBccpManifestId())) {
+                    record.setNextBccpManifestId(currentRecord.getBccpManifestId());
+                    record.update(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
+                }
+            }
+        });
+
+
     }
 }

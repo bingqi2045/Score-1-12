@@ -9,6 +9,7 @@ import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.gateway.http.event.ReleaseCleanupEvent;
 import org.oagi.srt.gateway.http.event.ReleaseCreateRequestEvent;
 import org.oagi.srt.redis.event.EventListenerContainer;
 import org.oagi.srt.repo.component.release.ReleaseRepository;
@@ -37,6 +38,7 @@ import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
 import static org.oagi.srt.entity.jooq.Tables.RELEASE;
+import static org.oagi.srt.gateway.http.api.release_management.data.ReleaseState.Published;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,12 +64,15 @@ public class ReleaseService implements InitializingBean {
     @Autowired
     private EventListenerContainer eventListenerContainer;
 
-    private String INTERESTED_EVENT_NAME = "releaseCreateRequestEvent";
+    private final String RELEASE_CREATE_REQUEST_EVENT = "releaseCreateRequestEvent";
+    private final String RELEASE_CLEANUP_EVENT = "releaseCleanupEvent";
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        eventListenerContainer.addMessageListener(this, "onEventReceived",
-                new ChannelTopic(INTERESTED_EVENT_NAME));
+        eventListenerContainer.addMessageListener(this, "onReleaseCreateRequestEventReceived",
+                new ChannelTopic(RELEASE_CREATE_REQUEST_EVENT));
+        eventListenerContainer.addMessageListener(this, "onReleaseCleanupEventReceived",
+                new ChannelTopic(RELEASE_CLEANUP_EVENT));
     }
 
     public List<SimpleRelease> getSimpleReleases(SimpleReleasesRequest request) {
@@ -291,12 +296,33 @@ public class ReleaseService implements InitializingBean {
     }
 
     /**
-     * This method is invoked by 'bieCopyRequestEvent' channel subscriber.
+     * This method is invoked by 'releaseCleanupEvent' channel subscriber.
+     *
+     * @param releaseCleanupEvent
+     */
+    @Transactional
+    public void onReleaseCleanupEventReceived(ReleaseCleanupEvent releaseCleanupEvent) {
+        RLock lock = redissonClient.getLock("ReleaseCleanupEvent:" + releaseCleanupEvent.hashCode());
+        if (!lock.tryLock()) {
+            return;
+        }
+        try {
+            logger.debug("Received ReleaseCleanupEvent: " + releaseCleanupEvent);
+            repository.cleanUp(releaseCleanupEvent.getReleaseId());
+            repository.updateState(releaseCleanupEvent.getUserId(),
+                    releaseCleanupEvent.getReleaseId(), ReleaseState.Published);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * This method is invoked by 'releaseCreateRequestEvent' channel subscriber.
      *
      * @param releaseCreateRequestEvent
      */
     @Transactional
-    public void onEventReceived(ReleaseCreateRequestEvent releaseCreateRequestEvent) {
+    public void onReleaseCreateRequestEventReceived(ReleaseCreateRequestEvent releaseCreateRequestEvent) {
         RLock lock = redissonClient.getLock("ReleaseCreateRequestEvent:" + releaseCreateRequestEvent.hashCode());
         if (!lock.tryLock()) {
             return;
@@ -311,6 +337,8 @@ public class ReleaseService implements InitializingBean {
                     releaseCreateRequestEvent.getAsccpManifestIds(),
                     releaseCreateRequestEvent.getBccpManifestIds()
             );
+            repository.updateState(releaseCreateRequestEvent.getUserId(),
+                    releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);
         } finally {
             lock.unlock();
         }
@@ -356,6 +384,16 @@ public class ReleaseService implements InitializingBean {
                              TransitStateRequest request) {
 
         repository.transitState(user, request);
+        if (Published == ReleaseState.valueOf(request.getState())) {
+            // fire the create release draft event.
+            ReleaseCleanupEvent releaseCreateRequestEvent = new ReleaseCleanupEvent(
+                    sessionService.userId(user), request.getReleaseId());
+
+            /*
+             * Message Publishing
+             */
+            redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
+        }
     }
 
     public ReleaseValidationResponse validate(User user,
@@ -388,6 +426,7 @@ public class ReleaseService implements InitializingBean {
 
             // fire the create release draft event.
             ReleaseCreateRequestEvent releaseCreateRequestEvent = new ReleaseCreateRequestEvent(
+                    sessionService.userId(user),
                     releaseId,
                     request.getAssignedAccComponentManifestIds(),
                     request.getAssignedAsccpComponentManifestIds(),
@@ -396,7 +435,7 @@ public class ReleaseService implements InitializingBean {
             /*
              * Message Publishing
              */
-            redisTemplate.convertAndSend(INTERESTED_EVENT_NAME, releaseCreateRequestEvent);
+            redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
         }
 
         return response;

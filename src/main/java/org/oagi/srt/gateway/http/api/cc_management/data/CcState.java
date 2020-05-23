@@ -29,7 +29,7 @@ public enum CcState {
                 return (to == WIP || to == Draft || to == ReleaseDraft);
 
             case ReleaseDraft:
-                return (to == Candidate);
+                return (to == Candidate || to == Published);
 
             case Production:
             case Published:
