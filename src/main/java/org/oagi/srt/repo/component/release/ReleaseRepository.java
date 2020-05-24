@@ -21,7 +21,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -860,6 +859,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 } else {
                     restOfRecords.add(accManifestRecord);
                 }
+
+                accManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
@@ -868,15 +869,18 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             currentRecord.setPrevAccManifestId(workingRecord.getPrevAccManifestId());
             currentRecord.setNextAccManifestId(workingRecord.getAccManifestId());
-            currentRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
+            currentRecord.update(ACC_MANIFEST.CONFLICT,
+                    ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
 
             workingRecord.setPrevAccManifestId(currentRecord.getAccManifestId());
-            workingRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID);
+            workingRecord.update(ACC_MANIFEST.CONFLICT,
+                    ACC_MANIFEST.PREV_ACC_MANIFEST_ID);
 
             for (AccManifestRecord record : restOfRecords) {
                 if (workingRecord.getAccManifestId().equals(record.getNextAccManifestId())) {
                     record.setNextAccManifestId(currentRecord.getAccManifestId());
-                    record.update(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
+                    record.update(ACC_MANIFEST.CONFLICT,
+                            ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
                 }
             }
         });
@@ -897,6 +901,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 } else {
                     restOfRecords.add(asccManifestRecord);
                 }
+
+                asccManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
@@ -905,15 +911,18 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             currentRecord.setPrevAsccManifestId(workingRecord.getPrevAsccManifestId());
             currentRecord.setNextAsccManifestId(workingRecord.getAsccManifestId());
-            currentRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
+            currentRecord.update(ASCC_MANIFEST.CONFLICT,
+                    ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
 
             workingRecord.setPrevAsccManifestId(currentRecord.getAsccManifestId());
-            workingRecord.update(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
+            workingRecord.update(ASCC_MANIFEST.CONFLICT,
+                    ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
 
             for (AsccManifestRecord record : restOfRecords) {
                 if (workingRecord.getAsccManifestId().equals(record.getNextAsccManifestId())) {
                     record.setNextAsccManifestId(currentRecord.getAsccManifestId());
-                    record.update(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
+                    record.update(ASCC_MANIFEST.CONFLICT,
+                            ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
                 }
             }
         });
@@ -934,6 +943,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 } else {
                     restOfRecords.add(bccManifestRecord);
                 }
+
+                bccManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
@@ -942,15 +953,18 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             currentRecord.setPrevBccManifestId(workingRecord.getPrevBccManifestId());
             currentRecord.setNextBccManifestId(workingRecord.getBccManifestId());
-            currentRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID, BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
+            currentRecord.update(BCC_MANIFEST.CONFLICT,
+                    BCC_MANIFEST.PREV_BCC_MANIFEST_ID, BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
 
             workingRecord.setPrevBccManifestId(currentRecord.getBccManifestId());
-            workingRecord.update(BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
+            workingRecord.update(BCC_MANIFEST.CONFLICT,
+                    BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
 
             for (BccManifestRecord record : restOfRecords) {
                 if (workingRecord.getBccManifestId().equals(record.getNextBccManifestId())) {
                     record.setNextBccManifestId(currentRecord.getBccManifestId());
-                    record.update(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
+                    record.update(BCC_MANIFEST.CONFLICT,
+                            BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
                 }
             }
         });
@@ -971,6 +985,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 } else {
                     restOfRecords.add(asccpManifestRecord);
                 }
+
+                asccpManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
@@ -979,15 +995,18 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             currentRecord.setPrevAsccpManifestId(workingRecord.getPrevAsccpManifestId());
             currentRecord.setNextAsccpManifestId(workingRecord.getAsccpManifestId());
-            currentRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
+            currentRecord.update(ASCCP_MANIFEST.CONFLICT,
+                    ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
 
             workingRecord.setPrevAsccpManifestId(currentRecord.getAsccpManifestId());
-            workingRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID);
+            workingRecord.update(ASCCP_MANIFEST.CONFLICT,
+                    ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID);
 
             for (AsccpManifestRecord record : restOfRecords) {
                 if (workingRecord.getAsccpManifestId().equals(record.getNextAsccpManifestId())) {
                     record.setNextAsccpManifestId(currentRecord.getAsccpManifestId());
-                    record.update(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
+                    record.update(ASCCP_MANIFEST.CONFLICT,
+                            ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
                 }
             }
         });
@@ -1008,6 +1027,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 } else {
                     restOfRecords.add(bccpManifestRecord);
                 }
+
+                bccpManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
@@ -1016,15 +1037,18 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             currentRecord.setPrevBccpManifestId(workingRecord.getPrevBccpManifestId());
             currentRecord.setNextBccpManifestId(workingRecord.getBccpManifestId());
-            currentRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
+            currentRecord.update(BCCP_MANIFEST.CONFLICT,
+                    BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
 
             workingRecord.setPrevBccpManifestId(currentRecord.getBccpManifestId());
-            workingRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID);
+            workingRecord.update(BCCP_MANIFEST.CONFLICT,
+                    BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID);
 
             for (BccpManifestRecord record : restOfRecords) {
                 if (workingRecord.getBccpManifestId().equals(record.getNextBccpManifestId())) {
                     record.setNextBccpManifestId(currentRecord.getBccpManifestId());
-                    record.update(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
+                    record.update(BCCP_MANIFEST.CONFLICT,
+                            BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
                 }
             }
         });

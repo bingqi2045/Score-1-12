@@ -295,55 +295,6 @@ public class ReleaseService implements InitializingBean {
         return detail;
     }
 
-    /**
-     * This method is invoked by 'releaseCleanupEvent' channel subscriber.
-     *
-     * @param releaseCleanupEvent
-     */
-    @Transactional
-    public void onReleaseCleanupEventReceived(ReleaseCleanupEvent releaseCleanupEvent) {
-        RLock lock = redissonClient.getLock("ReleaseCleanupEvent:" + releaseCleanupEvent.hashCode());
-        if (!lock.tryLock()) {
-            return;
-        }
-        try {
-            logger.debug("Received ReleaseCleanupEvent: " + releaseCleanupEvent);
-            repository.cleanUp(releaseCleanupEvent.getReleaseId());
-            repository.updateState(releaseCleanupEvent.getUserId(),
-                    releaseCleanupEvent.getReleaseId(), ReleaseState.Published);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * This method is invoked by 'releaseCreateRequestEvent' channel subscriber.
-     *
-     * @param releaseCreateRequestEvent
-     */
-    @Transactional
-    public void onReleaseCreateRequestEventReceived(ReleaseCreateRequestEvent releaseCreateRequestEvent) {
-        RLock lock = redissonClient.getLock("ReleaseCreateRequestEvent:" + releaseCreateRequestEvent.hashCode());
-        if (!lock.tryLock()) {
-            return;
-        }
-        try {
-            logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
-
-            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId());
-            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId(),
-                    Arrays.asList(CcState.ReleaseDraft),
-                    releaseCreateRequestEvent.getAccManifestIds(),
-                    releaseCreateRequestEvent.getAsccpManifestIds(),
-                    releaseCreateRequestEvent.getBccpManifestIds()
-            );
-            repository.updateState(releaseCreateRequestEvent.getUserId(),
-                    releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);
-        } finally {
-            lock.unlock();
-        }
-    }
-
     @Transactional
     public void discard(User user, List<BigInteger> releaseIds) {
         for (BigInteger releaseId : releaseIds) {
@@ -363,13 +314,13 @@ public class ReleaseService implements InitializingBean {
         repository.transitState(user, request);
         if (Published == ReleaseState.valueOf(request.getState())) {
             // fire the create release draft event.
-            ReleaseCleanupEvent releaseCreateRequestEvent = new ReleaseCleanupEvent(
+            ReleaseCleanupEvent releaseCleanupEvent = new ReleaseCleanupEvent(
                     sessionService.userId(user), request.getReleaseId());
 
             /*
              * Message Publishing
              */
-            redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
+            redisTemplate.convertAndSend(RELEASE_CLEANUP_EVENT, releaseCleanupEvent);
         }
     }
 
@@ -416,5 +367,54 @@ public class ReleaseService implements InitializingBean {
         }
 
         return response;
+    }
+
+    /**
+     * This method is invoked by 'releaseCreateRequestEvent' channel subscriber.
+     *
+     * @param releaseCreateRequestEvent
+     */
+    @Transactional
+    public void onReleaseCreateRequestEventReceived(ReleaseCreateRequestEvent releaseCreateRequestEvent) {
+        RLock lock = redissonClient.getLock("ReleaseCreateRequestEvent:" + releaseCreateRequestEvent.hashCode());
+        if (!lock.tryLock()) {
+            return;
+        }
+        try {
+            logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
+
+            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId());
+            repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId(),
+                    Arrays.asList(CcState.ReleaseDraft),
+                    releaseCreateRequestEvent.getAccManifestIds(),
+                    releaseCreateRequestEvent.getAsccpManifestIds(),
+                    releaseCreateRequestEvent.getBccpManifestIds()
+            );
+            repository.updateState(releaseCreateRequestEvent.getUserId(),
+                    releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * This method is invoked by 'releaseCleanupEvent' channel subscriber.
+     *
+     * @param releaseCleanupEvent
+     */
+    @Transactional
+    public void onReleaseCleanupEventReceived(ReleaseCleanupEvent releaseCleanupEvent) {
+        RLock lock = redissonClient.getLock("ReleaseCleanupEvent:" + releaseCleanupEvent.hashCode());
+        if (!lock.tryLock()) {
+            return;
+        }
+        try {
+            logger.debug("Received ReleaseCleanupEvent: " + releaseCleanupEvent);
+            repository.cleanUp(releaseCleanupEvent.getReleaseId());
+            repository.updateState(releaseCleanupEvent.getUserId(),
+                    releaseCleanupEvent.getReleaseId(), ReleaseState.Published);
+        } finally {
+            lock.unlock();
+        }
     }
 }
