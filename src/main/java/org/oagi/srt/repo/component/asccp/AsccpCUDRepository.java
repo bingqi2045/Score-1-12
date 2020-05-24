@@ -354,7 +354,7 @@ public class AsccpCUDRepository {
                 ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getToState())
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
                 ? RevisionAction.Restored : RevisionAction.Modified;
         RevisionRecord revisionRecord =
                 revisionRepository.insertAsccpRevision(

@@ -364,7 +364,7 @@ public class BccpCUDRepository {
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getToState())
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
                 ? RevisionAction.Restored : RevisionAction.Modified;
         RevisionRecord revisionRecord =
                 revisionRepository.insertBccpRevision(

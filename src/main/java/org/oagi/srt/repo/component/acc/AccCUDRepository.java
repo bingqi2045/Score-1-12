@@ -637,11 +637,11 @@ public class AccCUDRepository {
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
 
         // update associations' state.
-        updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
-        updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
+        updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, nextState, userId, timestamp);
+        updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, nextState, userId, timestamp);
 
         // creates new revision for updated record.
-        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getToState())
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
                 ? RevisionAction.Restored : RevisionAction.Modified;
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(
