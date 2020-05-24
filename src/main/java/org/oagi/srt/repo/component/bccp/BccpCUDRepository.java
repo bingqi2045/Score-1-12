@@ -342,7 +342,11 @@ public class BccpCUDRepository {
                 .fetchOne();
 
         CcState prevState = CcState.valueOf(bccpRecord.getState());
-        CcState nextState = request.getState();
+        CcState nextState = request.getToState();
+
+        if (prevState != request.getFromState()) {
+            throw new IllegalArgumentException("Target core component is not in '" + request.getFromState() + "' state.");
+        }
 
         if (!prevState.canMove(nextState)) {
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
@@ -360,7 +364,7 @@ public class BccpCUDRepository {
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getState())
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getToState())
                 ? RevisionAction.Restored : RevisionAction.Modified;
         RevisionRecord revisionRecord =
                 revisionRepository.insertBccpRevision(

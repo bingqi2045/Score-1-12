@@ -429,9 +429,15 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAccState(User user, BigInteger accManifestId, String state) {
+    public BigInteger updateAccState(User user, BigInteger accManifestId, CcState toState) {
+        CcState fromState = repository.getAccState(accManifestId);
+        return updateAccState(user, accManifestId, fromState, toState);
+    }
+
+    @Transactional
+    public BigInteger updateAccState(User user, BigInteger accManifestId, CcState fromState, CcState toState) {
         UpdateAccStateRepositoryRequest repositoryRequest =
-                new UpdateAccStateRepositoryRequest(user, accManifestId, CcState.valueOf(state));
+                new UpdateAccStateRepositoryRequest(user, accManifestId, fromState, toState);
 
         UpdateAccStateRepositoryResponse repositoryResponse =
                 accCUDRepository.updateAccState(repositoryRequest);
@@ -442,9 +448,15 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAsccpState(User user, BigInteger asccpManifestId, String state) {
+    public BigInteger updateAsccpState(User user, BigInteger asccpManifestId, CcState toState) {
+        CcState fromState = repository.getAsccpState(asccpManifestId);
+        return updateAsccpState(user, asccpManifestId, fromState, toState);
+    }
+
+    @Transactional
+    public BigInteger updateAsccpState(User user, BigInteger asccpManifestId, CcState fromState, CcState toState) {
         UpdateAsccpStateRepositoryRequest repositoryRequest =
-                new UpdateAsccpStateRepositoryRequest(user, asccpManifestId, CcState.valueOf(state));
+                new UpdateAsccpStateRepositoryRequest(user, asccpManifestId, fromState, toState);
 
         UpdateAsccpStateRepositoryResponse repositoryResponse =
                 asccpCUDRepository.updateAsccpState(repositoryRequest);
@@ -455,9 +467,15 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateBccpState(User user, BigInteger bccpManifestId, String state) {
+    public BigInteger updateBccpState(User user, BigInteger bccpManifestId, CcState toState) {
+        CcState fromState = repository.getBccpState(bccpManifestId);
+        return updateBccpState(user, bccpManifestId, fromState, toState);
+    }
+
+    @Transactional
+    public BigInteger updateBccpState(User user, BigInteger bccpManifestId, CcState fromState, CcState toState) {
         UpdateBccpStateRepositoryRequest repositoryRequest =
-                new UpdateBccpStateRepositoryRequest(user, bccpManifestId, CcState.valueOf(state));
+                new UpdateBccpStateRepositoryRequest(user, bccpManifestId, fromState, toState);
 
         UpdateBccpStateRepositoryResponse repositoryResponse =
                 bccpCUDRepository.updateBccpState(repositoryRequest);

@@ -10,30 +10,39 @@ import java.time.LocalDateTime;
 public class UpdateAccStateRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger accManifestId;
-    private final CcState state;
+    private final CcState fromState;
+    private final CcState toState;
 
     public UpdateAccStateRepositoryRequest(User user,
                                            BigInteger accManifestId,
-                                           CcState state) {
+                                           CcState fromState,
+                                           CcState toState) {
         super(user);
         this.accManifestId = accManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public UpdateAccStateRepositoryRequest(User user,
                                            LocalDateTime localDateTime,
                                            BigInteger accManifestId,
-                                           CcState state) {
+                                           CcState fromState,
+                                           CcState toState) {
         super(user, localDateTime);
         this.accManifestId = accManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public BigInteger getAccManifestId() {
         return accManifestId;
     }
 
-    public CcState getState() {
-        return state;
+    public CcState getFromState() {
+        return fromState;
+    }
+
+    public CcState getToState() {
+        return toState;
     }
 }

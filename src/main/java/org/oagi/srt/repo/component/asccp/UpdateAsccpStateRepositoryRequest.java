@@ -10,30 +10,39 @@ import java.time.LocalDateTime;
 public class UpdateAsccpStateRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger asccpManifestId;
-    private final CcState state;
+    private final CcState fromState;
+    private final CcState toState;
 
     public UpdateAsccpStateRepositoryRequest(User user,
                                              BigInteger asccpManifestId,
-                                             CcState state) {
+                                             CcState fromState,
+                                             CcState toState) {
         super(user);
         this.asccpManifestId = asccpManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public UpdateAsccpStateRepositoryRequest(User user,
                                              LocalDateTime localDateTime,
                                              BigInteger asccpManifestId,
-                                             CcState state) {
+                                             CcState fromState,
+                                             CcState toState) {
         super(user, localDateTime);
         this.asccpManifestId = asccpManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public BigInteger getAsccpManifestId() {
         return asccpManifestId;
     }
 
-    public CcState getState() {
-        return state;
+    public CcState getFromState() {
+        return fromState;
+    }
+
+    public CcState getToState() {
+        return toState;
     }
 }

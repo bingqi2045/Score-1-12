@@ -112,17 +112,17 @@ public class CcNodeController {
         switch (type) {
             case "acc":
                 resp.setManifestId(
-                        service.updateAccState(user, manifestId, ccUpdateStateRequest.getState())
+                        service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
             case "asccp":
                 resp.setManifestId(
-                        service.updateAsccpState(user, manifestId, ccUpdateStateRequest.getState())
+                        service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
             case "bccp":
                 resp.setManifestId(
-                        service.updateBccpState(user, manifestId, ccUpdateStateRequest.getState())
+                        service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
             default:

@@ -10,30 +10,40 @@ import java.time.LocalDateTime;
 public class UpdateBccpStateRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger bccpManifestId;
-    private final CcState state;
+    private final CcState fromState;
+    private final CcState toState;
 
     public UpdateBccpStateRepositoryRequest(User user,
                                             BigInteger bccpManifestId,
-                                            CcState state) {
+                                            CcState fromState,
+                                            CcState toState) {
         super(user);
         this.bccpManifestId = bccpManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public UpdateBccpStateRepositoryRequest(User user,
                                             LocalDateTime localDateTime,
                                             BigInteger bccpManifestId,
-                                            CcState state) {
+                                            CcState fromState,
+                                            CcState toState) {
         super(user, localDateTime);
         this.bccpManifestId = bccpManifestId;
-        this.state = state;
+        this.fromState = fromState;
+        this.toState = toState;
     }
 
     public BigInteger getBccpManifestId() {
         return bccpManifestId;
     }
 
-    public CcState getState() {
-        return state;
+
+    public CcState getFromState() {
+        return fromState;
+    }
+
+    public CcState getToState() {
+        return toState;
     }
 }

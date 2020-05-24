@@ -757,13 +757,13 @@ public class ReleaseRepository implements SrtRepository<Release> {
             if (toCcState == ReleaseDraft) {
                 ReleaseValidationRequest validationRequest = request.getValidationRequest();
                 for (BigInteger accManifestId : validationRequest.getAssignedAccComponentManifestIds()) {
-                    ccNodeService.updateAccState(user, accManifestId, toCcState.name());
+                    ccNodeService.updateAccState(user, accManifestId, fromCcState, toCcState);
                 }
                 for (BigInteger asccpManifestId : validationRequest.getAssignedAsccpComponentManifestIds()) {
-                    ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
+                    ccNodeService.updateAsccpState(user, asccpManifestId, fromCcState, toCcState);
                 }
                 for (BigInteger bccpManifestId : validationRequest.getAssignedBccpComponentManifestIds()) {
-                    ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
+                    ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
                 }
             } else if (toCcState == Candidate) {
                 updateCCStates(user, fromCcState, toCcState);
@@ -800,7 +800,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
                 .fetchInto(BigInteger.class)) {
-            ccNodeService.updateAccState(user, accManifestId, toCcState.name());
+            ccNodeService.updateAccState(user, accManifestId, fromCcState, toCcState);
         }
         for (BigInteger asccpManifestId : dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                 .from(ASCCP_MANIFEST)
@@ -811,7 +811,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
                 .fetchInto(BigInteger.class)) {
-            ccNodeService.updateAsccpState(user, asccpManifestId, toCcState.name());
+            ccNodeService.updateAsccpState(user, asccpManifestId, fromCcState, toCcState);
         }
         for (BigInteger bccpManifestId : dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID)
                 .from(BCCP_MANIFEST)
@@ -822,7 +822,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         RELEASE.RELEASE_NUM.eq("Working")
                 ))
                 .fetchInto(BigInteger.class)) {
-            ccNodeService.updateBccpState(user, bccpManifestId, toCcState.name());
+            ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
         }
     }
 

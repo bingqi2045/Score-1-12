@@ -8,7 +8,6 @@ import org.jooq.Record4;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
-import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.srt.data.BCCEntityType.Attribute;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
 @Repository
 public class CcNodeRepository {
@@ -898,5 +896,35 @@ public class CcNodeRepository {
         }
 
         return record.get(ACC_MANIFEST.ACC_MANIFEST_ID);
+    }
+
+    public CcState getAccState(BigInteger manifestId) {
+        return CcState.valueOf(
+                dslContext.select(ACC.STATE)
+                        .from(ACC)
+                        .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(String.class)
+        );
+    }
+
+    public CcState getAsccpState(BigInteger manifestId) {
+        return CcState.valueOf(
+                dslContext.select(ASCCP.STATE)
+                        .from(ASCCP)
+                        .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                        .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(String.class)
+        );
+    }
+
+    public CcState getBccpState(BigInteger manifestId) {
+        return CcState.valueOf(
+                dslContext.select(BCCP.STATE)
+                        .from(BCCP)
+                        .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                        .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                        .fetchOneInto(String.class)
+        );
     }
 }
