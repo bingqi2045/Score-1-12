@@ -5,6 +5,6 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public class CcAccRequest {
+public class CcSetBaseAccRequest {
     private BigInteger basedAccManifestId;
 }

@@ -368,25 +368,25 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public long appendAsccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger asccpManifestId) {
+    public BigInteger appendAsccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger asccpManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateAsccRepositoryRequest request =
                 new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
 
         CreateAsccRepositoryResponse response = asccCUDRepository.createAscc(request);
         fireEvent(new CreatedAsccEvent());
-        return response.getAsccManifestId().longValue();
+        return response.getAsccManifestId();
     }
 
     @Transactional
-    public long appendBccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger bccpManifestId) {
+    public BigInteger appendBccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger bccpManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateBccRepositoryRequest request =
                 new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId);
 
         CreateBccRepositoryResponse response = bccCUDRepository.createBcc(request);
         fireEvent(new CreatedBccEvent());
-        return response.getBccManifestId().longValue();
+        return response.getBccManifestId();
     }
 
     @Transactional

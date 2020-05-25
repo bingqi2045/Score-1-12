@@ -28,7 +28,7 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNode getCcNode(@AuthenticationPrincipal User user,
@@ -54,7 +54,7 @@ public class CcNodeController {
         return service.updateCcDetails(user, ccUpdateRequest);
     }
 
-    @RequestMapping(value = "/core_component/node/acc/{manifestId:[\\d]+}/seq_key",
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/seq_key",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateCcSeq(@AuthenticationPrincipal User user,
@@ -64,7 +64,7 @@ public class CcNodeController {
                 Pair.of(request.getItem(), request.getAfter()));
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal User user,
@@ -98,7 +98,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/state",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse updateState(@AuthenticationPrincipal User user,
@@ -137,7 +137,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}/revision",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse makeNewRevision(@AuthenticationPrincipal User user,
@@ -185,7 +185,7 @@ public class CcNodeController {
         return service.getBccpNode(user, manifestId);
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
@@ -214,10 +214,10 @@ public class CcNodeController {
         return ResponseEntity.accepted().build();
     }
 
-    @RequestMapping(value = "/core_component/asccp/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("id") BigInteger id) {
-        return service.getAsccp(id);
+    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("manifestId") BigInteger manifestId) {
+        return service.getAsccp(manifestId);
     }
 
     private <T> T convertValue(String data, Class<T> clazz) {
@@ -232,7 +232,7 @@ public class CcNodeController {
         return objectMapper.convertValue(params, clazz);
     }
 
-    @RequestMapping(value = "/core_component/node/detail/{type}",
+    @RequestMapping(value = "/core_component/{type}/detail",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
@@ -256,13 +256,15 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/node/append",
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/append",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendNode(@AuthenticationPrincipal User user,
+                                       @PathVariable("manifestId") BigInteger manifestId,
                                        @RequestBody CcAppendRequest ccAppendRequest) {
 
-        long manifestId = 0L;
+        ccAppendRequest.setAccManifestId(manifestId);
+
         if (ccAppendRequest.getAccManifestId() != null) {
             if (ccAppendRequest.getAsccpManifestId() != null) {
                 manifestId = service.appendAsccp(user,
@@ -277,21 +279,22 @@ public class CcNodeController {
                         ccAppendRequest.getBccpManifestId());
             }
         }
+
         CcCreateResponse response = new CcCreateResponse();
-        response.setManifestId(BigInteger.valueOf(manifestId));
+        response.setManifestId(manifestId);
         return response;
     }
 
-    @RequestMapping(value = "/core_component/node/acc/{manifestId}/base",
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcNodeUpdateResponse setBasedNode(@AuthenticationPrincipal User user,
                                              @PathVariable("manifestId") BigInteger manifestId,
-                                             @RequestBody CcAccRequest ccAccRequest) {
+                                             @RequestBody CcSetBaseAccRequest ccSetBaseAccRequest) {
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
         resp.setType("acc");
         resp.setManifestId(
-                service.updateAccBasedAcc(user, manifestId, ccAccRequest.getBasedAccManifestId())
+                service.updateAccBasedAcc(user, manifestId, ccSetBaseAccRequest.getBasedAccManifestId())
         );
         resp.setState(CcState.WIP.name());
         resp.setAccess(AccessPrivilege.CanEdit.name());
@@ -331,7 +334,7 @@ public class CcNodeController {
         return resp;
     }
 
-    @RequestMapping(value = "/core_component/node/{type}/{manifestId}/revision", method = RequestMethod.GET,
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
                                                 @PathVariable("type") String type,

@@ -117,9 +117,9 @@ public class CcNodeControllerTest {
         BigInteger lastAccId = currentAccNode.getAccId();
 
         // set baseAcc
-        CcAccRequest ccAccRequest = new CcAccRequest();
-        ccAccRequest.setBasedAccManifestId(baseAccManifestId);
-        MvcResult setBaseAccMvcResult = this.callApi("/core_component/node/acc/" + accManifestId + "/base", ccAccRequest, METHOD_POST);
+        CcSetBaseAccRequest ccSetBaseAccRequest = new CcSetBaseAccRequest();
+        ccSetBaseAccRequest.setBasedAccManifestId(baseAccManifestId);
+        MvcResult setBaseAccMvcResult = this.callApi("/core_component/node/acc/" + accManifestId + "/base", ccSetBaseAccRequest, METHOD_POST);
         CcAccNode accNode = objectMapping(setBaseAccMvcResult, CcAccNode.class);
 
         if (currentAccNode.getManifestId() != accNode.getManifestId()) {
