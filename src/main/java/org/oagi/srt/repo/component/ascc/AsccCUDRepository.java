@@ -73,6 +73,17 @@ public class AsccCUDRepository {
             throw new IllegalArgumentException("Target ASCCP has already included.");
         }
 
+        if (dslContext.selectCount()
+                .from(ASCCP_MANIFEST)
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(ASCC_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
+                .where(and(ASCCP.REUSABLE_INDICATOR.eq((byte) 0),
+                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())))
+                )
+                .fetchOneInto(Integer.class) > 0) {
+            throw new IllegalArgumentException("Target ASCCP is not reusable.");
+        }
+
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
