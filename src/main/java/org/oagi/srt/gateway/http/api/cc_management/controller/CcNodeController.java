@@ -28,22 +28,28 @@ public class CcNodeController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getCcNode(@AuthenticationPrincipal User user,
-                            @PathVariable("type") String type,
-                            @PathVariable("manifestId") BigInteger manifestId) {
-        switch (type) {
-            case "acc":
-                return getAccNode(user, manifestId);
-            case "asccp":
-                return getAsccpNode(user, manifestId);
-            case "bccp":
-                return getBccpNode(user, manifestId);
-            default:
-                throw new UnsupportedOperationException();
-        }
+    public CcNode getAccNode(@AuthenticationPrincipal User user,
+                             @PathVariable("manifestId") BigInteger manifestId) {
+        return service.getAccNode(user, manifestId);
+    }
+
+    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNode getAsccpNode(@AuthenticationPrincipal User user,
+                               @PathVariable("manifestId") BigInteger manifestId) {
+        return service.getAsccpNode(user, manifestId);
+    }
+
+    @RequestMapping(value = "/core_component/bccp/{manifestId:[\\d]+}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNode getBccpNode(@AuthenticationPrincipal User user,
+                              @PathVariable("manifestId") BigInteger manifestId) {
+        return service.getBccpNode(user, manifestId);
     }
 
     @RequestMapping(value = "/core_component",
@@ -173,18 +179,6 @@ public class CcNodeController {
         return resp;
     }
 
-    private CcAccNode getAccNode(User user, BigInteger manifestId) {
-        return service.getAccNode(user, manifestId);
-    }
-
-    private CcAsccpNode getAsccpNode(User user, BigInteger manifestId) {
-        return service.getAsccpNode(user, manifestId);
-    }
-
-    private CcBccpNode getBccpNode(User user, BigInteger manifestId) {
-        return service.getBccpNode(user, manifestId);
-    }
-
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -212,12 +206,6 @@ public class CcNodeController {
         }
 
         return ResponseEntity.accepted().build();
-    }
-
-    @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcAsccpNodeDetail.Asccp getAsccp(@PathVariable("manifestId") BigInteger manifestId) {
-        return service.getAsccp(manifestId);
     }
 
     private <T> T convertValue(String data, Class<T> clazz) {
