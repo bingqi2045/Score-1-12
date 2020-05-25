@@ -18,6 +18,9 @@ public class CcBccNode extends CcNode {
     private BCCEntityType entityType;
     private BigInteger cardinalityMin = BigInteger.ZERO;
     private BigInteger cardinalityMax = BigInteger.ZERO;
+    private String defaultValue;
+    private String fixedValue;
+    private boolean deprecated;
 
     @Override
     public BigInteger getId() {

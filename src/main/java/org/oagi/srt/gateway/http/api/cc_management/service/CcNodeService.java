@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.oagi.srt.gateway.http.api.cc_management.data.CcType.*;
 
@@ -642,11 +644,17 @@ public class CcNodeService extends EventHandler {
             ccRevisionResponse.setHasBaseCc(accRecord.getBasedAccId() != null);
             List<AsccManifestRecord> asccManifestRecordList
                     = ccRepository.getAsccManifestByFromAccManifestId(ULong.valueOf(manifestId));
-            List<String> associationKeys = new ArrayList<>();
+            Map<String, CcNode> associations = new HashMap<>();
             for (AsccManifestRecord asccManifestRecord : asccManifestRecordList) {
                 BigInteger lastAsccId = getLastPublishedCcId(asccManifestRecord.getAsccId().toBigInteger(), CcType.ASCC);
                 if (lastAsccId != null) {
-                    associationKeys.add(CcType.ASCCP.toString().toLowerCase() + "-" + asccManifestRecord.getToAsccpManifestId());
+                    CcAsccNode ascc = new CcAsccNode();
+                    AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
+                    ascc.setAsccId(asccRecord.getAsccId().toBigInteger());
+                    ascc.setCardinalityMin(BigInteger.valueOf(asccRecord.getCardinalityMin()));
+                    ascc.setCardinalityMax(BigInteger.valueOf(asccRecord.getCardinalityMax()));
+                    ascc.setDeprecated(asccRecord.getIsDeprecated() == 1);
+                    associations.put(CcType.ASCCP.toString().toLowerCase() + "-" + asccManifestRecord.getToAsccpManifestId(), ascc);
                 }
             }
             List<BccManifestRecord> bccManifestRecordList
@@ -654,10 +662,17 @@ public class CcNodeService extends EventHandler {
             for (BccManifestRecord bccManifestRecord : bccManifestRecordList) {
                 BigInteger lastBccId = getLastPublishedCcId(bccManifestRecord.getBccId().toBigInteger(), CcType.BCC);
                 if (lastBccId != null) {
-                    associationKeys.add(CcType.BCCP.toString().toLowerCase() + "-" + bccManifestRecord.getToBccpManifestId());
+                    CcBccNode bcc = new CcBccNode();
+                    BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
+                    bcc.setBccId(bccRecord.getBccId().toBigInteger());
+                    bcc.setCardinalityMin(BigInteger.valueOf(bccRecord.getCardinalityMin()));
+                    bcc.setCardinalityMax(BigInteger.valueOf(bccRecord.getCardinalityMax()));
+                    bcc.setEntityType(BCCEntityType.valueOf(bccRecord.getEntityType()));
+                    bcc.setDeprecated(bccRecord.getIsDeprecated() == 1);
+                    associations.put(CcType.BCCP.toString().toLowerCase() + "-" + bccManifestRecord.getToBccpManifestId(), bcc);
                 }
             }
-            ccRevisionResponse.setAssociationKeys(associationKeys);
+            ccRevisionResponse.setAssociations(associations);
         }
         return ccRevisionResponse;
     }
@@ -711,7 +726,8 @@ public class CcNodeService extends EventHandler {
                 return getLastPublishedCcId(accRecord.getPrevAccId().toBigInteger(), CcType.ACC);
             case ASCC:
                 AsccRecord asccRecord = ccRepository.getAsccById(ULong.valueOf(ccId));
-                if (asccRecord.getState().equals(CcState.Published.name())) {
+                if (asccRecord.getState().equals(CcState.Published.name()) ||
+                        asccRecord.getState().equals(CcState.Production.name())) {
                     return ccId;
                 }
                 if (asccRecord.getPrevAsccId() == null) {
@@ -720,7 +736,8 @@ public class CcNodeService extends EventHandler {
                 return getLastPublishedCcId(asccRecord.getPrevAsccId().toBigInteger(), CcType.ASCC);
             case BCC:
                 BccRecord bccRecord = ccRepository.getBccById(ULong.valueOf(ccId));
-                if (bccRecord.getState().equals(CcState.Published.name())) {
+                if (bccRecord.getState().equals(CcState.Published.name()) ||
+                        bccRecord.getState().equals(CcState.Production.name())) {
                     return ccId;
                 }
                 if (bccRecord.getPrevBccId() == null) {
@@ -729,7 +746,8 @@ public class CcNodeService extends EventHandler {
                 return getLastPublishedCcId(bccRecord.getPrevBccId().toBigInteger(), CcType.BCC);
             case ASCCP:
                 AsccpRecord asccpRecord = ccRepository.getAsccpById(ULong.valueOf(ccId));
-                if (asccpRecord.getState().equals(CcState.Published.name())) {
+                if (asccpRecord.getState().equals(CcState.Published.name()) ||
+                        asccpRecord.getState().equals(CcState.Production.name())) {
                     return ccId;
                 }
                 if (asccpRecord.getPrevAsccpId() == null) {

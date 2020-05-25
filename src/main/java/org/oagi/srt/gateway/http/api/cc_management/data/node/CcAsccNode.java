@@ -16,6 +16,7 @@ public class CcAsccNode extends CcNode {
     private BigInteger toAsccpManifestId = BigInteger.ZERO;
     private BigInteger cardinalityMin = BigInteger.ZERO;
     private BigInteger cardinalityMax = BigInteger.ZERO;
+    private boolean deprecated;
 
     @Override
     public BigInteger getId() {
