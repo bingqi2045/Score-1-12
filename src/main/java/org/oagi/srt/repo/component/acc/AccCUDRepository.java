@@ -164,8 +164,8 @@ public class AccCUDRepository {
         prevAccRecord.update(ACC.NEXT_ACC_ID);
 
         // create new associations for revised record.
-        createNewAsccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
-        createNewBccListForRevisedRecord(accManifestRecord, nextAccRecord, targetReleaseId, userId, timestamp);
+        createNewAsccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
+        createNewBccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
         linkSeqKeys(nextAccRecord);
 
         // creates new revision for revised record.
@@ -210,15 +210,16 @@ public class AccCUDRepository {
     }
 
     private void createNewAsccListForRevisedRecord(
+            AppUser user,
             AccManifestRecord accManifestRecord,
             AccRecord nextAccRecord,
             ULong targetReleaseId,
-            ULong userId,
             LocalDateTime timestamp) {
+        ULong fromAccManifestId = user.isDeveloper() ? accManifestRecord.getPrevAccManifestId() : accManifestRecord.getAccManifestId();
         for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
                 .where(and(
                         ASCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
-                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId)
                 ))
                 .fetch()) {
 
@@ -235,9 +236,9 @@ public class AccCUDRepository {
                             .fetchOneInto(ULong.class)
             );
             nextAsccRecord.setState(CcState.WIP.name());
-            nextAsccRecord.setCreatedBy(userId);
-            nextAsccRecord.setLastUpdatedBy(userId);
-            nextAsccRecord.setOwnerUserId(userId);
+            nextAsccRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
+            nextAsccRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
+            nextAsccRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
             nextAsccRecord.setCreationTimestamp(timestamp);
             nextAsccRecord.setLastUpdateTimestamp(timestamp);
             nextAsccRecord.setPrevAsccId(prevAsccRecord.getAsccId());
@@ -266,15 +267,16 @@ public class AccCUDRepository {
     }
 
     private void createNewBccListForRevisedRecord(
+            AppUser user,
             AccManifestRecord accManifestRecord,
             AccRecord nextAccRecord,
             ULong targetReleaseId,
-            ULong userId,
             LocalDateTime timestamp) {
+        ULong fromAccManifestId = user.isDeveloper() ? accManifestRecord.getPrevAccManifestId() : accManifestRecord.getAccManifestId();
         for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
                 .where(and(
                         BCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
-                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId)
                 ))
                 .fetch()) {
 
@@ -291,9 +293,9 @@ public class AccCUDRepository {
                             .fetchOneInto(ULong.class)
             );
             nextBccRecord.setState(CcState.WIP.name());
-            nextBccRecord.setCreatedBy(userId);
-            nextBccRecord.setLastUpdatedBy(userId);
-            nextBccRecord.setOwnerUserId(userId);
+            nextBccRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
+            nextBccRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
+            nextBccRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
             nextBccRecord.setCreationTimestamp(timestamp);
             nextBccRecord.setLastUpdateTimestamp(timestamp);
             nextBccRecord.setPrevBccId(prevBccRecord.getBccId());

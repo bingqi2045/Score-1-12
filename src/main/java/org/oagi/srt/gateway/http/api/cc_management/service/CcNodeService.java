@@ -717,7 +717,8 @@ public class CcNodeService extends EventHandler {
         switch (type) {
             case ACC:
                 AccRecord accRecord = ccRepository.getAccById(ULong.valueOf(ccId));
-                if (accRecord.getState().equals(CcState.Published.name())) {
+                if (accRecord.getState().equals(CcState.Published.name()) ||
+                        accRecord.getState().equals(CcState.Production.name())) {
                     return ccId;
                 }
                 if (accRecord.getPrevAccId() == null) {
@@ -756,7 +757,8 @@ public class CcNodeService extends EventHandler {
                 return getLastPublishedCcId(asccpRecord.getPrevAsccpId().toBigInteger(), CcType.ASCCP);
             case BCCP:
                 BccpRecord bccpRecord = ccRepository.getBccpById(ULong.valueOf(ccId));
-                if (bccpRecord.getState().equals(CcState.Published.name())) {
+                if (bccpRecord.getState().equals(CcState.Published.name()) ||
+                        bccpRecord.getState().equals(CcState.Production.name())) {
                     return ccId;
                 }
                 if (bccpRecord.getPrevBccpId() == null) {
