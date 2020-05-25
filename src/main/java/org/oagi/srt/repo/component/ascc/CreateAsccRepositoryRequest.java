@@ -11,6 +11,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     private final BigInteger releaseId;
     private final BigInteger accManifestId;
     private final BigInteger asccpManifestId;
+    private int pos = -1;
 
     public CreateAsccRepositoryRequest(User user,
                                        BigInteger releaseId,
@@ -36,10 +37,20 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     public BigInteger getReleaseId() {
         return releaseId;
     }
+
     public BigInteger getAccManifestId() {
         return accManifestId;
     }
+
     public BigInteger getAsccpManifestId() {
         return asccpManifestId;
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
     }
 }

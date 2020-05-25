@@ -10,4 +10,5 @@ public class CcAppendRequest {
     private BigInteger accManifestId;
     private BigInteger asccpManifestId;
     private BigInteger bccpManifestId;
+    private int pos;
 }

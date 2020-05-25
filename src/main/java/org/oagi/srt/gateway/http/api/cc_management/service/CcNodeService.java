@@ -368,10 +368,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendAsccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger asccpManifestId) {
+    public BigInteger appendAsccp(User user, BigInteger releaseId,
+                                  BigInteger accManifestId, BigInteger asccpManifestId,
+                                  int pos) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateAsccRepositoryRequest request =
                 new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
+        request.setPos(pos);
 
         CreateAsccRepositoryResponse response = asccCUDRepository.createAscc(request);
         fireEvent(new CreatedAsccEvent());
@@ -379,10 +382,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendBccp(User user, BigInteger releaseId, BigInteger accManifestId, BigInteger bccpManifestId) {
+    public BigInteger appendBccp(User user, BigInteger releaseId,
+                                 BigInteger accManifestId, BigInteger bccpManifestId,
+                                 int pos) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateBccRepositoryRequest request =
                 new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId);
+        request.setPos(pos);
 
         CreateBccRepositoryResponse response = bccCUDRepository.createBcc(request);
         fireEvent(new CreatedBccEvent());

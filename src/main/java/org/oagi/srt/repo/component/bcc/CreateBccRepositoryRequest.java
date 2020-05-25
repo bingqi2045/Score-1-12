@@ -11,6 +11,7 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     private final BigInteger releaseId;
     private final BigInteger accManifestId;
     private final BigInteger bccpManifestId;
+    private int pos = -1;
 
     public CreateBccRepositoryRequest(User user,
                                       BigInteger releaseId,
@@ -36,10 +37,20 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     public BigInteger getReleaseId() {
         return releaseId;
     }
+
     public BigInteger getAccManifestId() {
         return accManifestId;
     }
+
     public BigInteger getBccpManifestId() {
         return bccpManifestId;
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
     }
 }

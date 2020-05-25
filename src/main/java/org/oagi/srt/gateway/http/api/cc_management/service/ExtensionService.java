@@ -290,7 +290,7 @@ public class ExtensionService {
 
         ccNodeService.appendAsccp(user, asccpManifestRecord.getReleaseId().toBigInteger(),
                 extensionAcc.getAccManifestId().toBigInteger(),
-                asccpManifestRecord.getAsccpManifestId().toBigInteger());
+                asccpManifestRecord.getAsccpManifestId().toBigInteger(), -1);
     }
 
     @Transactional
@@ -303,7 +303,7 @@ public class ExtensionService {
 
         ccNodeService.appendBccp(user, bccpManifestRecord.getReleaseId().toBigInteger(),
                 extensionAcc.getAccManifestId().toBigInteger(),
-                bccpManifestRecord.getBccpManifestId().toBigInteger());
+                bccpManifestRecord.getBccpManifestId().toBigInteger(), -1);
     }
 
     @Transactional

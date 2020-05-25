@@ -261,23 +261,23 @@ public class CcNodeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcCreateResponse appendNode(@AuthenticationPrincipal User user,
                                        @PathVariable("manifestId") BigInteger manifestId,
-                                       @RequestBody CcAppendRequest ccAppendRequest) {
+                                       @RequestBody CcAppendRequest request) {
 
-        ccAppendRequest.setAccManifestId(manifestId);
+        request.setAccManifestId(manifestId);
 
-        if (ccAppendRequest.getAccManifestId() != null) {
-            if (ccAppendRequest.getAsccpManifestId() != null) {
-                manifestId = service.appendAsccp(user,
-                        ccAppendRequest.getReleaseId(),
-                        ccAppendRequest.getAccManifestId(),
-                        ccAppendRequest.getAsccpManifestId());
-            }
-            if (ccAppendRequest.getBccpManifestId() != null) {
-                manifestId = service.appendBccp(user,
-                        ccAppendRequest.getReleaseId(),
-                        ccAppendRequest.getAccManifestId(),
-                        ccAppendRequest.getBccpManifestId());
-            }
+        if (request.getAsccpManifestId() != null) {
+            manifestId = service.appendAsccp(user,
+                    request.getReleaseId(),
+                    request.getAccManifestId(),
+                    request.getAsccpManifestId(),
+                    request.getPos());
+        }
+        if (request.getBccpManifestId() != null) {
+            manifestId = service.appendBccp(user,
+                    request.getReleaseId(),
+                    request.getAccManifestId(),
+                    request.getBccpManifestId(),
+                    request.getPos());
         }
 
         CcCreateResponse response = new CcCreateResponse();

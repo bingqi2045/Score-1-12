@@ -102,7 +102,7 @@ public class AsccCUDRepository {
                         .set(ascc)
                         .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
         );
-        new SeqKeyHandler(dslContext, ascc).moveTo(LAST);
+        new SeqKeyHandler(dslContext, ascc).moveTo(request.getPos());
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());

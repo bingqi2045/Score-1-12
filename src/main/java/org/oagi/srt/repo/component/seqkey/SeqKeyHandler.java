@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.repo.component.seqkey.MoveTo.FIRST;
+import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
 
 public class SeqKeyHandler {
 
@@ -82,6 +84,26 @@ public class SeqKeyHandler {
                         .where(BCC.BCC_ID.eq(associationId))
                         .execute();
             }
+        }
+    }
+
+    public void moveTo(int pos) {
+        if (pos < -1) {
+            throw new IllegalArgumentException();
+        }
+
+        if (pos == 0) {
+            this.moveTo(FIRST);
+        } else if (pos == -1) {
+            this.moveTo(LAST);
+        } else {
+            SeqKeyRecord target = this.head;
+            pos--;
+            while (pos > 0) {
+                target = this.seqKeyRecordMap.get(target.getNextSeqKeyId());
+                pos--;
+            }
+            moveAfter(target);
         }
     }
 
@@ -195,6 +217,10 @@ public class SeqKeyHandler {
 
     public void moveAfter(SeqKeyRecord after) {
         if (after == null) {
+            return;
+        }
+
+        if (after.getNextSeqKeyId() != null && after.getNextSeqKeyId().equals(this.current.getSeqKeyId())) {
             return;
         }
 

@@ -101,7 +101,7 @@ public class BccCUDRepository {
                         .set(bcc)
                         .returning(BCC.BCC_ID).fetchOne().getBccId()
         );
-        new SeqKeyHandler(dslContext, bcc).moveTo(LAST);
+        new SeqKeyHandler(dslContext, bcc).moveTo(request.getPos());
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
