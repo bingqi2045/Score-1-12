@@ -1,9 +1,6 @@
 package org.oagi.srt.gateway.http.api.cc_management.controller;
 
-import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListTypes;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
@@ -44,6 +41,8 @@ public class CcListController {
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
             @RequestParam(name = "excludes", required = false) String excludes,
+            @RequestParam(name = "findUsagesType", required = false) String findUsagesType,
+            @RequestParam(name = "findUsagesManifestId", required = false) BigInteger findUsagesManifestId,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -77,6 +76,9 @@ public class CcListController {
         request.setComponentTypes(componentTypes);
         request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
                 Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        if (!StringUtils.isEmpty(findUsagesType) && findUsagesManifestId != null && findUsagesManifestId.compareTo(BigInteger.ZERO) > 0) {
+            request.setFindUsages(new CcId(findUsagesType, findUsagesManifestId));
+        }
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));

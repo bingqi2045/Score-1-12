@@ -23,6 +23,7 @@ public class CcListRequest {
     private String module;
     private String componentTypes;
     private List<String> excludes;
+    private CcId findUsages;
 
     private Date updateStartDate;
     private Date updateEndDate;
