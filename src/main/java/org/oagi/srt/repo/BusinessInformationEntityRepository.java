@@ -604,10 +604,14 @@ public class BusinessInformationEntityRepository {
                         offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
     }
 
-    public BigInteger getAccManifestIdByTopLevelAbieId(BigInteger topLevelAbieId) {
-        return dslContext.select(ABIE.BASED_ACC_MANIFEST_ID)
+    public BigInteger getAsccpManifestIdByTopLevelAbieId(BigInteger topLevelAbieId) {
+        return dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                 .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ABIE)
+                .on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ASCCP_MANIFEST)
+                .on(and(ABIE.BASED_ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID),
+                        TOP_LEVEL_ABIE.RELEASE_ID.eq(ASCCP_MANIFEST.RELEASE_ID)))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchOptionalInto(BigInteger.class).orElse(null);
     }

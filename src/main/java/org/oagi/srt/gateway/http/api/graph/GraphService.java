@@ -71,8 +71,8 @@ public class GraphService {
     }
 
     public Graph getBieGraph(BigInteger topLevelBieId) {
-        BigInteger accManifestId = bieRepository.getAccManifestIdByTopLevelAbieId(topLevelBieId);
-        return getAccGraph(accManifestId);
+        BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAbieId(topLevelBieId);
+        return getAsccpGraph(asccpManifestId);
     }
 
     private Graph buildGraph(GraphContext graphContext, Node root) {

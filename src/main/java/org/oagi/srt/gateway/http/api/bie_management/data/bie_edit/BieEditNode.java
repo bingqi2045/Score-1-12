@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit;
 
 import lombok.Data;
+import org.oagi.srt.data.BIE;
 
 import java.math.BigInteger;
 
@@ -9,6 +10,7 @@ public class BieEditNode {
 
     private BigInteger topLevelAbieId;
     private BigInteger releaseId;
+    private BigInteger ccManifestId;
 
     private String type;
     private String guid;
