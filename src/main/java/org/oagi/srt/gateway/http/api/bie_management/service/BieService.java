@@ -138,7 +138,7 @@ public class BieService {
                     .fetchInto(BusinessContext.class).getResult());
 
             bieList.setAccess(
-                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), bieList.getState())
+                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), BieState.valueOf(bieList.getRawState()))
             );
         });
 

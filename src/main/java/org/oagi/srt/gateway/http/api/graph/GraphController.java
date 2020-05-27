@@ -20,25 +20,29 @@ public class GraphController {
     @Autowired
     private GraphService graphService;
 
-    @RequestMapping(value = "/graphs/{type}/{manifestId:[\\d]+}",
+    @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getGraph(@AuthenticationPrincipal User user,
                                         @PathVariable("type") String type,
-                                        @PathVariable("manifestId") BigInteger manifestId,
+                                        @PathVariable("id") BigInteger id,
                                         @RequestParam(value = "q", required = false) String query) {
         Graph graph;
         switch (type) {
             case "acc":
-                graph = graphService.getAccGraph(manifestId);
+                graph = graphService.getAccGraph(id);
                 break;
 
             case "asccp":
-                graph = graphService.getAsccpGraph(manifestId);
+                graph = graphService.getAsccpGraph(id);
                 break;
 
             case "bccp":
-                graph = graphService.getBccpGraph(manifestId);
+                graph = graphService.getBccpGraph(id);
+                break;
+
+            case "abie":
+                graph = graphService.getBieGraph(id);
                 break;
 
             default:
@@ -48,7 +52,7 @@ public class GraphController {
         Map<String, Object> response = new HashMap();
 
         if (!StringUtils.isEmpty(query)) {
-            Collection<List<String>> paths = graph.findPaths(type + manifestId, query);
+            Collection<List<String>> paths = graph.findPaths(type + id, query);
             response.put("query", query);
             response.put("paths", paths.stream()
                     .map(e -> e.stream()

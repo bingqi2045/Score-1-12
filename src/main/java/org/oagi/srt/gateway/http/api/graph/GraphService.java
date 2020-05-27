@@ -5,6 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.oagi.srt.repo.GraphContext;
 import org.oagi.srt.repo.GraphContextRepository;
@@ -26,6 +27,9 @@ public class GraphService {
 
     @Autowired
     private GraphContextRepository graphContextRepository;
+
+    @Autowired
+    private BusinessInformationEntityRepository bieRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -64,6 +68,11 @@ public class GraphService {
         GraphContext graphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
         return buildGraph(graphContext, graphContext.toNode(bccpManifest));
+    }
+
+    public Graph getBieGraph(BigInteger topLevelBieId) {
+        BigInteger accManifestId = bieRepository.getAccManifestIdByTopLevelAbieId(topLevelBieId);
+        return getAccGraph(accManifestId);
     }
 
     private Graph buildGraph(GraphContext graphContext, Node root) {
