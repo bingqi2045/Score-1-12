@@ -11,9 +11,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -22,6 +23,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
@@ -41,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 1669045112;
+    private static final long serialVersionUID = 1118566914;
 
     /**
      * The reference instance of <code>oagi.abie</code>
@@ -70,6 +72,11 @@ public class Abie extends TableImpl<AbieRecord> {
      * The column <code>oagi.abie.based_acc_manifest_id</code>. A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.
      */
     public final TableField<AbieRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.");
+
+    /**
+     * The column <code>oagi.abie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<AbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.abie.biz_ctx_id</code>. (Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
@@ -175,6 +182,11 @@ public class Abie extends TableImpl<AbieRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.ABIE_ABIE_HASH_PATH_K);
+    }
+
+    @Override
     public Identity<AbieRecord, ULong> getIdentity() {
         return Keys.IDENTITY_ABIE;
     }
@@ -245,11 +257,11 @@ public class Abie extends TableImpl<AbieRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<ULong, String, ULong, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row17<ULong, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

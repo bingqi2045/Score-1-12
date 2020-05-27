@@ -12,9 +12,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -23,6 +24,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
@@ -35,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbie extends TableImpl<AsbieRecord> {
 
-    private static final long serialVersionUID = -1285192;
+    private static final long serialVersionUID = 304946870;
 
     /**
      * The reference instance of <code>oagi.asbie</code>
@@ -64,6 +66,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * The column <code>oagi.asbie.based_ascc_manifest_id</code>. The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.
      */
     public final TableField<AsbieRecord, ULong> BASED_ASCC_MANIFEST_ID = createField(DSL.name("based_ascc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.");
+
+    /**
+     * The column <code>oagi.asbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<AsbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
@@ -174,6 +181,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.ASBIE_ASBIE_HASH_PATH_K);
+    }
+
+    @Override
     public Identity<AsbieRecord, ULong> getIdentity() {
         return Keys.IDENTITY_ASBIE;
     }
@@ -244,11 +256,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row18<ULong, String, ULong, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }

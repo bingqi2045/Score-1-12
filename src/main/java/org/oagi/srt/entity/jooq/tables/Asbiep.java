@@ -11,9 +11,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -22,6 +23,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
@@ -34,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbiep extends TableImpl<AsbiepRecord> {
 
-    private static final long serialVersionUID = 1519119855;
+    private static final long serialVersionUID = 2067398809;
 
     /**
      * The reference instance of <code>oagi.asbiep</code>
@@ -63,6 +65,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * The column <code>oagi.asbiep.based_asccp_manifest_id</code>. A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.
      */
     public final TableField<AsbiepRecord, ULong> BASED_ASCCP_MANIFEST_ID = createField(DSL.name("based_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.");
+
+    /**
+     * The column <code>oagi.asbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<AsbiepRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.asbiep.role_of_abie_id</code>. A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.
@@ -148,6 +155,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.ASBIEP_ASBIEP_HASH_PATH_K);
+    }
+
+    @Override
     public Identity<AsbiepRecord, ULong> getIdentity() {
         return Keys.IDENTITY_ASBIEP;
     }
@@ -214,11 +226,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<ULong, String, ULong, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<ULong, String, ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

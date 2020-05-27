@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record11;
-import org.jooq.Row11;
+import org.jooq.Record12;
+import org.jooq.Row12;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bbiep;
@@ -20,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Bbiep;
  * It is a contextualization of a BCCP.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record11<ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
+public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record12<ULong, String, ULong, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = -1883157432;
+    private static final long serialVersionUID = -366613406;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.
@@ -67,115 +67,129 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     /**
+     * Setter for <code>oagi.bbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public void setHashPath(String value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public String getHashPath() {
+        return (String) get(3);
+    }
+
+    /**
      * Setter for <code>oagi.bbiep.definition</code>. Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.
      */
     public void setDefinition(String value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.definition</code>. Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.
      */
     public String getDefinition() {
-        return (String) get(3);
+        return (String) get(4);
     }
 
     /**
      * Setter for <code>oagi.bbiep.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the Definition column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode.
      */
     public void setRemark(String value) {
-        set(4, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the Definition column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode.
      */
     public String getRemark() {
-        return (String) get(4);
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>oagi.bbiep.biz_term</code>. Business term to indicate what the BIE is called in a particular business context such as in an industry.
      */
     public void setBizTerm(String value) {
-        set(5, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.biz_term</code>. Business term to indicate what the BIE is called in a particular business context such as in an industry.
      */
     public String getBizTerm() {
-        return (String) get(5);
+        return (String) get(6);
     }
 
     /**
      * Setter for <code>oagi.bbiep.created_by</code>. A foreign key referring to the user who creates the BBIEP. The creator of the BBIEP is also its owner by default. BBIEPs created as children of another ABIE have the same CREATED_BY',
      */
     public void setCreatedBy(ULong value) {
-        set(6, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.created_by</code>. A foreign key referring to the user who creates the BBIEP. The creator of the BBIEP is also its owner by default. BBIEPs created as children of another ABIE have the same CREATED_BY',
      */
     public ULong getCreatedBy() {
-        return (ULong) get(6);
+        return (ULong) get(7);
     }
 
     /**
      * Setter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record. 
      */
     public void setLastUpdatedBy(ULong value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the BBIEP record. 
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(7);
+        return (ULong) get(8);
     }
 
     /**
      * Setter for <code>oagi.bbiep.creation_timestamp</code>. Timestamp when the BBIEP record was first created. BBIEPs created as children of another ABIE have the same CREATION_TIMESTAMP,
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.creation_timestamp</code>. Timestamp when the BBIEP record was first created. BBIEPs created as children of another ABIE have the same CREATION_TIMESTAMP,
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(8);
+        return (LocalDateTime) get(9);
     }
 
     /**
      * Setter for <code>oagi.bbiep.last_update_timestamp</code>. The timestamp when the BBIEP was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.last_update_timestamp</code>. The timestamp when the BBIEP was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(9);
+        return (LocalDateTime) get(10);
     }
 
     /**
      * Setter for <code>oagi.bbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this BBIEP record.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.bbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this BBIEP record.
      */
     public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(10);
+        return (ULong) get(11);
     }
 
     // -------------------------------------------------------------------------
@@ -188,17 +202,17 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     // -------------------------------------------------------------------------
-    // Record11 type implementation
+    // Record12 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<ULong, String, ULong, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 
     @Override
-    public Row11<ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> valuesRow() {
-        return (Row11) super.valuesRow();
+    public Row12<ULong, String, ULong, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> valuesRow() {
+        return (Row12) super.valuesRow();
     }
 
     @Override
@@ -218,41 +232,46 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public Field<String> field4() {
-        return Bbiep.BBIEP.DEFINITION;
+        return Bbiep.BBIEP.HASH_PATH;
     }
 
     @Override
     public Field<String> field5() {
-        return Bbiep.BBIEP.REMARK;
+        return Bbiep.BBIEP.DEFINITION;
     }
 
     @Override
     public Field<String> field6() {
+        return Bbiep.BBIEP.REMARK;
+    }
+
+    @Override
+    public Field<String> field7() {
         return Bbiep.BBIEP.BIZ_TERM;
     }
 
     @Override
-    public Field<ULong> field7() {
+    public Field<ULong> field8() {
         return Bbiep.BBIEP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field8() {
+    public Field<ULong> field9() {
         return Bbiep.BBIEP.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field9() {
+    public Field<LocalDateTime> field10() {
         return Bbiep.BBIEP.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field10() {
+    public Field<LocalDateTime> field11() {
         return Bbiep.BBIEP.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<ULong> field11() {
+    public Field<ULong> field12() {
         return Bbiep.BBIEP.OWNER_TOP_LEVEL_ABIE_ID;
     }
 
@@ -273,41 +292,46 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public String component4() {
-        return getDefinition();
+        return getHashPath();
     }
 
     @Override
     public String component5() {
-        return getRemark();
+        return getDefinition();
     }
 
     @Override
     public String component6() {
+        return getRemark();
+    }
+
+    @Override
+    public String component7() {
         return getBizTerm();
     }
 
     @Override
-    public ULong component7() {
+    public ULong component8() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component8() {
+    public ULong component9() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component9() {
+    public LocalDateTime component10() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component10() {
+    public LocalDateTime component11() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong component11() {
+    public ULong component12() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -328,41 +352,46 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public String value4() {
-        return getDefinition();
+        return getHashPath();
     }
 
     @Override
     public String value5() {
-        return getRemark();
+        return getDefinition();
     }
 
     @Override
     public String value6() {
+        return getRemark();
+    }
+
+    @Override
+    public String value7() {
         return getBizTerm();
     }
 
     @Override
-    public ULong value7() {
+    public ULong value8() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value8() {
+    public ULong value9() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value9() {
+    public LocalDateTime value10() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value10() {
+    public LocalDateTime value11() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong value11() {
+    public ULong value12() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -386,54 +415,60 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public BbiepRecord value4(String value) {
-        setDefinition(value);
+        setHashPath(value);
         return this;
     }
 
     @Override
     public BbiepRecord value5(String value) {
-        setRemark(value);
+        setDefinition(value);
         return this;
     }
 
     @Override
     public BbiepRecord value6(String value) {
+        setRemark(value);
+        return this;
+    }
+
+    @Override
+    public BbiepRecord value7(String value) {
         setBizTerm(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value7(ULong value) {
+    public BbiepRecord value8(ULong value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value8(ULong value) {
+    public BbiepRecord value9(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value9(LocalDateTime value) {
+    public BbiepRecord value10(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value10(LocalDateTime value) {
+    public BbiepRecord value11(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public BbiepRecord value11(ULong value) {
+    public BbiepRecord value12(ULong value) {
         setOwnerTopLevelAbieId(value);
         return this;
     }
 
     @Override
-    public BbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, String value6, ULong value7, ULong value8, LocalDateTime value9, LocalDateTime value10, ULong value11) {
+    public BbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, String value6, String value7, ULong value8, ULong value9, LocalDateTime value10, LocalDateTime value11, ULong value12) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -445,6 +480,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
         value9(value9);
         value10(value10);
         value11(value11);
+        value12(value12);
         return this;
     }
 
@@ -462,19 +498,20 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     /**
      * Create a detached, initialised BbiepRecord
      */
-    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
+    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String hashPath, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
         super(Bbiep.BBIEP);
 
         set(0, bbiepId);
         set(1, guid);
         set(2, basedBccpManifestId);
-        set(3, definition);
-        set(4, remark);
-        set(5, bizTerm);
-        set(6, createdBy);
-        set(7, lastUpdatedBy);
-        set(8, creationTimestamp);
-        set(9, lastUpdateTimestamp);
-        set(10, ownerTopLevelAbieId);
+        set(3, hashPath);
+        set(4, definition);
+        set(5, remark);
+        set(6, bizTerm);
+        set(7, createdBy);
+        set(8, lastUpdatedBy);
+        set(9, creationTimestamp);
+        set(10, lastUpdateTimestamp);
+        set(11, ownerTopLevelAbieId);
     }
 }

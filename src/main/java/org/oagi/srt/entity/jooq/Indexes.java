@@ -7,11 +7,17 @@ package org.oagi.srt.entity.jooq;
 import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.Internal;
+import org.oagi.srt.entity.jooq.tables.Abie;
 import org.oagi.srt.entity.jooq.tables.Acc;
 import org.oagi.srt.entity.jooq.tables.AppGroupUser;
 import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
+import org.oagi.srt.entity.jooq.tables.Asbie;
+import org.oagi.srt.entity.jooq.tables.Asbiep;
 import org.oagi.srt.entity.jooq.tables.Ascc;
 import org.oagi.srt.entity.jooq.tables.Asccp;
+import org.oagi.srt.entity.jooq.tables.Bbie;
+import org.oagi.srt.entity.jooq.tables.BbieSc;
+import org.oagi.srt.entity.jooq.tables.Bbiep;
 import org.oagi.srt.entity.jooq.tables.Bcc;
 import org.oagi.srt.entity.jooq.tables.Bccp;
 import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
@@ -33,14 +39,20 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index ABIE_ABIE_HASH_PATH_K = Indexes0.ABIE_ABIE_HASH_PATH_K;
     public static final Index ACC_ACC_GUID_IDX = Indexes0.ACC_ACC_GUID_IDX;
     public static final Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index APP_GROUP_USER_APP_USER_ID = Indexes0.APP_GROUP_USER_APP_USER_ID;
     public static final Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Indexes0.APP_PERMISSION_GROUP_APP_PERMISSION_ID;
+    public static final Index ASBIE_ASBIE_HASH_PATH_K = Indexes0.ASBIE_ASBIE_HASH_PATH_K;
+    public static final Index ASBIEP_ASBIEP_HASH_PATH_K = Indexes0.ASBIEP_ASBIEP_HASH_PATH_K;
     public static final Index ASCC_ASCC_GUID_IDX = Indexes0.ASCC_ASCC_GUID_IDX;
     public static final Index ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index ASCCP_ASCCP_GUID_IDX = Indexes0.ASCCP_ASCCP_GUID_IDX;
     public static final Index ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX;
+    public static final Index BBIE_BBIE_HASH_PATH_K = Indexes0.BBIE_BBIE_HASH_PATH_K;
+    public static final Index BBIE_SC_BBIE_SC_HASH_PATH_K = Indexes0.BBIE_SC_BBIE_SC_HASH_PATH_K;
+    public static final Index BBIEP_BBIEP_HASH_PATH_K = Indexes0.BBIEP_BBIEP_HASH_PATH_K;
     public static final Index BCC_BCC_GUID_IDX = Indexes0.BCC_BCC_GUID_IDX;
     public static final Index BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index BCCP_BCCP_GUID_IDX = Indexes0.BCCP_BCCP_GUID_IDX;
@@ -61,14 +73,20 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
+        public static Index ABIE_ABIE_HASH_PATH_K = Internal.createIndex("abie_hash_path_k", Abie.ABIE, new OrderField[] { Abie.ABIE.HASH_PATH }, false);
         public static Index ACC_ACC_GUID_IDX = Internal.createIndex("acc_guid_idx", Acc.ACC, new OrderField[] { Acc.ACC.GUID }, false);
         public static Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("acc_last_update_timestamp_desc_idx", Acc.ACC, new OrderField[] { Acc.ACC.LAST_UPDATE_TIMESTAMP }, false);
         public static Index APP_GROUP_USER_APP_USER_ID = Internal.createIndex("app_user_id", AppGroupUser.APP_GROUP_USER, new OrderField[] { AppGroupUser.APP_GROUP_USER.APP_USER_ID }, false);
         public static Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Internal.createIndex("app_permission_id", AppPermissionGroup.APP_PERMISSION_GROUP, new OrderField[] { AppPermissionGroup.APP_PERMISSION_GROUP.APP_PERMISSION_ID }, false);
+        public static Index ASBIE_ASBIE_HASH_PATH_K = Internal.createIndex("asbie_hash_path_k", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.HASH_PATH }, false);
+        public static Index ASBIEP_ASBIEP_HASH_PATH_K = Internal.createIndex("asbiep_hash_path_k", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.HASH_PATH }, false);
         public static Index ASCC_ASCC_GUID_IDX = Internal.createIndex("ascc_guid_idx", Ascc.ASCC, new OrderField[] { Ascc.ASCC.GUID }, false);
         public static Index ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("ascc_last_update_timestamp_desc_idx", Ascc.ASCC, new OrderField[] { Ascc.ASCC.LAST_UPDATE_TIMESTAMP }, false);
         public static Index ASCCP_ASCCP_GUID_IDX = Internal.createIndex("asccp_guid_idx", Asccp.ASCCP, new OrderField[] { Asccp.ASCCP.GUID }, false);
         public static Index ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("asccp_last_update_timestamp_desc_idx", Asccp.ASCCP, new OrderField[] { Asccp.ASCCP.LAST_UPDATE_TIMESTAMP }, false);
+        public static Index BBIE_BBIE_HASH_PATH_K = Internal.createIndex("bbie_hash_path_k", Bbie.BBIE, new OrderField[] { Bbie.BBIE.HASH_PATH }, false);
+        public static Index BBIE_SC_BBIE_SC_HASH_PATH_K = Internal.createIndex("bbie_sc_hash_path_k", BbieSc.BBIE_SC, new OrderField[] { BbieSc.BBIE_SC.HASH_PATH }, false);
+        public static Index BBIEP_BBIEP_HASH_PATH_K = Internal.createIndex("bbiep_hash_path_k", Bbiep.BBIEP, new OrderField[] { Bbiep.BBIEP.HASH_PATH }, false);
         public static Index BCC_BCC_GUID_IDX = Internal.createIndex("bcc_guid_idx", Bcc.BCC, new OrderField[] { Bcc.BCC.GUID }, false);
         public static Index BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("bcc_last_update_timestamp_desc_idx", Bcc.BCC, new OrderField[] { Bcc.BCC.LAST_UPDATE_TIMESTAMP }, false);
         public static Index BCCP_BCCP_GUID_IDX = Internal.createIndex("bccp_guid_idx", Bccp.BCCP, new OrderField[] { Bccp.BCCP.GUID }, false);

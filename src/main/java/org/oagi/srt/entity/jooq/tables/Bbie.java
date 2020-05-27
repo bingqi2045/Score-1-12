@@ -12,6 +12,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
 import org.jooq.Schema;
@@ -22,6 +23,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
@@ -39,7 +41,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -723746217;
+    private static final long serialVersionUID = -1445370814;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -68,6 +70,11 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.based_bcc_manifest_id</code>. The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.
      */
     public final TableField<BbieRecord, ULong> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
+
+    /**
+     * The column <code>oagi.bbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<BbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.
@@ -210,6 +217,11 @@ public class Bbie extends TableImpl<BbieRecord> {
     @Override
     public Schema getSchema() {
         return Oagi.OAGI;
+    }
+
+    @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.BBIE_BBIE_HASH_PATH_K);
     }
 
     @Override

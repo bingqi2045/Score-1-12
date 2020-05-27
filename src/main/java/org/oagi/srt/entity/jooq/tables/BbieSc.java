@@ -10,9 +10,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -21,6 +22,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
@@ -35,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 1397746223;
+    private static final long serialVersionUID = 1198827996;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -64,6 +66,11 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * The column <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
      */
     public final TableField<BbieScRecord, ULong> BASED_DT_SC_MANIFEST_ID = createField(DSL.name("based_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.");
+
+    /**
+     * The column <code>oagi.bbie_sc.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
@@ -182,6 +189,11 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_HASH_PATH_K);
+    }
+
+    @Override
     public Identity<BbieScRecord, ULong> getIdentity() {
         return Keys.IDENTITY_BBIE_SC;
     }
@@ -252,11 +264,11 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row18<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }

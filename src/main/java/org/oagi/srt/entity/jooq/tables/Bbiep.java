@@ -11,9 +11,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -22,6 +23,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.Indexes;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.BbiepRecord;
@@ -34,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbiep extends TableImpl<BbiepRecord> {
 
-    private static final long serialVersionUID = -1781507148;
+    private static final long serialVersionUID = 11710024;
 
     /**
      * The reference instance of <code>oagi.bbiep</code>
@@ -63,6 +65,11 @@ public class Bbiep extends TableImpl<BbiepRecord> {
      * The column <code>oagi.bbiep.based_bccp_manifest_id</code>. A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.
      */
     public final TableField<BbiepRecord, ULong> BASED_BCCP_MANIFEST_ID = createField(DSL.name("based_bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.");
+
+    /**
+     * The column <code>oagi.bbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
+     */
+    public final TableField<BbiepRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbiep.definition</code>. Definition to override the BCCP's Definition. If NULLl, it means that the definition should be inherited from the based CC.
@@ -143,6 +150,11 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.BBIEP_BBIEP_HASH_PATH_K);
+    }
+
+    @Override
     public Identity<BbiepRecord, ULong> getIdentity() {
         return Keys.IDENTITY_BBIEP;
     }
@@ -205,11 +217,11 @@ public class Bbiep extends TableImpl<BbiepRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<ULong, String, ULong, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }
