@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditBbieScNode extends BieEditNode {
 
-    private BigInteger bbieScId;
+    private BigInteger bbieScManifestId;
     private BigInteger dtScManifestId;
 
 }

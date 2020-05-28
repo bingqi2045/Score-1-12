@@ -116,7 +116,7 @@ public class ExtensionService {
                 throw new IllegalArgumentException("Invalid State.");
             }
         } else {
-            return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccId()), releaseId, user);
+            return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccManifestId()), releaseId, user);
         }
     }
 

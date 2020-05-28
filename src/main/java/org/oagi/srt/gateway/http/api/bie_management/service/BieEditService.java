@@ -13,6 +13,18 @@ import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBie
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.component.abie.AbieNode;
+import org.oagi.srt.repo.component.abie.AbieReadRepository;
+import org.oagi.srt.repo.component.asbie.AsbieNode;
+import org.oagi.srt.repo.component.asbie.AsbieReadRepository;
+import org.oagi.srt.repo.component.asbiep.AsbiepNode;
+import org.oagi.srt.repo.component.asbiep.AsbiepReadRepository;
+import org.oagi.srt.repo.component.bbie.BbieNode;
+import org.oagi.srt.repo.component.bbie.BbieReadRepository;
+import org.oagi.srt.repo.component.bbie_sc.BbieScNode;
+import org.oagi.srt.repo.component.bbie_sc.BbieScReadRepository;
+import org.oagi.srt.repo.component.bbiep.BbiepNode;
+import org.oagi.srt.repo.component.bbiep.BbiepReadRepository;
 import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +140,7 @@ public class BieEditService {
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
-        BigInteger asccpId = extension.getAsccpId();
+        BigInteger asccpId = extension.getAsccpManifestId();
         BigInteger releaseId = extension.getReleaseId();
         BigInteger roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
 
@@ -212,5 +224,53 @@ public class BieEditService {
     @Transactional
     public void updateTopLevelAbieLastUpdated(User user, BigInteger topLevelAbieId) {
         topLevelAbieRepository.updateTopLevelAbieLastUpdated(sessionService.userId(user), topLevelAbieId);
+    }
+
+    @Autowired
+    private AbieReadRepository abieReadRepository;
+
+    public AbieNode getAbieDetail(User user, BigInteger topLevelAbieId,
+                                  BigInteger accManifestId, String hashPath) {
+        return abieReadRepository.getAbieNode(topLevelAbieId, accManifestId, hashPath);
+    }
+
+    @Autowired
+    private AsbieReadRepository asbieReadRepository;
+
+    public AsbieNode getAsbieDetail(User user, BigInteger topLevelAbieId,
+                                    BigInteger asccManifestId, String hashPath) {
+        return asbieReadRepository.getAsbieNode(topLevelAbieId, asccManifestId, hashPath);
+    }
+
+    @Autowired
+    private BbieReadRepository bbieReadRepository;
+
+    public BbieNode getBbieDetail(User user, BigInteger topLevelAbieId,
+                                  BigInteger bccManifestId, String hashPath) {
+        return bbieReadRepository.getBbieNode(topLevelAbieId, bccManifestId, hashPath);
+    }
+
+    @Autowired
+    private AsbiepReadRepository asbiepReadRepository;
+
+    public AsbiepNode getAsbiepDetail(User user, BigInteger topLevelAbieId,
+                                      BigInteger asccpManifestId, String hashPath) {
+        return asbiepReadRepository.getAsbiepNode(topLevelAbieId, asccpManifestId, hashPath);
+    }
+
+    @Autowired
+    private BbiepReadRepository bbiepReadRepository;
+
+    public BbiepNode getBbiepDetail(User user, BigInteger topLevelAbieId,
+                                    BigInteger bccpManifestId, String hashPath) {
+        return bbiepReadRepository.getBbiepNode(topLevelAbieId, bccpManifestId, hashPath);
+    }
+
+    @Autowired
+    private BbieScReadRepository bbieScReadRepository;
+
+    public BbieScNode getBbieScDetail(User user, BigInteger topLevelAbieId,
+                                      BigInteger dtScManifestId, String hashPath) {
+        return bbieScReadRepository.getBbieScNode(topLevelAbieId, dtScManifestId, hashPath);
     }
 }

@@ -11,10 +11,10 @@ import java.math.BigInteger;
 public class BieEditBbiepNode extends BieEditNode {
 
     private BigInteger bbieId = BigInteger.ZERO;
-    private BigInteger bccId = BigInteger.ZERO;
+    private BigInteger bccManifestId = BigInteger.ZERO;
     private BigInteger bbiepId = BigInteger.ZERO;
-    private BigInteger bccpId = BigInteger.ZERO;
-    private BigInteger bdtId = BigInteger.ZERO;
+    private BigInteger bccpManifestId = BigInteger.ZERO;
+    private BigInteger bdtManifestId = BigInteger.ZERO;
     private boolean attribute;
 
 }

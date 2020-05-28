@@ -32,11 +32,11 @@ public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode implements BieEdi
         this.setHasChild(asbiepNode.isHasChild());
 
         this.setAsbieId(asbiepNode.getAsbieId());
-        this.setAsccId(asbiepNode.getAsccId());
+        this.setAsccManifestId(asbiepNode.getAsccManifestId());
         this.setAsbiepId(asbiepNode.getAsbiepId());
-        this.setAsccpId(asbiepNode.getAsccpId());
+        this.setAsccpManifestId(asbiepNode.getAsccpManifestId());
         this.setAbieId(asbiepNode.getAbieId());
-        this.setAccId(asbiepNode.getAccId());
+        this.setAccManifestId(asbiepNode.getAccManifestId());
 
         return this;
     }

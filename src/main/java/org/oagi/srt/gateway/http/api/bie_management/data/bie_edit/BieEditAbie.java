@@ -8,6 +8,6 @@ import java.math.BigInteger;
 public class BieEditAbie {
 
     private BigInteger abieId;
-    private BigInteger basedAccId;
+    private BigInteger basedAccManifestId;
 
 }

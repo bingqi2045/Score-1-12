@@ -1,0 +1,37 @@
+package org.oagi.srt.repo.component.abie;
+
+import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+
+import java.math.BigInteger;
+
+@Data
+public class AbieNode {
+
+    @Data
+    public class Acc {
+        private BigInteger accManifestId;
+        private String guid;
+        private String objectClassTerm;
+        private String den;
+        private String definition;
+        private CcState state;
+    }
+
+    private Acc acc = new Acc();
+
+    @Data
+    public class Abie {
+        private boolean used;
+
+        private BigInteger abieId;
+        private String guid;
+        private String version;
+        private String status;
+        private String remark;
+        private String bizTerm;
+        private String definition;
+    }
+
+    private Abie abie = new Abie();
+}

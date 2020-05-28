@@ -127,8 +127,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         if (topLevelAbieId.compareTo(BigInteger.ZERO) > 0) {
             fromAccId = repository.getAccIdByTopLevelAbieId(topLevelAbieId, releaseId);
         } else {
-            acc = repository.getAcc(abieNode.getAccId(), releaseId);
-            fromAccId = acc.getAccId();
+            acc = repository.getAcc(abieNode.getAccManifestId(), releaseId);
+            fromAccId = acc.getAccManifestId();
         }
 
         if (repository.getAsccListByFromAccId(fromAccId, releaseId).size() > 0) {
@@ -146,7 +146,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             basedAbieNode.setReleaseId(releaseId);
 
             acc = repository.getAccByAccId(acc.getBasedAccId(), releaseId);
-            basedAbieNode.setAccId(acc.getAccId());
+            basedAbieNode.setAccManifestId(acc.getAccManifestId());
             return hasChild(basedAbieNode);
         }
 
@@ -216,12 +216,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         Map<BigInteger, BieEditAsbie> asbieMap;
         Map<BigInteger, BieEditBbie> bbieMap;
 
-        BigInteger accId = asbiepNode.getAccId();
+        BigInteger accId = asbiepNode.getAccManifestId();
         BigInteger abieId = asbiepNode.getAbieId();
 
         if (abieId.longValue() == 0L && isForceBieUpdate()) {
-            BieEditAcc acc = repository.getAcc(asbiepNode.getAccId(), asbiepNode.getReleaseId());
-            AccManifestRecord accManifest = ccNodeRepository.getAccManifestByAcc(asbiepNode.getAccId(), asbiepNode.getReleaseId());
+            BieEditAcc acc = repository.getAcc(asbiepNode.getAccManifestId(), asbiepNode.getReleaseId());
+            AccManifestRecord accManifest = ccNodeRepository.getAccManifestByAcc(asbiepNode.getAccManifestId(), asbiepNode.getReleaseId());
 
             abieId = bieRepository.insertAbie()
                     .setUserId(sessionService.userId(user))
@@ -263,7 +263,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     continue;
                 }
 
-                OagisComponentType oagisComponentType = ccNodeRepository.getOagisComponentTypeByAccId(asbiepNode.getAccId());
+                OagisComponentType oagisComponentType = ccNodeRepository.getOagisComponentTypeByAccId(asbiepNode.getAccManifestId());
                 if (oagisComponentType.isGroup()) {
                     children.addAll(getDescendants(asbiepNode, hideUnused));
                 } else {
@@ -276,7 +276,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 }
             } else {
                 BieEditBcc bcc = (BieEditBcc) assoc;
-                BieEditBbie bbie = bbieMap.get(bcc.getBccId());
+                BieEditBbie bbie = bbieMap.get(bcc.getBccManifestId());
                 if (hideUnused && (bbie == null || bbie.getBbieId().longValue() == 0L || !bbie.isUsed())) {
                     continue;
                 }
@@ -302,7 +302,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         while (!accStack.isEmpty()) {
             BieEditAcc acc = accStack.pop();
 
-            BigInteger fromAccId = acc.getAccId();
+            BigInteger fromAccId = acc.getAccManifestId();
             List<BieEditAscc> asccList = repository.getAsccListByFromAccId(fromAccId, releaseId, true);
             List<BieEditBcc> bccList = repository.getBccListByFromAccId(fromAccId, releaseId, true);
 
@@ -370,32 +370,32 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         asbiepNode.setReleaseId(releaseId);
         asbiepNode.setType("asbiep");
         asbiepNode.setGuid(ascc.getGuid());
-        asbiepNode.setAsccId(ascc.getAsccId());
+        asbiepNode.setAsccManifestId(ascc.getAsccId());
 
         BieEditAsccp asccp = repository.getAsccpByAsccpManifestId(ascc.getToAsccpManifestId());
 
-        asbiepNode.setAsccpId(asccp.getAsccpId());
+        asbiepNode.setAsccpManifestId(asccp.getAsccpId());
 
         if (StringUtils.isEmpty(asbiepNode.getName())) {
             asbiepNode.setName(asccp.getPropertyTerm());
         }
 
         BieEditAcc acc;
-        if ((asbiepNode.getAccId() == null) || (asbiepNode.getAccId()).longValue() == 0L) {
+        if ((asbiepNode.getAccManifestId() == null) || (asbiepNode.getAccManifestId()).longValue() == 0L) {
             acc = repository.getAccByAccManifestId(asccp.getRoleOfAccManifestId());
             if (acc == null) {
                 return null;
             }
-            asbiepNode.setAccId(acc.getAccId());
+            asbiepNode.setAccManifestId(acc.getAccManifestId());
         } else {
-            acc = repository.getAcc(asbiepNode.getAccId(), releaseId);
+            acc = repository.getAcc(asbiepNode.getAccManifestId(), releaseId);
         }
 
         if (asbie == null && isForceBieUpdate()) {
             BigInteger abieId = bieRepository.insertAbie()
                     .setUserId(sessionService.userId(user))
                     .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
-                    .setAccManifestId(acc.getAccId())
+                    .setAccManifestId(acc.getAccManifestId())
                     .execute().toBigInteger();
 
             AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpId(), abieId, topLevelAbieId);
@@ -419,7 +419,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             BieEditAbie abie = repository.getAbieByAsbiepId(asbie.getToAsbiepId());
             asbiepNode.setAbieId(abie.getAbieId());
-            asbiepNode.setAccId(abie.getBasedAccId());
+            asbiepNode.setAccManifestId(abie.getBasedAccManifestId());
 
             asbiepNode.setName(repository.getAsccpPropertyTermByAsbiepId(asbie.getToAsbiepId()));
             asbiepNode.setUsed(asbie.isUsed());
@@ -445,10 +445,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         bbiepNode.setGuid(bcc.getGuid());
         bbiepNode.setAttribute(bcc.isAttribute());
 
-        bbiepNode.setBccId(bcc.getBccId());
+        bbiepNode.setBccManifestId(bcc.getBccManifestId());
         BieEditBccp bccp = repository.getBccpByBccpManifestId(bcc.getToBccpManifestId());
-        bbiepNode.setBccpId(bccp.getBccpId());
-        bbiepNode.setBdtId(bccp.getBdtManifestId());
+        bbiepNode.setBccpManifestId(bccp.getBccpManifestId());
+        bbiepNode.setBdtManifestId(bccp.getBdtManifestId());
 
         if (StringUtils.isEmpty(bbiepNode.getName())) {
             bbiepNode.setName(bccp.getPropertyTerm());
@@ -462,7 +462,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             BigInteger bbieId = bbieRecord.getBbieId().toBigInteger();
 
             bbie = new BieEditBbie();
-            bbie.setBasedBccId(bcc.getBccId());
+            bbie.setBasedBccId(bcc.getBccManifestId());
             bbie.setBbieId(bbieId);
             bbie.setFromAbieId(fromAbieId);
             bbie.setToBbiepId(bbiepId);
@@ -488,7 +488,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     public boolean hasChild(BieEditAsbiepNode asbiepNode) {
         BieEditAbieNode abieNode = new BieEditAbieNode();
         abieNode.setReleaseId(asbiepNode.getReleaseId());
-        abieNode.setAccId(asbiepNode.getAccId());
+        abieNode.setAccManifestId(asbiepNode.getAccManifestId());
 
         return hasChild(abieNode);
     }
@@ -499,7 +499,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     bbiepNode.getBbieId(), true, bbiepNode.getTopLevelAbieId()) > 0;
 
         } else {
-            BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpId(), bbiepNode.getReleaseId());
+            BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpManifestId(), bbiepNode.getReleaseId());
             return repository.getCountDtScByOwnerDtId(bccp.getBdtManifestId()) > 0;
         }
     }
@@ -516,7 +516,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 return Collections.emptyList();
             }
 
-            bccp = repository.getBccp(bbiepNode.getBccpId(), bbiepNode.getReleaseId());
+            bccp = repository.getBccp(bbiepNode.getBccpManifestId(), bbiepNode.getReleaseId());
         }
 
         List<BieEditNode> children = new ArrayList();
@@ -538,14 +538,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     if (isForceBieUpdate()) {
                         BigInteger bbieScId = repository.createBbieSc(user, bbieId, dtScManifestId, topLevelAbieId);
                         bbieSc = new BieEditBbieSc();
-                        bbieSc.setBbieScId(bbieScId);
+                        bbieSc.setBbieScManifestId(bbieScId);
                     }
                 }
 
-                if (hideUnused && (bbieSc == null || bbieSc.getBbieScId().longValue() == 0L || !bbieSc.isUsed())) {
+                if (hideUnused && (bbieSc == null || bbieSc.getBbieScManifestId().longValue() == 0L || !bbieSc.isUsed())) {
                     continue;
                 }
-                bbieScNode.setBbieScId(bbieSc.getBbieScId());
+                bbieScNode.setBbieScManifestId(bbieSc.getBbieScManifestId());
                 bbieScNode.setUsed(bbieSc.isUsed());
             }
 
@@ -605,7 +605,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     ASCC.CARDINALITY_MIN.as("bie_cardinality_min"),
                     ASCC.CARDINALITY_MAX.as("bie_cardinality_max"))
                     .from(ASCC)
-                    .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                    .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccManifestId())))
                     .fetchOneInto(BieEditAsbiepNodeDetail.class);
         }
 
@@ -621,12 +621,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .fetchOneInto(String.class));
         }
 
-        if (asbiepNode.getAsccId().longValue() > 0L) {
+        if (asbiepNode.getAsccManifestId().longValue() > 0L) {
             Record2<Integer, Integer> res = dslContext.select(
                     ASCC.CARDINALITY_MIN,
                     ASCC.CARDINALITY_MAX)
                     .from(ASCC)
-                    .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                    .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccManifestId())))
                     .fetchOne();
 
             detail.setCcCardinalityMin(res.get(ASCC.CARDINALITY_MIN));
@@ -634,11 +634,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             detail.setRequired(detail.getCcCardinalityMin() > 0);
         }
 
-        if (asbiepNode.getAsccpId().longValue() > 0L) {
+        if (asbiepNode.getAsccpManifestId().longValue() > 0L) {
             Record1<Byte> ccNillable = dslContext.select(
                     ASCCP.IS_NILLABLE)
                     .from(ASCCP)
-                    .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpId())))
+                    .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpManifestId())))
                     .fetchOne();
 
             detail.setCcNillable(ccNillable.get(ASCCP.IS_NILLABLE) == 1);
@@ -646,17 +646,17 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         detail.setAssociationDefinition(dslContext.select(
                 ASCC.DEFINITION).from(ASCC)
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccId())))
+                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccManifestId())))
                 .fetchOneInto(String.class));
 
         detail.setComponentDefinition(dslContext.select(
                 ASCCP.DEFINITION).from(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpId())))
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpManifestId())))
                 .fetchOneInto(String.class));
 
         detail.setTypeDefinition(dslContext.select(
                 ACC.DEFINITION).from(ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(asbiepNode.getAccId())))
+                .where(ACC.ACC_ID.eq(ULong.valueOf(asbiepNode.getAccManifestId())))
                 .fetchOneInto(String.class));
 
         return detail.append(asbiepNode);
@@ -701,7 +701,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     BCC.FIXED_VALUE.as("bie_fixed_value"),
                     BCC.IS_NILLABLE.as("bie_nillable"))
                     .from(BCC)
-                    .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                    .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccManifestId())))
                     .fetchOneInto(BieEditBbiepNodeDetail.class);
         }
 
@@ -730,13 +730,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbiepNode.getBbieId().longValue() == 0L) {
-            BigInteger defaultBdtPriRestriId = repository.getDefaultBdtPriRestriIdByBdtId(detail.getBdtId());
+            BigInteger defaultBdtPriRestriId = repository.getDefaultBdtPriRestriIdByBdtId(detail.getBdtManifestId());
             detail.setBdtPriRestriId(defaultBdtPriRestriId);
         }
 
-        if (bbiepNode.getBccId().longValue() > 0L) {
+        if (bbiepNode.getBccManifestId().longValue() > 0L) {
             BccRecord bccRecord = dslContext.selectFrom(BCC)
-                    .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId()))).fetchOne();
+                    .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccManifestId()))).fetchOne();
             detail.setCcCardinalityMin(bccRecord.getCardinalityMin());
             detail.setCcCardinalityMax(bccRecord.getCardinalityMax());
             detail.setCcDefaultValue(bccRecord.getDefaultValue());
@@ -751,13 +751,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         detail.setAgencyIdLists(bdtPriRestri.getAgencyIdLists());
         detail.setAssociationDefinition(dslContext.select(
                 BCC.DEFINITION).from(BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccId())))
+                .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNode.getBccManifestId())))
                 .fetchOneInto(String.class)
         );
 
         detail.setComponentDefinition(dslContext.select(
                 BCCP.DEFINITION).from(BCCP)
-                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBccpId())))
+                .where(BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNode.getBccpManifestId())))
                 .fetchOneInto(String.class)
         );
 
@@ -765,7 +765,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     private BieEditBdtPriRestri getBdtPriRestri(BieEditBbiepNode bbiepNode) {
-        BigInteger bdtId = bbiepNode.getBdtId();
+        BigInteger bdtId = bbiepNode.getBdtManifestId();
 
         List<BieEditXbt> bieEditXbtList = dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID.as("pri_restri_id"),
@@ -835,7 +835,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     private BieEditBbieScNodeDetail getDetail(BieEditBbieScNode bbieScNode) {
         BieEditBbieScNodeDetail detail;
-        if (bbieScNode.getBbieScId().longValue() > 0L) {
+        if (bbieScNode.getBbieScManifestId().longValue() > 0L) {
             detail = dslContext.select(
                     BBIE_SC.CARDINALITY_MIN.as("bie_cardinality_min"),
                     BBIE_SC.CARDINALITY_MAX.as("bie_cardinality_max"),
@@ -851,7 +851,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     BBIE_SC.EXAMPLE
             )
                     .from(BBIE_SC)
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScId())))
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNode.getBbieScManifestId())))
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
 
             /* Issue #762 */
@@ -877,7 +877,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .fetchOneInto(BieEditBbieScNodeDetail.class);
         }
 
-        if (bbieScNode.getBbieScId().longValue() == 0L) {
+        if (bbieScNode.getBbieScManifestId().longValue() == 0L) {
             BigInteger defaultDtScPriRestriId = repository.getDefaultDtScPriRestriIdByDtScId(bbieScNode.getDtScManifestId());
             detail.setDtScPriRestriId(defaultDtScPriRestriId);
         }
@@ -1094,7 +1094,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .execute();
         }
         Record1<Byte> rs = dslContext.select(ASCCP.IS_NILLABLE).from(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsccpId()))).fetchOne();
+                .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsccpManifestId()))).fetchOne();
 
         if (rs.getValue(ASCCP.IS_NILLABLE) != 1 && asbiepNodeDetail.getBieNillable() != null) {
             dslContext.update(ASBIE)
@@ -1160,7 +1160,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         BccRecord bccRecord = dslContext.selectFrom(BCC)
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccId()))).fetchOne();
+                .where(BCC.BCC_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccManifestId()))).fetchOne();
 
         if (bccRecord.getIsNillable() != 1 && bbiepNodeDetail.getBieNillable() != null) {
             dslContext.update(BBIE)
@@ -1169,7 +1169,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         Record2<String, String> bccp = dslContext.select(BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE)
-                .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccpId()))).fetchOne();
+                .from(BCCP).where(BCCP.BCCP_ID.eq(ULong.valueOf(bbiepNodeDetail.getBccpManifestId()))).fetchOne();
 
         if (bccRecord.getDefaultValue() == null &&
                 bccRecord.getFixedValue() == null &&
@@ -1204,13 +1204,13 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         if (bbieScNodeDetail.getBieCardinalityMin() != null) {
             dslContext.update(BBIE_SC)
                     .set(BBIE_SC.CARDINALITY_MIN, bbieScNodeDetail.getBieCardinalityMin())
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId()))).execute();
         }
 
         if (bbieScNodeDetail.getBieCardinalityMax() != null) {
             dslContext.update(BBIE_SC)
                     .set(BBIE_SC.CARDINALITY_MAX, bbieScNodeDetail.getBieCardinalityMax())
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId()))).execute();
         }
 
         BigInteger dtScPriRestriId = bbieScNodeDetail.getDtScPriRestriId();
@@ -1222,19 +1222,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .setNull(BBIE_SC.DT_SC_PRI_RESTRI_ID)
                     .setNull(BBIE_SC.CODE_LIST_ID)
                     .set(BBIE_SC.AGENCY_ID_LIST_ID, ULong.valueOf(agencyIdListId))
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId()))).execute();
         } else if (codeListId != null) {
             dslContext.update(BBIE_SC)
                     .setNull(BBIE_SC.DT_SC_PRI_RESTRI_ID)
                     .set(BBIE_SC.CODE_LIST_ID, ULong.valueOf(codeListId))
                     .setNull(BBIE_SC.AGENCY_ID_LIST_ID)
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId()))).execute();
         } else if (dtScPriRestriId != null) {
             dslContext.update(BBIE_SC)
                     .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(dtScPriRestriId))
                     .setNull(BBIE_SC.CODE_LIST_ID)
                     .setNull(BBIE_SC.AGENCY_ID_LIST_ID)
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId()))).execute();
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId()))).execute();
         }
 
         DtScRecord dtScRecord = dslContext.select(DT_SC.fields())
@@ -1247,7 +1247,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             dslContext.update(BBIE_SC)
                     .set(BBIE_SC.DEFAULT_VALUE, emptyToNull(bbieScNodeDetail.getBieDefaultValue()))
                     .set(BBIE_SC.FIXED_VALUE, emptyToNull(bbieScNodeDetail.getBieFixedValue()))
-                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                    .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId())))
                     .execute();
         }
 
@@ -1257,7 +1257,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 .set(BBIE_SC.BIZ_TERM, emptyToNull(bbieScNodeDetail.getBizTerm()))
                 .set(BBIE_SC.REMARK, emptyToNull(bbieScNodeDetail.getRemark()))
                 .set(BBIE_SC.EXAMPLE, emptyToNull(bbieScNodeDetail.getExample()))
-                .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScId())))
+                .where(BBIE_SC.BBIE_SC_ID.eq(ULong.valueOf(bbieScNodeDetail.getBbieScManifestId())))
                 .execute();
     }
 

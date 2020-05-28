@@ -10,13 +10,13 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAcc extends TrackableImpl {
 
-    private BigInteger accId;
+    private BigInteger accManifestId;
     private String guid;
     private int oagisComponentType;
     private BigInteger basedAccId;
 
     @Override
     public BigInteger getId() {
-        return accId;
+        return accManifestId;
     }
 }

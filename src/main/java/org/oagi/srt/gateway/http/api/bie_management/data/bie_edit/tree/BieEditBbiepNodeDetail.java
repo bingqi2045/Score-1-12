@@ -56,9 +56,9 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
         this.setHasChild(bbiepNode.isHasChild());
 
         this.setBbieId(bbiepNode.getBbieId());
-        this.setBccId(bbiepNode.getBccId());
+        this.setBccManifestId(bbiepNode.getBccManifestId());
         this.setBbiepId(bbiepNode.getBbiepId());
-        this.setBccpId(bbiepNode.getBccpId());
+        this.setBccpManifestId(bbiepNode.getBccpManifestId());
         this.setAttribute(bbiepNode.isAttribute());
 
         return this;
