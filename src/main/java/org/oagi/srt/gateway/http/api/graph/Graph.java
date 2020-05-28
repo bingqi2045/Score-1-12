@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcId;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.math.BigInteger;

@@ -115,6 +115,7 @@ public class BusinessInformationEntityRepository {
     public class InsertAbieArguments {
         private ULong userId;
         private ULong accManifestId;
+        private String hashPath;
         private ULong topLevelAbieId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
@@ -133,6 +134,15 @@ public class BusinessInformationEntityRepository {
 
         public InsertAbieArguments setAccManifestId(ULong accManifestId) {
             this.accManifestId = accManifestId;
+            return this;
+        }
+
+        public String getHashPath() {
+            return hashPath;
+        }
+
+        public InsertAbieArguments setHashPath(String hashPath) {
+            this.hashPath = hashPath;
             return this;
         }
 
@@ -187,6 +197,7 @@ public class BusinessInformationEntityRepository {
         return dslContext.insertInto(ABIE)
                 .set(ABIE.GUID, SrtGuid.randomGuid())
                 .set(ABIE.BASED_ACC_MANIFEST_ID, arguments.getAccManifestId())
+                .set(ABIE.HASH_PATH, arguments.getHashPath())
                 .set(ABIE.CREATED_BY, arguments.getUserId())
                 .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
@@ -248,6 +259,7 @@ public class BusinessInformationEntityRepository {
         private ULong asccpManifestId;
         private ULong roleOfAbieId;
         private ULong topLevelAbieId;
+        private String hashPath;
         private ULong userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
@@ -275,6 +287,15 @@ public class BusinessInformationEntityRepository {
 
         public InsertAsbiepArguments setTopLevelAbieId(ULong topLevelAbieId) {
             this.topLevelAbieId = topLevelAbieId;
+            return this;
+        }
+
+        public String getHashPath() {
+            return hashPath;
+        }
+
+        public InsertAsbiepArguments setHashPath(String hashPath) {
+            this.hashPath = hashPath;
             return this;
         }
 
@@ -333,6 +354,7 @@ public class BusinessInformationEntityRepository {
         return dslContext.insertInto(ASBIEP)
                 .set(ASBIEP.GUID, SrtGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
+                .set(ASBIEP.HASH_PATH, arguments.getHashPath())
                 .set(ASBIEP.ROLE_OF_ABIE_ID, arguments.getRoleOfAbieId())
                 .set(ASBIEP.CREATED_BY, arguments.getUserId())
                 .set(ASBIEP.LAST_UPDATED_BY, arguments.getUserId())
@@ -605,13 +627,10 @@ public class BusinessInformationEntityRepository {
     }
 
     public BigInteger getAsccpManifestIdByTopLevelAbieId(BigInteger topLevelAbieId) {
-        return dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
-                .from(TOP_LEVEL_ABIE)
-                .join(ABIE)
-                .on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASCCP_MANIFEST)
-                .on(and(ABIE.BASED_ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID),
-                        TOP_LEVEL_ABIE.RELEASE_ID.eq(ASCCP_MANIFEST.RELEASE_ID)))
+        return dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
+                .from(ASBIEP)
+                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(TOP_LEVEL_ABIE).on(ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchOptionalInto(BigInteger.class).orElse(null);
     }

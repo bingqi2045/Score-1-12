@@ -11,13 +11,16 @@ import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.srt.gateway.http.api.bie_management.data.*;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateRequest;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieCreateResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieList;
+import org.oagi.srt.gateway.http.api.bie_management.data.BieListRequest;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.srt.gateway.http.api.context_management.data.BusinessContext;
+import org.oagi.srt.gateway.http.api.graph.GraphService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.BusinessContextRepository;
 import org.oagi.srt.repo.BusinessInformationEntityRepository;
@@ -32,15 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
+import static org.oagi.srt.gateway.http.helper.Utility.sha256;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,6 +50,9 @@ public class BieService {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private GraphService graphService;
 
     @Autowired
     private ABIERepository abieRepository;
@@ -75,6 +80,10 @@ public class BieService {
             throw new IllegalArgumentException();
         }
 
+        String asccpPath = sha256("asccp-" + asccpManifest.getAsccpManifestId());
+        String accPath = sha256(String.join(">",
+                Arrays.asList(asccpPath, "acc-" + asccpManifest.getRoleOfAccManifestId())));
+
         BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
 
@@ -88,6 +97,7 @@ public class BieService {
                 .setUserId(userId)
                 .setTopLevelAbieId(topLevelAbieId)
                 .setAccManifestId(asccpManifest.getRoleOfAccManifestId())
+                .setHashPath(accPath)
                 .setTimestamp(millis)
                 .execute();
 
@@ -100,6 +110,7 @@ public class BieService {
                 .setAsccpManifestId(asccpManifest.getAsccpManifestId())
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAbieId(topLevelAbieId)
+                .setHashPath(asccpPath)
                 .setUserId(userId)
                 .setTimestamp(millis)
                 .execute();

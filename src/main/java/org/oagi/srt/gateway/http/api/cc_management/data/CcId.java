@@ -12,4 +12,9 @@ import java.math.BigInteger;
 public class CcId {
     private String type;
     private BigInteger manifestId;
+
+    public CcId(CcType type, BigInteger manifestId) {
+        this.type = type.name().toLowerCase();
+        this.manifestId = manifestId;
+    }
 }

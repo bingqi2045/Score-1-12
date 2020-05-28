@@ -70,8 +70,8 @@ public class GraphService {
         return buildGraph(graphContext, graphContext.toNode(bccpManifest));
     }
 
-    public Graph getBieGraph(BigInteger topLevelBieId) {
-        BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAbieId(topLevelBieId);
+    public Graph getBieGraph(BigInteger topLevelAbieId) {
+        BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAbieId(topLevelAbieId);
         return getAsccpGraph(asccpManifestId);
     }
 

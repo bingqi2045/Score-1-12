@@ -1007,7 +1007,7 @@ DEALLOCATE PREPARE stmt;
 -- ABIE
 ALTER TABLE `abie` ADD COLUMN `based_acc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.' AFTER `guid`,
                    ADD CONSTRAINT `abie_based_acc_manifest_id_fk` FOREIGN KEY (`based_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
-                   ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_acc_manifest_id`,
+                   ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_acc_manifest_id`,
                    ADD KEY `abie_hash_path_k` (`hash_path`);
 
 UPDATE `abie`, `acc_manifest`, `release`
@@ -1022,7 +1022,7 @@ ALTER TABLE `abie` DROP FOREIGN KEY `abie_based_acc_id_fk`,
 -- ASBIE
 ALTER TABLE `asbie` ADD COLUMN `based_ascc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.' AFTER `guid`,
                     ADD CONSTRAINT `asbie_based_ascc_manifest_id_fk` FOREIGN KEY (`based_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`),
-                    ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_ascc_manifest_id`,
+                    ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_ascc_manifest_id`,
                     ADD KEY `asbie_hash_path_k` (`hash_path`);
 
 UPDATE `asbie`, `ascc_manifest`, `release`
@@ -1037,7 +1037,7 @@ ALTER TABLE `asbie` DROP FOREIGN KEY `asbie_based_ascc_id_fk`,
 -- BBIE
 ALTER TABLE `bbie` ADD COLUMN `based_bcc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.' AFTER `guid`,
                    ADD CONSTRAINT `bbie_based_bcc_manifest_id_fk` FOREIGN KEY (`based_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`),
-                   ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_bcc_manifest_id`,
+                   ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_bcc_manifest_id`,
                    ADD KEY `bbie_hash_path_k` (`hash_path`);
 
 UPDATE `bbie`, `bcc_manifest`, `release`
@@ -1052,7 +1052,7 @@ ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_based_bcc_id_fk`,
 -- ASBIEP
 ALTER TABLE `asbiep` ADD COLUMN `based_asccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.' AFTER `guid`,
                      ADD CONSTRAINT `asbiep_based_asccp_manifest_id_fk` FOREIGN KEY (`based_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
-                     ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_asccp_manifest_id`,
+                     ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_asccp_manifest_id`,
                      ADD KEY `asbiep_hash_path_k` (`hash_path`);
 
 UPDATE `asbiep`, `asccp_manifest`, `release`
@@ -1067,7 +1067,7 @@ ALTER TABLE `asbiep` DROP FOREIGN KEY `asbiep_based_asccp_id_fk`,
 -- BBIEP
 ALTER TABLE `bbiep` ADD COLUMN `based_bccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key pointing to the BCCP_MANIFEST record. It is the BCCP, which the BBIEP contextualizes.' AFTER `guid`,
                     ADD CONSTRAINT `bbiep_based_bccp_manifest_id_fk` FOREIGN KEY (`based_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
-                    ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_bccp_manifest_id`,
+                    ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_bccp_manifest_id`,
                     ADD KEY `bbiep_hash_path_k` (`hash_path`);
 
 UPDATE `bbiep`, `bccp_manifest`, `release`
@@ -1082,7 +1082,7 @@ ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_based_bccp_id_fk`,
 -- BBIE_SC
 ALTER TABLE `bbie_sc` ADD COLUMN `based_dt_sc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.' AFTER `guid`,
                       ADD CONSTRAINT `bbie_sc_based_dt_sc_manifest_id_fk` FOREIGN KEY (`based_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`),
-                      ADD COLUMN `hash_path` varchar(60) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_dt_sc_manifest_id`,
+                      ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_dt_sc_manifest_id`,
                       ADD KEY `bbie_sc_hash_path_k` (`hash_path`);
 
 UPDATE `bbie_sc`, `dt_sc_manifest`, `release`

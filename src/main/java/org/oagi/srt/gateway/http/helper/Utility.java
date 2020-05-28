@@ -1,7 +1,10 @@
 package org.oagi.srt.gateway.http.helper;
 
+import lombok.SneakyThrows;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.StringUtils;
 
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -207,5 +210,11 @@ public class Utility {
             out = out + delim[i] + " ";
         }
         return out.trim();
+    }
+
+    @SneakyThrows
+    public static String sha256(String str) {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        return new String(Hex.encode(digest.digest(str.getBytes())));
     }
 }
