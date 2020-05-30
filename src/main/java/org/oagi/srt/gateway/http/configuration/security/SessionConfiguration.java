@@ -16,7 +16,6 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 @Configuration
-@EnableRedisHttpSession
 public class SessionConfiguration extends RedisHttpSessionConfiguration {
 
     @Autowired
