@@ -704,6 +704,7 @@ public class CcNodeService extends EventHandler {
             ccRevisionResponse.setType(ASCCP.toString());
             ccRevisionResponse.setIsDeprecated(asccpRecord.getIsDeprecated() == 1);
             ccRevisionResponse.setIsNillable(asccpRecord.getIsNillable() == 1);
+            ccRevisionResponse.setIsReusable(asccpRecord.getReusableIndicator() == 1);
             ccRevisionResponse.setName(asccpRecord.getPropertyTerm());
             ccRevisionResponse.setHasBaseCc(asccpRecord.getRoleOfAccId() != null);
         }

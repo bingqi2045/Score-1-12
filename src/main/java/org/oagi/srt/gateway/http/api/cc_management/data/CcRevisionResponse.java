@@ -12,6 +12,7 @@ public class CcRevisionResponse {
     Long ccId;
     Boolean isDeprecated;
     Boolean isNillable;
+    Boolean isReusable;
     Boolean isAbstract;
     Boolean hasBaseCc;
     String name;
