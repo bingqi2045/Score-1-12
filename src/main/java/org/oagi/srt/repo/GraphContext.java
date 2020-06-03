@@ -5,7 +5,10 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record3;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.BCCEntityType;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
@@ -42,6 +45,7 @@ public class GraphContext {
         private ULong accManifestId;
         private ULong basedAccManifestId;
         private String objectClassTerm;
+        private OagisComponentType componentType;
         private String state;
         private ULong releaseId;
         private ULong prevAccManifestId;
@@ -95,6 +99,7 @@ public class GraphContext {
         private ULong toBccpManifestId;
         private int cardinalityMin;
         private int cardinalityMax;
+        private BCCEntityType entityType;
         private String state;
         private ULong releaseId;
         private ULong prevBccManifestId;
@@ -133,7 +138,7 @@ public class GraphContext {
 
         accManifestMap =
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
-                        ACC.OBJECT_CLASS_TERM, ACC.STATE,
+                        ACC.OBJECT_CLASS_TERM, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE,
                         ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
@@ -141,6 +146,7 @@ public class GraphContext {
                                 record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
                                 record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
                                 record.get(ACC.OBJECT_CLASS_TERM),
+                                OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)),
                                 record.get(ACC.STATE),
                                 record.get(ACC_MANIFEST.RELEASE_ID),
                                 record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
@@ -212,7 +218,7 @@ public class GraphContext {
                         BCC_MANIFEST.BCC_MANIFEST_ID,
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                         BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
-                        BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX,
+                        BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX, BCC.ENTITY_TYPE,
                         SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
                         BCC.STATE, BCC_MANIFEST.RELEASE_ID, BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
                         .from(BCC_MANIFEST)
@@ -229,6 +235,7 @@ public class GraphContext {
                                     record.get(BCC_MANIFEST.TO_BCCP_MANIFEST_ID),
                                     record.get(BCC.CARDINALITY_MIN),
                                     record.get(BCC.CARDINALITY_MAX),
+                                    BCCEntityType.valueOf(record.get(BCC.ENTITY_TYPE)),
                                     record.get(BCC.STATE),
                                     record.get(BCC_MANIFEST.RELEASE_ID),
                                     record.get(BCC_MANIFEST.PREV_BCC_MANIFEST_ID),
@@ -338,12 +345,12 @@ public class GraphContext {
     }
 
     public Node toNode(AccManifestRecord record) {
-        Record2<String, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.STATE)
+        Record3<String, Integer, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE)
                 .from(ACC)
                 .where(ACC.ACC_ID.eq(record.getAccId()))
                 .fetchOne();
         return toNode(new AccManifest(record.getAccManifestId(), record.getBasedAccManifestId(),
-                res.get(ACC.OBJECT_CLASS_TERM), res.get(ACC.STATE),
+                res.get(ACC.OBJECT_CLASS_TERM), OagisComponentType.valueOf(res.get(ACC.OAGIS_COMPONENT_TYPE)), res.get(ACC.STATE),
                 record.getReleaseId(), record.getPrevAccManifestId()));
     }
 
@@ -403,6 +410,7 @@ public class GraphContext {
         node.setPrevManifestId(accManifest.getPrevAccManifestId());
         node.put("state", accManifest.getState());
         node.put("objectClassTerm", accManifest.getObjectClassTerm());
+        node.put("componentType", accManifest.getComponentType().name());
         return node;
     }
 
@@ -445,6 +453,7 @@ public class GraphContext {
         node.put("state", bccManifest.getState());
         node.put("cardinalityMin", bccManifest.getCardinalityMin());
         node.put("cardinalityMax", bccManifest.getCardinalityMax());
+        node.put("entityType", bccManifest.getEntityType().name());
         return node;
     }
 
