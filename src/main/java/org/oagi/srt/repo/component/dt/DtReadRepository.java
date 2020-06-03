@@ -24,4 +24,27 @@ public class DtReadRepository {
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOptionalInto(DtRecord.class).orElse(null);
     }
+
+    public DtRecord getDtByDtManifestId(BigInteger dtManifestId) {
+        return dslContext.select(DT.fields())
+                .from(DT)
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .where(DT_MANIFEST.DT_MANIFEST_ID.eq(ULong.valueOf(dtManifestId)))
+                .fetchOptionalInto(DtRecord.class).orElse(null);
+    }
+
+    public BdtNode getBdtNode(BigInteger topLevelAbieId, BigInteger dtManifestId, String hashPath) {
+        DtRecord dtRecord = getDtByDtManifestId(dtManifestId);
+        if (dtRecord == null) {
+            return null;
+        }
+
+        BdtNode bdtNode = new BdtNode();
+
+        bdtNode.setDataTypeTerm(dtRecord.getDataTypeTerm());
+        bdtNode.setQualifier(dtRecord.getQualifier());
+        bdtNode.setDefinition(dtRecord.getDefinition());
+
+        return bdtNode;
+    }
 }

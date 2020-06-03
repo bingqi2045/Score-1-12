@@ -17,6 +17,7 @@ import org.oagi.srt.repo.component.asbiep.AsbiepNode;
 import org.oagi.srt.repo.component.bbie.BbieNode;
 import org.oagi.srt.repo.component.bbie_sc.BbieScNode;
 import org.oagi.srt.repo.component.bbiep.BbiepNode;
+import org.oagi.srt.repo.component.dt.BdtNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -143,6 +144,16 @@ public class BieEditController {
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
         return service.getBbieScDetail(user, topLevelAbieId, manifestId, hashPath);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bdt/{manifestId}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public BdtNode getBdtDetail(@AuthenticationPrincipal User user,
+                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                @PathVariable("manifestId") BigInteger manifestId,
+                                @RequestParam("hashPath") String hashPath) {
+        return service.getBdtDetail(user, topLevelAbieId, manifestId, hashPath);
     }
 
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,

@@ -25,6 +25,8 @@ import org.oagi.srt.repo.component.bbie_sc.BbieScNode;
 import org.oagi.srt.repo.component.bbie_sc.BbieScReadRepository;
 import org.oagi.srt.repo.component.bbiep.BbiepNode;
 import org.oagi.srt.repo.component.bbiep.BbiepReadRepository;
+import org.oagi.srt.repo.component.dt.BdtNode;
+import org.oagi.srt.repo.component.dt.DtReadRepository;
 import org.oagi.srt.repository.TopLevelAbieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -272,5 +274,13 @@ public class BieEditService {
     public BbieScNode getBbieScDetail(User user, BigInteger topLevelAbieId,
                                       BigInteger dtScManifestId, String hashPath) {
         return bbieScReadRepository.getBbieScNode(topLevelAbieId, dtScManifestId, hashPath);
+    }
+
+    @Autowired
+    private DtReadRepository bdtReadRepository;
+
+    public BdtNode getBdtDetail(User user, BigInteger topLevelAbieId,
+                                BigInteger dtManifestId, String hashPath) {
+        return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId, hashPath);
     }
 }
