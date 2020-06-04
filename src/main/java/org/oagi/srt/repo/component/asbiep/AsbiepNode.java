@@ -24,6 +24,8 @@ public class AsbiepNode {
     @Data
     public class Asbiep {
         private boolean used;
+        private String hashPath;
+        private BigInteger basedAsccpManifestId;
 
         private BigInteger asbiepId;
         private String guid;

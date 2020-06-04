@@ -26,6 +26,8 @@ public class BbieScNode {
     @Data
     public class BbieSc {
         private boolean used;
+        private String hashPath;
+        private BigInteger basedDtScManifestId;
 
         private BigInteger bbieScId;
         private String guid;

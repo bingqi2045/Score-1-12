@@ -49,11 +49,14 @@ public class AsbiepReadRepository {
         asccp.setState(CcState.valueOf(asccpRecord.getState()));
         asccp.setNillable(asccpRecord.getIsNillable() == 1 ? true : false);
 
+        AsbiepNode.Asbiep asbiep = asbiepNode.getAsbiep();
+        asbiep.setUsed(true);
+        asbiep.setHashPath(hashPath);
+        asbiep.setBasedAsccpManifestId(asccp.getAsccpManifestId());
+
         AsbiepRecord asbiepRecord = getAsbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (asbiepRecord != null) {
-            AsbiepNode.Asbiep asbiep = asbiepNode.getAsbiep();
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
-            asbiep.setUsed(true);
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
             asbiep.setBizTerm(asbiepRecord.getBizTerm());

@@ -65,11 +65,14 @@ public class BbiepReadRepository {
         bdt.setDefinition(bdtRecord.getDefinition());
         bdt.setState(CcState.valueOf(bdtRecord.getState()));
 
+        BbiepNode.Bbiep bbiep = bbiepNode.getBbiep();
+        bbiep.setUsed(true);
+        bbiep.setHashPath(hashPath);
+        bbiep.setBasedBccpManifestId(bccp.getBccpManifestId());
+
         BbiepRecord bbiepRecord = getBbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbiepRecord != null) {
-            BbiepNode.Bbiep bbiep = bbiepNode.getBbiep();
             bbiep.setBbiepId(bbiepRecord.getBbiepId().toBigInteger());
-            bbiep.setUsed(true);
             bbiep.setGuid(bbiepRecord.getGuid());
             bbiep.setRemark(bbiepRecord.getRemark());
             bbiep.setBizTerm(bbiepRecord.getBizTerm());

@@ -48,11 +48,14 @@ public class AbieReadRepository {
         acc.setDefinition(accRecord.getDefinition());
         acc.setState(CcState.valueOf(accRecord.getState()));
 
+        AbieNode.Abie abie = abieNode.getAbie();
+        abie.setUsed(true);
+        abie.setHashPath(hashPath);
+        abie.setBasedAccManifestId(acc.getAccManifestId());
+
         AbieRecord abieRecord = getAbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (abieRecord != null) {
-            AbieNode.Abie abie = abieNode.getAbie();
             abie.setAbieId(abieRecord.getAbieId().toBigInteger());
-            abie.setUsed(true);
             abie.setGuid(abieRecord.getGuid());
             abie.setVersion(abieRecord.getVersion());
             abie.setStatus(abieRecord.getStatus());

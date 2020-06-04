@@ -53,9 +53,12 @@ public class BbieReadRepository {
         bcc.setDeprecated(bccRecord.getIsDeprecated() == 1 ? true : false);
         bcc.setNillable(bccRecord.getIsNillable() == 1 ? true : false);
 
+        BbieNode.Bbie bbie = bbieNode.getBbie();
+        bbie.setHashPath(hashPath);
+        bbie.setBasedBccManifestId(bcc.getBccManifestId());
+
         BbieRecord bbieRecord = getBbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieRecord != null) {
-            BbieNode.Bbie bbie = bbieNode.getBbie();
             bbie.setBbieId(bbieRecord.getBbieId().toBigInteger());
             bbie.setUsed(bbieRecord.getIsUsed() == 1 ? true : false);
             bbie.setGuid(bbieRecord.getGuid());

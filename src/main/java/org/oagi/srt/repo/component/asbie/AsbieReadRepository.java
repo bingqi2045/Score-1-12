@@ -49,9 +49,12 @@ public class AsbieReadRepository {
         ascc.setDefinition(asccRecord.getDefinition());
         ascc.setState(CcState.valueOf(asccRecord.getState()));
 
+        AsbieNode.Asbie asbie = asbieNode.getAsbie();
+        asbie.setHashPath(hashPath);
+        asbie.setBasedAsccManifestId(ascc.getAsccManifestId());
+
         AsbieRecord asbieRecord = getAsbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (asbieRecord != null) {
-            AsbieNode.Asbie asbie = asbieNode.getAsbie();
             asbie.setAsbieId(asbieRecord.getAsbieId().toBigInteger());
             asbie.setUsed(asbieRecord.getIsUsed() == 1 ? true : false);
             asbie.setGuid(asbieRecord.getGuid());

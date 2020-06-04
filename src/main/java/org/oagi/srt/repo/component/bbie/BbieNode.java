@@ -28,6 +28,8 @@ public class BbieNode {
     @Data
     public class Bbie {
         private boolean used;
+        private String hashPath;
+        private BigInteger basedBccManifestId;
 
         private BigInteger bbieId;
         private String guid;

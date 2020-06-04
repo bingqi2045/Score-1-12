@@ -55,9 +55,12 @@ public class BbieScReadRepository {
                         .where(DT.DT_ID.eq(dtScRecord.getOwnerDtId()))
                         .fetchOneInto(String.class)));
 
+        BbieScNode.BbieSc bbieSc = bbieScNode.getBbieSc();
+        bbieSc.setHashPath(hashPath);
+        bbieSc.setBasedDtScManifestId(dtSc.getDtScManifestId());
+
         BbieScRecord bbieScRecord = getBbieScByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieScRecord != null) {
-            BbieScNode.BbieSc bbieSc = bbieScNode.getBbieSc();
             bbieSc.setBbieScId(bbieScRecord.getBbieScId().toBigInteger());
             bbieSc.setUsed(bbieScRecord.getIsUsed() == 1 ? true : false);
             bbieSc.setGuid(bbieScRecord.getGuid());
