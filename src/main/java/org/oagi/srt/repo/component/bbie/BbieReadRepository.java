@@ -77,6 +77,11 @@ public class BbieReadRepository {
                     bbieRecord.getCodeListId().toBigInteger() : null);
             bbie.setAgencyIdListId((bbieRecord.getAgencyIdListId() != null) ?
                     bbieRecord.getAgencyIdListId().toBigInteger() : null);
+        } else {
+            bbie.setCardinalityMin(bccRecord.getCardinalityMin());
+            bbie.setCardinalityMax(bccRecord.getCardinalityMax());
+            bbie.setDefaultValue(bccRecord.getDefaultValue());
+            bbie.setFixedValue(bccRecord.getFixedValue());
         }
 
         return bbieNode;

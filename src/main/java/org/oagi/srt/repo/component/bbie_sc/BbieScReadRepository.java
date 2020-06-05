@@ -49,6 +49,8 @@ public class BbieScReadRepository {
         dtSc.setPropertyTerm(dtScRecord.getPropertyTerm());
         dtSc.setRepresentationTerm(dtScRecord.getRepresentationTerm());
         dtSc.setDefinition(dtScRecord.getDefinition());
+        dtSc.setDefaultValue(dtScRecord.getDefaultValue());
+        dtSc.setFixedValue(dtScRecord.getFixedValue());
         dtSc.setState(CcState.valueOf(
                 dslContext.select(DT.STATE)
                         .from(DT)
@@ -79,6 +81,11 @@ public class BbieScReadRepository {
                     bbieScRecord.getCodeListId().toBigInteger() : null);
             bbieSc.setAgencyIdListId((bbieScRecord.getAgencyIdListId() != null) ?
                     bbieScRecord.getAgencyIdListId().toBigInteger() : null);
+        } else {
+            bbieSc.setCardinalityMin(dtScRecord.getCardinalityMin());
+            bbieSc.setCardinalityMax(dtScRecord.getCardinalityMax());
+            bbieSc.setDefaultValue(dtScRecord.getDefaultValue());
+            bbieSc.setFixedValue(dtScRecord.getFixedValue());
         }
 
         return bbieScNode;

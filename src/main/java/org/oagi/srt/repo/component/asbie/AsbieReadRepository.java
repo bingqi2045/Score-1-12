@@ -63,6 +63,9 @@ public class AsbieReadRepository {
             asbie.setNillable(asbieRecord.getIsNillable() == 1 ? true : false);
             asbie.setRemark(asbieRecord.getRemark());
             asbie.setDefinition(asbieRecord.getDefinition());
+        } else {
+            asbie.setCardinalityMin(ascc.getCardinalityMin());
+            asbie.setCardinalityMax(ascc.getCardinalityMax());
         }
 
         return asbieNode;

@@ -18,6 +18,8 @@ public class BbieScNode {
         private String propertyTerm;
         private String representationTerm;
         private String definition;
+        private String defaultValue;
+        private String fixedValue;
         private CcState state;
     }
 

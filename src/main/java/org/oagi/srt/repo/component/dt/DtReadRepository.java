@@ -44,6 +44,7 @@ public class DtReadRepository {
         bdtNode.setDataTypeTerm(dtRecord.getDataTypeTerm());
         bdtNode.setQualifier(dtRecord.getQualifier());
         bdtNode.setDefinition(dtRecord.getDefinition());
+        bdtNode.setDen(dtRecord.getDen());
 
         return bdtNode;
     }
