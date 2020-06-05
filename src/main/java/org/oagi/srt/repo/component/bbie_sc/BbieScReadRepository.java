@@ -41,17 +41,17 @@ public class BbieScReadRepository {
 
         BbieScNode bbieScNode = new BbieScNode();
 
-        BbieScNode.DtSc dtSc = bbieScNode.getDtSc();
-        dtSc.setDtScManifestId(dtScManifestId);
-        dtSc.setGuid(dtScRecord.getGuid());
-        dtSc.setCardinalityMin(dtScRecord.getCardinalityMin());
-        dtSc.setCardinalityMax(dtScRecord.getCardinalityMax());
-        dtSc.setPropertyTerm(dtScRecord.getPropertyTerm());
-        dtSc.setRepresentationTerm(dtScRecord.getRepresentationTerm());
-        dtSc.setDefinition(dtScRecord.getDefinition());
-        dtSc.setDefaultValue(dtScRecord.getDefaultValue());
-        dtSc.setFixedValue(dtScRecord.getFixedValue());
-        dtSc.setState(CcState.valueOf(
+        BbieScNode.BdtSc bdtSc = bbieScNode.getBdtSc();
+        bdtSc.setDtScManifestId(dtScManifestId);
+        bdtSc.setGuid(dtScRecord.getGuid());
+        bdtSc.setCardinalityMin(dtScRecord.getCardinalityMin());
+        bdtSc.setCardinalityMax(dtScRecord.getCardinalityMax());
+        bdtSc.setPropertyTerm(dtScRecord.getPropertyTerm());
+        bdtSc.setRepresentationTerm(dtScRecord.getRepresentationTerm());
+        bdtSc.setDefinition(dtScRecord.getDefinition());
+        bdtSc.setDefaultValue(dtScRecord.getDefaultValue());
+        bdtSc.setFixedValue(dtScRecord.getFixedValue());
+        bdtSc.setState(CcState.valueOf(
                 dslContext.select(DT.STATE)
                         .from(DT)
                         .where(DT.DT_ID.eq(dtScRecord.getOwnerDtId()))
@@ -59,7 +59,7 @@ public class BbieScReadRepository {
 
         BbieScNode.BbieSc bbieSc = bbieScNode.getBbieSc();
         bbieSc.setHashPath(hashPath);
-        bbieSc.setBasedDtScManifestId(dtSc.getDtScManifestId());
+        bbieSc.setBasedDtScManifestId(bdtSc.getDtScManifestId());
 
         BbieScRecord bbieScRecord = getBbieScByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieScRecord != null) {

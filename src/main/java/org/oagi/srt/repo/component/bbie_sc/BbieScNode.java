@@ -2,7 +2,6 @@ package org.oagi.srt.repo.component.bbie_sc;
 
 import lombok.Data;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.repo.component.asbie.AsbieNode;
 
 import java.math.BigInteger;
 
@@ -10,7 +9,7 @@ import java.math.BigInteger;
 public class BbieScNode {
 
     @Data
-    public class DtSc {
+    public class BdtSc {
         private BigInteger dtScManifestId;
         private String guid;
         private int cardinalityMin;
@@ -23,7 +22,7 @@ public class BbieScNode {
         private CcState state;
     }
 
-    private DtSc dtSc = new DtSc();
+    private BdtSc bdtSc = new BdtSc();
 
     @Data
     public class BbieSc {
