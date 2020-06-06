@@ -22,9 +22,10 @@ public class AsbiepNode {
     private Asccp asccp = new Asccp();
 
     @Data
-    public class Asbiep {
+    public static class Asbiep {
         private boolean used;
         private String hashPath;
+        private String roleOfAbieHashPath;
         private BigInteger basedAsccpManifestId;
 
         private BigInteger asbiepId;

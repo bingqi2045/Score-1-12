@@ -35,7 +35,7 @@ public class BbiepNode {
     private Bdt bdt = new Bdt();
 
     @Data
-    public class Bbiep {
+    public static class Bbiep {
         private boolean used;
         private String hashPath;
         private BigInteger basedBccpManifestId;

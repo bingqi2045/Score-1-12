@@ -53,13 +53,26 @@ public class BbieReadRepository {
         bcc.setDeprecated(bccRecord.getIsDeprecated() == 1 ? true : false);
         bcc.setNillable(bccRecord.getIsNillable() == 1 ? true : false);
 
-        BbieNode.Bbie bbie = bbieNode.getBbie();
+        BbieNode.Bbie bbie = getBbie(topLevelAbieId, hashPath);
+        if (bbie.getBbieId() == null) {
+            bbie.setBasedBccManifestId(bcc.getBccManifestId());
+            bbie.setCardinalityMin(bccRecord.getCardinalityMin());
+            bbie.setCardinalityMax(bccRecord.getCardinalityMax());
+            bbie.setDefaultValue(bccRecord.getDefaultValue());
+            bbie.setFixedValue(bccRecord.getFixedValue());
+        }
+
+        return bbieNode;
+    }
+
+    public BbieNode.Bbie getBbie(BigInteger topLevelAbieId, String hashPath) {
+        BbieNode.Bbie bbie = new BbieNode.Bbie();
         bbie.setHashPath(hashPath);
-        bbie.setBasedBccManifestId(bcc.getBccManifestId());
 
         BbieRecord bbieRecord = getBbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieRecord != null) {
             bbie.setBbieId(bbieRecord.getBbieId().toBigInteger());
+            bbie.setBasedBccManifestId(bbieRecord.getBasedBccManifestId().toBigInteger());
             bbie.setUsed(bbieRecord.getIsUsed() == 1 ? true : false);
             bbie.setGuid(bbieRecord.getGuid());
             bbie.setCardinalityMin(bbieRecord.getCardinalityMin());
@@ -77,14 +90,9 @@ public class BbieReadRepository {
                     bbieRecord.getCodeListId().toBigInteger() : null);
             bbie.setAgencyIdListId((bbieRecord.getAgencyIdListId() != null) ?
                     bbieRecord.getAgencyIdListId().toBigInteger() : null);
-        } else {
-            bbie.setCardinalityMin(bccRecord.getCardinalityMin());
-            bbie.setCardinalityMax(bccRecord.getCardinalityMax());
-            bbie.setDefaultValue(bccRecord.getDefaultValue());
-            bbie.setFixedValue(bccRecord.getFixedValue());
         }
 
-        return bbieNode;
+        return bbie;
     }
     
 }

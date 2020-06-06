@@ -7,7 +7,9 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAbie;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.*;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditNodeDetail;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -15,16 +17,28 @@ import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.component.abie.AbieNode;
 import org.oagi.srt.repo.component.abie.AbieReadRepository;
+import org.oagi.srt.repo.component.abie.AbieWriteRepository;
+import org.oagi.srt.repo.component.abie.UpsertAbieRequest;
 import org.oagi.srt.repo.component.asbie.AsbieNode;
 import org.oagi.srt.repo.component.asbie.AsbieReadRepository;
+import org.oagi.srt.repo.component.asbie.AsbieWriteRepository;
+import org.oagi.srt.repo.component.asbie.UpsertAsbieRequest;
 import org.oagi.srt.repo.component.asbiep.AsbiepNode;
 import org.oagi.srt.repo.component.asbiep.AsbiepReadRepository;
+import org.oagi.srt.repo.component.asbiep.AsbiepWriteRepository;
+import org.oagi.srt.repo.component.asbiep.UpsertAsbiepRequest;
 import org.oagi.srt.repo.component.bbie.BbieNode;
 import org.oagi.srt.repo.component.bbie.BbieReadRepository;
+import org.oagi.srt.repo.component.bbie.BbieWriteRepository;
+import org.oagi.srt.repo.component.bbie.UpsertBbieRequest;
 import org.oagi.srt.repo.component.bbie_sc.BbieScNode;
 import org.oagi.srt.repo.component.bbie_sc.BbieScReadRepository;
+import org.oagi.srt.repo.component.bbie_sc.BbieScWriteRepository;
+import org.oagi.srt.repo.component.bbie_sc.UpsertBbieScRequest;
 import org.oagi.srt.repo.component.bbiep.BbiepNode;
 import org.oagi.srt.repo.component.bbiep.BbiepReadRepository;
+import org.oagi.srt.repo.component.bbiep.BbiepWriteRepository;
+import org.oagi.srt.repo.component.bbiep.UpsertBbiepRequest;
 import org.oagi.srt.repo.component.dt.BdtNode;
 import org.oagi.srt.repo.component.dt.DtReadRepository;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -37,7 +51,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 
@@ -108,34 +125,86 @@ public class BieEditService {
         treeController.updateState(state);
     }
 
+    @Autowired
+    private AbieWriteRepository abieWriteRepository;
+
+    @Autowired
+    private AsbieWriteRepository asbieWriteRepository;
+
+    @Autowired
+    private BbieWriteRepository bbieWriteRepository;
+
+    @Autowired
+    private AsbiepWriteRepository asbiepWriteRepository;
+
+    @Autowired
+    private BbiepWriteRepository bbiepWriteRepository;
+
+    @Autowired
+    private BbieScWriteRepository bbieScWriteRepository;
 
     @Transactional
-    public BieEditUpdateResponse updateDetails(User user, BieEditUpdateRequest request) {
-        BigInteger topLevelAbieId = request.getTopLevelAbieId();
-        BieEditTreeController treeController = getTreeController(user, topLevelAbieId);
+    public BieEditUpdateDetailResponse updateDetails(User user, BieEditUpdateDetailRequest request) {
+        BieEditUpdateDetailResponse response = new BieEditUpdateDetailResponse();
+        LocalDateTime timestamp = LocalDateTime.now();
 
-        BieEditUpdateResponse response = new BieEditUpdateResponse();
-        BieEditAbieNodeDetail abieNodeDetail = request.getAbieNodeDetail();
-        if (abieNodeDetail != null) {
-            response.setAbieNodeResult(treeController.updateDetail(abieNodeDetail));
-        }
+        response.setAbieDetailMap(
+                request.getAbieDetails().stream()
+                        .map(abie ->
+                                abieWriteRepository.upsertAbie(new UpsertAbieRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), abie))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
 
-        for (BieEditAsbiepNodeDetail asbiepNodeDetail : request.getAsbiepNodeDetails()) {
-            response.getAsbiepNodeResults().put(asbiepNodeDetail.getGuid(),
-                    treeController.updateDetail(asbiepNodeDetail));
-        }
+        response.setAsbiepDetailMap(
+                request.getAsbiepDetails().stream()
+                        .map(asbiep ->
+                                asbiepWriteRepository.upsertAsbiep(new UpsertAsbiepRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), asbiep))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
 
-        for (BieEditBbiepNodeDetail bbiepNodeDetail : request.getBbiepNodeDetails()) {
-            response.getBbiepNodeResults().put(bbiepNodeDetail.getGuid(),
-                    treeController.updateDetail(bbiepNodeDetail));
-        }
+        response.setBbiepDetailMap(
+                request.getBbiepDetails().stream()
+                        .map(bbiep ->
+                                bbiepWriteRepository.upsertBbiep(new UpsertBbiepRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), bbiep
+                                ))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
 
-        for (BieEditBbieScNodeDetail bbieScNodeDetail : request.getBbieScNodeDetails()) {
-            response.getBbieScNodeResults().put(bbieScNodeDetail.getGuid(),
-                    treeController.updateDetail(bbieScNodeDetail));
-        }
+        response.setAsbieDetailMap(
+                request.getAsbieDetails().stream()
+                        .map(asbie ->
+                                asbieWriteRepository.upsertAsbie(new UpsertAsbieRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), asbie
+                                ))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
 
-        this.updateTopLevelAbieLastUpdated(user, topLevelAbieId);
+        response.setBbieDetailMap(
+                request.getBbieDetails().stream()
+                        .map(bbie ->
+                                bbieWriteRepository.upsertBbie(new UpsertBbieRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), bbie
+                                ))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
+
+        response.setBbieScDetailMap(
+                request.getBbieScDetails().stream()
+                        .map(bbieSc ->
+                                bbieScWriteRepository.upsertBbieSc(new UpsertBbieScRequest(
+                                        user, timestamp, request.getTopLevelAbieId(), bbieSc
+                                ))
+                        )
+                        .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
+        );
 
         return response;
     }

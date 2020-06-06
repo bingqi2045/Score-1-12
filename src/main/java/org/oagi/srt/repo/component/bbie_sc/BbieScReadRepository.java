@@ -57,13 +57,26 @@ public class BbieScReadRepository {
                         .where(DT.DT_ID.eq(dtScRecord.getOwnerDtId()))
                         .fetchOneInto(String.class)));
 
-        BbieScNode.BbieSc bbieSc = bbieScNode.getBbieSc();
+        BbieScNode.BbieSc bbieSc = getBbieSc(topLevelAbieId, hashPath);
+        if (bbieSc.getBbieScId() == null) {
+            bbieSc.setBasedDtScManifestId(bdtSc.getDtScManifestId());
+            bbieSc.setCardinalityMin(dtScRecord.getCardinalityMin());
+            bbieSc.setCardinalityMax(dtScRecord.getCardinalityMax());
+            bbieSc.setDefaultValue(dtScRecord.getDefaultValue());
+            bbieSc.setFixedValue(dtScRecord.getFixedValue());
+        }
+
+        return bbieScNode;
+    }
+
+    public BbieScNode.BbieSc getBbieSc(BigInteger topLevelAbieId, String hashPath) {
+        BbieScNode.BbieSc bbieSc = new BbieScNode.BbieSc();
         bbieSc.setHashPath(hashPath);
-        bbieSc.setBasedDtScManifestId(bdtSc.getDtScManifestId());
 
         BbieScRecord bbieScRecord = getBbieScByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieScRecord != null) {
             bbieSc.setBbieScId(bbieScRecord.getBbieScId().toBigInteger());
+            bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
             bbieSc.setUsed(bbieScRecord.getIsUsed() == 1 ? true : false);
             bbieSc.setGuid(bbieScRecord.getGuid());
             bbieSc.setCardinalityMin(bbieScRecord.getCardinalityMin());
@@ -81,14 +94,9 @@ public class BbieScReadRepository {
                     bbieScRecord.getCodeListId().toBigInteger() : null);
             bbieSc.setAgencyIdListId((bbieScRecord.getAgencyIdListId() != null) ?
                     bbieScRecord.getAgencyIdListId().toBigInteger() : null);
-        } else {
-            bbieSc.setCardinalityMin(dtScRecord.getCardinalityMin());
-            bbieSc.setCardinalityMax(dtScRecord.getCardinalityMax());
-            bbieSc.setDefaultValue(dtScRecord.getDefaultValue());
-            bbieSc.setFixedValue(dtScRecord.getFixedValue());
         }
 
-        return bbieScNode;
+        return bbieSc;
     }
 
 }

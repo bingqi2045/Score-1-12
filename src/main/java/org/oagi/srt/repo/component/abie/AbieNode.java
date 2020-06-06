@@ -21,7 +21,7 @@ public class AbieNode {
     private Acc acc = new Acc();
 
     @Data
-    public class Abie {
+    public static class Abie {
         private boolean used;
         private String hashPath;
         private BigInteger basedAccManifestId;
@@ -29,6 +29,7 @@ public class AbieNode {
         private BigInteger abieId;
         private String guid;
         private String version;
+        private BigInteger clientId;
         private String status;
         private String remark;
         private String bizTerm;

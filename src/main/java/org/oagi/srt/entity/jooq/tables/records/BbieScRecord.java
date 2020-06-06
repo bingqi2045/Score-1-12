@@ -4,10 +4,12 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record18;
-import org.jooq.Row18;
+import org.jooq.Record22;
+import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.BbieSc;
@@ -20,9 +22,9 @@ import org.oagi.srt.entity.jooq.tables.BbieSc;
  * the constraints associated with the DT's SCs. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements Record18<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> {
+public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> implements Record22<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = 1479419605;
+    private static final long serialVersionUID = 975605367;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.
@@ -279,17 +281,73 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     /**
+     * Setter for <code>oagi.bbie_sc.created_by</code>. A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.
+     */
+    public void setCreatedBy(ULong value) {
+        set(17, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie_sc.created_by</code>. A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.
+     */
+    public ULong getCreatedBy() {
+        return (ULong) get(17);
+    }
+
+    /**
+     * Setter for <code>oagi.bbie_sc.last_updated_by</code>. A foreign key referring to the user who has last updated the BBIE_SC record.
+     */
+    public void setLastUpdatedBy(ULong value) {
+        set(18, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie_sc.last_updated_by</code>. A foreign key referring to the user who has last updated the BBIE_SC record.
+     */
+    public ULong getLastUpdatedBy() {
+        return (ULong) get(18);
+    }
+
+    /**
+     * Setter for <code>oagi.bbie_sc.creation_timestamp</code>. Timestamp when the BBIE_SC record was first created.
+     */
+    public void setCreationTimestamp(LocalDateTime value) {
+        set(19, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie_sc.creation_timestamp</code>. Timestamp when the BBIE_SC record was first created.
+     */
+    public LocalDateTime getCreationTimestamp() {
+        return (LocalDateTime) get(19);
+    }
+
+    /**
+     * Setter for <code>oagi.bbie_sc.last_update_timestamp</code>. The timestamp when the BBIE_SC was last updated.
+     */
+    public void setLastUpdateTimestamp(LocalDateTime value) {
+        set(20, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bbie_sc.last_update_timestamp</code>. The timestamp when the BBIE_SC was last updated.
+     */
+    public LocalDateTime getLastUpdateTimestamp() {
+        return (LocalDateTime) get(20);
+    }
+
+    /**
      * Setter for <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
-        set(17, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
      */
     public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(17);
+        return (ULong) get(21);
     }
 
     // -------------------------------------------------------------------------
@@ -302,17 +360,17 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     // -------------------------------------------------------------------------
-    // Record18 type implementation
+    // Record22 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row22<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> valuesRow() {
-        return (Row18) super.valuesRow();
+    public Row22<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime, ULong> valuesRow() {
+        return (Row22) super.valuesRow();
     }
 
     @Override
@@ -402,6 +460,26 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public Field<ULong> field18() {
+        return BbieSc.BBIE_SC.CREATED_BY;
+    }
+
+    @Override
+    public Field<ULong> field19() {
+        return BbieSc.BBIE_SC.LAST_UPDATED_BY;
+    }
+
+    @Override
+    public Field<LocalDateTime> field20() {
+        return BbieSc.BBIE_SC.CREATION_TIMESTAMP;
+    }
+
+    @Override
+    public Field<LocalDateTime> field21() {
+        return BbieSc.BBIE_SC.LAST_UPDATE_TIMESTAMP;
+    }
+
+    @Override
+    public Field<ULong> field22() {
         return BbieSc.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID;
     }
 
@@ -492,6 +570,26 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public ULong component18() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong component19() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime component20() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime component21() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public ULong component22() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -582,6 +680,26 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public ULong value18() {
+        return getCreatedBy();
+    }
+
+    @Override
+    public ULong value19() {
+        return getLastUpdatedBy();
+    }
+
+    @Override
+    public LocalDateTime value20() {
+        return getCreationTimestamp();
+    }
+
+    @Override
+    public LocalDateTime value21() {
+        return getLastUpdateTimestamp();
+    }
+
+    @Override
+    public ULong value22() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -689,12 +807,36 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public BbieScRecord value18(ULong value) {
+        setCreatedBy(value);
+        return this;
+    }
+
+    @Override
+    public BbieScRecord value19(ULong value) {
+        setLastUpdatedBy(value);
+        return this;
+    }
+
+    @Override
+    public BbieScRecord value20(LocalDateTime value) {
+        setCreationTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public BbieScRecord value21(LocalDateTime value) {
+        setLastUpdateTimestamp(value);
+        return this;
+    }
+
+    @Override
+    public BbieScRecord value22(ULong value) {
         setOwnerTopLevelAbieId(value);
         return this;
     }
 
     @Override
-    public BbieScRecord values(ULong value1, String value2, ULong value3, String value4, ULong value5, ULong value6, ULong value7, ULong value8, Integer value9, Integer value10, String value11, String value12, String value13, String value14, String value15, String value16, Byte value17, ULong value18) {
+    public BbieScRecord values(ULong value1, String value2, ULong value3, String value4, ULong value5, ULong value6, ULong value7, ULong value8, Integer value9, Integer value10, String value11, String value12, String value13, String value14, String value15, String value16, Byte value17, ULong value18, ULong value19, LocalDateTime value20, LocalDateTime value21, ULong value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -713,6 +855,10 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
         value16(value16);
         value17(value17);
         value18(value18);
+        value19(value19);
+        value20(value20);
+        value21(value21);
+        value22(value22);
         return this;
     }
 
@@ -730,7 +876,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
         super(BbieSc.BBIE_SC);
 
         set(0, bbieScId);
@@ -750,6 +896,10 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
         set(14, remark);
         set(15, bizTerm);
         set(16, isUsed);
-        set(17, ownerTopLevelAbieId);
+        set(17, createdBy);
+        set(18, lastUpdatedBy);
+        set(19, creationTimestamp);
+        set(20, lastUpdateTimestamp);
+        set(21, ownerTopLevelAbieId);
     }
 }

@@ -65,21 +65,30 @@ public class BbiepReadRepository {
         bdt.setDefinition(bdtRecord.getDefinition());
         bdt.setState(CcState.valueOf(bdtRecord.getState()));
 
-        BbiepNode.Bbiep bbiep = bbiepNode.getBbiep();
+        BbiepNode.Bbiep bbiep = getBbiep(topLevelAbieId, hashPath);
+        if (bbiep.getBbiepId() == null) {
+            bbiep.setBasedBccpManifestId(bccp.getBccpManifestId());
+        }
+
+        return bbiepNode;
+    }
+
+    public BbiepNode.Bbiep getBbiep(BigInteger topLevelAbieId, String hashPath) {
+        BbiepNode.Bbiep bbiep = new BbiepNode.Bbiep();
         bbiep.setUsed(true);
         bbiep.setHashPath(hashPath);
-        bbiep.setBasedBccpManifestId(bccp.getBccpManifestId());
 
         BbiepRecord bbiepRecord = getBbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbiepRecord != null) {
             bbiep.setBbiepId(bbiepRecord.getBbiepId().toBigInteger());
+            bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId().toBigInteger());
             bbiep.setGuid(bbiepRecord.getGuid());
             bbiep.setRemark(bbiepRecord.getRemark());
             bbiep.setBizTerm(bbiepRecord.getBizTerm());
             bbiep.setDefinition(bbiepRecord.getDefinition());
         }
 
-        return bbiepNode;
+        return bbiep;
     }
     
 }

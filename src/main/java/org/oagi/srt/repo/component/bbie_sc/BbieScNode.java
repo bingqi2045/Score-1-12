@@ -25,9 +25,10 @@ public class BbieScNode {
     private BdtSc bdtSc = new BdtSc();
 
     @Data
-    public class BbieSc {
+    public static class BbieSc {
         private boolean used;
         private String hashPath;
+        private String bbieHashPath;
         private BigInteger basedDtScManifestId;
 
         private BigInteger bbieScId;

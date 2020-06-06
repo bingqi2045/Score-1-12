@@ -49,21 +49,30 @@ public class AsbiepReadRepository {
         asccp.setState(CcState.valueOf(asccpRecord.getState()));
         asccp.setNillable(asccpRecord.getIsNillable() == 1 ? true : false);
 
-        AsbiepNode.Asbiep asbiep = asbiepNode.getAsbiep();
+        AsbiepNode.Asbiep asbiep = getAsbiep(topLevelAbieId, hashPath);
+        if (asbiep.getAsbiepId() == null) {
+            asbiep.setBasedAsccpManifestId(asccp.getAsccpManifestId());
+        }
+
+        return asbiepNode;
+    }
+
+    public AsbiepNode.Asbiep getAsbiep(BigInteger topLevelAbieId, String hashPath) {
+        AsbiepNode.Asbiep asbiep = new AsbiepNode.Asbiep();
         asbiep.setUsed(true);
         asbiep.setHashPath(hashPath);
-        asbiep.setBasedAsccpManifestId(asccp.getAsccpManifestId());
 
         AsbiepRecord asbiepRecord = getAsbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (asbiepRecord != null) {
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
+            asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
             asbiep.setBizTerm(asbiepRecord.getBizTerm());
             asbiep.setDefinition(asbiepRecord.getDefinition());
         }
 
-        return asbiepNode;
+        return asbiep;
     }
     
 }

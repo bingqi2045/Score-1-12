@@ -48,22 +48,34 @@ public class AbieReadRepository {
         acc.setDefinition(accRecord.getDefinition());
         acc.setState(CcState.valueOf(accRecord.getState()));
 
-        AbieNode.Abie abie = abieNode.getAbie();
+        AbieNode.Abie abie = getAbie(topLevelAbieId, hashPath);
+        if (abie.getAbieId() == null) {
+            abie.setBasedAccManifestId(acc.getAccManifestId());
+        }
+
+        return abieNode;
+    }
+
+    public AbieNode.Abie getAbie(BigInteger topLevelAbieId, String hashPath) {
+        AbieNode.Abie abie = new AbieNode.Abie();
         abie.setUsed(true);
         abie.setHashPath(hashPath);
-        abie.setBasedAccManifestId(acc.getAccManifestId());
 
         AbieRecord abieRecord = getAbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (abieRecord != null) {
             abie.setAbieId(abieRecord.getAbieId().toBigInteger());
             abie.setGuid(abieRecord.getGuid());
+            abie.setBasedAccManifestId(abieRecord.getBasedAccManifestId().toBigInteger());
             abie.setVersion(abieRecord.getVersion());
+            if (abieRecord.getClientId() != null) {
+                abie.setClientId(abieRecord.getClientId().toBigInteger());
+            }
             abie.setStatus(abieRecord.getStatus());
             abie.setRemark(abieRecord.getRemark());
             abie.setBizTerm(abieRecord.getBizTerm());
             abie.setDefinition(abieRecord.getDefinition());
         }
 
-        return abieNode;
+        return abie;
     }
 }

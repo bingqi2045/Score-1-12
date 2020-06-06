@@ -3,8 +3,8 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateRequest;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateDetailRequest;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateDetailResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateExtensionResponse;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -150,8 +150,8 @@ public class BieEditController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BdtNode getBdtDetail(@AuthenticationPrincipal User user,
-                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
                                 @PathVariable("manifestId") BigInteger manifestId,
+                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
                                 @RequestParam("hashPath") String hashPath) {
         return service.getBdtDetail(user, topLevelAbieId, manifestId, hashPath);
     }
@@ -179,11 +179,12 @@ public class BieEditController {
         return objectMapper.convertValue(params, clazz);
     }
 
-    @RequestMapping(value = "/profile_bie/node/detail", method = RequestMethod.POST,
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/detail", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public BieEditUpdateResponse updateDetails(@AuthenticationPrincipal User user,
-                                               @RequestBody BieEditUpdateRequest request) {
-
+    public BieEditUpdateDetailResponse updateDetails(@AuthenticationPrincipal User user,
+                                                     @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                                     @RequestBody BieEditUpdateDetailRequest request) {
+        request.setTopLevelAbieId(topLevelAbieId);
         return service.updateDetails(user, request);
     }
 
