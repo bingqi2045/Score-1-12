@@ -12,8 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.BBIE_SC;
-import static org.oagi.srt.entity.jooq.Tables.DT;
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
 public class BbieScReadRepository {
@@ -76,6 +75,13 @@ public class BbieScReadRepository {
         BbieScRecord bbieScRecord = getBbieScByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieScRecord != null) {
             bbieSc.setBbieScId(bbieScRecord.getBbieScId().toBigInteger());
+            bbieSc.setBbieHashPath(dslContext.select(BBIE.HASH_PATH)
+                    .from(BBIE)
+                    .where(and(
+                            BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            BBIE.BBIE_ID.eq(bbieScRecord.getBbieId())
+                    ))
+                    .fetchOneInto(String.class));
             bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
             bbieSc.setUsed(bbieScRecord.getIsUsed() == 1 ? true : false);
             bbieSc.setGuid(bbieScRecord.getGuid());

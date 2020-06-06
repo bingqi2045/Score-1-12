@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
+import static org.oagi.srt.entity.jooq.Tables.ABIE;
 import static org.oagi.srt.entity.jooq.Tables.ASBIEP;
 
 @Repository
@@ -65,6 +66,13 @@ public class AsbiepReadRepository {
         AsbiepRecord asbiepRecord = getAsbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (asbiepRecord != null) {
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
+            asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
+                    .from(ABIE)
+                    .where(and(
+                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            ABIE.ABIE_ID.eq(asbiepRecord.getRoleOfAbieId())
+                    ))
+                    .fetchOneInto(String.class));
             asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
@@ -74,5 +82,5 @@ public class AsbiepReadRepository {
 
         return asbiep;
     }
-    
+
 }

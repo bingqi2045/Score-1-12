@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.BBIE;
+import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
 public class BbieReadRepository {
@@ -72,6 +72,20 @@ public class BbieReadRepository {
         BbieRecord bbieRecord = getBbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
         if (bbieRecord != null) {
             bbie.setBbieId(bbieRecord.getBbieId().toBigInteger());
+            bbie.setFromAbieHashPath(dslContext.select(ABIE.HASH_PATH)
+                    .from(ABIE)
+                    .where(and(
+                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            ABIE.ABIE_ID.eq(bbieRecord.getFromAbieId())
+                    ))
+                    .fetchOneInto(String.class));
+            bbie.setToBbiepHashPath(dslContext.select(BBIEP.HASH_PATH)
+                    .from(BBIEP)
+                    .where(and(
+                            BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            BBIEP.BBIEP_ID.eq(bbieRecord.getToBbiepId())
+                    ))
+                    .fetchOneInto(String.class));
             bbie.setBasedBccManifestId(bbieRecord.getBasedBccManifestId().toBigInteger());
             bbie.setUsed(bbieRecord.getIsUsed() == 1 ? true : false);
             bbie.setGuid(bbieRecord.getGuid());
