@@ -23,7 +23,7 @@ import static org.oagi.srt.entity.jooq.tables.CodeList.CODE_LIST;
 import static org.oagi.srt.entity.jooq.tables.CodeListManifest.CODE_LIST_MANIFEST;
 
 @Repository
-public class CodeListCUDRepository {
+public class CodeListWriteRepository {
 
     @Autowired
     private DSLContext dslContext;

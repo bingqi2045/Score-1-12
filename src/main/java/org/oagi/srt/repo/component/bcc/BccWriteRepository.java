@@ -28,7 +28,7 @@ import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
 import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST_OF_ATTR;
 
 @Repository
-public class BccCUDRepository {
+public class BccWriteRepository {
 
     @Autowired
     private DSLContext dslContext;

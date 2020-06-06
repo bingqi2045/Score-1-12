@@ -33,7 +33,7 @@ import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
-public class AccCUDRepository {
+public class AccWriteRepository {
 
     @Autowired
     private DSLContext dslContext;

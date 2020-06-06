@@ -25,7 +25,7 @@ import static org.oagi.srt.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
 import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
 
 @Repository
-public class AsccCUDRepository {
+public class AsccWriteRepository {
 
     @Autowired
     private DSLContext dslContext;

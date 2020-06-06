@@ -47,7 +47,7 @@ public class CodeListService extends EventHandler {
     private SessionService sessionService;
 
     @Autowired
-    private CodeListCUDRepository codeListCUDRepository;
+    private CodeListWriteRepository codeListWriteRepository;
 
     @Autowired
     private RevisionRepository revisionRepository;
@@ -269,7 +269,7 @@ public class CodeListService extends EventHandler {
                 new CreateCodeListRepositoryRequest(user, releaseId);
 
         CreateCodeListRepositoryResponse repositoryResponse =
-                codeListCUDRepository.createCodeList(repositoryRequest);
+                codeListWriteRepository.createCodeList(repositoryRequest);
 
         fireEvent(new CreatedCodeListEvent());
 
@@ -340,7 +340,7 @@ public class CodeListService extends EventHandler {
                         CcState.valueOf(codeList.getState()));
 
         UpdateCodeListStateRepositoryResponse response =
-                codeListCUDRepository.updateCodeListState(request);
+                codeListWriteRepository.updateCodeListState(request);
 
         fireEvent(new UpdatedCodeListStateEvent());
     }
@@ -360,7 +360,7 @@ public class CodeListService extends EventHandler {
         request.setDeprecated(codeList.isDeprecated());
 
         UpdateCodeListPropertiesRepositoryResponse response =
-                codeListCUDRepository.updateCodeListProperties(request);
+                codeListWriteRepository.updateCodeListProperties(request);
 
         fireEvent(new UpdatedCodeListPropertiesEvent());
     }
@@ -394,7 +394,7 @@ public class CodeListService extends EventHandler {
         );
 
         ModifyCodeListValuesRepositoryResponse response =
-                codeListCUDRepository.modifyCodeListValues(request);
+                codeListWriteRepository.modifyCodeListValues(request);
     }
 
     @Transactional
@@ -551,7 +551,7 @@ public class CodeListService extends EventHandler {
                 new DeleteCodeListRepositoryRequest(user, codeListId);
 
         DeleteCodeListRepositoryResponse repositoryResponse =
-                codeListCUDRepository.deleteCodeList(repositoryRequest);
+                codeListWriteRepository.deleteCodeList(repositoryRequest);
 
         fireEvent(new DeletedCodeListEvent());
     }

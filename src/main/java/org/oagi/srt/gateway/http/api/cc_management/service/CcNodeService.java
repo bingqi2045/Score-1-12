@@ -45,19 +45,19 @@ public class CcNodeService extends EventHandler {
     private CoreComponentRepository ccRepository;
 
     @Autowired
-    private AccCUDRepository accCUDRepository;
+    private AccWriteRepository accWriteRepository;
 
     @Autowired
-    private AsccpCUDRepository asccpCUDRepository;
+    private AsccpWriteRepository asccpWriteRepository;
 
     @Autowired
-    private BccpCUDRepository bccpCUDRepository;
+    private BccpWriteRepository bccpWriteRepository;
 
     @Autowired
-    private AsccCUDRepository asccCUDRepository;
+    private AsccWriteRepository asccWriteRepository;
 
     @Autowired
-    private BccCUDRepository bccCUDRepository;
+    private BccWriteRepository bccWriteRepository;
 
     @Autowired
     private RevisionRepository revisionRepository;
@@ -89,7 +89,7 @@ public class CcNodeService extends EventHandler {
                 new DeleteAccRepositoryRequest(user, manifestId);
 
         DeleteAccRepositoryResponse repositoryResponse =
-                accCUDRepository.deleteAcc(repositoryRequest);
+                accWriteRepository.deleteAcc(repositoryRequest);
 
         fireEvent(new DeletedAccEvent());
     }
@@ -100,7 +100,7 @@ public class CcNodeService extends EventHandler {
                 new DeleteAsccpRepositoryRequest(user, manifestId);
 
         DeleteAsccpRepositoryResponse repositoryResponse =
-                asccpCUDRepository.deleteAsccp(repositoryRequest);
+                asccpWriteRepository.deleteAsccp(repositoryRequest);
 
         fireEvent(new DeletedAsccpEvent());
     }
@@ -111,7 +111,7 @@ public class CcNodeService extends EventHandler {
                 new DeleteBccpRepositoryRequest(user, manifestId);
 
         DeleteBccpRepositoryResponse repositoryResponse =
-                bccpCUDRepository.deleteBccp(repositoryRequest);
+                bccpWriteRepository.deleteBccp(repositoryRequest);
 
         fireEvent(new DeletedBccpEvent());
     }
@@ -121,7 +121,7 @@ public class CcNodeService extends EventHandler {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
-        asccCUDRepository.deleteAscc(request);
+        asccWriteRepository.deleteAscc(request);
 
         fireEvent(new DeletedAsccEvent());
     }
@@ -131,7 +131,7 @@ public class CcNodeService extends EventHandler {
         DeleteBccRepositoryRequest request =
                 new DeleteBccRepositoryRequest(user, bccManifestId);
 
-        bccCUDRepository.deleteBcc(request);
+        bccWriteRepository.deleteBcc(request);
 
         fireEvent(new DeletedBccEvent());
     }
@@ -162,7 +162,7 @@ public class CcNodeService extends EventHandler {
                 new CreateAccRepositoryRequest(user, request.getReleaseId());
 
         CreateAccRepositoryResponse repositoryResponse =
-                accCUDRepository.createAcc(repositoryRequest);
+                accWriteRepository.createAcc(repositoryRequest);
 
         fireEvent(new CreatedAccEvent());
 
@@ -176,7 +176,7 @@ public class CcNodeService extends EventHandler {
                         request.getRoleOfAccManifestId(), request.getReleaseId());
 
         CreateAsccpRepositoryResponse repositoryResponse =
-                asccpCUDRepository.createAsccp(repositoryRequest);
+                asccpWriteRepository.createAsccp(repositoryRequest);
 
         fireEvent(new CreatedAsccpEvent());
 
@@ -190,7 +190,7 @@ public class CcNodeService extends EventHandler {
                         request.getBdtManifestId(), request.getReleaseId());
 
         CreateBccpRepositoryResponse repositoryResponse =
-                bccpCUDRepository.createBccp(repositoryRequest);
+                bccpWriteRepository.createBccp(repositoryRequest);
 
         fireEvent(new CreatedBccpEvent());
 
@@ -219,7 +219,7 @@ public class CcNodeService extends EventHandler {
         UpdateSeqKeyRequest request =
                 new UpdateSeqKeyRequest(user, accManifestId, itemAfterPair);
 
-        accCUDRepository.moveSeq(request);
+        accWriteRepository.moveSeq(request);
     }
 
     @Transactional
@@ -278,7 +278,7 @@ public class CcNodeService extends EventHandler {
         request.setNamespaceId(detail.getNamespaceId());
 
         UpdateAccPropertiesRepositoryResponse response =
-                accCUDRepository.updateAccProperties(request);
+                accWriteRepository.updateAccProperties(request);
 
         fireEvent(new UpdatedAccPropertiesEvent());
 
@@ -298,7 +298,7 @@ public class CcNodeService extends EventHandler {
         request.setNamespaceId(detail.getNamespaceId());
 
         UpdateAsccpPropertiesRepositoryResponse response =
-                asccpCUDRepository.updateAsccpProperties(request);
+                asccpWriteRepository.updateAsccpProperties(request);
 
         fireEvent(new UpdatedAsccpPropertiesEvent());
 
@@ -315,7 +315,7 @@ public class CcNodeService extends EventHandler {
         request.setDefinitionSource(detail.getDefinitionSource());
         request.setDeprecated(detail.isDeprecated());
 
-        asccCUDRepository.updateAsccProperties(request);
+        asccWriteRepository.updateAsccProperties(request);
 
         fireEvent(new UpdatedAsccPropertiesEvent());
     }
@@ -343,7 +343,7 @@ public class CcNodeService extends EventHandler {
             request.setFixedValue(null);
         }
 
-        bccCUDRepository.updateBccProperties(request);
+        bccWriteRepository.updateBccProperties(request);
 
         fireEvent(new UpdatedBccPropertiesEvent());
     }
@@ -362,7 +362,7 @@ public class CcNodeService extends EventHandler {
         request.setNamespaceId(detail.getNamespaceId());
 
         UpdateBccpPropertiesRepositoryResponse response =
-                bccpCUDRepository.updateBccpProperties(request);
+                bccpWriteRepository.updateBccpProperties(request);
 
         fireEvent(new UpdatedBccpPropertiesEvent());
 
@@ -378,7 +378,7 @@ public class CcNodeService extends EventHandler {
                 new CreateAsccRepositoryRequest(user, timestamp, releaseId, accManifestId, asccpManifestId);
         request.setPos(pos);
 
-        CreateAsccRepositoryResponse response = asccCUDRepository.createAscc(request);
+        CreateAsccRepositoryResponse response = asccWriteRepository.createAscc(request);
         fireEvent(new CreatedAsccEvent());
         return response.getAsccManifestId();
     }
@@ -392,7 +392,7 @@ public class CcNodeService extends EventHandler {
                 new CreateBccRepositoryRequest(user, timestamp, releaseId, accManifestId, bccpManifestId);
         request.setPos(pos);
 
-        CreateBccRepositoryResponse response = bccCUDRepository.createBcc(request);
+        CreateBccRepositoryResponse response = bccWriteRepository.createBcc(request);
         fireEvent(new CreatedBccEvent());
         return response.getBccManifestId();
     }
@@ -403,7 +403,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateAccBasedAccRepositoryRequest(user, accManifestId, basedAccManifestId);
 
         UpdateAccBasedAccRepositoryResponse repositoryResponse =
-                accCUDRepository.updateAccBasedAcc(repositoryRequest);
+                accWriteRepository.updateAccBasedAcc(repositoryRequest);
 
         fireEvent(new UpdatedAccBasedAccEvent());
 
@@ -416,7 +416,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateAsccpRoleOfAccRepositoryRequest(user, asccpManifestId, roleOfAccManifestId);
 
         UpdateAsccpRoleOfAccRepositoryResponse repositoryResponse =
-                asccpCUDRepository.updateAsccpBdt(repositoryRequest);
+                asccpWriteRepository.updateAsccpBdt(repositoryRequest);
 
         fireEvent(new UpdatedAsccpRoleOfAccEvent());
 
@@ -429,7 +429,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateBccpBdtRepositoryRequest(user, bccpManifestId, bdtManifestId);
 
         UpdateBccpBdtRepositoryResponse repositoryResponse =
-                bccpCUDRepository.updateBccpBdt(repositoryRequest);
+                bccpWriteRepository.updateBccpBdt(repositoryRequest);
 
         fireEvent(new UpdatedBccpBdtEvent());
 
@@ -448,7 +448,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateAccStateRepositoryRequest(user, accManifestId, fromState, toState);
 
         UpdateAccStateRepositoryResponse repositoryResponse =
-                accCUDRepository.updateAccState(repositoryRequest);
+                accWriteRepository.updateAccState(repositoryRequest);
 
         fireEvent(new UpdatedAccStateEvent());
 
@@ -467,7 +467,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateAsccpStateRepositoryRequest(user, asccpManifestId, fromState, toState);
 
         UpdateAsccpStateRepositoryResponse repositoryResponse =
-                asccpCUDRepository.updateAsccpState(repositoryRequest);
+                asccpWriteRepository.updateAsccpState(repositoryRequest);
 
         fireEvent(new UpdatedAsccpStateEvent());
 
@@ -486,7 +486,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateBccpStateRepositoryRequest(user, bccpManifestId, fromState, toState);
 
         UpdateBccpStateRepositoryResponse repositoryResponse =
-                bccpCUDRepository.updateBccpState(repositoryRequest);
+                bccpWriteRepository.updateBccpState(repositoryRequest);
 
         fireEvent(new UpdatedBccpStateEvent());
 
@@ -499,7 +499,7 @@ public class CcNodeService extends EventHandler {
                 new ReviseAccRepositoryRequest(user, accManifestId);
 
         ReviseAccRepositoryResponse repositoryResponse =
-                accCUDRepository.reviseAcc(repositoryRequest);
+                accWriteRepository.reviseAcc(repositoryRequest);
 
         fireEvent(new RevisedAccEvent());
 
@@ -512,7 +512,7 @@ public class CcNodeService extends EventHandler {
                 new ReviseAsccpRepositoryRequest(user, asccpManifestId);
 
         ReviseAsccpRepositoryResponse repositoryResponse =
-                asccpCUDRepository.reviseAsccp(repositoryRequest);
+                asccpWriteRepository.reviseAsccp(repositoryRequest);
 
         fireEvent(new RevisedAsccpEvent());
 
@@ -525,7 +525,7 @@ public class CcNodeService extends EventHandler {
                 new ReviseBccpRepositoryRequest(user, bccpManifestId);
 
         ReviseBccpRepositoryResponse repositoryResponse =
-                bccpCUDRepository.reviseBccp(repositoryRequest);
+                bccpWriteRepository.reviseBccp(repositoryRequest);
 
         fireEvent(new RevisedBccpEvent());
 
@@ -934,7 +934,7 @@ public class CcNodeService extends EventHandler {
     public void updateAccOwnerUserId(User user, BigInteger accManifestId, BigInteger ownerUserId) {
         UpdateAccOwnerRepositoryRequest request =
                 new UpdateAccOwnerRepositoryRequest(user, accManifestId, ownerUserId);
-        accCUDRepository.updateAccOwner(request);
+        accWriteRepository.updateAccOwner(request);
 
         fireEvent(new UpdatedAccOwnerEvent());
     }
@@ -942,7 +942,7 @@ public class CcNodeService extends EventHandler {
     public void updateAsccpOwnerUserId(User user, BigInteger asccpManifestId, BigInteger ownerUserId) {
         UpdateAsccpOwnerRepositoryRequest request =
                 new UpdateAsccpOwnerRepositoryRequest(user, asccpManifestId, ownerUserId);
-        asccpCUDRepository.updateAsccpOwner(request);
+        asccpWriteRepository.updateAsccpOwner(request);
 
         fireEvent(new UpdatedAsccpOwnerEvent());
     }
@@ -950,7 +950,7 @@ public class CcNodeService extends EventHandler {
     public void updateBccpOwnerUserId(User user, BigInteger bccpManifestId, BigInteger ownerUserId) {
         UpdateBccpOwnerRepositoryRequest request =
                 new UpdateBccpOwnerRepositoryRequest(user, bccpManifestId, ownerUserId);
-        bccpCUDRepository.updateBccpOwner(request);
+        bccpWriteRepository.updateBccpOwner(request);
 
         fireEvent(new UpdatedBccpOwnerEvent());
     }

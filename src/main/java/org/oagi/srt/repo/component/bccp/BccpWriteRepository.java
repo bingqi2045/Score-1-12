@@ -23,7 +23,7 @@ import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
-public class BccpCUDRepository {
+public class BccpWriteRepository {
 
     @Autowired
     private DSLContext dslContext;

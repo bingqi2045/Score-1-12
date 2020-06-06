@@ -25,7 +25,7 @@ import static org.oagi.srt.entity.jooq.tables.AsccpManifest.ASCCP_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
-public class AsccpCUDRepository {
+public class AsccpWriteRepository {
 
     @Autowired
     private DSLContext dslContext;
