@@ -19,6 +19,8 @@ import org.oagi.srt.repo.component.abie.AbieNode;
 import org.oagi.srt.repo.component.abie.AbieReadRepository;
 import org.oagi.srt.repo.component.abie.AbieWriteRepository;
 import org.oagi.srt.repo.component.abie.UpsertAbieRequest;
+import org.oagi.srt.repo.component.agency_id_list.AgencyIdListReadRepository;
+import org.oagi.srt.repo.component.agency_id_list.AvailableAgencyIdList;
 import org.oagi.srt.repo.component.asbie.AsbieNode;
 import org.oagi.srt.repo.component.asbie.AsbieReadRepository;
 import org.oagi.srt.repo.component.asbie.AsbieWriteRepository;
@@ -39,6 +41,12 @@ import org.oagi.srt.repo.component.bbiep.BbiepNode;
 import org.oagi.srt.repo.component.bbiep.BbiepReadRepository;
 import org.oagi.srt.repo.component.bbiep.BbiepWriteRepository;
 import org.oagi.srt.repo.component.bbiep.UpsertBbiepRequest;
+import org.oagi.srt.repo.component.bdt_pri_restri.AvailableBdtPriRestri;
+import org.oagi.srt.repo.component.bdt_pri_restri.BdtPriRestriReadRepository;
+import org.oagi.srt.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
+import org.oagi.srt.repo.component.bdt_sc_pri_restri.BdtScPriRestriReadRepository;
+import org.oagi.srt.repo.component.code_list.AvailableCodeList;
+import org.oagi.srt.repo.component.code_list.CodeListReadRepository;
 import org.oagi.srt.repo.component.dt.BdtNode;
 import org.oagi.srt.repo.component.dt.DtReadRepository;
 import org.oagi.srt.repository.TopLevelAbieRepository;
@@ -352,4 +360,50 @@ public class BieEditService {
                                 BigInteger dtManifestId, String hashPath) {
         return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId, hashPath);
     }
+
+    // begins supporting dynamic primitive type lists
+
+    @Autowired
+    private BdtPriRestriReadRepository bdtPriRestriReadRepository;
+
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bccpManifestId) {
+        return bdtPriRestriReadRepository.availableBdtPriRestriListByBccpManifestId(bccpManifestId);
+    }
+
+    @Autowired
+    private BdtScPriRestriReadRepository bdtScPriRestriReadRepository;
+
+    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bdtScManifestId) {
+        return bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bdtScManifestId);
+    }
+
+    @Autowired
+    private CodeListReadRepository codeListReadRepository;
+
+    public List<AvailableCodeList> availableCodeListListByBccpManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bccpManifestId) {
+        return codeListReadRepository.availableCodeListByBccpManifestId(bccpManifestId);
+    }
+
+    public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bdtScManifestId) {
+        return codeListReadRepository.availableCodeListByBdtScManifestId(bdtScManifestId);
+    }
+
+    @Autowired
+    private AgencyIdListReadRepository agencyIdListReadRepository;
+
+    public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bccpManifestId) {
+        return agencyIdListReadRepository.availableAgencyIdListByBccpManifestId(bccpManifestId);
+    }
+
+    public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
+            User user, BigInteger topLevelAbieId, BigInteger bdtScManifestId) {
+        return agencyIdListReadRepository.availableAgencyIdListByBdtScManifestId(bdtScManifestId);
+    }
+
+    // ends supporting dynamic primitive type lists
 }

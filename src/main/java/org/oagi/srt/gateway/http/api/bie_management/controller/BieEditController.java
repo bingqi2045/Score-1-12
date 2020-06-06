@@ -12,11 +12,15 @@ import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.component.abie.AbieNode;
+import org.oagi.srt.repo.component.agency_id_list.AvailableAgencyIdList;
 import org.oagi.srt.repo.component.asbie.AsbieNode;
 import org.oagi.srt.repo.component.asbiep.AsbiepNode;
 import org.oagi.srt.repo.component.bbie.BbieNode;
 import org.oagi.srt.repo.component.bbie_sc.BbieScNode;
 import org.oagi.srt.repo.component.bbiep.BbiepNode;
+import org.oagi.srt.repo.component.bdt_pri_restri.AvailableBdtPriRestri;
+import org.oagi.srt.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
+import org.oagi.srt.repo.component.code_list.AvailableCodeList;
 import org.oagi.srt.repo.component.dt.BdtNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,10 +29,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.oagi.srt.gateway.http.api.common.data.AccessPrivilege.*;
 
@@ -136,6 +137,36 @@ public class BieEditController {
         return service.getBbiepDetail(user, topLevelAbieId, manifestId, hashPath);
     }
 
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/bdt_pri_restri",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableBdtPriRestriListByBccpManifestId(user, topLevelAbieId, manifestId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/code_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableCodeList> availableCodeListListByBccpManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableCodeListListByBccpManifestId(user, topLevelAbieId, manifestId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/agency_id_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableAgencyIdListListByBccpManifestId(user, topLevelAbieId, manifestId);
+    }
+
     @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -144,6 +175,36 @@ public class BieEditController {
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
         return service.getBbieScDetail(user, topLevelAbieId, manifestId, hashPath);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/bdt_sc_pri_restri",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableBdtScPriRestriListByBdtScManifestId(user, topLevelAbieId, manifestId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/code_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableCodeListListByBdtScManifestId(user, topLevelAbieId, manifestId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/agency_id_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
+            @AuthenticationPrincipal User user,
+            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("manifestId") BigInteger manifestId) {
+        return service.availableAgencyIdListListByBdtScManifestId(user, topLevelAbieId, manifestId);
     }
 
     @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bdt/{manifestId}",
