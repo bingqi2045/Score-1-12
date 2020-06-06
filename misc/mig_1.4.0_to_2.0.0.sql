@@ -1083,7 +1083,15 @@ ALTER TABLE `bbiep` DROP FOREIGN KEY `bbiep_based_bccp_id_fk`,
 ALTER TABLE `bbie_sc` ADD COLUMN `based_dt_sc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.' AFTER `guid`,
                       ADD CONSTRAINT `bbie_sc_based_dt_sc_manifest_id_fk` FOREIGN KEY (`based_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`),
                       ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_dt_sc_manifest_id`,
-                      ADD KEY `bbie_sc_hash_path_k` (`hash_path`);
+                      ADD KEY `bbie_sc_hash_path_k` (`hash_path`),
+                      ADD COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.' AFTER `is_used`,
+                      ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'A foreign key referring to the user who has last updated the BBIE_SC record.' AFTER `created_by`,
+                      ADD COLUMN `creation_timestamp` datetime(6) NOT NULL COMMENT 'Timestamp when the BBIE_SC record was first created.' AFTER `last_updated_by`,
+                      ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the BBIE_SC was last updated.' AFTER `creation_timestamp`,
+                      ADD KEY `bbie_sc_created_by_fk` (`created_by`),
+                      ADD KEY `bbie_sc_last_updated_by_fk` (`last_updated_by`),
+                      ADD CONSTRAINT `bbie_sc_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+                      ADD CONSTRAINT `bbie_sc_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
 
 UPDATE `bbie_sc`, `dt_sc_manifest`, `release`
 SET `bbie_sc`.`based_dt_sc_manifest_id` = `dt_sc_manifest`.`dt_sc_manifest_id`

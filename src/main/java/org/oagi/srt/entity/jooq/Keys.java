@@ -366,6 +366,8 @@ public class Keys {
     public static final ForeignKey<BbieScRecord, BdtScPriRestriRecord> BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = ForeignKeys0.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK;
     public static final ForeignKey<BbieScRecord, CodeListRecord> BBIE_SC_CODE_LIST_ID_FK = ForeignKeys0.BBIE_SC_CODE_LIST_ID_FK;
     public static final ForeignKey<BbieScRecord, AgencyIdListRecord> BBIE_SC_AGENCY_ID_LIST_ID_FK = ForeignKeys0.BBIE_SC_AGENCY_ID_LIST_ID_FK;
+    public static final ForeignKey<BbieScRecord, AppUserRecord> BBIE_SC_CREATED_BY_FK = ForeignKeys0.BBIE_SC_CREATED_BY_FK;
+    public static final ForeignKey<BbieScRecord, AppUserRecord> BBIE_SC_LAST_UPDATED_BY_FK = ForeignKeys0.BBIE_SC_LAST_UPDATED_BY_FK;
     public static final ForeignKey<BbieScRecord, TopLevelAbieRecord> BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK;
     public static final ForeignKey<BbiepRecord, BccpManifestRecord> BBIEP_BASED_BCCP_MANIFEST_ID_FK = ForeignKeys0.BBIEP_BASED_BCCP_MANIFEST_ID_FK;
     public static final ForeignKey<BbiepRecord, AppUserRecord> BBIEP_CREATED_BY_FK = ForeignKeys0.BBIEP_CREATED_BY_FK;
@@ -746,6 +748,8 @@ public class Keys {
         public static final ForeignKey<BbieScRecord, BdtScPriRestriRecord> BBIE_SC_DT_SC_PRI_RESTRI_ID_FK = Internal.createForeignKey(Keys.KEY_BDT_SC_PRI_RESTRI_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_dt_sc_pri_restri_id_fk", new TableField[] { BbieSc.BBIE_SC.DT_SC_PRI_RESTRI_ID }, true);
         public static final ForeignKey<BbieScRecord, CodeListRecord> BBIE_SC_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_code_list_id_fk", new TableField[] { BbieSc.BBIE_SC.CODE_LIST_ID }, true);
         public static final ForeignKey<BbieScRecord, AgencyIdListRecord> BBIE_SC_AGENCY_ID_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_agency_id_list_id_fk", new TableField[] { BbieSc.BBIE_SC.AGENCY_ID_LIST_ID }, true);
+        public static final ForeignKey<BbieScRecord, AppUserRecord> BBIE_SC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_created_by_fk", new TableField[] { BbieSc.BBIE_SC.CREATED_BY }, true);
+        public static final ForeignKey<BbieScRecord, AppUserRecord> BBIE_SC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_last_updated_by_fk", new TableField[] { BbieSc.BBIE_SC.LAST_UPDATED_BY }, true);
         public static final ForeignKey<BbieScRecord, TopLevelAbieRecord> BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, BbieSc.BBIE_SC, "bbie_sc_owner_top_level_abie_id_fk", new TableField[] { BbieSc.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID }, true);
         public static final ForeignKey<BbiepRecord, BccpManifestRecord> BBIEP_BASED_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, Bbiep.BBIEP, "bbiep_based_bccp_manifest_id_fk", new TableField[] { Bbiep.BBIEP.BASED_BCCP_MANIFEST_ID }, true);
         public static final ForeignKey<BbiepRecord, AppUserRecord> BBIEP_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bbiep.BBIEP, "bbiep_created_by_fk", new TableField[] { Bbiep.BBIEP.CREATED_BY }, true);

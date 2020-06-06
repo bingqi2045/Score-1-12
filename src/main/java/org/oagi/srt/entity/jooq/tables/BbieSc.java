@@ -4,6 +4,7 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row18;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +38,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 1198827996;
+    private static final long serialVersionUID = -2060169408;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -70,7 +71,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     /**
      * The column <code>oagi.bbie_sc.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(60).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
@@ -146,6 +147,26 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     public final TableField<BbieScRecord, Byte> IS_USED = createField(DSL.name("is_used"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Flag to indicate whether the field/component is used in the content model. It indicates whether the field/component should be generated.");
 
     /**
+     * The column <code>oagi.bbie_sc.created_by</code>. A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.
+     */
+    public final TableField<BbieScRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who creates the BBIE_SC. The creator of the BBIE_SC is also its owner by default.");
+
+    /**
+     * The column <code>oagi.bbie_sc.last_updated_by</code>. A foreign key referring to the user who has last updated the BBIE_SC record.
+     */
+    public final TableField<BbieScRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the user who has last updated the BBIE_SC record.");
+
+    /**
+     * The column <code>oagi.bbie_sc.creation_timestamp</code>. Timestamp when the BBIE_SC record was first created.
+     */
+    public final TableField<BbieScRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the BBIE_SC record was first created.");
+
+    /**
+     * The column <code>oagi.bbie_sc.last_update_timestamp</code>. The timestamp when the BBIE_SC was last updated.
+     */
+    public final TableField<BbieScRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the BBIE_SC was last updated.");
+
+    /**
      * The column <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
      */
     public final TableField<BbieScRecord, ULong> OWNER_TOP_LEVEL_ABIE_ID = createField(DSL.name("owner_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.");
@@ -210,7 +231,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<ForeignKey<BbieScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_CREATED_BY_FK, Keys.BBIE_SC_LAST_UPDATED_BY_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
     }
 
     public DtScManifest dtScManifest() {
@@ -231,6 +252,14 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     public AgencyIdList agencyIdList() {
         return new AgencyIdList(this, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK);
+    }
+
+    public AppUser bbieScCreatedByFk() {
+        return new AppUser(this, Keys.BBIE_SC_CREATED_BY_FK);
+    }
+
+    public AppUser bbieScLastUpdatedByFk() {
+        return new AppUser(this, Keys.BBIE_SC_LAST_UPDATED_BY_FK);
     }
 
     public TopLevelAbie topLevelAbie() {
@@ -264,11 +293,11 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     // -------------------------------------------------------------------------
-    // Row18 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row22<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }
