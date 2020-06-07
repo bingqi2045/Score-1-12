@@ -66,6 +66,8 @@ public class BbiepReadRepository {
         bdt.setState(CcState.valueOf(bdtRecord.getState()));
 
         BbiepNode.Bbiep bbiep = getBbiep(topLevelAbieId, hashPath);
+        bbiepNode.setBbiep(bbiep);
+
         if (bbiep.getBbiepId() == null) {
             bbiep.setBasedBccpManifestId(bccp.getBccpManifestId());
         }

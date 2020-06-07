@@ -50,6 +50,8 @@ public class AsbieReadRepository {
         ascc.setState(CcState.valueOf(asccRecord.getState()));
 
         AsbieNode.Asbie asbie = getAsbie(topLevelAbieId, hashPath);
+        asbieNode.setAsbie(asbie);
+
         if (asbie.getAsbieId() == null) {
             asbie.setBasedAsccManifestId(ascc.getAsccManifestId());
             asbie.setCardinalityMin(ascc.getCardinalityMin());

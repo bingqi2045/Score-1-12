@@ -54,6 +54,8 @@ public class BbieReadRepository {
         bcc.setNillable(bccRecord.getIsNillable() == 1 ? true : false);
 
         BbieNode.Bbie bbie = getBbie(topLevelAbieId, hashPath);
+        bbieNode.setBbie(bbie);
+
         if (bbie.getBbieId() == null) {
             bbie.setBasedBccManifestId(bcc.getBccManifestId());
             bbie.setCardinalityMin(bccRecord.getCardinalityMin());

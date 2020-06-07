@@ -49,6 +49,8 @@ public class AbieReadRepository {
         acc.setState(CcState.valueOf(accRecord.getState()));
 
         AbieNode.Abie abie = getAbie(topLevelAbieId, hashPath);
+        abieNode.setAbie(abie);
+
         if (abie.getAbieId() == null) {
             abie.setBasedAccManifestId(acc.getAccManifestId());
         }

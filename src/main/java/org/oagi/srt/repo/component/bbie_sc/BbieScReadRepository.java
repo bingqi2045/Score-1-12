@@ -57,6 +57,8 @@ public class BbieScReadRepository {
                         .fetchOneInto(String.class)));
 
         BbieScNode.BbieSc bbieSc = getBbieSc(topLevelAbieId, hashPath);
+        bbieScNode.setBbieSc(bbieSc);
+
         if (bbieSc.getBbieScId() == null) {
             bbieSc.setBasedDtScManifestId(bdtSc.getDtScManifestId());
             bbieSc.setCardinalityMin(dtScRecord.getCardinalityMin());

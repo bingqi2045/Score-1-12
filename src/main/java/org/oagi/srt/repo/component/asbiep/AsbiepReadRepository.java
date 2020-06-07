@@ -51,6 +51,8 @@ public class AsbiepReadRepository {
         asccp.setNillable(asccpRecord.getIsNillable() == 1 ? true : false);
 
         AsbiepNode.Asbiep asbiep = getAsbiep(topLevelAbieId, hashPath);
+        asbiepNode.setAsbiep(asbiep);
+
         if (asbiep.getAsbiepId() == null) {
             asbiep.setBasedAsccpManifestId(asccp.getAsccpManifestId());
         }
