@@ -80,9 +80,9 @@ public class BieService {
             throw new IllegalArgumentException();
         }
 
-        String asccpPath = sha256("asccp-" + asccpManifest.getAsccpManifestId());
-        String accPath = sha256(String.join(">",
-                Arrays.asList(asccpPath, "acc-" + asccpManifest.getRoleOfAccManifestId())));
+        String asccpPath = "asccp-" + asccpManifest.getAsccpManifestId();
+        String accPath = String.join(">",
+                Arrays.asList(asccpPath, "acc-" + asccpManifest.getRoleOfAccManifestId()));
 
         BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
@@ -97,7 +97,7 @@ public class BieService {
                 .setUserId(userId)
                 .setTopLevelAbieId(topLevelAbieId)
                 .setAccManifestId(asccpManifest.getRoleOfAccManifestId())
-                .setHashPath(accPath)
+                .setHashPath(sha256(accPath))
                 .setTimestamp(millis)
                 .execute();
 
@@ -110,7 +110,7 @@ public class BieService {
                 .setAsccpManifestId(asccpManifest.getAsccpManifestId())
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAbieId(topLevelAbieId)
-                .setHashPath(asccpPath)
+                .setHashPath(sha256(asccpPath))
                 .setUserId(userId)
                 .setTimestamp(millis)
                 .execute();
