@@ -212,9 +212,8 @@ public class BieEditController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BdtNode getBdtDetail(@AuthenticationPrincipal User user,
                                 @PathVariable("manifestId") BigInteger manifestId,
-                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
-                                @RequestParam("hashPath") String hashPath) {
-        return service.getBdtDetail(user, topLevelAbieId, manifestId, hashPath);
+                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
+        return service.getBdtDetail(user, topLevelAbieId, manifestId);
     }
 
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,

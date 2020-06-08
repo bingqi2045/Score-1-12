@@ -357,8 +357,8 @@ public class BieEditService {
     private DtReadRepository bdtReadRepository;
 
     public BdtNode getBdtDetail(User user, BigInteger topLevelAbieId,
-                                BigInteger dtManifestId, String hashPath) {
-        return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId, hashPath);
+                                BigInteger dtManifestId) {
+        return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId);
     }
 
     // begins supporting dynamic primitive type lists

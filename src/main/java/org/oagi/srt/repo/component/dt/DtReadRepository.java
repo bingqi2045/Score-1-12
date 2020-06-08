@@ -33,7 +33,7 @@ public class DtReadRepository {
                 .fetchOptionalInto(DtRecord.class).orElse(null);
     }
 
-    public BdtNode getBdtNode(BigInteger topLevelAbieId, BigInteger dtManifestId, String hashPath) {
+    public BdtNode getBdtNode(BigInteger topLevelAbieId, BigInteger dtManifestId) {
         DtRecord dtRecord = getDtByDtManifestId(dtManifestId);
         if (dtRecord == null) {
             return null;
