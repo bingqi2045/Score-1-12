@@ -80,9 +80,9 @@ public class BieService {
             throw new IllegalArgumentException();
         }
 
-        String asccpPath = "asccp-" + asccpManifest.getAsccpManifestId();
-        String accPath = String.join(">",
-                Arrays.asList(asccpPath, "acc-" + asccpManifest.getRoleOfAccManifestId()));
+        String accPath =  "acc-" + asccpManifest.getRoleOfAccManifestId();
+        String asccpPath = String.join(">",
+                Arrays.asList(accPath, "asccp-" + asccpManifest.getAsccpManifestId()));;
 
         BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
