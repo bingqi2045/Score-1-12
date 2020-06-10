@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -26,6 +27,8 @@ public class CodeListReadRepository {
                 .join(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(BCCP).on(BDT_PRI_RESTRI.BDT_ID.eq(BCCP.BDT_ID))
                 .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(CODE_LIST_MANIFEST).on(and(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
+                        BCCP_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchInto(AvailableCodeList.class);
     }
@@ -40,6 +43,8 @@ public class CodeListReadRepository {
                 .join(CODE_LIST).on(BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
                 .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .join(CODE_LIST_MANIFEST).on(and(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
+                        DT_SC_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)))
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
                 .fetchInto(AvailableCodeList.class);
     }
