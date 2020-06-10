@@ -35,8 +35,8 @@ public class BbieNode {
 
         private BigInteger bbieId;
         private String guid;
-        private int cardinalityMin;
-        private int cardinalityMax;
+        private Integer cardinalityMin;
+        private Integer cardinalityMax;
         private boolean nillable;
         private String remark;
         private String definition;
@@ -47,6 +47,14 @@ public class BbieNode {
         private BigInteger bdtPriRestriId;
         private BigInteger codeListId;
         private BigInteger agencyIdListId;
+
+        public boolean isEmptyCardinality() {
+            return (cardinalityMin == null && cardinalityMax == null);
+        }
+
+        public boolean isEmptyPrimitive() {
+            return (bdtPriRestriId == null && codeListId == null && agencyIdListId == null);
+        }
     }
 
     private Bbie bbie = new Bbie();

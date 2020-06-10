@@ -4,13 +4,19 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
+import org.oagi.srt.entity.jooq.tables.records.BccRecord;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.component.bcc.BccReadRepository;
+import org.oagi.srt.repo.component.bdt_pri_restri.AvailableBdtPriRestri;
+import org.oagi.srt.repo.component.bdt_pri_restri.BdtPriRestriReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
@@ -25,7 +31,13 @@ public class BbieWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private BbieReadRepository readRepository;
+    private BccReadRepository bccReadRepository;
+
+    @Autowired
+    private BdtPriRestriReadRepository bdtPriRestriReadRepository;
+
+    @Autowired
+    private BbieReadRepository bbieReadRepository;
 
     public BbieNode.Bbie upsertBbie(UpsertBbieRequest request) {
         BbieNode.Bbie bbie = request.getBbie();
@@ -65,8 +77,18 @@ public class BbieWriteRepository {
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
             bbieRecord.setDefinition(bbie.getDefinition());
-            bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
-            bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
+            if (bbie.isEmptyCardinality()) {
+                BccRecord bccRecord = bccReadRepository.getBccByManifestId(bbie.getBasedBccManifestId());
+                if (bccRecord == null) {
+                    throw new IllegalArgumentException();
+                }
+
+                bbieRecord.setCardinalityMin(bccRecord.getCardinalityMin());
+                bbieRecord.setCardinalityMax(bccRecord.getCardinalityMax());
+            } else {
+                bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
+                bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
+            }
             bbieRecord.setExample(bbie.getExample());
             bbieRecord.setRemark(bbie.getRemark());
 
@@ -78,18 +100,30 @@ public class BbieWriteRepository {
                 bbieRecord.setFixedValue(bbie.getFixedValue());
             }
 
-            if (bbie.getBdtPriRestriId() != null) {
-                bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
-                bbieRecord.setCodeListId(null);
-                bbieRecord.setAgencyIdListId(null);
-            } else if (bbie.getCodeListId() != null) {
-                bbieRecord.setBdtPriRestriId(null);
-                bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
-                bbieRecord.setAgencyIdListId(null);
-            } else if (bbie.getAgencyIdListId() != null) {
-                bbieRecord.setBdtPriRestriId(null);
-                bbieRecord.setCodeListId(null);
-                bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+            if (bbie.isEmptyPrimitive()) {
+                List<AvailableBdtPriRestri> bdtPriRestriList =
+                        bdtPriRestriReadRepository.availableBdtPriRestriListByBccManifestId(bbie.getBasedBccManifestId());
+                bdtPriRestriList = bdtPriRestriList.stream().filter(e -> e.isDefault())
+                        .collect(Collectors.toList());
+                if (bdtPriRestriList.size() != 1) {
+                    throw new IllegalArgumentException();
+                }
+
+                bbieRecord.setBdtPriRestriId(ULong.valueOf(bdtPriRestriList.get(0).getBdtPriRestriId()));
+            } else {
+                if (bbie.getBdtPriRestriId() != null) {
+                    bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
+                    bbieRecord.setCodeListId(null);
+                    bbieRecord.setAgencyIdListId(null);
+                } else if (bbie.getCodeListId() != null) {
+                    bbieRecord.setBdtPriRestriId(null);
+                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setAgencyIdListId(null);
+                } else if (bbie.getAgencyIdListId() != null) {
+                    bbieRecord.setBdtPriRestriId(null);
+                    bbieRecord.setCodeListId(null);
+                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                }
             }
 
             bbieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
@@ -109,6 +143,9 @@ public class BbieWriteRepository {
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
             bbieRecord.setDefinition(bbie.getDefinition());
+            if (bbie.isEmptyCardinality()) {
+                throw new IllegalArgumentException();
+            }
             bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
             bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
             bbieRecord.setExample(bbie.getExample());
@@ -122,6 +159,9 @@ public class BbieWriteRepository {
                 bbieRecord.setFixedValue(bbie.getFixedValue());
             }
 
+            if (bbie.isEmptyPrimitive()) {
+                throw new IllegalArgumentException();
+            }
             if (bbie.getBdtPriRestriId() != null) {
                 bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
                 bbieRecord.setCodeListId(null);
@@ -157,7 +197,7 @@ public class BbieWriteRepository {
             );
         }
 
-        return readRepository.getBbie(request.getTopLevelAbieId(), hashPath);
+        return bbieReadRepository.getBbie(request.getTopLevelAbieId(), hashPath);
     }
-    
+
 }

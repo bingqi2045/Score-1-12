@@ -4,8 +4,10 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
+import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.component.ascc.AsccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +26,10 @@ public class AsbieWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private AsbieReadRepository readRepository;
+    private AsccReadRepository asccReadRepository;
+
+    @Autowired
+    private AsbieReadRepository asbieReadRepository;
 
     public AsbieNode.Asbie upsertAsbie(UpsertAsbieRequest request) {
         AsbieNode.Asbie asbie = request.getAsbie();
@@ -64,10 +69,20 @@ public class AsbieWriteRepository {
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
             asbieRecord.setDefinition(asbie.getDefinition());
-            asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
-            asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
+            if (asbie.isEmptyCardinality()) {
+                AsccRecord asccRecord = asccReadRepository.getAsccByManifestId(asbie.getBasedAsccManifestId());
+                if (asccRecord == null) {
+                    throw new IllegalArgumentException();
+                }
+
+                asbieRecord.setCardinalityMin(asccRecord.getCardinalityMin());
+                asbieRecord.setCardinalityMax(asccRecord.getCardinalityMax());
+            } else {
+                asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
+                asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
+            }
             asbieRecord.setRemark(asbie.getRemark());
-            
+
             asbieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
 
             asbieRecord.setCreatedBy(requesterId);
@@ -85,6 +100,9 @@ public class AsbieWriteRepository {
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
             asbieRecord.setDefinition(asbie.getDefinition());
+            if (asbie.isEmptyCardinality()) {
+                throw new IllegalArgumentException();
+            }
             asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
             asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
             asbieRecord.setRemark(asbie.getRemark());
@@ -104,7 +122,7 @@ public class AsbieWriteRepository {
             );
         }
 
-        return readRepository.getAsbie(request.getTopLevelAbieId(), hashPath);
+        return asbieReadRepository.getAsbie(request.getTopLevelAbieId(), hashPath);
     }
-    
+
 }

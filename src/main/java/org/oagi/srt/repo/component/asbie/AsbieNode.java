@@ -31,11 +31,15 @@ public class AsbieNode {
 
         private BigInteger asbieId;
         private String guid;
-        private int cardinalityMin;
-        private int cardinalityMax;
+        private Integer cardinalityMin;
+        private Integer cardinalityMax;
         private boolean nillable;
         private String remark;
         private String definition;
+
+        public boolean isEmptyCardinality() {
+            return (cardinalityMin == null && cardinalityMax == null);
+        }
     }
 
     private Asbie asbie = new Asbie();

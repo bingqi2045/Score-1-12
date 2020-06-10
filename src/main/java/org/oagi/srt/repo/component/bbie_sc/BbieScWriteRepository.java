@@ -4,11 +4,18 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
+import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
+import org.oagi.srt.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
+import org.oagi.srt.repo.component.bdt_sc_pri_restri.BdtScPriRestriReadRepository;
+import org.oagi.srt.repo.component.dt_sc.DtScReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.BBIE;
@@ -24,7 +31,13 @@ public class BbieScWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private BbieScReadRepository readRepository;
+    private DtScReadRepository dtScReadRepository;
+
+    @Autowired
+    private BdtScPriRestriReadRepository bdtScPriRestriReadRepository;
+
+    @Autowired
+    private BbieScReadRepository bbieScReadRepository;
 
     public BbieScNode.BbieSc upsertBbieSc(UpsertBbieScRequest request) {
         BbieScNode.BbieSc bbieSc = request.getBbieSc();
@@ -55,8 +68,18 @@ public class BbieScWriteRepository {
 
             bbieScRecord.setIsUsed((byte) (bbieSc.isUsed() ? 1 : 0));
             bbieScRecord.setDefinition(bbieSc.getDefinition());
-            bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
-            bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
+            if (bbieSc.isEmptyCardinality()) {
+                DtScRecord dtScRecord = dtScReadRepository.getDtScByManifestId(bbieSc.getBasedDtScManifestId());
+                if (dtScRecord == null) {
+                    throw new IllegalArgumentException();
+                }
+
+                bbieScRecord.setCardinalityMin(dtScRecord.getCardinalityMin());
+                bbieScRecord.setCardinalityMax(dtScRecord.getCardinalityMax());
+            } else {
+                bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
+                bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
+            }
             bbieScRecord.setExample(bbieSc.getExample());
             bbieScRecord.setRemark(bbieSc.getRemark());
 
@@ -68,18 +91,30 @@ public class BbieScWriteRepository {
                 bbieScRecord.setFixedValue(bbieSc.getFixedValue());
             }
 
-            if (bbieSc.getBdtScPriRestriId() != null) {
-                bbieScRecord.setDtScPriRestriId(ULong.valueOf(bbieSc.getBdtScPriRestriId()));
-                bbieScRecord.setCodeListId(null);
-                bbieScRecord.setAgencyIdListId(null);
-            } else if (bbieSc.getCodeListId() != null) {
-                bbieScRecord.setDtScPriRestriId(null);
-                bbieScRecord.setCodeListId(ULong.valueOf(bbieSc.getCodeListId()));
-                bbieScRecord.setAgencyIdListId(null);
-            } else if (bbieSc.getAgencyIdListId() != null) {
-                bbieScRecord.setDtScPriRestriId(null);
-                bbieScRecord.setCodeListId(null);
-                bbieScRecord.setAgencyIdListId(ULong.valueOf(bbieSc.getAgencyIdListId()));
+            if (bbieSc.isEmptyPrimitive()) {
+                List<AvailableBdtScPriRestri> bdtScPriRestriList =
+                        bdtScPriRestriReadRepository.availableBdtScPriRestriListByBdtScManifestId(bbieSc.getBasedDtScManifestId());
+                bdtScPriRestriList = bdtScPriRestriList.stream().filter(e -> e.isDefault())
+                        .collect(Collectors.toList());
+                if (bdtScPriRestriList.size() != 1) {
+                    throw new IllegalArgumentException();
+                }
+
+                bbieScRecord.setDtScPriRestriId(ULong.valueOf(bdtScPriRestriList.get(0).getBdtScPriRestriId()));
+            } else {
+                if (bbieSc.getBdtScPriRestriId() != null) {
+                    bbieScRecord.setDtScPriRestriId(ULong.valueOf(bbieSc.getBdtScPriRestriId()));
+                    bbieScRecord.setCodeListId(null);
+                    bbieScRecord.setAgencyIdListId(null);
+                } else if (bbieSc.getCodeListId() != null) {
+                    bbieScRecord.setDtScPriRestriId(null);
+                    bbieScRecord.setCodeListId(ULong.valueOf(bbieSc.getCodeListId()));
+                    bbieScRecord.setAgencyIdListId(null);
+                } else if (bbieSc.getAgencyIdListId() != null) {
+                    bbieScRecord.setDtScPriRestriId(null);
+                    bbieScRecord.setCodeListId(null);
+                    bbieScRecord.setAgencyIdListId(ULong.valueOf(bbieSc.getAgencyIdListId()));
+                }
             }
 
             bbieScRecord.setOwnerTopLevelAbieId(topLevelAbieId);
@@ -98,6 +133,9 @@ public class BbieScWriteRepository {
         } else {
             bbieScRecord.setIsUsed((byte) (bbieSc.isUsed() ? 1 : 0));
             bbieScRecord.setDefinition(bbieSc.getDefinition());
+            if (bbieSc.isEmptyCardinality()) {
+                throw new IllegalArgumentException();
+            }
             bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
             bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
             bbieScRecord.setExample(bbieSc.getExample());
@@ -111,6 +149,9 @@ public class BbieScWriteRepository {
                 bbieScRecord.setFixedValue(bbieSc.getFixedValue());
             }
 
+            if (bbieSc.isEmptyPrimitive()) {
+                throw new IllegalArgumentException();
+            }
             if (bbieSc.getBdtScPriRestriId() != null) {
                 bbieScRecord.setDtScPriRestriId(ULong.valueOf(bbieSc.getBdtScPriRestriId()));
                 bbieScRecord.setCodeListId(null);
@@ -145,6 +186,6 @@ public class BbieScWriteRepository {
             );
         }
 
-        return readRepository.getBbieSc(request.getTopLevelAbieId(), hashPath);
+        return bbieScReadRepository.getBbieSc(request.getTopLevelAbieId(), hashPath);
     }
 }

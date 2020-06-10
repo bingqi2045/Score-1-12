@@ -33,8 +33,8 @@ public class BbieScNode {
 
         private BigInteger bbieScId;
         private String guid;
-        private int cardinalityMin;
-        private int cardinalityMax;
+        private Integer cardinalityMin;
+        private Integer cardinalityMax;
         private String remark;
         private String bizTerm;
         private String definition;
@@ -45,6 +45,14 @@ public class BbieScNode {
         private BigInteger bdtScPriRestriId;
         private BigInteger codeListId;
         private BigInteger agencyIdListId;
+
+        public boolean isEmptyCardinality() {
+            return (cardinalityMin == null && cardinalityMax == null);
+        }
+
+        public boolean isEmptyPrimitive() {
+            return (bdtScPriRestriId == null && codeListId == null && agencyIdListId == null);
+        }
     }
 
     private BbieSc bbieSc = new BbieSc();

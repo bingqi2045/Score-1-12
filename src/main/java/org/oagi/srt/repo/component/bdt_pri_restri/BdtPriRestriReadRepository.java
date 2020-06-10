@@ -16,6 +16,22 @@ public class BdtPriRestriReadRepository {
     @Autowired
     private DSLContext dslContext;
 
+    public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(BigInteger bccManifestId) {
+        return dslContext.select(
+                BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
+                BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME.as("xbt_name"))
+                .from(BDT_PRI_RESTRI)
+                .join(CDT_AWD_PRI_XPS_TYPE_MAP)
+                .on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
+                .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
+                .join(BCCP)
+                .on(BDT_PRI_RESTRI.BDT_ID.eq(BCCP.BDT_ID))
+                .join(BCC_MANIFEST)
+                .on(BCC.TO_BCCP_ID.eq(BCCP.BCCP_ID))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
+                .fetchInto(AvailableBdtPriRestri.class);
+    }
+
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(BigInteger bccpManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID,
