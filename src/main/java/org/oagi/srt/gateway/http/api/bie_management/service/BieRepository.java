@@ -61,51 +61,25 @@ public class BieRepository {
         }).collect(Collectors.toList());
     }
 
-    public BigInteger getAccIdByTopLevelAbieId(BigInteger topLevelAbieId, BigInteger releaseId) {
-        return dslContext.select(ACC_MANIFEST.ACC_ID)
+    public BigInteger getAccManifestIdByTopLevelAbieId(BigInteger topLevelAbieId, BigInteger releaseId) {
+        return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ABIE)
                 .join(TOP_LEVEL_ABIE)
                 .on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
                 .join(ACC_MANIFEST)
                 .on(ABIE.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
-                        .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
-                .fetchOneInto(BigInteger.class);
-    }
-
-    public BieEditAcc getAccByAccId(BigInteger accId, BigInteger releaseId) {
-        // BIE only can see the ACCs whose state is in Published.
-        return dslContext.select(
-                ACC.ACC_ID,
-                ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
-                ACC.OAGIS_COMPONENT_TYPE,
-                RELEASE.RELEASE_ID,
-                RELEASE.RELEASE_NUM,
-                REVISION.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
-                .from(ACC)
-                .join(ACC_MANIFEST)
-                .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(RELEASE)
-                .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                .leftJoin(ACC_MANIFEST.as("base"))
-                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
                 .where(and(
-                        ACC.STATE.eq(CcState.Published.name()),
-                        ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(accId)),
+                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 ))
-                .fetchOneInto(BieEditAcc.class);
+                .fetchOneInto(BigInteger.class);
     }
 
     public BieEditAcc getAccByAccManifestId(BigInteger accManifestId) {
         // BIE only can see the ACCs whose state is in Published.
         return dslContext.select(
-                ACC.ACC_ID,
-                ACC_MANIFEST.as("base").ACC_ID.as("based_acc_id"),
+                ACC_MANIFEST.ACC_MANIFEST_ID,
+                ACC_MANIFEST.as("base").ACC_MANIFEST_ID.as("based_acc_manifest_id"),
                 ACC.OAGIS_COMPONENT_TYPE,
                 RELEASE.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
@@ -298,7 +272,7 @@ public class BieRepository {
 
     public BieEditAsccp getAsccpByAsccpManifestId(BigInteger asccpManifestId) {
         return dslContext.select(
-                ASCCP.ASCCP_ID,
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
@@ -396,8 +370,8 @@ public class BieRepository {
                 .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
-    public BigInteger getRoleOfAccIdByAsccpId(BigInteger asccpManifestId) {
-        return dslContext.select(ACC_MANIFEST.ACC_ID)
+    public BigInteger getRoleOfAccManifestIdByAsccpManifestId(BigInteger asccpManifestId) {
+        return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ASCCP_MANIFEST)
                 .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
@@ -405,14 +379,13 @@ public class BieRepository {
                 .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
-    public List<BieEditAscc> getAsccListByFromAccId(BigInteger fromAccId, BigInteger releaseId) {
-        return getAsccListByFromAccId(fromAccId, releaseId, false);
+    public List<BieEditAscc> getAsccListByFromAccManifestId(BigInteger fromAccManifestId) {
+        return getAsccListByFromAccManifestId(fromAccManifestId, false);
     }
 
-    public List<BieEditAscc> getAsccListByFromAccId(BigInteger fromAccId, BigInteger releaseId, boolean isPublished) {
+    public List<BieEditAscc> getAsccListByFromAccManifestId(BigInteger fromAccManifestId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
-                ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
-                ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
         ));
 
         if (isPublished) {
@@ -448,14 +421,13 @@ public class BieRepository {
                 .fetchInto(BieEditAscc.class);
     }
 
-    public List<BieEditBcc> getBccListByFromAccId(BigInteger fromAccId, BigInteger releaseId) {
-        return getBccListByFromAccId(fromAccId, releaseId, false);
+    public List<BieEditBcc> getBccListByFromAccManifestId(BigInteger fromAccManifestId) {
+        return getBccListByFromAccManifestId(fromAccManifestId, false);
     }
 
-    public List<BieEditBcc> getBccListByFromAccId(BigInteger fromAccId, BigInteger releaseId, boolean isPublished) {
+    public List<BieEditBcc> getBccListByFromAccManifestId(BigInteger fromAccManifestId, boolean isPublished) {
         List<Condition> conditions = new ArrayList(Arrays.asList(
-                ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(fromAccId)),
-                BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
+                ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId))
         ));
 
         if (isPublished) {
@@ -724,13 +696,12 @@ public class BieRepository {
                 .execute();
     }
 
-    public OagisComponentType getOagisComponentTypeOfAccByAsccpId(BigInteger asccpManifestId, BigInteger releaseId) {
+    public OagisComponentType getOagisComponentTypeOfAccByAsccpManifestId(BigInteger asccpManifestId) {
         int oagisComponentType = dslContext.select(ACC.OAGIS_COMPONENT_TYPE)
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId))
-                        .and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOneInto(Integer.class);
         return OagisComponentType.valueOf(oagisComponentType);
     }

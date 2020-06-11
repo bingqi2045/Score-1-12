@@ -1,6 +1,7 @@
 package org.oagi.srt.repo.component.bcc;
 
 import org.oagi.srt.data.RepositoryRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
@@ -12,6 +13,8 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
     private final BigInteger accManifestId;
     private final BigInteger bccpManifestId;
     private int pos = -1;
+
+    private CcState initialState = CcState.WIP;
 
     public CreateBccRepositoryRequest(User user,
                                       BigInteger releaseId,
@@ -52,5 +55,13 @@ public class CreateBccRepositoryRequest extends RepositoryRequest {
 
     public void setPos(int pos) {
         this.pos = pos;
+    }
+
+    public CcState getInitialState() {
+        return initialState;
+    }
+
+    public void setInitialState(CcState initialState) {
+        this.initialState = initialState;
     }
 }

@@ -58,7 +58,8 @@ public class AccWriteRepository {
         acc.setGuid(SrtGuid.randomGuid());
         acc.setObjectClassTerm(request.getInitialObjectClassTerm());
         acc.setDen(acc.getObjectClassTerm() + ". Details");
-        acc.setOagisComponentType(OagisComponentType.Semantics.getValue());
+        acc.setOagisComponentType(request.getInitialComponentType().getValue());
+        acc.setDefinition(request.getInitialDefinition());
         acc.setState(CcState.WIP.name());
         acc.setIsAbstract((byte) 0);
         acc.setIsDeprecated((byte) 0);

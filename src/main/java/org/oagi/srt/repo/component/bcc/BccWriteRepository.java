@@ -72,8 +72,9 @@ public class BccWriteRepository {
 
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        CcState accState = CcState.valueOf(accRecord.getState());
+        if (accState != request.getInitialState()) {
+            throw new IllegalArgumentException("The initial state of BCC must be '" + accState + "'.");
         }
 
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)

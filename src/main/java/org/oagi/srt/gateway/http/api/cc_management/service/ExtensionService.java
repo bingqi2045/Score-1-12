@@ -1,7 +1,9 @@
 package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Result;
+import org.jooq.SelectFieldOrAsterisk;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.AppUser;
@@ -19,6 +21,15 @@ import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
+import org.oagi.srt.repo.component.acc.AccWriteRepository;
+import org.oagi.srt.repo.component.acc.CreateAccRepositoryRequest;
+import org.oagi.srt.repo.component.acc.CreateAccRepositoryResponse;
+import org.oagi.srt.repo.component.ascc.AsccWriteRepository;
+import org.oagi.srt.repo.component.ascc.CreateAsccRepositoryRequest;
+import org.oagi.srt.repo.component.ascc.CreateAsccRepositoryResponse;
+import org.oagi.srt.repo.component.asccp.AsccpWriteRepository;
+import org.oagi.srt.repo.component.asccp.CreateAsccpRepositoryRequest;
+import org.oagi.srt.repo.component.asccp.CreateAsccpRepositoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -26,8 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -81,20 +91,21 @@ public class ExtensionService {
         return eAcc;
     }
 
-    public ACC getExistsUserExtension(BigInteger accId, BigInteger releaseId) {
+    public ACC getExistsUserExtension(BigInteger accManifestId) {
+        List<Field> fields = new ArrayList();
+        fields.add(ACC_MANIFEST.ACC_MANIFEST_ID);
+        fields.addAll(Arrays.asList(ACC.fields()));
+
         ACC ueAcc =
-                dslContext.select(ACC.fields())
+                dslContext.select(fields)
                         .from(ACC.as("eAcc"))
-                        .join(ACC_MANIFEST.as("eACCRM")).on(and(
-                        ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID),
-                        ACC_MANIFEST.as("eACCRM").RELEASE_ID.eq(ULong.valueOf(releaseId))
-                ))
+                        .join(ACC_MANIFEST.as("eACCRM")).on(ACC.as("eAcc").ACC_ID.eq(ACC_MANIFEST.as("eACCRM").ACC_ID))
                         .join(ASCC_MANIFEST).on(ACC_MANIFEST.as("eACCRM").ACC_MANIFEST_ID.eq(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID))
                         .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                         .join(ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .where(and(
-                                ACC.as("eAcc").ACC_ID.eq(ULong.valueOf(accId)),
+                                ACC_MANIFEST.as("eACCRM").ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)),
                                 ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
                         )).fetchOneInto(ACC.class);
         return ueAcc;
@@ -102,7 +113,7 @@ public class ExtensionService {
 
     @Transactional
     public BigInteger appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
-                                    BigInteger releaseId, User user) {
+                                          BigInteger releaseId, User user) {
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
@@ -120,23 +131,49 @@ public class ExtensionService {
         }
     }
 
+    @Autowired
+    private AccWriteRepository accWriteRepository;
+
+    @Autowired
+    private AsccpWriteRepository asccpWriteRepository;
+
+    @Autowired
+    private AsccWriteRepository asccWriteRepository;
+
     private BigInteger createNewUserExtensionGroupACC(ACC eAcc, BigInteger releaseId, User user) {
-        AccRecord ueAcc = createACCForExtension(eAcc, user);
-        AccManifestRecord ueAccManifest = createACCManifestForExtension(ueAcc, releaseId);
+        LocalDateTime timestamp = LocalDateTime.now();
+        CreateAccRepositoryRequest createUeAccRequest = new CreateAccRepositoryRequest(user, timestamp, releaseId);
 
-        AsccpRecord ueAsccp = createASCCPForExtension(eAcc, user, ueAcc);
-        AsccpManifestRecord ueAsccpManifest =
-                createASCCPManifestForExtension(ueAsccp, ueAccManifest, releaseId);
+        String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
+        createUeAccRequest.setInitialObjectClassTerm(objectClassTerm);
+        createUeAccRequest.setInitialComponentType(OagisComponentType.UserExtensionGroup);
+        createUeAccRequest.setInitialDefinition("A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".");
 
-        AsccRecord ueAscc = createASCCForExtension(eAcc, ueAsccp, user);
-        AccManifestRecord eAccManifest = dslContext.selectFrom(ACC_MANIFEST)
-                .where(and(
-                        ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(eAcc.getAccId())),
-                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
-                )).fetchOne();
-        createASCCManifestForExtension(ueAscc, eAccManifest, ueAsccpManifest, releaseId);
+        CreateAccRepositoryResponse createUeAccResponse =
+                accWriteRepository.createAcc(createUeAccRequest);
 
-        return ueAccManifest.getAccManifestId().toBigInteger();
+        CreateAsccpRepositoryRequest createAsccpRepositoryRequest = new CreateAsccpRepositoryRequest(
+                user, timestamp, createUeAccResponse.getAccManifestId(), releaseId);
+
+        createAsccpRepositoryRequest.setInitialPropertyTerm(objectClassTerm);
+        createAsccpRepositoryRequest.setReusable(false);
+        createAsccpRepositoryRequest.setDefinition("A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".");
+        createAsccpRepositoryRequest.setInitialState(CcState.Published);
+        CreateAsccpRepositoryResponse createUeAsccpRepositoryResponse =
+                asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
+
+        CreateAsccRepositoryRequest createAsccRepositoryRequest = new CreateAsccRepositoryRequest(
+                user, timestamp, releaseId,
+                eAcc.getAccManifestId(), createUeAsccpRepositoryResponse.getAsccpManifestId()
+        );
+        createAsccRepositoryRequest.setInitialState(CcState.Published);
+        createAsccRepositoryRequest.setCardinalityMin(1);
+        createAsccRepositoryRequest.setCardinalityMax(1);
+
+        CreateAsccRepositoryResponse createAsccRepositoryResponse =
+                asccWriteRepository.createAscc(createAsccRepositoryRequest);
+
+        return createUeAccResponse.getAccManifestId();
     }
 
     private AccRecord createACCForExtension(ACC eAcc, User user) {

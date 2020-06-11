@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 
 import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
@@ -154,9 +155,15 @@ public class CcListService {
         return pageResponse;
     }
 
-    public ACC getAcc(BigInteger id) {
-        return dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(ULong.valueOf(id)))
+    public ACC getAcc(BigInteger manifestId) {
+        List<Field> fields = new ArrayList();
+        fields.add(ACC_MANIFEST.ACC_MANIFEST_ID);
+        fields.addAll(Arrays.asList(ACC.fields()));
+
+        return dslContext.select(fields)
+                .from(ACC)
+                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(ACC.class);
     }
 

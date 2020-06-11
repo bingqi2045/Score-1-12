@@ -10,14 +10,14 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAsccp extends TrackableImpl {
 
-    private BigInteger asccpId;
+    private BigInteger asccpManifestId;
     private String guid;
     private String propertyTerm;
     private BigInteger roleOfAccManifestId;
 
     @Override
     public BigInteger getId() {
-        return asccpId;
+        return asccpManifestId;
     }
 
 }

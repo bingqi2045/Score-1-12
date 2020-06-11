@@ -22,7 +22,6 @@ import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.srt.entity.jooq.tables.Ascc.ASCC;
 import static org.oagi.srt.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
-import static org.oagi.srt.repo.component.seqkey.MoveTo.LAST;
 
 @Repository
 public class AsccWriteRepository {
@@ -86,8 +85,9 @@ public class AsccWriteRepository {
 
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+        CcState accState = CcState.valueOf(accRecord.getState());
+        if (accState != request.getInitialState()) {
+            throw new IllegalArgumentException("The initial state of ASCC must be '" + accState + "'.");
         }
 
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
@@ -96,12 +96,12 @@ public class AsccWriteRepository {
         AsccRecord ascc = new AsccRecord();
         ascc.setGuid(SrtGuid.randomGuid());
         ascc.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getDen());
-        ascc.setCardinalityMin(0);
-        ascc.setCardinalityMax(-1);
+        ascc.setCardinalityMin(request.getCardinalityMin());
+        ascc.setCardinalityMax(request.getCardinalityMax());
         ascc.setSeqKey(0); // @deprecated
         ascc.setFromAccId(accRecord.getAccId());
         ascc.setToAsccpId(asccpRecord.getAsccpId());
-        ascc.setState(CcState.WIP.name());
+        ascc.setState(request.getInitialState().name());
         ascc.setIsDeprecated((byte) 0);
         ascc.setCreatedBy(userId);
         ascc.setLastUpdatedBy(userId);

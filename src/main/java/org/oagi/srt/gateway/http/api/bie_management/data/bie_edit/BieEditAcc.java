@@ -13,7 +13,7 @@ public class BieEditAcc extends TrackableImpl {
     private BigInteger accManifestId;
     private String guid;
     private int oagisComponentType;
-    private BigInteger basedAccId;
+    private BigInteger basedAccManifestId;
 
     @Override
     public BigInteger getId() {

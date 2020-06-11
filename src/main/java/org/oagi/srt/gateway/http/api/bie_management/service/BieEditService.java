@@ -220,13 +220,13 @@ public class BieEditService {
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(User user, BieEditAsbiepNode extension) {
-        BigInteger asccpId = extension.getAsccpManifestId();
+        BigInteger asccpManifestId = extension.getAsccpManifestId();
         BigInteger releaseId = extension.getReleaseId();
-        BigInteger roleOfAccId = bieRepository.getRoleOfAccIdByAsccpId(asccpId);
+        BigInteger roleOfAccManifestId = bieRepository.getRoleOfAccManifestIdByAsccpManifestId(asccpManifestId);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
 
-        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
+        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
 
         response.setCanEdit(false);
         response.setCanView(false);
@@ -249,25 +249,23 @@ public class BieEditService {
             response.setCanView(true);
         }
 
-        response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
+        response.setExtensionId(createAbieExtension(user, roleOfAccManifestId, releaseId));
         return response;
     }
 
     @Transactional
     public CreateExtensionResponse createGlobalAbieExtension(User user, BieEditAsbiepNode extension) {
         BigInteger releaseId = extension.getReleaseId();
-        BigInteger roleOfAccId = dslContext.select(Tables.ACC.ACC_ID)
-                .from(Tables.ACC)
-                .join(Tables.ACC_MANIFEST)
-                .on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
+        BigInteger roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(Tables.ACC_MANIFEST)
                 .where(and(
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension"),
-                        Tables.ACC.STATE.eq(CcState.Candidate.name())))
+                        Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension")
+                ))
                 .fetchOneInto(BigInteger.class);
 
         CreateExtensionResponse response = new CreateExtensionResponse();
-        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
+        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
 
         response.setCanEdit(false);
         response.setCanView(false);
@@ -289,13 +287,13 @@ public class BieEditService {
             response.setCanEdit(true);
             response.setCanView(true);
         }
-        response.setExtensionId(createAbieExtension(user, roleOfAccId, releaseId));
+        response.setExtensionId(createAbieExtension(user, roleOfAccManifestId, releaseId));
         return response;
     }
 
-    private BigInteger createAbieExtension(User user, BigInteger roleOfAccId, BigInteger releaseId) {
-        BieEditAcc eAcc = bieRepository.getAccByAccId(roleOfAccId, releaseId);
-        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccId, releaseId);
+    private BigInteger createAbieExtension(User user, BigInteger roleOfAccManifestId, BigInteger releaseId) {
+        BieEditAcc eAcc = bieRepository.getAccByAccManifestId(roleOfAccManifestId);
+        ACC ueAcc = extensionService.getExistsUserExtension(roleOfAccManifestId);
 
         BigInteger manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return manifestId;

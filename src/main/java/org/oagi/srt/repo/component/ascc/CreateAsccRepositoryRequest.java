@@ -1,6 +1,7 @@
 package org.oagi.srt.repo.component.ascc;
 
 import org.oagi.srt.data.RepositoryRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
@@ -12,6 +13,10 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     private final BigInteger accManifestId;
     private final BigInteger asccpManifestId;
     private int pos = -1;
+
+    private CcState initialState = CcState.WIP;
+    private int cardinalityMin = 0;
+    private int cardinalityMax = -1;
 
     public CreateAsccRepositoryRequest(User user,
                                        BigInteger releaseId,
@@ -52,5 +57,29 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
 
     public void setPos(int pos) {
         this.pos = pos;
+    }
+
+    public CcState getInitialState() {
+        return initialState;
+    }
+
+    public void setInitialState(CcState initialState) {
+        this.initialState = initialState;
+    }
+
+    public int getCardinalityMin() {
+        return cardinalityMin;
+    }
+
+    public void setCardinalityMin(int cardinalityMin) {
+        this.cardinalityMin = cardinalityMin;
+    }
+
+    public int getCardinalityMax() {
+        return cardinalityMax;
+    }
+
+    public void setCardinalityMax(int cardinalityMax) {
+        this.cardinalityMax = cardinalityMax;
     }
 }

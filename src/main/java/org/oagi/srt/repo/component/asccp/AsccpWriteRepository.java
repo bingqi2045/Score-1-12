@@ -22,7 +22,6 @@ import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Asccp.ASCCP;
 import static org.oagi.srt.entity.jooq.tables.AsccpManifest.ASCCP_MANIFEST;
-import static org.oagi.srt.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
 public class AsccpWriteRepository {
@@ -55,8 +54,9 @@ public class AsccpWriteRepository {
         asccp.setPropertyTerm(request.getInitialPropertyTerm());
         asccp.setRoleOfAccId(roleOfAccManifest.getAccId());
         asccp.setDen(asccp.getPropertyTerm() + ". " + objectClassTerm(asccp.getRoleOfAccId()));
-        asccp.setState(CcState.WIP.name());
-        asccp.setReusableIndicator((byte) 1);
+        asccp.setState(request.getInitialState().name());
+        asccp.setDefinition(request.getDefinition());
+        asccp.setReusableIndicator((byte) (request.isReusable() ? 1 : 0));
         asccp.setIsDeprecated((byte) 0);
         asccp.setIsNillable((byte) 0);
         asccp.setNamespaceId(null);
