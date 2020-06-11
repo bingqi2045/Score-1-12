@@ -26,8 +26,10 @@ public class BdtPriRestriReadRepository {
                 .join(XBT).on(CDT_AWD_PRI_XPS_TYPE_MAP.XBT_ID.eq(XBT.XBT_ID))
                 .join(BCCP)
                 .on(BDT_PRI_RESTRI.BDT_ID.eq(BCCP.BDT_ID))
-                .join(BCC_MANIFEST)
+                .join(BCC)
                 .on(BCC.TO_BCCP_ID.eq(BCCP.BCCP_ID))
+                .join(BCC_MANIFEST)
+                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                 .fetchInto(AvailableBdtPriRestri.class);
     }
