@@ -151,6 +151,7 @@ public class BieService {
             bieList.setAccess(
                     AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), BieState.valueOf(bieList.getRawState()))
             );
+            bieList.setState(BieState.valueOf(bieList.getRawState()));
         });
 
         PageResponse<BieList> response = new PageResponse();
@@ -228,11 +229,11 @@ public class BieService {
             throw new IllegalArgumentException("Not found an owner user.");
         }
 
-        long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
+        Long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
-                .fetchOptionalInto(Long.class).orElse(0L);
-        if (targetAppUserId == 0L) {
+                .fetchOptionalInto(Long.class).orElse(null);
+        if (targetAppUserId == null) {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
