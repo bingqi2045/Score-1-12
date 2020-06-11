@@ -67,7 +67,7 @@ public class BieEditController {
 
             case QA:
                 if (rootNode.getOwnerUserId().equals(userId)) {
-                    accessPrivilege = CanEdit;
+                    accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = CanView;
                 }
