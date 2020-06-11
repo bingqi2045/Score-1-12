@@ -61,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -359,6 +360,13 @@ public class BieEditService {
     public BdtNode getBdtDetail(User user, BigInteger topLevelAbieId,
                                 BigInteger dtManifestId) {
         return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId);
+    }
+
+    public Map<String, BieEditUsed> getBieUsedList(User user, BigInteger topLevelAbieId) {
+        List<BieEditUsed> usedList = asbieReadRepository.getUsedAsbieList(topLevelAbieId);
+        usedList.addAll(bbieReadRepository.getUsedBbieList(topLevelAbieId));
+        usedList.addAll(bbieScReadRepository.getUsedBbieScList(topLevelAbieId));
+        return usedList.stream().collect(Collectors.toMap(BieEditUsed::getHashPath, bieEditUsed -> bieEditUsed));
     }
 
     // begins supporting dynamic primitive type lists

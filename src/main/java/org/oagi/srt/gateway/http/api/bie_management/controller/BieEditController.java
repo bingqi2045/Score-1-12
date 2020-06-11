@@ -2,10 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.data.BieState;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateDetailRequest;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUpdateDetailResponse;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateExtensionResponse;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
@@ -214,6 +211,14 @@ public class BieEditController {
                                 @PathVariable("manifestId") BigInteger manifestId,
                                 @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
         return service.getBdtDetail(user, topLevelAbieId, manifestId);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/used_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, BieEditUsed> getUsedAbieList(@AuthenticationPrincipal User user,
+                                             @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
+        return service.getBieUsedList(user, topLevelAbieId);
     }
 
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,

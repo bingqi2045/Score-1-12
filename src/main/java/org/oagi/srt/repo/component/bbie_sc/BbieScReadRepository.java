@@ -4,14 +4,17 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 import org.oagi.srt.entity.jooq.tables.records.DtScRecord;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.component.dt_sc.DtScReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -105,6 +108,14 @@ public class BbieScReadRepository {
         }
 
         return bbieSc;
+    }
+
+    public List<BieEditUsed> getUsedBbieScList(BigInteger topLevelAbieId) {
+        return dslContext.select(BBIE_SC.HASH_PATH, BBIE_SC.IS_USED, inline("bbie_sc").as("type"))
+                .from(BBIE_SC)
+                .where(and(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.IS_USED.eq((byte) 1)))
+                .fetchInto(BieEditUsed.class);
     }
 
 }

@@ -4,14 +4,17 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.component.ascc.AsccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -94,5 +97,12 @@ public class AsbieReadRepository {
 
         return asbie;
     }
-    
+    public List<BieEditUsed> getUsedAsbieList(BigInteger topLevelAbieId) {
+        return dslContext.select(ASBIEP.HASH_PATH, ASBIE.IS_USED, inline("asbiep").as("type"))
+                .from(ASBIE)
+                .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                .where(and(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIE.IS_USED.eq((byte) 1)))
+        .fetchInto(BieEditUsed.class);
+    }
 }
