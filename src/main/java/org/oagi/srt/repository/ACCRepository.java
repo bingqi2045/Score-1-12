@@ -20,6 +20,7 @@ public class ACCRepository implements SrtRepository<ACC> {
 
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
+                Tables.ACC_MANIFEST.ACC_MANIFEST_ID,
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
                 Tables.ACC.OBJECT_CLASS_TERM,
@@ -58,6 +59,13 @@ public class ACCRepository implements SrtRepository<ACC> {
     @Override
     public List<ACC> findAll() {
         return getSelectOnConditionStep().fetchInto(ACC.class);
+    }
+
+    @Override
+    public List<ACC> findAllByReleaseId(BigInteger releaseId) {
+        return getSelectOnConditionStep()
+                .where(Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(ACC.class);
     }
 
     @Override

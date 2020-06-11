@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record22;
+import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCC;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -19,13 +18,9 @@ public class BCCRepository implements SrtRepository<BCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record22<
-            ULong, String, Integer, Integer, Integer,
-            Integer, ULong, ULong, String, String,
-            String, String, ULong, ULong, ULong,
-            LocalDateTime, LocalDateTime, String, ULong, String,
-            Byte, Byte>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record> getSelectJoinStep() {
         return dslContext.select(
+                Tables.BCC_MANIFEST.BCC_MANIFEST_ID,
                 Tables.BCC.BCC_ID,
                 Tables.BCC.GUID,
                 Tables.BCC.CARDINALITY_MIN,
@@ -58,6 +53,13 @@ public class BCCRepository implements SrtRepository<BCC> {
     @Override
     public List<BCC> findAll() {
         return getSelectJoinStep().fetchInto(BCC.class);
+    }
+
+    @Override
+    public List<BCC> findAllByReleaseId(BigInteger releaseId) {
+        return getSelectJoinStep()
+                .where(Tables.BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(BCC.class);
     }
 
     @Override

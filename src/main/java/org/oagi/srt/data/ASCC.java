@@ -11,6 +11,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ASCC implements CoreComponent {
 
+    private BigInteger asccManifestId = BigInteger.ZERO;
     private BigInteger asccId = BigInteger.ZERO;
     private String guid;
     private int cardinalityMin;

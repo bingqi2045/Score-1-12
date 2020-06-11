@@ -11,6 +11,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BCCP implements CoreComponent {
 
+    private BigInteger bccpManifestId = BigInteger.ZERO;
     private BigInteger bccpId = BigInteger.ZERO;
     private String guid;
     private String propertyTerm;

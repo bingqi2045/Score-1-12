@@ -20,6 +20,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
 
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
+                Tables.BCCP_MANIFEST.BCCP_MANIFEST_ID,
                 Tables.BCCP.BCCP_ID,
                 Tables.BCCP.GUID,
                 Tables.BCCP.PROPERTY_TERM,
@@ -58,6 +59,13 @@ public class BCCPRepository implements SrtRepository<BCCP> {
     @Override
     public List<BCCP> findAll() {
         return getSelectOnConditionStep().fetchInto(BCCP.class);
+    }
+
+    @Override
+    public List<BCCP> findAllByReleaseId(BigInteger releaseId) {
+        return getSelectOnConditionStep()
+                .where(Tables.BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(BCCP.class);
     }
 
     @Override

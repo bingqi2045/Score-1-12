@@ -124,6 +124,7 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, ACC> findACCMap;
     private Map<BigInteger, BCC> findBCCMap;
     private Map<BigInteger, BCCP> findBCCPMap;
+    private Map<BigInteger, BCCP> findBccpByBccpIdMap;
     private Map<BigInteger, ASCC> findASCCMap;
     private Map<BigInteger, ASCCP> findASCCPMap;
     private Map<BigInteger, DT> findDTMap;
@@ -204,39 +205,36 @@ public class GenerationContext implements InitializingBean {
                 .filter(e -> e.isUsedIndicator())
                 .collect(Collectors.groupingBy(e -> e.getCodeListId()));
 
-        List<ACC> accList = accRepository.findAll();
+        List<ACC> accList = accRepository.findAllByReleaseId(releaseId);
         findACCMap = accList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
-                .collect(Collectors.toMap(e -> e.getAccId(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getAccManifestId(), Function.identity()));
 
-        List<BCC> bccList = bccRepository.findAll();
+        List<BCC> bccList = bccRepository.findAllByReleaseId(releaseId);
         findBCCMap = bccList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
-                .collect(Collectors.toMap(e -> e.getBccId(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getBccManifestId(), Function.identity()));
 
-        List<BCCP> bccpList = bccpRepository.findAll();
+        List<BCCP> bccpList = bccpRepository.findAllByReleaseId(releaseId);
         findBCCPMap = bccpList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
+                .collect(Collectors.toMap(e -> e.getBccpManifestId(), Function.identity()));
+        findBccpByBccpIdMap = bccpList.stream()
                 .collect(Collectors.toMap(e -> e.getBccpId(), Function.identity()));
 
-        List<ASCC> asccList = asccRepository.findAll();
+        List<ASCC> asccList = asccRepository.findAllByReleaseId(releaseId);
         findASCCMap = asccList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
-                .collect(Collectors.toMap(e -> e.getAsccId(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getAsccManifestId(), Function.identity()));
 
-        List<ASCCP> asccpList = asccpRepository.findAll();
+        List<ASCCP> asccpList = asccpRepository.findAllByReleaseId(releaseId);
         findASCCPMap = asccpList.stream()
-                .filter(e -> e.getReleaseId() == releaseId)
-                .collect(Collectors.toMap(e -> e.getAsccpId(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getAsccpManifestId(), Function.identity()));
 
         List<DT> dataTypeList = dataTypeRepository.findAll();
         findDTMap = dataTypeList.stream()
                 .filter(e -> e.getReleaseId() == releaseId)
                 .collect(Collectors.toMap(e -> e.getDtId(), Function.identity()));
 
-        List<DTSC> dtScList = dtScRepository.findAll();
+        List<DTSC> dtScList = dtScRepository.findAllByReleaseId(releaseId);
         findDtScMap = dtScList.stream()
-                .collect(Collectors.toMap(e -> e.getDtScId(), Function.identity()));
+                .collect(Collectors.toMap(e -> e.getDtScManifestId(), Function.identity()));
 
         List<AgencyIdList> agencyIdLists = agencyIdListRepository.findAll();
         findAgencyIdListMap = agencyIdLists.stream()
@@ -334,32 +332,32 @@ public class GenerationContext implements InitializingBean {
                 Collections.emptyList();
     }
 
-    public ACC findACC(BigInteger accId) {
-        return (accId != null && accId.longValue() > 0L) ? findACCMap.get(accId) : null;
+    public ACC findACC(BigInteger accManifestId) {
+        return (accManifestId != null && accManifestId.longValue() > 0L) ? findACCMap.get(accManifestId) : null;
     }
 
-    public BCC findBCC(BigInteger bccId) {
-        return (bccId != null && bccId.longValue() > 0L) ? findBCCMap.get(bccId) : null;
+    public BCC findBCC(BigInteger bccManifestId) {
+        return (bccManifestId != null && bccManifestId.longValue() > 0L) ? findBCCMap.get(bccManifestId) : null;
     }
 
-    public BCCP findBCCP(BigInteger bccpId) {
-        return (bccpId != null && bccpId.longValue() > 0L) ? findBCCPMap.get(bccpId) : null;
+    public BCCP findBCCP(BigInteger bccpManifestId) {
+        return (bccpManifestId != null && bccpManifestId.longValue() > 0L) ? findBCCPMap.get(bccpManifestId) : null;
     }
 
-    public ASCC findASCC(BigInteger asccId) {
-        return (asccId != null && asccId.longValue() > 0L) ? findASCCMap.get(asccId) : null;
+    public ASCC findASCC(BigInteger asccManifestId) {
+        return (asccManifestId != null && asccManifestId.longValue() > 0L) ? findASCCMap.get(asccManifestId) : null;
     }
 
-    public ASCCP findASCCP(BigInteger asccpId) {
-        return (asccpId != null && asccpId.longValue() > 0L) ? findASCCPMap.get(asccpId) : null;
+    public ASCCP findASCCP(BigInteger asccpManifestId) {
+        return (asccpManifestId != null && asccpManifestId.longValue() > 0L) ? findASCCPMap.get(asccpManifestId) : null;
     }
 
     public DT findDT(BigInteger dtId) {
         return (dtId != null && dtId.longValue() > 0L) ? findDTMap.get(dtId) : null;
     }
 
-    public DTSC findDtSc(BigInteger dtScId) {
-        return (dtScId != null && dtScId.longValue() > 0L) ? findDtScMap.get(dtScId) : null;
+    public DTSC findDtSc(BigInteger dtScManifestId) {
+        return (dtScManifestId != null && dtScManifestId.longValue() > 0L) ? findDtScMap.get(dtScManifestId) : null;
     }
 
     public AgencyIdList findAgencyIdList(BigInteger agencyIdListId) {
@@ -484,7 +482,7 @@ public class GenerationContext implements InitializingBean {
 
     public DT queryBDT(BBIE bbie) {
         BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccManifestId()) : null;
-        BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
+        BCCP bccp = (bcc != null) ? queryToBCCP(bcc) : null;
         return (bccp != null) ? queryBDT(bccp) : null;
     }
 
@@ -518,7 +516,7 @@ public class GenerationContext implements InitializingBean {
     }
 
     public BCCP queryToBCCP(BCC bcc) {
-        return (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
+        return (bcc != null) ? findBccpByBccpIdMap.get(bcc.getToBccpId()) : null;
     }
 
     public CodeList getCodeList(BBIESC bbieSc) {
@@ -608,7 +606,7 @@ public class GenerationContext implements InitializingBean {
 
     public DT queryAssocBDT(BBIE bbie) {
         BCC bcc = (bbie != null) ? findBCC(bbie.getBasedBccManifestId()) : null;
-        BCCP bccp = (bcc != null) ? findBCCP(bcc.getToBccpId()) : null;
+        BCCP bccp = (bcc != null) ? queryToBCCP(bcc) : null;
         return queryBDT(bccp);
     }
 

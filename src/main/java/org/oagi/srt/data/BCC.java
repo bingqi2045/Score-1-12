@@ -11,6 +11,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BCC implements CoreComponent {
 
+    private BigInteger bccManifestId = BigInteger.ZERO;
     private BigInteger bccId = BigInteger.ZERO;
     private String guid;
     private int cardinalityMin;

@@ -20,6 +20,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
 
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
+                Tables.ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
                 Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,
@@ -57,6 +58,13 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
     @Override
     public List<ASCCP> findAll() {
         return getSelectOnConditionStep().fetchInto(ASCCP.class);
+    }
+
+    @Override
+    public List<ASCCP> findAllByReleaseId(BigInteger releaseId) {
+        return getSelectOnConditionStep()
+                .where(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(ASCCP.class);
     }
 
     @Override

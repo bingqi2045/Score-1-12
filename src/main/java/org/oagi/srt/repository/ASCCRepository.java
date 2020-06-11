@@ -1,7 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record19;
+import org.jooq.Record20;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ASCC;
@@ -19,12 +19,13 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record19<
-            ULong, String, Integer, Integer, Integer,
-            ULong, ULong, String, String, String,
-            ULong, ULong, ULong, LocalDateTime, LocalDateTime,
-            String, ULong, String, Byte>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record20<
+            ULong, ULong, String, Integer, Integer,
+            Integer, ULong, ULong, String, String,
+            String, ULong, ULong, ULong, LocalDateTime,
+            LocalDateTime, String, ULong, String, Byte>> getSelectJoinStep() {
         return dslContext.select(
+                Tables.ASCC_MANIFEST.ASCC_MANIFEST_ID,
                 Tables.ASCC.ASCC_ID,
                 Tables.ASCC.GUID,
                 Tables.ASCC.CARDINALITY_MIN,
@@ -54,6 +55,13 @@ public class ASCCRepository implements SrtRepository<ASCC> {
     @Override
     public List<ASCC> findAll() {
         return getSelectJoinStep().fetchInto(ASCC.class);
+    }
+
+    @Override
+    public List<ASCC> findAllByReleaseId(BigInteger releaseId) {
+        return getSelectJoinStep()
+                .where(Tables.ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(ASCC.class);
     }
 
     @Override
