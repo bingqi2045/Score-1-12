@@ -64,7 +64,7 @@ public class AsbieWriteRepository {
                             ASBIEP.HASH_PATH.eq(asbie.getToAsbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
-            asbieRecord.setSeqKey(asbie.getSeqKey());
+            asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
 
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
@@ -97,6 +97,7 @@ public class AsbieWriteRepository {
                             .fetchOne().getAsbieId()
             );
         } else {
+            asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
             asbieRecord.setDefinition(asbie.getDefinition());
@@ -111,6 +112,7 @@ public class AsbieWriteRepository {
             asbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
             asbieRecord.update(
+                    ASBIE.SEQ_KEY,
                     ASBIE.IS_USED,
                     ASBIE.IS_NILLABLE,
                     ASBIE.DEFINITION,

@@ -32,7 +32,7 @@ public class AsbieNode {
 
         private BigInteger asbieId;
         private String guid;
-        private BigDecimal seqKey = BigDecimal.ZERO;
+        private BigInteger seqKey;
         private Integer cardinalityMin;
         private Integer cardinalityMax;
         private boolean nillable;

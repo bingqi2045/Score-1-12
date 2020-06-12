@@ -72,7 +72,7 @@ public class BbieWriteRepository {
                             BBIEP.HASH_PATH.eq(bbie.getToBbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
-            bbieRecord.setSeqKey(bbie.getSeqKey());
+            bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
@@ -140,6 +140,7 @@ public class BbieWriteRepository {
                             .fetchOne().getBbieId()
             );
         } else {
+            bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
             bbieRecord.setDefinition(bbie.getDefinition());
@@ -180,6 +181,7 @@ public class BbieWriteRepository {
             bbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
             bbieRecord.update(
+                    BBIE.SEQ_KEY,
                     BBIE.IS_USED,
                     BBIE.IS_NILLABLE,
                     BBIE.DEFINITION,
