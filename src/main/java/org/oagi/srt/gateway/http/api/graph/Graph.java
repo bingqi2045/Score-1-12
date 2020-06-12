@@ -5,7 +5,6 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcId;
 
 import javax.xml.bind.annotation.XmlTransient;
 import java.math.BigInteger;
@@ -63,6 +62,11 @@ public class Graph {
         edges.put(sourceKey, edge);
     }
 
+    public Edge getEdge(Node source) {
+        String sourceKey = source.getKey();
+        return edges.get(sourceKey);
+    }
+
     public Collection<List<String>> findPaths(String from, String query) {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();
@@ -97,6 +101,11 @@ public class Graph {
         }
 
         return paths;
+    }
+
+    public void merge(Graph other) {
+        this.nodes.putAll(other.nodes);
+        this.edges.putAll(other.edges);
     }
 
 }

@@ -45,6 +45,10 @@ public class GraphController {
                 graph = graphService.getBieGraph(id);
                 break;
 
+            case "extension":
+                graph = graphService.getExtensionGraph(id);
+                break;
+
             default:
                 throw new UnsupportedOperationException();
         }

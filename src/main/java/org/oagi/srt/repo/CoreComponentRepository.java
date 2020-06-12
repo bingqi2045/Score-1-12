@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -731,5 +732,22 @@ public class CoreComponentRepository {
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(arguments.getAsccpManifestId()))
                 .execute();
+    }
+
+    public BigInteger getGlobalExtensionAccManifestId(BigInteger extensionAccManifestId) {
+        ULong releaseId = dslContext.select(ACC_MANIFEST.RELEASE_ID)
+                .from(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(extensionAccManifestId)))
+                .fetchOneInto(ULong.class);
+
+        return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ACC)
+                .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .where(and(
+                        ACC_MANIFEST.RELEASE_ID.eq(releaseId),
+                        ACC.OBJECT_CLASS_TERM.eq("All Extension")
+                ))
+                .fetchOneInto(BigInteger.class);
     }
 }

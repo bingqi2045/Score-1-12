@@ -15,4 +15,8 @@ public class Edge {
     public void addTarget(String target) {
         targets.add(target);
     }
+
+    public void addTarget(int index, String target) {
+        targets.add(index, target);
+    }
 }

@@ -75,6 +75,28 @@ public class GraphService {
         return getAsccpGraph(asccpManifestId);
     }
 
+    public Graph getExtensionGraph(BigInteger extensionAccManifestId) {
+        Graph extensionAccGraph = getAccGraph(extensionAccManifestId);
+        Node extensionNode = extensionAccGraph.getNode(Node.NodeType.ACC, extensionAccManifestId);
+        String objectClassTerm = (String) extensionNode.getProperties().get("objectClassTerm");
+
+        // !isGlobalExtension
+        if (!"All Extension".equals(objectClassTerm)) {
+            BigInteger globalExtensionAccManifestId =
+                    coreComponentRepository.getGlobalExtensionAccManifestId(extensionAccManifestId);
+            Graph globalExtensionAccGraph = getAccGraph(globalExtensionAccManifestId);
+            extensionAccGraph.merge(globalExtensionAccGraph);
+
+            Node globalExtensionNode =
+                    globalExtensionAccGraph.getNode(Node.NodeType.ACC, globalExtensionAccManifestId);
+
+            Edge extensionEdge = extensionAccGraph.getEdge(extensionNode);
+            extensionEdge.addTarget(0, globalExtensionNode.getKey());
+        }
+
+        return extensionAccGraph;
+    }
+
     private Graph buildGraph(GraphContext graphContext, Node root) {
         Queue<Node> manifestQueue = new LinkedList<>();
         manifestQueue.add(root);
