@@ -64,7 +64,7 @@ public class AsbieWriteRepository {
                             ASBIEP.HASH_PATH.eq(asbie.getToAsbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
-            asbieRecord.setSeqKey(BigDecimal.ZERO);
+            asbieRecord.setSeqKey(asbie.getSeqKey());
 
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));

@@ -3,6 +3,7 @@ package org.oagi.srt.repo.component.asbie;
 import lombok.Data;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Data
@@ -31,6 +32,7 @@ public class AsbieNode {
 
         private BigInteger asbieId;
         private String guid;
+        private BigDecimal seqKey = BigDecimal.ZERO;
         private Integer cardinalityMin;
         private Integer cardinalityMax;
         private boolean nillable;

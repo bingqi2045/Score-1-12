@@ -72,7 +72,7 @@ public class BbieWriteRepository {
                             BBIEP.HASH_PATH.eq(bbie.getToBbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
-            bbieRecord.setSeqKey(BigDecimal.ZERO);
+            bbieRecord.setSeqKey(bbie.getSeqKey());
 
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
