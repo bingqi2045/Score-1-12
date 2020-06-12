@@ -9,6 +9,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
 import org.slf4j.Logger;
@@ -496,7 +497,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         if (basedCcMetaData) {
-            String ccType = bieDocumentation.ccType();
+            CcType ccType = bieDocumentation.ccType();
 
             String guid = bieDocumentation.getGuid();
             Element ccts_Based_GUID = new Element("ccts_Based" + ccType + "_GUID", OAGI_NS);
@@ -1326,7 +1327,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     private interface CCMetaData {
-        String ccType();
+        CcType ccType();
 
         String getGuid();
 
@@ -1531,8 +1532,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "ACC";
+        public CcType ccType() {
+            return CcType.ACC;
         }
 
         @Override
@@ -1603,8 +1604,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "ASCC";
+        public CcType ccType() {
+            return CcType.ASCC;
         }
 
         @Override
@@ -1713,8 +1714,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "ASCCP";
+        public CcType ccType() {
+            return CcType.ASCCP;
         }
 
         @Override
@@ -1785,8 +1786,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "BCC";
+        public CcType ccType() {
+            return CcType.BCC;
         }
 
         @Override
@@ -1867,8 +1868,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "BCCP";
+        public CcType ccType() {
+            return CcType.BCCP;
         }
 
         @Override
@@ -1929,8 +1930,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "BDT_SC";
+        public CcType ccType() {
+            return CcType.BDT_SC;
         }
 
         @Override
@@ -1967,8 +1968,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
-        public String ccType() {
-            return "BDT";
+        public CcType ccType() {
+            return CcType.BDT;
         }
 
         @Override

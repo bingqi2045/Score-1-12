@@ -1,14 +1,14 @@
 package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
-import org.oagi.srt.data.BCCEntityType;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 
 import java.math.BigInteger;
 
 @Data
 public class CcBccpNodeDetail implements CcNodeDetail {
 
-    private String type = "bccp";
+    private CcType type = CcType.BCCP;
     private Bcc bcc;
     private Bccp bccp;
     private Bdt bdt;

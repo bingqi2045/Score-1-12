@@ -22,7 +22,7 @@ public class Node {
         BDT_SC;
 
         public String toString() {
-            return this.name().toLowerCase();
+            return this.name();
         }
     }
 

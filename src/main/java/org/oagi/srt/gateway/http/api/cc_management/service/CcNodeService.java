@@ -545,7 +545,7 @@ public class CcNodeService extends EventHandler {
                 .setCreatedBy(userId)
                 .setCreationTimestamp(timestamp)
                 .setRevisionAction(RevisionAction.Modified)
-                .setReference("acc" + accManifestRecord.getAccManifestId())
+                .setReference(CcType.ACC.name().toLowerCase() + "-" + accManifestRecord.getAccManifestId())
                 .setPrevRevisionId(accManifestRecord.getRevisionId())
                 .execute();
 

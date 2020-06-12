@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 public class CcList {
 
-    private String type;
+    private CcType type;
     private BigInteger manifestId;
     private String guid;
     private String den;

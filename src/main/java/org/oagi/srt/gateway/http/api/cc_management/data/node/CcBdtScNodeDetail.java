@@ -1,13 +1,14 @@
 package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 
 import java.math.BigInteger;
 
 @Data
 public class CcBdtScNodeDetail implements CcNodeDetail {
 
-    private String type = "bdt_sc";
+    private CcType type = CcType.BDT_SC;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger bdtScId = BigInteger.ZERO;
     private String guid;

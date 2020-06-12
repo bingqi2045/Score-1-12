@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.cc_management.data.node;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.oagi.srt.data.SeqKeySupportable;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 
 import java.math.BigInteger;
 
@@ -10,7 +11,7 @@ import java.math.BigInteger;
 @EqualsAndHashCode(callSuper = true)
 public class CcAsccpNode extends CcNode implements SeqKeySupportable {
 
-    private String type = "asccp";
+    private CcType type = CcType.ASCCP;
 
     private BigInteger asccpId = BigInteger.ZERO;
     private BigInteger asccId = BigInteger.ZERO;

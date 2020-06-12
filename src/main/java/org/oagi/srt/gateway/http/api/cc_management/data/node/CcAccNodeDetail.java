@@ -2,12 +2,13 @@ package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 
 import java.math.BigInteger;
 
 @Data
 public class CcAccNodeDetail implements CcNodeDetail {
-    private String type = "acc";
+    private CcType type = CcType.ACC;
     private BigInteger accId;
     private String guid;
     private String objectClassTerm;

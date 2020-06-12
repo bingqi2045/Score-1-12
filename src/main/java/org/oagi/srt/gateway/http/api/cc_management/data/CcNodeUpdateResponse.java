@@ -7,7 +7,7 @@ import java.math.BigInteger;
 @Data
 public class CcNodeUpdateResponse {
 
-    private String type;
+    private CcType type;
     private BigInteger manifestId;
     private String state;
     private String access;

@@ -574,24 +574,27 @@ public class ReleaseRepository implements SrtRepository<Release> {
         AssignComponents assignComponents = new AssignComponents();
 
         // ACCs
-        Map<ULong, List<Record8<ULong, String, String, LocalDateTime, String, String, UInteger, UInteger>>> map
-                = dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
-                ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
-                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
-                .from(ACC_MANIFEST)
-                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .join(REVISION).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                .where(and(
-                        or(
-                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                                RELEASE.RELEASE_NUM.eq("Working")
-                        ),
-                        ACC.STATE.notEqual(Published.name())
-                ))
-                .fetchStream()
-                .collect(groupingBy(e -> e.value1()));
+        Map<ULong, List<Record8<
+                ULong, String, String, LocalDateTime, String,
+                String, UInteger, UInteger>>> map =
+                dslContext.select(
+                        ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
+                        ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
+                        REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                        .from(ACC_MANIFEST)
+                        .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                        .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                        .join(REVISION).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                        .where(and(
+                                or(
+                                        RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                        RELEASE.RELEASE_NUM.eq("Working")
+                                ),
+                                ACC.STATE.notEqual(Published.name())
+                        ))
+                        .fetchStream()
+                        .collect(groupingBy(e -> e.value1()));
 
         map.values().forEach(e -> {
             AssignableNode node = new AssignableNode();

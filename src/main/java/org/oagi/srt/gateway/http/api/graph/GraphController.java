@@ -28,7 +28,7 @@ public class GraphController {
                                         @PathVariable("id") BigInteger id,
                                         @RequestParam(value = "q", required = false) String query) {
         Graph graph;
-        switch (type) {
+        switch (type.toLowerCase()) {
             case "acc":
                 graph = graphService.getAccGraph(id);
                 break;

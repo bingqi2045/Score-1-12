@@ -79,16 +79,16 @@ public class CcNodeController {
                                                      @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(type);
+        resp.setType(CcType.valueOf(type.toUpperCase()));
 
-        switch (type) {
-            case "asccp":
+        switch (resp.getType()) {
+            case ASCCP:
                 resp.setManifestId(
                         service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId())
                 );
                 break;
 
-            case "bccp":
+            case BCCP:
                 resp.setManifestId(
                         service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId())
                 );
@@ -113,20 +113,20 @@ public class CcNodeController {
                                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(type);
+        resp.setType(CcType.valueOf(type.toUpperCase()));
 
-        switch (type) {
-            case "acc":
+        switch (resp.getType()) {
+            case ACC:
                 resp.setManifestId(
                         service.updateAccState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
-            case "asccp":
+            case ASCCP:
                 resp.setManifestId(
                         service.updateAsccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
                 break;
-            case "bccp":
+            case BCCP:
                 resp.setManifestId(
                         service.updateBccpState(user, manifestId, CcState.valueOf(ccUpdateStateRequest.getState()))
                 );
@@ -151,20 +151,20 @@ public class CcNodeController {
                                                 @PathVariable("manifestId") BigInteger manifestId) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType(type);
+        resp.setType(CcType.valueOf(type.toUpperCase()));
 
-        switch (type) {
-            case "acc":
+        switch (resp.getType()) {
+            case ACC:
                 resp.setManifestId(
                         service.makeNewRevisionForAcc(user, manifestId)
                 );
                 break;
-            case "asccp":
+            case ASCCP:
                 resp.setManifestId(
                         service.makeNewRevisionForAsccp(user, manifestId)
                 );
                 break;
-            case "bccp":
+            case BCCP:
                 resp.setManifestId(
                         service.makeNewRevisionForBccp(user, manifestId)
                 );
@@ -185,20 +185,20 @@ public class CcNodeController {
     public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
                                        @PathVariable("type") String type,
                                        @PathVariable("manifestId") BigInteger manifestId) {
-        switch (type) {
-            case "acc":
+        switch (CcType.valueOf(type.toUpperCase())) {
+            case ACC:
                 service.deleteAcc(user, manifestId);
                 break;
-            case "asccp":
+            case ASCCP:
                 service.deleteAsccp(user, manifestId);
                 break;
-            case "bccp":
+            case BCCP:
                 service.deleteBccp(user, manifestId);
                 break;
-            case "ascc":
+            case ASCC:
                 service.deleteAscc(user, manifestId);
                 break;
-            case "bcc":
+            case BCC:
                 service.deleteBcc(user, manifestId);
                 break;
             default:
@@ -226,17 +226,17 @@ public class CcNodeController {
     public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
                                       @PathVariable("type") String type,
                                       @RequestParam("data") String data) {
-        switch (type) {
-            case "acc":
+        switch (CcType.valueOf(type.toUpperCase())) {
+            case ACC:
                 CcAccNode accNode = convertValue(data, CcAccNode.class);
                 return service.getAccNodeDetail(user, accNode);
-            case "asccp":
+            case ASCCP:
                 CcAsccpNode asccpNode = convertValue(data, CcAsccpNode.class);
                 return service.getAsccpNodeDetail(user, asccpNode);
-            case "bccp":
+            case BCCP:
                 CcBccpNode bccpNode = convertValue(data, CcBccpNode.class);
                 return service.getBccpNodeDetail(user, bccpNode);
-            case "bdt_sc":
+            case BDT_SC:
                 CcBdtScNode bdtScNode = convertValue(data, CcBdtScNode.class);
                 return service.getBdtScNodeDetail(user, bdtScNode);
             default:
@@ -280,7 +280,7 @@ public class CcNodeController {
                                              @PathVariable("manifestId") BigInteger manifestId,
                                              @RequestBody CcSetBaseAccRequest ccSetBaseAccRequest) {
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
-        resp.setType("acc");
+        resp.setType(CcType.ACC);
         resp.setManifestId(
                 service.updateAccBasedAcc(user, manifestId, ccSetBaseAccRequest.getBasedAccManifestId())
         );
@@ -327,12 +327,12 @@ public class CcNodeController {
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
                                                 @PathVariable("type") String type,
                                                 @PathVariable("manifestId") BigInteger manifestId) {
-        switch (type) {
-            case "acc":
+        switch (CcType.valueOf(type.toUpperCase())) {
+            case ACC:
                 return service.getAccNodeRevision(user, manifestId);
-            case "asccp":
+            case ASCCP:
                 return service.getAsccpNodeRevision(user, manifestId);
-            case "bccp":
+            case BCCP:
                 return service.getBccpNodeRevision(user, manifestId);
             default:
                 throw new UnsupportedOperationException();

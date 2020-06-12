@@ -29,28 +29,28 @@ public class CcListTypes {
             types.setBdt(true);
         } else {
             for (String type : str.split(",")) {
-                switch (type.toLowerCase()) {
-                    case "acc":
+                switch (CcType.valueOf(type.toUpperCase())) {
+                    case ACC:
                         types.setAcc(true);
                         break;
 
-                    case "asccp":
+                    case ASCCP:
                         types.setAsccp(true);
                         break;
 
-                    case "bccp":
+                    case BCCP:
                         types.setBccp(true);
                         break;
 
-                    case "ascc":
+                    case ASCC:
                         types.setAscc(true);
                         break;
 
-                    case "bcc":
+                    case BCC:
                         types.setBcc(true);
                         break;
 
-                    case "bdt":
+                    case BDT:
                         types.setBdt(true);
                         break;
                 }

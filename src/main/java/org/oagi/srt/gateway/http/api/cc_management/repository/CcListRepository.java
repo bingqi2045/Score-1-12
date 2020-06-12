@@ -182,7 +182,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("ACC");
+                    ccList.setType(CcType.ACC);
                     ccList.setManifestId(row.getValue(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(ACC.ACC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ACC.GUID));
@@ -311,7 +311,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("ASCC");
+                    ccList.setType(CcType.ASCC);
                     ccList.setManifestId(row.getValue(ASCC_MANIFEST.ASCC_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(ASCC.ASCC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ASCC.GUID));
@@ -438,7 +438,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("BCC");
+                    ccList.setType(CcType.BCC);
                     ccList.setManifestId(row.getValue(BCC_MANIFEST.BCC_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(BCC.BCC_ID).toBigInteger());
                     ccList.setGuid(row.getValue(BCC.GUID));
@@ -565,7 +565,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("ASCCP");
+                    ccList.setType(CcType.ASCCP);
                     ccList.setManifestId(row.getValue(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(ASCCP.ASCCP_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ASCCP.GUID));
@@ -682,7 +682,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("BCCP");
+                    ccList.setType(CcType.BCCP);
                     ccList.setManifestId(row.getValue(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(BCCP.BCCP_ID).toBigInteger());
                     ccList.setGuid(row.getValue(BCCP.GUID));
@@ -774,7 +774,7 @@ public class CcListRepository {
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
-                    ccList.setType("BDT");
+                    ccList.setType(CcType.BDT);
                     ccList.setManifestId(row.getValue(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(DT.DT_ID).toBigInteger());
                     ccList.setGuid(row.getValue(DT.GUID));

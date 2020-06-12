@@ -12,6 +12,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -174,8 +175,8 @@ public class CcListService {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
-        switch (type) {
-            case "ACC":
+        switch (CcType.valueOf(type.toUpperCase())) {
+            case ACC:
                 AccManifestRecord accManifest = manifestRepository.getAccManifestById(ULong.valueOf(manifestId));
                 if (accManifest == null) {
                     throw new IllegalArgumentException("Not found a target ACC.");
@@ -184,7 +185,7 @@ public class CcListService {
                 ccNodeService.updateAccOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
 
-            case "ASCCP":
+            case ASCCP:
                 AsccpManifestRecord asccpManifest = manifestRepository.getAsccpManifestById(ULong.valueOf(manifestId));
                 if (asccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
@@ -193,7 +194,7 @@ public class CcListService {
                 ccNodeService.updateAsccpOwnerUserId(user, manifestId, targetUser.getAppUserId());
                 break;
 
-            case "BCCP":
+            case BCCP:
                 BccpManifestRecord bccpManifest = manifestRepository.getBccpManifestById(ULong.valueOf(manifestId));
                 if (bccpManifest == null) {
                     throw new IllegalArgumentException("Not found a target ASCCP.");
