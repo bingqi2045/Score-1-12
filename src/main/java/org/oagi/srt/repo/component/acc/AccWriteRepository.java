@@ -603,10 +603,8 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Target core component is not in '" + request.getFromState() + "' state.");
         }
 
-        if (!accRecord.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
-            if (!prevState.canMove(nextState)) {
-                throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
-            }
+        if (!prevState.canMove(nextState)) {
+            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
