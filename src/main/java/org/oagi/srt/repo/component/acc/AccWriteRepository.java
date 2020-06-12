@@ -5,7 +5,6 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
-import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.enums.SeqKeyType;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -496,7 +495,7 @@ public class AccWriteRepository {
                 bccRecord.update(BCC.DEN);
             }
 
-            for (AsccpManifestRecord asccpManifestRecord: dslContext.selectFrom(ASCCP_MANIFEST)
+            for (AsccpManifestRecord asccpManifestRecord : dslContext.selectFrom(ASCCP_MANIFEST)
                     .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                     .fetch()) {
 
@@ -506,6 +505,21 @@ public class AccWriteRepository {
 
                 asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
                 asccpRecord.update(ASCCP.DEN);
+
+                for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
+                        .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                        .fetch()) {
+
+                    AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                            .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                            .fetchOne();
+
+                    String objectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
+                            .from(ACC).where(ACC.ACC_ID.eq(asccRecord.getFromAccId()))
+                            .fetchOneInto(String.class);
+                    asccRecord.setDen(objectClassTerm + ". " + asccpRecord.getDen());
+                    asccRecord.update(ASCC.DEN);
+                }
             }
         }
 
