@@ -122,13 +122,11 @@ public class ExtensionService {
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-
                 ReviseAccRepositoryRequest reviseAccRepositoryRequest =
                         new ReviseAccRepositoryRequest(user, accManifest.getAccManifestId().toBigInteger());
                 ReviseAccRepositoryResponse reviseAccRepositoryResponse =
                         accWriteRepository.reviseAcc(reviseAccRepositoryRequest);
                 return reviseAccRepositoryResponse.getAccManifestId();
-
             } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().toBigInteger();

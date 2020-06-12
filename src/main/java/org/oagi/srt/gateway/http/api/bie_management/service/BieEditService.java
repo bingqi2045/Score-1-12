@@ -258,6 +258,7 @@ public class BieEditService {
         BigInteger releaseId = extension.getReleaseId();
         BigInteger roleOfAccManifestId = dslContext.select(Tables.ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(Tables.ACC_MANIFEST)
+                .join(Tables.ACC).on(Tables.ACC_MANIFEST.ACC_ID.eq(Tables.ACC.ACC_ID))
                 .where(and(
                         Tables.ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         Tables.ACC.OBJECT_CLASS_TERM.eq("All Extension")
