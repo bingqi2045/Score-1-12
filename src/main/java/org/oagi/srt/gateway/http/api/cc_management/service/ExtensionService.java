@@ -3,7 +3,6 @@ package org.oagi.srt.gateway.http.api.cc_management.service;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Result;
-import org.jooq.SelectFieldOrAsterisk;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.AppUser;
@@ -21,9 +20,7 @@ import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.gateway.http.helper.Utility;
-import org.oagi.srt.repo.component.acc.AccWriteRepository;
-import org.oagi.srt.repo.component.acc.CreateAccRepositoryRequest;
-import org.oagi.srt.repo.component.acc.CreateAccRepositoryResponse;
+import org.oagi.srt.repo.component.acc.*;
 import org.oagi.srt.repo.component.ascc.AsccWriteRepository;
 import org.oagi.srt.repo.component.ascc.CreateAsccRepositoryRequest;
 import org.oagi.srt.repo.component.ascc.CreateAsccRepositoryResponse;
@@ -37,7 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -114,12 +114,21 @@ public class ExtensionService {
     @Transactional
     public BigInteger appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
                                           BigInteger releaseId, User user) {
+        AppUser appUser = sessionService.getAppUser(user);
+        if (appUser.isDeveloper()) {
+            throw new IllegalArgumentException("Developer cannot create User Extension.");
+        }
+
         if (ueAcc != null) {
             if (ueAcc.getState() == CcState.Production) {
                 AccManifestRecord accManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
-                BigInteger accManifestId = ccNodeService.updateAccState(user,
-                        accManifest.getAccManifestId().toBigInteger(), CcState.Production);
-                return accManifestId;
+
+                ReviseAccRepositoryRequest reviseAccRepositoryRequest =
+                        new ReviseAccRepositoryRequest(user, accManifest.getAccManifestId().toBigInteger());
+                ReviseAccRepositoryResponse reviseAccRepositoryResponse =
+                        accWriteRepository.reviseAcc(reviseAccRepositoryRequest);
+                return reviseAccRepositoryResponse.getAccManifestId();
+
             } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().toBigInteger();
