@@ -127,6 +127,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 ABIE.ABIE_ID,
                 ABIE.GUID,
+                ABIE.HASH_PATH,
                 ABIE.BASED_ACC_MANIFEST_ID,
                 ABIE.DEFINITION,
                 ABIE.CLIENT_ID,
@@ -143,6 +144,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 ASBIE.ASBIE_ID,
                 ASBIE.GUID,
+                ASBIE.HASH_PATH,
                 ASBIE.FROM_ABIE_ID,
                 ASBIE.TO_ASBIEP_ID,
                 ASBIE.BASED_ASCC_MANIFEST_ID,
@@ -162,6 +164,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 BBIE.BBIE_ID,
                 BBIE.GUID,
+                BBIE.HASH_PATH,
                 BBIE.BASED_BCC_MANIFEST_ID,
                 BBIE.FROM_ABIE_ID,
                 BBIE.TO_BBIEP_ID,
@@ -188,6 +191,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 ASBIEP.ASBIEP_ID,
                 ASBIEP.GUID,
+                ASBIEP.HASH_PATH,
                 ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 ASBIEP.ROLE_OF_ABIE_ID,
                 ASBIEP.DEFINITION,
@@ -202,6 +206,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
                 BBIEP.GUID,
+                BBIEP.HASH_PATH,
                 BBIEP.BASED_BCCP_MANIFEST_ID,
                 BBIEP.DEFINITION,
                 BBIEP.REMARK,
@@ -215,6 +220,7 @@ public class BieCopyService implements InitializingBean {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.GUID,
+                BBIE_SC.HASH_PATH,
                 BBIE_SC.BBIE_ID,
                 BBIE_SC.BASED_DT_SC_MANIFEST_ID,
                 BBIE_SC.DT_SC_PRI_RESTRI_ID,
@@ -239,6 +245,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger abieId;
         private String guid;
+        private String hashPath;
         private BigInteger basedAccManifestId;
         private String definition;
         private Long clientId;
@@ -254,6 +261,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger asbieId;
         private String guid;
+        private String hashPath;
         private BigInteger fromAbieId;
         private BigInteger toAsbiepId;
         private BigInteger basedAsccManifestId;
@@ -272,6 +280,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger bbieId;
         private String guid;
+        private String hashPath;
         private BigInteger basedBccManifestId;
         private BigInteger fromAbieId;
         private BigInteger toBbiepId;
@@ -297,6 +306,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger asbiepId;
         private String guid;
+        private String hashPath;
         private BigInteger basedAsccpManifestId;
         private BigInteger roleOfAbieId;
         private String definition;
@@ -310,6 +320,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger bbiepId;
         private String guid;
+        private String hashPath;
         private BigInteger basedBccpManifestId;
         private String definition;
         private String remark;
@@ -322,6 +333,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger bbieScId;
         private String guid;
+        private String hashPath;
         private BigInteger bbieId;
         private BigInteger basedDtScManifestId;
         private Long dtScPriRestriId;
@@ -507,6 +519,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(ABIE)
                     .set(ABIE.GUID, SrtGuid.randomGuid())
+                    .set(ABIE.HASH_PATH, abie.getHashPath())
                     .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
                     .set(ABIE.DEFINITION, abie.getDefinition())
                     .set(ABIE.CREATED_BY, ULong.valueOf(userId))
@@ -527,6 +540,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(ASBIEP)
                     .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                    .set(ASBIEP.HASH_PATH, asbiep.getHashPath())
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
                     .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(asbiep.getRoleOfAbieId()))
                     .set(ASBIEP.DEFINITION, asbiep.getDefinition())
@@ -544,6 +558,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(BBIEP)
                     .set(BBIEP.GUID, SrtGuid.randomGuid())
+                    .set(BBIEP.HASH_PATH, bbiep.getHashPath())
                     .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(bbiep.getBasedBccpManifestId()))
                     .set(BBIEP.DEFINITION, bbiep.getDefinition())
                     .set(BBIEP.REMARK, bbiep.getRemark())
@@ -560,6 +575,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(ASBIE)
                     .set(ASBIE.GUID, SrtGuid.randomGuid())
+                    .set(ASBIE.HASH_PATH, asbie.getHashPath())
                     .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(asbie.getFromAbieId()))
                     .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(asbie.getToAsbiepId()))
                     .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(asbie.getBasedAsccManifestId()))
@@ -582,6 +598,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(BBIE)
                     .set(BBIE.GUID, SrtGuid.randomGuid())
+                    .set(BBIE.HASH_PATH, bbie.getHashPath())
                     .set(BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
                     .set(BBIE.TO_BBIEP_ID, ULong.valueOf(bbie.getToBbiepId()))
                     .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(bbie.getBasedBccManifestId()))
@@ -611,6 +628,7 @@ public class BieCopyService implements InitializingBean {
 
             return dslContext.insertInto(BBIE_SC)
                     .set(BBIE_SC.GUID, SrtGuid.randomGuid())
+                    .set(BBIE_SC.HASH_PATH, bbieSc.getHashPath())
                     .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))
                     .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(bbieSc.getBasedDtScManifestId()))
                     .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, (bbieSc.getDtScPriRestriId() != null) ? ULong.valueOf(bbieSc.getDtScPriRestriId()) : null)
