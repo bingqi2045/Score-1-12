@@ -50,21 +50,17 @@ public class Graph {
         return nodes.get(key);
     }
 
-    public void addEdges(Node source, List<Node> children) {
+    public Edge addEdges(Node source, List<Node> children) {
         String sourceKey = source.getKey();
         if (edges.containsKey(sourceKey)) {
-            return;
+            return edges.get(sourceKey);
         }
         Edge edge = new Edge();
         children.stream().forEach(e -> {
             edge.addTarget(e.getKey());
         });
         edges.put(sourceKey, edge);
-    }
-
-    public Edge getEdge(Node source) {
-        String sourceKey = source.getKey();
-        return edges.get(sourceKey);
+        return edge;
     }
 
     public Collection<List<String>> findPaths(String from, String query) {

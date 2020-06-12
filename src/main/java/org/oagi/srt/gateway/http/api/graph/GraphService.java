@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -90,7 +91,7 @@ public class GraphService {
             Node globalExtensionNode =
                     globalExtensionAccGraph.getNode(Node.NodeType.ACC, globalExtensionAccManifestId);
 
-            Edge extensionEdge = extensionAccGraph.getEdge(extensionNode);
+            Edge extensionEdge = extensionAccGraph.addEdges(extensionNode, Collections.emptyList());
             extensionEdge.addTarget(0, globalExtensionNode.getKey());
         }
 
