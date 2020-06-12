@@ -2,6 +2,8 @@ package org.oagi.srt.repo.component.bccp;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.Bccp.BCCP;
@@ -210,33 +213,62 @@ public class BccpWriteRepository {
         }
 
         // update bccp record.
-        bccpRecord.setPropertyTerm(request.getPropertyTerm());
-        bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
+        UpdateSetFirstStep<BccpRecord> firstStep = dslContext.update(BCCP);
+        UpdateSetMoreStep<BccpRecord> moreStep = null;
+        if (compare(bccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.PROPERTY_TERM, request.getPropertyTerm())
+                    .set(BCCP.DEN, bccpRecord.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
+        }
         if (StringUtils.isEmpty(request.getDefaultValue()) && StringUtils.isEmpty(request.getFixedValue())) {
-            bccpRecord.setDefaultValue(null);
-            bccpRecord.setFixedValue(null);
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(BCCP.DEFAULT_VALUE)
+                    .setNull(BCCP.FIXED_VALUE);
         } else {
-            if (!StringUtils.isEmpty(request.getDefaultValue())) {
-                bccpRecord.setDefaultValue(request.getDefaultValue());
-                bccpRecord.setFixedValue(null);
-            } else {
-                bccpRecord.setDefaultValue(null);
-                bccpRecord.setFixedValue(request.getFixedValue());
+            if (compare(bccpRecord.getDefaultValue(), request.getDefaultValue()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(BCCP.DEFAULT_VALUE, request.getDefaultValue())
+                        .setNull(BCCP.FIXED_VALUE);
+            } else if (compare(bccpRecord.getFixedValue(), request.getFixedValue()) != 0) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .setNull(BCCP.DEFAULT_VALUE)
+                        .set(BCCP.FIXED_VALUE, request.getFixedValue());
             }
         }
-        bccpRecord.setDefinition(request.getDefinition());
-        bccpRecord.setDefinitionSource(request.getDefinitionSource());
-        bccpRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        bccpRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
-        bccpRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
-        bccpRecord.setLastUpdatedBy(userId);
-        bccpRecord.setLastUpdateTimestamp(timestamp);
-        bccpRecord.update(BCCP.PROPERTY_TERM, BCCP.DEN,
-                BCCP.DEFAULT_VALUE, BCCP.FIXED_VALUE,
-                BCCP.DEFINITION, BCCP.DEFINITION_SOURCE,
-                BCCP.IS_DEPRECATED, BCCP.IS_NILLABLE,
-                BCCP.NAMESPACE_ID,
-                BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
+        if (compare(bccpRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.DEFINITION, request.getDefinition());
+        }
+        if (compare(bccpRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+        if ((bccpRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if ((bccpRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
+        }
+        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(BCCP.NAMESPACE_ID);
+        } else {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCCP.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+        }
+
+        if (moreStep != null) {
+            moreStep.set(BCCP.LAST_UPDATED_BY, userId)
+                    .set(BCCP.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(BCCP.BCCP_ID.eq(bccpRecord.getBccpId()))
+                    .execute();
+
+            bccpRecord = dslContext.selectFrom(BCCP)
+                    .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
+                    .fetchOne();
+        }
 
         // creates new revision for updated record.
         RevisionRecord revisionRecord =

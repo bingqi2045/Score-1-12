@@ -1,6 +1,8 @@
 package org.oagi.srt.repo.component.asccp;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
@@ -18,8 +20,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.tables.Acc.ACC;
 import static org.oagi.srt.entity.jooq.tables.Asccp.ASCCP;
 import static org.oagi.srt.entity.jooq.tables.AsccpManifest.ASCCP_MANIFEST;
 
@@ -215,22 +219,51 @@ public class AsccpWriteRepository {
         }
 
         // update asccp record.
-        asccpRecord.setPropertyTerm(request.getPropertyTerm());
-        asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
-        asccpRecord.setDefinition(request.getDefinition());
-        asccpRecord.setDefinitionSource(request.getDefinitionSource());
-        asccpRecord.setReusableIndicator((byte) ((request.isReusable()) ? 1 : 0));
-        asccpRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        asccpRecord.setIsNillable((byte) ((request.isNillable()) ? 1 : 0));
-        asccpRecord.setNamespaceId(request.getNamespaceId() == null ? null : ULong.valueOf(request.getNamespaceId()));
-        asccpRecord.setLastUpdatedBy(userId);
-        asccpRecord.setLastUpdateTimestamp(timestamp);
-        asccpRecord.update(ASCCP.PROPERTY_TERM, ASCCP.DEN,
-                ASCCP.DEFINITION, ASCCP.DEFINITION_SOURCE,
-                ASCCP.REUSABLE_INDICATOR,
-                ASCCP.IS_DEPRECATED, ASCCP.IS_NILLABLE,
-                ASCCP.NAMESPACE_ID,
-                ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
+        UpdateSetFirstStep<AsccpRecord> firstStep = dslContext.update(ASCCP);
+        UpdateSetMoreStep<AsccpRecord> moreStep = null;
+        if (compare(asccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.PROPERTY_TERM, request.getPropertyTerm())
+                    .set(ASCCP.DEN, asccpRecord.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
+        }
+        if (compare(asccpRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.DEFINITION, request.getDefinition());
+        }
+        if (compare(asccpRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+        if ((asccpRecord.getReusableIndicator() == 1 ? true : false) != request.isReusable()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.REUSABLE_INDICATOR, (byte) ((request.isReusable()) ? 1 : 0));
+        }
+        if ((asccpRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if ((asccpRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
+        }
+        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(ASCCP.NAMESPACE_ID);
+        } else {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+        }
+
+        if (moreStep != null) {
+            moreStep.set(ASCCP.LAST_UPDATED_BY, userId)
+                    .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(ASCCP.ASCCP_ID.eq(asccpRecord.getAsccpId()))
+                    .execute();
+
+            asccpRecord = dslContext.selectFrom(ASCCP)
+                    .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                    .fetchOne();
+        }
 
         // creates new revision for updated record.
         RevisionRecord revisionRecord =
