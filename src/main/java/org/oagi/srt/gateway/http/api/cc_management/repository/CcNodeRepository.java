@@ -3,9 +3,10 @@ package org.oagi.srt.gateway.http.api.cc_management.repository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.jooq.DSLContext;
-import org.jooq.Record11;
+import org.jooq.Record14;
 import org.jooq.Record4;
 import org.jooq.SelectOnConditionStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.OagisComponentType;
@@ -47,10 +48,10 @@ public class CcNodeRepository {
     @Autowired
     private UserRepository userRepository;
 
-    private SelectOnConditionStep<Record11<
+    private SelectOnConditionStep<Record14<
             ULong, String, String, ULong, Integer,
-            String, String, ULong, ULong,
-            ULong, ULong>> getSelectJoinStepForAccNode() {
+            String, String, ULong, UInteger, UInteger,
+            ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                 ACC.ACC_ID,
                 ACC.GUID,
@@ -60,12 +61,19 @@ public class CcNodeRepository {
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE,
                 ACC_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM,
                 ACC_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
                 ACC.OWNER_USER_ID,
                 ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"))
                 .from(ACC)
                 .join(ACC_MANIFEST)
-                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID));
+                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(RELEASE)
+                .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
     public CcAccNode getAccNodeByAccId(User user, BigInteger accId, BigInteger releaseId) {
@@ -149,16 +157,21 @@ public class CcNodeRepository {
         return bccCount > 0;
     }
 
-    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, BigInteger manifestId) {
-        CcAsccpNode asccpNode = dslContext.select(
+    private SelectOnConditionStep<Record14<
+            ULong, String, String, ULong, String,
+            ULong, UInteger, UInteger, ULong, String,
+            ULong, ULong, ULong, ULong>> selectOnConditionStepForAsccpNode() {
+        return dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
                 ACC_MANIFEST.ACC_ID.as("role_of_acc_id"),
                 ASCCP.STATE,
+                ASCCP_MANIFEST.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
                 ASCCP.OWNER_USER_ID,
                 ASCCP.PREV_ASCCP_ID,
@@ -166,10 +179,16 @@ public class CcNodeRepository {
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(RELEASE)
+                .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(REVISION)
                 .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(ACC_MANIFEST)
-                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID));
+    }
+
+    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, BigInteger manifestId) {
+        CcAsccpNode asccpNode = selectOnConditionStepForAsccpNode()
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcAsccpNode.class);
 
@@ -182,23 +201,7 @@ public class CcNodeRepository {
     }
 
     public CcAsccpNode getAsccpNodeByRoleOfAccId(BigInteger roleOfAccId, ULong releaseId) {
-        CcAsccpNode asccpNode = dslContext.select(
-                ASCCP.ASCCP_ID,
-                ASCCP.GUID,
-                ASCCP.PROPERTY_TERM.as("name"),
-                ASCCP.STATE,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
-                ASCCP_MANIFEST.RELEASE_ID,
-                ASCCP.PREV_ASCCP_ID,
-                ASCCP.NEXT_ASCCP_ID)
-                .from(ASCCP)
-                .join(ASCCP_MANIFEST)
-                .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
-                .join(REVISION)
-                .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
-                .join(ACC_MANIFEST)
-                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+        CcAsccpNode asccpNode = selectOnConditionStepForAsccpNode()
                 .where(and(
                         ACC_MANIFEST.ACC_ID.eq(ULong.valueOf(roleOfAccId)),
                         ASCCP_MANIFEST.RELEASE_ID.eq(releaseId)
@@ -213,16 +216,21 @@ public class CcNodeRepository {
         return asccpNode;
     }
 
-    public CcBccpNode getBccpNodeByBccpManifestId(User user, BigInteger manifestId) {
-        CcBccpNode bccpNode = dslContext.select(
+    private SelectOnConditionStep<Record14<
+            ULong, String, String, ULong, String,
+            ULong, UInteger, UInteger, ULong, String,
+            ULong, ULong, ULong, ULong>> selectOnConditionStepForBccpNode() {
+        return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,
                 BCCP.PROPERTY_TERM.as("name"),
                 DT_MANIFEST.DT_ID.as("bdt_id"),
                 BCCP.STATE,
+                BCCP_MANIFEST.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
                 BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
                 BCCP.OWNER_USER_ID,
                 BCCP.PREV_BCCP_ID,
@@ -230,10 +238,16 @@ public class CcNodeRepository {
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(RELEASE)
+                .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(REVISION)
                 .on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(DT_MANIFEST)
-                .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
+                .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID));
+    }
+
+    public CcBccpNode getBccpNodeByBccpManifestId(User user, BigInteger manifestId) {
+        CcBccpNode bccpNode = selectOnConditionStepForBccpNode()
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBccpNode.class);
 
@@ -402,10 +416,23 @@ public class CcNodeRepository {
                 ACC.DEFINITION,
                 ACC.DEFINITION_SOURCE,
                 ACC.NAMESPACE_ID,
-                ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"))
+                ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
+                ACC.STATE,
+                APP_USER.NAME.as("owner"),
+                ACC_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                ACC_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM)
                 .from(ACC_MANIFEST)
                 .join(ACC)
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(APP_USER)
+                .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(RELEASE)
+                .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accNode.getManifestId())))
                 .fetchOneInto(CcAccNodeDetail.class);
     }
@@ -424,10 +451,27 @@ public class CcNodeRepository {
                     ASCC.CARDINALITY_MAX,
                     ASCC.IS_DEPRECATED.as("deprecated"),
                     ASCC.DEFINITION,
-                    ASCC.DEFINITION_SOURCE)
+                    ASCC.DEFINITION_SOURCE,
+                    ACC.STATE,
+                    APP_USER.NAME.as("owner"),
+                    ACC_MANIFEST.RELEASE_ID,
+                    RELEASE.RELEASE_NUM,
+                    ACC_MANIFEST.REVISION_ID,
+                    REVISION.REVISION_NUM,
+                    REVISION.REVISION_TRACKING_NUM)
                     .from(ASCC_MANIFEST)
                     .join(ASCC)
                     .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                    .join(ACC_MANIFEST)
+                    .on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                    .join(ACC)
+                    .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                    .join(APP_USER)
+                    .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                    .join(RELEASE)
+                    .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                    .join(REVISION)
+                    .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                     .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
             asccpNodeDetail.setAscc(ascc);
@@ -445,10 +489,23 @@ public class CcNodeRepository {
                 ASCCP.IS_DEPRECATED.as("deprecated"),
                 ASCCP.IS_NILLABLE.as("nillable"),
                 ASCCP.DEFINITION,
-                ASCCP.DEFINITION_SOURCE)
+                ASCCP.DEFINITION_SOURCE,
+                ASCCP.STATE,
+                APP_USER.NAME.as("owner"),
+                ASCCP_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                ASCCP_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM)
                 .from(ASCCP_MANIFEST)
                 .join(ASCCP)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(APP_USER)
+                .on(ASCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(RELEASE)
+                .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestIdId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
@@ -493,10 +550,27 @@ public class CcNodeRepository {
                     BCC.FIXED_VALUE,
                     BCC.DEFINITION,
                     BCC.DEFINITION_SOURCE,
-                    BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"))
+                    BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"),
+                    ACC.STATE,
+                    APP_USER.NAME.as("owner"),
+                    ACC_MANIFEST.RELEASE_ID,
+                    RELEASE.RELEASE_NUM,
+                    ACC_MANIFEST.REVISION_ID,
+                    REVISION.REVISION_NUM,
+                    REVISION.REVISION_TRACKING_NUM)
                     .from(BCC_MANIFEST)
                     .join(BCC)
                     .on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                    .join(ACC_MANIFEST)
+                    .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                    .join(ACC)
+                    .on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                    .join(APP_USER)
+                    .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                    .join(RELEASE)
+                    .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                    .join(REVISION)
+                    .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                     .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
             bccpNodeDetail.setBcc(bcc);
@@ -515,20 +589,26 @@ public class CcNodeRepository {
                 BCCP.FIXED_VALUE,
                 BCCP.DEFINITION,
                 BCCP.DEFINITION_SOURCE,
-                BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"))
+                BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
+                BCCP.STATE,
+                APP_USER.NAME.as("owner"),
+                BCCP_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                BCCP_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM)
                 .from(BCCP_MANIFEST)
                 .join(BCCP)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(APP_USER)
+                .on(BCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(RELEASE)
+                .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
-
-        long bdtId = dslContext.select(DT_MANIFEST.DT_ID)
-                .from(BCCP_MANIFEST)
-                .join(DT_MANIFEST)
-                .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
-                .fetchOneInto(Long.class);
 
         CcBccpNodeDetail.Bdt bdt = dslContext.select(
                 DT.DT_ID.as("bdt_id"),
@@ -537,8 +617,26 @@ public class CcNodeRepository {
                 DT.QUALIFIER,
                 DT.DEN,
                 DT.DEFINITION,
-                DT.DEFINITION_SOURCE).from(DT)
-                .where(DT.DT_ID.eq(ULong.valueOf(bdtId)))
+                DT.DEFINITION_SOURCE,
+                DT.STATE,
+                APP_USER.NAME.as("owner"),
+                DT_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                DT_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM)
+                .from(DT)
+                .join(DT_MANIFEST)
+                .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .join(BCCP_MANIFEST)
+                .on(DT_MANIFEST.DT_MANIFEST_ID.eq(BCCP_MANIFEST.BDT_MANIFEST_ID))
+                .join(APP_USER)
+                .on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(RELEASE)
+                .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
 
@@ -557,8 +655,27 @@ public class CcNodeRepository {
                 DT_SC.DEFINITION,
                 DT_SC.DEFINITION_SOURCE,
                 DT_SC.DEFAULT_VALUE,
-                DT_SC.FIXED_VALUE).from(DT_SC_MANIFEST)
-                .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                DT_SC.FIXED_VALUE,
+                DT.STATE,
+                APP_USER.NAME.as("owner"),
+                DT_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
+                DT_MANIFEST.REVISION_ID,
+                REVISION.REVISION_NUM,
+                REVISION.REVISION_TRACKING_NUM)
+                .from(DT_SC_MANIFEST)
+                .join(DT_SC)
+                .on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .join(DT_MANIFEST)
+                .on(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
+                .join(DT)
+                .on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .join(APP_USER)
+                .on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(RELEASE)
+                .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(REVISION)
+                .on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }

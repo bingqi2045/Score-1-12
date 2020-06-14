@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.cc_management.data.node;
 
 import lombok.Data;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 
 import java.math.BigInteger;
@@ -19,4 +20,12 @@ public class CcBdtScNodeDetail implements CcNodeDetail {
     private String definitionSource;
     private String defaultValue;
     private String fixedValue;
+
+    private CcState state;
+    private String owner;
+    private BigInteger releaseId;
+    private String releaseNum;
+    private BigInteger revisionId;
+    private int revisionNum;
+    private int revisionTrackingNum;
 }
