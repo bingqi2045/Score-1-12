@@ -501,6 +501,15 @@ public class BusinessInformationEntityRepository {
         public SelectBieListArguments setSort(String field, String direction) {
             if (!StringUtils.isEmpty(field)) {
                 switch (field) {
+                    case "state":
+                        if ("asc".equals(direction)) {
+                            this.sortField = TOP_LEVEL_ABIE.STATE.asc();
+                        } else if ("desc".equals(direction)) {
+                            this.sortField = TOP_LEVEL_ABIE.STATE.desc();
+                        }
+
+                        break;
+
                     case "propertyTerm":
                         if ("asc".equals(direction)) {
                             this.sortField = ASCCP.PROPERTY_TERM.asc();
