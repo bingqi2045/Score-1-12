@@ -144,11 +144,10 @@ public class BbieWriteRepository {
             bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
             bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
             bbieRecord.setDefinition(bbie.getDefinition());
-            if (bbie.isEmptyCardinality()) {
-                throw new IllegalArgumentException();
+            if (!bbie.isEmptyCardinality()) {
+                bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
+                bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
             }
-            bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
-            bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
             bbieRecord.setExample(bbie.getExample());
             bbieRecord.setRemark(bbie.getRemark());
 
@@ -160,21 +159,20 @@ public class BbieWriteRepository {
                 bbieRecord.setFixedValue(bbie.getFixedValue());
             }
 
-            if (bbie.isEmptyPrimitive()) {
-                throw new IllegalArgumentException();
-            }
-            if (bbie.getBdtPriRestriId() != null) {
-                bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
-                bbieRecord.setCodeListId(null);
-                bbieRecord.setAgencyIdListId(null);
-            } else if (bbie.getCodeListId() != null) {
-                bbieRecord.setBdtPriRestriId(null);
-                bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
-                bbieRecord.setAgencyIdListId(null);
-            } else if (bbie.getAgencyIdListId() != null) {
-                bbieRecord.setBdtPriRestriId(null);
-                bbieRecord.setCodeListId(null);
-                bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+            if (!bbie.isEmptyPrimitive()) {
+                if (bbie.getBdtPriRestriId() != null) {
+                    bbieRecord.setBdtPriRestriId(ULong.valueOf(bbie.getBdtPriRestriId()));
+                    bbieRecord.setCodeListId(null);
+                    bbieRecord.setAgencyIdListId(null);
+                } else if (bbie.getCodeListId() != null) {
+                    bbieRecord.setBdtPriRestriId(null);
+                    bbieRecord.setCodeListId(ULong.valueOf(bbie.getCodeListId()));
+                    bbieRecord.setAgencyIdListId(null);
+                } else if (bbie.getAgencyIdListId() != null) {
+                    bbieRecord.setBdtPriRestriId(null);
+                    bbieRecord.setCodeListId(null);
+                    bbieRecord.setAgencyIdListId(ULong.valueOf(bbie.getAgencyIdListId()));
+                }
             }
 
             bbieRecord.setLastUpdatedBy(requesterId);

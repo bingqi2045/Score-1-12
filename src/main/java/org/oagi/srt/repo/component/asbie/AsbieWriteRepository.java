@@ -101,11 +101,10 @@ public class AsbieWriteRepository {
             asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
             asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
             asbieRecord.setDefinition(asbie.getDefinition());
-            if (asbie.isEmptyCardinality()) {
-                throw new IllegalArgumentException();
+            if (!asbie.isEmptyCardinality()) {
+                asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
+                asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
             }
-            asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
-            asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
             asbieRecord.setRemark(asbie.getRemark());
 
             asbieRecord.setLastUpdatedBy(requesterId);
