@@ -111,11 +111,6 @@ public class CodeListGraphContext implements GraphContext {
         switch (node.getType()) {
             case CODE_LIST:
                 List<Node> children = new ArrayList();
-                if (node.getBasedManifestId() != null) {
-                    CodeListManifest basedCodeListManifest = codeListManifestMap.get(node.getBasedManifestId());
-                    children.add(toNode(basedCodeListManifest));
-                }
-
                 children.addAll(
                         codeListValueManifestMap.getOrDefault(node.getManifestId(),
                                 codeListValueManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
