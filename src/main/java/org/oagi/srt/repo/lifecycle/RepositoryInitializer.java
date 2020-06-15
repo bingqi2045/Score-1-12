@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Component
@@ -51,7 +52,10 @@ public class RepositoryInitializer implements InitializingBean {
 
     private void initCodeListValueGuid() {
         List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
-                .where(CODE_LIST_VALUE.GUID.isNull())
+                .where(or(
+                        CODE_LIST_VALUE.GUID.isNull(),
+                        CODE_LIST_VALUE.GUID.eq("")
+                ))
                 .fetch();
 
         codeListValueRecords.stream()
