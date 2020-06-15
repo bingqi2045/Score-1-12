@@ -45,8 +45,13 @@ public class GraphController {
                 graph = graphService.getBieGraph(id);
                 break;
 
+            // This is only for UI to draw 'All Extension' as a based ACC.
             case "extension":
                 graph = graphService.getExtensionGraph(id);
+                break;
+
+            case "code_list":
+                graph = graphService.getCodeListGraph(id);
                 break;
 
             default:

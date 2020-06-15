@@ -2,6 +2,7 @@ package org.oagi.srt.repo.component.code_list;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,12 @@ public class CodeListReadRepository {
 
     @Autowired
     private DSLContext dslContext;
+
+    public CodeListManifestRecord getCodeListManifestByManifestId(BigInteger codeListManifestId) {
+        return dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
+                .fetchOne();
+    }
 
     public List<AvailableCodeList> availableCodeListByBccpManifestId(BigInteger bccpManifestId) {
         return dslContext.select(

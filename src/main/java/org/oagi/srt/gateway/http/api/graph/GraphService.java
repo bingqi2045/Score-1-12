@@ -5,10 +5,14 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.srt.repo.BusinessInformationEntityRepository;
 import org.oagi.srt.repo.CoreComponentRepository;
-import org.oagi.srt.repo.GraphContext;
-import org.oagi.srt.repo.GraphContextRepository;
+import org.oagi.srt.repo.component.code_list.CodeListReadRepository;
+import org.oagi.srt.repo.component.graph.CodeListGraphContext;
+import org.oagi.srt.repo.component.graph.CoreComponentGraphContext;
+import org.oagi.srt.repo.component.graph.GraphContext;
+import org.oagi.srt.repo.component.graph.GraphContextRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,9 @@ public class GraphService {
     private BusinessInformationEntityRepository bieRepository;
 
     @Autowired
+    private CodeListReadRepository codeListReadRepository;
+
+    @Autowired
     private DSLContext dslContext;
 
     public Graph getAccGraph(BigInteger accManifestId) {
@@ -42,9 +49,9 @@ public class GraphService {
             throw new IllegalArgumentException();
         }
 
-        GraphContext graphContext =
+        CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(accManifest);
-        return buildGraph(graphContext, graphContext.toNode(accManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(accManifest));
     }
 
     public Graph getAsccpGraph(BigInteger asccpManifestId) {
@@ -54,9 +61,9 @@ public class GraphService {
             throw new IllegalArgumentException();
         }
 
-        GraphContext graphContext =
+        CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(asccpManifest);
-        return buildGraph(graphContext, graphContext.toNode(asccpManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(asccpManifest));
     }
 
     public Graph getBccpGraph(BigInteger bccpManifestId) {
@@ -66,9 +73,9 @@ public class GraphService {
             throw new IllegalArgumentException();
         }
 
-        GraphContext graphContext =
+        CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
-        return buildGraph(graphContext, graphContext.toNode(bccpManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(bccpManifest));
     }
 
     public Graph getBieGraph(BigInteger topLevelAbieId) {
@@ -96,6 +103,18 @@ public class GraphService {
         }
 
         return extensionAccGraph;
+    }
+
+    public Graph getCodeListGraph(BigInteger codeListManifestId) {
+        CodeListManifestRecord codeListManifestRecord =
+                codeListReadRepository.getCodeListManifestByManifestId(codeListManifestId);
+        if (codeListManifestRecord == null) {
+            throw new IllegalArgumentException();
+        }
+
+        CodeListGraphContext codeListGraphContext =
+                graphContextRepository.buildGraphContext(codeListManifestRecord);
+        return buildGraph(codeListGraphContext, codeListGraphContext.toNode(codeListManifestRecord));
     }
 
     private Graph buildGraph(GraphContext graphContext, Node root) {

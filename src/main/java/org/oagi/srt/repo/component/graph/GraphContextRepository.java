@@ -1,9 +1,10 @@
-package org.oagi.srt.repo;
+package org.oagi.srt.repo.component.graph;
 
 import org.jooq.DSLContext;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.srt.entity.jooq.tables.records.CodeListManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,19 +16,23 @@ public class GraphContextRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public GraphContext buildGraphContext(BigInteger releaseId) {
-        return new GraphContext(dslContext, releaseId);
+    public CoreComponentGraphContext buildGraphContext(BigInteger releaseId) {
+        return new CoreComponentGraphContext(dslContext, releaseId);
     }
 
-    public GraphContext buildGraphContext(AccManifestRecord accManifest) {
+    public CoreComponentGraphContext buildGraphContext(AccManifestRecord accManifest) {
         return buildGraphContext(accManifest.getReleaseId().toBigInteger());
     }
 
-    public GraphContext buildGraphContext(AsccpManifestRecord asccpManifest) {
+    public CoreComponentGraphContext buildGraphContext(AsccpManifestRecord asccpManifest) {
         return buildGraphContext(asccpManifest.getReleaseId().toBigInteger());
     }
 
-    public GraphContext buildGraphContext(BccpManifestRecord bccpManifest) {
+    public CoreComponentGraphContext buildGraphContext(BccpManifestRecord bccpManifest) {
         return buildGraphContext(bccpManifest.getReleaseId().toBigInteger());
+    }
+
+    public CodeListGraphContext buildGraphContext(CodeListManifestRecord codeListManifest) {
+        return new CodeListGraphContext(dslContext, codeListManifest.getReleaseId().toBigInteger());
     }
 }

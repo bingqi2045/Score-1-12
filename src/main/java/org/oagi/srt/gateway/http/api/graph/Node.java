@@ -19,7 +19,10 @@ public class Node {
         BCC,
         BCCP,
         BDT,
-        BDT_SC;
+        BDT_SC,
+
+        CODE_LIST,
+        CODE_LIST_VALUE;
 
         public String toString() {
             return this.name();

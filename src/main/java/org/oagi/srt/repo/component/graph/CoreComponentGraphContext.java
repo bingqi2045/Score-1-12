@@ -1,11 +1,10 @@
-package org.oagi.srt.repo;
+package org.oagi.srt.repo.component.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record3;
-import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.OagisComponentType;
@@ -26,7 +25,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Data
-public class GraphContext {
+public class CoreComponentGraphContext implements GraphContext {
 
     private DSLContext dslContext;
     private ULong releaseId;
@@ -134,7 +133,7 @@ public class GraphContext {
         private ULong prevDtScManifestId;
     }
 
-    public GraphContext(DSLContext dslContext, BigInteger releaseId) {
+    public CoreComponentGraphContext(DSLContext dslContext, BigInteger releaseId) {
         this.dslContext = dslContext;
         this.releaseId = ULong.valueOf(releaseId);
 
@@ -282,6 +281,7 @@ public class GraphContext {
                         .collect(groupingBy(DtScManifest::getOwnerDtManifestId));
     }
 
+    @Override
     public List<Node> findChildren(Node node) {
         switch (node.getType()) {
             case ACC:
