@@ -97,13 +97,6 @@ public class CodeListController {
         return service.getCodeList(user, manifestId);
     }
 
-    @RequestMapping(value = "/code_list_value/{manifestId}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public CodeListValue getCodeListValue(@AuthenticationPrincipal User user,
-                                @PathVariable("manifestId") BigInteger manifestId) {
-        return service.getCodeListValue(user, manifestId);
-    }
-
     @RequestMapping(value = "/code_list", method = RequestMethod.PUT)
     public CcCreateResponse create(
             @AuthenticationPrincipal User user,
