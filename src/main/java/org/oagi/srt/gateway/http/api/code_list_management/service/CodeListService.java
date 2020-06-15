@@ -237,15 +237,11 @@ public class CodeListService extends EventHandler {
         );
         codeList.setOwnerId(null); // hide sensitive information
 
-        boolean isPublished = CodeListState.Published.name().equals(codeList.getState());
+        return codeList;
+    }
 
-        List<Condition> conditions = new ArrayList();
-        conditions.add(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)));
-        if (isPublished) {
-            conditions.add(CODE_LIST_VALUE.LOCKED_INDICATOR.eq((byte) 0));
-        }
-
-        List<CodeListValue> codeListValues = dslContext.select(
+    public CodeListValue getCodeListValue(User user, BigInteger manifestId) {
+        return dslContext.select(
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.NAME,
@@ -256,11 +252,8 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
                 .from(CODE_LIST_VALUE_MANIFEST)
                 .join(CODE_LIST_VALUE).on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE.CODE_LIST_VALUE_ID))
-                .where(conditions)
-                .fetchInto(CodeListValue.class);
-        codeList.setCodeListValues(codeListValues);
-
-        return codeList;
+                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .fetchOneInto(CodeListValue.class);
     }
 
     @Transactional
