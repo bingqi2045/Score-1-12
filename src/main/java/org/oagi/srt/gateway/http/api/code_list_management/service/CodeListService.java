@@ -254,8 +254,11 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE.USED_INDICATOR.as("used"),
                 CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
                 CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
-                .from(CODE_LIST_VALUE_MANIFEST)
-                .join(CODE_LIST_VALUE).on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE.CODE_LIST_VALUE_ID))
+                .from(CODE_LIST_VALUE)
+                .join(CODE_LIST_VALUE_MANIFEST).on(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID))
+                .join(CODE_LIST_MANIFEST)
+                    .on(and(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID),
+                            CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)))
                 .where(conditions)
                 .fetchInto(CodeListValue.class);
         codeList.setCodeListValues(codeListValues);
