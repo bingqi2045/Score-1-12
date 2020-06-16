@@ -5,6 +5,7 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ public class BieListRequest {
     private List<BieState> states = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
+    private BigInteger releaseId;
     private Date updateStartDate;
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;

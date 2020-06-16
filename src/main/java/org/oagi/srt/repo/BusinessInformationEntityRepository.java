@@ -548,6 +548,13 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
+        public SelectBieListArguments setReleaseId(BigInteger releaseId) {
+            if (releaseId != null) {
+                conditions.add(TOP_LEVEL_ABIE.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+            }
+            return this;
+        }
+
         public List<Condition> getConditions() {
             return conditions;
         }

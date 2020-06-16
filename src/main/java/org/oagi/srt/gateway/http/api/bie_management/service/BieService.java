@@ -133,6 +133,7 @@ public class BieService {
                 .setPropertyTerm(request.getPropertyTerm())
                 .setExcludes(request.getExcludes())
                 .setStates(request.getStates())
+                .setReleaseId(request.getReleaseId())
                 .setOwnerLoginIds(request.getOwnerLoginIds())
                 .setUpdaterLoginIds(request.getUpdaterLoginIds())
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
