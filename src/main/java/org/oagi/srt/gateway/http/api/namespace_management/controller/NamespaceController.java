@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.namespace_management.controller;
 
+import com.google.common.collect.ImmutableMap;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.namespace_management.data.Namespace;
@@ -83,15 +84,17 @@ public class NamespaceController {
 
     @RequestMapping(value = "/namespace", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createNamespace(@AuthenticationPrincipal User user,
-                                          @RequestBody Namespace namespace) {
-        service.create(user, namespace);
-        return ResponseEntity.noContent().build();
+    public Map<String, Object> createNamespace(@AuthenticationPrincipal User user,
+                                               @RequestBody Namespace namespace) {
+        BigInteger namespaceId = service.create(user, namespace);
+        return ImmutableMap.<String, Object>builder()
+                .put("namespaceId", namespaceId)
+                .build();
     }
 
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createNamespace(@PathVariable("id") BigInteger namespaceId,
+    public ResponseEntity updateNamespace(@PathVariable("id") BigInteger namespaceId,
                                           @AuthenticationPrincipal User user,
                                           @RequestBody Namespace namespace) {
         namespace.setNamespaceId(namespaceId);

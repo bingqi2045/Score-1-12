@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.namespace_management.service;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
+import org.oagi.srt.entity.jooq.tables.records.NamespaceRecord;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.srt.gateway.http.api.namespace_management.data.NamespaceList;
@@ -65,23 +66,25 @@ public class NamespaceService {
     }
 
     @Transactional
-    public void create(User user, Namespace namespace) {
-        BigInteger userId = sessionService.userId(user);
+    public BigInteger create(User user, Namespace namespace) {
+        AppUser requester = sessionService.getAppUser(user);
+        BigInteger userId = requester.getAppUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
-        dslContext.insertInto(NAMESPACE,
-                NAMESPACE.URI,
-                NAMESPACE.CREATED_BY,
-                NAMESPACE.LAST_UPDATED_BY,
-                NAMESPACE.OWNER_USER_ID,
-                NAMESPACE.CREATION_TIMESTAMP,
-                NAMESPACE.DESCRIPTION,
-                NAMESPACE.IS_STD_NMSP,
-                NAMESPACE.LAST_UPDATE_TIMESTAMP,
-                NAMESPACE.PREFIX)
-                .values(namespace.getUri(), ULong.valueOf(userId), ULong.valueOf(userId),
-                        ULong.valueOf(userId), timestamp, namespace.getDescription(), (byte) 0, timestamp,
-                        namespace.getPrefix()).execute();
+        NamespaceRecord namespaceRecord = new NamespaceRecord();
+        namespaceRecord.setUri(namespace.getUri());
+        namespaceRecord.setPrefix(namespace.getPrefix());
+        namespaceRecord.setDescription(namespace.getDescription());
+        namespaceRecord.setIsStdNmsp((byte) (requester.isDeveloper() ? 1 : 0));
+        namespaceRecord.setCreatedBy(ULong.valueOf(userId));
+        namespaceRecord.setLastUpdatedBy(ULong.valueOf(userId));
+        namespaceRecord.setCreationTimestamp(timestamp);
+        namespaceRecord.setLastUpdateTimestamp(timestamp);
+
+        return dslContext.insertInto(NAMESPACE)
+                .set(namespaceRecord)
+                .returning(NAMESPACE.NAMESPACE_ID)
+                .fetchOne().getNamespaceId().toBigInteger();
     }
 
     @Transactional
