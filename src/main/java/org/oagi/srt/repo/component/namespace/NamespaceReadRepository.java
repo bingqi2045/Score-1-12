@@ -135,7 +135,6 @@ public class NamespaceReadRepository {
             namespaceList.setOwner(record.get(APP_USER.as("owner").LOGIN_ID.as("owner")));
             namespaceList.setLastUpdateTimestamp(Date.from(record.get(NAMESPACE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             namespaceList.setLastUpdateUser(record.get(APP_USER.as("updater").LOGIN_ID.as("last_uppdate_user")));
-            namespaceList.setCanEdit(record.get(APP_USER.as("owner").APP_USER_ID.as("owner_user_id")).toBigInteger().equals(requester.getAppUserId()));
             return namespaceList;
         }).collect(Collectors.toList());
 

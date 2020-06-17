@@ -1,6 +1,7 @@
 package org.oagi.srt.gateway.http.api.namespace_management.service;
 
 import org.jooq.DSLContext;
+import org.jooq.Record5;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.NamespaceRecord;
@@ -12,6 +13,7 @@ import org.oagi.srt.gateway.http.api.namespace_management.data.SimpleNamespace;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.component.namespace.NamespaceReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -49,13 +51,22 @@ public class NamespaceService {
     public Namespace getNamespace(User user, BigInteger namespaceId) {
         BigInteger userId = sessionService.userId(user);
 
-        Namespace namespace =
-                dslContext.select(NAMESPACE.fields()).from(NAMESPACE)
+        Record5<ULong, String, String, String, ULong> result =
+                dslContext.select(NAMESPACE.NAMESPACE_ID,
+                        NAMESPACE.URI,
+                        NAMESPACE.PREFIX,
+                        NAMESPACE.DESCRIPTION,
+                        NAMESPACE.OWNER_USER_ID)
+                        .from(NAMESPACE)
                         .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
-                        .fetchOneInto(Namespace.class);
-        if (!namespace.getOwnerUserId().equals(userId)) {
-            throw new AccessDeniedException("Access is denied");
-        }
+                        .fetchOne();
+
+        Namespace namespace = new Namespace();
+        namespace.setNamespaceId(result.get(NAMESPACE.NAMESPACE_ID).toBigInteger());
+        namespace.setUri(result.get(NAMESPACE.URI));
+        namespace.setPrefix(result.get(NAMESPACE.PREFIX));
+        namespace.setDescription(result.get(NAMESPACE.DESCRIPTION));
+        namespace.setCanEdit(result.get(NAMESPACE.OWNER_USER_ID).toBigInteger().equals(userId));
         return namespace;
     }
 
@@ -76,6 +87,7 @@ public class NamespaceService {
         namespaceRecord.setPrefix(namespace.getPrefix());
         namespaceRecord.setDescription(namespace.getDescription());
         namespaceRecord.setIsStdNmsp((byte) (requester.isDeveloper() ? 1 : 0));
+        namespaceRecord.setOwnerUserId(ULong.valueOf(userId));
         namespaceRecord.setCreatedBy(ULong.valueOf(userId));
         namespaceRecord.setLastUpdatedBy(ULong.valueOf(userId));
         namespaceRecord.setCreationTimestamp(timestamp);
@@ -104,5 +116,23 @@ public class NamespaceService {
         if (res != 1) {
             throw new AccessDeniedException("Access is denied");
         }
+    }
+
+    @Transactional
+    public void discard(User user, BigInteger namespaceId) {
+        ULong userId = ULong.valueOf(sessionService.userId(user));
+
+        NamespaceRecord namespaceRecord = dslContext.selectFrom(NAMESPACE)
+                .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
+                .fetchOptional().orElse(null);
+        if (namespaceRecord == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        if (!namespaceRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("Access is denied");
+        }
+
+        namespaceRecord.delete();
     }
 }

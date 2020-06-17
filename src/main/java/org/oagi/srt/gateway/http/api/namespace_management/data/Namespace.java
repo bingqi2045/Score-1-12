@@ -11,5 +11,5 @@ public class Namespace {
     private String uri;
     private String prefix;
     private String description;
-    private BigInteger ownerUserId = BigInteger.ZERO;
+    private boolean canEdit;
 }

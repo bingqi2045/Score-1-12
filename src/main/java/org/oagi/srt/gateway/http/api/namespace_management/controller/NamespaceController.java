@@ -101,4 +101,12 @@ public class NamespaceController {
         service.update(user, namespace);
         return ResponseEntity.accepted().build();
     }
+
+    @RequestMapping(value = "/namespace/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity discardNamespace(@PathVariable("id") BigInteger namespaceId,
+                                           @AuthenticationPrincipal User user) {
+        service.discard(user, namespaceId);
+        return ResponseEntity.accepted().build();
+    }
 }

@@ -15,5 +15,4 @@ public class NamespaceList {
     private String description;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;
-    private boolean canEdit;
 }
