@@ -11,9 +11,9 @@ public class NamespaceList {
     private BigInteger namespaceId = BigInteger.ZERO;
     private String uri;
     private String prefix;
-    private BigInteger ownerUserId = BigInteger.ZERO;;
     private String owner;
     private String description;
     private Date lastUpdateTimestamp;
+    private String lastUpdateUser;
     private boolean canEdit;
 }

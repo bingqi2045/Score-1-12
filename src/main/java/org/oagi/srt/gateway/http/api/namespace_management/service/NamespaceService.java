@@ -2,11 +2,14 @@ package org.oagi.srt.gateway.http.api.namespace_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.entity.jooq.Tables;
+import org.oagi.srt.data.AppUser;
+import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.srt.gateway.http.api.namespace_management.data.NamespaceList;
+import org.oagi.srt.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.oagi.srt.gateway.http.api.namespace_management.data.SimpleNamespace;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
+import org.oagi.srt.repo.component.namespace.NamespaceReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.User;
@@ -16,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.oagi.srt.entity.jooq.Tables.NAMESPACE;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,33 +32,25 @@ public class NamespaceService {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    private NamespaceReadRepository readRepository;
+
     public List<SimpleNamespace> getSimpleNamespaces() {
-        return dslContext.select(Tables.NAMESPACE.NAMESPACE_ID, Tables.NAMESPACE.URI).from(Tables.NAMESPACE)
+        return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI).from(NAMESPACE)
                 .fetchInto(SimpleNamespace.class);
     }
 
-    public List<NamespaceList> getNamespaceList(User user) {
-        BigInteger userId = sessionService.userId(user);
-
-        List<NamespaceList> namespaceLists = dslContext.select(Tables.NAMESPACE.fields())
-                .select(Tables.APP_USER.LOGIN_ID.as("owner"))
-                .from(Tables.NAMESPACE)
-                .join(Tables.APP_USER)
-                .on(Tables.NAMESPACE.OWNER_USER_ID.eq(Tables.APP_USER.APP_USER_ID))
-                .fetchInto(NamespaceList.class);
-        namespaceLists.stream().forEach(namespaceList -> {
-            namespaceList.setCanEdit(namespaceList.getOwnerUserId().equals(userId));
-        });
-
-        return namespaceLists;
+    public PageResponse<NamespaceList> getNamespaceList(User user, NamespaceListRequest request) {
+        AppUser requester = sessionService.getAppUser(user);
+        return readRepository.fetch(requester, request);
     }
 
     public Namespace getNamespace(User user, BigInteger namespaceId) {
         BigInteger userId = sessionService.userId(user);
 
         Namespace namespace =
-                dslContext.select(Tables.NAMESPACE.fields()).from(Tables.NAMESPACE)
-                        .where(Tables.NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
+                dslContext.select(NAMESPACE.fields()).from(NAMESPACE)
+                        .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
                         .fetchOneInto(Namespace.class);
         if (!namespace.getOwnerUserId().equals(userId)) {
             throw new AccessDeniedException("Access is denied");
@@ -62,8 +59,8 @@ public class NamespaceService {
     }
 
     public BigInteger getNamespaceIdByUri(String uri) {
-        return dslContext.select(Tables.NAMESPACE.NAMESPACE_ID).from(Tables.NAMESPACE)
-                .where(Tables.NAMESPACE.URI.eq(uri))
+        return dslContext.select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
+                .where(NAMESPACE.URI.eq(uri))
                 .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
@@ -72,18 +69,19 @@ public class NamespaceService {
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
-        dslContext.insertInto(Tables.NAMESPACE,
-                Tables.NAMESPACE.URI,
-                Tables.NAMESPACE.CREATED_BY,
-                Tables.NAMESPACE.LAST_UPDATED_BY,
-                Tables.NAMESPACE.OWNER_USER_ID,
-                Tables.NAMESPACE.CREATION_TIMESTAMP,
-                Tables.NAMESPACE.DESCRIPTION,
-                Tables.NAMESPACE.IS_STD_NMSP,
-                Tables.NAMESPACE.LAST_UPDATE_TIMESTAMP,
-                Tables.NAMESPACE.PREFIX).values(namespace.getUri(), ULong.valueOf(userId), ULong.valueOf(userId),
-                ULong.valueOf(userId), timestamp, namespace.getDescription(), (byte) 0, timestamp,
-                namespace.getPrefix()).execute();
+        dslContext.insertInto(NAMESPACE,
+                NAMESPACE.URI,
+                NAMESPACE.CREATED_BY,
+                NAMESPACE.LAST_UPDATED_BY,
+                NAMESPACE.OWNER_USER_ID,
+                NAMESPACE.CREATION_TIMESTAMP,
+                NAMESPACE.DESCRIPTION,
+                NAMESPACE.IS_STD_NMSP,
+                NAMESPACE.LAST_UPDATE_TIMESTAMP,
+                NAMESPACE.PREFIX)
+                .values(namespace.getUri(), ULong.valueOf(userId), ULong.valueOf(userId),
+                        ULong.valueOf(userId), timestamp, namespace.getDescription(), (byte) 0, timestamp,
+                        namespace.getPrefix()).execute();
     }
 
     @Transactional
@@ -91,14 +89,14 @@ public class NamespaceService {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
-        int res = dslContext.update(Tables.NAMESPACE)
-                .set(Tables.NAMESPACE.URI, namespace.getUri())
-                .set(Tables.NAMESPACE.PREFIX, namespace.getPrefix())
-                .set(Tables.NAMESPACE.DESCRIPTION, namespace.getDescription())
-                .set(Tables.NAMESPACE.LAST_UPDATED_BY, userId)
-                .set(Tables.NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(Tables.NAMESPACE.OWNER_USER_ID.eq(userId),
-                        Tables.NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
+        int res = dslContext.update(NAMESPACE)
+                .set(NAMESPACE.URI, namespace.getUri())
+                .set(NAMESPACE.PREFIX, namespace.getPrefix())
+                .set(NAMESPACE.DESCRIPTION, namespace.getDescription())
+                .set(NAMESPACE.LAST_UPDATED_BY, userId)
+                .set(NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(NAMESPACE.OWNER_USER_ID.eq(userId),
+                        NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
 
         if (res != 1) {
             throw new AccessDeniedException("Access is denied");
