@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.NAMESPACE;
 
 @Service
@@ -70,14 +71,17 @@ public class NamespaceService {
         return namespace;
     }
 
-    public BigInteger getNamespaceIdByUri(String uri) {
-        return dslContext.select(NAMESPACE.NAMESPACE_ID).from(NAMESPACE)
-                .where(NAMESPACE.URI.eq(uri))
-                .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
-    }
-
     @Transactional
     public BigInteger create(User user, Namespace namespace) {
+        String uri = namespace.getUri();
+        boolean isExist = dslContext.selectCount()
+                .from(NAMESPACE)
+                .where(NAMESPACE.URI.eq(uri))
+                .fetchOneInto(Integer.class) > 0;
+        if (isExist) {
+            throw new IllegalArgumentException("Namespace '" + uri + "' exists.");
+        }
+
         AppUser requester = sessionService.getAppUser(user);
         BigInteger userId = requester.getAppUserId();
         LocalDateTime timestamp = LocalDateTime.now();
@@ -101,6 +105,18 @@ public class NamespaceService {
 
     @Transactional
     public void update(User user, Namespace namespace) {
+        String uri = namespace.getUri();
+        boolean isExist = dslContext.selectCount()
+                .from(NAMESPACE)
+                .where(and(
+                        NAMESPACE.URI.eq(uri),
+                        NAMESPACE.NAMESPACE_ID.notEqual(ULong.valueOf(namespace.getNamespaceId()))
+                ))
+                .fetchOneInto(Integer.class) > 0;
+        if (isExist) {
+            throw new IllegalArgumentException("Namespace '" + uri + "' exists.");
+        }
+
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
