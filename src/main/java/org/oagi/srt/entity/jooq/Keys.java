@@ -324,6 +324,7 @@ public class Keys {
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = ForeignKeys0.ASBIEP_CREATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = ForeignKeys0.ASBIEP_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK;
+    public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_REF_TOP_LEVEL_ABIE_ID_FK = ForeignKeys0.ASBIEP_REF_TOP_LEVEL_ABIE_ID_FK;
     public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = ForeignKeys0.ASCC_SEQ_KEY_ID_FK;
     public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = ForeignKeys0.ASCC_FROM_ACC_ID_FK;
     public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = ForeignKeys0.ASCC_TO_ASCCP_ID_FK;
@@ -706,6 +707,7 @@ public class Keys {
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_created_by_fk", new TableField[] { Asbiep.ASBIEP.CREATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_last_updated_by_fk", new TableField[] { Asbiep.ASBIEP.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, Asbiep.ASBIEP, "asbiep_owner_top_level_abie_id_fk", new TableField[] { Asbiep.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID }, true);
+        public static final ForeignKey<AsbiepRecord, TopLevelAbieRecord> ASBIEP_REF_TOP_LEVEL_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ABIE_PRIMARY, Asbiep.ASBIEP, "asbiep_ref_top_level_abie_id_fk", new TableField[] { Asbiep.ASBIEP.REF_TOP_LEVEL_ABIE_ID }, true);
         public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, Ascc.ASCC, "ascc_seq_key_id_fk", new TableField[] { Ascc.ASCC.SEQ_KEY_ID }, true);
         public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Ascc.ASCC, "ascc_from_acc_id_fk", new TableField[] { Ascc.ASCC.FROM_ACC_ID }, true);
         public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, Ascc.ASCC, "ascc_to_asccp_id_fk", new TableField[] { Ascc.ASCC.TO_ASCCP_ID }, true);

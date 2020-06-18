@@ -1052,6 +1052,8 @@ ALTER TABLE `bbie` DROP FOREIGN KEY `bbie_based_bcc_id_fk`,
 -- ASBIEP
 ALTER TABLE `asbiep` ADD COLUMN `based_asccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.' AFTER `guid`,
                      ADD CONSTRAINT `asbiep_based_asccp_manifest_id_fk` FOREIGN KEY (`based_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
+                     ADD COLUMN `ref_top_level_abie_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A foreign key of the reference TOP_LEVEL_ABIE to re-use a profiled BIE.' AFTER `owner_top_level_abie_id`,
+                     ADD CONSTRAINT `asbiep_ref_top_level_abie_id_fk` FOREIGN KEY (`ref_top_level_abie_id`) REFERENCES `top_level_abie` (`top_level_abie_id`),
                      ADD COLUMN `hash_path` varchar(64) NOT NULL COMMENT 'hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.' AFTER `based_asccp_manifest_id`,
                      ADD KEY `asbiep_hash_path_k` (`hash_path`);
 
