@@ -10,6 +10,7 @@ public class UpsertAsbiepRequest extends RepositoryRequest {
 
     private final BigInteger topLevelAbieId;
     private final AsbiepNode.Asbiep asbiep;
+    private BigInteger refTopLevelAbieId;
 
     public UpsertAsbiepRequest(User user, LocalDateTime localDateTime,
                                BigInteger topLevelAbieId, AsbiepNode.Asbiep asbiep) {
@@ -24,5 +25,13 @@ public class UpsertAsbiepRequest extends RepositoryRequest {
 
     public AsbiepNode.Asbiep getAsbiep() {
         return asbiep;
+    }
+
+    public BigInteger getRefTopLevelAbieId() {
+        return refTopLevelAbieId;
+    }
+
+    public void setRefTopLevelAbieId(BigInteger refTopLevelAbieId) {
+        this.refTopLevelAbieId = refTopLevelAbieId;
     }
 }

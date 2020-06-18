@@ -5,6 +5,7 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -221,6 +222,14 @@ public class BieEditController {
         return service.getBieUsedList(user, topLevelAbieId);
     }
 
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/ref_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, BieEditRef> getRefAbieList(@AuthenticationPrincipal User user,
+                                                  @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
+        return service.getBieRefList(user, topLevelAbieId);
+    }
+
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal User user,
@@ -267,5 +276,18 @@ public class BieEditController {
                                                              @RequestBody BieEditAsbiepNode extensionNode) {
         CreateExtensionResponse response = service.createGlobalAbieExtension(user, extensionNode);
         return response;
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/override",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void overrideBIE(@AuthenticationPrincipal User user,
+                            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                            @PathVariable("manifestId") BigInteger manifestId,
+                            @RequestBody OverrideBIERequest overrideBIERequest) {
+
+        overrideBIERequest.setTopLevelAbieId(topLevelAbieId);
+        overrideBIERequest.setAsccpManifestId(manifestId);
+        service.overrideBIE(user, overrideBIERequest);
     }
 }

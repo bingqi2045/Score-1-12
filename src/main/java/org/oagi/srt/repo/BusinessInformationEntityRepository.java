@@ -425,9 +425,32 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setExcludes(List<String> excludes) {
-            if (!excludes.isEmpty()) {
-                conditions.add(ASCCP.PROPERTY_TERM.notIn(excludes));
+        public SelectBieListArguments setBusinessContext(String businessContext) {
+            if (!StringUtils.isEmpty(businessContext)) {
+                conditions.addAll(contains(businessContext, BIZ_CTX.NAME));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setAccManifestId(BigInteger accManifestId) {
+            if (accManifestId != null && accManifestId.longValue() > 0L) {
+                conditions.add(ABIE.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setExcludePropertyTerms(List<String> excludePropertyTerms) {
+            if (!excludePropertyTerms.isEmpty()) {
+                conditions.add(ASCCP.PROPERTY_TERM.notIn(excludePropertyTerms));
+            }
+            return this;
+        }
+
+        public SelectBieListArguments setExcludeTopLevelAbieIds(List<BigInteger> excludeTopLevelAbieIds) {
+            if (!excludeTopLevelAbieIds.isEmpty()) {
+                conditions.add(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.notIn(
+                        excludeTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                ));
             }
             return this;
         }

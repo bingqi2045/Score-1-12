@@ -34,9 +34,11 @@ public class BieListController {
     public PageResponse<BieList> getBieList(@AuthenticationPrincipal User user,
                                             @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
                                             @RequestParam(name = "businessContext", required = false) String businessContext,
+                                            @RequestParam(name = "accManifestId", required = false) BigInteger accManifestId,
                                             @RequestParam(name = "access", required = false) String access,
                                             @RequestParam(name = "states", required = false) String states,
-                                            @RequestParam(name = "excludes", required = false) String excludes,
+                                            @RequestParam(name = "excludePropertyTerms", required = false) String excludePropertyTerms,
+                                            @RequestParam(name = "excludeTopLevelAbieIds", required = false) String excludeTopLevelAbieIds,
                                             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
                                             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -51,12 +53,15 @@ public class BieListController {
 
         request.setPropertyTerm(propertyTerm);
         request.setBusinessContext(businessContext);
+        request.setAccManifestId(accManifestId);
         request.setAccess(!StringUtils.isEmpty(access) ? AccessPrivilege.valueOf(access) : null);
         request.setStates(!StringUtils.isEmpty(states) ?
                 Arrays.asList(states.split(",")).stream()
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
-        request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
-                Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setExcludePropertyTerms(StringUtils.isEmpty(excludePropertyTerms) ? Collections.emptyList() :
+                Arrays.asList(excludePropertyTerms.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+        request.setExcludeTopLevelAbieIds(StringUtils.isEmpty(excludeTopLevelAbieIds) ? Collections.emptyList() :
+                Arrays.asList(excludeTopLevelAbieIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :

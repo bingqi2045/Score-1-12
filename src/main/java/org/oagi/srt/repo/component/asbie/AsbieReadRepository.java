@@ -98,7 +98,7 @@ public class AsbieReadRepository {
         return asbie;
     }
     public List<BieEditUsed> getUsedAsbieList(BigInteger topLevelAbieId) {
-        return dslContext.select(ASBIEP.HASH_PATH, ASBIE.IS_USED, inline("asbiep").as("type"))
+        return dslContext.select(ASBIEP.HASH_PATH, ASBIE.IS_USED, inline("ASBIEP").as("type"))
                 .from(ASBIE)
                 .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .where(and(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),

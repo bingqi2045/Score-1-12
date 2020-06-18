@@ -27,6 +27,7 @@ public class AsbiepNode {
         private String hashPath;
         private String roleOfAbieHashPath;
         private BigInteger basedAsccpManifestId;
+        private BigInteger refTopLevelAbieId;
 
         private BigInteger asbiepId;
         private String guid;

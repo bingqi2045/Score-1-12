@@ -115,7 +115,7 @@ public class BbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedBbieList(BigInteger topLevelAbieId) {
-        return dslContext.select(BBIEP.HASH_PATH, BBIE.IS_USED, inline("bbiep").as("type"))
+        return dslContext.select(BBIEP.HASH_PATH, BBIE.IS_USED, inline("BBIEP").as("type"))
                 .from(BBIE)
                 .join(BBIEP).on(BBIE.TO_BBIEP_ID.eq(BBIEP.BBIEP_ID))
                 .where(and(BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),

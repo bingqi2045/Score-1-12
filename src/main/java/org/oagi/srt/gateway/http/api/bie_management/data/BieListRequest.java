@@ -15,8 +15,10 @@ public class BieListRequest {
 
     private String propertyTerm;
     private String businessContext;
+    private BigInteger accManifestId;
     private AccessPrivilege access;
-    private List<String> excludes = Collections.emptyList();
+    private List<String> excludePropertyTerms = Collections.emptyList();
+    private List<BigInteger> excludeTopLevelAbieIds = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();

@@ -10,6 +10,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditNodeDetail;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -60,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -362,10 +364,16 @@ public class BieEditService {
     }
 
     public Map<String, BieEditUsed> getBieUsedList(User user, BigInteger topLevelAbieId) {
-        List<BieEditUsed> usedList = asbieReadRepository.getUsedAsbieList(topLevelAbieId);
+        List<BieEditUsed> usedList = new ArrayList();
+        usedList.addAll(asbieReadRepository.getUsedAsbieList(topLevelAbieId));
         usedList.addAll(bbieReadRepository.getUsedBbieList(topLevelAbieId));
         usedList.addAll(bbieScReadRepository.getUsedBbieScList(topLevelAbieId));
-        return usedList.stream().collect(Collectors.toMap(BieEditUsed::getHashPath, bieEditUsed -> bieEditUsed));
+        return usedList.stream().collect(Collectors.toMap(BieEditUsed::getHashPath, Function.identity()));
+    }
+
+    public Map<String, BieEditRef> getBieRefList(User user, BigInteger topLevelAbieId) {
+        return asbiepReadRepository.getBieRefList(topLevelAbieId)
+                .stream().collect(Collectors.toMap(BieEditRef::getHashPath, Function.identity()));
     }
 
     // begins supporting dynamic primitive type lists
@@ -413,4 +421,17 @@ public class BieEditService {
     }
 
     // ends supporting dynamic primitive type lists
+
+    @Transactional
+    public void overrideBIE(User user, OverrideBIERequest request) {
+
+        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiep(
+                request.getOverrideTopLevelAbieId(),
+                request.getHashPath());
+
+        UpsertAsbiepRequest upsertAsbiepRequest =
+                new UpsertAsbiepRequest(user, LocalDateTime.now(), request.getTopLevelAbieId(), asbiep);
+        upsertAsbiepRequest.setRefTopLevelAbieId(request.getOverrideTopLevelAbieId());
+        asbiepWriteRepository.upsertAsbiep(upsertAsbiepRequest);
+    }
 }
