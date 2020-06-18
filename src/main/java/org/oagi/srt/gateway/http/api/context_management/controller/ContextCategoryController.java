@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -53,13 +54,13 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContextCategory getContextCategory(@PathVariable("id") long id) {
+    public ContextCategory getContextCategory(@PathVariable("id") BigInteger id) {
         return service.getContextCategory(id);
     }
 
     @RequestMapping(value = "/context_schemes_from_ctg/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") long id) {
+    public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") BigInteger id) {
         return service.getContextSchemeByCategoryId(id);
     }
 
@@ -74,7 +75,7 @@ public class ContextCategoryController {
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
             @AuthenticationPrincipal User requester,
-            @PathVariable("id") long id,
+            @PathVariable("id") BigInteger id,
             @RequestBody ContextCategory contextCategory) {
         contextCategory.setCtxCategoryId(id);
         service.update(requester, contextCategory);
@@ -83,7 +84,7 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @PathVariable("id") long id) {
+            @PathVariable("id") BigInteger id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

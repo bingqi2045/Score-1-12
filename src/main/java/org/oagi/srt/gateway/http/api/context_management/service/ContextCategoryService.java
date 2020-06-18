@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class ContextCategoryService {
                 .fetchInto(ContextCategory.class);
 
         List<ContextCategory> contextCategories = result.getResult();
-        Map<Long, Boolean> usedMap = repository.used(
+        Map<BigInteger, Boolean> usedMap = repository.used(
                 contextCategories.stream().map(e -> e.getCtxCategoryId()
                 ).collect(Collectors.toList()));
         contextCategories.forEach(e -> {
@@ -69,7 +70,7 @@ public class ContextCategoryService {
         return response;
     }
 
-    public ContextCategory getContextCategory(long ctxCategoryId) {
+    public ContextCategory getContextCategory(BigInteger ctxCategoryId) {
         ContextCategoryListRequest request = new ContextCategoryListRequest();
         request.setContextCategoryIds(Arrays.asList(ctxCategoryId));
         List<ContextCategory> contextCategories = getContextCategoryList(request).getList();
@@ -84,7 +85,7 @@ public class ContextCategoryService {
                 .fetchInto(SimpleContextCategory.class);
     }
 
-    public List<ContextScheme> getContextSchemeByCategoryId(long ctxCategoryId) {
+    public List<ContextScheme> getContextSchemeByCategoryId(BigInteger ctxCategoryId) {
         return dslContext.select(
                 CTX_SCHEME.CTX_SCHEME_ID,
                 CTX_SCHEME.GUID,
@@ -121,8 +122,7 @@ public class ContextCategoryService {
         ULong userId = ULong.valueOf(sessionService.userId(requester));
         LocalDateTime timestamp = LocalDateTime.now();
 
-        repository.updateContextCategory()
-                .setContextCategoryId(contextCategory.getCtxCategoryId())
+        repository.updateContextCategory(contextCategory.getCtxCategoryId())
                 .setName(contextCategory.getName())
                 .setDescription(contextCategory.getDescription())
                 .setUserId(userId)
@@ -131,14 +131,14 @@ public class ContextCategoryService {
     }
 
     @Transactional
-    public void delete(long ctxCategoryId) {
+    public void delete(BigInteger ctxCategoryId) {
         dslContext.deleteFrom(CTX_CATEGORY)
                 .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(ctxCategoryId)))
                 .execute();
     }
 
     @Transactional
-    public void delete(List<Long> ctxCategoryIds) {
+    public void delete(List<BigInteger> ctxCategoryIds) {
         if (ctxCategoryIds == null || ctxCategoryIds.isEmpty()) {
             return;
         }

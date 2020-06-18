@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -192,7 +193,7 @@ public class ContextCategoryRepository {
                 .join(APP_USER).on(CTX_CATEGORY.LAST_UPDATED_BY.eq(APP_USER.APP_USER_ID));
     }
 
-    public Map<Long, Boolean> used(List<Long> contextCategoryIds) {
+    public Map<BigInteger, Boolean> used(List<BigInteger> contextCategoryIds) {
         if (contextCategoryIds == null || contextCategoryIds.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -203,7 +204,7 @@ public class ContextCategoryRepository {
                 .where(CTX_SCHEME.CTX_CATEGORY_ID.in(
                         contextCategoryIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
                 .groupBy(CTX_SCHEME.CTX_CATEGORY_ID)
-                .fetch().stream().collect(Collectors.toMap(e -> e.value1().longValue(), e -> e.value2() > 0));
+                .fetch().stream().collect(Collectors.toMap(e -> e.value1().toBigInteger(), e -> e.value2() > 0));
     }
 
     public class InsertContextCategoryArguments {
@@ -270,17 +271,12 @@ public class ContextCategoryRepository {
     public class UpdateContextCategoryArguments {
         private CtxCategoryRecord record;
 
-        public UpdateContextCategoryArguments() {
+        public UpdateContextCategoryArguments(BigInteger ctxCategoryId) {
+            if (ctxCategoryId == null || ctxCategoryId.longValue() <= 0L) {
+                throw new IllegalArgumentException("Context Category ID must be set to update.");
+            }
             this.record = new CtxCategoryRecord();
-        }
-
-        public UpdateContextCategoryArguments setContextCategoryId(ULong ctxCategoryId) {
-            this.record.setCtxCategoryId(ctxCategoryId);
-            return this;
-        }
-
-        public UpdateContextCategoryArguments setContextCategoryId(long ctxCategoryId) {
-            return this.setContextCategoryId(ULong.valueOf(ctxCategoryId));
+            this.record.setCtxCategoryId(ULong.valueOf(ctxCategoryId));
         }
 
         public UpdateContextCategoryArguments setName(String name) {
@@ -324,7 +320,7 @@ public class ContextCategoryRepository {
         }
     }
 
-    public UpdateContextCategoryArguments updateContextCategory() {
-        return new UpdateContextCategoryArguments();
+    public UpdateContextCategoryArguments updateContextCategory(BigInteger ctxCategoryId) {
+        return new UpdateContextCategoryArguments(ctxCategoryId);
     }
 }
