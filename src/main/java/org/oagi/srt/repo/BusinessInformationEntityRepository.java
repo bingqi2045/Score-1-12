@@ -678,7 +678,10 @@ public class BusinessInformationEntityRepository {
                         ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
                         ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
                 ))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .where(and(
+                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                ))
                 .fetchOptionalInto(BigInteger.class).orElse(null);
     }
 
