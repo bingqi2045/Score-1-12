@@ -426,8 +426,15 @@ public class BieEditService {
     public void overrideBIE(User user, OverrideBIERequest request) {
         LocalDateTime timestamp = LocalDateTime.now();
 
+        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiep(
+                request.getTopLevelAbieId(), request.getAsbiepHashPath());
+        if (asbiep.getRefTopLevelAbieId() != null &&
+                asbiep.getRefTopLevelAbieId().equals(request.getOverrideTopLevelAbieId())) {
+            return;
+        }
+
         AbieNode.Abie abie = abieReadRepository.getAbieByTopLevelAbieId(request.getOverrideTopLevelAbieId());
-        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiepByTopLevelAbieId(
+        asbiep = asbiepReadRepository.getAsbiepByTopLevelAbieId(
                 request.getOverrideTopLevelAbieId());
         asbiep.setHashPath(request.getAsbiepHashPath());
         asbiep.setRoleOfAbieHashPath(abie.getHashPath());
