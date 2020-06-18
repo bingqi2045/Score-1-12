@@ -13,6 +13,7 @@ import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.ABIE;
+import static org.oagi.srt.entity.jooq.Tables.TOP_LEVEL_ABIE;
 
 @Repository
 public class AbieReadRepository {
@@ -79,5 +80,17 @@ public class AbieReadRepository {
         }
 
         return abie;
+    }
+
+    public AbieNode.Abie getAbieByTopLevelAbieId(BigInteger topLevelAbieId) {
+        String abieHashPath = dslContext.select(ABIE.HASH_PATH)
+                .from(ABIE)
+                .join(TOP_LEVEL_ABIE).on(and(
+                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
+                        ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
+                ))
+                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .fetchOneInto(String.class);
+        return getAbie(topLevelAbieId, abieHashPath);
     }
 }

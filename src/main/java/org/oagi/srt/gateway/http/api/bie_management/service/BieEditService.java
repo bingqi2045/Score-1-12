@@ -426,17 +426,11 @@ public class BieEditService {
     public void overrideBIE(User user, OverrideBIERequest request) {
         LocalDateTime timestamp = LocalDateTime.now();
 
-        AbieNode.Abie abie = abieReadRepository.getAbie(request.getTopLevelAbieId(), request.getAbieHashPath());
-        if (abie.getAbieId() == null) {
-            abie.setBasedAccManifestId(request.getAccManifestId());
-        }
-        UpsertAbieRequest upsertAbieRequest = new UpsertAbieRequest(user, timestamp, request.getTopLevelAbieId(), abie);
-        abieWriteRepository.upsertAbie(upsertAbieRequest);
-
+        AbieNode.Abie abie = abieReadRepository.getAbieByTopLevelAbieId(request.getOverrideTopLevelAbieId());
         AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiepByTopLevelAbieId(
                 request.getOverrideTopLevelAbieId());
         asbiep.setHashPath(request.getAsbiepHashPath());
-        asbiep.setRoleOfAbieHashPath(request.getAbieHashPath());
+        asbiep.setRoleOfAbieHashPath(abie.getHashPath());
 
         UpsertAsbiepRequest upsertAsbiepRequest =
                 new UpsertAsbiepRequest(user, timestamp, request.getTopLevelAbieId(), asbiep);
