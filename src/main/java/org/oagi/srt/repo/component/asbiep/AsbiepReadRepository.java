@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,16 +129,29 @@ public class AsbiepReadRepository {
             return Collections.emptyList();
         }
 
-        List<BieEditRef> bieEditRefList = dslContext.select(ASBIEP.HASH_PATH, ASBIEP.REF_TOP_LEVEL_ABIE_ID)
-                .from(ASBIEP)
-                .where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .fetchInto(BieEditRef.class);
+        List<BieEditRef> bieEditRefList = new ArrayList();
+        List<BieEditRef> refTopLevelAbieIdList = getRefTopLevelAbieIdList(topLevelAbieId);
+        bieEditRefList.addAll(refTopLevelAbieIdList);
+
         if (!bieEditRefList.isEmpty()) {
-            bieEditRefList.stream().map(e -> e.getRefTopLevelAbieId()).distinct().forEach(refTopLevelAbieId -> {
+            refTopLevelAbieIdList.stream().map(e -> e.getRefTopLevelAbieId()).distinct().forEach(refTopLevelAbieId -> {
                 bieEditRefList.addAll(getBieRefList(refTopLevelAbieId));
             });
         }
         return bieEditRefList;
+    }
+
+    private List<BieEditRef> getRefTopLevelAbieIdList(BigInteger topLevelAbieId) {
+        return dslContext.select(
+                ASBIEP.HASH_PATH,
+                ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.as("top_level_abie_id"),
+                ASBIEP.REF_TOP_LEVEL_ABIE_ID)
+                .from(ASBIEP)
+                .where(and(
+                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIEP.REF_TOP_LEVEL_ABIE_ID.isNotNull()
+                ))
+                .fetchInto(BieEditRef.class);
     }
 
 }

@@ -102,7 +102,7 @@ public class BusinessInformationEntityRepository {
         TopLevelAbieRecord record = new TopLevelAbieRecord();
         record.setOwnerUserId(arguments.getUserId());
         record.setReleaseId(arguments.getReleaseId());
-        record.setState(arguments.getBieState().getValue());
+        record.setState(arguments.getBieState().name());
         record.setLastUpdatedBy(arguments.getUserId());
         record.setLastUpdateTimestamp(arguments.getTimestamp());
 
@@ -456,7 +456,7 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setStates(List<BieState> states) {
             if (!states.isEmpty()) {
-                conditions.add(ABIE.STATE.in(states.stream().map(e -> e.getValue()).collect(Collectors.toList())));
+                conditions.add(ABIE.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
             }
             return this;
         }
@@ -498,7 +498,7 @@ public class BusinessInformationEntityRepository {
                     case CanEdit:
                         conditions.add(
                                 and(
-                                        ABIE.STATE.notEqual(Initiating.getValue()),
+                                        TOP_LEVEL_ABIE.STATE.notEqual(Initiating.name()),
                                         TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
                                 )
                         );
@@ -507,9 +507,9 @@ public class BusinessInformationEntityRepository {
                     case CanView:
                         conditions.add(
                                 or(
-                                        ABIE.STATE.in(QA.getValue(), Production.getValue()),
+                                        TOP_LEVEL_ABIE.STATE.in(QA.name(), Production.name()),
                                         and(
-                                                ABIE.STATE.notEqual(Initiating.getValue()),
+                                                TOP_LEVEL_ABIE.STATE.notEqual(Initiating.name()),
                                                 TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
                                         )
                                 )
@@ -605,7 +605,7 @@ public class BusinessInformationEntityRepository {
     private SelectOnConditionStep<Record11<
             ULong, String, String, String,
             ULong, String, String, String,
-            LocalDateTime, String, Integer>> getSelectOnConditionStep() {
+            LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
                 ABIE.GUID,
@@ -617,7 +617,7 @@ public class BusinessInformationEntityRepository {
                 ABIE.STATUS,
                 TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
-                ABIE.STATE.as("raw_state"))
+                TOP_LEVEL_ABIE.STATE)
                 .from(TOP_LEVEL_ABIE)
                 .join(ABIE).on(and(
                         TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID),
@@ -639,12 +639,12 @@ public class BusinessInformationEntityRepository {
         SelectOnConditionStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                LocalDateTime, String, Integer>> step = getSelectOnConditionStep();
+                LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
         SelectConnectByStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                LocalDateTime, String, Integer>> conditionStep = step.where(arguments.getConditions());
+                LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
@@ -652,7 +652,7 @@ public class BusinessInformationEntityRepository {
         SelectWithTiesAfterOffsetStep<Record11<
                 ULong, String, String, String,
                 ULong, String, String, String,
-                LocalDateTime, String, Integer>> offsetStep = null;
+                LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
                 offsetStep = conditionStep.orderBy(sortField)

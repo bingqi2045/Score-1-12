@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.oagi.srt.data.BieState;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditNode;
 
 import java.math.BigInteger;
@@ -15,7 +16,7 @@ public class BieEditAbieNode extends BieEditNode {
     private BigInteger asccpManifestId;
     private BigInteger accManifestId;
     private BigInteger ownerUserId;
-    private Object topLevelAbieState;
+    private BieState topLevelAbieState;
     private String access;
 
 }

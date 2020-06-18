@@ -74,7 +74,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         this.user = user;
         this.topLevelAbie = topLevelAbie;
 
-        this.state = BieState.valueOf(topLevelAbie.getState());
+        this.state = topLevelAbie.getState();
         this.forceBieUpdate = true;
         switch (this.state) {
             case WIP:

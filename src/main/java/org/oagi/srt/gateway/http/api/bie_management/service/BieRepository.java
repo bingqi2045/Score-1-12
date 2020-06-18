@@ -686,13 +686,8 @@ public class BieRepository {
 
     public void updateState(BigInteger topLevelAbieId, BieState state) {
         dslContext.update(TOP_LEVEL_ABIE)
-                .set(TOP_LEVEL_ABIE.STATE, state.getValue())
+                .set(TOP_LEVEL_ABIE.STATE, state.name())
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .execute();
-
-        dslContext.update(ABIE)
-                .set(ABIE.STATE, state.getValue())
-                .where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
     }
 

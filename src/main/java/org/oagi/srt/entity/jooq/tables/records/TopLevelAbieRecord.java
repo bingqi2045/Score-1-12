@@ -21,9 +21,9 @@ import org.oagi.srt.entity.jooq.tables.TopLevelAbie;
  * to be retrieved all at once speeding up the profile BOD transactions.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> implements Record7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, Integer> {
+public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> implements Record7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String> {
 
-    private static final long serialVersionUID = -1207106447;
+    private static final long serialVersionUID = 1477381681;
 
     /**
      * Setter for <code>oagi.top_level_abie.top_level_abie_id</code>. A internal, primary database key of an ACC.
@@ -112,15 +112,15 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     /**
      * Setter for <code>oagi.top_level_abie.state</code>.
      */
-    public void setState(Integer value) {
+    public void setState(String value) {
         set(6, value);
     }
 
     /**
      * Getter for <code>oagi.top_level_abie.state</code>.
      */
-    public Integer getState() {
-        return (Integer) get(6);
+    public String getState() {
+        return (String) get(6);
     }
 
     // -------------------------------------------------------------------------
@@ -137,12 +137,12 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, Integer> fieldsRow() {
+    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, Integer> valuesRow() {
+    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -177,7 +177,7 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     }
 
     @Override
-    public Field<Integer> field7() {
+    public Field<String> field7() {
         return TopLevelAbie.TOP_LEVEL_ABIE.STATE;
     }
 
@@ -212,7 +212,7 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     }
 
     @Override
-    public Integer component7() {
+    public String component7() {
         return getState();
     }
 
@@ -247,7 +247,7 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     }
 
     @Override
-    public Integer value7() {
+    public String value7() {
         return getState();
     }
 
@@ -288,13 +288,13 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     }
 
     @Override
-    public TopLevelAbieRecord value7(Integer value) {
+    public TopLevelAbieRecord value7(String value) {
         setState(value);
         return this;
     }
 
     @Override
-    public TopLevelAbieRecord values(ULong value1, ULong value2, ULong value3, LocalDateTime value4, ULong value5, ULong value6, Integer value7) {
+    public TopLevelAbieRecord values(ULong value1, ULong value2, ULong value3, LocalDateTime value4, ULong value5, ULong value6, String value7) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -319,7 +319,7 @@ public class TopLevelAbieRecord extends UpdatableRecordImpl<TopLevelAbieRecord> 
     /**
      * Create a detached, initialised TopLevelAbieRecord
      */
-    public TopLevelAbieRecord(ULong topLevelAbieId, ULong abieId, ULong ownerUserId, LocalDateTime lastUpdateTimestamp, ULong lastUpdatedBy, ULong releaseId, Integer state) {
+    public TopLevelAbieRecord(ULong topLevelAbieId, ULong abieId, ULong ownerUserId, LocalDateTime lastUpdateTimestamp, ULong lastUpdatedBy, ULong releaseId, String state) {
         super(TopLevelAbie.TOP_LEVEL_ABIE);
 
         set(0, topLevelAbieId);

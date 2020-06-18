@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.types.ULong;
+import org.oagi.srt.data.ACC;
 import org.oagi.srt.data.*;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
@@ -263,7 +264,7 @@ public class CcListService {
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
                     item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
-                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE).intValue()));
+                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
                     item.setSeqKey(e.get(ASBIE.SEQ_KEY).intValue());
@@ -308,7 +309,7 @@ public class CcListService {
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
                     item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
-                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE).intValue()));
+                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(BCCP.PROPERTY_TERM));
                     item.setSeqKey(e.get(BBIE.SEQ_KEY).intValue());

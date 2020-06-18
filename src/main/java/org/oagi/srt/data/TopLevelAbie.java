@@ -12,7 +12,7 @@ public class TopLevelAbie {
     private BigInteger abieId = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;
     private BigInteger releaseId = BigInteger.ZERO;
-    private int state;
+    private BieState state;
     private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date lastUpdateTimestamp;
 

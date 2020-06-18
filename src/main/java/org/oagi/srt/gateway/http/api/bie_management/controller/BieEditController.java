@@ -48,8 +48,8 @@ public class BieEditController {
     public BieEditNode getRootNode(@AuthenticationPrincipal User user,
                                    @PathVariable("id") BigInteger topLevelAbieId) {
         BieEditAbieNode rootNode = service.getRootNode(user, topLevelAbieId);
-        BieState state = BieState.valueOf((Integer) rootNode.getTopLevelAbieState());
-        rootNode.setTopLevelAbieState(state.toString());
+        BieState state = rootNode.getTopLevelAbieState();
+        rootNode.setTopLevelAbieState(state);
 
         BigInteger userId = sessionService.userId(user);
         AccessPrivilege accessPrivilege = Prohibited;
@@ -225,8 +225,8 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/{topLevelAbieId}/ref_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, BieEditRef> getRefAbieList(@AuthenticationPrincipal User user,
-                                                  @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
+    public List<BieEditRef> getRefAbieList(@AuthenticationPrincipal User user,
+                                           @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
         return service.getBieRefList(user, topLevelAbieId);
     }
 

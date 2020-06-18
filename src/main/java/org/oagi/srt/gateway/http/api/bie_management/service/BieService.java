@@ -80,9 +80,10 @@ public class BieService {
             throw new IllegalArgumentException();
         }
 
+        String asccpPath = "ASCCP-" + asccpManifest.getAsccpManifestId();
         String accPath =  "ACC-" + asccpManifest.getRoleOfAccManifestId();
-        String asccpPath = String.join(">",
-                Arrays.asList(accPath, "ASCCP-" + asccpManifest.getAsccpManifestId()));;
+        accPath = String.join(">",
+                Arrays.asList(asccpPath, accPath));
 
         BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
@@ -153,9 +154,8 @@ public class BieService {
                     .fetchInto(BusinessContext.class).getResult());
 
             bieList.setAccess(
-                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), BieState.valueOf(bieList.getRawState()))
+                    AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), bieList.getState())
             );
-            bieList.setState(BieState.valueOf(bieList.getRawState()));
         });
 
         PageResponse<BieList> response = new PageResponse();
@@ -202,7 +202,7 @@ public class BieService {
     }
 
     private void ensureProperDeleteBieRequest(User requester, List<BigInteger> topLevelAbieIds) {
-        Result<Record2<Integer, ULong>> result =
+        Result<Record2<String, ULong>> result =
                 dslContext.select(TOP_LEVEL_ABIE.STATE, TOP_LEVEL_ABIE.OWNER_USER_ID)
                         .from(TOP_LEVEL_ABIE)
                         .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(
@@ -211,7 +211,7 @@ public class BieService {
                         .fetch();
 
         BigInteger requesterUserId = sessionService.userId(requester);
-        for (Record2<Integer, ULong> record : result) {
+        for (Record2<String, ULong> record : result) {
             BieState bieState = BieState.valueOf(record.value1());
             if (bieState == BieState.Production) {
                 throw new DataAccessForbiddenException("Not allowed to delete the BIE in '" + bieState + "' state.");

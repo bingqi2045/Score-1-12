@@ -371,9 +371,8 @@ public class BieEditService {
         return usedList.stream().collect(Collectors.toMap(BieEditUsed::getHashPath, Function.identity()));
     }
 
-    public Map<String, BieEditRef> getBieRefList(User user, BigInteger topLevelAbieId) {
-        return asbiepReadRepository.getBieRefList(topLevelAbieId)
-                .stream().collect(Collectors.toMap(BieEditRef::getHashPath, Function.identity()));
+    public List<BieEditRef> getBieRefList(User user, BigInteger topLevelAbieId) {
+        return asbiepReadRepository.getBieRefList(topLevelAbieId);
     }
 
     // begins supporting dynamic primitive type lists

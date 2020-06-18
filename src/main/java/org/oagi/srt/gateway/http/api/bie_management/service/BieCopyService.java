@@ -526,7 +526,6 @@ public class BieCopyService implements InitializingBean {
                     .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                     .set(ABIE.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
-                    .set(ABIE.STATE, BieState.Initiating.getValue())
                     .set(ABIE.CLIENT_ID, (abie.getClientId() != null) ? ULong.valueOf(abie.getClientId()) : null)
                     .set(ABIE.VERSION, abie.getVersion())
                     .set(ABIE.STATUS, abie.getStatus())

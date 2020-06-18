@@ -1105,6 +1105,14 @@ ALTER TABLE `bbie_sc` DROP FOREIGN KEY `bbie_sc_dt_sc_id_fk`,
                       DROP COLUMN `dt_sc_id`;
 
 
+-- `top_level_abie`
+ALTER TABLE `top_level_abie` MODIFY COLUMN `state` varchar(20) DEFAULT NULL;
+UPDATE `top_level_abie` SET `state` = 'Initiating' where `state` = '1';
+UPDATE `top_level_abie` SET `state` = 'WIP' where `state` = '2';
+UPDATE `top_level_abie` SET `state` = 'QA' where `state` = '3';
+UPDATE `top_level_abie` SET `state` = 'Production' where `state` = '4';
+
+
 -- Making relations between `xbt` and `release` tables.
 CREATE TABLE `xbt_manifest` (
     `xbt_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

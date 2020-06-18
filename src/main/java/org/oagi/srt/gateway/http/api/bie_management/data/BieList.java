@@ -25,7 +25,6 @@ public class BieList {
     private String status;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;
-    private int rawState;
     private BieState state;
 
 }

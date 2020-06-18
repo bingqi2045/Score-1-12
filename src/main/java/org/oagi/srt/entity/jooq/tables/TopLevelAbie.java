@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
 
-    private static final long serialVersionUID = 1757716997;
+    private static final long serialVersionUID = -1820938369;
 
     /**
      * The reference instance of <code>oagi.top_level_abie</code>
@@ -83,7 +83,7 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
     /**
      * The column <code>oagi.top_level_abie.state</code>.
      */
-    public final TableField<TopLevelAbieRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<TopLevelAbieRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "");
 
     /**
      * Create a <code>oagi.top_level_abie</code> table reference
@@ -190,7 +190,7 @@ public class TopLevelAbie extends TableImpl<TopLevelAbieRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, Integer> fieldsRow() {
+    public Row7<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 }

@@ -1675,7 +1675,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         @Override
         public String getStateCode() {
             if (topLevelAbie != null) {
-                return BieState.valueOf(topLevelAbie.getState()).toString();
+                return topLevelAbie.getState().name();
             }
             return null;
         }
