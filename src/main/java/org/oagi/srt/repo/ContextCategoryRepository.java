@@ -270,13 +270,14 @@ public class ContextCategoryRepository {
 
     public class UpdateContextCategoryArguments {
         private CtxCategoryRecord record;
+        private ULong ctxCategoryId;
 
         public UpdateContextCategoryArguments(BigInteger ctxCategoryId) {
             if (ctxCategoryId == null || ctxCategoryId.longValue() <= 0L) {
                 throw new IllegalArgumentException("Context Category ID must be set to update.");
             }
             this.record = new CtxCategoryRecord();
-            this.record.setCtxCategoryId(ULong.valueOf(ctxCategoryId));
+            this.ctxCategoryId = ULong.valueOf(ctxCategoryId);
         }
 
         public UpdateContextCategoryArguments setName(String name) {
@@ -316,6 +317,7 @@ public class ContextCategoryRepository {
         public int execute() {
             return dslContext.update(CTX_CATEGORY)
                     .set(this.record)
+                    .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ctxCategoryId))
                     .execute();
         }
     }
