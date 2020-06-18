@@ -107,8 +107,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 inline("abie").as("type"),
                 inline(true).as("used"))
                 .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
-                .join(ASBIEP).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ABIE).on(and(
+                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID),
+                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                ))
+                .join(ASBIEP).on(and(
+                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
+                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                ))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
