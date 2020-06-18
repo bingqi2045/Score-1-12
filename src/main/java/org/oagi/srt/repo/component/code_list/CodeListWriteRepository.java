@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
 import static org.oagi.srt.entity.jooq.tables.CodeList.CODE_LIST;
 import static org.oagi.srt.entity.jooq.tables.CodeListManifest.CODE_LIST_MANIFEST;
@@ -392,5 +393,134 @@ public class CodeListWriteRepository {
         codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new DeleteCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+    }
+
+    public ReviseCodeListRepositoryResponse reviseCodeList(ReviseCodeListRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getCodeListManifestId())))
+                .fetchOne();
+
+        CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(
+                        codeListManifestRecord.getCodeListId()))
+                .fetchOne();
+
+        if (user.isDeveloper()) {
+            if (!CcState.Published.equals(CcState.valueOf(prevCodeListRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Published' state can be revised.");
+            }
+        } else {
+            if (!CcState.Production.equals(CcState.valueOf(prevCodeListRecord.getState()))) {
+                throw new IllegalArgumentException("Only the core component in 'Production' state can be revised.");
+            }
+        }
+
+        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
+                .from(RELEASE)
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchOneInto(ULong.class);
+
+        ULong targetReleaseId = codeListManifestRecord.getReleaseId();
+        if (user.isDeveloper()) {
+            if (!targetReleaseId.equals(workingReleaseId)) {
+                throw new IllegalArgumentException("It only allows to revise the component in 'Working' branch for developers.");
+            }
+        } else {
+            if (targetReleaseId.equals(workingReleaseId)) {
+                throw new IllegalArgumentException("It only allows to revise the component in non-'Working' branch for end-users.");
+            }
+        }
+
+        boolean ownerIsDeveloper = dslContext.select(APP_USER.IS_DEVELOPER)
+                .from(APP_USER)
+                .where(APP_USER.APP_USER_ID.eq(prevCodeListRecord.getOwnerUserId()))
+                .fetchOneInto(Boolean.class);
+
+        if (user.isDeveloper() != ownerIsDeveloper) {
+            throw new IllegalArgumentException("It only allows to revise the component for users in the same roles.");
+        }
+
+        CodeListRecord nextCodeListRecord = prevCodeListRecord.copy();
+        nextCodeListRecord.setState(CcState.WIP.name());
+        nextCodeListRecord.setCreatedBy(userId);
+        nextCodeListRecord.setLastUpdatedBy(userId);
+        nextCodeListRecord.setOwnerUserId(userId);
+        nextCodeListRecord.setCreationTimestamp(timestamp);
+        nextCodeListRecord.setLastUpdateTimestamp(timestamp);
+        nextCodeListRecord.setPrevCodeListId(prevCodeListRecord.getCodeListId());
+        nextCodeListRecord.setCodeListId(
+                dslContext.insertInto(CODE_LIST)
+                        .set(nextCodeListRecord)
+                        .returning(CODE_LIST.CODE_LIST_ID).fetchOne().getCodeListId()
+        );
+
+        prevCodeListRecord.setNextCodeListId(nextCodeListRecord.getCodeListId());
+        prevCodeListRecord.update(CODE_LIST.NEXT_CODE_LIST_ID);
+
+        createNewCodeListValueForRevisedRecord(user, codeListManifestRecord, nextCodeListRecord, targetReleaseId, timestamp);
+
+        // creates new revision for revised record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        nextCodeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Revised,
+                        userId, timestamp);
+
+        ULong responseCodeListManifestId;
+        codeListManifestRecord.setCodeListId(nextCodeListRecord.getCodeListId());
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.REVISION_ID);
+
+        responseCodeListManifestId = codeListManifestRecord.getCodeListManifestId();
+
+        return new ReviseCodeListRepositoryResponse(responseCodeListManifestId.toBigInteger());
+    }
+
+    private void createNewCodeListValueForRevisedRecord(
+            AppUser user,
+            CodeListManifestRecord manifestRecord,
+            CodeListRecord nextCodeListRecord,
+            ULong targetReleaseId,
+            LocalDateTime timestamp) {
+        ULong codeListManifestId = user.isDeveloper() ?
+                manifestRecord.getPrevCodeListManifestId() : manifestRecord.getCodeListManifestId();
+        for (CodeListValueManifestRecord codeListValueManifestRecord : dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                .where(and(
+                        CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(targetReleaseId),
+                        CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestId)
+                ))
+                .fetch()) {
+
+            CodeListValueRecord prevCodeListValueRecord = dslContext.selectFrom(CODE_LIST_VALUE)
+                    .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(codeListValueManifestRecord.getCodeListValueId()))
+                    .fetchOne();
+
+            CodeListValueRecord nextCodeListValueRecord = prevCodeListValueRecord.copy();
+            nextCodeListValueRecord.setCodeListId(nextCodeListRecord.getCodeListId());
+            nextCodeListValueRecord.setCreatedBy(ULong.valueOf(user.getAppUserId()));
+            nextCodeListValueRecord.setLastUpdatedBy(ULong.valueOf(user.getAppUserId()));
+            nextCodeListValueRecord.setOwnerUserId(ULong.valueOf(user.getAppUserId()));
+            nextCodeListValueRecord.setCreationTimestamp(timestamp);
+            nextCodeListValueRecord.setLastUpdateTimestamp(timestamp);
+            nextCodeListValueRecord.setPrevCodeListValueId(prevCodeListValueRecord.getCodeListValueId());
+            nextCodeListValueRecord.setCodeListValueId(
+                    dslContext.insertInto(CODE_LIST_VALUE)
+                            .set(nextCodeListRecord)
+                            .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId()
+            );
+
+            prevCodeListValueRecord.setNextCodeListValueId(nextCodeListValueRecord.getCodeListValueId());
+            prevCodeListValueRecord.update(CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID);
+
+            codeListValueManifestRecord.setCodeListValueId(nextCodeListValueRecord.getCodeListValueId());
+            codeListValueManifestRecord.setCodeListManifestId(codeListManifestId);
+            codeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
+                    CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID);
+        }
     }
 }

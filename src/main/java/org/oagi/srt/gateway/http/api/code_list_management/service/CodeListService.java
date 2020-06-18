@@ -337,6 +337,20 @@ public class CodeListService extends EventHandler {
         }
     }
 
+    @Transactional
+    public BigInteger makeNewRevision(User user, BigInteger codeListManifestId) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        ReviseCodeListRepositoryRequest reviseCodeListRepositoryRequest
+                = new ReviseCodeListRepositoryRequest(user, codeListManifestId, timestamp);
+
+        ReviseCodeListRepositoryResponse reviseCodeListRepositoryResponse =
+                codeListWriteRepository.reviseCodeList(reviseCodeListRepositoryRequest);
+
+        fireEvent(new ReviseCodeListEvent());
+
+        return reviseCodeListRepositoryResponse.getCodeListManifestId();
+    }
+
     private void updateCodeListState(User user, LocalDateTime timestamp, CodeList codeList) {
         UpdateCodeListStateRepositoryRequest request =
                 new UpdateCodeListStateRepositoryRequest(user, timestamp, codeList.getCodeListManifestId(),
