@@ -202,7 +202,6 @@ public class BusinessInformationEntityRepository {
                 .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
                 .set(ABIE.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
-                .set(ABIE.STATE, WIP.getValue())
                 .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
                 .returningResult(ABIE.ABIE_ID)
                 .fetchOne().value1();

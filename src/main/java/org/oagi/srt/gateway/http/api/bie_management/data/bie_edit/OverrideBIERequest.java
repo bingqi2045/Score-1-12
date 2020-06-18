@@ -8,7 +8,12 @@ import java.math.BigInteger;
 public class OverrideBIERequest {
 
     private BigInteger topLevelAbieId;
+
+    private BigInteger accManifestId;
+    private String abieHashPath;
+
     private BigInteger asccpManifestId;
-    private String hashPath;
+    private String asbiepHashPath;
+
     private BigInteger overrideTopLevelAbieId;
 }

@@ -424,13 +424,22 @@ public class BieEditService {
 
     @Transactional
     public void overrideBIE(User user, OverrideBIERequest request) {
+        LocalDateTime timestamp = LocalDateTime.now();
 
-        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiep(
-                request.getOverrideTopLevelAbieId(),
-                request.getHashPath());
+        AbieNode.Abie abie = abieReadRepository.getAbie(request.getTopLevelAbieId(), request.getAbieHashPath());
+        if (abie.getAbieId() == null) {
+            abie.setBasedAccManifestId(request.getAccManifestId());
+        }
+        UpsertAbieRequest upsertAbieRequest = new UpsertAbieRequest(user, timestamp, request.getTopLevelAbieId(), abie);
+        abieWriteRepository.upsertAbie(upsertAbieRequest);
+
+        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiepByTopLevelAbieId(
+                request.getOverrideTopLevelAbieId());
+        asbiep.setHashPath(request.getAsbiepHashPath());
+        asbiep.setRoleOfAbieHashPath(request.getAbieHashPath());
 
         UpsertAsbiepRequest upsertAsbiepRequest =
-                new UpsertAsbiepRequest(user, LocalDateTime.now(), request.getTopLevelAbieId(), asbiep);
+                new UpsertAsbiepRequest(user, timestamp, request.getTopLevelAbieId(), asbiep);
         upsertAsbiepRequest.setRefTopLevelAbieId(request.getOverrideTopLevelAbieId());
         asbiepWriteRepository.upsertAsbiep(upsertAsbiepRequest);
     }
