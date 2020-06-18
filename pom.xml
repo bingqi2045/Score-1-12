@@ -6,7 +6,7 @@
     <groupId>org.oagi</groupId>
     <artifactId>score-http</artifactId>
     <version>2.0.0</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>score-http</name>
     <description>Score HTTP</description>
