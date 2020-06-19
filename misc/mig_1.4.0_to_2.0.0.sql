@@ -874,16 +874,6 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- Updating `based_code_list_manifest_id`
-UPDATE `code_list_manifest`, (
-    SELECT a.`code_list_manifest_id`, `code_list`.`code_list_id`, b.`code_list_manifest_id` as `based_code_list_manifest_id`, `code_list`.`based_code_list_id`
-    FROM `code_list` JOIN `code_list_manifest` a ON `code_list`.`code_list_id` = a.`code_list_id`
-                     JOIN `code_list_manifest` b ON `code_list`.`based_code_list_id` = b.`code_list_id`
-    WHERE `code_list`.`based_code_list_id` IS NOT NULL AND a.`release_id` = b.`release_id`
-) t
-SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
-WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
-
 -- Copying code_list_manifest records for 'Working' release from 10.x release
 INSERT `code_list_manifest` (`release_id`, `module_id`, `code_list_id`, `based_code_list_manifest_id`)
 SELECT
@@ -898,10 +888,20 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Updating `based_code_list_manifest_id`
+UPDATE `code_list_manifest`, (
+    SELECT a.`code_list_manifest_id`, `code_list`.`code_list_id`, b.`code_list_manifest_id` as `based_code_list_manifest_id`, `code_list`.`based_code_list_id`
+    FROM `code_list` JOIN `code_list_manifest` a ON `code_list`.`code_list_id` = a.`code_list_id`
+                     JOIN `code_list_manifest` b ON `code_list`.`based_code_list_id` = b.`code_list_id`
+    WHERE `code_list`.`based_code_list_id` IS NOT NULL AND a.`release_id` = b.`release_id`
+) t
+SET `code_list_manifest`.`based_code_list_manifest_id` = t.`based_code_list_manifest_id`
+WHERE `code_list_manifest`.`code_list_manifest_id` = t.`code_list_manifest_id`;
 
 -- Making relations between `code_list_value` and `release` tables.
 ALTER TABLE `code_list_value`
     ADD COLUMN `guid` varchar(41) NOT NULL COMMENT 'GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.' AFTER `code_list_value_id`,
+    ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).' AFTER `extension_Indicator`,
     ADD COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.',
     ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
     ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',
@@ -990,18 +990,17 @@ DEALLOCATE PREPARE stmt;
 
 -- Copying code_list_value_manifest records for 'Working' release from 10.x release
 INSERT `code_list_value_manifest` (`release_id`, `code_list_value_id`, `code_list_manifest_id`)
-SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `code_list_value_manifest`.`code_list_value_id`, `code_list_value_manifest`.`code_list_manifest_id`
-FROM `code_list_value_manifest` JOIN `release` ON `code_list_value_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+SELECT `code_list_manifest`.`release_id`, `code_list_value`.`code_list_value_id`, `code_list_manifest`.`code_list_manifest_id`
+FROM `code_list_value`
+	JOIN `code_list` ON `code_list`.`code_list_id` = `code_list_value`.`code_list_id`
+	JOIN `code_list_manifest` ON `code_list`.`code_list_id` = `code_list_manifest`.`code_list_id`
+WHERE `code_list_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 SET @sql = CONCAT('ALTER TABLE `code_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(code_list_value_manifest_id) + 1 FROM code_list_value_manifest));
 
 PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-
 
 -- BIEs
 -- ABIE
