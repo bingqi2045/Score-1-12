@@ -86,8 +86,7 @@ public class AsbiepReadRepository {
             BigInteger refTopLevelAbieId = (asbiepRecord.getRefTopLevelAbieId() != null) ?
                     asbiepRecord.getRefTopLevelAbieId().toBigInteger() : null;
             if (refTopLevelAbieId != null) {
-                asbiepRecord = getAsbiepByRefTopLevelAbieId(refTopLevelAbieId);
-                asbiep.setLocked(true);
+                asbiep.setDerived(true);
             }
 
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
