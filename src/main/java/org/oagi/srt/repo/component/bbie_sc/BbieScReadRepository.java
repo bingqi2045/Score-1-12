@@ -12,9 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -111,11 +111,21 @@ public class BbieScReadRepository {
     }
 
     public List<BieEditUsed> getUsedBbieScList(BigInteger topLevelAbieId) {
-        return dslContext.select(BBIE_SC.HASH_PATH, BBIE_SC.IS_USED, inline("BBIE_SC").as("type"))
+        return dslContext.select(BBIE_SC.HASH_PATH)
                 .from(BBIE_SC)
-                .where(and(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
-                        BBIE_SC.IS_USED.eq((byte) 1)))
-                .fetchInto(BieEditUsed.class);
+                .where(and(
+                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.IS_USED.eq((byte) 1)
+                ))
+                .fetchStream().map(record -> {
+                    BieEditUsed bieEditUsed = new BieEditUsed();
+                    bieEditUsed.setType("BBIE_SC");
+                    bieEditUsed.setHashPath(record.get(BBIE_SC.HASH_PATH));
+                    bieEditUsed.setTopLevelAbieId(topLevelAbieId);
+                    bieEditUsed.setUsed(true);
+                    return bieEditUsed;
+                })
+                .collect(Collectors.toList());
     }
 
 }

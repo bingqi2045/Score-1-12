@@ -12,9 +12,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.inline;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -115,11 +115,24 @@ public class BbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedBbieList(BigInteger topLevelAbieId) {
-        return dslContext.select(BBIEP.HASH_PATH, BBIE.IS_USED, inline("BBIEP").as("type"))
+        return dslContext.select(BBIEP.HASH_PATH)
                 .from(BBIE)
-                .join(BBIEP).on(BBIE.TO_BBIEP_ID.eq(BBIEP.BBIEP_ID))
-                .where(and(BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
-                        BBIE.IS_USED.eq((byte) 1)))
-                .fetchInto(BieEditUsed.class);
+                .join(BBIEP).on(and(
+                        BBIE.TO_BBIEP_ID.eq(BBIEP.BBIEP_ID),
+                        BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
+                ))
+                .where(and(
+                        BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE.IS_USED.eq((byte) 1)
+                ))
+                .fetchStream().map(record -> {
+                    BieEditUsed bieEditUsed = new BieEditUsed();
+                    bieEditUsed.setType("BBIEP");
+                    bieEditUsed.setHashPath(record.get(BBIEP.HASH_PATH));
+                    bieEditUsed.setTopLevelAbieId(topLevelAbieId);
+                    bieEditUsed.setUsed(true);
+                    return bieEditUsed;
+                })
+                .collect(Collectors.toList());
     }
 }

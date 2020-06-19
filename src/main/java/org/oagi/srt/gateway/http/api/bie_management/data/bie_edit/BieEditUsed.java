@@ -8,6 +8,7 @@ import java.math.BigInteger;
 public class BieEditUsed {
 
     private String hashPath;
+    private BigInteger topLevelAbieId;
     private String type;
     private boolean isUsed;
 

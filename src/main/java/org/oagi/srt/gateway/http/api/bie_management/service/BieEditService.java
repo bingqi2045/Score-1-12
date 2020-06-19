@@ -63,7 +63,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -363,12 +362,22 @@ public class BieEditService {
         return bdtReadRepository.getBdtNode(topLevelAbieId, dtManifestId);
     }
 
-    public Map<String, BieEditUsed> getBieUsedList(User user, BigInteger topLevelAbieId) {
+    public List<BieEditUsed> getBieUsedList(User user, BigInteger topLevelAbieId) {
         List<BieEditUsed> usedList = new ArrayList();
+
+        asbiepReadRepository.getBieRefList(topLevelAbieId).stream()
+                .filter(e -> e.getRefTopLevelAbieId() != null)
+                .map(e -> e.getRefTopLevelAbieId())
+                .distinct()
+                .forEach(refTopLevelAbieId -> {
+                    usedList.addAll(getBieUsedList(user, refTopLevelAbieId));
+                });
+
         usedList.addAll(asbieReadRepository.getUsedAsbieList(topLevelAbieId));
         usedList.addAll(bbieReadRepository.getUsedBbieList(topLevelAbieId));
         usedList.addAll(bbieScReadRepository.getUsedBbieScList(topLevelAbieId));
-        return usedList.stream().collect(Collectors.toMap(BieEditUsed::getHashPath, Function.identity()));
+
+        return usedList;
     }
 
     public List<BieEditRef> getBieRefList(User user, BigInteger topLevelAbieId) {

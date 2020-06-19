@@ -217,7 +217,7 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/{topLevelAbieId}/used_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, BieEditUsed> getUsedAbieList(@AuthenticationPrincipal User user,
+    public List<BieEditUsed> getUsedAbieList(@AuthenticationPrincipal User user,
                                              @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
         return service.getBieUsedList(user, topLevelAbieId);
     }
