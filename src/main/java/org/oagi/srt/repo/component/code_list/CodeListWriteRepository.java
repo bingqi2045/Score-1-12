@@ -131,6 +131,8 @@ public class CodeListWriteRepository {
                 codeListValueRecord.setOwnerUserId(userId);
                 codeListValueRecord.setCreationTimestamp(timestamp);
                 codeListValueRecord.setLastUpdateTimestamp(timestamp);
+                codeListValueRecord.setPrevCodeListValueId(null);
+                codeListValueRecord.setNextCodeListValueId(null);
 
                 codeListValueRecord.setCodeListValueId(
                         dslContext.insertInto(CODE_LIST_VALUE)
@@ -142,6 +144,8 @@ public class CodeListWriteRepository {
                 codeListValueManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
                 codeListValueManifestRecord.setCodeListValueId(codeListValueRecord.getCodeListValueId());
                 codeListValueManifestRecord.setCodeListManifestId(codeListManifest.getCodeListManifestId());
+                codeListValueManifestRecord.setPrevCodeListValueManifestId(null);
+                codeListValueManifestRecord.setNextCodeListValueManifestId(null);
 
                 dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
                         .set(codeListValueManifestRecord)
