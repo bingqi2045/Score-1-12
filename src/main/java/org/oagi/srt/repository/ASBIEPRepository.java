@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<ASBIEP> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
+    public List<ASBIEP> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
         if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -81,12 +82,13 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
                 Tables.ASBIEP.GUID,
                 Tables.ASBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIEP.CREATION_TIMESTAMP,
-                Tables.ASBIEP.DEFINITION)
+                Tables.ASBIEP.DEFINITION,
+                Tables.ASBIEP.REF_TOP_LEVEL_ABIE_ID)
                 .from(Tables.ASBIEP)
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
                                 Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.get(0))) :
+                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
                                 Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
 

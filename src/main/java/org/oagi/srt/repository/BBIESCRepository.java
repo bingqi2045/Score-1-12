@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,12 +68,12 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
         return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAbieId), used);
     }
 
-    public List<BBIESC> findByOwnerTopLevelAbieIdsAndUsed(List<BigInteger> ownerTopLevelAbieIds, boolean used) {
+    public List<BBIESC> findByOwnerTopLevelAbieIdsAndUsed(Collection<BigInteger> ownerTopLevelAbieIds, boolean used) {
         return getSelectJoinStep()
                 .where(and(
                         (ownerTopLevelAbieIds.size() == 1) ?
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.get(0))) :
+                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
                         Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0))))

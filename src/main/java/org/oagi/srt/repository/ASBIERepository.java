@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,7 +73,7 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<ASBIE> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
+    public List<ASBIE> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
         if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -96,7 +97,7 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
                                 Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.get(0))) :
+                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
                                 Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )

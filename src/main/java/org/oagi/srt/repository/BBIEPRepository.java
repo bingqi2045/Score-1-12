@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
         return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
     }
 
-    public List<BBIEP> findByOwnerTopLevelAbieIds(List<BigInteger> ownerTopLevelAbieIds) {
+    public List<BBIEP> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
                 Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
@@ -80,7 +81,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
                                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.get(0))) :
+                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
                                 Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )

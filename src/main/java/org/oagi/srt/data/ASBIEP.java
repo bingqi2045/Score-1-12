@@ -20,4 +20,5 @@ public class ASBIEP implements BIE {
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
     private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
+    private BigInteger refTopLevelAbieId = BigInteger.ZERO;
 }
