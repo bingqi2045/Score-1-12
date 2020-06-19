@@ -267,9 +267,11 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createCodeList(User user, BigInteger releaseId) {
+    public BigInteger createCodeList(User user, CodeList codeList) {
+        LocalDateTime timestamp = LocalDateTime.now();
         CreateCodeListRepositoryRequest repositoryRequest =
-                new CreateCodeListRepositoryRequest(user, releaseId);
+                new CreateCodeListRepositoryRequest(user, timestamp, codeList.getBasedCodeListManifestId(),
+                        codeList.getReleaseId());
 
         CreateCodeListRepositoryResponse repositoryResponse =
                 codeListWriteRepository.createCodeList(repositoryRequest);

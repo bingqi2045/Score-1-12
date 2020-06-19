@@ -42,27 +42,58 @@ public class CodeListWriteRepository {
 
         CodeListRecord codeList = new CodeListRecord();
         codeList.setGuid(SrtGuid.randomGuid());
-        codeList.setName(request.getInitialName());
         codeList.setListId(SrtGuid.randomGuid());
-        String initialAgencyIdValueName;
-        if (user.isDeveloper()) {
-            initialAgencyIdValueName = "OAGi (Open Applications Group, Incorporated)";
-        } else {
-            initialAgencyIdValueName = "Mutually defined";
-        }
-        codeList.setAgencyId(dslContext.select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID)
-                .from(AGENCY_ID_LIST_VALUE)
-                .where(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName))
-                .fetchOneInto(ULong.class));
-        codeList.setVersionId("1");
-        codeList.setExtensibleIndicator((byte) 1);
-        codeList.setIsDeprecated((byte) 0);
         codeList.setState(CcState.WIP.name());
         codeList.setCreatedBy(userId);
         codeList.setLastUpdatedBy(userId);
         codeList.setOwnerUserId(userId);
         codeList.setCreationTimestamp(timestamp);
         codeList.setLastUpdateTimestamp(timestamp);
+
+        List<CodeListValueManifestRecord> basedCodeListValueManifestList = null;
+
+        if (request.getbasedCodeListManifestId() != null) {
+            CodeListManifestRecord basedCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                    .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID
+                            .eq(ULong.valueOf(request.getbasedCodeListManifestId())))
+                    .fetchOne();
+            if (basedCodeListManifestRecord == null) {
+                throw new IllegalArgumentException("Can not found Based Code List");
+            }
+
+            CodeListRecord basedCodeListRecord = dslContext.selectFrom(CODE_LIST)
+                    .where(CODE_LIST.CODE_LIST_ID
+                            .eq(basedCodeListManifestRecord.getCodeListId()))
+                    .fetchOne();
+
+            codeList.setName(basedCodeListRecord.getName());
+            codeList.setAgencyId(basedCodeListRecord.getAgencyId());
+            codeList.setVersionId(basedCodeListRecord.getVersionId());
+            codeList.setExtensibleIndicator(basedCodeListRecord.getExtensibleIndicator());
+            codeList.setIsDeprecated(basedCodeListRecord.getIsDeprecated());
+
+            basedCodeListValueManifestList =
+                    dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID
+                            .eq(basedCodeListManifestRecord.getCodeListManifestId()))
+                    .fetch();
+        } else {
+            codeList.setName(request.getInitialName());
+            String initialAgencyIdValueName;
+            if (user.isDeveloper()) {
+                initialAgencyIdValueName = "OAGi (Open Applications Group, Incorporated)";
+            } else {
+                initialAgencyIdValueName = "Mutually defined";
+            }
+            codeList.setAgencyId(dslContext.select(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID)
+                    .from(AGENCY_ID_LIST_VALUE)
+                    .where(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName))
+                    .fetchOneInto(ULong.class));
+            codeList.setVersionId("1");
+            codeList.setExtensibleIndicator((byte) 1);
+            codeList.setIsDeprecated((byte) 0);
+        }
+
         codeList.setCodeListId(
                 dslContext.insertInto(CODE_LIST)
                         .set(codeList)
@@ -83,8 +114,40 @@ public class CodeListWriteRepository {
         codeListManifest.setCodeListManifestId(
                 dslContext.insertInto(CODE_LIST_MANIFEST)
                         .set(codeListManifest)
-                        .returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).fetchOne().getCodeListManifestId()
-        );
+                        .returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).fetchOne().getCodeListManifestId());
+
+        if (basedCodeListValueManifestList != null) {
+            for (CodeListValueManifestRecord basedCodeListValueManifest : basedCodeListValueManifestList) {
+                CodeListValueRecord basedCodeListValue = dslContext.selectFrom(CODE_LIST_VALUE)
+                        .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID
+                                .eq(basedCodeListValueManifest.getCodeListValueId()))
+                        .fetchOne();
+
+                CodeListValueRecord codeListValueRecord = basedCodeListValue.copy();
+                codeListValueRecord.setCodeListId(codeList.getCodeListId());
+                codeListValueRecord.setGuid(SrtGuid.randomGuid());
+                codeListValueRecord.setCreatedBy(userId);
+                codeListValueRecord.setLastUpdatedBy(userId);
+                codeListValueRecord.setOwnerUserId(userId);
+                codeListValueRecord.setCreationTimestamp(timestamp);
+                codeListValueRecord.setLastUpdateTimestamp(timestamp);
+
+                codeListValueRecord.setCodeListValueId(
+                        dslContext.insertInto(CODE_LIST_VALUE)
+                                .set(codeListValueRecord)
+                                .returning(CODE_LIST_VALUE.CODE_LIST_VALUE_ID).fetchOne().getCodeListValueId()
+                );
+
+                CodeListValueManifestRecord codeListValueManifestRecord = basedCodeListValueManifest.copy();
+                codeListValueManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
+                codeListValueManifestRecord.setCodeListValueId(codeListValueRecord.getCodeListValueId());
+                codeListValueManifestRecord.setCodeListManifestId(codeListManifest.getCodeListManifestId());
+
+                dslContext.insertInto(CODE_LIST_VALUE_MANIFEST)
+                        .set(codeListValueManifestRecord)
+                        .execute();
+            }
+        }
 
         return new CreateCodeListRepositoryResponse(codeListManifest.getCodeListManifestId().toBigInteger());
     }

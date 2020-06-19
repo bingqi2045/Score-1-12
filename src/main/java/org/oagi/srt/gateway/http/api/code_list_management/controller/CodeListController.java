@@ -101,7 +101,7 @@ public class CodeListController {
     public CcCreateResponse create(
             @AuthenticationPrincipal User user,
             @RequestBody CodeList codeList) {
-        BigInteger manifestId = service.createCodeList(user, codeList.getReleaseId());
+        BigInteger manifestId = service.createCodeList(user, codeList);
 
         CcCreateResponse resp = new CcCreateResponse();
         resp.setManifestId(manifestId);
