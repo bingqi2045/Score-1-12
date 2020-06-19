@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import lombok.Data;
 import org.jooq.DSLContext;
+import org.jooq.InsertSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAbie;
@@ -194,6 +195,7 @@ public class BieCopyService implements InitializingBean {
                 ASBIEP.HASH_PATH,
                 ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 ASBIEP.ROLE_OF_ABIE_ID,
+                ASBIEP.REF_TOP_LEVEL_ABIE_ID,
                 ASBIEP.DEFINITION,
                 ASBIEP.REMARK,
                 ASBIEP.BIZ_TERM)
@@ -309,6 +311,7 @@ public class BieCopyService implements InitializingBean {
         private String hashPath;
         private BigInteger basedAsccpManifestId;
         private BigInteger roleOfAbieId;
+        private BigInteger refTopLevelAbieId;
         private String definition;
         private String remark;
         private String bizTerm;
@@ -537,7 +540,7 @@ public class BieCopyService implements InitializingBean {
 
         private BigInteger insertAsbiep(BieCopyAsbiep asbiep) {
 
-            return dslContext.insertInto(ASBIEP)
+            InsertSetMoreStep step = dslContext.insertInto(ASBIEP)
                     .set(ASBIEP.GUID, SrtGuid.randomGuid())
                     .set(ASBIEP.HASH_PATH, asbiep.getHashPath())
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
@@ -549,8 +552,12 @@ public class BieCopyService implements InitializingBean {
                     .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                     .set(ASBIEP.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
-                    .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()))
-                    .returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).toBigInteger();
+                    .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(copiedTopLevelAbie.getTopLevelAbieId()));
+            if (asbiep.getRefTopLevelAbieId() != null) {
+                step = step.set(ASBIEP.REF_TOP_LEVEL_ABIE_ID, ULong.valueOf(asbiep.getRefTopLevelAbieId()));
+            }
+
+            return step.returning(ASBIEP.ASBIEP_ID).fetchOne().getValue(ASBIEP.ASBIEP_ID).toBigInteger();
         }
 
         private BigInteger insertBbiep(BieCopyBbiep bbiep) {
