@@ -539,36 +539,34 @@ public class RepositoryInitializer implements InitializingBean {
             nextCodeListManifestRecord.setRevisionId(prevCodeListManifestRecord.getRevisionId());
             nextCodeListManifestRecord.update(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.REVISION_ID);
 
-//            // update prev/next code_list_value_manifest_id
-//            for (CodeListValueManifestRecord prevCodeListValueManifestRecord :
-//                    dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
-//                            .from(CODE_LIST_VALUE_MANIFEST)
-//                            .join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-//                            .where(and(
-//                                    RELEASE.RELEASE_NUM.notEqual("Working"),
-//                                    CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(prevCodeListManifestRecord.getCodeListManifestId())
-//                            ))
-//                            .fetchInto(CodeListValueManifestRecord.class)) {
-//
-//                CodeListValueManifestRecord nextCodeListValueManifestRecord = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
-//                        .where(and(
-//                                CODE_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(
-//                                        prevCodeListValueManifestRecord.getReleaseId()),
-//                                CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.equal(
-//                                        prevCodeListValueManifestRecord.getCodeListValueId()),
-//                                CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.equal(
-//                                        prevCodeListValueManifestRecord.getCodeListManifestId())
-//                        ))
-//                        .fetchOne();
-//
-//                prevCodeListValueManifestRecord.setNextCodeListValueManifestId(
-//                        nextCodeListValueManifestRecord.getCodeListValueManifestId());
-//                prevCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID);
-//
-//                nextCodeListValueManifestRecord.setPrevCodeListValueManifestId(
-//                        prevCodeListValueManifestRecord.getCodeListValueManifestId());
-//                nextCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID);
-//            }
+            // update prev/next code_list_value_manifest_id
+            for (CodeListValueManifestRecord prevCodeListValueManifestRecord :
+                    dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                            .from(CODE_LIST_VALUE_MANIFEST)
+                            .join(RELEASE).on(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(prevCodeListManifestRecord.getCodeListManifestId())
+                            ))
+                            .fetchInto(CodeListValueManifestRecord.class)) {
+
+                CodeListValueManifestRecord nextCodeListValueManifestRecord = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                        .where(and(
+                                CODE_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(
+                                        prevCodeListValueManifestRecord.getReleaseId()),
+                                CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID.equal(
+                                        prevCodeListValueManifestRecord.getCodeListValueId())
+                        ))
+                        .fetchOne();
+
+                prevCodeListValueManifestRecord.setNextCodeListValueManifestId(
+                        nextCodeListValueManifestRecord.getCodeListValueManifestId());
+                prevCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID);
+
+                nextCodeListValueManifestRecord.setPrevCodeListValueManifestId(
+                        prevCodeListValueManifestRecord.getCodeListValueManifestId());
+                nextCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID);
+            }
         }
     }
 
