@@ -85,9 +85,6 @@ public class AsbiepReadRepository {
         if (asbiepRecord != null) {
             BigInteger refTopLevelAbieId = (asbiepRecord.getRefTopLevelAbieId() != null) ?
                     asbiepRecord.getRefTopLevelAbieId().toBigInteger() : null;
-            if (refTopLevelAbieId != null) {
-                asbiep.setDerived(true);
-            }
 
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
             if (asbiepRecord.getRoleOfAbieId() != null) {
@@ -105,9 +102,8 @@ public class AsbiepReadRepository {
                         .fetchOneInto(String.class));
             }
             asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
-            if (refTopLevelAbieId != null) {
-                asbiep.setRefTopLevelAbieId(refTopLevelAbieId);
-            }
+            asbiep.setRefTopLevelAbieId(refTopLevelAbieId);
+            asbiep.setDerived(refTopLevelAbieId != null);
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
             asbiep.setBizTerm(asbiepRecord.getBizTerm());
