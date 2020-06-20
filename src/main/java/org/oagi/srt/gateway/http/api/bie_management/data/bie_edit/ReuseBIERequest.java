@@ -5,12 +5,10 @@ import lombok.Data;
 import java.math.BigInteger;
 
 @Data
-public class OverrideBIERequest {
+public class ReuseBIERequest {
 
     private BigInteger topLevelAbieId;
-
     private BigInteger asccpManifestId;
     private String asbiepHashPath;
-
-    private BigInteger overrideTopLevelAbieId;
+    private BigInteger reuseTopLevelAbieId;
 }

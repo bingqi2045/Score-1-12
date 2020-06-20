@@ -431,25 +431,51 @@ public class BieEditService {
     // ends supporting dynamic primitive type lists
 
     @Transactional
-    public void overrideBIE(User user, OverrideBIERequest request) {
-        LocalDateTime timestamp = LocalDateTime.now();
-
+    public void reuseBIE(User user, ReuseBIERequest request) {
         AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiep(
                 request.getTopLevelAbieId(), request.getAsbiepHashPath());
         if (asbiep.getRefTopLevelAbieId() != null &&
-                asbiep.getRefTopLevelAbieId().equals(request.getOverrideTopLevelAbieId())) {
+                asbiep.getRefTopLevelAbieId().equals(request.getReuseTopLevelAbieId())) {
             return;
         }
 
-        AbieNode.Abie abie = abieReadRepository.getAbieByTopLevelAbieId(request.getOverrideTopLevelAbieId());
+        AbieNode.Abie abie = abieReadRepository.getAbieByTopLevelAbieId(request.getReuseTopLevelAbieId());
         asbiep = asbiepReadRepository.getAsbiepByTopLevelAbieId(
-                request.getOverrideTopLevelAbieId());
+                request.getReuseTopLevelAbieId());
         asbiep.setHashPath(request.getAsbiepHashPath());
         asbiep.setRoleOfAbieHashPath(abie.getHashPath());
 
+        LocalDateTime timestamp = LocalDateTime.now();
         UpsertAsbiepRequest upsertAsbiepRequest =
                 new UpsertAsbiepRequest(user, timestamp, request.getTopLevelAbieId(), asbiep);
-        upsertAsbiepRequest.setRefTopLevelAbieId(request.getOverrideTopLevelAbieId());
+        upsertAsbiepRequest.setRefTopLevelAbieId(request.getReuseTopLevelAbieId());
+        upsertAsbiepRequest.setRoleOfAbieId(abie.getAbieId());
+        asbiepWriteRepository.upsertAsbiep(upsertAsbiepRequest);
+    }
+
+    @Transactional
+    public void removeReusedBIE(User user, RemoveReusedBIERequest request) {
+        AsbiepNode.Asbiep asbiep = asbiepReadRepository.getAsbiep(
+                request.getTopLevelAbieId(), request.getAsbiepHashPath());
+        if (asbiep.getRefTopLevelAbieId() == null) {
+            return;
+        }
+
+        LocalDateTime timestamp = LocalDateTime.now();
+        AbieNode.Abie abie = abieReadRepository.getAbie(request.getTopLevelAbieId(), request.getAbieHashPath());
+        if (abie.getAbieId() == null) {
+            AbieNode.Abie reusedAbie =
+                    abieReadRepository.getAbie(asbiep.getRefTopLevelAbieId(), asbiep.getRoleOfAbieHashPath());
+            abie.setBasedAccManifestId(reusedAbie.getBasedAccManifestId());
+        }
+        UpsertAbieRequest upsertAbieRequest =
+                new UpsertAbieRequest(user, timestamp, request.getTopLevelAbieId(), abie);
+        abie = abieWriteRepository.upsertAbie(upsertAbieRequest);
+
+        UpsertAsbiepRequest upsertAsbiepRequest =
+                new UpsertAsbiepRequest(user, timestamp, request.getTopLevelAbieId(), asbiep);
+        upsertAsbiepRequest.setRoleOfAbieId(abie.getAbieId());
+        upsertAsbiepRequest.setRefTopLevelAbieId(null);
         asbiepWriteRepository.upsertAsbiep(upsertAsbiepRequest);
     }
 }

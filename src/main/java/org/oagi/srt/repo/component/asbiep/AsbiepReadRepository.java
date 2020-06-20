@@ -90,13 +90,20 @@ public class AsbiepReadRepository {
             }
 
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
-            asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
-                    .from(ABIE)
-                    .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(asbiepRecord.getOwnerTopLevelAbieId()),
-                            ABIE.ABIE_ID.eq(asbiepRecord.getRoleOfAbieId())
-                    ))
-                    .fetchOneInto(String.class));
+            if (asbiepRecord.getRoleOfAbieId() != null) {
+                asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
+                        .from(ABIE)
+                        .where(ABIE.ABIE_ID.eq(asbiepRecord.getRoleOfAbieId()))
+                        .fetchOneInto(String.class));
+            } else {
+                asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
+                        .from(ABIE)
+                        .where(and(
+                                ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(asbiepRecord.getOwnerTopLevelAbieId()),
+                                ABIE.ABIE_ID.eq(asbiepRecord.getRoleOfAbieId())
+                        ))
+                        .fetchOneInto(String.class));
+            }
             asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
             if (refTopLevelAbieId != null) {
                 asbiep.setRefTopLevelAbieId(refTopLevelAbieId);

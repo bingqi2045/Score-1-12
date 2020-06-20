@@ -1,6 +1,8 @@
 package org.oagi.srt.repo.component.asbiep;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetStep;
+import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
@@ -45,13 +47,17 @@ public class AsbiepWriteRepository {
             asbiepRecord.setGuid(SrtGuid.randomGuid());
             asbiepRecord.setBasedAsccpManifestId(ULong.valueOf(asbiep.getBasedAsccpManifestId()));
             asbiepRecord.setHashPath(hashPath);
-            asbiepRecord.setRoleOfAbieId(dslContext.select(ABIE.ABIE_ID)
-                    .from(ABIE)
-                    .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq((refTopLevelAbieId != null) ? refTopLevelAbieId : topLevelAbieId),
-                            ABIE.HASH_PATH.eq(asbiep.getRoleOfAbieHashPath())
-                    ))
-                    .fetchOneInto(ULong.class));
+            if (request.getRoleOfAbieId() != null) {
+                asbiepRecord.setRoleOfAbieId(ULong.valueOf(request.getRoleOfAbieId()));
+            } else {
+                asbiepRecord.setRoleOfAbieId(dslContext.select(ABIE.ABIE_ID)
+                        .from(ABIE)
+                        .where(and(
+                                ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq((refTopLevelAbieId != null) ? refTopLevelAbieId : topLevelAbieId),
+                                ABIE.HASH_PATH.eq(asbiep.getRoleOfAbieHashPath())
+                        ))
+                        .fetchOneInto(ULong.class));
+            }
 
             asbiepRecord.setDefinition(asbiep.getDefinition());
             asbiepRecord.setRemark(asbiep.getRemark());
@@ -72,25 +78,41 @@ public class AsbiepWriteRepository {
                             .fetchOne().getAsbiepId()
             );
         } else {
-            asbiepRecord.setDefinition(asbiep.getDefinition());
-            asbiepRecord.setRemark(asbiep.getRemark());
-            asbiepRecord.setBizTerm(asbiep.getBizTerm());
-
+            UpdateSetStep updateSetStep = dslContext.update(ASBIEP);
+            if (!StringUtils.equals(asbiepRecord.getDefinition(), asbiep.getDefinition())) {
+                if (!StringUtils.isEmpty(asbiep.getDefinition())) {
+                    updateSetStep = updateSetStep.set(ASBIEP.DEFINITION, asbiep.getDefinition());
+                } else {
+                    updateSetStep = updateSetStep.setNull(ASBIEP.DEFINITION);
+                }
+            }
+            if (!StringUtils.equals(asbiepRecord.getRemark(), asbiep.getRemark())) {
+                if (!StringUtils.isEmpty(asbiep.getRemark())) {
+                    updateSetStep = updateSetStep.set(ASBIEP.REMARK, asbiep.getRemark());
+                } else {
+                    updateSetStep = updateSetStep.setNull(ASBIEP.REMARK);
+                }
+            }
+            if (!StringUtils.equals(asbiepRecord.getBizTerm(), asbiep.getBizTerm())) {
+                if (!StringUtils.isEmpty(asbiep.getBizTerm())) {
+                    updateSetStep = updateSetStep.set(ASBIEP.BIZ_TERM, asbiep.getBizTerm());
+                } else {
+                    updateSetStep = updateSetStep.setNull(ASBIEP.BIZ_TERM);
+                }
+            }
+            if (request.getRoleOfAbieId() != null) {
+                updateSetStep = updateSetStep.set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(request.getRoleOfAbieId()));
+            }
             if (request.getRefTopLevelAbieId() != null) {
-                asbiepRecord.setRefTopLevelAbieId(ULong.valueOf(request.getRefTopLevelAbieId()));
+                updateSetStep = updateSetStep.set(ASBIEP.REF_TOP_LEVEL_ABIE_ID, ULong.valueOf(request.getRefTopLevelAbieId()));
+            } else {
+                updateSetStep = updateSetStep.setNull(ASBIEP.REF_TOP_LEVEL_ABIE_ID);
             }
 
-            asbiepRecord.setLastUpdatedBy(requesterId);
-            asbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
-
-            asbiepRecord.update(
-                    ASBIEP.DEFINITION,
-                    ASBIEP.REMARK,
-                    ASBIEP.BIZ_TERM,
-                    ASBIEP.REF_TOP_LEVEL_ABIE_ID,
-                    ASBIEP.LAST_UPDATED_BY,
-                    ASBIEP.LAST_UPDATE_TIMESTAMP
-            );
+            updateSetStep.set(ASBIEP.LAST_UPDATED_BY, requesterId)
+                    .set(ASBIEP.LAST_UPDATE_TIMESTAMP, request.getLocalDateTime())
+                    .where(ASBIEP.ASBIEP_ID.eq(asbiepRecord.getAsbiepId()))
+                    .execute();
         }
 
         return readRepository.getAsbiep(request.getTopLevelAbieId(), hashPath);

@@ -278,16 +278,31 @@ public class BieEditController {
         return response;
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/override",
+    /* Reuse BIE */
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/reuse",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void overrideBIE(@AuthenticationPrincipal User user,
-                            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
-                            @PathVariable("manifestId") BigInteger manifestId,
-                            @RequestBody OverrideBIERequest overrideBIERequest) {
+    public void reuseBIE(@AuthenticationPrincipal User user,
+                         @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                         @PathVariable("manifestId") BigInteger manifestId,
+                         @RequestBody ReuseBIERequest reuseBIERequest) {
 
-        overrideBIERequest.setTopLevelAbieId(topLevelAbieId);
-        overrideBIERequest.setAsccpManifestId(manifestId);
-        service.overrideBIE(user, overrideBIERequest);
+        reuseBIERequest.setTopLevelAbieId(topLevelAbieId);
+        reuseBIERequest.setAsccpManifestId(manifestId);
+        service.reuseBIE(user, reuseBIERequest);
+    }
+
+    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/remove_reuse",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void reuseBIE(@AuthenticationPrincipal User user,
+                         @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                         @PathVariable("manifestId") BigInteger manifestId,
+                         @RequestBody RemoveReusedBIERequest removeReusedBIERequest) {
+
+        removeReusedBIERequest.setTopLevelAbieId(topLevelAbieId);
+        removeReusedBIERequest.setAsccpManifestId(manifestId);
+        service.removeReusedBIE(user, removeReusedBIERequest);
     }
 }
