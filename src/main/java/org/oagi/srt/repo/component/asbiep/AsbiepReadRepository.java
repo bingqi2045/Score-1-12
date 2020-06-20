@@ -113,7 +113,10 @@ public class AsbiepReadRepository {
     public AsbiepNode.Asbiep getAsbiepByTopLevelAbieId(BigInteger topLevelAbieId) {
         String asbiepHashPath = dslContext.select(ASBIEP.HASH_PATH)
                 .from(ASBIEP)
-                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(ABIE).on(and(
+                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
+                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID)
+                ))
                 .join(TOP_LEVEL_ABIE).on(and(
                         ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
                         ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
