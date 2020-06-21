@@ -353,6 +353,63 @@ public class CodeListService extends EventHandler {
         return reviseCodeListRepositoryResponse.getCodeListManifestId();
     }
 
+    public CodeList getCodeListRevision(User user, BigInteger manifestId) {
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
+                .fetchOne();
+        if (codeListManifestRecord == null) {
+            throw new IllegalArgumentException("Unknown CodeList: " + manifestId);
+        }
+
+        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
+                .fetchOne();
+
+        ULong lastPublishedCodeListId = codeListRecord.getPrevCodeListId();
+        if (lastPublishedCodeListId == null) {
+            // rev = 1 return null
+            return null;
+        }
+        CodeList codeList = dslContext.select(
+                CODE_LIST.NAME.as("code_list_name"),
+                CODE_LIST.AGENCY_ID,
+                AGENCY_ID_LIST_VALUE.NAME.as("agency_id_name"),
+                CODE_LIST.VERSION_ID,
+                CODE_LIST.GUID,
+                CODE_LIST.LIST_ID,
+                CODE_LIST.DEFINITION,
+                CODE_LIST.DEFINITION_SOURCE,
+                CODE_LIST.REMARK,
+                CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
+                APP_USER.as("owner").APP_USER_ID.as("owner_id"),
+                CODE_LIST.STATE,
+                CODE_LIST.IS_DEPRECATED.as("deprecated"))
+                .from(CODE_LIST)
+                .join(APP_USER.as("owner")).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
+                .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .where(CODE_LIST.CODE_LIST_ID.eq(lastPublishedCodeListId))
+                .fetchOptionalInto(CodeList.class).orElse(null);
+
+        if (codeList == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        List<CodeListValue> codeListValues = dslContext.select(
+                CODE_LIST_VALUE.VALUE,
+                CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.DEFINITION,
+                CODE_LIST_VALUE.DEFINITION_SOURCE,
+                CODE_LIST_VALUE.USED_INDICATOR.as("used"),
+                CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
+                CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
+                .from(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(lastPublishedCodeListId))
+                .fetchInto(CodeListValue.class);
+        codeList.setCodeListValues(codeListValues);
+
+        return codeList;
+    }
+
     private void updateCodeListState(User user, LocalDateTime timestamp, CodeList codeList) {
         UpdateCodeListStateRepositoryRequest request =
                 new UpdateCodeListStateRepositoryRequest(user, timestamp, codeList.getCodeListManifestId(),

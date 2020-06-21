@@ -127,6 +127,13 @@ public class CodeListController {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(value = "/code_list/{manifestId}/revision", method = RequestMethod.GET)
+    public CodeList getCodeListRevision(
+            @PathVariable("manifestId") BigInteger manifestId,
+            @AuthenticationPrincipal User user) {
+        return service.getCodeListRevision(user, manifestId);
+    }
+
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal User user,
