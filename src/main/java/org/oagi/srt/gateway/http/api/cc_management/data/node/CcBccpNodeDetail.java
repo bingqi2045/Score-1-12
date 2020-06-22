@@ -66,6 +66,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
     @Data
     public static class Bdt {
         private BigInteger bdtId = BigInteger.ZERO;
+        private BigInteger manifestId;
         private String guid;
         private String dataTypeTerm;
         private String qualifier;

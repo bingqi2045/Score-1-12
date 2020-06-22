@@ -612,6 +612,7 @@ public class CcNodeRepository {
 
         CcBccpNodeDetail.Bdt bdt = dslContext.select(
                 DT.DT_ID.as("bdt_id"),
+                DT_MANIFEST.DT_MANIFEST_ID.as("manifest_id"),
                 DT.GUID,
                 DT.DATA_TYPE_TERM,
                 DT.QUALIFIER,
