@@ -12,10 +12,12 @@ public class AssignComponents {
     private Map<BigInteger, AssignableNode> assignableAccManifestMap = new HashMap();
     private Map<BigInteger, AssignableNode> assignableAsccpManifestMap = new HashMap();
     private Map<BigInteger, AssignableNode> assignableBccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> assignableCodeListManifestMap = new HashMap();
 
     private Map<BigInteger, AssignableNode> unassignableAccManifestMap = new HashMap();
     private Map<BigInteger, AssignableNode> unassignableAsccpManifestMap = new HashMap();
     private Map<BigInteger, AssignableNode> unassignableBccpManifestMap = new HashMap();
+    private Map<BigInteger, AssignableNode> unassignableCodeListManifestMap = new HashMap();
 
     public void addAssignableAccManifest(BigInteger accManifestId, AssignableNode node) {
         assignableAccManifestMap.put(accManifestId, node);
@@ -29,6 +31,10 @@ public class AssignComponents {
         assignableBccpManifestMap.put(bccpManifestId, node);
     }
 
+    public void addAssignableCodeListManifest(BigInteger codeListManifestId, AssignableNode node) {
+        assignableBccpManifestMap.put(codeListManifestId, node);
+    }
+
     public void addUnassignableAccManifest(BigInteger accManifestId, AssignableNode node) {
         unassignableAccManifestMap.put(accManifestId, node);
     }
@@ -39,5 +45,9 @@ public class AssignComponents {
 
     public void addUnassignableBccpManifest(BigInteger bccpManifestId, AssignableNode node) {
         unassignableBccpManifestMap.put(bccpManifestId, node);
+    }
+
+    public void addUnassignableCodeListManifest(BigInteger codeListManifestId, AssignableNode node) {
+        unassignableCodeListManifestMap.put(codeListManifestId, node);
     }
 }

@@ -14,11 +14,13 @@ public class ReleaseValidationResponse {
     private Map<BigInteger, Set<String>> statusMapForAcc = new HashMap();
     private Map<BigInteger, Set<String>> statusMapForAsccp = new HashMap();
     private Map<BigInteger, Set<String>> statusMapForBccp = new HashMap();
+    private Map<BigInteger, Set<String>> statusMapForCodeList = new HashMap();
 
     public boolean isSucceed() {
         return statusMapForAcc.isEmpty() &&
                 statusMapForAsccp.isEmpty() &&
-                statusMapForBccp.isEmpty();
+                statusMapForBccp.isEmpty() &&
+                statusMapForCodeList.isEmpty();
     }
 
     public void addMessageForAcc(BigInteger manifestId, String message) {
@@ -31,6 +33,10 @@ public class ReleaseValidationResponse {
 
     public void addMessageForBccp(BigInteger manifestId, String message) {
         addMessage(statusMapForBccp, manifestId, message);
+    }
+
+    public void addMessageForCodeList(BigInteger manifestId, String message) {
+        addMessage(statusMapForCodeList, manifestId, message);
     }
 
     private void addMessage(Map<BigInteger, Set<String>> statusMap, BigInteger manifestId, String message) {

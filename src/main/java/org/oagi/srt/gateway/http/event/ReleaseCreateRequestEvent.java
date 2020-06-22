@@ -20,5 +20,6 @@ public class ReleaseCreateRequestEvent implements Event {
     private List<BigInteger> accManifestIds = Collections.emptyList();
     private List<BigInteger> asccpManifestIds = Collections.emptyList();
     private List<BigInteger> bccpManifestIds = Collections.emptyList();
+    private List<BigInteger> codeListManifestIds = Collections.emptyList();
 
 }

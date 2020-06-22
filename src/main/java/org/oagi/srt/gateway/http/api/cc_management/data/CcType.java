@@ -8,5 +8,6 @@ public enum CcType {
     BCC,
     BDT,
     BDT_SC,
-    XBT
+    XBT,
+    CODE_LIST,
 }

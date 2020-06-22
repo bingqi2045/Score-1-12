@@ -331,6 +331,7 @@ public class ReleaseService implements InitializingBean {
         validator.setAssignedAccComponentManifestIds(request.getAssignedAccComponentManifestIds());
         validator.setAssignedAsccpComponentManifestIds(request.getAssignedAsccpComponentManifestIds());
         validator.setAssignedBccpComponentManifestIds(request.getAssignedBccpComponentManifestIds());
+        validator.setAssignedCodeListComponentManifestIds(request.getAssignedBccpComponentManifestIds());
         return validator.validate();
     }
 
@@ -358,7 +359,8 @@ public class ReleaseService implements InitializingBean {
                     releaseId,
                     request.getAssignedAccComponentManifestIds(),
                     request.getAssignedAsccpComponentManifestIds(),
-                    request.getAssignedBccpComponentManifestIds());
+                    request.getAssignedBccpComponentManifestIds(),
+                    request.getAssignedCodeListComponentManifestIds());
 
             /*
              * Message Publishing
@@ -388,7 +390,8 @@ public class ReleaseService implements InitializingBean {
                     Arrays.asList(CcState.ReleaseDraft),
                     releaseCreateRequestEvent.getAccManifestIds(),
                     releaseCreateRequestEvent.getAsccpManifestIds(),
-                    releaseCreateRequestEvent.getBccpManifestIds()
+                    releaseCreateRequestEvent.getBccpManifestIds(),
+                    releaseCreateRequestEvent.getCodeListManifestIds()
             );
             repository.updateState(releaseCreateRequestEvent.getUserId(),
                     releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);

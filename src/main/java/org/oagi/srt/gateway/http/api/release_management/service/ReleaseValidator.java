@@ -23,6 +23,7 @@ public class ReleaseValidator {
     private List<BigInteger> assignedAccComponentManifestIds = Collections.emptyList();
     private List<BigInteger> assignedAsccpComponentManifestIds = Collections.emptyList();
     private List<BigInteger> assignedBccpComponentManifestIds = Collections.emptyList();
+    private List<BigInteger> assignedCodeListComponentManifestIds = Collections.emptyList();
 
     private List<AccManifestRecord> accManifestRecords;
     private Map<ULong, AccManifestRecord> accManifestRecordMap;
@@ -47,6 +48,11 @@ public class ReleaseValidator {
     private List<BccpRecord> bccpRecords;
     private Map<ULong, BccpRecord> bccpRecordMap;
 
+    private List<CodeListManifestRecord> codeListManifestRecords;
+    private Map<ULong, CodeListManifestRecord> codeListManifestRecordMap;
+    private List<CodeListRecord> codeListRecords;
+    private Map<ULong, CodeListRecord> codeListRecordMap;
+
     public ReleaseValidator(DSLContext dslContext) {
         this.dslContext = dslContext;
     }
@@ -63,6 +69,10 @@ public class ReleaseValidator {
         this.assignedBccpComponentManifestIds = assignedBccpComponentManifestIds;
     }
 
+    public void setAssignedCodeListComponentManifestIds(List<BigInteger> assignedCodeListComponentManifestIds) {
+        this.assignedCodeListComponentManifestIds = assignedCodeListComponentManifestIds;
+    }
+
     public ReleaseValidationResponse validate() {
         loadManifests();
 
@@ -71,6 +81,7 @@ public class ReleaseValidator {
         validateAcc(response);
         validateAsccp(response);
         validateBccp(response);
+        validateCodeList(response);
 
         return response;
     }
@@ -151,6 +162,22 @@ public class ReleaseValidator {
                 .where(RELEASE.RELEASE_NUM.eq("Working"))
                 .fetchInto(BccpRecord.class);
         bccpRecordMap = bccpRecords.stream().collect(Collectors.toMap(BccpRecord::getBccpId, Function.identity()));
+
+        codeListManifestRecords = dslContext.select(CODE_LIST_MANIFEST.fields())
+                .from(CODE_LIST_MANIFEST)
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchInto(CodeListManifestRecord.class);
+        codeListManifestRecordMap = codeListManifestRecords.stream()
+                .collect(Collectors.toMap(CodeListManifestRecord::getCodeListManifestId, Function.identity()));
+
+        codeListRecords = dslContext.select(CODE_LIST.fields())
+                .from(CODE_LIST)
+                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchInto(CodeListRecord.class);
+        codeListRecordMap = codeListRecords.stream().collect(Collectors.toMap(CodeListRecord::getCodeListId, Function.identity()));
     }
 
     private void validateAcc(ReleaseValidationResponse response) {
@@ -300,5 +327,8 @@ public class ReleaseValidator {
                         }
                     });
         }
+    }
+
+    private void validateCodeList(ReleaseValidationResponse response) {
     }
 }

@@ -11,6 +11,7 @@ import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcNodeService;
+import org.oagi.srt.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.SrtRepository;
@@ -42,6 +43,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
     @Autowired
     private CcNodeService ccNodeService;
+
+    @Autowired
+    private CodeListService codeListService;
 
     @Override
     public List<Release> findAll() {
@@ -185,6 +189,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 releaseId, Arrays.asList(CcState.Published),
                 Collections.emptyList(),
                 Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()
         );
     }
@@ -194,7 +199,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             List<CcState> states,
             List<BigInteger> accManifestIds,
             List<BigInteger> asccpManifestIds,
-            List<BigInteger> bccpManifestIds) {
+            List<BigInteger> bccpManifestIds,
+            List<BigInteger> codeListManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -226,6 +232,10 @@ public class ReleaseRepository implements SrtRepository<Release> {
                     states, accManifestIds);
             copyBccManifests(releaseRecord, bccManifestRecords,
                     prevNextAccManifestIdMap, prevNextBccpManifestIdMap);
+
+            List<CodeListManifestRecord> codeListManifestRecords = getCodeListManifestRecordsInWorking(
+                    states, codeListManifestIds);
+            copyCodeListManifests(releaseRecord, codeListManifestRecords);
 
         } catch (Exception e) {
             releaseRecord.setReleaseNote(e.getMessage());
@@ -320,6 +330,23 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .fetchInto(BccpManifestRecord.class);
     }
 
+    private List<CodeListManifestRecord> getCodeListManifestRecordsInWorking(List<CcState> states,
+                                                                     List<BigInteger> codeListManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(CODE_LIST.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+        if (codeListManifestIds != null && codeListManifestIds.size() > 0) {
+            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds));
+        }
+
+        return dslContext.select(CODE_LIST_MANIFEST.fields())
+                .from(CODE_LIST_MANIFEST)
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .where(conditions)
+                .fetchInto(CodeListManifestRecord.class);
+    }
+
     private Map<ULong, ULong> copyAccManifests(ReleaseRecord releaseRecord,
                                                List<AccManifestRecord> accManifestRecords) {
         Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap();
@@ -394,6 +421,26 @@ public class ReleaseRepository implements SrtRepository<Release> {
         });
 
         return prevNextBccpManifestIdMap;
+    }
+
+    private Map<ULong, ULong> copyCodeListManifests(ReleaseRecord releaseRecord,
+                                                List<CodeListManifestRecord> codeListManifestRecords) {
+        Map<ULong, ULong> prevNextCodeListManifestIdMap = new HashMap();
+        codeListManifestRecords.forEach(e -> {
+            ULong prevCodeListManifestId = e.getCodeListManifestId();
+
+            e.setCodeListManifestId(null);
+            e.setReleaseId(releaseRecord.getReleaseId());
+            e.setCodeListManifestId(
+                    dslContext.insertInto(CODE_LIST_MANIFEST)
+                            .set(e).returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                            .fetchOne().getCodeListManifestId()
+            );
+
+            prevNextCodeListManifestIdMap.put(prevCodeListManifestId, e.getCodeListManifestId());
+        });
+
+        return prevNextCodeListManifestIdMap;
     }
 
     private Map<ULong, ULong> copyAsccManifests(ReleaseRecord releaseRecord,
@@ -696,6 +743,46 @@ public class ReleaseRepository implements SrtRepository<Release> {
             }
         });
 
+        // CODE_LISTs
+        map = dslContext.select(
+                CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, CODE_LIST.NAME, RELEASE.RELEASE_NUM,
+                CODE_LIST.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, CODE_LIST.STATE,
+                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                .from(CODE_LIST_MANIFEST)
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .join(APP_USER).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(REVISION).on(CODE_LIST_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .where(and(
+                        or(
+                                RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                                RELEASE.RELEASE_NUM.eq("Working")
+                        ),
+                        CODE_LIST.STATE.notEqual(Published.name())
+                ))
+                .fetchStream()
+                .collect(groupingBy(e -> e.value1()));
+
+        map.values().forEach(e -> {
+            AssignableNode node = new AssignableNode();
+            node.setManifestId(e.get(0).value1().toBigInteger());
+            node.setDen(e.get(0).value2());
+            node.setTimestamp(e.get(0).value4());
+            node.setOwnerUserId(e.get(0).value5());
+            node.setState(CcState.valueOf(e.get(0).value6()));
+            node.setRevision(e.get(0).value7().toBigInteger());
+            node.setType(CcType.CODE_LIST);
+            if (e.size() == 2) { // manifest are located at both sides.
+                assignComponents.addUnassignableCodeListManifest(
+                        node.getManifestId(), node);
+            }
+            // manifest is only located at 'Working' release side.
+            else if (e.size() == 1 && "Working".equals(e.get(0).value3())) {
+                assignComponents.addAssignableCodeListManifest(
+                        node.getManifestId(), node);
+            }
+        });
+
         return assignComponents;
     }
 
@@ -768,8 +855,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 for (BigInteger bccpManifestId : validationRequest.getAssignedBccpComponentManifestIds()) {
                     ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
                 }
+                for (BigInteger codeListManifestId : validationRequest.getAssignedCodeListComponentManifestIds()) {
+                    codeListService.updateCodeListState(user, timestamp, codeListManifestId, toCcState);
+                }
             } else if (toCcState == Candidate) {
-                updateCCStates(user, fromCcState, toCcState);
+                updateCCStates(user, fromCcState, toCcState, timestamp);
 
                 dslContext.deleteFrom(BCC_MANIFEST)
                         .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
@@ -786,14 +876,17 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 dslContext.deleteFrom(ACC_MANIFEST)
                         .where(ACC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
+                dslContext.deleteFrom(CODE_LIST_MANIFEST)
+                        .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
 
             } else if (toCcState == CcState.Published) {
-                updateCCStates(user, fromCcState, toCcState);
+                updateCCStates(user, fromCcState, toCcState, timestamp);
             }
         }
     }
 
-    private void updateCCStates(User user, CcState fromCcState, CcState toCcState) {
+    private void updateCCStates(User user, CcState fromCcState, CcState toCcState, LocalDateTime timestamp) {
         for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
@@ -826,6 +919,17 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 ))
                 .fetchInto(BigInteger.class)) {
             ccNodeService.updateBccpState(user, bccpManifestId, fromCcState, toCcState);
+        }
+        for (BigInteger codeListManifestId : dslContext.select(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                .from(CODE_LIST_MANIFEST)
+                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        CODE_LIST.STATE.eq(fromCcState.name()),
+                        RELEASE.RELEASE_NUM.eq("Working")
+                ))
+                .fetchInto(BigInteger.class)) {
+            codeListService.updateCodeListState(user, timestamp, codeListManifestId, toCcState);
         }
     }
 
@@ -1052,6 +1156,48 @@ public class ReleaseRepository implements SrtRepository<Release> {
                     record.setNextBccpManifestId(currentRecord.getBccpManifestId());
                     record.update(BCCP_MANIFEST.CONFLICT,
                             BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
+                }
+            }
+        });
+
+        // CODE_LISTs
+        dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .fetchStream().collect(groupingBy(CodeListManifestRecord::getCodeListId))
+                .values().forEach(codeListManifestRecords -> {
+
+            CodeListManifestRecord workingRecord = null;
+            CodeListManifestRecord currentRecord = null;
+            List<CodeListManifestRecord> restOfRecords = new ArrayList();
+            for (CodeListManifestRecord codeListManifestRecord : codeListManifestRecords) {
+                if (workingReleaseId.equals(codeListManifestRecord.getReleaseId())) {
+                    workingRecord = codeListManifestRecord;
+                } else if (currentReleaseId.equals(codeListManifestRecord.getReleaseId())) {
+                    currentRecord = codeListManifestRecord;
+                } else {
+                    restOfRecords.add(codeListManifestRecord);
+                }
+
+                codeListManifestRecord.setConflict((byte) 0);
+            }
+
+            if (currentRecord == null) {
+                return;
+            }
+
+            currentRecord.setPrevCodeListManifestId(workingRecord.getPrevCodeListManifestId());
+            currentRecord.setNextCodeListManifestId(workingRecord.getCodeListManifestId());
+            currentRecord.update(CODE_LIST_MANIFEST.CONFLICT,
+                    CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID);
+
+            workingRecord.setPrevCodeListManifestId(currentRecord.getCodeListManifestId());
+            workingRecord.update(CODE_LIST_MANIFEST.CONFLICT,
+                    CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID);
+
+            for (CodeListManifestRecord record : restOfRecords) {
+                if (workingRecord.getCodeListManifestId().equals(record.getNextCodeListManifestId())) {
+                    record.setNextCodeListManifestId(currentRecord.getCodeListManifestId());
+                    record.update(CODE_LIST_MANIFEST.CONFLICT,
+                            CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID);
                 }
             }
         });

@@ -332,7 +332,7 @@ public class CodeListService extends EventHandler {
     public void update(User user, CodeList codeList) {
         LocalDateTime timestamp = LocalDateTime.now();
         if (!StringUtils.isEmpty(codeList.getState())) {
-            updateCodeListState(user, timestamp, codeList);
+            updateCodeListState(user, timestamp, codeList.getCodeListManifestId(), CcState.valueOf(codeList.getState()));
         } else {
             updateCodeListProperties(user, timestamp, codeList);
             updateCodeListValues(user, timestamp, codeList);
@@ -410,10 +410,9 @@ public class CodeListService extends EventHandler {
         return codeList;
     }
 
-    private void updateCodeListState(User user, LocalDateTime timestamp, CodeList codeList) {
+    public void updateCodeListState(User user, LocalDateTime timestamp, BigInteger codeListManifestId, CcState state) {
         UpdateCodeListStateRepositoryRequest request =
-                new UpdateCodeListStateRepositoryRequest(user, timestamp, codeList.getCodeListManifestId(),
-                        CcState.valueOf(codeList.getState()));
+                new UpdateCodeListStateRepositoryRequest(user, timestamp, codeListManifestId, state);
 
         UpdateCodeListStateRepositoryResponse response =
                 codeListWriteRepository.updateCodeListState(request);
