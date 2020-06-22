@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
 public class BusinessContextRepository {
@@ -51,7 +52,7 @@ public class BusinessContextRepository {
 
         public SelectBusinessContextArguments setName(String name) {
             if (!StringUtils.isEmpty(name)) {
-                conditions.add(BIZ_CTX.NAME.containsIgnoreCase(name.trim()));
+                conditions.addAll(contains(name, BIZ_CTX.NAME));
             }
             return this;
         }
