@@ -98,7 +98,7 @@ public class BieService {
                 .setUserId(userId)
                 .setTopLevelAbieId(topLevelAbieId)
                 .setAccManifestId(asccpManifest.getRoleOfAccManifestId())
-                .setHashPath(sha256(accPath))
+                .setPath(accPath)
                 .setTimestamp(millis)
                 .execute();
 
@@ -111,7 +111,7 @@ public class BieService {
                 .setAsccpManifestId(asccpManifest.getAsccpManifestId())
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAbieId(topLevelAbieId)
-                .setHashPath(sha256(asccpPath))
+                .setPath(asccpPath)
                 .setUserId(userId)
                 .setTimestamp(millis)
                 .execute();
@@ -122,7 +122,7 @@ public class BieService {
                 .execute();
 
         BieCreateResponse response = new BieCreateResponse();
-        response.setTopLevelAbieId(topLevelAbieId.longValue());
+        response.setTopLevelAbieId(topLevelAbieId.toBigInteger());
         return response;
     }
 

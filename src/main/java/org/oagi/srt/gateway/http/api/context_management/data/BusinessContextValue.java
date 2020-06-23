@@ -3,18 +3,19 @@ package org.oagi.srt.gateway.http.api.context_management.data;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Data
 public class BusinessContextValue implements Serializable {
 
-    private long bizCtxValueId;
+    private BigInteger bizCtxValueId;
     private String guid;
-    private long ctxCategoryId;
+    private BigInteger ctxCategoryId;
     private String ctxCategoryName;
-    private long ctxSchemeId;
+    private BigInteger ctxSchemeId;
     private String ctxSchemeName;
-    private long ctxSchemeValueId;
+    private BigInteger ctxSchemeValueId;
     private String ctxSchemeValue;
     private String ctxSchemeValueMeaning;
-    private long bizCtxId;
+    private BigInteger bizCtxId;
 }

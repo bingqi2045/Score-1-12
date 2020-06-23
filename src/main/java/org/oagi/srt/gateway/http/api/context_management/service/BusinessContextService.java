@@ -67,7 +67,7 @@ public class BusinessContextService {
         return response;
     }
 
-    public BusinessContext getBusinessContext(long bizCtxId) {
+    public BusinessContext getBusinessContext(BigInteger bizCtxId) {
         return repository.findBusinessContextByBizCtxId(bizCtxId);
     }
 
@@ -75,13 +75,13 @@ public class BusinessContextService {
         return repository.findBusinessContextValues();
     }
 
-    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(long ctxSchemeId) {
+    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(BigInteger ctxSchemeId) {
         return repository.selectContextSchemeValues()
                 .setContextSchemeId(ctxSchemeId)
                 .fetchInto(SimpleContextSchemeValue.class);
     }
 
-    public List<BusinessContextValue> getBusinessContextValuesByBusinessCtxId(long businessContextId) {
+    public List<BusinessContextValue> getBusinessContextValuesByBusinessCtxId(BigInteger businessContextId) {
         return repository.selectBusinessContextValues()
                 .setBusinessContextId(businessContextId)
                 .fetchInto(BusinessContextValue.class);
@@ -98,6 +98,7 @@ public class BusinessContextService {
                 .setUserId(userId)
                 .setTimestamp(timestamp)
                 .execute();
+        bizCtx.setBizCtxId(businessContextId.toBigInteger());
 
         for (BusinessContextValue bizCtxValue : bizCtx.getBizCtxValues()) {
             repository.insertBusinessContextValue()
@@ -123,18 +124,18 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void update(final long bizCtxId, List<BusinessContextValue> bizCtxValues) {
-        List<Long> oldBizCtxValueIds = dslContext.select(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID)
+    public void update(final BigInteger bizCtxId, List<BusinessContextValue> bizCtxValues) {
+        List<BigInteger> oldBizCtxValueIds = dslContext.select(BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID)
                 .from(BIZ_CTX_VALUE)
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
-                .fetchInto(Long.class);
+                .fetchInto(BigInteger.class);
 
-        Map<Long, BusinessContextValue> newBizCtxValues = bizCtxValues.stream()
-                .filter(e -> e.getBizCtxValueId() > 0L)
+        Map<BigInteger, BusinessContextValue> newBizCtxValues = bizCtxValues.stream()
+                .filter(e -> e.getBizCtxValueId().longValue() > 0L)
                 .collect(Collectors.toMap(BusinessContextValue::getBizCtxValueId, Function.identity()));
 
         oldBizCtxValueIds.removeAll(newBizCtxValues.keySet());
-        for (long deleteBizCtxValueId : oldBizCtxValueIds) {
+        for (BigInteger deleteBizCtxValueId : oldBizCtxValueIds) {
             delete(bizCtxId, deleteBizCtxValueId);
         }
 
@@ -143,7 +144,7 @@ public class BusinessContextService {
         }
 
         for (BusinessContextValue bizCtxValue : bizCtxValues.stream()
-                .filter(e -> e.getBizCtxValueId() == 0L)
+                .filter(e -> e.getBizCtxValueId().longValue() == 0L)
                 .collect(Collectors.toList())) {
 
             repository.insertBusinessContextValue()
@@ -154,7 +155,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void update(long bizCtxId, BusinessContextValue bizCtxValue) {
+    public void update(BigInteger bizCtxId, BusinessContextValue bizCtxValue) {
         dslContext.update(BIZ_CTX_VALUE)
                 .set(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID, ULong.valueOf(bizCtxValue.getCtxSchemeValueId()))
                 .where(and(
@@ -165,7 +166,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void delete(long bizCtxId, long bizCtxValueId) {
+    public void delete(BigInteger bizCtxId, BigInteger bizCtxValueId) {
         dslContext.deleteFrom(BIZ_CTX_VALUE)
                 .where(and(
                         BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID.eq(ULong.valueOf(bizCtxValueId)),
@@ -174,7 +175,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void assign(long bizCtxId, long topLevelAbieId) {
+    public void assign(BigInteger bizCtxId, BigInteger topLevelAbieId) {
         dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
                 .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
                 .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
@@ -182,7 +183,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void dismiss(long bizCtxId, long topLevelAbieId) {
+    public void dismiss(BigInteger bizCtxId, BigInteger topLevelAbieId) {
         dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT)
                 .where(and(
                         BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
@@ -192,7 +193,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void delete(long bizCtxId) {
+    public void delete(BigInteger bizCtxId) {
         dslContext.deleteFrom(BIZ_CTX_VALUE)
                 .where(BIZ_CTX_VALUE.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId)))
                 .execute();
@@ -202,7 +203,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void delete(List<Long> bizCtxIds) {
+    public void delete(List<BigInteger> bizCtxIds) {
         if (bizCtxIds == null || bizCtxIds.isEmpty()) {
             return;
         }

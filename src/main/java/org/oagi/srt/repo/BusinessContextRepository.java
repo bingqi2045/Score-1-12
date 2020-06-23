@@ -201,8 +201,8 @@ public class BusinessContextRepository {
                         offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
     }
 
-    public BusinessContext findBusinessContextByBizCtxId(long bizCtxId) {
-        if (bizCtxId <= 0L) {
+    public BusinessContext findBusinessContextByBizCtxId(BigInteger bizCtxId) {
+        if (bizCtxId.longValue() <= 0L) {
             return null;
         }
 
@@ -219,8 +219,8 @@ public class BusinessContextRepository {
         return bizCtx;
     }
 
-    public boolean used(long bizCtxId) {
-        if (bizCtxId <= 0L) {
+    public boolean used(BigInteger bizCtxId) {
+        if (bizCtxId.longValue() <= 0L) {
             return false;
         }
         return dslContext.selectCount()
@@ -229,7 +229,7 @@ public class BusinessContextRepository {
                 .fetchOptionalInto(Integer.class).orElse(0) > 0;
     }
 
-    public List<BusinessContext> findBusinessContextsByBizCtxIdIn(List<Long> bizCtxIds) {
+    public List<BusinessContext> findBusinessContextsByBizCtxIdIn(List<BigInteger> bizCtxIds) {
         if (bizCtxIds == null || bizCtxIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -264,8 +264,8 @@ public class BusinessContextRepository {
                 .fetchInto(BusinessContextValue.class);
     }
 
-    public List<BusinessContextValue> findBusinessContextValuesByBizCtxId(long bizCtxId) {
-        if (bizCtxId <= 0L) {
+    public List<BusinessContextValue> findBusinessContextValuesByBizCtxId(BigInteger bizCtxId) {
+        if (bizCtxId.longValue() <= 0L) {
             return Collections.emptyList();
         }
         return getSelectOnConditionStepForBusinessContextValue()
@@ -277,7 +277,7 @@ public class BusinessContextRepository {
 
         private List<Condition> conditions = new ArrayList();
 
-        public SelectContextSchemeValueArguments setContextSchemeId(long contextSchemeId) {
+        public SelectContextSchemeValueArguments setContextSchemeId(BigInteger contextSchemeId) {
             return setContextSchemeId(ULong.valueOf(contextSchemeId));
         }
 
@@ -313,7 +313,7 @@ public class BusinessContextRepository {
 
         private List<Condition> conditions = new ArrayList();
 
-        public SelectBusinessContextValueArguments setBusinessContextId(long businessContextId) {
+        public SelectBusinessContextValueArguments setBusinessContextId(BigInteger businessContextId) {
             return setBusinessContextId(ULong.valueOf(businessContextId));
         }
 
@@ -435,7 +435,7 @@ public class BusinessContextRepository {
 
         private ULong contextSchemeValueId;
 
-        public InsertBusinessContextValueArguments setBusinessContextId(long businessContextId) {
+        public InsertBusinessContextValueArguments setBusinessContextId(BigInteger businessContextId) {
             return setBusinessContextId(ULong.valueOf(businessContextId));
         }
 
@@ -444,7 +444,7 @@ public class BusinessContextRepository {
             return this;
         }
 
-        public InsertBusinessContextValueArguments setContextSchemeValueId(long contextSchemeValueId) {
+        public InsertBusinessContextValueArguments setContextSchemeValueId(BigInteger contextSchemeValueId) {
             return setContextSchemeValueId(ULong.valueOf(contextSchemeValueId));
         }
 
@@ -520,7 +520,7 @@ public class BusinessContextRepository {
             return this;
         }
 
-        public UpdateBusinessContextArguments setBusinessContextId(long businessContextId) {
+        public UpdateBusinessContextArguments setBusinessContextId(BigInteger businessContextId) {
             return setBusinessContextId(ULong.valueOf(businessContextId));
         }
 

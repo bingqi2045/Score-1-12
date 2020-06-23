@@ -63,6 +63,15 @@ public class Graph {
         return edge;
     }
 
+    public List<Node> getChildren(Node node) {
+        Edge edge = edges.get(node.getKey());
+        if (edge == null) {
+            return Collections.emptyList();
+        }
+        return edge.getTargets().stream().map(e -> getNodes().get(e))
+                .collect(Collectors.toList());
+    }
+
     public Collection<List<String>> findPaths(String from, String query) {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();

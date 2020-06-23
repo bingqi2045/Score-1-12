@@ -3,6 +3,7 @@ package org.oagi.srt.gateway.http.api.context_management.data;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Data
 public class BusinessContext implements Serializable {
 
-    private long bizCtxId;
+    private BigInteger bizCtxId;
     private String guid;
     private String name;
     private Date lastUpdateTimestamp;

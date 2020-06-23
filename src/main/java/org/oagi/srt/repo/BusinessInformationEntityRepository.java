@@ -23,6 +23,7 @@ import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.srt.data.BieState.*;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.Utility.sha256;
 import static org.oagi.srt.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository
@@ -115,7 +116,7 @@ public class BusinessInformationEntityRepository {
     public class InsertAbieArguments {
         private ULong userId;
         private ULong accManifestId;
-        private String hashPath;
+        private String path;
         private ULong topLevelAbieId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
@@ -137,12 +138,12 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public String getHashPath() {
-            return hashPath;
+        public String getPath() {
+            return path;
         }
 
-        public InsertAbieArguments setHashPath(String hashPath) {
-            this.hashPath = hashPath;
+        public InsertAbieArguments setPath(String path) {
+            this.path = path;
             return this;
         }
 
@@ -197,7 +198,8 @@ public class BusinessInformationEntityRepository {
         return dslContext.insertInto(ABIE)
                 .set(ABIE.GUID, SrtGuid.randomGuid())
                 .set(ABIE.BASED_ACC_MANIFEST_ID, arguments.getAccManifestId())
-                .set(ABIE.HASH_PATH, arguments.getHashPath())
+                .set(ABIE.PATH, arguments.getPath())
+                .set(ABIE.HASH_PATH, sha256(arguments.getPath()))
                 .set(ABIE.CREATED_BY, arguments.getUserId())
                 .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
@@ -258,7 +260,7 @@ public class BusinessInformationEntityRepository {
         private ULong asccpManifestId;
         private ULong roleOfAbieId;
         private ULong topLevelAbieId;
-        private String hashPath;
+        private String path;
         private ULong userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
@@ -289,12 +291,12 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public String getHashPath() {
-            return hashPath;
+        public String getPath() {
+            return path;
         }
 
-        public InsertAsbiepArguments setHashPath(String hashPath) {
-            this.hashPath = hashPath;
+        public InsertAsbiepArguments setPath(String path) {
+            this.path = path;
             return this;
         }
 
@@ -353,7 +355,8 @@ public class BusinessInformationEntityRepository {
         return dslContext.insertInto(ASBIEP)
                 .set(ASBIEP.GUID, SrtGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
-                .set(ASBIEP.HASH_PATH, arguments.getHashPath())
+                .set(ASBIEP.PATH, arguments.getPath())
+                .set(ASBIEP.HASH_PATH, sha256(arguments.getPath()))
                 .set(ASBIEP.ROLE_OF_ABIE_ID, arguments.getRoleOfAbieId())
                 .set(ASBIEP.CREATED_BY, arguments.getUserId())
                 .set(ASBIEP.LAST_UPDATED_BY, arguments.getUserId())

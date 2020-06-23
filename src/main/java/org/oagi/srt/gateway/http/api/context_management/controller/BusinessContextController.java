@@ -67,7 +67,7 @@ public class BusinessContextController {
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public BusinessContext getBusinessContext(@PathVariable("id") long id) {
+    public BusinessContext getBusinessContext(@PathVariable("id") BigInteger id) {
         return service.getBusinessContext(id);
     }
 
@@ -79,13 +79,13 @@ public class BusinessContextController {
 
     @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(@PathVariable("id") long ctxSchemeId) {
+    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(@PathVariable("id") BigInteger ctxSchemeId) {
         return service.getSimpleContextSchemeValueList(ctxSchemeId);
     }
 
     @RequestMapping(value = "/business_context_values_from_biz_ctx/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(@PathVariable("id") long businessCtxID) {
+    public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(@PathVariable("id") BigInteger businessCtxID) {
         return service.getBusinessContextValuesByBusinessCtxId(businessCtxID);
     }
 
@@ -99,7 +99,7 @@ public class BusinessContextController {
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("id") long id,
+            @PathVariable("id") BigInteger id,
             @AuthenticationPrincipal User user,
             @RequestBody BusinessContext businessContext) {
         businessContext.setBizCtxId(id);
@@ -110,8 +110,8 @@ public class BusinessContextController {
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.PUT)
     public ResponseEntity assign(
             @AuthenticationPrincipal User user,
-            @PathVariable("id") long id,
-            @RequestParam(name = "topLevelAbieId", required = true) long topLevelAbieId) {
+            @PathVariable("id") BigInteger id,
+            @RequestParam(name = "topLevelAbieId", required = true) BigInteger topLevelAbieId) {
         service.assign(id, topLevelAbieId);
         return ResponseEntity.noContent().build();
     }
@@ -119,8 +119,8 @@ public class BusinessContextController {
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
             @AuthenticationPrincipal User user,
-            @PathVariable("id") long id,
-            @RequestParam(name = "topLevelAbieId", required = false) Long topLevelAbieId) {
+            @PathVariable("id") BigInteger id,
+            @RequestParam(name = "topLevelAbieId", required = false) BigInteger topLevelAbieId) {
         if (topLevelAbieId != null) {
             service.dismiss(id, topLevelAbieId);
         } else {
