@@ -41,7 +41,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -1503466682;
+    private static final long serialVersionUID = 231394773;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -70,6 +70,11 @@ public class Bbie extends TableImpl<BbieRecord> {
      * The column <code>oagi.bbie.based_bcc_manifest_id</code>. The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.
      */
     public final TableField<BbieRecord, ULong> BASED_BCC_MANIFEST_ID = createField(DSL.name("based_bcc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_BCC_MANIFEST_ID column refers to the BCC_MANIFEST record, which this BBIE contextualizes.");
+
+    /**
+     * The column <code>oagi.bbie.path</code>.
+     */
+    public final TableField<BbieRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.bbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.

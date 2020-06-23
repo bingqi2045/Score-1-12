@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbiep extends TableImpl<AsbiepRecord> {
 
-    private static final long serialVersionUID = 203905186;
+    private static final long serialVersionUID = 618896318;
 
     /**
      * The reference instance of <code>oagi.asbiep</code>
@@ -65,6 +65,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
      * The column <code>oagi.asbiep.based_asccp_manifest_id</code>. A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.
      */
     public final TableField<AsbiepRecord, ULong> BASED_ASCCP_MANIFEST_ID = createField(DSL.name("based_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the ASCCP_MANIFEST record. It is the ASCCP, on which the ASBIEP contextualizes.");
+
+    /**
+     * The column <code>oagi.asbiep.path</code>.
+     */
+    public final TableField<AsbiepRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.asbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
@@ -235,11 +240,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }

@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 276751230;
+    private static final long serialVersionUID = 457429746;
 
     /**
      * The reference instance of <code>oagi.abie</code>
@@ -72,6 +72,11 @@ public class Abie extends TableImpl<AbieRecord> {
      * The column <code>oagi.abie.based_acc_manifest_id</code>. A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.
      */
     public final TableField<AbieRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.");
+
+    /**
+     * The column <code>oagi.abie.path</code>.
+     */
+    public final TableField<AbieRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.abie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
@@ -257,11 +262,11 @@ public class Abie extends TableImpl<AbieRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<ULong, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row18<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }

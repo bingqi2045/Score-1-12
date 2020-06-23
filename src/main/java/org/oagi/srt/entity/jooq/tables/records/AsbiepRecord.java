@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record14;
-import org.jooq.Row14;
+import org.jooq.Record15;
+import org.jooq.Row15;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Asbiep;
@@ -20,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Asbiep;
  * of an ASCCP.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<ULong, String, ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
+public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record15<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = 712843535;
+    private static final long serialVersionUID = -538069648;
 
     /**
      * Setter for <code>oagi.asbiep.asbiep_id</code>. A internal, primary database key of an ASBIEP.
@@ -67,157 +67,171 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     /**
+     * Setter for <code>oagi.asbiep.path</code>.
+     */
+    public void setPath(String value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>oagi.asbiep.path</code>.
+     */
+    public String getPath() {
+        return (String) get(3);
+    }
+
+    /**
      * Setter for <code>oagi.asbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
     public void setHashPath(String value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
     public String getHashPath() {
-        return (String) get(3);
+        return (String) get(4);
     }
 
     /**
      * Setter for <code>oagi.asbiep.role_of_abie_id</code>. A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.
      */
     public void setRoleOfAbieId(ULong value) {
-        set(4, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.role_of_abie_id</code>. A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.
      */
     public ULong getRoleOfAbieId() {
-        return (ULong) get(4);
+        return (ULong) get(5);
     }
 
     /**
      * Setter for <code>oagi.asbiep.definition</code>. A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.
      */
     public void setDefinition(String value) {
-        set(5, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.definition</code>. A definition to override the ASCCP's definition. If NULL, it means that the definition should be derived from the based ASCCP on the UI, expression generation, and any API.
      */
     public String getDefinition() {
-        return (String) get(5);
+        return (String) get(6);
     }
 
     /**
      * Setter for <code>oagi.asbiep.remark</code>. This column allows the user to specify a context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ASBIEP can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ASBIEP. A remark about that ASBIEP may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public void setRemark(String value) {
-        set(6, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.remark</code>. This column allows the user to specify a context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ASBIEP can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ASBIEP. A remark about that ASBIEP may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public String getRemark() {
-        return (String) get(6);
+        return (String) get(7);
     }
 
     /**
      * Setter for <code>oagi.asbiep.biz_term</code>. This column represents a business term to indicate what the BIE is called in a particular business context. With this current design, only one business term is allowed per business context.
      */
     public void setBizTerm(String value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.biz_term</code>. This column represents a business term to indicate what the BIE is called in a particular business context. With this current design, only one business term is allowed per business context.
      */
     public String getBizTerm() {
-        return (String) get(7);
+        return (String) get(8);
     }
 
     /**
      * Setter for <code>oagi.asbiep.created_by</code>. A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.
      */
     public void setCreatedBy(ULong value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.created_by</code>. A foreign key referring to the user who creates the ASBIEP. The creator of the ASBIEP is also its owner by default. ASBIEPs created as children of another ABIE have the same CREATED_BY.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(8);
+        return (ULong) get(9);
     }
 
     /**
      * Setter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record. 
      */
     public void setLastUpdatedBy(ULong value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated the ASBIEP record. 
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(9);
+        return (ULong) get(10);
     }
 
     /**
      * Setter for <code>oagi.asbiep.creation_timestamp</code>. Timestamp when the ASBIEP record was first created. ASBIEPs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.creation_timestamp</code>. Timestamp when the ASBIEP record was first created. ASBIEPs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(10);
+        return (LocalDateTime) get(11);
     }
 
     /**
      * Setter for <code>oagi.asbiep.last_update_timestamp</code>. The timestamp when the ASBIEP was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.last_update_timestamp</code>. The timestamp when the ASBIEP was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(11);
+        return (LocalDateTime) get(12);
     }
 
     /**
      * Setter for <code>oagi.asbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this ASBIEP record.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this ASBIEP record.
      */
     public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
      * Setter for <code>oagi.asbiep.ref_top_level_abie_id</code>. A foreign key of the reference TOP_LEVEL_ABIE to re-use a profiled BIE.
      */
     public void setRefTopLevelAbieId(ULong value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.asbiep.ref_top_level_abie_id</code>. A foreign key of the reference TOP_LEVEL_ABIE to re-use a profiled BIE.
      */
     public ULong getRefTopLevelAbieId() {
-        return (ULong) get(13);
+        return (ULong) get(14);
     }
 
     // -------------------------------------------------------------------------
@@ -230,17 +244,17 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     }
 
     // -------------------------------------------------------------------------
-    // Record14 type implementation
+    // Record15 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 
     @Override
-    public Row14<ULong, String, ULong, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
-        return (Row14) super.valuesRow();
+    public Row15<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+        return (Row15) super.valuesRow();
     }
 
     @Override
@@ -260,56 +274,61 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public Field<String> field4() {
+        return Asbiep.ASBIEP.PATH;
+    }
+
+    @Override
+    public Field<String> field5() {
         return Asbiep.ASBIEP.HASH_PATH;
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<ULong> field6() {
         return Asbiep.ASBIEP.ROLE_OF_ABIE_ID;
     }
 
     @Override
-    public Field<String> field6() {
+    public Field<String> field7() {
         return Asbiep.ASBIEP.DEFINITION;
     }
 
     @Override
-    public Field<String> field7() {
+    public Field<String> field8() {
         return Asbiep.ASBIEP.REMARK;
     }
 
     @Override
-    public Field<String> field8() {
+    public Field<String> field9() {
         return Asbiep.ASBIEP.BIZ_TERM;
     }
 
     @Override
-    public Field<ULong> field9() {
+    public Field<ULong> field10() {
         return Asbiep.ASBIEP.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field10() {
+    public Field<ULong> field11() {
         return Asbiep.ASBIEP.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field11() {
+    public Field<LocalDateTime> field12() {
         return Asbiep.ASBIEP.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field12() {
+    public Field<LocalDateTime> field13() {
         return Asbiep.ASBIEP.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<ULong> field14() {
         return Asbiep.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<ULong> field15() {
         return Asbiep.ASBIEP.REF_TOP_LEVEL_ABIE_ID;
     }
 
@@ -330,56 +349,61 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public String component4() {
+        return getPath();
+    }
+
+    @Override
+    public String component5() {
         return getHashPath();
     }
 
     @Override
-    public ULong component5() {
+    public ULong component6() {
         return getRoleOfAbieId();
     }
 
     @Override
-    public String component6() {
+    public String component7() {
         return getDefinition();
     }
 
     @Override
-    public String component7() {
+    public String component8() {
         return getRemark();
     }
 
     @Override
-    public String component8() {
+    public String component9() {
         return getBizTerm();
     }
 
     @Override
-    public ULong component9() {
+    public ULong component10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component10() {
+    public ULong component11() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component11() {
+    public LocalDateTime component12() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component12() {
+    public LocalDateTime component13() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong component13() {
+    public ULong component14() {
         return getOwnerTopLevelAbieId();
     }
 
     @Override
-    public ULong component14() {
+    public ULong component15() {
         return getRefTopLevelAbieId();
     }
 
@@ -400,56 +424,61 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public String value4() {
+        return getPath();
+    }
+
+    @Override
+    public String value5() {
         return getHashPath();
     }
 
     @Override
-    public ULong value5() {
+    public ULong value6() {
         return getRoleOfAbieId();
     }
 
     @Override
-    public String value6() {
+    public String value7() {
         return getDefinition();
     }
 
     @Override
-    public String value7() {
+    public String value8() {
         return getRemark();
     }
 
     @Override
-    public String value8() {
+    public String value9() {
         return getBizTerm();
     }
 
     @Override
-    public ULong value9() {
+    public ULong value10() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value10() {
+    public ULong value11() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value11() {
+    public LocalDateTime value12() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value12() {
+    public LocalDateTime value13() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong value13() {
+    public ULong value14() {
         return getOwnerTopLevelAbieId();
     }
 
     @Override
-    public ULong value14() {
+    public ULong value15() {
         return getRefTopLevelAbieId();
     }
 
@@ -473,72 +502,78 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
 
     @Override
     public AsbiepRecord value4(String value) {
+        setPath(value);
+        return this;
+    }
+
+    @Override
+    public AsbiepRecord value5(String value) {
         setHashPath(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value5(ULong value) {
+    public AsbiepRecord value6(ULong value) {
         setRoleOfAbieId(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value6(String value) {
+    public AsbiepRecord value7(String value) {
         setDefinition(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value7(String value) {
+    public AsbiepRecord value8(String value) {
         setRemark(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value8(String value) {
+    public AsbiepRecord value9(String value) {
         setBizTerm(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value9(ULong value) {
+    public AsbiepRecord value10(ULong value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value10(ULong value) {
+    public AsbiepRecord value11(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value11(LocalDateTime value) {
+    public AsbiepRecord value12(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value12(LocalDateTime value) {
+    public AsbiepRecord value13(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value13(ULong value) {
+    public AsbiepRecord value14(ULong value) {
         setOwnerTopLevelAbieId(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord value14(ULong value) {
+    public AsbiepRecord value15(ULong value) {
         setRefTopLevelAbieId(value);
         return this;
     }
 
     @Override
-    public AsbiepRecord values(ULong value1, String value2, ULong value3, String value4, ULong value5, String value6, String value7, String value8, ULong value9, ULong value10, LocalDateTime value11, LocalDateTime value12, ULong value13, ULong value14) {
+    public AsbiepRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, String value7, String value8, String value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, ULong value14, ULong value15) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -553,6 +588,7 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
         value12(value12);
         value13(value13);
         value14(value14);
+        value15(value15);
         return this;
     }
 
@@ -570,22 +606,23 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     /**
      * Create a detached, initialised AsbiepRecord
      */
-    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, String hashPath, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId, ULong refTopLevelAbieId) {
+    public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, String path, String hashPath, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId, ULong refTopLevelAbieId) {
         super(Asbiep.ASBIEP);
 
         set(0, asbiepId);
         set(1, guid);
         set(2, basedAsccpManifestId);
-        set(3, hashPath);
-        set(4, roleOfAbieId);
-        set(5, definition);
-        set(6, remark);
-        set(7, bizTerm);
-        set(8, createdBy);
-        set(9, lastUpdatedBy);
-        set(10, creationTimestamp);
-        set(11, lastUpdateTimestamp);
-        set(12, ownerTopLevelAbieId);
-        set(13, refTopLevelAbieId);
+        set(3, path);
+        set(4, hashPath);
+        set(5, roleOfAbieId);
+        set(6, definition);
+        set(7, remark);
+        set(8, bizTerm);
+        set(9, createdBy);
+        set(10, lastUpdatedBy);
+        set(11, creationTimestamp);
+        set(12, lastUpdateTimestamp);
+        set(13, ownerTopLevelAbieId);
+        set(14, refTopLevelAbieId);
     }
 }

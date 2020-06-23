@@ -15,7 +15,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row18;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbie extends TableImpl<AsbieRecord> {
 
-    private static final long serialVersionUID = 385402298;
+    private static final long serialVersionUID = -1188853388;
 
     /**
      * The reference instance of <code>oagi.asbie</code>
@@ -66,6 +66,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
      * The column <code>oagi.asbie.based_ascc_manifest_id</code>. The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.
      */
     public final TableField<AsbieRecord, ULong> BASED_ASCC_MANIFEST_ID = createField(DSL.name("based_ascc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The BASED_ASCC_MANIFEST_ID column refers to the ASCC_MANIFEST record, which this ASBIE contextualizes.");
+
+    /**
+     * The column <code>oagi.asbie.path</code>.
+     */
+    public final TableField<AsbieRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.asbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
@@ -256,11 +261,11 @@ public class Asbie extends TableImpl<AsbieRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row18 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

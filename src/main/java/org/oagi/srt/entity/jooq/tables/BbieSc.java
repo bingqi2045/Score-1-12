@@ -14,7 +14,6 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 1326682905;
+    private static final long serialVersionUID = 751475013;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -67,6 +66,11 @@ public class BbieSc extends TableImpl<BbieScRecord> {
      * The column <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.
      */
     public final TableField<BbieScRecord, ULong> BASED_DT_SC_MANIFEST_ID = createField(DSL.name("based_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.");
+
+    /**
+     * The column <code>oagi.bbie_sc.path</code>.
+     */
+    public final TableField<BbieScRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.bbie_sc.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
@@ -290,14 +294,5 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     @Override
     public BbieSc rename(Name name) {
         return new BbieSc(name, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Row22 type methods
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row22<ULong, String, ULong, String, ULong, ULong, ULong, ULong, Integer, Integer, String, String, String, String, String, String, Byte, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
-        return (Row22) super.fieldsRow();
     }
 }

@@ -35,7 +35,7 @@ import org.oagi.srt.entity.jooq.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = -2049866432;
+    private static final long serialVersionUID = 1125385473;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -140,7 +140,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * The column <code>oagi.code_list.state</code>. Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.
      */
-    public final TableField<CodeListRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(10), this, "Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.");
+    public final TableField<CodeListRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.");
 
     /**
      * The column <code>oagi.code_list.prev_code_list_id</code>. A self-foreign key to indicate the previous history record.

@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record18;
-import org.jooq.Row18;
+import org.jooq.Record19;
+import org.jooq.Row19;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Asbie;
@@ -21,9 +21,9 @@ import org.oagi.srt.entity.jooq.tables.Asbie;
  * an ASBIEP. It is a contextualization of an ASCC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record18<ULong, String, ULong, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
+public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = 472558548;
+    private static final long serialVersionUID = -901419445;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.
@@ -68,213 +68,227 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     /**
+     * Setter for <code>oagi.asbie.path</code>.
+     */
+    public void setPath(String value) {
+        set(3, value);
+    }
+
+    /**
+     * Getter for <code>oagi.asbie.path</code>.
+     */
+    public String getPath() {
+        return (String) get(3);
+    }
+
+    /**
      * Setter for <code>oagi.asbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
     public void setHashPath(String value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
     public String getHashPath() {
-        return (String) get(3);
+        return (String) get(4);
     }
 
     /**
      * Setter for <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
     public void setFromAbieId(ULong value) {
-        set(4, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.from_abie_id</code>. A foreign key pointing to the ABIE table. FROM_ABIE_ID is basically  a parent data element (type) of the TO_ASBIEP_ID. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_ASCC_ID except when the FROM_ACC_ID refers to an SEMANTIC_GROUP ACC or USER_EXTENSION_GROUP ACC.
      */
     public ULong getFromAbieId() {
-        return (ULong) get(4);
+        return (ULong) get(5);
     }
 
     /**
      * Setter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
      */
     public void setToAsbiepId(ULong value) {
-        set(5, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
      */
     public ULong getToAsbiepId() {
-        return (ULong) get(5);
+        return (ULong) get(6);
     }
 
     /**
      * Setter for <code>oagi.asbie.definition</code>. Definition to override the ASCC definition. If NULL, it means that the definition should be derived from the based CC on the UI, expression generation, and any API.
      */
     public void setDefinition(String value) {
-        set(6, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.definition</code>. Definition to override the ASCC definition. If NULL, it means that the definition should be derived from the based CC on the UI, expression generation, and any API.
      */
     public String getDefinition() {
-        return (String) get(6);
+        return (String) get(7);
     }
 
     /**
      * Setter for <code>oagi.asbie.cardinality_min</code>. Minimum occurence constraint of the TO_ASBIEP_ID. A valid value is a non-negative integer.
      */
     public void setCardinalityMin(Integer value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.cardinality_min</code>. Minimum occurence constraint of the TO_ASBIEP_ID. A valid value is a non-negative integer.
      */
     public Integer getCardinalityMin() {
-        return (Integer) get(7);
+        return (Integer) get(8);
     }
 
     /**
      * Setter for <code>oagi.asbie.cardinality_max</code>. Maximum occurrence constraint of the TO_ASBIEP_ID. A valid value is an integer from -1 and up. Specifically, -1 means unbounded. 0 means prohibited or not to use.
      */
     public void setCardinalityMax(Integer value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.cardinality_max</code>. Maximum occurrence constraint of the TO_ASBIEP_ID. A valid value is an integer from -1 and up. Specifically, -1 means unbounded. 0 means prohibited or not to use.
      */
     public Integer getCardinalityMax() {
-        return (Integer) get(8);
+        return (Integer) get(9);
     }
 
     /**
      * Setter for <code>oagi.asbie.is_nillable</code>. Indicate whether the TO_ASBIEP_ID is allowed to be null.
      */
     public void setIsNillable(Byte value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.is_nillable</code>. Indicate whether the TO_ASBIEP_ID is allowed to be null.
      */
     public Byte getIsNillable() {
-        return (Byte) get(9);
+        return (Byte) get(10);
     }
 
     /**
      * Setter for <code>oagi.asbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public void setRemark(String value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public String getRemark() {
-        return (String) get(10);
+        return (String) get(11);
     }
 
     /**
      * Setter for <code>oagi.asbie.created_by</code>. A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.
      */
     public void setCreatedBy(ULong value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.created_by</code>. A foreign key referring to the user who creates the ASBIE. The creator of the ASBIE is also its owner by default. ASBIEs created as children of another ABIE have the same CREATED_BY.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(11);
+        return (ULong) get(12);
     }
 
     /**
      * Setter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public void setLastUpdatedBy(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.last_updated_by</code>. A foreign key referring to the user who has last updated the ASBIE record. 
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
      * Setter for <code>oagi.asbie.creation_timestamp</code>. Timestamp when the ASBIE record was first created. ASBIEs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.creation_timestamp</code>. Timestamp when the ASBIE record was first created. ASBIEs created as children of another ABIE have the same CREATION_TIMESTAMP.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(13);
+        return (LocalDateTime) get(14);
     }
 
     /**
      * Setter for <code>oagi.asbie.last_update_timestamp</code>. The timestamp when the ASBIE was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.last_update_timestamp</code>. The timestamp when the ASBIE was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(14);
+        return (LocalDateTime) get(15);
     }
 
     /**
      * Setter for <code>oagi.asbie.seq_key</code>. This indicates the order of the associations among other siblings. The SEQ_KEY for BIEs is decimal in order to accomodate the removal of inheritance hierarchy and group. For example, children of the most abstract ACC will have SEQ_KEY = 1.1, 1.2, 1.3, and so on; and SEQ_KEY of the next abstraction level ACC will have SEQ_KEY = 2.1, 2.2, 2.3 and so on so forth.
      */
     public void setSeqKey(BigDecimal value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.seq_key</code>. This indicates the order of the associations among other siblings. The SEQ_KEY for BIEs is decimal in order to accomodate the removal of inheritance hierarchy and group. For example, children of the most abstract ACC will have SEQ_KEY = 1.1, 1.2, 1.3, and so on; and SEQ_KEY of the next abstraction level ACC will have SEQ_KEY = 2.1, 2.2, 2.3 and so on so forth.
      */
     public BigDecimal getSeqKey() {
-        return (BigDecimal) get(15);
+        return (BigDecimal) get(16);
     }
 
     /**
      * Setter for <code>oagi.asbie.is_used</code>. Flag to indicate whether the field/component is used in the content model. It signifies whether the field/component should be generated.
      */
     public void setIsUsed(Byte value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.is_used</code>. Flag to indicate whether the field/component is used in the content model. It signifies whether the field/component should be generated.
      */
     public Byte getIsUsed() {
-        return (Byte) get(16);
+        return (Byte) get(17);
     }
 
     /**
      * Setter for <code>oagi.asbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this ASBIE record.
      */
     public void setOwnerTopLevelAbieId(ULong value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.asbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this ASBIE record.
      */
     public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(17);
+        return (ULong) get(18);
     }
 
     // -------------------------------------------------------------------------
@@ -287,17 +301,17 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     // -------------------------------------------------------------------------
-    // Record18 type implementation
+    // Record19 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 
     @Override
-    public Row18<ULong, String, ULong, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> valuesRow() {
-        return (Row18) super.valuesRow();
+    public Row19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> valuesRow() {
+        return (Row19) super.valuesRow();
     }
 
     @Override
@@ -317,76 +331,81 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public Field<String> field4() {
+        return Asbie.ASBIE.PATH;
+    }
+
+    @Override
+    public Field<String> field5() {
         return Asbie.ASBIE.HASH_PATH;
     }
 
     @Override
-    public Field<ULong> field5() {
+    public Field<ULong> field6() {
         return Asbie.ASBIE.FROM_ABIE_ID;
     }
 
     @Override
-    public Field<ULong> field6() {
+    public Field<ULong> field7() {
         return Asbie.ASBIE.TO_ASBIEP_ID;
     }
 
     @Override
-    public Field<String> field7() {
+    public Field<String> field8() {
         return Asbie.ASBIE.DEFINITION;
     }
 
     @Override
-    public Field<Integer> field8() {
+    public Field<Integer> field9() {
         return Asbie.ASBIE.CARDINALITY_MIN;
     }
 
     @Override
-    public Field<Integer> field9() {
+    public Field<Integer> field10() {
         return Asbie.ASBIE.CARDINALITY_MAX;
     }
 
     @Override
-    public Field<Byte> field10() {
+    public Field<Byte> field11() {
         return Asbie.ASBIE.IS_NILLABLE;
     }
 
     @Override
-    public Field<String> field11() {
+    public Field<String> field12() {
         return Asbie.ASBIE.REMARK;
     }
 
     @Override
-    public Field<ULong> field12() {
+    public Field<ULong> field13() {
         return Asbie.ASBIE.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<ULong> field14() {
         return Asbie.ASBIE.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field14() {
+    public Field<LocalDateTime> field15() {
         return Asbie.ASBIE.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field15() {
+    public Field<LocalDateTime> field16() {
         return Asbie.ASBIE.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<BigDecimal> field16() {
+    public Field<BigDecimal> field17() {
         return Asbie.ASBIE.SEQ_KEY;
     }
 
     @Override
-    public Field<Byte> field17() {
+    public Field<Byte> field18() {
         return Asbie.ASBIE.IS_USED;
     }
 
     @Override
-    public Field<ULong> field18() {
+    public Field<ULong> field19() {
         return Asbie.ASBIE.OWNER_TOP_LEVEL_ABIE_ID;
     }
 
@@ -407,76 +426,81 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public String component4() {
+        return getPath();
+    }
+
+    @Override
+    public String component5() {
         return getHashPath();
     }
 
     @Override
-    public ULong component5() {
+    public ULong component6() {
         return getFromAbieId();
     }
 
     @Override
-    public ULong component6() {
+    public ULong component7() {
         return getToAsbiepId();
     }
 
     @Override
-    public String component7() {
+    public String component8() {
         return getDefinition();
     }
 
     @Override
-    public Integer component8() {
+    public Integer component9() {
         return getCardinalityMin();
     }
 
     @Override
-    public Integer component9() {
+    public Integer component10() {
         return getCardinalityMax();
     }
 
     @Override
-    public Byte component10() {
+    public Byte component11() {
         return getIsNillable();
     }
 
     @Override
-    public String component11() {
+    public String component12() {
         return getRemark();
     }
 
     @Override
-    public ULong component12() {
+    public ULong component13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component13() {
+    public ULong component14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component14() {
+    public LocalDateTime component15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component15() {
+    public LocalDateTime component16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public BigDecimal component16() {
+    public BigDecimal component17() {
         return getSeqKey();
     }
 
     @Override
-    public Byte component17() {
+    public Byte component18() {
         return getIsUsed();
     }
 
     @Override
-    public ULong component18() {
+    public ULong component19() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -497,76 +521,81 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public String value4() {
+        return getPath();
+    }
+
+    @Override
+    public String value5() {
         return getHashPath();
     }
 
     @Override
-    public ULong value5() {
+    public ULong value6() {
         return getFromAbieId();
     }
 
     @Override
-    public ULong value6() {
+    public ULong value7() {
         return getToAsbiepId();
     }
 
     @Override
-    public String value7() {
+    public String value8() {
         return getDefinition();
     }
 
     @Override
-    public Integer value8() {
+    public Integer value9() {
         return getCardinalityMin();
     }
 
     @Override
-    public Integer value9() {
+    public Integer value10() {
         return getCardinalityMax();
     }
 
     @Override
-    public Byte value10() {
+    public Byte value11() {
         return getIsNillable();
     }
 
     @Override
-    public String value11() {
+    public String value12() {
         return getRemark();
     }
 
     @Override
-    public ULong value12() {
+    public ULong value13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value13() {
+    public ULong value14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value14() {
+    public LocalDateTime value15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value15() {
+    public LocalDateTime value16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public BigDecimal value16() {
+    public BigDecimal value17() {
         return getSeqKey();
     }
 
     @Override
-    public Byte value17() {
+    public Byte value18() {
         return getIsUsed();
     }
 
     @Override
-    public ULong value18() {
+    public ULong value19() {
         return getOwnerTopLevelAbieId();
     }
 
@@ -590,96 +619,102 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public AsbieRecord value4(String value) {
+        setPath(value);
+        return this;
+    }
+
+    @Override
+    public AsbieRecord value5(String value) {
         setHashPath(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value5(ULong value) {
+    public AsbieRecord value6(ULong value) {
         setFromAbieId(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value6(ULong value) {
+    public AsbieRecord value7(ULong value) {
         setToAsbiepId(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value7(String value) {
+    public AsbieRecord value8(String value) {
         setDefinition(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value8(Integer value) {
+    public AsbieRecord value9(Integer value) {
         setCardinalityMin(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value9(Integer value) {
+    public AsbieRecord value10(Integer value) {
         setCardinalityMax(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value10(Byte value) {
+    public AsbieRecord value11(Byte value) {
         setIsNillable(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value11(String value) {
+    public AsbieRecord value12(String value) {
         setRemark(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value12(ULong value) {
+    public AsbieRecord value13(ULong value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value13(ULong value) {
+    public AsbieRecord value14(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value14(LocalDateTime value) {
+    public AsbieRecord value15(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value15(LocalDateTime value) {
+    public AsbieRecord value16(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value16(BigDecimal value) {
+    public AsbieRecord value17(BigDecimal value) {
         setSeqKey(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value17(Byte value) {
+    public AsbieRecord value18(Byte value) {
         setIsUsed(value);
         return this;
     }
 
     @Override
-    public AsbieRecord value18(ULong value) {
+    public AsbieRecord value19(ULong value) {
         setOwnerTopLevelAbieId(value);
         return this;
     }
 
     @Override
-    public AsbieRecord values(ULong value1, String value2, ULong value3, String value4, ULong value5, ULong value6, String value7, Integer value8, Integer value9, Byte value10, String value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, BigDecimal value16, Byte value17, ULong value18) {
+    public AsbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, ULong value7, String value8, Integer value9, Integer value10, Byte value11, String value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, BigDecimal value17, Byte value18, ULong value19) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -698,6 +733,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
         value16(value16);
         value17(value17);
         value18(value18);
+        value19(value19);
         return this;
     }
 
@@ -715,26 +751,27 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
         super(Asbie.ASBIE);
 
         set(0, asbieId);
         set(1, guid);
         set(2, basedAsccManifestId);
-        set(3, hashPath);
-        set(4, fromAbieId);
-        set(5, toAsbiepId);
-        set(6, definition);
-        set(7, cardinalityMin);
-        set(8, cardinalityMax);
-        set(9, isNillable);
-        set(10, remark);
-        set(11, createdBy);
-        set(12, lastUpdatedBy);
-        set(13, creationTimestamp);
-        set(14, lastUpdateTimestamp);
-        set(15, seqKey);
-        set(16, isUsed);
-        set(17, ownerTopLevelAbieId);
+        set(3, path);
+        set(4, hashPath);
+        set(5, fromAbieId);
+        set(6, toAsbiepId);
+        set(7, definition);
+        set(8, cardinalityMin);
+        set(9, cardinalityMax);
+        set(10, isNillable);
+        set(11, remark);
+        set(12, createdBy);
+        set(13, lastUpdatedBy);
+        set(14, creationTimestamp);
+        set(15, lastUpdateTimestamp);
+        set(16, seqKey);
+        set(17, isUsed);
+        set(18, ownerTopLevelAbieId);
     }
 }
