@@ -11,6 +11,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.ExtensionUpdateResponse;
 import org.oagi.srt.gateway.http.api.cc_management.data.node.*;
@@ -593,7 +594,7 @@ public class ExtensionService {
 
     public CcNode getLastRevisionCc(User user, String type, BigInteger manifestId) {
 
-        if (type.equals("ascc")) {
+        if (type.equals(CcType.ASCC.name())) {
             AsccManifestRecord asccManifest = manifestRepository.getAsccManifestById(manifestId);
             if (asccManifest == null) {
                 return null;
@@ -609,7 +610,7 @@ public class ExtensionService {
                     .where(and(ASCC.GUID.eq(guid), ASCC.STATE.eq(CcState.Published.name())))
                     .orderBy(ASCC.ASCC_ID.desc()).limit(1)
                     .fetchOneInto(CcAsccNode.class);
-        } else if (type.equals("bcc")) {
+        } else if (type.equals(CcType.BCC.name())) {
             BccManifestRecord bccManifest = manifestRepository.getBccManifestById(manifestId);
             if (bccManifest == null) {
                 return null;
