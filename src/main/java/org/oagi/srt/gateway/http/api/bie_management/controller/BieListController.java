@@ -67,7 +67,9 @@ public class BieListController {
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
 
-        request.setReleaseId(releaseId);
+        if (releaseId != null && releaseId.compareTo(BigInteger.ZERO) > 0) {
+            request.setReleaseId(releaseId);
+        }
 
         if (!StringUtils.isEmpty(updateStart)) {
             request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
