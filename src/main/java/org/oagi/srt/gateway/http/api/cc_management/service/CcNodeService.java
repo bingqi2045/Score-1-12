@@ -545,7 +545,7 @@ public class CcNodeService extends EventHandler {
                 .setCreatedBy(userId)
                 .setCreationTimestamp(timestamp)
                 .setRevisionAction(RevisionAction.Modified)
-                .setReference(CcType.ACC.name().toLowerCase() + "-" + accManifestRecord.getAccManifestId())
+                .setReference(CcType.ACC.name() + "-" + accManifestRecord.getAccManifestId())
                 .setPrevRevisionId(accManifestRecord.getRevisionId())
                 .execute();
 
@@ -654,7 +654,7 @@ public class CcNodeService extends EventHandler {
                     ascc.setCardinalityMin(BigInteger.valueOf(asccRecord.getCardinalityMin()));
                     ascc.setCardinalityMax(BigInteger.valueOf(asccRecord.getCardinalityMax()));
                     ascc.setDeprecated(asccRecord.getIsDeprecated() == 1);
-                    associations.put(CcType.ASCCP.toString().toLowerCase() + "-" + asccManifestRecord.getToAsccpManifestId(), ascc);
+                    associations.put(CcType.ASCCP.toString() + "-" + asccManifestRecord.getToAsccpManifestId(), ascc);
                 }
             }
             List<BccManifestRecord> bccManifestRecordList
@@ -669,7 +669,7 @@ public class CcNodeService extends EventHandler {
                     bcc.setCardinalityMax(BigInteger.valueOf(bccRecord.getCardinalityMax()));
                     bcc.setEntityType(BCCEntityType.valueOf(bccRecord.getEntityType()));
                     bcc.setDeprecated(bccRecord.getIsDeprecated() == 1);
-                    associations.put(CcType.BCCP.toString().toLowerCase() + "-" + bccManifestRecord.getToBccpManifestId(), bcc);
+                    associations.put(CcType.BCCP.toString() + "-" + bccManifestRecord.getToBccpManifestId(), bcc);
                 }
             }
             ccRevisionResponse.setAssociations(associations);
