@@ -459,7 +459,7 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setStates(List<BieState> states) {
             if (!states.isEmpty()) {
-                conditions.add(ABIE.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+                conditions.add(TOP_LEVEL_ABIE.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
             }
             return this;
         }
