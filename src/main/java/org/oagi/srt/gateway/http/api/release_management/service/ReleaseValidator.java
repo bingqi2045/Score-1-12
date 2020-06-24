@@ -189,6 +189,10 @@ public class ReleaseValidator {
                     accManifestRecord.getAccManifestId().toBigInteger())) {
                 continue;
             }
+            if (accRecord.getNamespaceId() == null) {
+                response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                        "Namespace is required.");
+            }
 
             // check ASCCPs whose `roleOfAcc` is this acc.
             asccpManifestRecords.stream().filter(e -> e.getRoleOfAccManifestId().equals(accManifestRecord.getAccManifestId()))
@@ -258,6 +262,10 @@ public class ReleaseValidator {
                     asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
                 continue;
             }
+            if (asccpRecord.getNamespaceId() == null) {
+                response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
+                        "Namespace is required.");
+            }
 
             // check ASCCs whose `toAsccp` is this asccp.
             asccManifestRecords.stream().filter(e -> e.getToAsccpManifestId().equals(asccpManifestRecord.getAsccpManifestId()))
@@ -306,6 +314,10 @@ public class ReleaseValidator {
             if (state != Published && !assignedBccpComponentManifestIds.contains(
                     bccpManifestRecord.getBccpManifestId().toBigInteger())) {
                 continue;
+            }
+            if (bccpRecord.getNamespaceId() == null) {
+                response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
+                        "Namespace is required.");
             }
 
             // check BCCs whose `toBccp` is this bccp.
