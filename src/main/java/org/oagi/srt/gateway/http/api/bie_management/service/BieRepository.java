@@ -46,7 +46,7 @@ public class BieRepository {
                 .from(TOP_LEVEL_ABIE)
                 .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
+                .join(ASBIEP).on(and(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID), ASBIEP.REF_TOP_LEVEL_ABIE_ID.isNull()))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .fetchStream().map(e -> {
