@@ -454,6 +454,7 @@ public class CodeListService extends EventHandler {
                     codeListValue.setValue(e.getValue());
                     codeListValue.setDefinition(e.getDefinition());
                     codeListValue.setDefinitionSource(e.getDefinitionSource());
+                    codeListValue.setUsed(e.isUsed());
 
                     if (codeListValue.isLocked()) {
                         codeListValue.setUsed(false);
