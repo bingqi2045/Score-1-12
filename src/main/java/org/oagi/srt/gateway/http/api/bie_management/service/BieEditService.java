@@ -475,7 +475,7 @@ public class BieEditService {
         UpsertAsbiepRequest upsertAsbiepRequest =
                 new UpsertAsbiepRequest(user, timestamp, request.getTopLevelAbieId(), asbiep);
         upsertAsbiepRequest.setRoleOfAbieId(abie.getAbieId());
-        upsertAsbiepRequest.setRefTopLevelAbieId(null);
+        upsertAsbiepRequest.setRefTopLevelAbieIdNull(true);
         asbiepWriteRepository.upsertAsbiep(upsertAsbiepRequest);
     }
 }

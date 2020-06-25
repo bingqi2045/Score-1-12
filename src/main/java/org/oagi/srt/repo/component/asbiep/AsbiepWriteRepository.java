@@ -105,7 +105,7 @@ public class AsbiepWriteRepository {
             }
             if (request.getRefTopLevelAbieId() != null) {
                 updateSetStep = updateSetStep.set(ASBIEP.REF_TOP_LEVEL_ABIE_ID, ULong.valueOf(request.getRefTopLevelAbieId()));
-            } else {
+            } else if (request.isRefTopLevelAbieIdNull()) {
                 updateSetStep = updateSetStep.setNull(ASBIEP.REF_TOP_LEVEL_ABIE_ID);
             }
 
