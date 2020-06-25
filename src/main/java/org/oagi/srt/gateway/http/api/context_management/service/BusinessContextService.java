@@ -131,7 +131,7 @@ public class BusinessContextService {
                 .fetchInto(BigInteger.class);
 
         Map<BigInteger, BusinessContextValue> newBizCtxValues = bizCtxValues.stream()
-                .filter(e -> e.getBizCtxValueId().longValue() > 0L)
+                .filter(e -> e.getBizCtxValueId() != null && e.getBizCtxValueId().longValue() > 0L)
                 .collect(Collectors.toMap(BusinessContextValue::getBizCtxValueId, Function.identity()));
 
         oldBizCtxValueIds.removeAll(newBizCtxValues.keySet());
@@ -144,7 +144,7 @@ public class BusinessContextService {
         }
 
         for (BusinessContextValue bizCtxValue : bizCtxValues.stream()
-                .filter(e -> e.getBizCtxValueId().longValue() == 0L)
+                .filter(e -> e.getBizCtxValueId() == null)
                 .collect(Collectors.toList())) {
 
             repository.insertBusinessContextValue()
