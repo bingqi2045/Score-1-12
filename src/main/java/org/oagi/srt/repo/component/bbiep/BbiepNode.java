@@ -37,6 +37,7 @@ public class BbiepNode {
     @Data
     public static class Bbiep {
         private boolean used;
+        private String path;
         private String hashPath;
         private BigInteger basedBccpManifestId;
 

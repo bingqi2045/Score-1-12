@@ -23,6 +23,7 @@ public class AbieNode {
     @Data
     public static class Abie {
         private boolean used;
+        private String path;
         private String hashPath;
         private BigInteger basedAccManifestId;
 

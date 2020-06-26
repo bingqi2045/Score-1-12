@@ -42,6 +42,7 @@ public class BbiepWriteRepository {
             bbiepRecord = new BbiepRecord();
             bbiepRecord.setGuid(SrtGuid.randomGuid());
             bbiepRecord.setBasedBccpManifestId(ULong.valueOf(bbiep.getBasedBccpManifestId()));
+            bbiepRecord.setPath(bbiep.getPath());
             bbiepRecord.setHashPath(hashPath);
 
             bbiepRecord.setDefinition(bbiep.getDefinition());

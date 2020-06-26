@@ -49,6 +49,7 @@ public class AsbieWriteRepository {
             asbieRecord = new AsbieRecord();
             asbieRecord.setGuid(SrtGuid.randomGuid());
             asbieRecord.setBasedAsccManifestId(ULong.valueOf(asbie.getBasedAsccManifestId()));
+            asbieRecord.setPath(asbie.getPath());
             asbieRecord.setHashPath(hashPath);
             asbieRecord.setFromAbieId(dslContext.select(ABIE.ABIE_ID)
                     .from(ABIE)

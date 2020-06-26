@@ -27,7 +27,9 @@ public class BbieScNode {
     @Data
     public static class BbieSc {
         private boolean used;
+        private String path;
         private String hashPath;
+        private String bbiePath;
         private String bbieHashPath;
         private BigInteger basedDtScManifestId;
 

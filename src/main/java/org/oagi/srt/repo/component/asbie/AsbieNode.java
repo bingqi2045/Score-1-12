@@ -25,8 +25,11 @@ public class AsbieNode {
     @Data
     public static class Asbie {
         private boolean used;
+        private String path;
         private String hashPath;
+        private String fromAbiePath;
         private String fromAbieHashPath;
+        private String toAsbiepPath;
         private String toAsbiepHashPath;
         private BigInteger basedAsccManifestId;
 

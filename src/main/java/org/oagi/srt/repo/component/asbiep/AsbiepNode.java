@@ -25,7 +25,9 @@ public class AsbiepNode {
     public static class Asbiep {
         private boolean used;
         private boolean derived;
+        private String path;
         private String hashPath;
+        private String roleOfAbiePath;
         private String roleOfAbieHashPath;
         private BigInteger basedAsccpManifestId;
         private BigInteger refTopLevelAbieId;

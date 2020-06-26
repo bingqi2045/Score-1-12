@@ -29,8 +29,11 @@ public class BbieNode {
     @Data
     public static class Bbie {
         private boolean used;
+        private String path;
         private String hashPath;
+        private String fromAbiePath;
         private String fromAbieHashPath;
+        private String toBbiepPath;
         private String toBbiepHashPath;
         private BigInteger basedBccManifestId;
 

@@ -46,6 +46,7 @@ public class AsbiepWriteRepository {
             asbiepRecord = new AsbiepRecord();
             asbiepRecord.setGuid(SrtGuid.randomGuid());
             asbiepRecord.setBasedAsccpManifestId(ULong.valueOf(asbiep.getBasedAsccpManifestId()));
+            asbiepRecord.setPath(asbiep.getPath());
             asbiepRecord.setHashPath(hashPath);
             if (request.getRoleOfAbieId() != null) {
                 asbiepRecord.setRoleOfAbieId(ULong.valueOf(request.getRoleOfAbieId()));
