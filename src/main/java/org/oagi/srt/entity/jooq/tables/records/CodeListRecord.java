@@ -23,7 +23,7 @@ import org.oagi.srt.entity.jooq.tables.CodeList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implements Record20<ULong, String, String, String, String, ULong, String, String, String, String, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
-    private static final long serialVersionUID = -1830698672;
+    private static final long serialVersionUID = -803652176;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.
@@ -268,14 +268,14 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     /**
-     * Setter for <code>oagi.code_list.state</code>. Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.
+     * Setter for <code>oagi.code_list.state</code>.
      */
     public void setState(String value) {
         set(17, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list.state</code>. Life cycle state of the code list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the code list is published, it cannot go back to Editing. A new version would have to be created.
+     * Getter for <code>oagi.code_list.state</code>.
      */
     public String getState() {
         return (String) get(17);

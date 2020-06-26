@@ -43,7 +43,7 @@ import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Abie extends TableImpl<AbieRecord> {
 
-    private static final long serialVersionUID = 457429746;
+    private static final long serialVersionUID = -1497820008;
 
     /**
      * The reference instance of <code>oagi.abie</code>
@@ -81,7 +81,7 @@ public class Abie extends TableImpl<AbieRecord> {
     /**
      * The column <code>oagi.abie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<AbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<AbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.abie.biz_ctx_id</code>. (Deprecated) A foreign key to the BIZ_CTX table. This column stores the business context assigned to the ABIE.
@@ -188,7 +188,7 @@ public class Abie extends TableImpl<AbieRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.ABIE_ABIE_HASH_PATH_K);
+        return Arrays.<Index>asList(Indexes.ABIE_ABIE_HASH_PATH_K, Indexes.ABIE_ABIE_PATH_K);
     }
 
     @Override

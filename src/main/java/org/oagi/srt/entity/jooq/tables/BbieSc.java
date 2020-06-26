@@ -37,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 751475013;
+    private static final long serialVersionUID = 1432282935;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -75,7 +75,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     /**
      * The column <code>oagi.bbie_sc.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
@@ -215,7 +215,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_HASH_PATH_K);
+        return Arrays.<Index>asList(Indexes.BBIE_SC_BBIE_SC_HASH_PATH_K, Indexes.BBIE_SC_BBIE_SC_PATH_K);
     }
 
     @Override
