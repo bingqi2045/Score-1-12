@@ -1,5 +1,6 @@
 package org.oagi.srt.gateway.http.api.release_management.service;
 
+import io.netty.util.internal.EmptyArrays;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
@@ -34,6 +35,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.oagi.srt.entity.jooq.Tables.APP_USER;
@@ -391,7 +393,10 @@ public class ReleaseService implements InitializingBean {
                     releaseCreateRequestEvent.getAccManifestIds(),
                     releaseCreateRequestEvent.getAsccpManifestIds(),
                     releaseCreateRequestEvent.getBccpManifestIds(),
-                    releaseCreateRequestEvent.getCodeListManifestIds()
+                    releaseCreateRequestEvent.getCodeListManifestIds(),
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    Collections.emptyList()
             );
             repository.updateState(releaseCreateRequestEvent.getUserId(),
                     releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);

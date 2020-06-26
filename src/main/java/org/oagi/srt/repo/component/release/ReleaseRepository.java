@@ -190,6 +190,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()
         );
     }
@@ -200,7 +203,10 @@ public class ReleaseRepository implements SrtRepository<Release> {
             List<BigInteger> accManifestIds,
             List<BigInteger> asccpManifestIds,
             List<BigInteger> bccpManifestIds,
-            List<BigInteger> codeListManifestIds) {
+            List<BigInteger> codeListManifestIds,
+            List<BigInteger> bdtManifestIds,
+            List<BigInteger> bdtScManifestIds,
+            List<BigInteger> xbtManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -218,10 +224,13 @@ public class ReleaseRepository implements SrtRepository<Release> {
             Map<ULong, ULong> prevNextAsccpManifestIdMap = copyAsccpManifests(
                     releaseRecord, asccpManifestRecords, prevNextAccManifestIdMap);
 
+            List<DtManifestRecord> bdtManifestRecords = getBdtManifestRecordsInWorking(states, bdtManifestIds);
+            Map<ULong, ULong> prevNextBdtManifestIdMap =  copyBdtManifests(releaseRecord, bdtManifestRecords);
+
             List<BccpManifestRecord> bccpManifestRecords = getBccpManifestRecordsInWorking(
                     states, bccpManifestIds);
             Map<ULong, ULong> prevNextBccpManifestIdMap = copyBccpManifests(
-                    releaseRecord, bccpManifestRecords);
+                    releaseRecord, bccpManifestRecords, prevNextBdtManifestIdMap);
 
             List<AsccManifestRecord> asccManifestRecords = getAsccManifestRecordsInWorking(
                     states, accManifestIds);
@@ -232,6 +241,12 @@ public class ReleaseRepository implements SrtRepository<Release> {
                     states, accManifestIds);
             copyBccManifests(releaseRecord, bccManifestRecords,
                     prevNextAccManifestIdMap, prevNextBccpManifestIdMap);
+
+            List<DtScManifestRecord> bdtScManifestRecords = getBdtScManifestRecordsInWorking(states, bdtScManifestIds);
+            copyBdtScManifests(releaseRecord, bdtScManifestRecords, prevNextBdtManifestIdMap);
+
+            List<XbtManifestRecord> XbtManifestRecords = getXbtManifestRecordsInWorking(states, xbtManifestIds);
+            copyXbtManifests(releaseRecord, XbtManifestRecords);
 
             List<CodeListManifestRecord> codeListManifestRecords = getCodeListManifestRecordsInWorking(
                     states, codeListManifestIds);
@@ -330,6 +345,64 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .fetchInto(BccpManifestRecord.class);
     }
 
+    private List<DtManifestRecord> getBdtManifestRecordsInWorking(List<CcState> states,
+                                                                  List<BigInteger> bdtManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+        conditions.add(DT.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+
+        if (bdtManifestIds != null && bdtManifestIds.size() > 0) {
+            conditions.add(DT_MANIFEST.DT_MANIFEST_ID.in(bdtManifestIds));
+        }
+
+        return dslContext.select(DT_MANIFEST.fields())
+                .from(DT_MANIFEST)
+                .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .where(conditions)
+                .fetchInto(DtManifestRecord.class);
+    }
+
+    private List<DtScManifestRecord> getBdtScManifestRecordsInWorking(List<CcState> states,
+                                                                      List<BigInteger> bdtScManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+
+        if (bdtScManifestIds != null && bdtScManifestIds.size() > 0) {
+            conditions.add(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(bdtScManifestIds));
+        }
+
+        if (states.indexOf(CcState.Published) > -1) {
+            return dslContext.select(DT_SC_MANIFEST.fields())
+                    .from(DT_SC_MANIFEST)
+                    .join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                    .where(conditions)
+                    .fetchInto(DtScManifestRecord.class);
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<XbtManifestRecord> getXbtManifestRecordsInWorking(List<CcState> states,
+                                                                   List<BigInteger> xbtManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+
+        if (xbtManifestIds != null && xbtManifestIds.size() > 0) {
+            conditions.add(XBT_MANIFEST.XBT_MANIFEST_ID.in(xbtManifestIds));
+        }
+
+        if (states.indexOf(CcState.Published) > -1) {
+            return dslContext.select(XBT_MANIFEST.fields())
+                    .from(XBT_MANIFEST)
+                    .join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                    .where(conditions)
+                    .fetchInto(XbtManifestRecord.class);
+        }
+
+        return Collections.emptyList();
+    }
+
     private List<CodeListManifestRecord> getCodeListManifestRecordsInWorking(List<CcState> states,
                                                                      List<BigInteger> codeListManifestIds) {
         List<Condition> conditions = new ArrayList();
@@ -404,13 +477,15 @@ public class ReleaseRepository implements SrtRepository<Release> {
     }
 
     private Map<ULong, ULong> copyBccpManifests(ReleaseRecord releaseRecord,
-                                                List<BccpManifestRecord> bccpManifestRecords) {
+                                                List<BccpManifestRecord> bccpManifestRecords,
+                                                Map<ULong, ULong> prevNextBdtManifestIdMap) {
         Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap();
         bccpManifestRecords.forEach(e -> {
             ULong prevBccpManifestId = e.getBccpManifestId();
 
             e.setBccpManifestId(null);
             e.setReleaseId(releaseRecord.getReleaseId());
+            e.setBdtManifestId(prevNextBdtManifestIdMap.get(e.getBdtManifestId()));
             e.setBccpManifestId(
                     dslContext.insertInto(BCCP_MANIFEST)
                             .set(e).returning(BCCP_MANIFEST.BCCP_MANIFEST_ID)
@@ -421,6 +496,68 @@ public class ReleaseRepository implements SrtRepository<Release> {
         });
 
         return prevNextBccpManifestIdMap;
+    }
+
+    private Map<ULong, ULong> copyBdtManifests(ReleaseRecord releaseRecord,
+                                                    List<DtManifestRecord> bdtManifestRecords) {
+        Map<ULong, ULong> prevNextbdtManifestIdMap = new HashMap();
+        bdtManifestRecords.forEach(e -> {
+            ULong prevBdtManifestId = e.getDtManifestId();
+
+            e.setDtManifestId(null);
+            e.setReleaseId(releaseRecord.getReleaseId());
+            e.setDtManifestId(
+                    dslContext.insertInto(DT_MANIFEST)
+                            .set(e).returning(DT_MANIFEST.DT_MANIFEST_ID)
+                            .fetchOne().getDtManifestId()
+            );
+
+            prevNextbdtManifestIdMap.put(prevBdtManifestId, e.getDtManifestId());
+        });
+
+        return prevNextbdtManifestIdMap;
+    }
+
+    private Map<ULong, ULong> copyBdtScManifests(ReleaseRecord releaseRecord,
+                                                 List<DtScManifestRecord> bdtScManifestRecords,
+                                                 Map<ULong, ULong> prevNextBdtManifestIdMap) {
+        Map<ULong, ULong> prevNextbdtScManifestIdMap = new HashMap();
+        bdtScManifestRecords.forEach(e -> {
+            ULong prevBdtScManifestId = e.getDtScManifestId();
+
+            e.setDtScManifestId(null);
+            e.setReleaseId(releaseRecord.getReleaseId());
+            e.setOwnerDtManifestId(prevNextBdtManifestIdMap.get(e.getOwnerDtManifestId()));
+            e.setDtScManifestId(
+                    dslContext.insertInto(DT_SC_MANIFEST)
+                            .set(e).returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
+                            .fetchOne().getDtScManifestId()
+            );
+
+            prevNextbdtScManifestIdMap.put(prevBdtScManifestId, e.getDtScManifestId());
+        });
+
+        return prevNextbdtScManifestIdMap;
+    }
+
+    private Map<ULong, ULong> copyXbtManifests(ReleaseRecord releaseRecord,
+                                                 List<XbtManifestRecord> xbtManifestRecords) {
+        Map<ULong, ULong> prevNextXbtManifestIdMap = new HashMap();
+        xbtManifestRecords.forEach(e -> {
+            ULong prevXbtManifestId = e.getXbtManifestId();
+
+            e.setXbtManifestId(null);
+            e.setReleaseId(releaseRecord.getReleaseId());
+            e.setXbtManifestId(
+                    dslContext.insertInto(XBT_MANIFEST)
+                            .set(e).returning(XBT_MANIFEST.XBT_MANIFEST_ID)
+                            .fetchOne().getXbtManifestId()
+            );
+
+            prevNextXbtManifestIdMap.put(prevXbtManifestId, e.getXbtManifestId());
+        });
+
+        return prevNextXbtManifestIdMap;
     }
 
     private Map<ULong, ULong> copyCodeListManifests(ReleaseRecord releaseRecord,
@@ -867,11 +1004,24 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 dslContext.deleteFrom(BCCP_MANIFEST)
                         .where(BCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
+                dslContext.deleteFrom(XBT_MANIFEST)
+                        .where(XBT_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(DT_SC_MANIFEST)
+                        .where(DT_SC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(DT_MANIFEST)
+                        .where(DT_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
                 dslContext.deleteFrom(ASCC_MANIFEST)
                         .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
                 dslContext.deleteFrom(ASCCP_MANIFEST)
                         .where(ASCCP_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.update(ACC_MANIFEST)
+                        .setNull(ACC_MANIFEST.BASED_ACC_MANIFEST_ID)
+                        .where(ACC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
                 dslContext.deleteFrom(ACC_MANIFEST)
                         .where(ACC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
