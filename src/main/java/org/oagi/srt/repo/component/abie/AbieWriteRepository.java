@@ -52,6 +52,7 @@ public class AbieWriteRepository {
             abieRecord.setVersion(abie.getVersion());
             abieRecord.setRemark(abie.getRemark());
             abieRecord.setBizTerm(abie.getBizTerm());
+            abieRecord.setStatus(abie.getStatus());
 
             abieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
 
@@ -74,6 +75,7 @@ public class AbieWriteRepository {
             abieRecord.setVersion(abie.getVersion());
             abieRecord.setRemark(abie.getRemark());
             abieRecord.setBizTerm(abie.getBizTerm());
+            abieRecord.setStatus(abie.getStatus());
 
             abieRecord.setLastUpdatedBy(requesterId);
             abieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
@@ -84,6 +86,7 @@ public class AbieWriteRepository {
                     ABIE.VERSION,
                     ABIE.REMARK,
                     ABIE.BIZ_TERM,
+                    ABIE.STATUS,
                     ABIE.LAST_UPDATED_BY,
                     ABIE.LAST_UPDATE_TIMESTAMP
             );
