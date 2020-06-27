@@ -40,6 +40,8 @@ public class RepositoryInitializer implements InitializingBean {
         initCodeListValueGuid();
         initSeqKey();
 
+        initModuleDir();
+
         initAccRevision();
         initAsccpRevision();
         initBccpRevision();
@@ -230,6 +232,76 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
+    private void initModuleDir() {
+        AppUserRecord oagisUser = dslContext.selectFrom(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq("oagis"))
+                .fetchOne();
+
+        for (ModuleRecord moduleRecord : dslContext.selectFrom(MODULE)
+                .where(MODULE.MODULE_DIR_ID.isNull())
+                .fetch()) {
+
+            ModuleDirRecord parent = dslContext.selectFrom(MODULE_DIR)
+                    .where(MODULE_DIR.NAME.eq(""))
+                    .fetchOptional().orElse(null);
+            if (parent == null) {
+                LocalDateTime timestamp = LocalDateTime.now();
+                parent = new ModuleDirRecord();
+                parent.setName("");
+                parent.setPath("");
+                parent.setCreatedBy(oagisUser.getAppUserId());
+                parent.setLastUpdatedBy(oagisUser.getAppUserId());
+                parent.setCreationTimestamp(timestamp);
+                parent.setLastUpdateTimestamp(timestamp);
+                parent = dslContext.insertInto(MODULE_DIR)
+                        .set(parent)
+                        .returning().fetchOne();
+            }
+
+            String moduleName = moduleRecord.getName();
+            List<String> paths = Arrays.asList(moduleName.split("\\\\"));
+
+            for (int i = 0, len = paths.size(); i < len - 1; ++i) {
+                String path = paths.get(i);
+                String fullpath = String.join("/", Arrays.asList(parent.getPath(), path));
+
+                ModuleDirRecord moduleDirRecord = dslContext.selectFrom(MODULE_DIR)
+                        .where(and(
+                                MODULE_DIR.NAME.eq(path),
+                                MODULE_DIR.PARENT_MODULE_DIR_ID.eq(parent.getModuleDirId())
+                        ))
+                        .fetchOptional().orElse(null);
+
+                if (moduleDirRecord == null) {
+                    LocalDateTime timestamp = LocalDateTime.now();
+                    moduleDirRecord = new ModuleDirRecord();
+                    moduleDirRecord.setParentModuleDirId(parent.getModuleDirId());
+                    moduleDirRecord.setName(path);
+
+                    moduleDirRecord.setPath(fullpath);
+                    moduleDirRecord.setCreatedBy(oagisUser.getAppUserId());
+                    moduleDirRecord.setLastUpdatedBy(oagisUser.getAppUserId());
+                    moduleDirRecord.setCreationTimestamp(timestamp);
+                    moduleDirRecord.setLastUpdateTimestamp(timestamp);
+                    moduleDirRecord = dslContext.insertInto(MODULE_DIR)
+                            .set(moduleDirRecord)
+                            .returning().fetchOne();
+                }
+
+                if (i == len - 2) {
+                    moduleRecord.setModuleDirId(moduleDirRecord.getModuleDirId());
+                    moduleRecord.update(MODULE.MODULE_DIR_ID);
+                } else {
+                    parent = moduleDirRecord;
+                }
+            }
+
+            String filename = paths.get(paths.size() - 1);
+            moduleRecord.setName(filename);
+            moduleRecord.update(MODULE.NAME);
+        }
+    }
+
     private void initAccRevision() {
         // For 'Non-Working' releases.
         List<AccManifestRecord> accManifestRecordList = dslContext.select(ACC_MANIFEST.fields())
@@ -300,11 +372,7 @@ public class RepositoryInitializer implements InitializingBean {
             for (AsccManifestRecord prevAsccManifestRecord :
                     dslContext.select(ASCC_MANIFEST.fields())
                             .from(ASCC_MANIFEST)
-                            .join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                            .where(and(
-                                    RELEASE.RELEASE_NUM.notEqual("Working"),
-                                    ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId())
-                            ))
+                            .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()))
                             .fetchInto(AsccManifestRecord.class)) {
 
                 AsccManifestRecord nextAsccManifestRecord = dslContext.selectFrom(ASCC_MANIFEST)
@@ -312,9 +380,7 @@ public class RepositoryInitializer implements InitializingBean {
                                 ASCC_MANIFEST.RELEASE_ID.notEqual(
                                         prevAsccManifestRecord.getReleaseId()),
                                 ASCC_MANIFEST.ASCC_ID.equal(
-                                        prevAsccManifestRecord.getAsccId()),
-                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.equal(
-                                        prevAsccManifestRecord.getFromAccManifestId())
+                                        prevAsccManifestRecord.getAsccId())
                         ))
                         .fetchOne();
 
@@ -331,11 +397,7 @@ public class RepositoryInitializer implements InitializingBean {
             for (BccManifestRecord prevBccManifestRecord :
                     dslContext.select(BCC_MANIFEST.fields())
                             .from(BCC_MANIFEST)
-                            .join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                            .where(and(
-                                    RELEASE.RELEASE_NUM.notEqual("Working"),
-                                    BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId())
-                            ))
+                            .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(prevAccManifestRecord.getAccManifestId()))
                             .fetchInto(BccManifestRecord.class)) {
 
                 BccManifestRecord nextBccManifestRecord = dslContext.selectFrom(BCC_MANIFEST)
@@ -343,9 +405,7 @@ public class RepositoryInitializer implements InitializingBean {
                                 BCC_MANIFEST.RELEASE_ID.notEqual(
                                         prevBccManifestRecord.getReleaseId()),
                                 BCC_MANIFEST.BCC_ID.equal(
-                                        prevBccManifestRecord.getBccId()),
-                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.equal(
-                                        prevBccManifestRecord.getFromAccManifestId())
+                                        prevBccManifestRecord.getBccId())
                         ))
                         .fetchOne();
 
@@ -649,9 +709,7 @@ public class RepositoryInitializer implements InitializingBean {
                                 DT_SC_MANIFEST.RELEASE_ID.notEqual(
                                         prevDtScManifestRecord.getReleaseId()),
                                 DT_SC_MANIFEST.DT_SC_ID.equal(
-                                        prevDtScManifestRecord.getDtScId()),
-                                DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.equal(
-                                        prevDtScManifestRecord.getOwnerDtManifestId())
+                                        prevDtScManifestRecord.getDtScId())
                         ))
                         .fetchOne();
 
