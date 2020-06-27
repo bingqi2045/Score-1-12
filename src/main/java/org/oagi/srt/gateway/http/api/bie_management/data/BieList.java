@@ -23,6 +23,8 @@ public class BieList {
 
     private String version;
     private String status;
+    private String bizTerm;
+    private String remark;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;
     private BieState state;

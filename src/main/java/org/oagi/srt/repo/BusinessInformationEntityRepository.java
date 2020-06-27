@@ -605,9 +605,9 @@ public class BusinessInformationEntityRepository {
         return new SelectBieListArguments();
     }
 
-    private SelectOnConditionStep<Record11<
-            ULong, String, String, String,
-            ULong, String, String, String,
+    private SelectOnConditionStep<Record13<
+            ULong, String, String, String, ULong,
+            String, String, String, String, String,
             LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
@@ -618,6 +618,8 @@ public class BusinessInformationEntityRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 ABIE.VERSION,
                 ABIE.STATUS,
+                ABIE.BIZ_TERM,
+                ABIE.REMARK,
                 TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 TOP_LEVEL_ABIE.STATE)
@@ -639,22 +641,22 @@ public class BusinessInformationEntityRepository {
     }
 
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
-        SelectOnConditionStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
+        SelectOnConditionStep<Record13<
+                ULong, String, String, String, ULong,
+                String, String, String, String, String,
                 LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
-        SelectConnectByStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
+        SelectConnectByStep<Record13<
+                ULong, String, String, String, ULong,
+                String, String, String, String, String,
                 LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
         SortField sortField = arguments.getSortField();
-        SelectWithTiesAfterOffsetStep<Record11<
-                ULong, String, String, String,
-                ULong, String, String, String,
+        SelectWithTiesAfterOffsetStep<Record13<
+                ULong, String, String, String, ULong,
+                String, String, String, String, String,
                 LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
