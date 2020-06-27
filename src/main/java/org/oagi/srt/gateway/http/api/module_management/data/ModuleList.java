@@ -15,7 +15,6 @@ public class ModuleList {
     private String owner;
     private String lastUpdatedBy;
     private Date lastUpdateTimestamp;
-    private String sinceRelease;
     private boolean canEdit;
 
 }

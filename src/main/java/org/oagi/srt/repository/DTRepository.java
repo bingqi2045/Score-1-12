@@ -47,7 +47,7 @@ public class DTRepository implements SrtRepository<DT> {
                 Tables.DT.CREATION_TIMESTAMP,
                 Tables.DT.LAST_UPDATE_TIMESTAMP,
                 Tables.DT.IS_DEPRECATED.as("deprecated"),
-                Tables.MODULE.MODULE_.as("module"))
+                Tables.MODULE.NAME.as("module"))
                 .from(Tables.DT)
                 .join(Tables.DT_MANIFEST)
                 .on(Tables.DT.DT_ID.eq(Tables.DT_MANIFEST.DT_ID))

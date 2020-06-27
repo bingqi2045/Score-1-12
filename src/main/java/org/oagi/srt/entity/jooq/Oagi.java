@@ -62,6 +62,10 @@ import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
+import org.oagi.srt.entity.jooq.tables.ModuleDir;
+import org.oagi.srt.entity.jooq.tables.ModuleSet;
+import org.oagi.srt.entity.jooq.tables.ModuleSetAssignment;
+import org.oagi.srt.entity.jooq.tables.ModuleSetRelease;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
 import org.oagi.srt.entity.jooq.tables.Revision;
@@ -79,7 +83,7 @@ import org.oagi.srt.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 1258314164;
+    private static final long serialVersionUID = 26403298;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -359,6 +363,26 @@ If we use a separate table for each expression, then we need binding all the way
     public final ModuleDep MODULE_DEP = ModuleDep.MODULE_DEP;
 
     /**
+     * The table <code>oagi.module_dir</code>.
+     */
+    public final ModuleDir MODULE_DIR = ModuleDir.MODULE_DIR;
+
+    /**
+     * The table <code>oagi.module_set</code>.
+     */
+    public final ModuleSet MODULE_SET = ModuleSet.MODULE_SET;
+
+    /**
+     * The table <code>oagi.module_set_assignment</code>.
+     */
+    public final ModuleSetAssignment MODULE_SET_ASSIGNMENT = ModuleSetAssignment.MODULE_SET_ASSIGNMENT;
+
+    /**
+     * The table <code>oagi.module_set_release</code>.
+     */
+    public final ModuleSetRelease MODULE_SET_RELEASE = ModuleSetRelease.MODULE_SET_RELEASE;
+
+    /**
      * This table stores information about a namespace. Namespace is the namespace as in the XML schema specification.
      */
     public final Namespace NAMESPACE = Namespace.NAMESPACE;
@@ -471,6 +495,10 @@ If we use a separate table for each expression, then we need binding all the way
             DtUsageRule.DT_USAGE_RULE,
             Module.MODULE,
             ModuleDep.MODULE_DEP,
+            ModuleDir.MODULE_DIR,
+            ModuleSet.MODULE_SET,
+            ModuleSetAssignment.MODULE_SET_ASSIGNMENT,
+            ModuleSetRelease.MODULE_SET_RELEASE,
             Namespace.NAMESPACE,
             Release.RELEASE,
             Revision.REVISION,

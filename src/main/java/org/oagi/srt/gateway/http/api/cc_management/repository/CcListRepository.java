@@ -82,7 +82,7 @@ public class CcListRepository {
             conditions.addAll(contains(request.getDefinition(), ACC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
+            conditions.addAll(contains(request.getModule(), MODULE.NAME));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -156,7 +156,7 @@ public class CcListRepository {
                 ACC.DEN,
                 ACC.DEFINITION,
                 ACC.DEFINITION_SOURCE,
-                MODULE.MODULE_,
+                MODULE.NAME,
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.STATE,
                 ACC.IS_DEPRECATED,
@@ -189,7 +189,7 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(ACC.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION_SOURCE)));
-                    ccList.setModule(row.getValue(MODULE.MODULE_));
+                    ccList.setModule(row.getValue(MODULE.NAME));
                     ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
                     ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
                     ccList.setDeprecated(row.getValue(ACC.IS_DEPRECATED) == 1);
@@ -492,7 +492,7 @@ public class CcListRepository {
             conditions.addAll(contains(request.getDefinition(), ASCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
+            conditions.addAll(contains(request.getModule(), MODULE.NAME));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -540,7 +540,7 @@ public class CcListRepository {
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
                 ASCCP.DEFINITION_SOURCE,
-                MODULE.MODULE_,
+                MODULE.NAME,
                 ASCCP.STATE,
                 ASCCP.IS_DEPRECATED,
                 ASCCP.LAST_UPDATE_TIMESTAMP,
@@ -572,7 +572,7 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION_SOURCE)));
-                    ccList.setModule(row.getValue(MODULE.MODULE_));
+                    ccList.setModule(row.getValue(MODULE.NAME));
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
@@ -619,7 +619,7 @@ public class CcListRepository {
             conditions.addAll(contains(request.getDefinition(), BCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.addAll(contains(request.getModule(), MODULE.MODULE_));
+            conditions.addAll(contains(request.getModule(), MODULE.NAME));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -657,7 +657,7 @@ public class CcListRepository {
                 BCCP.DEN,
                 BCCP.DEFINITION,
                 BCCP.DEFINITION_SOURCE,
-                MODULE.MODULE_,
+                MODULE.NAME,
                 BCCP.STATE,
                 BCCP.IS_DEPRECATED,
                 BCCP.LAST_UPDATE_TIMESTAMP,
@@ -689,7 +689,7 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(BCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION_SOURCE)));
-                    ccList.setModule(row.getValue(MODULE.MODULE_));
+                    ccList.setModule(row.getValue(MODULE.NAME));
                     ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
                     ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
@@ -749,7 +749,7 @@ public class CcListRepository {
                 DT.DEN,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
-                MODULE.MODULE_,
+                MODULE.NAME,
                 DT.STATE,
                 DT.IS_DEPRECATED,
                 DT.LAST_UPDATE_TIMESTAMP,
@@ -784,7 +784,7 @@ public class CcListRepository {
                     }
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION_SOURCE)));
-                    ccList.setModule(row.getValue(MODULE.MODULE_));
+                    ccList.setModule(row.getValue(MODULE.NAME));
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(DT.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));

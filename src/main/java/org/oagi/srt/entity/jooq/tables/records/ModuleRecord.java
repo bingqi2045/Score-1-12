@@ -20,9 +20,9 @@ import org.oagi.srt.entity.jooq.tables.Module;
  * components will be generated during the expression generation.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
+public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -2141879399;
+    private static final long serialVersionUID = 113499139;
 
     /**
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database key.
@@ -39,31 +39,31 @@ public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.module.module</code>. The is the subdirectory and filename. The format is Windows file path. The starting directory typically is the root folder of all the release content. For example, for OAGIS 10.1 Model, the root directory is Model. If the file shall be directly under the Model directory, then this column should be 'Model\filename' without the extension. If the file is under, say, Model\Platform\2_1\Common\Components directory, then the value of this column shall be 'Model\Platform\2_1\Common\Components\filenam'. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
+     * Setter for <code>oagi.module.module_dir_id</code>. This indicates a module directory.
      */
-    public void setModule(String value) {
+    public void setModuleDirId(ULong value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.module.module</code>. The is the subdirectory and filename. The format is Windows file path. The starting directory typically is the root folder of all the release content. For example, for OAGIS 10.1 Model, the root directory is Model. If the file shall be directly under the Model directory, then this column should be 'Model\filename' without the extension. If the file is under, say, Model\Platform\2_1\Common\Components directory, then the value of this column shall be 'Model\Platform\2_1\Common\Components\filenam'. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
+     * Getter for <code>oagi.module.module_dir_id</code>. This indicates a module directory.
      */
-    public String getModule() {
-        return (String) get(1);
+    public ULong getModuleDirId() {
+        return (ULong) get(1);
     }
 
     /**
-     * Setter for <code>oagi.module.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.
+     * Setter for <code>oagi.module.name</code>. The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
      */
-    public void setReleaseId(ULong value) {
+    public void setName(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.module.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.
+     * Getter for <code>oagi.module.name</code>. The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
      */
-    public ULong getReleaseId() {
-        return (ULong) get(2);
+    public String getName() {
+        return (String) get(2);
     }
 
     /**
@@ -182,12 +182,12 @@ In the history record, this should always be the user who is editing the entity 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 
     @Override
-    public Row10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
+    public Row10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> valuesRow() {
         return (Row10) super.valuesRow();
     }
 
@@ -197,13 +197,13 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     @Override
-    public Field<String> field2() {
-        return Module.MODULE.MODULE_;
+    public Field<ULong> field2() {
+        return Module.MODULE.MODULE_DIR_ID;
     }
 
     @Override
-    public Field<ULong> field3() {
-        return Module.MODULE.RELEASE_ID;
+    public Field<String> field3() {
+        return Module.MODULE.NAME;
     }
 
     @Override
@@ -247,13 +247,13 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     @Override
-    public String component2() {
-        return getModule();
+    public ULong component2() {
+        return getModuleDirId();
     }
 
     @Override
-    public ULong component3() {
-        return getReleaseId();
+    public String component3() {
+        return getName();
     }
 
     @Override
@@ -297,13 +297,13 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     @Override
-    public String value2() {
-        return getModule();
+    public ULong value2() {
+        return getModuleDirId();
     }
 
     @Override
-    public ULong value3() {
-        return getReleaseId();
+    public String value3() {
+        return getName();
     }
 
     @Override
@@ -348,14 +348,14 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     @Override
-    public ModuleRecord value2(String value) {
-        setModule(value);
+    public ModuleRecord value2(ULong value) {
+        setModuleDirId(value);
         return this;
     }
 
     @Override
-    public ModuleRecord value3(ULong value) {
-        setReleaseId(value);
+    public ModuleRecord value3(String value) {
+        setName(value);
         return this;
     }
 
@@ -402,7 +402,7 @@ In the history record, this should always be the user who is editing the entity 
     }
 
     @Override
-    public ModuleRecord values(ULong value1, String value2, ULong value3, ULong value4, String value5, ULong value6, ULong value7, ULong value8, LocalDateTime value9, LocalDateTime value10) {
+    public ModuleRecord values(ULong value1, ULong value2, String value3, ULong value4, String value5, ULong value6, ULong value7, ULong value8, LocalDateTime value9, LocalDateTime value10) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -430,12 +430,12 @@ In the history record, this should always be the user who is editing the entity 
     /**
      * Create a detached, initialised ModuleRecord
      */
-    public ModuleRecord(ULong moduleId, String module, ULong releaseId, ULong namespaceId, String versionNum, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleRecord(ULong moduleId, ULong moduleDirId, String name, ULong namespaceId, String versionNum, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Module.MODULE);
 
         set(0, moduleId);
-        set(1, module);
-        set(2, releaseId);
+        set(1, moduleDirId);
+        set(2, name);
         set(3, namespaceId);
         set(4, versionNum);
         set(5, createdBy);

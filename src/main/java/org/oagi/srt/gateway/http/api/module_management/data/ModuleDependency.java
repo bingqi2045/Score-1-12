@@ -2,11 +2,13 @@ package org.oagi.srt.gateway.http.api.module_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class ModuleDependency {
 
-    private long moduleDepId;
+    private BigInteger moduleDepId;
     private String dependencyType;
-    private long relatedModuleId;
+    private BigInteger relatedModuleId;
 
 }

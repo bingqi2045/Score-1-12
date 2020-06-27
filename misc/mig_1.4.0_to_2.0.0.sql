@@ -1351,6 +1351,114 @@ ALTER TABLE `ctx_category`
     MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.',
     MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the context category.';
 
+
+-- Add `module_dir` table.
+DROP TABLE IF EXISTS `module_dir`;
+CREATE TABLE `module_dir` (
+    `module_dir_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `parent_module_dir_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This indicates the parent of this directory.',
+    `name` varchar(100) NOT NULL COMMENT 'This is the name of the directory.',
+    `path` text NOT NULL COMMENT 'This is a full-path of this module directory for performance.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_DIR.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_dir_id`),
+    KEY `module_dir_created_by_fk` (`created_by`),
+    KEY `module_dir_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_dir_parent_module_dir_id_fk` (`parent_module_dir_id`),
+    KEY `module_dir_path_k` (`path`(1024)),
+    CONSTRAINT `module_dir_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_dir_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+CONSTRAINT `module_dir_parent_module_dir_id_fk` FOREIGN KEY (`parent_module_dir_id`) REFERENCES `module_dir` (`module_dir_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `module_dir` (`module_dir_id`, `parent_module_dir_id`, `name`, `path`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
+VALUES
+(1, NULL, '', '', 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+-- Add 'module_set` table.
+CREATE TABLE `module_set` (
+    `module_set_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `guid` varchar(41) NOT NULL COMMENT 'A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.',
+    `name` varchar(100) NOT NULL COMMENT 'This is the name of the module set.',
+    `description` text COMMENT 'Description or explanation about the module set or use of the module set.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_set_id`),
+    KEY `module_set_created_by_fk` (`created_by`),
+    KEY `module_set_last_updated_by_fk` (`last_updated_by`),
+    CONSTRAINT `module_set_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_set_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `module_set` (`module_set_id`, `guid`, `name`, `description`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
+VALUES
+(1, 'oagis-id-dd2c4bf4885e4b769504ab0afd0a7aae', 'OAGIS 10.6 Canonical XML Schema', 'Can be used for both global-global and local-global pattern', 1, 1, '2020-06-27 01:47:41.918540', '2020-06-27 01:47:41.918540');
+
+-- Add 'module_set_assignment` table.
+CREATE TABLE `module_set_assignment` (
+    `module_set_assignment_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module assigned in the module set.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_ASSIGNMENT.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_set_assignment_id`),
+    KEY `module_set_assignment_module_set_id_fk` (`module_set_id`),
+    KEY `module_set_assignment_module_id_fk` (`module_id`),
+    KEY `module_set_assignment_created_by_fk` (`created_by`),
+    KEY `module_set_assignment_last_updated_by_fk` (`last_updated_by`),
+    CONSTRAINT `module_set_assignment_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_set_assignment_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_set_assignment_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `module_set_assignment_module_set_id_fk` FOREIGN KEY (`module_set_id`) REFERENCES `module_set` (`module_set_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `module_set_assignment`
+(`module_set_id`, `module_id`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
+SELECT `module_set`.`module_set_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `module_set`, `module`;
+
+DROP TABLE IF EXISTS `module_set_release`;
+CREATE TABLE `module_set_release` (
+    `module_set_release_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set.',
+    `release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the release.',
+    `is_default` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'It would be a default module set if this indicator is checked. Otherwise, it would be an optional.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_set_release_id`),
+    KEY `module_set_release_module_set_id_fk` (`module_set_id`),
+    KEY `module_set_release_release_id_fk` (`release_id`),
+    KEY `module_set_release_assignment_created_by_fk` (`created_by`),
+    KEY `module_set_release_assignment_last_updated_by_fk` (`last_updated_by`),
+    CONSTRAINT `module_set_release_assignment_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_set_release_assignment_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_set_release_module_set_id_fk` FOREIGN KEY (`module_set_id`) REFERENCES `module_set` (`module_set_id`),
+    CONSTRAINT `module_set_release_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `module_set_release` (`module_set_release_id`, `module_set_id`, `release_id`, `is_default`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
+VALUES
+(1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+
+
+-- Add columns and constraints on `module` table.
+ALTER TABLE `module` CHANGE `module` `name` varchar(100) NOT NULL COMMENT 'The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, ''.xsd'' maybe added; or for JSON, ''.json'' maybe added as the file extension.';
+ALTER TABLE `module`
+    ADD COLUMN `module_dir_id` bigint(20) unsigned COMMENT 'This indicates a module directory.' AFTER `module_id`,
+    ADD CONSTRAINT `module_module_dir_id_fk` FOREIGN KEY (`module_dir_id`) REFERENCES `module_dir` (`module_dir_id`),
+    DROP FOREIGN KEY `module_release_id_fk`,
+    DROP COLUMN `release_id`;
+
+
 -- DROP `current_acc_id` column on `acc` table.
 ALTER TABLE `acc` DROP FOREIGN KEY `acc_current_acc_id_fk`;
 DROP INDEX `acc_current_acc_id_fk` ON `acc`;

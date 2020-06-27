@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.*;
 
 @Data
@@ -12,7 +13,7 @@ public class ModuleElement implements Serializable, Comparable<ModuleElement> {
 
     private final String name;
     private final boolean directory;
-    private long moduleId;
+    private BigInteger moduleId;
     private ModuleElement parent;
     private SortedSet<ModuleElement> elements = new TreeSet();
     private SortedSet<ModuleElementDependency> dependents = new TreeSet();

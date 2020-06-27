@@ -44,7 +44,7 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCCP.IS_NILLABLE.as("nillable"),
-                Tables.MODULE.MODULE_.as("module"))
+                Tables.MODULE.NAME.as("module"))
                 .from(Tables.ASCCP)
                 .join(Tables.ASCCP_MANIFEST)
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))

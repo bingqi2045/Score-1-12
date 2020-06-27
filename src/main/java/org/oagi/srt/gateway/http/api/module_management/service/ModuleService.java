@@ -33,7 +33,7 @@ public class ModuleService {
     private SessionService sessionService;
 
     public List<SimpleModule> getSimpleModules() {
-        return dslContext.select(Tables.MODULE.MODULE_ID, Tables.MODULE.MODULE_)
+        return dslContext.select(Tables.MODULE.MODULE_ID, Tables.MODULE.NAME)
                 .from(Tables.MODULE)
                 .fetchInto(SimpleModule.class);
     }
@@ -43,18 +43,15 @@ public class ModuleService {
         AppUser U2 = Tables.APP_USER;
         List<ModuleList> moduleLists = dslContext.select(
                 Tables.MODULE.MODULE_ID,
-                Tables.MODULE.MODULE_,
+                Tables.MODULE.NAME,
                 Tables.MODULE.OWNER_USER_ID,
                 Tables.MODULE.LAST_UPDATE_TIMESTAMP,
                 Tables.NAMESPACE.URI.as("namespace"),
-                Tables.RELEASE.RELEASE_NUM.as("since_release"),
                 U1.LOGIN_ID.as("owner"),
                 U2.LOGIN_ID.as("last_updated_by"))
                 .from(Tables.MODULE)
                 .join(Tables.NAMESPACE)
                 .on(Tables.MODULE.NAMESPACE_ID.eq(Tables.NAMESPACE.NAMESPACE_ID))
-                .join(Tables.RELEASE)
-                .on(Tables.MODULE.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(U1)
                 .on(Tables.MODULE.OWNER_USER_ID.eq(U1.APP_USER_ID))
                 .join(U2)
@@ -73,7 +70,7 @@ public class ModuleService {
     public Module getModule(User user, long moduleId) {
         Module module = dslContext.select(
                 Tables.MODULE.MODULE_ID,
-                Tables.MODULE.MODULE_,
+                Tables.MODULE.NAME,
                 Tables.MODULE.NAMESPACE_ID,
                 Tables.MODULE.LAST_UPDATE_TIMESTAMP)
                 .from(Tables.MODULE)
@@ -116,10 +113,10 @@ public class ModuleService {
 
         ModuleElement root = new ModuleElement("/", true);
 
-        Map<Long, ModuleElement> moduleMap = new HashMap();
+        Map<BigInteger, ModuleElement> moduleMap = new HashMap();
 
         for (ModuleRecord moduleRecord : modules) {
-            String module = moduleRecord.getModule();
+            String module = moduleRecord.getName();
             List<String> splitModule = Arrays.asList(module.split("\\\\"));
 
             String parentName = null;
@@ -129,7 +126,7 @@ public class ModuleService {
 
                 ModuleElement element = new ModuleElement(name, isDirectory);
                 if (!element.isDirectory()) {
-                    long moduleId = moduleRecord.getModuleId().longValue();
+                    BigInteger moduleId = moduleRecord.getModuleId().toBigInteger();
                     element.setModuleId(moduleId);
 
                     moduleMap.put(moduleId, element);

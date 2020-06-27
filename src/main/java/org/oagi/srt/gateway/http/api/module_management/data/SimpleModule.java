@@ -2,10 +2,12 @@ package org.oagi.srt.gateway.http.api.module_management.data;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class SimpleModule {
 
-    private long moduleId;
-    private String module;
+    private BigInteger moduleId;
+    private String name;
 
 }

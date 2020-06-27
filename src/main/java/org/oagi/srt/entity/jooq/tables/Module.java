@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Module extends TableImpl<ModuleRecord> {
 
-    private static final long serialVersionUID = -180526299;
+    private static final long serialVersionUID = -1120722857;
 
     /**
      * The reference instance of <code>oagi.module</code>
@@ -55,14 +55,14 @@ public class Module extends TableImpl<ModuleRecord> {
     public final TableField<ModuleRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.module.module</code>. The is the subdirectory and filename. The format is Windows file path. The starting directory typically is the root folder of all the release content. For example, for OAGIS 10.1 Model, the root directory is Model. If the file shall be directly under the Model directory, then this column should be 'Model\filename' without the extension. If the file is under, say, Model\Platform\2_1\Common\Components directory, then the value of this column shall be 'Model\Platform\2_1\Common\Components\filenam'. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
+     * The column <code>oagi.module.module_dir_id</code>. This indicates a module directory.
      */
-    public final TableField<ModuleRecord, String> MODULE_ = createField(DSL.name("module"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "The is the subdirectory and filename. The format is Windows file path. The starting directory typically is the root folder of all the release content. For example, for OAGIS 10.1 Model, the root directory is Model. If the file shall be directly under the Model directory, then this column should be 'Model\\filename' without the extension. If the file is under, say, Model\\Platform\\2_1\\Common\\Components directory, then the value of this column shall be 'Model\\Platform\\2_1\\Common\\Components\\filenam'. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.");
+    public final TableField<ModuleRecord, ULong> MODULE_DIR_ID = createField(DSL.name("module_dir_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This indicates a module directory.");
 
     /**
-     * The column <code>oagi.module.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.
+     * The column <code>oagi.module.name</code>. The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.
      */
-    public final TableField<ModuleRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the RELEASE table. It identifies the release, for which this module is associated.");
+    public final TableField<ModuleRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, '.xsd' maybe added; or for JSON, '.json' maybe added as the file extension.");
 
     /**
      * The column <code>oagi.module.namespace_id</code>. Note that a release record has a namespace associated. The NAMESPACE_ID, if specified here, overrides the release's namespace. However, the NAMESPACE_ID associated with the component takes the highest precedence.
@@ -156,11 +156,11 @@ In the history record, this should always be the user who is editing the entity 
 
     @Override
     public List<ForeignKey<ModuleRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleRecord, ?>>asList(Keys.MODULE_RELEASE_ID_FK, Keys.MODULE_NAMESPACE_ID_FK, Keys.MODULE_CREATED_BY_FK, Keys.MODULE_LAST_UPDATED_BY_FK, Keys.MODULE_OWNER_USER_ID_FK);
+        return Arrays.<ForeignKey<ModuleRecord, ?>>asList(Keys.MODULE_MODULE_DIR_ID_FK, Keys.MODULE_NAMESPACE_ID_FK, Keys.MODULE_CREATED_BY_FK, Keys.MODULE_LAST_UPDATED_BY_FK, Keys.MODULE_OWNER_USER_ID_FK);
     }
 
-    public Release release() {
-        return new Release(this, Keys.MODULE_RELEASE_ID_FK);
+    public ModuleDir moduleDir() {
+        return new ModuleDir(this, Keys.MODULE_MODULE_DIR_ID_FK);
     }
 
     public Namespace namespace() {
@@ -210,7 +210,7 @@ In the history record, this should always be the user who is editing the entity 
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<ULong, String, ULong, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
+    public Row10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> fieldsRow() {
         return (Row10) super.fieldsRow();
     }
 }

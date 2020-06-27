@@ -56,6 +56,10 @@ import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
+import org.oagi.srt.entity.jooq.tables.ModuleDir;
+import org.oagi.srt.entity.jooq.tables.ModuleSet;
+import org.oagi.srt.entity.jooq.tables.ModuleSetAssignment;
+import org.oagi.srt.entity.jooq.tables.ModuleSetRelease;
 import org.oagi.srt.entity.jooq.tables.Namespace;
 import org.oagi.srt.entity.jooq.tables.Release;
 import org.oagi.srt.entity.jooq.tables.Revision;
@@ -344,6 +348,26 @@ If we use a separate table for each expression, then we need binding all the way
      * This table carries the dependency between modules in the MODULE table.
      */
     public static final ModuleDep MODULE_DEP = ModuleDep.MODULE_DEP;
+
+    /**
+     * The table <code>oagi.module_dir</code>.
+     */
+    public static final ModuleDir MODULE_DIR = ModuleDir.MODULE_DIR;
+
+    /**
+     * The table <code>oagi.module_set</code>.
+     */
+    public static final ModuleSet MODULE_SET = ModuleSet.MODULE_SET;
+
+    /**
+     * The table <code>oagi.module_set_assignment</code>.
+     */
+    public static final ModuleSetAssignment MODULE_SET_ASSIGNMENT = ModuleSetAssignment.MODULE_SET_ASSIGNMENT;
+
+    /**
+     * The table <code>oagi.module_set_release</code>.
+     */
+    public static final ModuleSetRelease MODULE_SET_RELEASE = ModuleSetRelease.MODULE_SET_RELEASE;
 
     /**
      * This table stores information about a namespace. Namespace is the namespace as in the XML schema specification.
