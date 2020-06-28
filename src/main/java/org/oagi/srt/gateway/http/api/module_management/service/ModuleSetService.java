@@ -5,9 +5,7 @@ import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.repo.component.module.ModuleSetReadRepository;
-import org.oagi.srt.repo.component.module.ModuleSetWriteRepository;
-import org.oagi.srt.repo.component.module.UpdateModuleSetRepositoryRequest;
+import org.oagi.srt.repo.component.module.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -45,6 +43,22 @@ public class ModuleSetService {
     }
 
     @Transactional
+    public ModuleSet createModuleSet(User user, CreateModuleSetRequest request) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (!requester.isDeveloper()) {
+            throw new DataAccessForbiddenException(user);
+        }
+
+        CreateModuleSetRepositoryRequest repositoryRequest =
+                new CreateModuleSetRepositoryRequest(user);
+        repositoryRequest.setName(request.getName());
+        repositoryRequest.setDescription(request.getDescription());
+
+        BigInteger moduleSetId = writeRepository.createModuleSet(repositoryRequest);
+        return getModuleSet(user, moduleSetId);
+    }
+
+    @Transactional
     public void updateModuleSet(User user, UpdateModuleSetRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
@@ -57,6 +71,19 @@ public class ModuleSetService {
         repositoryRequest.setDescription(request.getDescription());
 
         writeRepository.updateModuleSet(repositoryRequest);
+    }
+
+    @Transactional
+    public void discardModuleSet(User user, BigInteger moduleSetId) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (!requester.isDeveloper()) {
+            throw new DataAccessForbiddenException(user);
+        }
+
+        DeleteModuleSetRepositoryRequest repositoryRequest =
+                new DeleteModuleSetRepositoryRequest(user, moduleSetId);
+
+        writeRepository.deleteModuleSet(repositoryRequest);
     }
 
     public PageResponse<ModuleSetModule> getModuleSetModuleList(User user, ModuleSetModuleListRequest request) {

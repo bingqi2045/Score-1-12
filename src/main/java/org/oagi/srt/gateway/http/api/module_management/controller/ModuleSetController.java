@@ -69,6 +69,13 @@ public class ModuleSetController {
         return service.getModuleSet(user, moduleSetId);
     }
 
+    @RequestMapping(value = "/module_set", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ModuleSet createModuleSet(@AuthenticationPrincipal User user,
+                                     @RequestBody CreateModuleSetRequest request) {
+        return service.createModuleSet(user, request);
+    }
+
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateModuleSet(@AuthenticationPrincipal User user,
@@ -76,6 +83,13 @@ public class ModuleSetController {
                                 @RequestBody UpdateModuleSetRequest request) {
         request.setModuleSetId(moduleSetId);
         service.updateModuleSet(user, request);
+    }
+
+    @RequestMapping(value = "/module_set/{id}", method = RequestMethod.DELETE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void discardModuleSet(@AuthenticationPrincipal User user,
+                                 @PathVariable("id") BigInteger moduleSetId) {
+        service.discardModuleSet(user, moduleSetId);
     }
 
     @RequestMapping(value = "/module_set/module", method = RequestMethod.GET,
