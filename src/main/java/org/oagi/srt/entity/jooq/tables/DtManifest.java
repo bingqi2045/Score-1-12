@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.DtManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtManifest extends TableImpl<DtManifestRecord> {
 
-    private static final long serialVersionUID = 182432417;
+    private static final long serialVersionUID = -1992182031;
 
     /**
      * The reference instance of <code>oagi.dt_manifest</code>
@@ -56,11 +56,6 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
      * The column <code>oagi.dt_manifest.release_id</code>.
      */
     public final TableField<DtManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
-
-    /**
-     * The column <code>oagi.dt_manifest.module_id</code>.
-     */
-    public final TableField<DtManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.dt_manifest.dt_id</code>.
@@ -142,15 +137,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_MODULE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_REVISION_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_REVISION_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.DT_MANIFEST_RELEASE_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.DT_MANIFEST_MODULE_ID_FK);
     }
 
     public Dt dt() {
@@ -196,11 +187,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row7<ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

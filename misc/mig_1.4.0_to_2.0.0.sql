@@ -1449,6 +1449,211 @@ INSERT INTO `module_set_release` (`module_set_release_id`, `module_set_id`, `rel
 VALUES
 (1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
 
+-- `module_manifest` tables.
+-- 'module_acc_manifest'
+DROP TABLE IF EXISTS `module_acc_manifest`;
+CREATE TABLE `module_acc_manifest` (
+    `module_acc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `acc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the acc manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_acc_manifest_id`),
+    KEY `module_acc_manifest_created_by_fk` (`created_by`),
+    KEY `module_acc_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_acc_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_acc_manifest_acc_manifest_id_fk` (`acc_manifest_id`),
+    KEY `module_acc_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_acc_manifest_acc_manifest_id_fk` FOREIGN KEY (`acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
+    CONSTRAINT `module_acc_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_acc_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_acc_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `module_acc_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_acc_manifest`
+INSERT INTO `module_acc_manifest` (
+    `module_set_release_id`, `acc_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `acc_manifest`.`acc_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `acc_manifest`
+JOIN `module` ON `acc_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `acc_manifest` SET `module_id` = NULL;
+ALTER TABLE `acc_manifest`
+    DROP FOREIGN KEY `acc_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
+-- 'module_asccp_manifest'
+DROP TABLE IF EXISTS `module_asccp_manifest`;
+CREATE TABLE `module_asccp_manifest` (
+    `module_asccp_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `asccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the asccp manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_asccp_manifest_id`),
+    KEY `module_asccp_manifest_created_by_fk` (`created_by`),
+    KEY `module_asccp_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_asccp_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_asccp_manifest_asccp_manifest_id_fk` (`asccp_manifest_id`),
+    KEY `module_asccp_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_asccp_manifest_asccp_manifest_id_fk` FOREIGN KEY (`asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
+    CONSTRAINT `module_asccp_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_asccp_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_asccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+CONSTRAINT `module_asccp_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_asccp_manifest`
+INSERT INTO `module_asccp_manifest` (
+    `module_set_release_id`, `asccp_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `asccp_manifest`.`asccp_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `asccp_manifest`
+JOIN `module` ON `asccp_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `asccp_manifest` SET `module_id` = NULL;
+ALTER TABLE `asccp_manifest`
+    DROP FOREIGN KEY `asccp_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
+-- 'module_bccp_manifest'
+DROP TABLE IF EXISTS `module_bccp_manifest`;
+CREATE TABLE `module_bccp_manifest` (
+    `module_bccp_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `bccp_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the bccp manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_bccp_manifest_id`),
+    KEY `module_bccp_manifest_created_by_fk` (`created_by`),
+    KEY `module_bccp_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_bccp_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_bccp_manifest_bccp_manifest_id_fk` (`bccp_manifest_id`),
+    KEY `module_bccp_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_bccp_manifest_bccp_manifest_id_fk` FOREIGN KEY (`bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
+    CONSTRAINT `module_bccp_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_bccp_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_bccp_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+CONSTRAINT `module_bccp_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_bccp_manifest`
+INSERT INTO `module_bccp_manifest` (
+    `module_set_release_id`, `bccp_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `bccp_manifest`.`bccp_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `bccp_manifest`
+JOIN `module` ON `bccp_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `bccp_manifest` SET `module_id` = NULL;
+ALTER TABLE `bccp_manifest`
+    DROP FOREIGN KEY `bccp_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
+-- 'module_code_list_manifest'
+DROP TABLE IF EXISTS `module_code_list_manifest`;
+CREATE TABLE `module_code_list_manifest` (
+    `module_code_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `code_list_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the code list manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_code_list_manifest_id`),
+    KEY `module_code_list_manifest_created_by_fk` (`created_by`),
+    KEY `module_code_list_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_code_list_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_code_list_manifest_code_list_manifest_id_fk` (`code_list_manifest_id`),
+    KEY `module_code_list_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_code_list_manifest_code_list_manifest_id_fk` FOREIGN KEY (`code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`),
+    CONSTRAINT `module_code_list_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_code_list_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_code_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+CONSTRAINT `module_code_list_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_code_list_manifest`
+INSERT INTO `module_code_list_manifest` (
+    `module_set_release_id`, `code_list_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `code_list_manifest`.`code_list_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `code_list_manifest`
+JOIN `module` ON `code_list_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `code_list_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `code_list_manifest` SET `module_id` = NULL;
+ALTER TABLE `code_list_manifest`
+    DROP FOREIGN KEY `code_list_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
+-- 'module_dt_manifest'
+DROP TABLE IF EXISTS `module_dt_manifest`;
+CREATE TABLE `module_dt_manifest` (
+    `module_dt_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `dt_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the dt manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_dt_manifest_id`),
+    KEY `module_dt_manifest_created_by_fk` (`created_by`),
+    KEY `module_dt_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_dt_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_dt_manifest_dt_manifest_id_fk` (`dt_manifest_id`),
+    KEY `module_dt_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_dt_manifest_dt_manifest_id_fk` FOREIGN KEY (`dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`),
+    CONSTRAINT `module_dt_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_dt_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_dt_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+CONSTRAINT `module_dt_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_dt_manifest`
+INSERT INTO `module_dt_manifest` (
+    `module_set_release_id`, `dt_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `dt_manifest`.`dt_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `dt_manifest`
+JOIN `module` ON `dt_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `dt_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `dt_manifest` SET `module_id` = NULL;
+ALTER TABLE `dt_manifest`
+    DROP FOREIGN KEY `dt_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
 
 -- Add columns and constraints on `module` table.
 ALTER TABLE `module` CHANGE `module` `name` varchar(100) NOT NULL COMMENT 'The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, ''.xsd'' maybe added; or for JSON, ''.json'' maybe added as the file extension.';

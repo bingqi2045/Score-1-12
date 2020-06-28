@@ -30,7 +30,6 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.BCCP.DEN,
                 Tables.BCCP.DEFINITION,
                 Tables.BCCP.DEFINITION_SOURCE,
-                Tables.BCCP_MANIFEST.MODULE_ID,
                 Tables.BCCP.NAMESPACE_ID,
                 Tables.BCCP.CREATED_BY,
                 Tables.BCCP.OWNER_USER_ID,
@@ -52,8 +51,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 .join(Tables.RELEASE)
                 .on(Tables.BCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.BCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
-                .leftJoin(Tables.MODULE).on(Tables.BCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .on(Tables.BCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
     }
 
     @Override

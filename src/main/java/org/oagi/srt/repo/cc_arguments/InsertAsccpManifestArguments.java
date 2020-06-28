@@ -10,7 +10,6 @@ public class InsertAsccpManifestArguments {
     private ULong asccpManifestId;
     private ULong asccpId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong roleOfAccManifestId;
 
     public InsertAsccpManifestArguments(CoreComponentRepository repository) {
@@ -41,15 +40,6 @@ public class InsertAsccpManifestArguments {
 
     public InsertAsccpManifestArguments setReleaseId(ULong releaseId) {
         this.releaseId = releaseId;
-        return this;
-    }
-
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public InsertAsccpManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
         return this;
     }
 

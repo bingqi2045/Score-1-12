@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
-    private static final long serialVersionUID = -1380636219;
+    private static final long serialVersionUID = -1680428559;
 
     /**
      * The reference instance of <code>oagi.bccp_manifest</code>
@@ -56,11 +56,6 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
      * The column <code>oagi.bccp_manifest.release_id</code>.
      */
     public final TableField<BccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
-
-    /**
-     * The column <code>oagi.bccp_manifest.module_id</code>.
-     */
-    public final TableField<BccpManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.bccp_id</code>.
@@ -147,15 +142,11 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     @Override
     public List<ForeignKey<BccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_MODULE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_REVISION_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_REVISION_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.BCCP_MANIFEST_RELEASE_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.BCCP_MANIFEST_MODULE_ID_FK);
     }
 
     public Bccp bccp() {
@@ -205,11 +196,11 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

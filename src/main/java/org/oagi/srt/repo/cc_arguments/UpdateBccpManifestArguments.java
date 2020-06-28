@@ -13,7 +13,6 @@ public class UpdateBccpManifestArguments {
     private ULong bccpManifestId;
     private ULong bccpId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong bdtManifestId;
 
     private int _hashCode;
@@ -24,7 +23,6 @@ public class UpdateBccpManifestArguments {
             this.bccpManifestId = bccpManifestRecord.getBccpManifestId();
             this.bccpId = bccpManifestRecord.getBccpId();
             this.releaseId = bccpManifestRecord.getReleaseId();
-            this.moduleId = bccpManifestRecord.getModuleId();
             this.bdtManifestId = bccpManifestRecord.getBdtManifestId();
         }
         this._hashCode = this.hashCode();
@@ -57,15 +55,6 @@ public class UpdateBccpManifestArguments {
         return this;
     }
 
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public UpdateBccpManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
-        return this;
-    }
-
     public ULong getBdtManifestId() {
         return bdtManifestId;
     }
@@ -82,13 +71,12 @@ public class UpdateBccpManifestArguments {
         UpdateBccpManifestArguments that = (UpdateBccpManifestArguments) o;
         return Objects.equals(bccpId, that.bccpId) &&
                 Objects.equals(bdtManifestId, that.bdtManifestId) &&
-                Objects.equals(moduleId, that.moduleId) &&
                 Objects.equals(releaseId, that.releaseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bccpId, bdtManifestId, moduleId, releaseId);
+        return Objects.hash(bccpId, bdtManifestId, releaseId);
     }
 
     private boolean isDirty() {

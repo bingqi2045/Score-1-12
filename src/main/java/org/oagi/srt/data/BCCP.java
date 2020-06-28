@@ -21,8 +21,6 @@ public class BCCP implements CoreComponent {
     private String definitionSource;
     private String defaultValue;
     private BigInteger bdtId = BigInteger.ZERO;
-    private BigInteger moduleId = BigInteger.ZERO;
-    private String module;
     private BigInteger namespaceId = BigInteger.ZERO;
     private BigInteger createdBy = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;

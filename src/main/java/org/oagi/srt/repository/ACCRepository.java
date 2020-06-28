@@ -30,7 +30,6 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.ACC.BASED_ACC_ID,
                 Tables.ACC.OBJECT_CLASS_QUALIFIER,
                 Tables.ACC.OAGIS_COMPONENT_TYPE,
-                Tables.ACC_MANIFEST.MODULE_ID,
                 Tables.ACC.NAMESPACE_ID,
                 Tables.ACC.CREATED_BY,
                 Tables.ACC.OWNER_USER_ID,
@@ -44,16 +43,14 @@ public class ACCRepository implements SrtRepository<ACC> {
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ACC.IS_DEPRECATED.as("deprecated"),
-                Tables.ACC.IS_ABSTRACT.as("abstracted"),
-                Tables.MODULE.NAME.as("module"))
+                Tables.ACC.IS_ABSTRACT.as("abstracted"))
                 .from(Tables.ACC)
                 .join(Tables.ACC_MANIFEST)
                 .on(Tables.ACC.ACC_ID.eq(Tables.ACC_MANIFEST.ACC_ID))
                 .join(Tables.RELEASE)
                 .on(Tables.ACC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.ACC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
-                .leftJoin(Tables.MODULE).on(Tables.ACC_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .on(Tables.ACC_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
     }
 
     @Override

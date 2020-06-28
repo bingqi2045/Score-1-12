@@ -13,7 +13,6 @@ public class UpdateAccManifestArguments {
     private ULong accManifestId;
     private ULong accId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong basedAccManifestId;
 
     private int _hashCode;
@@ -24,7 +23,6 @@ public class UpdateAccManifestArguments {
             this.accManifestId = accManifestRecord.getAccManifestId();
             this.accId = accManifestRecord.getAccId();
             this.releaseId = accManifestRecord.getReleaseId();
-            this.moduleId = accManifestRecord.getModuleId();
             this.basedAccManifestId = accManifestRecord.getBasedAccManifestId();
         }
         this._hashCode = this.hashCode();
@@ -57,15 +55,6 @@ public class UpdateAccManifestArguments {
         return this;
     }
 
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public UpdateAccManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
-        return this;
-    }
-
     public ULong getBasedAccManifestId() {
         return basedAccManifestId;
     }
@@ -82,13 +71,12 @@ public class UpdateAccManifestArguments {
         UpdateAccManifestArguments that = (UpdateAccManifestArguments) o;
         return Objects.equals(accId, that.accId) &&
                 Objects.equals(basedAccManifestId, that.basedAccManifestId) &&
-                Objects.equals(moduleId, that.moduleId) &&
                 Objects.equals(releaseId, that.releaseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accId, basedAccManifestId, moduleId, releaseId);
+        return Objects.hash(accId, basedAccManifestId, releaseId);
     }
 
     private boolean isDirty() {

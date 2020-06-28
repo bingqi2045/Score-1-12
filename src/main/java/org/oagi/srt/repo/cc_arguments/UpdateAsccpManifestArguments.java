@@ -13,7 +13,6 @@ public class UpdateAsccpManifestArguments {
     private ULong asccpManifestId;
     private ULong asccpId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong roleOfAccManifestId;
 
     private int _hashCode;
@@ -24,7 +23,6 @@ public class UpdateAsccpManifestArguments {
             this.asccpManifestId = asccpManifestRecord.getAsccpManifestId();
             this.asccpId = asccpManifestRecord.getAsccpId();
             this.releaseId = asccpManifestRecord.getReleaseId();
-            this.moduleId = asccpManifestRecord.getModuleId();
             this.roleOfAccManifestId = asccpManifestRecord.getRoleOfAccManifestId();
         }
         this._hashCode = this.hashCode();
@@ -57,15 +55,6 @@ public class UpdateAsccpManifestArguments {
         return this;
     }
 
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public UpdateAsccpManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
-        return this;
-    }
-
     public ULong getRoleOfAccManifestId() {
         return roleOfAccManifestId;
     }
@@ -82,13 +71,12 @@ public class UpdateAsccpManifestArguments {
         UpdateAsccpManifestArguments that = (UpdateAsccpManifestArguments) o;
         return Objects.equals(asccpId, that.asccpId) &&
                 Objects.equals(roleOfAccManifestId, that.roleOfAccManifestId) &&
-                Objects.equals(moduleId, that.moduleId) &&
                 Objects.equals(releaseId, that.releaseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(asccpId, roleOfAccManifestId, moduleId, releaseId);
+        return Objects.hash(asccpId, roleOfAccManifestId, releaseId);
     }
 
     private boolean isDirty() {

@@ -28,7 +28,6 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.DEFINITION,
                 Tables.ASCCP.DEFINITION_SOURCE,
                 Tables.ASCCP.ROLE_OF_ACC_ID,
-                Tables.ASCCP_MANIFEST.MODULE_ID,
                 Tables.ASCCP.NAMESPACE_ID,
                 Tables.ASCCP.CREATED_BY,
                 Tables.ASCCP.OWNER_USER_ID,
@@ -43,16 +42,14 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.ASCCP.IS_NILLABLE.as("nillable"),
-                Tables.MODULE.NAME.as("module"))
+                Tables.ASCCP.IS_NILLABLE.as("nillable"))
                 .from(Tables.ASCCP)
                 .join(Tables.ASCCP_MANIFEST)
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
                 .join(Tables.RELEASE)
                 .on(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
                 .join(Tables.REVISION)
-                .on(Tables.ASCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID))
-                .leftJoin(Tables.MODULE).on(Tables.ASCCP_MANIFEST.MODULE_ID.eq(Tables.MODULE.MODULE_ID));
+                .on(Tables.ASCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
     }
 
     @Override

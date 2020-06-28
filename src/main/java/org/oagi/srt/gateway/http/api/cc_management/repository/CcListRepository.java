@@ -177,8 +177,10 @@ public class CcListRepository {
                 .on(ACC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ACC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
+                .leftJoin(MODULE_ACC_MANIFEST)
+                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
                 .leftJoin(MODULE)
-                .on(ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                .on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
@@ -560,8 +562,10 @@ public class CcListRepository {
                 .on(ASCCP.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ASCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
-                .leftOuterJoin(MODULE)
-                .on(ASCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                .leftJoin(MODULE_ASCCP_MANIFEST)
+                .on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .leftJoin(MODULE)
+                .on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
@@ -677,8 +681,10 @@ public class CcListRepository {
                 .on(BCCP.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(BCCP.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
+                .leftJoin(MODULE_BCCP_MANIFEST)
+                .on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .leftJoin(MODULE)
-                .on(BCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                .on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();
@@ -769,8 +775,10 @@ public class CcListRepository {
                 .on(DT.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(DT.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
+                .leftJoin(MODULE_DT_MANIFEST)
+                .on(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID))
                 .leftJoin(MODULE)
-                .on(DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
+                .on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE.MODULE_ID))
                 .where(conditions)
                 .fetch().map(row -> {
                     CcList ccList = new CcList();

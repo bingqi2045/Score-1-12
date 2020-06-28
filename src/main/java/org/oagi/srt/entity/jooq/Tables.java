@@ -55,8 +55,13 @@ import org.oagi.srt.entity.jooq.tables.DtSc;
 import org.oagi.srt.entity.jooq.tables.DtScManifest;
 import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
+import org.oagi.srt.entity.jooq.tables.ModuleAccManifest;
+import org.oagi.srt.entity.jooq.tables.ModuleAsccpManifest;
+import org.oagi.srt.entity.jooq.tables.ModuleBccpManifest;
+import org.oagi.srt.entity.jooq.tables.ModuleCodeListManifest;
 import org.oagi.srt.entity.jooq.tables.ModuleDep;
 import org.oagi.srt.entity.jooq.tables.ModuleDir;
+import org.oagi.srt.entity.jooq.tables.ModuleDtManifest;
 import org.oagi.srt.entity.jooq.tables.ModuleSet;
 import org.oagi.srt.entity.jooq.tables.ModuleSetAssignment;
 import org.oagi.srt.entity.jooq.tables.ModuleSetRelease;
@@ -345,6 +350,26 @@ If we use a separate table for each expression, then we need binding all the way
     public static final Module MODULE = Module.MODULE;
 
     /**
+     * The table <code>oagi.module_acc_manifest</code>.
+     */
+    public static final ModuleAccManifest MODULE_ACC_MANIFEST = ModuleAccManifest.MODULE_ACC_MANIFEST;
+
+    /**
+     * The table <code>oagi.module_asccp_manifest</code>.
+     */
+    public static final ModuleAsccpManifest MODULE_ASCCP_MANIFEST = ModuleAsccpManifest.MODULE_ASCCP_MANIFEST;
+
+    /**
+     * The table <code>oagi.module_bccp_manifest</code>.
+     */
+    public static final ModuleBccpManifest MODULE_BCCP_MANIFEST = ModuleBccpManifest.MODULE_BCCP_MANIFEST;
+
+    /**
+     * The table <code>oagi.module_code_list_manifest</code>.
+     */
+    public static final ModuleCodeListManifest MODULE_CODE_LIST_MANIFEST = ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST;
+
+    /**
      * This table carries the dependency between modules in the MODULE table.
      */
     public static final ModuleDep MODULE_DEP = ModuleDep.MODULE_DEP;
@@ -353,6 +378,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The table <code>oagi.module_dir</code>.
      */
     public static final ModuleDir MODULE_DIR = ModuleDir.MODULE_DIR;
+
+    /**
+     * The table <code>oagi.module_dt_manifest</code>.
+     */
+    public static final ModuleDtManifest MODULE_DT_MANIFEST = ModuleDtManifest.MODULE_DT_MANIFEST;
 
     /**
      * The table <code>oagi.module_set</code>.

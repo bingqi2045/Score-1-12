@@ -21,8 +21,6 @@ public class ACC implements CoreComponent {
     private BigInteger basedAccId = BigInteger.ZERO;
     private String objectClassQualifier;
     private Integer oagisComponentType;
-    private BigInteger moduleId = BigInteger.ZERO;
-    private String module;
     private BigInteger namespaceId = BigInteger.ZERO;
     private BigInteger createdBy = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;

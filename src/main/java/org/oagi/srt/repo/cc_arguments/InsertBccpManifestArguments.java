@@ -10,7 +10,6 @@ public class InsertBccpManifestArguments {
     private ULong bccpManifestId;
     private ULong bccpId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong bdtManifestId;
 
     public InsertBccpManifestArguments(CoreComponentRepository repository) {
@@ -41,15 +40,6 @@ public class InsertBccpManifestArguments {
 
     public InsertBccpManifestArguments setReleaseId(ULong releaseId) {
         this.releaseId = releaseId;
-        return this;
-    }
-
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public InsertBccpManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
         return this;
     }
 

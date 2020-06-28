@@ -442,7 +442,6 @@ public class CoreComponentRepository {
         return dslContext.insertInto(ACC_MANIFEST)
                 .set(ACC_MANIFEST.ACC_ID, arguments.getAccId())
                 .set(ACC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
                 .returning(ACC_MANIFEST.ACC_MANIFEST_ID).fetchOne().getAccManifestId();
     }
@@ -496,7 +495,6 @@ public class CoreComponentRepository {
                 .set(BCCP_MANIFEST.BCCP_MANIFEST_ID, arguments.getBccpManifestId())
                 .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
                 .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
                 .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId();
     }
@@ -529,7 +527,6 @@ public class CoreComponentRepository {
                 .set(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
                 .set(ASCCP_MANIFEST.ASCCP_ID, arguments.getAsccpId())
                 .set(ASCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(ASCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
                 .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne().getAsccpManifestId();
     }
@@ -568,7 +565,6 @@ public class CoreComponentRepository {
         dslContext.update(ACC_MANIFEST)
                 .set(ACC_MANIFEST.ACC_ID, arguments.getAccId())
                 .set(ACC_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(ACC_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, arguments.getBasedAccManifestId())
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(arguments.getAccManifestId()))
                 .execute();
@@ -718,7 +714,6 @@ public class CoreComponentRepository {
         dslContext.update(BCCP_MANIFEST)
                 .set(BCCP_MANIFEST.BCCP_ID, arguments.getBccpId())
                 .set(BCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(BCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(BCCP_MANIFEST.BDT_MANIFEST_ID, arguments.getBdtManifestId())
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(arguments.getBccpManifestId()))
                 .execute();
@@ -728,7 +723,6 @@ public class CoreComponentRepository {
         dslContext.update(ASCCP_MANIFEST)
                 .set(ASCCP_MANIFEST.ASCCP_ID, arguments.getAsccpId())
                 .set(ASCCP_MANIFEST.RELEASE_ID, arguments.getReleaseId())
-                .set(ASCCP_MANIFEST.MODULE_ID, arguments.getModuleId())
                 .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, arguments.getRoleOfAccManifestId())
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(arguments.getAsccpManifestId()))
                 .execute();

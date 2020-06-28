@@ -31,8 +31,6 @@ public class DT implements CoreComponent {
     private BigInteger revisionId = BigInteger.ZERO;
     private int revisionNum;
     private int revisionTrackingNum;
-    private BigInteger moduleId = BigInteger.ZERO;
-    private String module;
     private BigInteger createdBy = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;
     private BigInteger lastUpdatedBy = BigInteger.ZERO;

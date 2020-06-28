@@ -19,8 +19,6 @@ public class ASCCP implements CoreComponent {
     private String definition;
     private String definitionSource;
     private BigInteger roleOfAccId = BigInteger.ZERO;
-    private BigInteger moduleId = BigInteger.ZERO;
-    private String module;
     private BigInteger namespaceId = BigInteger.ZERO;
     private BigInteger createdBy = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;

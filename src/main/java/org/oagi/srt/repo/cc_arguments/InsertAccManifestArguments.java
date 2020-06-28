@@ -10,7 +10,6 @@ public class InsertAccManifestArguments {
     private ULong accManifestId;
     private ULong accId;
     private ULong releaseId;
-    private ULong moduleId;
     private ULong basedAccManifestId;
 
     public InsertAccManifestArguments(CoreComponentRepository repository) {
@@ -41,15 +40,6 @@ public class InsertAccManifestArguments {
 
     public InsertAccManifestArguments setReleaseId(ULong releaseId) {
         this.releaseId = releaseId;
-        return this;
-    }
-
-    public ULong getModuleId() {
-        return moduleId;
-    }
-
-    public InsertAccManifestArguments setModuleId(ULong moduleId) {
-        this.moduleId = moduleId;
         return this;
     }
 
