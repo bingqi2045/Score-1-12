@@ -1663,6 +1663,37 @@ ALTER TABLE `module`
     DROP FOREIGN KEY `module_release_id_fk`,
     DROP COLUMN `release_id`;
 
+-- Replace `module_id` with `module_assignment_id` on `module_dep` table.
+ALTER TABLE `module_dep`
+    ADD COLUMN `depending_module_set_assignment_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.',
+    ADD COLUMN `depended_module_set_assignment_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.',
+    ADD CONSTRAINT `module_dep_depended_module_set_assignment_id_fk` FOREIGN KEY (`depended_module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`),
+    ADD CONSTRAINT `module_dep_depending_module_set_assignment_id_fk` FOREIGN KEY (`depending_module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_dep`, (
+    SELECT `module_set_assignment_id`, `module_id`
+    FROM `module_set_assignment`
+) t
+SET `depending_module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_dep`.`depending_module_id` = t.`module_id`;
+
+UPDATE `module_dep`, (
+    SELECT `module_set_assignment_id`, `module_id`
+    FROM `module_set_assignment`
+) t
+SET `depended_module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_dep`.`depended_module_id` = t.`module_id`;
+
+ALTER TABLE `module_dep`
+    DROP FOREIGN KEY `module_dep_depending_module_id_fk`,
+    DROP FOREIGN KEY `module_dep_depended_module_id_fk`,
+    DROP COLUMN `depending_module_id`,
+    DROP COLUMN `depended_module_id`;
+
+ALTER TABLE `module_dep`
+    MODIFY COLUMN `depending_module_set_assignment_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.',
+    MODIFY COLUMN `depended_module_set_assignment_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.';
+
 
 -- DROP `current_acc_id` column on `acc` table.
 ALTER TABLE `acc` DROP FOREIGN KEY `acc_current_acc_id_fk`;

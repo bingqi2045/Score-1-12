@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.ModuleDep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implements Record4<ULong, Integer, ULong, ULong> {
 
-    private static final long serialVersionUID = -1616111790;
+    private static final long serialVersionUID = -1069576438;
 
     /**
      * Setter for <code>oagi.module_dep.module_dep_id</code>. Primary, internal database key.
@@ -50,30 +50,30 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.module_dep.depending_module_id</code>. Foreign key to the MODULE table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
+     * Setter for <code>oagi.module_dep.depending_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
      */
-    public void setDependingModuleId(ULong value) {
+    public void setDependingModuleSetAssignmentId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.module_dep.depending_module_id</code>. Foreign key to the MODULE table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
+     * Getter for <code>oagi.module_dep.depending_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
      */
-    public ULong getDependingModuleId() {
+    public ULong getDependingModuleSetAssignmentId() {
         return (ULong) get(2);
     }
 
     /**
-     * Setter for <code>oagi.module_dep.depended_module_id</code>. Foreign key to the MODULE table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
+     * Setter for <code>oagi.module_dep.depended_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
      */
-    public void setDependedModuleId(ULong value) {
+    public void setDependedModuleSetAssignmentId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.module_dep.depended_module_id</code>. Foreign key to the MODULE table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
+     * Getter for <code>oagi.module_dep.depended_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
      */
-    public ULong getDependedModuleId() {
+    public ULong getDependedModuleSetAssignmentId() {
         return (ULong) get(3);
     }
 
@@ -112,12 +112,12 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
 
     @Override
     public Field<ULong> field3() {
-        return ModuleDep.MODULE_DEP.DEPENDING_MODULE_ID;
+        return ModuleDep.MODULE_DEP.DEPENDING_MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
     public Field<ULong> field4() {
-        return ModuleDep.MODULE_DEP.DEPENDED_MODULE_ID;
+        return ModuleDep.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
@@ -132,12 +132,12 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
 
     @Override
     public ULong component3() {
-        return getDependingModuleId();
+        return getDependingModuleSetAssignmentId();
     }
 
     @Override
     public ULong component4() {
-        return getDependedModuleId();
+        return getDependedModuleSetAssignmentId();
     }
 
     @Override
@@ -152,12 +152,12 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
 
     @Override
     public ULong value3() {
-        return getDependingModuleId();
+        return getDependingModuleSetAssignmentId();
     }
 
     @Override
     public ULong value4() {
-        return getDependedModuleId();
+        return getDependedModuleSetAssignmentId();
     }
 
     @Override
@@ -174,13 +174,13 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
 
     @Override
     public ModuleDepRecord value3(ULong value) {
-        setDependingModuleId(value);
+        setDependingModuleSetAssignmentId(value);
         return this;
     }
 
     @Override
     public ModuleDepRecord value4(ULong value) {
-        setDependedModuleId(value);
+        setDependedModuleSetAssignmentId(value);
         return this;
     }
 
@@ -207,12 +207,12 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
     /**
      * Create a detached, initialised ModuleDepRecord
      */
-    public ModuleDepRecord(ULong moduleDepId, Integer dependencyType, ULong dependingModuleId, ULong dependedModuleId) {
+    public ModuleDepRecord(ULong moduleDepId, Integer dependencyType, ULong dependingModuleSetAssignmentId, ULong dependedModuleSetAssignmentId) {
         super(ModuleDep.MODULE_DEP);
 
         set(0, moduleDepId);
         set(1, dependencyType);
-        set(2, dependingModuleId);
-        set(3, dependedModuleId);
+        set(2, dependingModuleSetAssignmentId);
+        set(3, dependedModuleSetAssignmentId);
     }
 }

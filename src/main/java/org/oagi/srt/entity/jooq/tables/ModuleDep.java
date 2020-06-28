@@ -32,7 +32,7 @@ import org.oagi.srt.entity.jooq.tables.records.ModuleDepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
-    private static final long serialVersionUID = -894042300;
+    private static final long serialVersionUID = -365879058;
 
     /**
      * The reference instance of <code>oagi.module_dep</code>
@@ -58,14 +58,14 @@ public class ModuleDep extends TableImpl<ModuleDepRecord> {
     public final TableField<ModuleDepRecord, Integer> DEPENDENCY_TYPE = createField(DSL.name("dependency_type"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "This is a code list. The value tells the expression generator what to do based on this dependency type. 0 = xsd:include, 1 = xsd:import. There could be other values supporting other expressions/syntaxes.");
 
     /**
-     * The column <code>oagi.module_dep.depending_module_id</code>. Foreign key to the MODULE table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
+     * The column <code>oagi.module_dep.depending_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
      */
-    public final TableField<ModuleDepRecord, ULong> DEPENDING_MODULE_ID = createField(DSL.name("depending_module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.");
+    public final TableField<ModuleDepRecord, ULong> DEPENDING_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depending_module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.");
 
     /**
-     * The column <code>oagi.module_dep.depended_module_id</code>. Foreign key to the MODULE table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
+     * The column <code>oagi.module_dep.depended_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
      */
-    public final TableField<ModuleDepRecord, ULong> DEPENDED_MODULE_ID = createField(DSL.name("depended_module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.");
+    public final TableField<ModuleDepRecord, ULong> DEPENDED_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depended_module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.");
 
     /**
      * Create a <code>oagi.module_dep</code> table reference
@@ -122,15 +122,15 @@ public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
     @Override
     public List<ForeignKey<ModuleDepRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleDepRecord, ?>>asList(Keys.MODULE_DEP_DEPENDING_MODULE_ID_FK, Keys.MODULE_DEP_DEPENDED_MODULE_ID_FK);
+        return Arrays.<ForeignKey<ModuleDepRecord, ?>>asList(Keys.MODULE_DEP_DEPENDING_MODULE_SET_ASSIGNMENT_ID_FK, Keys.MODULE_DEP_DEPENDED_MODULE_SET_ASSIGNMENT_ID_FK);
     }
 
-    public Module moduleDepDependingModuleIdFk() {
-        return new Module(this, Keys.MODULE_DEP_DEPENDING_MODULE_ID_FK);
+    public ModuleSetAssignment moduleDepDependingModuleSetAssignmentIdFk() {
+        return new ModuleSetAssignment(this, Keys.MODULE_DEP_DEPENDING_MODULE_SET_ASSIGNMENT_ID_FK);
     }
 
-    public Module moduleDepDependedModuleIdFk() {
-        return new Module(this, Keys.MODULE_DEP_DEPENDED_MODULE_ID_FK);
+    public ModuleSetAssignment moduleDepDependedModuleSetAssignmentIdFk() {
+        return new ModuleSetAssignment(this, Keys.MODULE_DEP_DEPENDED_MODULE_SET_ASSIGNMENT_ID_FK);
     }
 
     @Override

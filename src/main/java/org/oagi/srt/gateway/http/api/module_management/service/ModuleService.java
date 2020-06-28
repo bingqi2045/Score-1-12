@@ -86,9 +86,9 @@ public class ModuleService {
         moduleDependencies.addAll(
                 dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
                         inline(ModuleDependencyType.Include.name()).as("dependency_type"),
-                        Tables.MODULE_DEP.DEPENDED_MODULE_ID.as("related_module_id"))
+                        Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.as("related_module_id"))
                         .from(Tables.MODULE_DEP)
-                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
+                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(moduleId)),
                                 Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Include.getValue()))
                         .fetchInto(ModuleDependency.class)
         );
@@ -96,9 +96,9 @@ public class ModuleService {
         moduleDependencies.addAll(
                 dslContext.select(Tables.MODULE_DEP.MODULE_DEP_ID,
                         inline(ModuleDependencyType.Import.name()).as("dependency_type"),
-                        Tables.MODULE_DEP.DEPENDING_MODULE_ID.as("related_module_id"))
+                        Tables.MODULE_DEP.DEPENDING_MODULE_SET_ASSIGNMENT_ID.as("related_module_id"))
                         .from(Tables.MODULE_DEP)
-                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_ID.eq(ULong.valueOf(moduleId)),
+                        .where(Tables.MODULE_DEP.DEPENDED_MODULE_SET_ASSIGNMENT_ID.eq(ULong.valueOf(moduleId)),
                                 Tables.MODULE_DEP.DEPENDENCY_TYPE.eq(ModuleDependencyType.Import.getValue()))
                         .fetchInto(ModuleDependency.class)
         );
@@ -146,10 +146,10 @@ public class ModuleService {
 
         for (ModuleDepRecord moduleDep : moduleDeps) {
             ModuleElement dependedModule =
-                    moduleMap.get(moduleDep.getDependedModuleId().longValue());
+                    moduleMap.get(moduleDep.getDependedModuleSetAssignmentId().longValue());
 
             ModuleElement dependingModule =
-                    moduleMap.get(moduleDep.getDependingModuleId().longValue());
+                    moduleMap.get(moduleDep.getDependingModuleSetAssignmentId().longValue());
 
             String type =
                     (moduleDep.getDependencyType() == 0) ? "include" : "import";
