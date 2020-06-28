@@ -14,5 +14,6 @@ public class ModuleSetModule {
     private String namespaceUri;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;
+    private boolean assigned;
 
 }

@@ -92,9 +92,10 @@ public class ModuleSetController {
         service.discardModuleSet(user, moduleSetId);
     }
 
-    @RequestMapping(value = "/module_set/module", method = RequestMethod.GET,
+    @RequestMapping(value = "/module_set/{id}/module", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<ModuleSetModule> getModuleSetModuleList(@AuthenticationPrincipal User user,
+                                                                @PathVariable("id") BigInteger moduleSetId,
                                                                 @RequestParam(name = "path", required = false) String path,
                                                                 @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                                 @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -105,6 +106,7 @@ public class ModuleSetController {
                                                                 @RequestParam(name = "pageSize") int pageSize) {
         ModuleSetModuleListRequest request = new ModuleSetModuleListRequest();
 
+        request.setModuleSetId(moduleSetId);
         request.setPath(path);
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));

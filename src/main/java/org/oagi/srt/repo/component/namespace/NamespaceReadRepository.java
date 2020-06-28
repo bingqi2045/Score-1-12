@@ -35,7 +35,7 @@ public class NamespaceReadRepository {
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner"),
                 NAMESPACE.DESCRIPTION, NAMESPACE.LAST_UPDATE_TIMESTAMP,
-                APP_USER.as("updater").LOGIN_ID.as("last_uppdate_user"))
+                APP_USER.as("updater").LOGIN_ID.as("last_update_user"))
                 .from(NAMESPACE)
                 .join(APP_USER.as("owner"))
                 .on(NAMESPACE.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
@@ -134,7 +134,7 @@ public class NamespaceReadRepository {
             namespaceList.setDescription(record.get(NAMESPACE.DESCRIPTION));
             namespaceList.setOwner(record.get(APP_USER.as("owner").LOGIN_ID.as("owner")));
             namespaceList.setLastUpdateTimestamp(Date.from(record.get(NAMESPACE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-            namespaceList.setLastUpdateUser(record.get(APP_USER.as("updater").LOGIN_ID.as("last_uppdate_user")));
+            namespaceList.setLastUpdateUser(record.get(APP_USER.as("updater").LOGIN_ID.as("last_update_user")));
             return namespaceList;
         }).collect(Collectors.toList());
 
