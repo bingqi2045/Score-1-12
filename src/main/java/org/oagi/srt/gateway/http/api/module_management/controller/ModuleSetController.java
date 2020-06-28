@@ -2,10 +2,7 @@ package org.oagi.srt.gateway.http.api.module_management.controller;
 
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSet;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetListRequest;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetModule;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetModuleListRequest;
+import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.api.module_management.service.ModuleSetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -70,6 +67,15 @@ public class ModuleSetController {
     public ModuleSet getModuleSet(@AuthenticationPrincipal User user,
                                   @PathVariable("id") BigInteger moduleSetId) {
         return service.getModuleSet(user, moduleSetId);
+    }
+
+    @RequestMapping(value = "/module_set/{id}", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void updateModuleSet(@AuthenticationPrincipal User user,
+                                @PathVariable("id") BigInteger moduleSetId,
+                                @RequestBody UpdateModuleSetRequest request) {
+        request.setModuleSetId(moduleSetId);
+        service.updateModuleSet(user, request);
     }
 
     @RequestMapping(value = "/module_set/module", method = RequestMethod.GET,

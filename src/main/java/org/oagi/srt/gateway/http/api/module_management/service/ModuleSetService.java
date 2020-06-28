@@ -3,12 +3,11 @@ package org.oagi.srt.gateway.http.api.module_management.service;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.common.data.PageResponse;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSet;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetListRequest;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetModule;
-import org.oagi.srt.gateway.http.api.module_management.data.ModuleSetModuleListRequest;
+import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.component.module.ModuleSetReadRepository;
+import org.oagi.srt.repo.component.module.ModuleSetWriteRepository;
+import org.oagi.srt.repo.component.module.UpdateModuleSetRepositoryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,9 @@ public class ModuleSetService {
     @Autowired
     private ModuleSetReadRepository readRepository;
 
+    @Autowired
+    private ModuleSetWriteRepository writeRepository;
+
     public PageResponse<ModuleSet> getModuleSetList(User user, ModuleSetListRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
@@ -40,6 +42,21 @@ public class ModuleSetService {
             throw new DataAccessForbiddenException(user);
         }
         return readRepository.getModuleSet(moduleSetId);
+    }
+
+    @Transactional
+    public void updateModuleSet(User user, UpdateModuleSetRequest request) {
+        AppUser requester = sessionService.getAppUser(user);
+        if (!requester.isDeveloper()) {
+            throw new DataAccessForbiddenException(user);
+        }
+
+        UpdateModuleSetRepositoryRequest repositoryRequest =
+                new UpdateModuleSetRepositoryRequest(user, request.getModuleSetId());
+        repositoryRequest.setName(request.getName());
+        repositoryRequest.setDescription(request.getDescription());
+
+        writeRepository.updateModuleSet(repositoryRequest);
     }
 
     public PageResponse<ModuleSetModule> getModuleSetModuleList(User user, ModuleSetModuleListRequest request) {
