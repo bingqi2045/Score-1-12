@@ -15,5 +15,6 @@ public class CodeListValue {
     boolean used;
     boolean locked;
     boolean extension;
+    boolean deprecated;
 
 }

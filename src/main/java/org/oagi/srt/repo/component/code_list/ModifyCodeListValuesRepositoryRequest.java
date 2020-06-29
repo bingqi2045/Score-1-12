@@ -20,6 +20,7 @@ public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
         private String definition;
         private String definitionSource;
 
+        private boolean deprecated;
         private boolean used;
         private boolean locked;
         private boolean extension;
@@ -54,6 +55,14 @@ public class ModifyCodeListValuesRepositoryRequest extends RepositoryRequest {
 
         public void setDefinitionSource(String definitionSource) {
             this.definitionSource = definitionSource;
+        }
+
+        public boolean isDeprecated() {
+            return deprecated;
+        }
+
+        public void setDeprecated(boolean deprecated) {
+            this.deprecated = deprecated;
         }
 
         public boolean isUsed() {

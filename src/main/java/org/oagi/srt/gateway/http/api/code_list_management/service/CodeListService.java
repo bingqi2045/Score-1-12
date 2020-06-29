@@ -249,8 +249,10 @@ public class CodeListService extends EventHandler {
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID,
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
+                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"),
                 CODE_LIST_VALUE.USED_INDICATOR.as("used"),
                 CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
                 CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
@@ -397,8 +399,10 @@ public class CodeListService extends EventHandler {
         List<CodeListValue> codeListValues = dslContext.select(
                 CODE_LIST_VALUE.VALUE,
                 CODE_LIST_VALUE.NAME,
+                CODE_LIST_VALUE.GUID,
                 CODE_LIST_VALUE.DEFINITION,
                 CODE_LIST_VALUE.DEFINITION_SOURCE,
+                CODE_LIST_VALUE.IS_DEPRECATED.as("deprecated"),
                 CODE_LIST_VALUE.USED_INDICATOR.as("used"),
                 CODE_LIST_VALUE.LOCKED_INDICATOR.as("locked"),
                 CODE_LIST_VALUE.EXTENSION_INDICATOR.as("extension"))
@@ -455,6 +459,7 @@ public class CodeListService extends EventHandler {
                     codeListValue.setDefinition(e.getDefinition());
                     codeListValue.setDefinitionSource(e.getDefinitionSource());
                     codeListValue.setUsed(e.isUsed());
+                    codeListValue.setDeprecated(e.isDeprecated());
 
                     if (codeListValue.isLocked()) {
                         codeListValue.setUsed(false);

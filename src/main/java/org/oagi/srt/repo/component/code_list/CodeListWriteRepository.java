@@ -335,6 +335,7 @@ public class CodeListWriteRepository {
             codeListValueRecord.setLastUpdatedBy(userId);
             codeListValueRecord.setCreationTimestamp(timestamp);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
+            codeListValueRecord.setIsDeprecated((byte) (0));
 
             codeListValueRecord.setCodeListValueId(
                     dslContext.insertInto(CODE_LIST_VALUE)
@@ -382,13 +383,15 @@ public class CodeListWriteRepository {
             codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
             codeListValueRecord.setUsedIndicator((byte) (codeListValue.isUsed() ? 1 : 0));
             codeListValueRecord.setExtensionIndicator((byte) (codeListValue.isExtension() ? 1 : 0));
+            codeListValueRecord.setIsDeprecated((byte) (codeListValue.isDeprecated() ? 1 : 0));
             codeListValueRecord.setLastUpdatedBy(userId);
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
             codeListValueRecord.update(
                     CODE_LIST_VALUE.VALUE,
                     CODE_LIST_VALUE.DEFINITION, CODE_LIST_VALUE.DEFINITION_SOURCE,
-                    CODE_LIST_VALUE.LOCKED_INDICATOR, CODE_LIST_VALUE.USED_INDICATOR, CODE_LIST_VALUE.EXTENSION_INDICATOR,
+                    CODE_LIST_VALUE.LOCKED_INDICATOR, CODE_LIST_VALUE.USED_INDICATOR,
+                    CODE_LIST_VALUE.EXTENSION_INDICATOR, CODE_LIST_VALUE.IS_DEPRECATED,
                     CODE_LIST_VALUE.LAST_UPDATED_BY, CODE_LIST_VALUE.LAST_UPDATE_TIMESTAMP);
         }
     }
