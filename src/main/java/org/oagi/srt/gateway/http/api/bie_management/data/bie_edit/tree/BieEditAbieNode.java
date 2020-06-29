@@ -16,6 +16,8 @@ public class BieEditAbieNode extends BieEditNode {
     private BigInteger asccpManifestId;
     private BigInteger accManifestId;
     private BigInteger ownerUserId;
+    private String loginId;
+    private String releaseNum;
     private BieState topLevelAbieState;
     private String access;
 

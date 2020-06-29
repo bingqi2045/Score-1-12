@@ -98,6 +98,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 TOP_LEVEL_ABIE.RELEASE_ID,
                 TOP_LEVEL_ABIE.STATE.as("top_level_abie_state"),
                 TOP_LEVEL_ABIE.OWNER_USER_ID,
+                RELEASE.RELEASE_NUM,
+                APP_USER.LOGIN_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
                 ASBIEP.ASBIEP_ID,
@@ -117,6 +119,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 ))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .join(RELEASE).on(TOP_LEVEL_ABIE.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .fetchOneInto(BieEditAbieNode.class);
         rootNode.setHasChild(hasChild(rootNode));
