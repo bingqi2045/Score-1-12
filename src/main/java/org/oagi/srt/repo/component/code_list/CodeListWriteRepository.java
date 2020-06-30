@@ -51,9 +51,10 @@ public class CodeListWriteRepository {
         codeList.setLastUpdateTimestamp(timestamp);
 
         List<CodeListValueManifestRecord> basedCodeListValueManifestList = null;
+        CodeListManifestRecord basedCodeListManifestRecord = null;
 
         if (request.getbasedCodeListManifestId() != null) {
-            CodeListManifestRecord basedCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+            basedCodeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                     .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID
                             .eq(ULong.valueOf(request.getbasedCodeListManifestId())))
                     .fetchOne();
@@ -110,6 +111,9 @@ public class CodeListWriteRepository {
                         RevisionAction.Added,
                         userId, timestamp);
         codeListManifest.setRevisionId(revisionRecord.getRevisionId());
+        if (basedCodeListManifestRecord != null) {
+            codeListManifest.setBasedCodeListManifestId(basedCodeListManifestRecord.getCodeListManifestId());
+        }
 
         codeListManifest.setCodeListManifestId(
                 dslContext.insertInto(CODE_LIST_MANIFEST)
