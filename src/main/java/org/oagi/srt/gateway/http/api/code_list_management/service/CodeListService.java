@@ -466,9 +466,9 @@ public class CodeListService extends EventHandler {
                         codeListValue.setExtension(false);
                     }
 
-                    codeListValue.setLocked(codeListValue.isLocked());
-                    codeListValue.setUsed(codeListValue.isUsed());
-                    codeListValue.setExtension(codeListValue.isExtension());
+                    codeListValue.setLocked(e.isLocked());
+                    codeListValue.setUsed(e.isUsed());
+                    codeListValue.setExtension(e.isExtension());
 
                     return codeListValue;
                 }).collect(Collectors.toList())
