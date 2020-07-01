@@ -43,8 +43,7 @@ public class BCCPRepository implements SrtRepository<BCCP> {
                 Tables.REVISION.REVISION_NUM,
                 Tables.REVISION.REVISION_TRACKING_NUM,
                 Tables.BCCP.IS_DEPRECATED.as("deprecated"),
-                Tables.BCCP.IS_NILLABLE.as("nillable"),
-                Tables.MODULE.NAME.as("module"))
+                Tables.BCCP.IS_NILLABLE.as("nillable"))
                 .from(Tables.BCCP)
                 .join(Tables.BCCP_MANIFEST)
                 .on(Tables.BCCP.BCCP_ID.eq(Tables.BCCP_MANIFEST.BCCP_ID))
