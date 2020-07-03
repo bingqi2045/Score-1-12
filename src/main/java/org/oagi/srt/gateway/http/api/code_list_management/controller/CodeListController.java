@@ -134,18 +134,17 @@ public class CodeListController {
         return service.getCodeListRevision(user, manifestId);
     }
 
-    @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.DELETE)
-    public ResponseEntity delete(
-            @AuthenticationPrincipal User user,
-            @PathVariable("manifestId") BigInteger manifestId) {
-        service.deleteCodeList(user, manifestId);
+    @RequestMapping(value = "/code_list/delete", method = RequestMethod.POST)
+    public ResponseEntity deleteCodeList(@AuthenticationPrincipal User user,
+                                  @RequestBody DeleteCodeListRequest request) {
+        service.deleteCodeList(user, request.getCodeListManifestIds());
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/code_list/delete", method = RequestMethod.POST)
-    public ResponseEntity deletes(@AuthenticationPrincipal User user,
+    @RequestMapping(value = "/code_list/restore", method = RequestMethod.POST)
+    public ResponseEntity restoreCodeList(@AuthenticationPrincipal User user,
                                   @RequestBody DeleteCodeListRequest request) {
-        service.deleteCodeList(user, request.getCodeListIds());
+        service.restoreCodeList(user, request.getCodeListManifestIds());
         return ResponseEntity.noContent().build();
     }
 

@@ -627,9 +627,9 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(User user, BigInteger codeListId) {
+    public void deleteCodeList(User user, BigInteger codeListManifestIds) {
         DeleteCodeListRepositoryRequest repositoryRequest =
-                new DeleteCodeListRepositoryRequest(user, codeListId);
+                new DeleteCodeListRepositoryRequest(user, codeListManifestIds);
 
         DeleteCodeListRepositoryResponse repositoryResponse =
                 codeListWriteRepository.deleteCodeList(repositoryRequest);
@@ -638,8 +638,24 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(User user, List<BigInteger> codeListIds) {
-        codeListIds.stream().forEach(e -> deleteCodeList(user, e));
+    public void restoreCodeList(User user, BigInteger codeListManifestIds) {
+        RestoreCodeListRepositoryRequest repositoryRequest =
+                new RestoreCodeListRepositoryRequest(user, codeListManifestIds);
+
+        RestoreCodeListRepositoryResponse repositoryResponse =
+                codeListWriteRepository.restoreCodeList(repositoryRequest);
+
+        fireEvent(new RestoredCodeListEvent());
+    }
+
+    @Transactional
+    public void deleteCodeList(User user, List<BigInteger> codeListManifestIds) {
+        codeListManifestIds.stream().forEach(e -> deleteCodeList(user, e));
+    }
+
+    @Transactional
+    public void restoreCodeList(User user, List<BigInteger> codeListManifestIds) {
+        codeListManifestIds.stream().forEach(e -> restoreCodeList(user, e));
     }
 
     public boolean hasSameCodeList(SameCodeListParams params) {

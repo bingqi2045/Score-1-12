@@ -471,6 +471,49 @@ public class CodeListWriteRepository {
         return new DeleteCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
 
+    public RestoreCodeListRepositoryResponse restoreCodeList(RestoreCodeListRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getCodeListManifestId())
+                ))
+                .fetchOne();
+
+        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
+                .fetchOne();
+
+        if (!CcState.Deleted.equals(CcState.valueOf(codeListRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'Deleted' state can be deleted.");
+        }
+
+        if (!codeListRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        // update codeList state.
+        codeListRecord.setState(CcState.WIP.name());
+        codeListRecord.setLastUpdatedBy(userId);
+        codeListRecord.setLastUpdateTimestamp(timestamp);
+        codeListRecord.update(CODE_LIST.STATE,
+                CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
+
+        // creates new revision for deleted record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Restored,
+                        userId, timestamp);
+
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
+
+        return new RestoreCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
+    }
+
     public ReviseCodeListRepositoryResponse reviseCodeList(ReviseCodeListRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
