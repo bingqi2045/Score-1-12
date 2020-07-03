@@ -10,10 +10,7 @@ import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.entity.jooq.tables.records.BccpManifestRecord;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcList;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcListRequest;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
+import org.oagi.srt.gateway.http.api.cc_management.data.*;
 import org.oagi.srt.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.srt.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.srt.gateway.http.api.common.data.PageRequest;
@@ -329,6 +326,32 @@ public class CcListService {
             return compFirst;
         });
         return result;
+    }
+
+    @Transactional
+    public void deleteCcs(User user, CcUpdateStateListRequest request) {
+        request.getAccManifestIds().forEach(e -> {
+            ccNodeService.deleteAcc(user, e);
+        });
+        request.getAsccpManifestIds().forEach(e -> {
+            ccNodeService.deleteAsccp(user, e);
+        });
+        request.getBccpManifestIds().forEach(e -> {
+            ccNodeService.deleteBccp(user, e);
+        });
+    }
+
+    @Transactional
+    public void restoreCcs(User user, CcUpdateStateListRequest request) {
+        request.getAccManifestIds().forEach(e -> {
+            ccNodeService.updateAccState(user, e, CcState.WIP);
+        });
+        request.getAsccpManifestIds().forEach(e -> {
+            ccNodeService.updateAsccpState(user, e, CcState.WIP);
+        });
+        request.getBccpManifestIds().forEach(e -> {
+            ccNodeService.updateBccpState(user, e, CcState.WIP);
+        });
     }
 }
 

@@ -111,4 +111,19 @@ public class CcListController {
         service.transferOwnership(user, type, manifestId, targetLoginId);
         return ResponseEntity.noContent().build();
     }
+
+    @RequestMapping(value = "/core_component/state/{type}",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateCcState(@AuthenticationPrincipal User user,
+                                            @PathVariable("type") String type,
+                                            @RequestBody CcUpdateStateListRequest ccUpdateStateListRequest) {
+        if (type.toUpperCase().equals(Deleted.name().toUpperCase())) {
+            service.deleteCcs(user, ccUpdateStateListRequest);
+        } else {
+            service.restoreCcs(user, ccUpdateStateListRequest);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
 }
