@@ -338,4 +338,25 @@ public class CcNodeController {
                 throw new UnsupportedOperationException();
         }
     }
+
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/reset",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcNodeUpdateResponse resetRevision(@AuthenticationPrincipal User user,
+                                                @PathVariable("type") String type,
+                                                @PathVariable("manifestId") BigInteger manifestId) {
+
+        CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
+        resp.setType(CcType.valueOf(type.toUpperCase()));
+
+        switch (resp.getType()) {
+            case BCCP:
+                service.resetRevisionBccp(user, manifestId);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        return resp;
+    }
 }

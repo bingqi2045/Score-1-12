@@ -224,7 +224,7 @@ public class AsccpWriteRepository {
         if (compare(asccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.PROPERTY_TERM, request.getPropertyTerm())
-                    .set(ASCCP.DEN, asccpRecord.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
+                    .set(ASCCP.DEN, request.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
         }
         if (compare(asccpRecord.getDefinition(), request.getDefinition()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)

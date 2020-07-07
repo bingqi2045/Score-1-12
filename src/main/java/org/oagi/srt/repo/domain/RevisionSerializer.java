@@ -460,4 +460,26 @@ public class RevisionSerializer {
         return properties;
     }
 
+    public ULong getSnapshotId(JsonElement obj) {
+        if (obj != null && !obj.isJsonNull()) {
+            return obj.getAsJsonObject().isJsonNull() ? null :
+                    ULong.valueOf(obj.getAsJsonObject().get("value").getAsBigInteger());
+        }
+        return null;
+    }
+
+    public String getSnapshotString(JsonElement obj) {
+        if (obj != null && !obj.isJsonNull()) {
+            return obj.getAsString().isEmpty() ? "" : obj.getAsString();
+        }
+        return "";
+    }
+
+    public Byte getSnapshotByte(JsonElement obj) {
+        if (obj != null && !obj.isJsonNull()) {
+            return obj.getAsBoolean() ? (byte) 1 : 0;
+        }
+        return 0;
+    }
+
 }

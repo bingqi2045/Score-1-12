@@ -954,5 +954,14 @@ public class CcNodeService extends EventHandler {
 
         fireEvent(new UpdatedBccpOwnerEvent());
     }
+
+    @Transactional
+    public void resetRevisionBccp(User user, BigInteger bccpManifestId) {
+        ResetRevisionBccpRepositoryRequest request
+                = new ResetRevisionBccpRepositoryRequest(user, bccpManifestId);
+        bccpWriteRepository.resetRevisionBccp(request);
+
+        fireEvent(new resetRevisionBccpEvent());
+    }
 }
 

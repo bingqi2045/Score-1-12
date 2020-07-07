@@ -1,9 +1,12 @@
 package org.oagi.srt.repo.component.bccp;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
@@ -12,12 +15,17 @@ import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import javax.print.DocFlavor;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -36,6 +44,9 @@ public class BccpWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    @Autowired
+    private RevisionSerializer serializer;
 
     public CreateBccpRepositoryResponse createBccp(CreateBccpRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
@@ -218,7 +229,7 @@ public class BccpWriteRepository {
         if (compare(bccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCCP.PROPERTY_TERM, request.getPropertyTerm())
-                    .set(BCCP.DEN, bccpRecord.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
+                    .set(BCCP.DEN, request.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
         }
         if (StringUtils.isEmpty(request.getDefaultValue()) && StringUtils.isEmpty(request.getFixedValue())) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
@@ -470,5 +481,80 @@ public class BccpWriteRepository {
         bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
 
         return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
+    }
+
+    public ResetRevisionBccpRepositoryResponse resetRevisionBccp(ResetRevisionBccpRepositoryRequest request) {
+        BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
+
+        if (bccpManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target BCCP");
+        }
+
+        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
+
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(bccpManifestRecord.getRevisionId())).fetchOne();
+
+        UInteger revisionNum = cursorRevision.getRevisionNum();
+
+        if (cursorRevision.getPrevRevisionId() == null) {
+            throw new IllegalArgumentException("There is no change to be reset.");
+        }
+
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
+
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
+                throw new IllegalArgumentException("Can not found reset point");
+            }
+            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+                break;
+            }
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+        }
+
+        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
+
+        ULong bdtId = serializer.getSnapshotId(snapshot.get("bdtId"));
+        DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST).where(and(
+                DT_MANIFEST.DT_ID.eq(bdtId),
+                DT_MANIFEST.RELEASE_ID.eq(bccpManifestRecord.getReleaseId())
+        )).fetchOne();
+
+        if (bdtManifestRecord == null) {
+            throw new IllegalArgumentException("Not found based BDT.");
+        }
+
+        bccpManifestRecord.setBdtManifestId(bdtManifestRecord.getDtManifestId());
+        bccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.REVISION_ID);
+
+        bccpRecord.setBdtId(bdtManifestRecord.getDtId());
+        bccpRecord.setPropertyTerm(serializer.getSnapshotString(snapshot.get("propertyTerm")));
+        bccpRecord.setRepresentationTerm(serializer.getSnapshotString(snapshot.get("representationTerm")));
+        bccpRecord.setDen(bccpRecord.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
+        bccpRecord.setDefinition(serializer.getSnapshotString(snapshot.get("definition")));
+        bccpRecord.setDefinitionSource(serializer.getSnapshotString(snapshot.get("definitionSource")));
+        bccpRecord.setNamespaceId(serializer.getSnapshotId(snapshot.get("namespaceId")));
+        bccpRecord.setIsDeprecated(serializer.getSnapshotByte(snapshot.get("deprecated")));
+        bccpRecord.setIsNillable(serializer.getSnapshotByte(snapshot.get("nillable")));
+        bccpRecord.setDefaultValue(serializer.getSnapshotString(snapshot.get("defaultValue")));
+        bccpRecord.setFixedValue(serializer.getSnapshotString(snapshot.get("fixedValue")));
+        bccpRecord.update();
+
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+                .execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+
+        return new ResetRevisionBccpRepositoryResponse(request.getBccpManifestId());
     }
 }
