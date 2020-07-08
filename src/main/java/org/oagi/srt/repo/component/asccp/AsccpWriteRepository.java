@@ -1,24 +1,26 @@
 package org.oagi.srt.repo.component.asccp;
 
+import com.google.gson.JsonObject;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
-import org.oagi.srt.entity.jooq.tables.records.AccManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
-import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
-import org.oagi.srt.entity.jooq.tables.records.RevisionRecord;
+import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
+import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -38,6 +40,9 @@ public class AsccpWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    @Autowired
+    private RevisionSerializer serializer;
 
     private String objectClassTerm(ULong accId) {
         return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
@@ -462,5 +467,80 @@ public class AsccpWriteRepository {
         asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
 
         return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+    }
+
+    public ResetRevisionAsccpRepositoryResponse resetRevisionAsccp(ResetRevisionAsccpRepositoryRequest request) {
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
+
+        if (asccpManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target ASCCP");
+        }
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
+
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(asccpManifestRecord.getRevisionId())).fetchOne();
+
+        UInteger revisionNum = cursorRevision.getRevisionNum();
+
+        if (cursorRevision.getPrevRevisionId() == null) {
+            throw new IllegalArgumentException("There is no change to be reset.");
+        }
+
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
+
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
+                throw new IllegalArgumentException("Can not found reset point");
+            }
+            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+                break;
+            }
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+        }
+
+        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
+
+        ULong roleOfAccId = serializer.getSnapshotId(snapshot.get("roleOfAccId"));
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST).where(and(
+                ACC_MANIFEST.ACC_ID.eq(roleOfAccId),
+                ACC_MANIFEST.RELEASE_ID.eq(asccpManifestRecord.getReleaseId())
+        )).fetchOne();
+
+        if (accManifestRecord == null) {
+            throw new IllegalArgumentException("Not found role of ACC.");
+        }
+
+        AccRecord accRecord = dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
+
+        asccpManifestRecord.setRoleOfAccManifestId(accManifestRecord.getAccManifestId());
+        asccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.REVISION_ID);
+
+        asccpRecord.setRoleOfAccId(accManifestRecord.getAccId());
+        asccpRecord.setPropertyTerm(serializer.getSnapshotString(snapshot.get("propertyTerm")));
+        asccpRecord.setDen(asccpRecord.getPropertyTerm() + ". " + accRecord.getObjectClassTerm());
+        asccpRecord.setDefinition(serializer.getSnapshotString(snapshot.get("definition")));
+        asccpRecord.setDefinitionSource(serializer.getSnapshotString(snapshot.get("definitionSource")));
+        asccpRecord.setNamespaceId(serializer.getSnapshotId(snapshot.get("namespaceId")));
+        asccpRecord.setIsDeprecated(serializer.getSnapshotByte(snapshot.get("deprecated")));
+        asccpRecord.setIsNillable(serializer.getSnapshotByte(snapshot.get("nillable")));
+        asccpRecord.setReusableIndicator(serializer.getSnapshotByte(snapshot.get("reusable")));
+        asccpRecord.update();
+
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+                .execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+
+        return new ResetRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
     }
 }

@@ -961,7 +961,25 @@ public class CcNodeService extends EventHandler {
                 = new ResetRevisionBccpRepositoryRequest(user, bccpManifestId);
         bccpWriteRepository.resetRevisionBccp(request);
 
-        fireEvent(new resetRevisionBccpEvent());
+        fireEvent(new ResetRevisionBccpEvent());
+    }
+
+    @Transactional
+    public void resetRevisionAsccp(User user, BigInteger asccpManifestId) {
+        ResetRevisionAsccpRepositoryRequest request
+                = new ResetRevisionAsccpRepositoryRequest(user, asccpManifestId);
+        asccpWriteRepository.resetRevisionAsccp(request);
+
+        fireEvent(new ResetRevisionAsccpEvent());
+    }
+
+    @Transactional
+    public void resetRevisionAcc(User user, BigInteger accManifestId) {
+        ResetRevisionAccRepositoryRequest request
+                = new ResetRevisionAccRepositoryRequest(user, accManifestId);
+        accWriteRepository.resetRevisionAcc(request);
+
+        fireEvent(new ResetRevisionAccEvent());
     }
 }
 

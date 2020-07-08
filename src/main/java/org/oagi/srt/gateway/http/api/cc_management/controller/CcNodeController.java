@@ -350,6 +350,12 @@ public class CcNodeController {
         resp.setType(CcType.valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
+            case ACC:
+                service.resetRevisionAcc(user, manifestId);
+                break;
+            case ASCCP:
+                service.resetRevisionAsccp(user, manifestId);
+                break;
             case BCCP:
                 service.resetRevisionBccp(user, manifestId);
                 break;

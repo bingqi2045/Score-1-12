@@ -1,10 +1,16 @@
 package org.oagi.srt.repo.component.acc;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jooq.DSLContext;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
+import org.oagi.srt.data.BCCEntityType;
+import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RevisionAction;
 import org.oagi.srt.entity.jooq.enums.SeqKeyType;
 import org.oagi.srt.entity.jooq.tables.records.*;
@@ -15,14 +21,18 @@ import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.component.seqkey.MoveTo;
 import org.oagi.srt.repo.component.seqkey.SeqKeyHandler;
+import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.parser.Entity;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
@@ -42,6 +52,9 @@ public class AccWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    @Autowired
+    private RevisionSerializer serializer;
 
     private String objectClassTerm(ULong accId) {
         return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
@@ -215,7 +228,7 @@ public class AccWriteRepository {
             AccRecord nextAccRecord,
             ULong targetReleaseId,
             LocalDateTime timestamp) {
-        ULong fromAccManifestId = user.isDeveloper() ? accManifestRecord.getPrevAccManifestId() : accManifestRecord.getAccManifestId();
+        ULong fromAccManifestId = accManifestRecord.getAccManifestId();
         for (AsccManifestRecord asccManifestRecord : dslContext.selectFrom(ASCC_MANIFEST)
                 .where(and(
                         ASCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
@@ -272,7 +285,7 @@ public class AccWriteRepository {
             AccRecord nextAccRecord,
             ULong targetReleaseId,
             LocalDateTime timestamp) {
-        ULong fromAccManifestId = user.isDeveloper() ? accManifestRecord.getPrevAccManifestId() : accManifestRecord.getAccManifestId();
+        ULong fromAccManifestId = accManifestRecord.getAccManifestId();
         for (BccManifestRecord bccManifestRecord : dslContext.selectFrom(BCC_MANIFEST)
                 .where(and(
                         BCC_MANIFEST.RELEASE_ID.eq(targetReleaseId),
@@ -942,5 +955,145 @@ public class AccWriteRepository {
         }
 
         return bccRecord;
+    }
+
+    public ResetRevisionAccRepositoryResponse resetRevisionAcc(ResetRevisionAccRepositoryRequest request) {
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
+
+        if (accManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target ACC");
+        }
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
+
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(accManifestRecord.getRevisionId())).fetchOne();
+
+        UInteger revisionNum = cursorRevision.getRevisionNum();
+
+        if (cursorRevision.getPrevRevisionId() == null) {
+            throw new IllegalArgumentException("There is no change to be reset.");
+        }
+
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
+
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
+                throw new IllegalArgumentException("Can not found reset point");
+            }
+            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+                break;
+            }
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+        }
+
+        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
+
+        ULong basedAccId = serializer.getSnapshotId(snapshot.get("basedAccId"));
+
+        if (basedAccId != null) {
+            AccManifestRecord basedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST).where(and(
+                    ACC_MANIFEST.ACC_ID.eq(basedAccId),
+                    ACC_MANIFEST.RELEASE_ID.eq(accManifestRecord.getReleaseId())
+            )).fetchOne();
+
+            if (basedAccManifestRecord == null) {
+                throw new IllegalArgumentException("Not found based ACC.");
+            }
+
+            accManifestRecord.setBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
+            accRecord.setBasedAccId(basedAccManifestRecord.getAccId());
+        } else {
+            accManifestRecord.setBasedAccManifestId(null);
+            accRecord.setBasedAccId(null);
+        }
+        accManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
+
+        accRecord.setObjectClassTerm(serializer.getSnapshotString(snapshot.get("objectClassTerm")));
+        accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
+        accRecord.setDefinition(serializer.getSnapshotString(snapshot.get("definition")));
+        accRecord.setDefinitionSource(serializer.getSnapshotString(snapshot.get("definitionSource")));
+        accRecord.setOagisComponentType(OagisComponentType.valueOf(
+                serializer.getSnapshotString(snapshot.get("componentType"))).getValue());
+        accRecord.setNamespaceId(serializer.getSnapshotId(snapshot.get("namespaceId")));
+        accRecord.setIsDeprecated(serializer.getSnapshotByte(snapshot.get("deprecated")));
+        accRecord.setIsAbstract(serializer.getSnapshotByte(snapshot.get("abstract")));
+        accRecord.update();
+
+        resetAssociations(snapshot.get("associations"), accManifestRecord);
+
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+                .execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+
+        return new ResetRevisionAccRepositoryResponse(request.getAccManifestId());
+    }
+
+    private void resetAssociations(JsonElement associationElement, AccManifestRecord accManifestRecord) {
+        JsonArray associations = associationElement.getAsJsonArray();
+        int associationCount = associations.size();
+
+        List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
+
+        List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
+
+        List<JsonObject> associationObjects = IntStream.range(0, associationCount)
+                .mapToObj(i -> associations.get(i).getAsJsonObject())
+                .collect(Collectors.toList());
+        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
+            AsccRecord asccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
+            JsonObject asccObject = associationObjects.stream().filter(o ->
+                serializer.getSnapshotString(o.get("component")).equals("ascc")
+                        && serializer.getSnapshotString(o.get("guid")).equals(asccRecord.getGuid())
+            ).findFirst().orElse(null);
+
+            if (asccObject == null) {
+                asccRecord.setState(CcState.Deleted.name());
+            } else {
+                asccRecord.setCardinalityMin(asccObject.get("cardinalityMin").getAsInt());
+                asccRecord.setCardinalityMax(asccObject.get("cardinalityMax").getAsInt());
+                asccRecord.setIsDeprecated(serializer.getSnapshotByte(asccObject.get("deprecated")));
+                asccRecord.setDefinition(serializer.getSnapshotString(asccObject.get("definition")));
+                asccRecord.setDefinitionSource(serializer.getSnapshotString(asccObject.get("definitionSource")));
+            }
+            asccRecord.update();
+        }
+
+        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
+            BccRecord bccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne();
+            JsonObject bccObject = associationObjects.stream().filter(o ->
+                    serializer.getSnapshotString(o.get("component")).equals("bcc")
+                            && serializer.getSnapshotString(o.get("guid")).equals(bccRecord.getGuid())
+            ).findFirst().orElse(null);
+
+            if (bccObject == null) {
+                bccRecord.setState(CcState.Deleted.name());
+            } else {
+                bccRecord.setCardinalityMin(bccObject.get("cardinalityMin").getAsInt());
+                bccRecord.setCardinalityMax(bccObject.get("cardinalityMax").getAsInt());
+                bccRecord.setIsDeprecated(serializer.getSnapshotByte(bccObject.get("deprecated")));
+                bccRecord.setDefinition(serializer.getSnapshotString(bccObject.get("definition")));
+                bccRecord.setDefinitionSource(serializer.getSnapshotString(bccObject.get("definitionSource")));
+                bccRecord.setEntityType(BCCEntityType.valueOf(
+                        serializer.getSnapshotString(bccObject.get("entityType"))).getValue());
+                bccRecord.setDefaultValue(serializer.getSnapshotString(bccObject.get("defaultValue")));
+                bccRecord.setFixedValue(serializer.getSnapshotString(bccObject.get("fixedValue")));
+            }
+            bccRecord.update();
+        }
     }
 }
