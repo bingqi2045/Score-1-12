@@ -355,6 +355,19 @@ public class CodeListService extends EventHandler {
         return reviseCodeListRepositoryResponse.getCodeListManifestId();
     }
 
+    @Transactional
+    public BigInteger discardRevision(User user, BigInteger codeListManifestId) {
+        DiscardRevisionCodeListRepositoryRequest request
+                = new DiscardRevisionCodeListRepositoryRequest(user, codeListManifestId);
+
+        DiscardRevisionCodeListRepositoryResponse response =
+                codeListWriteRepository.discardRevisionCodeList(request);
+
+        fireEvent(new ReviseCodeListEvent());
+
+        return response.getCodeListManifestId();
+    }
+
     public CodeList getCodeListRevision(User user, BigInteger manifestId) {
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))

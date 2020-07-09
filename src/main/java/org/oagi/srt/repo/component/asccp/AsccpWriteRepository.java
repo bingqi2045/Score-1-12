@@ -469,7 +469,76 @@ public class AsccpWriteRepository {
         return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
-    public ResetRevisionAsccpRepositoryResponse resetRevisionAsccp(ResetRevisionAsccpRepositoryRequest request) {
+    public DiscardRevisionAsccpRepositoryResponse discardRevisionAsccp(DiscardRevisionAsccpRepositoryRequest request) {
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
+
+        if (asccpManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target ASCCP");
+        }
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
+
+        if (asccpRecord.getPrevAsccpId() == null) {
+            throw new IllegalArgumentException("Not found previous revision");
+        }
+
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(asccpManifestRecord.getRevisionId())).fetchOne();
+
+        UInteger revisionNum = cursorRevision.getRevisionNum();
+
+        if (cursorRevision.getPrevRevisionId() == null) {
+            throw new IllegalArgumentException("There is no change to be reset.");
+        }
+
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
+
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if(cursorRevision.getRevisionNum().compareTo(revisionNum) < 0) {
+                break;
+            }
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+        }
+
+        // update ASCCP MANIFEST's asccp_id and revision_id
+        asccpManifestRecord.setAsccpId(asccpRecord.getPrevAsccpId());
+        asccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID);
+
+        // unlink revision
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+                .execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+
+        // update ASCCs which using current ASCCP
+        dslContext.update(ASCC)
+                .set(ASCC.TO_ASCCP_ID, asccpRecord.getPrevAsccpId())
+                .where(ASCC.TO_ASCCP_ID.eq(asccpRecord.getAsccpId()))
+                .execute();
+
+        AsccpRecord prevAsccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpRecord.getPrevAsccpId())).fetchOne();
+
+        // unlink prev ASCCP
+        prevAsccpRecord.setNextAsccpId(null);
+        prevAsccpRecord.update(ASCCP.NEXT_ASCCP_ID);
+
+        // delete current ASCCP
+        asccpRecord.delete();
+
+        return new DiscardRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
+    }
+
+    public DiscardRevisionAsccpRepositoryResponse resetRevisionAsccp(DiscardRevisionAsccpRepositoryRequest request) {
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
 
@@ -541,6 +610,6 @@ public class AsccpWriteRepository {
                 .execute();
         dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
-        return new ResetRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
+        return new DiscardRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
     }
 }

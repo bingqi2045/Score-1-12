@@ -956,30 +956,30 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void resetRevisionBccp(User user, BigInteger bccpManifestId) {
-        ResetRevisionBccpRepositoryRequest request
-                = new ResetRevisionBccpRepositoryRequest(user, bccpManifestId);
-        bccpWriteRepository.resetRevisionBccp(request);
+    public void discardRevisionBccp(User user, BigInteger bccpManifestId) {
+        DiscardRevisionBccpRepositoryRequest request
+                = new DiscardRevisionBccpRepositoryRequest(user, bccpManifestId);
+        bccpWriteRepository.discardRevisionBccp(request);
 
-        fireEvent(new ResetRevisionBccpEvent());
+        fireEvent(new DiscardRevisionBccpEvent());
     }
 
     @Transactional
-    public void resetRevisionAsccp(User user, BigInteger asccpManifestId) {
-        ResetRevisionAsccpRepositoryRequest request
-                = new ResetRevisionAsccpRepositoryRequest(user, asccpManifestId);
-        asccpWriteRepository.resetRevisionAsccp(request);
+    public void discardRevisionAsccp(User user, BigInteger asccpManifestId) {
+        DiscardRevisionAsccpRepositoryRequest request
+                = new DiscardRevisionAsccpRepositoryRequest(user, asccpManifestId);
+        asccpWriteRepository.discardRevisionAsccp(request);
 
-        fireEvent(new ResetRevisionAsccpEvent());
+        fireEvent(new DiscardRevisionAsccpEvent());
     }
 
     @Transactional
-    public void resetRevisionAcc(User user, BigInteger accManifestId) {
-        ResetRevisionAccRepositoryRequest request
-                = new ResetRevisionAccRepositoryRequest(user, accManifestId);
-        accWriteRepository.resetRevisionAcc(request);
+    public void discardRevisionAcc(User user, BigInteger accManifestId) {
+        DiscardRevisionAccRepositoryRequest request
+                = new DiscardRevisionAccRepositoryRequest(user, accManifestId);
+        accWriteRepository.discardRevisionAcc(request);
 
-        fireEvent(new ResetRevisionAccEvent());
+        fireEvent(new DiscardRevisionAccEvent());
     }
 }
 

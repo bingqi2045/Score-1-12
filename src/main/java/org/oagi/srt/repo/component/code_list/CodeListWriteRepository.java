@@ -1,6 +1,7 @@
 package org.oagi.srt.repo.component.code_list;
 
 import org.jooq.DSLContext;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.RevisionAction;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -599,6 +601,110 @@ public class CodeListWriteRepository {
         responseCodeListManifestId = codeListManifestRecord.getCodeListManifestId();
 
         return new ReviseCodeListRepositoryResponse(responseCodeListManifestId.toBigInteger());
+    }
+
+    public DiscardRevisionCodeListRepositoryResponse discardRevisionCodeList(DiscardRevisionCodeListRepositoryRequest request) {
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId()))).fetchOne();
+
+        if (codeListManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target Code List");
+        }
+
+        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId())).fetchOne();
+
+        if (codeListRecord.getPrevCodeListId() == null) {
+            throw new IllegalArgumentException("Not found previous revision");
+        }
+
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(codeListManifestRecord.getRevisionId())).fetchOne();
+
+        UInteger revisionNum = cursorRevision.getRevisionNum();
+
+        if (cursorRevision.getPrevRevisionId() == null) {
+            throw new IllegalArgumentException("There is no change to be reset.");
+        }
+
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
+
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if(cursorRevision.getRevisionNum().compareTo(revisionNum) < 0) {
+                break;
+            }
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+        }
+
+        // update BIE CODE LIST IDs
+        dslContext.update(BBIE)
+                .set(BBIE.CODE_LIST_ID, codeListRecord.getPrevCodeListId())
+                .where(BBIE.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
+                .execute();
+
+        dslContext.update(BBIE_SC)
+                .set(BBIE_SC.CODE_LIST_ID, codeListRecord.getPrevCodeListId())
+                .where(BBIE_SC.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
+                .execute();
+
+        // update CODE LIST MANIFEST's codeList_id and revision_id
+        codeListManifestRecord.setCodeListId(codeListRecord.getPrevCodeListId());
+        codeListManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.REVISION_ID);
+
+        // unlink revision
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+                .execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+
+        discardRevisionCodeListValues(codeListManifestRecord, codeListRecord);
+
+        CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListRecord.getPrevCodeListId())).fetchOne();
+
+        // unlink prev CODE_LIST
+        prevCodeListRecord.setNextCodeListId(null);
+        prevCodeListRecord.update(CODE_LIST.NEXT_CODE_LIST_ID);
+
+        // delete current CODE_LIST
+        codeListRecord.delete();
+
+        return new DiscardRevisionCodeListRepositoryResponse(request.getCodeListManifestId());
+    }
+
+    private void discardRevisionCodeListValues(CodeListManifestRecord codeListManifestRecord, CodeListRecord codeListRecord) {
+        List<CodeListValueManifestRecord> codeListValueManifests = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestRecord.getCodeListManifestId()))
+                .fetch();
+
+        for (CodeListValueManifestRecord codeListValueManifest : codeListValueManifests) {
+            CodeListValueRecord codeListValue = dslContext.selectFrom(CODE_LIST_VALUE)
+                    .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(codeListValueManifest.getCodeListValueId()))
+                    .fetchOne();
+
+            if (codeListValue.getPrevCodeListValueId() == null) {
+                //delete code list value and code list manifest which added this revision
+                codeListValueManifest.delete();
+                codeListValue.delete();
+            } else {
+                //delete code list value and update code list value manifest
+                CodeListValueRecord prevCodeListValue = dslContext.selectFrom(CODE_LIST_VALUE)
+                        .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(codeListValue.getPrevCodeListValueId()))
+                        .fetchOne();
+                prevCodeListValue.setNextCodeListValueId(null);
+                prevCodeListValue.update(CODE_LIST_VALUE.NEXT_CODE_LIST_VALUE_ID);
+                codeListValueManifest.setCodeListValueId(prevCodeListValue.getCodeListValueId());
+                codeListValueManifest.update(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID);
+                codeListValue.delete();
+            }
+        }
     }
 
     private void createNewCodeListValueForRevisedRecord(

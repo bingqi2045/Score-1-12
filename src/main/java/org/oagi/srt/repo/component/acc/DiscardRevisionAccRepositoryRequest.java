@@ -5,12 +5,12 @@ import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
 
-public class ResetRevisionAccRepositoryRequest extends RepositoryRequest {
+public class DiscardRevisionAccRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger accManifestId;
 
-    public ResetRevisionAccRepositoryRequest(User user,
-                                             BigInteger accManifestId) {
+    public DiscardRevisionAccRepositoryRequest(User user,
+                                               BigInteger accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }

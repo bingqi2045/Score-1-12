@@ -4,7 +4,6 @@ import org.oagi.srt.data.RepositoryRequest;
 import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 
 public class UpdateAccOwnerRepositoryRequest extends RepositoryRequest {
 

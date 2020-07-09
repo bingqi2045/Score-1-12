@@ -4,16 +4,14 @@ import org.oagi.srt.data.RepositoryRequest;
 import org.springframework.security.core.userdetails.User;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 
-public class ReviseCodeListRepositoryRequest extends RepositoryRequest {
+public class DiscardRevisionCodeListRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger codeListManifestId;
 
-    public ReviseCodeListRepositoryRequest(User user,
-                                           BigInteger codeListManifestId,
-                                           LocalDateTime localDateTime) {
-        super(user, localDateTime);
+    public DiscardRevisionCodeListRepositoryRequest(User user,
+                                                    BigInteger codeListManifestId) {
+        super(user);
         this.codeListManifestId = codeListManifestId;
     }
 

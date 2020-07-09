@@ -1,6 +1,5 @@
 package org.oagi.srt.repo.component.ascc;
 
-import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RepositoryRequest;
 import org.springframework.security.core.userdetails.User;
 
