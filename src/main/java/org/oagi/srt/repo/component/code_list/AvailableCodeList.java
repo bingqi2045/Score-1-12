@@ -7,6 +7,7 @@ import java.math.BigInteger;
 @Data
 public class AvailableCodeList {
 
+    private BigInteger codeListId;
     private BigInteger codeListManifestId;
     private BigInteger basedCodeListManifestId;
     private boolean isDefault;

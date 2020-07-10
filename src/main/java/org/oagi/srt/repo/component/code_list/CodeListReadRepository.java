@@ -29,6 +29,7 @@ public class CodeListReadRepository {
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                 BDT_PRI_RESTRI.IS_DEFAULT,
+                CODE_LIST.CODE_LIST_ID,
                 CODE_LIST.NAME.as("code_list_name"))
                 .from(BDT_PRI_RESTRI)
                 .join(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
