@@ -37,7 +37,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 1432282935;
+    private static final long serialVersionUID = -1494051916;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -75,7 +75,7 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     /**
      * The column <code>oagi.bbie_sc.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<BbieScRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie_sc.bbie_id</code>. The BBIE this BBIE_SC applies to.
@@ -171,9 +171,9 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     public final TableField<BbieScRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the BBIE_SC was last updated.");
 
     /**
-     * The column <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
+     * The column <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BbieScRecord, ULong> OWNER_TOP_LEVEL_ABIE_ID = createField(DSL.name("owner_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.");
+    public final TableField<BbieScRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     /**
      * Create a <code>oagi.bbie_sc</code> table reference
@@ -235,7 +235,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
 
     @Override
     public List<ForeignKey<BbieScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_CREATED_BY_FK, Keys.BBIE_SC_LAST_UPDATED_BY_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieScRecord, ?>>asList(Keys.BBIE_SC_BASED_DT_SC_MANIFEST_ID_FK, Keys.BBIE_SC_BBIE_ID_FK, Keys.BBIE_SC_DT_SC_PRI_RESTRI_ID_FK, Keys.BBIE_SC_CODE_LIST_ID_FK, Keys.BBIE_SC_AGENCY_ID_LIST_ID_FK, Keys.BBIE_SC_CREATED_BY_FK, Keys.BBIE_SC_LAST_UPDATED_BY_FK, Keys.BBIE_SC_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     public DtScManifest dtScManifest() {
@@ -266,8 +266,8 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
         return new AppUser(this, Keys.BBIE_SC_LAST_UPDATED_BY_FK);
     }
 
-    public TopLevelAbie topLevelAbie() {
-        return new TopLevelAbie(this, Keys.BBIE_SC_OWNER_TOP_LEVEL_ABIE_ID_FK);
+    public TopLevelAsbiep topLevelAsbiep() {
+        return new TopLevelAsbiep(this, Keys.BBIE_SC_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     @Override

@@ -41,7 +41,7 @@ import org.oagi.srt.entity.jooq.tables.records.BbieRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bbie extends TableImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 1547894287;
+    private static final long serialVersionUID = -1844963616;
 
     /**
      * The reference instance of <code>oagi.bbie</code>
@@ -79,7 +79,7 @@ public class Bbie extends TableImpl<BbieRecord> {
     /**
      * The column <code>oagi.bbie.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<BbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<BbieRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.bbie.from_abie_id</code>. FROM_ABIE_ID must be based on the FROM_ACC_ID in the BASED_BCC_ID.
@@ -182,9 +182,9 @@ public class Bbie extends TableImpl<BbieRecord> {
     public final TableField<BbieRecord, Byte> IS_USED = createField(DSL.name("is_used"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Flag to indicate whether the field/component is used in the content model. It indicates whether the field/component should be generated in the expression generation.");
 
     /**
-     * The column <code>oagi.bbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.
+     * The column <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BbieRecord, ULong> OWNER_TOP_LEVEL_ABIE_ID = createField(DSL.name("owner_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.");
+    public final TableField<BbieRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     /**
      * Create a <code>oagi.bbie</code> table reference
@@ -246,7 +246,7 @@ public class Bbie extends TableImpl<BbieRecord> {
 
     @Override
     public List<ForeignKey<BbieRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_MANIFEST_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BbieRecord, ?>>asList(Keys.BBIE_BASED_BCC_MANIFEST_ID_FK, Keys.BBIE_FROM_ABIE_ID_FK, Keys.BBIE_TO_BBIEP_ID_FK, Keys.BBIE_BDT_PRI_RESTRI_ID_FK, Keys.BBIE_CODE_LIST_ID_FK, Keys.BBIE_AGENCY_ID_LIST_ID_FK, Keys.BBIE_CREATED_BY_FK, Keys.BBIE_LAST_UPDATED_BY_FK, Keys.BBIE_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     public BccManifest bccManifest() {
@@ -281,8 +281,8 @@ public class Bbie extends TableImpl<BbieRecord> {
         return new AppUser(this, Keys.BBIE_LAST_UPDATED_BY_FK);
     }
 
-    public TopLevelAbie topLevelAbie() {
-        return new TopLevelAbie(this, Keys.BBIE_OWNER_TOP_LEVEL_ABIE_ID_FK);
+    public TopLevelAsbiep topLevelAsbiep() {
+        return new TopLevelAsbiep(this, Keys.BBIE_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     @Override

@@ -65,7 +65,6 @@ public class Indexes {
     public static final Index BCCP_BCCP_GUID_IDX = Indexes0.BCCP_BCCP_GUID_IDX;
     public static final Index BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID = Indexes0.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID;
-    public static final Index BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ABIE_ID = Indexes0.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ABIE_ID;
     public static final Index COMMENT_REFERENCE = Indexes0.COMMENT_REFERENCE;
     public static final Index DT_DT_GUID_IDX = Indexes0.DT_DT_GUID_IDX;
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX;
@@ -106,7 +105,6 @@ public class Indexes {
         public static Index BCCP_BCCP_GUID_IDX = Internal.createIndex("bccp_guid_idx", Bccp.BCCP, new OrderField[] { Bccp.BCCP.GUID }, false);
         public static Index BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("bccp_last_update_timestamp_desc_idx", Bccp.BCCP, new OrderField[] { Bccp.BCCP.LAST_UPDATE_TIMESTAMP }, false);
         public static Index BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID = Internal.createIndex("biz_ctx_id", BizCtxAssignment.BIZ_CTX_ASSIGNMENT, new OrderField[] { BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID }, false);
-        public static Index BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ABIE_ID = Internal.createIndex("top_level_abie_id", BizCtxAssignment.BIZ_CTX_ASSIGNMENT, new OrderField[] { BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID }, false);
         public static Index COMMENT_REFERENCE = Internal.createIndex("reference", Comment.COMMENT, new OrderField[] { Comment.COMMENT.REFERENCE }, false);
         public static Index DT_DT_GUID_IDX = Internal.createIndex("dt_guid_idx", Dt.DT, new OrderField[] { Dt.DT.GUID }, false);
         public static Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("dt_last_update_timestamp_desc_idx", Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);

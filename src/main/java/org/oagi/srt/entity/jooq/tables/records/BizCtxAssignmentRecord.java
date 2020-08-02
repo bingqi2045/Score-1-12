@@ -19,7 +19,7 @@ import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignmentRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 50345348;
+    private static final long serialVersionUID = 660945868;
 
     /**
      * Setter for <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.
@@ -50,16 +50,16 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
     }
 
     /**
-     * Setter for <code>oagi.biz_ctx_assignment.top_level_abie_id</code>.
+     * Setter for <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setTopLevelAbieId(ULong value) {
+    public void setTopLevelAsbiepId(ULong value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.biz_ctx_assignment.top_level_abie_id</code>.
+     * Getter for <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getTopLevelAbieId() {
+    public ULong getTopLevelAsbiepId() {
         return (ULong) get(2);
     }
 
@@ -98,7 +98,7 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
 
     @Override
     public Field<ULong> field3() {
-        return BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID;
+        return BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
 
     @Override
     public ULong component3() {
-        return getTopLevelAbieId();
+        return getTopLevelAsbiepId();
     }
 
     @Override
@@ -128,7 +128,7 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
 
     @Override
     public ULong value3() {
-        return getTopLevelAbieId();
+        return getTopLevelAsbiepId();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
 
     @Override
     public BizCtxAssignmentRecord value3(ULong value) {
-        setTopLevelAbieId(value);
+        setTopLevelAsbiepId(value);
         return this;
     }
 
@@ -171,11 +171,11 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
     /**
      * Create a detached, initialised BizCtxAssignmentRecord
      */
-    public BizCtxAssignmentRecord(ULong bizCtxAssignmentId, ULong bizCtxId, ULong topLevelAbieId) {
+    public BizCtxAssignmentRecord(ULong bizCtxAssignmentId, ULong bizCtxId, ULong topLevelAsbiepId) {
         super(BizCtxAssignment.BIZ_CTX_ASSIGNMENT);
 
         set(0, bizCtxAssignmentId);
         set(1, bizCtxId);
-        set(2, topLevelAbieId);
+        set(2, topLevelAsbiepId);
     }
 }

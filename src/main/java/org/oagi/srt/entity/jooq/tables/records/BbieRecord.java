@@ -25,7 +25,7 @@ import org.oagi.srt.entity.jooq.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 365788001;
+    private static final long serialVersionUID = 307939367;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -378,16 +378,16 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.
+     * Setter for <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAbieId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(ULong value) {
         set(25, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this BBIE record.
+     * Getter for <code>oagi.bbie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAbieId() {
+    public ULong getOwnerTopLevelAsbiepId() {
         return (ULong) get(25);
     }
 
@@ -414,7 +414,7 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     /**
      * Create a detached, initialised BbieRecord
      */
-    public BbieRecord(ULong bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public BbieRecord(ULong bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
         super(Bbie.BBIE);
 
         set(0, bbieId);
@@ -442,6 +442,6 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
         set(22, lastUpdateTimestamp);
         set(23, seqKey);
         set(24, isUsed);
-        set(25, ownerTopLevelAbieId);
+        set(25, ownerTopLevelAsbiepId);
     }
 }

@@ -21,7 +21,7 @@ import org.oagi.srt.entity.jooq.tables.BbieSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 1495252000;
+    private static final long serialVersionUID = -468178026;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.
@@ -348,16 +348,16 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     }
 
     /**
-     * Setter for <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
+     * Setter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAbieId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(ULong value) {
         set(22, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie_sc.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE. It specifies the top-level ABIE, which owns this BBIE_SC record.
+     * Getter for <code>oagi.bbie_sc.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAbieId() {
+    public ULong getOwnerTopLevelAsbiepId() {
         return (ULong) get(22);
     }
 
@@ -384,7 +384,7 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     /**
      * Create a detached, initialised BbieScRecord
      */
-    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
+    public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
         set(0, bbieScId);
@@ -409,6 +409,6 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
         set(19, lastUpdatedBy);
         set(20, creationTimestamp);
         set(21, lastUpdateTimestamp);
-        set(22, ownerTopLevelAbieId);
+        set(22, ownerTopLevelAsbiepId);
     }
 }

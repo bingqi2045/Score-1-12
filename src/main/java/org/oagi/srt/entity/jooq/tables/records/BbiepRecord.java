@@ -22,7 +22,7 @@ import org.oagi.srt.entity.jooq.tables.Bbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = -1075512499;
+    private static final long serialVersionUID = -129321619;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.
@@ -193,16 +193,16 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.bbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this BBIEP record.
+     * Setter for <code>oagi.bbiep.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAbieId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(ULong value) {
         set(12, value);
     }
 
     /**
-     * Getter for <code>oagi.bbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this BBIEP record.
+     * Getter for <code>oagi.bbiep.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAbieId() {
+    public ULong getOwnerTopLevelAsbiepId() {
         return (ULong) get(12);
     }
 
@@ -291,7 +291,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public Field<ULong> field13() {
-        return Bbiep.BBIEP.OWNER_TOP_LEVEL_ABIE_ID;
+        return Bbiep.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
@@ -356,7 +356,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public ULong component13() {
-        return getOwnerTopLevelAbieId();
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -421,7 +421,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public ULong value13() {
-        return getOwnerTopLevelAbieId();
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -498,7 +498,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
 
     @Override
     public BbiepRecord value13(ULong value) {
-        setOwnerTopLevelAbieId(value);
+        setOwnerTopLevelAsbiepId(value);
         return this;
     }
 
@@ -534,7 +534,7 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     /**
      * Create a detached, initialised BbiepRecord
      */
-    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String path, String hashPath, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAbieId) {
+    public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String path, String hashPath, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(Bbiep.BBIEP);
 
         set(0, bbiepId);
@@ -549,6 +549,6 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
         set(9, lastUpdatedBy);
         set(10, creationTimestamp);
         set(11, lastUpdateTimestamp);
-        set(12, ownerTopLevelAbieId);
+        set(12, ownerTopLevelAsbiepId);
     }
 }

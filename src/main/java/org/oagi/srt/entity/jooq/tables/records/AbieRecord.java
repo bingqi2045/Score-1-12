@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record18;
-import org.jooq.Row18;
+import org.jooq.Record15;
+import org.jooq.Row15;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Abie;
@@ -27,9 +27,9 @@ import org.oagi.srt.entity.jooq.tables.Abie;
  * etc.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record18<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> {
+public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> {
 
-    private static final long serialVersionUID = -113674005;
+    private static final long serialVersionUID = -1199597908;
 
     /**
      * Setter for <code>oagi.abie.abie_id</code>. A internal, primary database key of an ABIE.
@@ -200,87 +200,45 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.abie.client_id</code>. This is a foreign key to the CLIENT table. The use case associated with this column is to indicate the organizational entity for which the profile BOD is created. For example, Boeing may generate a profile BOD for Boeing civilian or Boeing defense. It is more for the documentation purpose. Only an ABIE which is the top-level ABIE can use this column.
-     */
-    public void setClientId(ULong value) {
-        set(12, value);
-    }
-
-    /**
-     * Getter for <code>oagi.abie.client_id</code>. This is a foreign key to the CLIENT table. The use case associated with this column is to indicate the organizational entity for which the profile BOD is created. For example, Boeing may generate a profile BOD for Boeing civilian or Boeing defense. It is more for the documentation purpose. Only an ABIE which is the top-level ABIE can use this column.
-     */
-    public ULong getClientId() {
-        return (ULong) get(12);
-    }
-
-    /**
-     * Setter for <code>oagi.abie.version</code>. This column hold a version number assigned by the user. This column is only used by the top-level ABIE. No format of version is enforced.
-     */
-    public void setVersion(String value) {
-        set(13, value);
-    }
-
-    /**
-     * Getter for <code>oagi.abie.version</code>. This column hold a version number assigned by the user. This column is only used by the top-level ABIE. No format of version is enforced.
-     */
-    public String getVersion() {
-        return (String) get(13);
-    }
-
-    /**
-     * Setter for <code>oagi.abie.status</code>. This is different from the STATE column which is CRUD life cycle of an entity. The use case for this is to allow the user to indicate the usage status of a top-level ABIE (a profile BOD). An integration architect can use this column. Example values are ?Prototype?, ?Test?, and ?Production?. Only the top-level ABIE can use this field.
-     */
-    public void setStatus(String value) {
-        set(14, value);
-    }
-
-    /**
-     * Getter for <code>oagi.abie.status</code>. This is different from the STATE column which is CRUD life cycle of an entity. The use case for this is to allow the user to indicate the usage status of a top-level ABIE (a profile BOD). An integration architect can use this column. Example values are ?Prototype?, ?Test?, and ?Production?. Only the top-level ABIE can use this field.
-     */
-    public String getStatus() {
-        return (String) get(14);
-    }
-
-    /**
      * Setter for <code>oagi.abie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public void setRemark(String value) {
-        set(15, value);
+        set(12, value);
     }
 
     /**
      * Getter for <code>oagi.abie.remark</code>. This column allows the user to specify very context-specific usage of the BIE. It is different from the DEFINITION column in that the DEFINITION column is a description conveying the meaning of the associated concept. Remarks may be a very implementation specific instruction or others. For example, BOM BOD, as an ACC, is a generic BOM structure. In a particular context, a BOM ABIE can be a Super BOM. Explanation of the Super BOM concept should be captured in the Definition of the ABIE. A remark about that ABIE may be "Type of BOM should be recognized in the BOM/typeCode."
      */
     public String getRemark() {
-        return (String) get(15);
+        return (String) get(12);
     }
 
     /**
      * Setter for <code>oagi.abie.biz_term</code>. To indicate what the BIE is called in a particular business context. With this current design, only one business term is allowed per business context.
      */
     public void setBizTerm(String value) {
-        set(16, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.abie.biz_term</code>. To indicate what the BIE is called in a particular business context. With this current design, only one business term is allowed per business context.
      */
     public String getBizTerm() {
-        return (String) get(16);
+        return (String) get(13);
     }
 
     /**
-     * Setter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. 
+     * Setter for <code>oagi.abie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAbieId(ULong value) {
-        set(17, value);
+    public void setOwnerTopLevelAsbiepId(ULong value) {
+        set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.abie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE itself. It specifies the top-level ABIE which owns this ABIE record. For the ABIE that is a top-level ABIE itself, this column will have the same value as the ABIE_ID column. 
+     * Getter for <code>oagi.abie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAbieId() {
-        return (ULong) get(17);
+    public ULong getOwnerTopLevelAsbiepId() {
+        return (ULong) get(14);
     }
 
     // -------------------------------------------------------------------------
@@ -293,17 +251,17 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     // -------------------------------------------------------------------------
-    // Record18 type implementation
+    // Record15 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 
     @Override
-    public Row18<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, ULong, String, String, String, String, ULong> valuesRow() {
-        return (Row18) super.valuesRow();
+    public Row15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> valuesRow() {
+        return (Row15) super.valuesRow();
     }
 
     @Override
@@ -367,33 +325,18 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public Field<ULong> field13() {
-        return Abie.ABIE.CLIENT_ID;
-    }
-
-    @Override
-    public Field<String> field14() {
-        return Abie.ABIE.VERSION;
-    }
-
-    @Override
-    public Field<String> field15() {
-        return Abie.ABIE.STATUS;
-    }
-
-    @Override
-    public Field<String> field16() {
+    public Field<String> field13() {
         return Abie.ABIE.REMARK;
     }
 
     @Override
-    public Field<String> field17() {
+    public Field<String> field14() {
         return Abie.ABIE.BIZ_TERM;
     }
 
     @Override
-    public Field<ULong> field18() {
-        return Abie.ABIE.OWNER_TOP_LEVEL_ABIE_ID;
+    public Field<ULong> field15() {
+        return Abie.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
@@ -457,33 +400,18 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public ULong component13() {
-        return getClientId();
-    }
-
-    @Override
-    public String component14() {
-        return getVersion();
-    }
-
-    @Override
-    public String component15() {
-        return getStatus();
-    }
-
-    @Override
-    public String component16() {
+    public String component13() {
         return getRemark();
     }
 
     @Override
-    public String component17() {
+    public String component14() {
         return getBizTerm();
     }
 
     @Override
-    public ULong component18() {
-        return getOwnerTopLevelAbieId();
+    public ULong component15() {
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -547,33 +475,18 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public ULong value13() {
-        return getClientId();
-    }
-
-    @Override
-    public String value14() {
-        return getVersion();
-    }
-
-    @Override
-    public String value15() {
-        return getStatus();
-    }
-
-    @Override
-    public String value16() {
+    public String value13() {
         return getRemark();
     }
 
     @Override
-    public String value17() {
+    public String value14() {
         return getBizTerm();
     }
 
     @Override
-    public ULong value18() {
-        return getOwnerTopLevelAbieId();
+    public ULong value15() {
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -649,43 +562,25 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     }
 
     @Override
-    public AbieRecord value13(ULong value) {
-        setClientId(value);
-        return this;
-    }
-
-    @Override
-    public AbieRecord value14(String value) {
-        setVersion(value);
-        return this;
-    }
-
-    @Override
-    public AbieRecord value15(String value) {
-        setStatus(value);
-        return this;
-    }
-
-    @Override
-    public AbieRecord value16(String value) {
+    public AbieRecord value13(String value) {
         setRemark(value);
         return this;
     }
 
     @Override
-    public AbieRecord value17(String value) {
+    public AbieRecord value14(String value) {
         setBizTerm(value);
         return this;
     }
 
     @Override
-    public AbieRecord value18(ULong value) {
-        setOwnerTopLevelAbieId(value);
+    public AbieRecord value15(ULong value) {
+        setOwnerTopLevelAsbiepId(value);
         return this;
     }
 
     @Override
-    public AbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, String value7, ULong value8, ULong value9, LocalDateTime value10, LocalDateTime value11, Integer value12, ULong value13, String value14, String value15, String value16, String value17, ULong value18) {
+    public AbieRecord values(ULong value1, String value2, ULong value3, String value4, String value5, ULong value6, String value7, ULong value8, ULong value9, LocalDateTime value10, LocalDateTime value11, Integer value12, String value13, String value14, ULong value15) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -701,9 +596,6 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
         value13(value13);
         value14(value14);
         value15(value15);
-        value16(value16);
-        value17(value17);
-        value18(value18);
         return this;
     }
 
@@ -721,7 +613,7 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     /**
      * Create a detached, initialised AbieRecord
      */
-    public AbieRecord(ULong abieId, String guid, ULong basedAccManifestId, String path, String hashPath, ULong bizCtxId, String definition, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, ULong clientId, String version, String status, String remark, String bizTerm, ULong ownerTopLevelAbieId) {
+    public AbieRecord(ULong abieId, String guid, ULong basedAccManifestId, String path, String hashPath, ULong bizCtxId, String definition, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, String remark, String bizTerm, ULong ownerTopLevelAsbiepId) {
         super(Abie.ABIE);
 
         set(0, abieId);
@@ -736,11 +628,8 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
         set(9, creationTimestamp);
         set(10, lastUpdateTimestamp);
         set(11, state);
-        set(12, clientId);
-        set(13, version);
-        set(14, status);
-        set(15, remark);
-        set(16, bizTerm);
-        set(17, ownerTopLevelAbieId);
+        set(12, remark);
+        set(13, bizTerm);
+        set(14, ownerTopLevelAsbiepId);
     }
 }

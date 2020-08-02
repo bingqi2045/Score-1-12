@@ -34,7 +34,7 @@ import org.oagi.srt.entity.jooq.tables.records.BizCtxAssignmentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
-    private static final long serialVersionUID = 252438664;
+    private static final long serialVersionUID = 2104365306;
 
     /**
      * The reference instance of <code>oagi.biz_ctx_assignment</code>
@@ -60,9 +60,9 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>oagi.biz_ctx_assignment.top_level_abie_id</code>.
+     * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ABIE_ID = createField(DSL.name("top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     /**
      * Create a <code>oagi.biz_ctx_assignment</code> table reference
@@ -104,7 +104,7 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID, Indexes.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ABIE_ID);
+        return Arrays.<Index>asList(Indexes.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID);
     }
 
     @Override
@@ -124,15 +124,15 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     @Override
     public List<ForeignKey<BizCtxAssignmentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BizCtxAssignmentRecord, ?>>asList(Keys.BIZ_CTX_RULE_IBFK_1, Keys.BIZ_CTX_RULE_IBFK_2);
+        return Arrays.<ForeignKey<BizCtxAssignmentRecord, ?>>asList(Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     public BizCtx bizCtx() {
-        return new BizCtx(this, Keys.BIZ_CTX_RULE_IBFK_1);
+        return new BizCtx(this, Keys.BIZ_CTX_ASSIGNMENT_BIZ_CTX_ID_FK);
     }
 
-    public TopLevelAbie topLevelAbie() {
-        return new TopLevelAbie(this, Keys.BIZ_CTX_RULE_IBFK_2);
+    public TopLevelAsbiep topLevelAsbiep() {
+        return new TopLevelAsbiep(this, Keys.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     @Override

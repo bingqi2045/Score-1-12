@@ -23,7 +23,7 @@ import org.oagi.srt.entity.jooq.tables.Asbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = -901419445;
+    private static final long serialVersionUID = 1103912453;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.
@@ -110,14 +110,14 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
+     * Setter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables
      */
     public void setToAsbiepId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID.
+     * Getter for <code>oagi.asbie.to_asbiep_id</code>. A foreign key to the ASBIEP table. TO_ASBIEP_ID is basically a child data element of the FROM_ABIE_ID. The TO_ASBIEP_ID must be based on the TO_ASCCP_ID in the BASED_ASCC_ID. the ASBIEP is reused with the OWNER_TOP_LEVEL_ASBIEP is different after joining ASBIE and ASBIEP tables
      */
     public ULong getToAsbiepId() {
         return (ULong) get(6);
@@ -278,16 +278,16 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     }
 
     /**
-     * Setter for <code>oagi.asbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this ASBIE record.
+     * Setter for <code>oagi.asbie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public void setOwnerTopLevelAbieId(ULong value) {
+    public void setOwnerTopLevelAsbiepId(ULong value) {
         set(18, value);
     }
 
     /**
-     * Getter for <code>oagi.asbie.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE which owns this ASBIE record.
+     * Getter for <code>oagi.asbie.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public ULong getOwnerTopLevelAbieId() {
+    public ULong getOwnerTopLevelAsbiepId() {
         return (ULong) get(18);
     }
 
@@ -406,7 +406,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public Field<ULong> field19() {
-        return Asbie.ASBIE.OWNER_TOP_LEVEL_ABIE_ID;
+        return Asbie.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID;
     }
 
     @Override
@@ -501,7 +501,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public ULong component19() {
-        return getOwnerTopLevelAbieId();
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -596,7 +596,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public ULong value19() {
-        return getOwnerTopLevelAbieId();
+        return getOwnerTopLevelAsbiepId();
     }
 
     @Override
@@ -709,7 +709,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
 
     @Override
     public AsbieRecord value19(ULong value) {
-        setOwnerTopLevelAbieId(value);
+        setOwnerTopLevelAsbiepId(value);
         return this;
     }
 
@@ -751,7 +751,7 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     /**
      * Create a detached, initialised AsbieRecord
      */
-    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAbieId) {
+    public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
         super(Asbie.ASBIE);
 
         set(0, asbieId);
@@ -772,6 +772,6 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
         set(15, lastUpdateTimestamp);
         set(16, seqKey);
         set(17, isUsed);
-        set(18, ownerTopLevelAbieId);
+        set(18, ownerTopLevelAsbiepId);
     }
 }

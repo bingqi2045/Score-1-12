@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +36,7 @@ import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbiep extends TableImpl<AsbiepRecord> {
 
-    private static final long serialVersionUID = -1828087560;
+    private static final long serialVersionUID = 630159924;
 
     /**
      * The reference instance of <code>oagi.asbiep</code>
@@ -74,7 +74,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     /**
      * The column <code>oagi.asbiep.hash_path</code>. hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.
      */
-    public final TableField<AsbiepRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
+    public final TableField<AsbiepRecord, String> HASH_PATH = createField(DSL.name("hash_path"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "hash_path generated from the path of the component graph using hash function, so that it is unique in the graph.");
 
     /**
      * The column <code>oagi.asbiep.role_of_abie_id</code>. A foreign key pointing to the ABIE record. It is the ABIE, which the property term in the based ASCCP qualifies. Note that the ABIE has to be derived from the ACC used by the based ASCCP.
@@ -117,14 +117,9 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     public final TableField<AsbiepRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the ASBIEP was last updated.");
 
     /**
-     * The column <code>oagi.asbiep.owner_top_level_abie_id</code>. This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this ASBIEP record.
+     * The column <code>oagi.asbiep.owner_top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<AsbiepRecord, ULong> OWNER_TOP_LEVEL_ABIE_ID = createField(DSL.name("owner_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foriegn key to the ABIE table. It specifies the top-level ABIE, which owns this ASBIEP record.");
-
-    /**
-     * The column <code>oagi.asbiep.ref_top_level_abie_id</code>. A foreign key of the reference TOP_LEVEL_ABIE to re-use a profiled BIE.
-     */
-    public final TableField<AsbiepRecord, ULong> REF_TOP_LEVEL_ABIE_ID = createField(DSL.name("ref_top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key of the reference TOP_LEVEL_ABIE to re-use a profiled BIE.");
+    public final TableField<AsbiepRecord, ULong> OWNER_TOP_LEVEL_ASBIEP_ID = createField(DSL.name("owner_top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     /**
      * Create a <code>oagi.asbiep</code> table reference
@@ -186,7 +181,7 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
 
     @Override
     public List<ForeignKey<AsbiepRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsbiepRecord, ?>>asList(Keys.ASBIEP_BASED_ASCCP_MANIFEST_ID_FK, Keys.ASBIEP_ROLE_OF_ABIE_ID_FK, Keys.ASBIEP_CREATED_BY_FK, Keys.ASBIEP_LAST_UPDATED_BY_FK, Keys.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK, Keys.ASBIEP_REF_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<AsbiepRecord, ?>>asList(Keys.ASBIEP_BASED_ASCCP_MANIFEST_ID_FK, Keys.ASBIEP_ROLE_OF_ABIE_ID_FK, Keys.ASBIEP_CREATED_BY_FK, Keys.ASBIEP_LAST_UPDATED_BY_FK, Keys.ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     public AsccpManifest asccpManifest() {
@@ -205,12 +200,8 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
         return new AppUser(this, Keys.ASBIEP_LAST_UPDATED_BY_FK);
     }
 
-    public TopLevelAbie asbiepOwnerTopLevelAbieIdFk() {
-        return new TopLevelAbie(this, Keys.ASBIEP_OWNER_TOP_LEVEL_ABIE_ID_FK);
-    }
-
-    public TopLevelAbie asbiepRefTopLevelAbieIdFk() {
-        return new TopLevelAbie(this, Keys.ASBIEP_REF_TOP_LEVEL_ABIE_ID_FK);
+    public TopLevelAsbiep topLevelAsbiep() {
+        return new TopLevelAsbiep(this, Keys.ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     @Override
@@ -240,11 +231,11 @@ public class Asbiep extends TableImpl<AsbiepRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }

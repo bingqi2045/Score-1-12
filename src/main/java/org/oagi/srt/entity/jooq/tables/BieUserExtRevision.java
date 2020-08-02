@@ -40,7 +40,7 @@ import org.oagi.srt.entity.jooq.tables.records.BieUserExtRevisionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
 
-    private static final long serialVersionUID = -402962442;
+    private static final long serialVersionUID = 785785708;
 
     /**
      * The reference instance of <code>oagi.bie_user_ext_revision</code>
@@ -61,11 +61,6 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     public final TableField<BieUserExtRevisionRecord, ULong> BIE_USER_EXT_REVISION_ID = createField(DSL.name("bie_user_ext_revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.bie_user_ext_revision.top_level_abie_id</code>. This is a foreign key pointing to an ABIE record which is a top-level ABIE. 
-     */
-    public final TableField<BieUserExtRevisionRecord, ULong> TOP_LEVEL_ABIE_ID = createField(DSL.name("top_level_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key pointing to an ABIE record which is a top-level ABIE. ");
-
-    /**
      * The column <code>oagi.bie_user_ext_revision.ext_abie_id</code>. This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.
      */
     public final TableField<BieUserExtRevisionRecord, ULong> EXT_ABIE_ID = createField(DSL.name("ext_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This points to an ABIE record corresponding to the EXTENSION_ACC_ID record. For example, this column can point to the ApplicationAreaExtension ABIE which is based on the ApplicationAreaExtension ACC (referred to by the EXT_ACC_ID column). This column can be NULL only when the extension is the AllExtension because there is no corresponding ABIE for the AllExtension ACC.");
@@ -84,6 +79,11 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
      * The column <code>oagi.bie_user_ext_revision.revised_indicator</code>. This column is a flag indicating to whether the User Extension ACC (as identified in the USER_EXT_ACC_ID column) has been revised, i.e., there is a newer version of the user extension ACC than the one currently used by the EXT_ABIE_ID. 0 means the USER_EXT_ACC_ID is current, 1 means it is not current.
      */
     public final TableField<BieUserExtRevisionRecord, Byte> REVISED_INDICATOR = createField(DSL.name("revised_indicator"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This column is a flag indicating to whether the User Extension ACC (as identified in the USER_EXT_ACC_ID column) has been revised, i.e., there is a newer version of the user extension ACC than the one currently used by the EXT_ABIE_ID. 0 means the USER_EXT_ACC_ID is current, 1 means it is not current.");
+
+    /**
+     * The column <code>oagi.bie_user_ext_revision.top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
+     */
+    public final TableField<BieUserExtRevisionRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
     /**
      * Create a <code>oagi.bie_user_ext_revision</code> table reference
@@ -140,11 +140,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
 
     @Override
     public List<ForeignKey<BieUserExtRevisionRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BieUserExtRevisionRecord, ?>>asList(Keys.BIE_USER_EXT_REVISION_TOP_LEVEL_ABIE_ID_FK, Keys.BIE_USER_EXT_REVISION_EXT_ABIE_ID_FK, Keys.BIE_USER_EXT_REVISION_EXT_ACC_ID_FK, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK);
-    }
-
-    public TopLevelAbie topLevelAbie() {
-        return new TopLevelAbie(this, Keys.BIE_USER_EXT_REVISION_TOP_LEVEL_ABIE_ID_FK);
+        return Arrays.<ForeignKey<BieUserExtRevisionRecord, ?>>asList(Keys.BIE_USER_EXT_REVISION_EXT_ABIE_ID_FK, Keys.BIE_USER_EXT_REVISION_EXT_ACC_ID_FK, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK, Keys.BIE_USER_EXT_REVISION_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     public Abie abie() {
@@ -157,6 +153,10 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
 
     public Acc bieUserExtRevisionUserExtAccIdFk() {
         return new Acc(this, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK);
+    }
+
+    public TopLevelAsbiep topLevelAsbiep() {
+        return new TopLevelAsbiep(this, Keys.BIE_USER_EXT_REVISION_TOP_LEVEL_ASBIEP_ID_FK);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class BieUserExtRevision extends TableImpl<BieUserExtRevisionRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, ULong, ULong, ULong, ULong, Byte> fieldsRow() {
+    public Row6<ULong, ULong, ULong, ULong, Byte, ULong> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }
