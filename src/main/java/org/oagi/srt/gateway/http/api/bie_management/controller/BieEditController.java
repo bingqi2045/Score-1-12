@@ -6,6 +6,7 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
+import org.oagi.srt.gateway.http.api.bie_management.service.BieCreateFromExistingBieService;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
@@ -38,6 +39,9 @@ public class BieEditController {
     private BieEditService service;
 
     @Autowired
+    private BieCreateFromExistingBieService createBieFromExistingBieService;
+
+    @Autowired
     private SessionService sessionService;
 
     @Autowired
@@ -46,10 +50,10 @@ public class BieEditController {
     @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BieEditNode getRootNode(@AuthenticationPrincipal User user,
-                                   @PathVariable("id") BigInteger topLevelAbieId) {
-        BieEditAbieNode rootNode = service.getRootNode(user, topLevelAbieId);
-        BieState state = rootNode.getTopLevelAbieState();
-        rootNode.setTopLevelAbieState(state);
+                                   @PathVariable("id") BigInteger topLevelAsbiepId) {
+        BieEditAbieNode rootNode = service.getRootNode(user, topLevelAsbiepId);
+        BieState state = rootNode.getTopLevelAsbiepState();
+        rootNode.setTopLevelAsbiepState(state);
 
         BigInteger userId = sessionService.userId(user);
         AccessPrivilege accessPrivilege = Prohibited;
@@ -85,180 +89,158 @@ public class BieEditController {
         return rootNode;
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/abie/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/abie/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AbieNode getAbieDetail(@AuthenticationPrincipal User user,
-                                  @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                  @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                   @PathVariable("manifestId") BigInteger manifestId,
                                   @RequestParam("hashPath") String hashPath) {
-        return service.getAbieDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getAbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbie/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/asbie/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AsbieNode getAsbieDetail(@AuthenticationPrincipal User user,
-                                    @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                    @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                     @PathVariable("manifestId") BigInteger manifestId,
                                     @RequestParam("hashPath") String hashPath) {
-        return service.getAsbieDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getAsbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbie/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbieNode getBbieDetail(@AuthenticationPrincipal User user,
-                                  @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                  @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                   @PathVariable("manifestId") BigInteger manifestId,
                                   @RequestParam("hashPath") String hashPath) {
-        return service.getBbieDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getBbieDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/asbiep/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public AsbiepNode getAsbiepDetail(@AuthenticationPrincipal User user,
-                                      @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                      @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
-        return service.getAsbiepDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getAsbiepDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbiep/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbiepNode getBbiepDetail(@AuthenticationPrincipal User user,
-                                    @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                    @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                     @PathVariable("manifestId") BigInteger manifestId,
                                     @RequestParam("hashPath") String hashPath) {
-        return service.getBbiepDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getBbiepDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/bdt_pri_restri",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbiep/{manifestId}/bdt_pri_restri",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableBdtPriRestriListByBccpManifestId(user, topLevelAbieId, manifestId);
+        return service.availableBdtPriRestriListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/code_list",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbiep/{manifestId}/code_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableCodeList> availableCodeListListByBccpManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableCodeListListByBccpManifestId(user, topLevelAbieId, manifestId);
+        return service.availableCodeListListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbiep/{manifestId}/agency_id_list",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbiep/{manifestId}/agency_id_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableAgencyIdList> availableAgencyIdListListByBccpManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableAgencyIdListListByBccpManifestId(user, topLevelAbieId, manifestId);
+        return service.availableAgencyIdListListByBccpManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbie_sc/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BbieScNode getBbieScDetail(@AuthenticationPrincipal User user,
-                                      @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                      @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                       @PathVariable("manifestId") BigInteger manifestId,
                                       @RequestParam("hashPath") String hashPath) {
-        return service.getBbieScDetail(user, topLevelAbieId, manifestId, hashPath);
+        return service.getBbieScDetail(user, topLevelAsbiepId, manifestId, hashPath);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/bdt_sc_pri_restri",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbie_sc/{manifestId}/bdt_sc_pri_restri",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableBdtScPriRestri> availableBdtScPriRestriListByBdtScManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableBdtScPriRestriListByBdtScManifestId(user, topLevelAbieId, manifestId);
+        return service.availableBdtScPriRestriListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/code_list",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbie_sc/{manifestId}/code_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableCodeList> availableCodeListListByBdtScManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableCodeListListByBdtScManifestId(user, topLevelAbieId, manifestId);
+        return service.availableCodeListListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bbie_sc/{manifestId}/agency_id_list",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bbie_sc/{manifestId}/agency_id_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AvailableAgencyIdList> availableAgencyIdListListByBdtScManifestId(
             @AuthenticationPrincipal User user,
-            @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+            @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
             @PathVariable("manifestId") BigInteger manifestId) {
-        return service.availableAgencyIdListListByBdtScManifestId(user, topLevelAbieId, manifestId);
+        return service.availableAgencyIdListListByBdtScManifestId(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/bdt/{manifestId}",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/bdt/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BdtNode getBdtDetail(@AuthenticationPrincipal User user,
                                 @PathVariable("manifestId") BigInteger manifestId,
-                                @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
-        return service.getBdtDetail(user, topLevelAbieId, manifestId);
+                                @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+        return service.getBdtDetail(user, topLevelAsbiepId, manifestId);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/used_list",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/used_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BieEditUsed> getUsedAbieList(@AuthenticationPrincipal User user,
-                                             @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
-        return service.getBieUsedList(user, topLevelAbieId);
-    }
-
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/ref_list",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BieEditRef> getRefAbieList(@AuthenticationPrincipal User user,
-                                           @PathVariable("topLevelAbieId") BigInteger topLevelAbieId) {
-        return service.getBieRefList(user, topLevelAbieId);
+                                             @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+        return service.getBieUsedList(user, topLevelAsbiepId);
     }
 
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal User user,
-                            @PathVariable("id") BigInteger topLevelAbieId,
+                            @PathVariable("id") BigInteger topLevelAsbiepId,
                             @RequestBody Map<String, Object> body) {
         BieState state = BieState.valueOf((String) body.get("state"));
-        service.updateState(user, topLevelAbieId, state);
+        service.updateState(user, topLevelAsbiepId, state);
     }
 
-    private <T> T convertValue(String data, Class<T> clazz) {
-        Map<String, Object> params = new HashMap();
-        Arrays.stream(new String(Base64.getDecoder().decode(data)).split("&")).forEach(e -> {
-            String[] keyValue = e.split("=");
-            if (keyValue.length > 1) {
-                params.put(keyValue[0], keyValue[1]);
-            } else {
-                params.put(keyValue[0], "");
-            }
-
-        });
-        return objectMapper.convertValue(params, clazz);
-    }
-
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/detail", method = RequestMethod.POST,
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/detail", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public BieEditUpdateDetailResponse updateDetails(@AuthenticationPrincipal User user,
-                                                     @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                                                     @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                                                      @RequestBody BieEditUpdateDetailRequest request) {
-        request.setTopLevelAbieId(topLevelAbieId);
+        request.setTopLevelAsbiepId(topLevelAsbiepId);
         return service.updateDetails(user, request);
     }
 
@@ -280,29 +262,41 @@ public class BieEditController {
 
     /* Reuse BIE */
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/reuse",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/asbiep/{manifestId}/reuse",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reuseBIE(@AuthenticationPrincipal User user,
-                         @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                         @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                          @PathVariable("manifestId") BigInteger manifestId,
                          @RequestBody ReuseBIERequest reuseBIERequest) {
 
-        reuseBIERequest.setTopLevelAbieId(topLevelAbieId);
+        reuseBIERequest.setTopLevelAsbiepId(topLevelAsbiepId);
         reuseBIERequest.setAsccpManifestId(manifestId);
         service.reuseBIE(user, reuseBIERequest);
     }
 
-    @RequestMapping(value = "/profile_bie/{topLevelAbieId}/asbiep/{manifestId}/remove_reuse",
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/asbiep/{manifestId}/remove_reuse",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void reuseBIE(@AuthenticationPrincipal User user,
-                         @PathVariable("topLevelAbieId") BigInteger topLevelAbieId,
+                         @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId,
                          @PathVariable("manifestId") BigInteger manifestId,
                          @RequestBody RemoveReusedBIERequest removeReusedBIERequest) {
 
-        removeReusedBIERequest.setTopLevelAbieId(topLevelAbieId);
+        removeReusedBIERequest.setTopLevelAsbiepId(topLevelAsbiepId);
         removeReusedBIERequest.setAsccpManifestId(manifestId);
         service.removeReusedBIE(user, removeReusedBIERequest);
+    }
+
+    @RequestMapping(value = "/profile_bie/node/asbie/{asbieId}/create_bie_from_existing_bie",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public void createBieFromExistingBie(@AuthenticationPrincipal User user,
+                                         @PathVariable("asbieId") BigInteger asbieId) {
+
+        CreateBieFromExistingBieRequest request = new CreateBieFromExistingBieRequest();
+        request.setAsbieId(asbieId);
+
+        createBieFromExistingBieService.createBieFromExistingBie(user, request);
     }
 }

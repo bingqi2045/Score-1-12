@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 public class DeleteBieListRequest {
 
-    private List<BigInteger> topLevelAbieIds = Collections.emptyList();
+    private List<BigInteger> topLevelAsbiepIds = Collections.emptyList();
 
 }

@@ -37,46 +37,41 @@ public class BieRepository {
 
     public List<SummaryBie> getSummaryBieList() {
         return dslContext.select(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
-                TOP_LEVEL_ABIE.STATE,
-                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP,
+                TOP_LEVEL_ASBIEP.STATE,
+                TOP_LEVEL_ASBIEP.OWNER_USER_ID,
                 APP_USER.LOGIN_ID,
                 ASCCP.PROPERTY_TERM)
-                .from(TOP_LEVEL_ABIE)
-                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .join(ABIE).on(and(
-                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID),
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID)
-                ))
-                .join(ASBIEP).on(and(
-                        ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID),
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID),
-                        ASBIEP.REF_TOP_LEVEL_ABIE_ID.isNull()
-                ))
+                .from(TOP_LEVEL_ASBIEP)
+                .join(APP_USER).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .join(ASBIEP).on(
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .fetchStream().map(e -> {
             SummaryBie item = new SummaryBie();
-            item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
-            item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP));
-            item.setState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
-            item.setOwnerUserId(e.get(TOP_LEVEL_ABIE.OWNER_USER_ID).toBigInteger());
+            item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+            item.setLastUpdateTimestamp(e.get(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP));
+            item.setState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
+            item.setOwnerUserId(e.get(TOP_LEVEL_ASBIEP.OWNER_USER_ID).toBigInteger());
             item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
             item.setPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
             return item;
         }).collect(Collectors.toList());
     }
 
-    public BigInteger getAccManifestIdByTopLevelAbieId(BigInteger topLevelAbieId, BigInteger releaseId) {
+    public BigInteger getAccManifestIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId, BigInteger releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
-                .from(ABIE)
-                .join(TOP_LEVEL_ABIE)
-                .on(ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID))
+                .from(ASBIEP)
+                .join(TOP_LEVEL_ASBIEP)
+                .on(ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID))
+                .join(ASCCP_MANIFEST)
+                .on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ACC_MANIFEST)
-                .on(ABIE.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
                 .where(and(
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))
                 ))
                 .fetchOneInto(BigInteger.class);
@@ -133,14 +128,14 @@ public class BieRepository {
                 .fetchOptionalInto(BieEditAcc.class).orElse(null);
     }
 
-    public BieEditBbiep getBbiep(BigInteger bbiepId, BigInteger topLevelAbieId) {
+    public BieEditBbiep getBbiep(BigInteger bbiepId, BigInteger topLevelAsbiepId) {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
                 BCCP_MANIFEST.BCCP_ID.as("based_bccp_id"))
                 .from(BBIEP)
                 .join(BCCP_MANIFEST).on(BBIEP.BASED_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
                 .where(and(
-                        BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BBIEP.BBIEP_ID.eq(ULong.valueOf(bbiepId))))
                 .fetchOptionalInto(BieEditBbiep.class).orElse(null);
     }
@@ -211,8 +206,8 @@ public class BieRepository {
                 )).fetchOptionalInto(Integer.class).orElse(0);
     }
 
-    public int getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAbieId(BigInteger bbieId,
-                                                                     boolean used, BigInteger ownerTopLevelAbieId) {
+    public int getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAsbiepId(BigInteger bbieId,
+                                                                       boolean used, BigInteger ownerTopLevelAsbiepId) {
         if (bbieId == null || bbieId.longValue() == 0L) {
             return 0;
         }
@@ -221,7 +216,7 @@ public class BieRepository {
                 .from(BBIE_SC)
                 .where(and(BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieId)),
                         BBIE_SC.IS_USED.eq((byte) ((used) ? 1 : 0)),
-                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(ownerTopLevelAbieId))))
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId))))
                 .fetchOptionalInto(Integer.class).orElse(0);
     }
 
@@ -241,7 +236,7 @@ public class BieRepository {
                 )).fetchInto(BieEditBdtSc.class);
     }
 
-    public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(BigInteger bbieId, BigInteger dtScManifestId, BigInteger topLevelAbieId) {
+    public BieEditBbieSc getBbieScIdByBbieIdAndDtScId(BigInteger bbieId, BigInteger dtScManifestId, BigInteger topLevelAsbiepId) {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.BBIE_ID,
@@ -252,7 +247,7 @@ public class BieRepository {
                 .where(and(
                         BBIE_SC.BBIE_ID.eq(ULong.valueOf(bbieId)),
                         DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(dtScManifestId)),
-                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 )).fetchOptionalInto(BieEditBbieSc.class).orElse(null);
     }
 
@@ -344,7 +339,7 @@ public class BieRepository {
                 .from(ASBIE)
                 .join(ASCC_MANIFEST).on(ASBIE.BASED_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.ASCC_MANIFEST_ID))
                 .where(and(
-                        ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(node.getTopLevelAsbiepId())),
                         ASBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
                 ))
                 .fetchInto(BieEditAsbie.class);
@@ -362,7 +357,7 @@ public class BieRepository {
                 .from(BBIE)
                 .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
                 .where(and(
-                        BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(node.getTopLevelAbieId())),
+                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(node.getTopLevelAsbiepId())),
                         BBIE.FROM_ABIE_ID.eq(ULong.valueOf(fromAbieId))
                 ))
                 .fetchInto(BieEditBbie.class);
@@ -471,15 +466,45 @@ public class BieRepository {
                 .fetchInto(BieEditBcc.class);
     }
 
-    public List<Long> getBizCtxIdByTopLevelAbieId(BigInteger topLevelAbieId) {
+    public BigInteger createTopLevelAsbiep(BigInteger userId, BigInteger releaseId, BieState state) {
+        TopLevelAsbiepRecord record = new TopLevelAsbiepRecord();
+        LocalDateTime timestamp = LocalDateTime.now();
+        record.setOwnerUserId(ULong.valueOf(userId));
+        record.setReleaseId(ULong.valueOf(releaseId));
+        record.setState(state.name());
+        record.setLastUpdatedBy(ULong.valueOf(userId));
+        record.setLastUpdateTimestamp(timestamp);
+
+        return dslContext.insertInto(TOP_LEVEL_ASBIEP)
+                .set(record)
+                .returning().fetchOne().getTopLevelAsbiepId().toBigInteger();
+    }
+
+    public void updateAsbiepIdOnTopLevelAsbiep(BigInteger asbiepId, BigInteger topLevelAsbiepId) {
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.ASBIEP_ID, ULong.valueOf(asbiepId))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                .execute();
+    }
+
+    public List<Long> getBizCtxIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
         return dslContext.select(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(BIZ_CTX_ASSIGNMENT)
-                .join(TOP_LEVEL_ABIE).on(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .join(TOP_LEVEL_ASBIEP).on(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .fetchInto(Long.class);
     }
 
-    public AsbiepRecord createAsbiep(User user, BigInteger asccpManifestId, BigInteger abieId, BigInteger topLevelAbieId) {
+    public void createBizCtxAssignments(BigInteger topLevelAsbiepId, List<BigInteger> bizCtxIds) {
+        bizCtxIds.stream().forEach(bizCtxId -> {
+            dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
+                    .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
+                    .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
+                    .execute();
+        });
+    }
+
+    public AsbiepRecord createAsbiep(User user, BigInteger asccpManifestId, BigInteger abieId, BigInteger topLevelAsbiepId) {
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -491,13 +516,13 @@ public class BieRepository {
                 .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ASBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
-                .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .returning().fetchOne();
     }
 
     public AsbieRecord createAsbie(User user, BigInteger fromAbieId, BigInteger toAsbiepId,
                                    BigInteger basedAsccManifestId,
-                                   int seqKey, BigInteger topLevelAbieId) {
+                                   int seqKey, BigInteger topLevelAsbiepId) {
 
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
@@ -531,12 +556,12 @@ public class BieRepository {
                 .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(ASBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
                 .set(ASBIE.IS_USED, (byte) (cardinality.get(ASCC.CARDINALITY_MIN) > 0 ? 1 : 0))
-                .set(ASBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .returning().fetchOne();
 
     }
 
-    public BbiepRecord createBbiep(User user, BigInteger basedBccpManifestId, BigInteger topLevelAbieId) {
+    public BbiepRecord createBbiep(User user, BigInteger basedBccpManifestId, BigInteger topLevelAsbiepId) {
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -547,14 +572,14 @@ public class BieRepository {
                 .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(BBIEP.CREATION_TIMESTAMP, timestamp)
                 .set(BBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
-                .set(BBIEP.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .returning().fetchOne();
     }
 
     public BbieRecord createBbie(User user, BigInteger fromAbieId, BigInteger toBbiepId,
                                  BigInteger basedBccManifestId,
                                  BigInteger bdtManifestId,
-                                 int seqKey, BigInteger topLevelAbieId) {
+                                 int seqKey, BigInteger topLevelAsbiepId) {
 
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
@@ -594,7 +619,7 @@ public class BieRepository {
                 .set(BBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .set(BBIE.SEQ_KEY, BigDecimal.valueOf(seqKey))
                 .set(BBIE.IS_USED, (byte) (bccRecord.getCardinalityMin() > 0 ? 1 : 0))
-                .set(BBIE.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .set(BBIE.DEFAULT_VALUE, StringUtils.defaultIfEmpty(bccRecord.getDefaultValue(), bccpRecord.getDefaultValue()))
                 .set(BBIE.FIXED_VALUE, StringUtils.defaultIfEmpty(bccRecord.getFixedValue(), bccpRecord.getFixedValue()))
                 .returning().fetchOne();
@@ -635,7 +660,7 @@ public class BieRepository {
     }
 
     public BigInteger createBbieSc(User user, BigInteger bbieId, BigInteger dtScManifestId,
-                                   BigInteger topLevelAbieId) {
+                                   BigInteger topLevelAsbiepId) {
 
         DtScRecord dtScRecord = dslContext.select(DT_SC.fields())
                 .from(DT_SC)
@@ -651,7 +676,7 @@ public class BieRepository {
                 .set(BBIE_SC.CARDINALITY_MIN, dtScRecord.getCardinalityMin())
                 .set(BBIE_SC.CARDINALITY_MAX, dtScRecord.getCardinalityMax())
                 .set(BBIE_SC.IS_USED, (byte) (dtScRecord.getCardinalityMin() > 0 ? 1 : 0))
-                .set(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .set(BBIE_SC.DEFAULT_VALUE, dtScRecord.getDefaultValue())
                 .set(BBIE_SC.FIXED_VALUE, dtScRecord.getFixedValue())
                 .returning().fetchOne().getBbieScId().toBigInteger();
@@ -691,10 +716,10 @@ public class BieRepository {
                 .fetchOptionalInto(BigInteger.class).orElse(BigInteger.ZERO);
     }
 
-    public void updateState(BigInteger topLevelAbieId, BieState state) {
-        dslContext.update(TOP_LEVEL_ABIE)
-                .set(TOP_LEVEL_ABIE.STATE, state.name())
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+    public void updateState(BigInteger topLevelAsbiepId, BieState state) {
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.STATE, state.name())
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .execute();
     }
 

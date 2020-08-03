@@ -31,5 +31,5 @@ public class BBIE implements BIE {
     private Date lastUpdateTimestamp;
     private double seqKey;
     private boolean used;
-    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
+    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
 }

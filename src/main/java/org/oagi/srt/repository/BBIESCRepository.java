@@ -45,7 +45,7 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
                 Tables.BBIE_SC.BIZ_TERM,
                 Tables.BBIE_SC.EXAMPLE,
                 Tables.BBIE_SC.IS_USED.as("used"),
-                Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID)
+                Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIE_SC);
     }
 
@@ -72,9 +72,9 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
         return getSelectJoinStep()
                 .where(and(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
                         Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIESC.class);

@@ -6,10 +6,10 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
-public class TopLevelAbie {
+public class TopLevelAsbiep {
 
-    private BigInteger topLevelAbieId = BigInteger.ZERO;
-    private BigInteger abieId = BigInteger.ZERO;
+    private BigInteger topLevelAsbiepId = BigInteger.ZERO;
+    private BigInteger asbiepId = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;
     private BigInteger releaseId = BigInteger.ZERO;
     private BieState state;

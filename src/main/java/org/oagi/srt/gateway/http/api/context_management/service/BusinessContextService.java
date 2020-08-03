@@ -45,7 +45,7 @@ public class BusinessContextService {
         PageRequest pageRequest = request.getPageRequest();
 
         PaginationResponse<BusinessContext> result = repository.selectBusinessContexts()
-                .setTopLevelAbieId(request.getTopLevelAbieId())
+                .setTopLevelAsbiepId(request.getTopLevelAsbiepId())
                 .setName(request.getName())
                 .setBizCtxIds(request.getBizCtxIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
@@ -175,18 +175,18 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void assign(BigInteger bizCtxId, BigInteger topLevelAbieId) {
+    public void assign(BigInteger bizCtxId, BigInteger topLevelAsbiepId) {
         dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
-                .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                 .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(bizCtxId))
                 .execute();
     }
 
     @Transactional
-    public void dismiss(BigInteger bizCtxId, BigInteger topLevelAbieId) {
+    public void dismiss(BigInteger bizCtxId, BigInteger topLevelAsbiepId) {
         dslContext.deleteFrom(BIZ_CTX_ASSIGNMENT)
                 .where(and(
-                        BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(ULong.valueOf(bizCtxId))
                 ))
                 .execute();

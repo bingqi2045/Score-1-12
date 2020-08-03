@@ -27,26 +27,13 @@ public class AsbiepReadRepository {
     @Autowired
     private AsccpReadRepository asccpReadRepository;
 
-    private AsbiepRecord getAsbiepByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
+    private AsbiepRecord getAsbiepByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(ASBIEP)
                 .where(and(
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         ASBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
-    }
-
-    private AsbiepRecord getAsbiepByRefTopLevelAbieId(BigInteger topLevelAbieId) {
-        return dslContext.select(ASBIEP.fields())
-                .from(ASBIEP)
-                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(TOP_LEVEL_ABIE).on(and(
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
-                        ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
-                ))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
-                .fetchOptionalInto(AsbiepRecord.class).orElse(null);
     }
 
     public AsbiepNode getAsbiepNode(BigInteger topLevelAbieId, BigInteger asccpManifestId, String hashPath) {
@@ -76,15 +63,13 @@ public class AsbiepReadRepository {
         return asbiepNode;
     }
 
-    public AsbiepNode.Asbiep getAsbiep(BigInteger topLevelAbieId, String hashPath) {
+    public AsbiepNode.Asbiep getAsbiep(BigInteger topLevelAsbiepId, String hashPath) {
         AsbiepNode.Asbiep asbiep = new AsbiepNode.Asbiep();
         asbiep.setUsed(true);
         asbiep.setHashPath(hashPath);
 
-        AsbiepRecord asbiepRecord = getAsbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
+        AsbiepRecord asbiepRecord = getAsbiepByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (asbiepRecord != null) {
-            BigInteger refTopLevelAbieId = (asbiepRecord.getRefTopLevelAbieId() != null) ?
-                    asbiepRecord.getRefTopLevelAbieId().toBigInteger() : null;
 
             asbiep.setAsbiepId(asbiepRecord.getAsbiepId().toBigInteger());
             if (asbiepRecord.getRoleOfAbieId() != null) {
@@ -96,14 +81,13 @@ public class AsbiepReadRepository {
                 asbiep.setRoleOfAbieHashPath(dslContext.select(ABIE.HASH_PATH)
                         .from(ABIE)
                         .where(and(
-                                ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(asbiepRecord.getOwnerTopLevelAbieId()),
+                                ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(asbiepRecord.getOwnerTopLevelAsbiepId()),
                                 ABIE.ABIE_ID.eq(asbiepRecord.getRoleOfAbieId())
                         ))
                         .fetchOneInto(String.class));
             }
             asbiep.setBasedAsccpManifestId(asbiepRecord.getBasedAsccpManifestId().toBigInteger());
-            asbiep.setRefTopLevelAbieId(refTopLevelAbieId);
-            asbiep.setDerived(refTopLevelAbieId != null);
+            asbiep.setDerived(false); // TODO
             asbiep.setGuid(asbiepRecord.getGuid());
             asbiep.setRemark(asbiepRecord.getRemark());
             asbiep.setBizTerm(asbiepRecord.getBizTerm());
@@ -113,50 +97,16 @@ public class AsbiepReadRepository {
         return asbiep;
     }
 
-    public AsbiepNode.Asbiep getAsbiepByTopLevelAbieId(BigInteger topLevelAbieId) {
+    public AsbiepNode.Asbiep getAsbiepByTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
         String asbiepHashPath = dslContext.select(ASBIEP.HASH_PATH)
                 .from(ASBIEP)
-                .join(ABIE).on(and(
-                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID)
+                .join(TOP_LEVEL_ASBIEP).on(and(
+                        ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                        ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID)
                 ))
-                .join(TOP_LEVEL_ABIE).on(and(
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
-                        ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
-                ))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .fetchOneInto(String.class);
-        return getAsbiep(topLevelAbieId, asbiepHashPath);
-    }
-
-    public List<BieEditRef> getBieRefList(BigInteger topLevelAbieId) {
-        if (topLevelAbieId == null || topLevelAbieId.longValue() <= 0L) {
-            return Collections.emptyList();
-        }
-
-        List<BieEditRef> bieEditRefList = new ArrayList();
-        List<BieEditRef> refTopLevelAbieIdList = getRefTopLevelAbieIdList(topLevelAbieId);
-        bieEditRefList.addAll(refTopLevelAbieIdList);
-
-        if (!bieEditRefList.isEmpty()) {
-            refTopLevelAbieIdList.stream().map(e -> e.getRefTopLevelAbieId()).distinct().forEach(refTopLevelAbieId -> {
-                bieEditRefList.addAll(getBieRefList(refTopLevelAbieId));
-            });
-        }
-        return bieEditRefList;
-    }
-
-    private List<BieEditRef> getRefTopLevelAbieIdList(BigInteger topLevelAbieId) {
-        return dslContext.select(
-                ASBIEP.HASH_PATH,
-                ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.as("top_level_abie_id"),
-                ASBIEP.REF_TOP_LEVEL_ABIE_ID)
-                .from(ASBIEP)
-                .where(and(
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
-                        ASBIEP.REF_TOP_LEVEL_ABIE_ID.isNotNull()
-                ))
-                .fetchInto(BieEditRef.class);
+        return getAsbiep(topLevelAsbiepId, asbiepHashPath);
     }
 
 }

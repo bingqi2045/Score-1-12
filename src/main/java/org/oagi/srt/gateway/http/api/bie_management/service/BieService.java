@@ -7,7 +7,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.BizCtx;
-import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
-import static org.oagi.srt.gateway.http.helper.Utility.sha256;
 
 @Service
 @Transactional(readOnly = true)
@@ -88,7 +87,7 @@ public class BieService {
         BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
 
-        ULong topLevelAbieId = bieRepository.insertTopLevelAbie()
+        ULong topLevelAsbiepId = bieRepository.insertTopLevelAsbiep()
                 .setUserId(userId)
                 .setReleaseId(asccpManifest.getReleaseId())
                 .setTimestamp(millis)
@@ -96,21 +95,21 @@ public class BieService {
 
         ULong abieId = bieRepository.insertAbie()
                 .setUserId(userId)
-                .setTopLevelAbieId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .setAccManifestId(asccpManifest.getRoleOfAccManifestId())
                 .setPath(accPath)
                 .setTimestamp(millis)
                 .execute();
 
         bieRepository.insertBizCtxAssignments()
-                .setTopLevelAbieId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .setBizCtxIds(request.getBizCtxIds())
                 .execute();
 
         bieRepository.insertAsbiep()
                 .setAsccpManifestId(asccpManifest.getAsccpManifestId())
                 .setRoleOfAbieId(abieId)
-                .setTopLevelAbieId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .setPath(asccpPath)
                 .setUserId(userId)
                 .setTimestamp(millis)
@@ -118,11 +117,11 @@ public class BieService {
 
         bieRepository.updateTopLevelAbie()
                 .setAbieId(abieId)
-                .setTopLevelAbieId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .execute();
 
         BieCreateResponse response = new BieCreateResponse();
-        response.setTopLevelAbieId(topLevelAbieId.toBigInteger());
+        response.setTopLevelAsbiepId(topLevelAsbiepId.toBigInteger());
         return response;
     }
 
@@ -135,7 +134,7 @@ public class BieService {
                 .setBusinessContext(request.getBusinessContext())
                 .setAccManifestId(request.getAccManifestId())
                 .setExcludePropertyTerms(request.getExcludePropertyTerms())
-                .setExcludeTopLevelAbieIds(request.getExcludeTopLevelAbieIds())
+                .setExcludeTopLevelAsbiepIds(request.getExcludeTopLevelAsbiepIds())
                 .setStates(request.getStates())
                 .setReleaseId(request.getReleaseId())
                 .setOwnerLoginIds(request.getOwnerLoginIds())
@@ -149,7 +148,7 @@ public class BieService {
         List<BieList> bieLists = result.getResult();
         bieLists.forEach(bieList -> {
             bieList.setBusinessContexts(businessContextRepository.selectBusinessContexts()
-                    .setTopLevelAbieId(bieList.getTopLevelAbieId())
+                    .setTopLevelAsbiepId(bieList.getTopLevelAsbiepId())
                     .setName(request.getBusinessContext())
                     .fetchInto(BusinessContext.class).getResult());
 
@@ -167,46 +166,46 @@ public class BieService {
     }
 
     public BizCtx findBizCtxByAbieId(BigInteger abieId) {
-        BigInteger topLevelAbieId = abieRepository.findById(abieId).getOwnerTopLevelAbieId();
-        // return the first biz ctx of the specific topLevelAbieId
-        TopLevelAbie top = new TopLevelAbie();
-        top.setTopLevelAbieId(topLevelAbieId);
-        return bizCtxRepository.findByTopLevelAbie(top).get(0);
+        BigInteger topLevelAsbiepId = abieRepository.findById(abieId).getOwnerTopLevelAsbiepId();
+        // return the first biz ctx of the specific topLevelAsbiepId
+        TopLevelAsbiep top = new TopLevelAsbiep();
+        top.setTopLevelAsbiepId(topLevelAsbiepId);
+        return bizCtxRepository.findByTopLevelAsbiep(top).get(0);
     }
 
     @Transactional
-    public void deleteBieList(User requester, List<BigInteger> topLevelAbieIds) {
-        if (topLevelAbieIds == null || topLevelAbieIds.isEmpty()) {
+    public void deleteBieList(User requester, List<BigInteger> topLevelAsbiepIds) {
+        if (topLevelAsbiepIds == null || topLevelAsbiepIds.isEmpty()) {
             return;
         }
 
         /*
          * Issue #772
          */
-        ensureProperDeleteBieRequest(requester, topLevelAbieIds);
+        ensureProperDeleteBieRequest(requester, topLevelAsbiepIds);
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 0").execute();
 
-        dslContext.deleteFrom(ABIE).where(ABIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(ABIE).where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
+        dslContext.deleteFrom(ASBIE).where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
+        dslContext.deleteFrom(ASBIEP).where(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
 
-        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE).where(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
+        dslContext.deleteFrom(Tables.BBIEP).where(BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
 
-        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.TOP_LEVEL_ABIE).where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
-        dslContext.deleteFrom(Tables.BIZ_CTX_ASSIGNMENT).where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.in(topLevelAbieIds)).execute();
+        dslContext.deleteFrom(Tables.BBIE_SC).where(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
+        dslContext.deleteFrom(Tables.TOP_LEVEL_ASBIEP).where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
+        dslContext.deleteFrom(Tables.BIZ_CTX_ASSIGNMENT).where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds)).execute();
 
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
 
-    private void ensureProperDeleteBieRequest(User requester, List<BigInteger> topLevelAbieIds) {
+    private void ensureProperDeleteBieRequest(User requester, List<BigInteger> topLevelAsbiepIds) {
         Result<Record2<String, ULong>> result =
-                dslContext.select(TOP_LEVEL_ABIE.STATE, TOP_LEVEL_ABIE.OWNER_USER_ID)
-                        .from(TOP_LEVEL_ABIE)
-                        .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.in(
-                                topLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+                dslContext.select(TOP_LEVEL_ASBIEP.STATE, TOP_LEVEL_ASBIEP.OWNER_USER_ID)
+                        .from(TOP_LEVEL_ASBIEP)
+                        .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(
+                                topLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
                         ))
                         .fetch();
 
@@ -224,7 +223,7 @@ public class BieService {
     }
 
     @Transactional
-    public void transferOwnership(User user, BigInteger topLevelAbieId, String targetLoginId) {
+    public void transferOwnership(User user, BigInteger topLevelAsbiepId, String targetLoginId) {
         long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
@@ -241,37 +240,37 @@ public class BieService {
             throw new IllegalArgumentException("Not found a target user.");
         }
 
-        dslContext.update(TOP_LEVEL_ABIE)
-                .set(TOP_LEVEL_ABIE.OWNER_USER_ID, ULong.valueOf(targetAppUserId))
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.OWNER_USER_ID, ULong.valueOf(targetAppUserId))
                 .where(and(
-                        TOP_LEVEL_ABIE.OWNER_USER_ID.eq(ULong.valueOf(ownerAppUserId)),
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                        TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(ULong.valueOf(ownerAppUserId)),
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 ))
                 .execute();
     }
 
     @Transactional
-    public List<BizCtxAssignment> getAssignBizCtx(BigInteger topLevelAbieId) {
+    public List<BizCtxAssignment> getAssignBizCtx(BigInteger topLevelAsbiepId) {
         return dslContext.select(
                 BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID,
                 BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID,
-                BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID)
+                BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID)
                 .from(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .fetchInto(BizCtxAssignment.class);
     }
 
     @Transactional
-    public void assignBizCtx(User user, BigInteger topLevelAbieId, Collection<Long> biz_ctx_list) {
+    public void assignBizCtx(User user, BigInteger topLevelAsbiepId, Collection<Long> biz_ctx_list) {
         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
         //remove all records of previous assignment if not in the current assignment
         dslContext.delete(BIZ_CTX_ASSIGNMENT)
-                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .execute();
 
         for (int i = 0; i < newList.size(); i++) {
             dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
-                    .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, ULong.valueOf(topLevelAbieId))
+                    .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, ULong.valueOf(topLevelAsbiepId))
                     .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
                     .onDuplicateKeyIgnore()
                     .execute();

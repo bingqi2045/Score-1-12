@@ -18,7 +18,7 @@ public class BieListRequest {
     private BigInteger accManifestId;
     private AccessPrivilege access;
     private List<String> excludePropertyTerms = Collections.emptyList();
-    private List<BigInteger> excludeTopLevelAbieIds = Collections.emptyList();
+    private List<BigInteger> excludeTopLevelAsbiepIds = Collections.emptyList();
     private List<BieState> states = Collections.emptyList();
     private List<String> ownerLoginIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
@@ -26,5 +26,6 @@ public class BieListRequest {
     private Date updateStartDate;
     private Date updateEndDate;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
+    private Boolean ownedByDeveloper;
 
 }

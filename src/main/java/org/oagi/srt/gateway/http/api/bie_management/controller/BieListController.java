@@ -43,6 +43,7 @@ public class BieListController {
                                             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
                                             @RequestParam(name = "updateEnd", required = false) String updateEnd,
+                                            @RequestParam(name = "ownedByDeveloper", required = false) boolean ownedByDeveloper,
                                             @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
                                             @RequestParam(name = "sortActive") String sortActive,
                                             @RequestParam(name = "sortDirection") String sortDirection,
@@ -60,12 +61,14 @@ public class BieListController {
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
         request.setExcludePropertyTerms(StringUtils.isEmpty(excludePropertyTerms) ? Collections.emptyList() :
                 Arrays.asList(excludePropertyTerms.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setExcludeTopLevelAbieIds(StringUtils.isEmpty(excludeTopLevelAbieIds) ? Collections.emptyList() :
+        request.setExcludeTopLevelAsbiepIds(StringUtils.isEmpty(excludeTopLevelAbieIds) ? Collections.emptyList() :
                 Arrays.asList(excludeTopLevelAbieIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
                 Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+
+        request.setOwnedByDeveloper(ownedByDeveloper);
 
         if (releaseId != null && releaseId.compareTo(BigInteger.ZERO) > 0) {
             request.setReleaseId(releaseId);
@@ -94,8 +97,8 @@ public class BieListController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity deleteBieList(@AuthenticationPrincipal User user,
                                         @RequestBody DeleteBieListRequest request) {
-        List<BigInteger> topLevelAbieIds = request.getTopLevelAbieIds();
-        service.deleteBieList(user, topLevelAbieIds);
+        List<BigInteger> topLevelAsbiepIds = request.getTopLevelAsbiepIds();
+        service.deleteBieList(user, topLevelAsbiepIds);
         return ResponseEntity.noContent().build();
     }
 
@@ -107,26 +110,26 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie/{id}/biz_ctx", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") BigInteger topLevelAbieId) {
-        return service.getAssignBizCtx(topLevelAbieId);
+    public List<BizCtxAssignment> getAssignBizCtx(@PathVariable("id") BigInteger topLevelAsbiepId) {
+        return service.getAssignBizCtx(topLevelAsbiepId);
     }
 
     @RequestMapping(value = "/profile_bie/{id}/assign_biz_ctx", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity assignBizCtx(@AuthenticationPrincipal User user,
-                                       @PathVariable("id") BigInteger topLevelAbieId,
+                                       @PathVariable("id") BigInteger topLevelAsbiepId,
                                        @RequestBody Map<String, List<Long>> request) {
-        service.assignBizCtx(user, topLevelAbieId, request.getOrDefault("bizCtxList", Collections.emptyList()));
+        service.assignBizCtx(user, topLevelAsbiepId, request.getOrDefault("bizCtxList", Collections.emptyList()));
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/profile_bie/{id}/transfer_ownership", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
-                                            @PathVariable("id") BigInteger topLevelAbieId,
+                                            @PathVariable("id") BigInteger topLevelAsbiepId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");
-        service.transferOwnership(user, topLevelAbieId, targetLoginId);
+        service.transferOwnership(user, topLevelAsbiepId, targetLoginId);
         return ResponseEntity.noContent().build();
     }
 

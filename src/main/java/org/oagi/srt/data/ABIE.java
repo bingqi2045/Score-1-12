@@ -22,6 +22,6 @@ public class ABIE implements BIE {
     private String status;
     private String remark;
     private String bizTerm;
-    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
+    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
 
 }

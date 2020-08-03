@@ -21,7 +21,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public class GenerationContext implements InitializingBean {
 
-    private List<TopLevelAbie> topLevelAbies;
+    private List<TopLevelAsbiep> topLevelAbies;
 
     @Autowired
     private AgencyIdListRepository agencyIdListRepository;
@@ -149,11 +149,11 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, ContextScheme> findContextSchemeMap;
     private Map<BigInteger, ContextCategory> findContextCategoryMap;
 
-    public GenerationContext(TopLevelAbie topLevelAbie) {
-        this(Arrays.asList(topLevelAbie));
+    public GenerationContext(TopLevelAsbiep topLevelAsbiep) {
+        this(Arrays.asList(topLevelAsbiep));
     }
 
-    public GenerationContext(List<TopLevelAbie> topLevelAbies) {
+    public GenerationContext(List<TopLevelAsbiep> topLevelAbies) {
         this.topLevelAbies = topLevelAbies;
     }
 
@@ -171,12 +171,7 @@ public class GenerationContext implements InitializingBean {
 
         Set<BigInteger> topLevelAbieIds = new HashSet();
 
-        topLevelAbies.stream().map(e -> e.getTopLevelAbieId()).distinct().forEach(topLevelAbieId -> {
-            topLevelAbieIds.add(topLevelAbieId);
-            asbiepReadRepository.getBieRefList(topLevelAbieId).stream().forEach(refBie -> {
-                topLevelAbieIds.add(refBie.getRefTopLevelAbieId());
-            });
-        });
+        topLevelAbies.stream().map(e -> e.getTopLevelAsbiepId()).distinct().forEach(topLevelAbieIds::add);
 
         init(topLevelAbieIds, releaseIdSet.iterator().next());
     }
@@ -285,7 +280,6 @@ public class GenerationContext implements InitializingBean {
         findASBIEPMap = asbiepList.stream()
                 .collect(Collectors.toMap(e -> e.getAsbiepId(), Function.identity()));
         findAsbiepByRoleOfAbieIdMap = asbiepList.stream()
-                .filter(e -> e.getRefTopLevelAbieId() == null)
                 .collect(Collectors.toMap(e -> e.getRoleOfAbieId(), Function.identity()));
 
         List<BBIEP> bbiepList =
@@ -621,14 +615,14 @@ public class GenerationContext implements InitializingBean {
         return queryBDT(bccp);
     }
 
-    public BizCtx findBusinessContext(TopLevelAbie topLevelAbie) {
-        BigInteger bizCtxId = (topLevelAbie != null) ? bizCtxRepository.findByTopLevelAbie(topLevelAbie).get(0).getBizCtxId() : BigInteger.ZERO;
+    public BizCtx findBusinessContext(TopLevelAsbiep topLevelAsbiep) {
+        BigInteger bizCtxId = (topLevelAsbiep != null) ? bizCtxRepository.findByTopLevelAsbiep(topLevelAsbiep).get(0).getBizCtxId() : BigInteger.ZERO;
         //return the first one of the list
         return bizCtxRepository.findById(bizCtxId);
     }
 
-    public List<BizCtx> findBusinessContexts(TopLevelAbie topLevelAbie) {
-        return bizCtxRepository.findByTopLevelAbie(topLevelAbie);
+    public List<BizCtx> findBusinessContexts(TopLevelAsbiep topLevelAsbiep) {
+        return bizCtxRepository.findByTopLevelAsbiep(topLevelAsbiep);
     }
 
     public List<ContextSchemeValue> findContextSchemeValue(BizCtx businessContext) {

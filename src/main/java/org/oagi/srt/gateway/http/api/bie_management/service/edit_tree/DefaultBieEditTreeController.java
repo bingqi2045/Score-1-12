@@ -8,7 +8,7 @@ import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.SeqKeySupportable;
-import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.entity.jooq.tables.records.*;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
@@ -66,19 +66,19 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     private boolean initialized;
     private User user;
-    private TopLevelAbie topLevelAbie;
+    private TopLevelAsbiep topLevelAsbiep;
     private BieState state;
     private boolean forceBieUpdate;
 
-    public void initialize(User user, TopLevelAbie topLevelAbie) {
+    public void initialize(User user, TopLevelAsbiep topLevelAsbiep) {
         this.user = user;
-        this.topLevelAbie = topLevelAbie;
+        this.topLevelAsbiep = topLevelAsbiep;
 
-        this.state = topLevelAbie.getState();
+        this.state = topLevelAsbiep.getState();
         this.forceBieUpdate = true;
         switch (this.state) {
             case WIP:
-                if (!sessionService.userId(user).equals(topLevelAbie.getOwnerUserId())) {
+                if (!sessionService.userId(user).equals(topLevelAsbiep.getOwnerUserId())) {
                     throw new DataAccessForbiddenException("'" + user.getUsername() +
                             "' doesn't have an access privilege.");
                 }
@@ -92,12 +92,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         return forceBieUpdate;
     }
 
-    public BieEditAbieNode getRootNode(BigInteger topLevelAbieId) {
+    public BieEditAbieNode getRootNode(BigInteger topLevelAsbiepId) {
         BieEditAbieNode rootNode = dslContext.select(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                TOP_LEVEL_ABIE.RELEASE_ID,
-                TOP_LEVEL_ABIE.STATE.as("top_level_abie_state"),
-                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                TOP_LEVEL_ASBIEP.RELEASE_ID,
+                TOP_LEVEL_ASBIEP.STATE.as("top_level_asbiep_state"),
+                TOP_LEVEL_ASBIEP.OWNER_USER_ID,
                 RELEASE.RELEASE_NUM,
                 APP_USER.LOGIN_ID,
                 ASCCP.GUID,
@@ -108,20 +108,21 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 ABIE.BASED_ACC_MANIFEST_ID.as("acc_manifest_id"),
                 inline("abie").as("type"),
                 inline(true).as("used"))
-                .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(and(
-                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID),
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
-                ))
+                .from(TOP_LEVEL_ASBIEP)
                 .join(ASBIEP).on(and(
-                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                        TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                 ))
+                .join(ABIE).on(and(
+                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
+                        ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
+                ))
+
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .join(RELEASE).on(TOP_LEVEL_ABIE.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(APP_USER).on(TOP_LEVEL_ABIE.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .join(RELEASE).on(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(APP_USER).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .fetchOneInto(BieEditAbieNode.class);
         rootNode.setHasChild(hasChild(rootNode));
 
@@ -131,11 +132,11 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     // have to check @hakju
     private boolean hasChild(BieEditAbieNode abieNode) {
         BigInteger fromAccManifestId;
-        BigInteger topLevelAbieId = abieNode.getTopLevelAbieId();
+        BigInteger topLevelAsbiepId = abieNode.getTopLevelAsbiepId();
         BigInteger releaseId = abieNode.getReleaseId();
         BieEditAcc acc = null;
-        if (topLevelAbieId.compareTo(BigInteger.ZERO) > 0) {
-            fromAccManifestId = repository.getAccManifestIdByTopLevelAbieId(topLevelAbieId, releaseId);
+        if (topLevelAsbiepId.compareTo(BigInteger.ZERO) > 0) {
+            fromAccManifestId = repository.getAccManifestIdByTopLevelAsbiepId(topLevelAsbiepId, releaseId);
         } else {
             acc = repository.getAcc(abieNode.getAccManifestId(), releaseId);
             fromAccManifestId = acc.getAccManifestId();
@@ -164,14 +165,14 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     @Override
-    public List<BieEditNode> getDescendants(BieEditNode node, boolean hideUnused) {
+    public List<BieEditNode> getDescendants(User user, BieEditNode node, boolean hideUnused) {
         /*
          * If this profile BIE is in Editing state, descendants of given node will create during this process,
          * and this must be thread-safe.
          */
         RLock lock = null;
         String lockName = getClass().getSimpleName() + ".getDescendants(" +
-                node.getType() + ", " + topLevelAbie.getTopLevelAbieId() + ")";
+                node.getType() + ", " + topLevelAsbiep.getTopLevelAsbiepId() + ")";
         lock = redissonClient.getLock(lockName);
 
         try {
@@ -235,7 +236,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             abieId = bieRepository.insertAbie()
                     .setUserId(sessionService.userId(user))
-                    .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
+                    .setTopLevelAsbiepId(asbiepNode.getTopLevelAsbiepId())
                     .setAccManifestId(accManifest.getAccManifestId())
                     .execute().toBigInteger();
         }
@@ -374,10 +375,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                                                BieEditAsbie asbie, BieEditAscc ascc) {
         BieEditAsbiepNode asbiepNode = new BieEditAsbiepNode();
 
-        BigInteger topLevelAbieId = topLevelAbie.getTopLevelAbieId();
-        BigInteger releaseId = topLevelAbie.getReleaseId();
+        BigInteger topLevelAbieId = topLevelAsbiep.getTopLevelAsbiepId();
+        BigInteger releaseId = topLevelAsbiep.getReleaseId();
 
-        asbiepNode.setTopLevelAbieId(topLevelAbieId);
+        asbiepNode.setTopLevelAsbiepId(topLevelAbieId);
         asbiepNode.setReleaseId(releaseId);
         asbiepNode.setType("asbiep");
         asbiepNode.setGuid(ascc.getGuid());
@@ -404,7 +405,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         if (asbie == null && isForceBieUpdate()) {
             BigInteger abieId = bieRepository.insertAbie()
                     .setUserId(sessionService.userId(user))
-                    .setTopLevelAbieId(asbiepNode.getTopLevelAbieId())
+                    .setTopLevelAsbiepId(asbiepNode.getTopLevelAsbiepId())
                     .setAccManifestId(acc.getAccManifestId())
                     .execute().toBigInteger();
 
@@ -446,10 +447,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                                              boolean hideUnused) {
         BieEditBbiepNode bbiepNode = new BieEditBbiepNode();
 
-        BigInteger topLevelAbieId = topLevelAbie.getTopLevelAbieId();
-        BigInteger releaseId = topLevelAbie.getReleaseId();
+        BigInteger topLevelAbieId = topLevelAsbiep.getTopLevelAsbiepId();
+        BigInteger releaseId = topLevelAsbiep.getReleaseId();
 
-        bbiepNode.setTopLevelAbieId(topLevelAbieId);
+        bbiepNode.setTopLevelAsbiepId(topLevelAbieId);
         bbiepNode.setReleaseId(releaseId);
         bbiepNode.setType("bbiep");
         bbiepNode.setGuid(bcc.getGuid());
@@ -505,8 +506,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     public boolean hasChild(BieEditBbiepNode bbiepNode, boolean hideUnused) {
         if (hideUnused) {
-            return repository.getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAbieId(
-                    bbiepNode.getBbieId(), true, bbiepNode.getTopLevelAbieId()) > 0;
+            return repository.getCountBbieScByBbieIdAndIsUsedAndOwnerTopLevelAsbiepId(
+                    bbiepNode.getBbieId(), true, bbiepNode.getTopLevelAsbiepId()) > 0;
 
         } else {
             BieEditBccp bccp = repository.getBccp(bbiepNode.getBccpManifestId(), bbiepNode.getReleaseId());
@@ -516,7 +517,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     private List<BieEditNode> getDescendants(BieEditBbiepNode bbiepNode, boolean hideUnused) {
         BigInteger bbiepId = bbiepNode.getBbiepId();
-        BigInteger topLevelAbieId = bbiepNode.getTopLevelAbieId();
+        BigInteger topLevelAbieId = bbiepNode.getTopLevelAsbiepId();
         BieEditBccp bccp;
         if (bbiepId.longValue() > 0L) {
             BieEditBbiep bbiep = repository.getBbiep(bbiepId, topLevelAbieId);
@@ -535,7 +536,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         for (BieEditBdtSc bdtSc : bdtScList) {
             BieEditBbieScNode bbieScNode = new BieEditBbieScNode();
 
-            bbieScNode.setTopLevelAbieId(topLevelAbieId);
+            bbieScNode.setTopLevelAsbiepId(topLevelAbieId);
             bbieScNode.setReleaseId(bbiepNode.getReleaseId());
             bbieScNode.setType("bbie_sc");
             bbieScNode.setGuid(bdtSc.getGuid());
@@ -585,8 +586,6 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     private BieEditNodeDetail getDetail(BieEditAbieNode abieNode) {
         BieEditAbieNodeDetail detail = dslContext.select(
-                ABIE.VERSION,
-                ABIE.STATUS,
                 ABIE.REMARK,
                 ABIE.BIZ_TERM,
                 ABIE.DEFINITION)
@@ -620,12 +619,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (asbiepNode.getAsbiepId().longValue() > 0L) {
-            detail.setBizTerm(dslContext.select(
+            detail.setAsbiepBizTerm(dslContext.select(
                     ASBIEP.BIZ_TERM).from(ASBIEP)
                     .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
                     .fetchOneInto(String.class));
 
-            detail.setRemark(dslContext.select(
+            detail.setAsbiepRemark(dslContext.select(
                     ASBIEP.REMARK).from(ASBIEP)
                     .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNode.getAsbiepId())))
                     .fetchOneInto(String.class));
@@ -654,17 +653,17 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             detail.setCcNillable(ccNillable.get(ASCCP.IS_NILLABLE) == 1);
         }
 
-        detail.setAssociationDefinition(dslContext.select(
+        detail.setAsccDefinition(dslContext.select(
                 ASCC.DEFINITION).from(ASCC)
                 .where(ASCC.ASCC_ID.eq(ULong.valueOf(asbiepNode.getAsccManifestId())))
                 .fetchOneInto(String.class));
 
-        detail.setComponentDefinition(dslContext.select(
+        detail.setAsccpDefinition(dslContext.select(
                 ASCCP.DEFINITION).from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(ULong.valueOf(asbiepNode.getAsccpManifestId())))
                 .fetchOneInto(String.class));
 
-        detail.setTypeDefinition(dslContext.select(
+        detail.setAccDefinition(dslContext.select(
                 ACC.DEFINITION).from(ACC)
                 .where(ACC.ACC_ID.eq(ULong.valueOf(asbiepNode.getAccManifestId())))
                 .fetchOneInto(String.class));
@@ -1054,7 +1053,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     @Override
     public void updateState(BieState state) {
-        repository.updateState(topLevelAbie.getTopLevelAbieId(), state);
+        repository.updateState(topLevelAsbiep.getTopLevelAsbiepId(), state);
     }
 
     @Override
@@ -1079,11 +1078,9 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private void updateDetail(BieEditAbieNodeDetail abieNodeDetail) {
         LocalDateTime timestamp = LocalDateTime.now();
         dslContext.update(ABIE)
-                .set(ABIE.VERSION, emptyToNull(abieNodeDetail.getVersion()))
-                .set(ABIE.STATUS, emptyToNull(abieNodeDetail.getStatus()))
-                .set(ABIE.REMARK, emptyToNull(abieNodeDetail.getRemark()))
-                .set(ABIE.BIZ_TERM, emptyToNull(abieNodeDetail.getBizTerm()))
-                .set(ABIE.DEFINITION, emptyToNull(abieNodeDetail.getDefinition()))
+                .set(ABIE.REMARK, emptyToNull(abieNodeDetail.getAsbiepRemark()))
+                .set(ABIE.BIZ_TERM, emptyToNull(abieNodeDetail.getAsbiepBizTerm()))
+                .set(ABIE.DEFINITION, emptyToNull(abieNodeDetail.getAsccpDefinition()))
                 .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(sessionService.userId(user)))
                 .set(ABIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ABIE.ABIE_ID.eq(ULong.valueOf(abieNodeDetail.getAbieId())))
@@ -1118,15 +1115,15 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
         dslContext.update(ASBIE)
                 .set(ASBIE.IS_USED, (byte) (asbiepNodeDetail.isUsed() ? 1 : 0))
-                .set(ASBIE.DEFINITION, emptyToNull(asbiepNodeDetail.getContextDefinition()))
+                .set(ASBIE.DEFINITION, emptyToNull(asbiepNodeDetail.getAsbiepDefinition()))
                 .set(ASBIE.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ASBIE.ASBIE_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbieId())))
                 .execute();
 
         dslContext.update(ASBIEP)
-                .set(ASBIEP.BIZ_TERM, emptyToNull(asbiepNodeDetail.getBizTerm()))
-                .set(ASBIEP.REMARK, emptyToNull(asbiepNodeDetail.getRemark()))
+                .set(ASBIEP.BIZ_TERM, emptyToNull(asbiepNodeDetail.getAsbiepBizTerm()))
+                .set(ASBIEP.REMARK, emptyToNull(asbiepNodeDetail.getAsbiepRemark()))
                 .set(ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(asbiepNodeDetail.getAsbiepId())))

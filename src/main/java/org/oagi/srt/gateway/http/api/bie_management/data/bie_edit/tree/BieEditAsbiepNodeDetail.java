@@ -14,22 +14,30 @@ public class BieEditAsbiepNodeDetail extends BieEditAsbiepNode implements BieEdi
 
     private Boolean ccNillable;
     private Boolean bieNillable;
-    private String bizTerm;
-    private String remark;
+    private String asbiepBizTerm;
+    private String asbiepRemark;
 
-    private String contextDefinition;
-    private String associationDefinition;
-    private String componentDefinition;
-    private String typeDefinition;
+    private String asccDen;
+    private String asccpDen;
+    private String accDen;
+
+    private String asbiepDefinition;
+    private String asccDefinition;
+    private String asccpDefinition;
+    private String accDefinition;
 
     public BieEditAsbiepNodeDetail append(BieEditAsbiepNode asbiepNode) {
 
-        this.setTopLevelAbieId(asbiepNode.getTopLevelAbieId());
+        this.setTopLevelAsbiepId(asbiepNode.getTopLevelAsbiepId());
         this.setReleaseId(asbiepNode.getReleaseId());
         this.setType(asbiepNode.getType());
         this.setGuid(asbiepNode.getGuid());
         this.setName(asbiepNode.getName());
         this.setHasChild(asbiepNode.isHasChild());
+
+        this.setRequired(asbiepNode.isRequired());
+        this.setDerived(asbiepNode.isDerived());
+        this.setLocked(asbiepNode.isLocked());
 
         this.setAsbieId(asbiepNode.getAsbieId());
         this.setAsccManifestId(asbiepNode.getAsccManifestId());

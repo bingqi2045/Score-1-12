@@ -41,11 +41,11 @@ public class BbieScWriteRepository {
 
     public BbieScNode.BbieSc upsertBbieSc(UpsertBbieScRequest request) {
         BbieScNode.BbieSc bbieSc = request.getBbieSc();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         String hashPath = bbieSc.getHashPath();
         BbieScRecord bbieScRecord = dslContext.selectFrom(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIE_SC.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -62,7 +62,7 @@ public class BbieScWriteRepository {
             bbieScRecord.setBbieId(dslContext.select(BBIE.BBIE_ID)
                     .from(BBIE)
                     .where(and(
-                            BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIE.HASH_PATH.eq(bbieSc.getBbieHashPath())
                     ))
                     .fetchOneInto(ULong.class));
@@ -118,7 +118,7 @@ public class BbieScWriteRepository {
                 }
             }
 
-            bbieScRecord.setOwnerTopLevelAbieId(topLevelAbieId);
+            bbieScRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             bbieScRecord.setCreatedBy(requesterId);
             bbieScRecord.setLastUpdatedBy(requesterId);
@@ -187,6 +187,6 @@ public class BbieScWriteRepository {
             );
         }
 
-        return bbieScReadRepository.getBbieSc(request.getTopLevelAbieId(), hashPath);
+        return bbieScReadRepository.getBbieSc(request.getTopLevelAsbiepId(), hashPath);
     }
 }

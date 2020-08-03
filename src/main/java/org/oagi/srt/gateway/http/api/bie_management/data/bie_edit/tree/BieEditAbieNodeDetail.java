@@ -7,15 +7,20 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class BieEditAbieNodeDetail extends BieEditAbieNode implements BieEditNodeDetail {
 
-    private String version;
-    private String status;
-    private String remark;
-    private String bizTerm;
-    private String definition;
+    private String accDen;
+    private String accDefinition;
+
+    private String asccpDen;
+    private String asccpDefinition;
+
+    private String topLevelAsbiepVersion;
+    private String topLevelAsbiepStatus;
+    private String asbiepRemark;
+    private String asbiepBizTerm;
 
     public BieEditAbieNodeDetail append(BieEditAbieNode abieNode) {
 
-        this.setTopLevelAbieId(abieNode.getTopLevelAbieId());
+        this.setTopLevelAsbiepId(abieNode.getTopLevelAsbiepId());
         this.setReleaseId(abieNode.getReleaseId());
         this.setType(abieNode.getType());
         this.setGuid(abieNode.getGuid());
@@ -26,7 +31,6 @@ public class BieEditAbieNodeDetail extends BieEditAbieNode implements BieEditNod
         this.setAbieId(abieNode.getAbieId());
         this.setAsccpManifestId(abieNode.getAsccpManifestId());
         this.setAccManifestId(abieNode.getAccManifestId());
-        this.setTopLevelAbieState(abieNode.getTopLevelAbieState());
 
         return this;
     }

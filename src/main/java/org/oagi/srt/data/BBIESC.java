@@ -23,5 +23,5 @@ public class BBIESC implements BIE {
     private String bizTerm;
     private String example;
     private boolean used;
-    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
+    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
 }

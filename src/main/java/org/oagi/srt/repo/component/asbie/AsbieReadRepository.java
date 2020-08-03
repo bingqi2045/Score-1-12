@@ -29,7 +29,7 @@ public class AsbieReadRepository {
     private AsbieRecord getAsbieByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
         return dslContext.selectFrom(ASBIE)
                 .where(and(
-                        ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                         ASBIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -75,14 +75,14 @@ public class AsbieReadRepository {
             asbie.setFromAbieHashPath(dslContext.select(ABIE.HASH_PATH)
                     .from(ABIE)
                     .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                             ABIE.ABIE_ID.eq(asbieRecord.getFromAbieId())
                     ))
                     .fetchOneInto(String.class));
             asbie.setToAsbiepHashPath(dslContext.select(ASBIEP.HASH_PATH)
                     .from(ASBIEP)
                     .where(and(
-                            ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                             ASBIEP.ASBIEP_ID.eq(asbieRecord.getToAsbiepId())
                     ))
                     .fetchOneInto(String.class));
@@ -103,17 +103,17 @@ public class AsbieReadRepository {
                 .from(ASBIE)
                 .join(ASBIEP).on(and(
                         ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID),
-                        ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID)
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                 ))
                 .where(and(
-                        ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                         ASBIE.IS_USED.eq((byte) 1)
                 ))
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("ASBIEP");
                     bieEditUsed.setHashPath(record.get(ASBIEP.HASH_PATH));
-                    bieEditUsed.setTopLevelAbieId(topLevelAbieId);
+                    bieEditUsed.setTopLevelAsbiepId(topLevelAbieId);
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 }).collect(Collectors.toList());

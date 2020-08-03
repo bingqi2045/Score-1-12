@@ -29,12 +29,12 @@ public class AsbiepWriteRepository {
 
     public AsbiepNode.Asbiep upsertAsbiep(UpsertAsbiepRequest request) {
         AsbiepNode.Asbiep asbiep = request.getAsbiep();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAbieId());
         ULong refTopLevelAbieId = (request.getRefTopLevelAbieId() != null) ? ULong.valueOf(request.getRefTopLevelAbieId()) : null;
         String hashPath = asbiep.getHashPath();
         AsbiepRecord asbiepRecord = dslContext.selectFrom(ASBIEP)
                 .where(and(
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ASBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -54,7 +54,7 @@ public class AsbiepWriteRepository {
                 asbiepRecord.setRoleOfAbieId(dslContext.select(ABIE.ABIE_ID)
                         .from(ABIE)
                         .where(and(
-                                ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq((refTopLevelAbieId != null) ? refTopLevelAbieId : topLevelAbieId),
+                                ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq((refTopLevelAbieId != null) ? refTopLevelAbieId : topLevelAsbiepId),
                                 ABIE.HASH_PATH.eq(asbiep.getRoleOfAbieHashPath())
                         ))
                         .fetchOneInto(ULong.class));
@@ -64,8 +64,7 @@ public class AsbiepWriteRepository {
             asbiepRecord.setRemark(asbiep.getRemark());
             asbiepRecord.setBizTerm(asbiep.getBizTerm());
 
-            asbiepRecord.setOwnerTopLevelAbieId(topLevelAbieId);
-            asbiepRecord.setRefTopLevelAbieId(refTopLevelAbieId);
+            asbiepRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             asbiepRecord.setCreatedBy(requesterId);
             asbiepRecord.setLastUpdatedBy(requesterId);
@@ -104,12 +103,6 @@ public class AsbiepWriteRepository {
             if (request.getRoleOfAbieId() != null) {
                 updateSetStep = updateSetStep.set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(request.getRoleOfAbieId()));
             }
-            if (request.getRefTopLevelAbieId() != null) {
-                updateSetStep = updateSetStep.set(ASBIEP.REF_TOP_LEVEL_ABIE_ID, ULong.valueOf(request.getRefTopLevelAbieId()));
-            } else if (request.isRefTopLevelAbieIdNull()) {
-                updateSetStep = updateSetStep.setNull(ASBIEP.REF_TOP_LEVEL_ABIE_ID);
-            }
-
             updateSetStep.set(ASBIEP.LAST_UPDATED_BY, requesterId)
                     .set(ASBIEP.LAST_UPDATE_TIMESTAMP, request.getLocalDateTime())
                     .where(ASBIEP.ASBIEP_ID.eq(asbiepRecord.getAsbiepId()))

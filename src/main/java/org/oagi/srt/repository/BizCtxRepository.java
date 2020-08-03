@@ -6,7 +6,7 @@ import org.jooq.Record7;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BizCtx;
-import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -52,11 +52,11 @@ public class BizCtxRepository implements SrtRepository<BizCtx> {
                 .fetchOneInto(BizCtx.class);
     }
 
-    public List<BizCtx> findByTopLevelAbie(TopLevelAbie topLevelAbie) {
+    public List<BizCtx> findByTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
         List<BigInteger> bizCtxIds = dslContext.select(
                 Tables.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                 .from(Tables.BIZ_CTX_ASSIGNMENT)
-                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbie.getTopLevelAbieId())))
+                .where(Tables.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId())))
                 .fetchInto(BigInteger.class);
 
         return bizCtxIds.stream().map(bizCtxId -> findById(bizCtxId)).collect(Collectors.toList());

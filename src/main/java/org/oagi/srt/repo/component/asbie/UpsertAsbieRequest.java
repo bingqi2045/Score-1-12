@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
 
 public class UpsertAsbieRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAbieId;
+    private final BigInteger topLevelAsbiepId;
     private final AsbieNode.Asbie asbie;
 
     public UpsertAsbieRequest(User user, LocalDateTime localDateTime,
-                              BigInteger topLevelAbieId, AsbieNode.Asbie asbie) {
+                              BigInteger topLevelAsbiepId, AsbieNode.Asbie asbie) {
         super(user, localDateTime);
-        this.topLevelAbieId = topLevelAbieId;
+        this.topLevelAsbiepId = topLevelAsbiepId;
         this.asbie = asbie;
     }
 
-    public BigInteger getTopLevelAbieId() {
-        return topLevelAbieId;
+    public BigInteger getTopLevelAsbiepId() {
+        return topLevelAsbiepId;
     }
 
     public AsbieNode.Asbie getAsbie() {

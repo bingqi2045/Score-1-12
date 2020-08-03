@@ -47,7 +47,7 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 Tables.BBIE.LAST_UPDATE_TIMESTAMP,
                 Tables.BBIE.SEQ_KEY,
                 Tables.BBIE.IS_USED.as("used"),
-                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID)
+                Tables.BBIE.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIE);
     }
 
@@ -66,17 +66,17 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 .fetchOptionalInto(BBIE.class).orElse(null);
     }
 
-    public List<BBIE> findByOwnerTopLevelAbieIdAndUsed(BigInteger ownerTopLevelAbieId, boolean used) {
-        return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAbieId), used);
+    public List<BBIE> findByOwnerTopLevelAsbiepIdAndUsed(BigInteger ownerTopLevelAsbiepId, boolean used) {
+        return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAsbiepId), used);
     }
 
     public List<BBIE> findByOwnerTopLevelAbieIdsAndUsed(Collection<BigInteger> ownerTopLevelAbieIds, boolean used) {
         return getSelectOnConditionStep()
                 .where(and(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.BBIE.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
                         Tables.BBIE.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIE.class);

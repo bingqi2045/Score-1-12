@@ -25,7 +25,7 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
         return dslContext.select(Tables.ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 Tables.ASBIEP.ASBIEP_ID,
                 Tables.ASBIEP.ROLE_OF_ABIE_ID,
-                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID,
                 Tables.ASBIEP.LAST_UPDATED_BY,
                 Tables.ASBIEP.BIZ_TERM,
                 Tables.ASBIEP.CREATED_BY,
@@ -46,7 +46,7 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
         return dslContext.select(Tables.ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 Tables.ASBIEP.ASBIEP_ID,
                 Tables.ASBIEP.ROLE_OF_ABIE_ID,
-                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID,
                 Tables.ASBIEP.LAST_UPDATED_BY,
                 Tables.ASBIEP.BIZ_TERM,
                 Tables.ASBIEP.CREATED_BY,
@@ -74,7 +74,7 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
         return dslContext.select(Tables.ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 Tables.ASBIEP.ASBIEP_ID,
                 Tables.ASBIEP.ROLE_OF_ABIE_ID,
-                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID,
+                Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID,
                 Tables.ASBIEP.LAST_UPDATED_BY,
                 Tables.ASBIEP.BIZ_TERM,
                 Tables.ASBIEP.CREATED_BY,
@@ -82,14 +82,13 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
                 Tables.ASBIEP.GUID,
                 Tables.ASBIEP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIEP.CREATION_TIMESTAMP,
-                Tables.ASBIEP.DEFINITION,
-                Tables.ASBIEP.REF_TOP_LEVEL_ABIE_ID)
+                Tables.ASBIEP.DEFINITION)
                 .from(Tables.ASBIEP)
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
 
                 )

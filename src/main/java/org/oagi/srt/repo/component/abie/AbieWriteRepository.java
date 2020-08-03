@@ -26,11 +26,11 @@ public class AbieWriteRepository {
 
     public AbieNode.Abie upsertAbie(UpsertAbieRequest request) {
         AbieNode.Abie abie = request.getAbie();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         String hashPath = abie.getHashPath();
         AbieRecord abieRecord = dslContext.selectFrom(ABIE)
                 .where(and(
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ABIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -46,15 +46,10 @@ public class AbieWriteRepository {
             abieRecord.setHashPath(hashPath);
 
             abieRecord.setDefinition(abie.getDefinition());
-            if (abie.getClientId() != null) {
-                abieRecord.setClientId(ULong.valueOf(abie.getClientId()));
-            }
-            abieRecord.setVersion(abie.getVersion());
             abieRecord.setRemark(abie.getRemark());
             abieRecord.setBizTerm(abie.getBizTerm());
-            abieRecord.setStatus(abie.getStatus());
 
-            abieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
+            abieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             abieRecord.setCreatedBy(requesterId);
             abieRecord.setLastUpdatedBy(requesterId);
@@ -69,30 +64,22 @@ public class AbieWriteRepository {
             );
         } else {
             abieRecord.setDefinition(abie.getDefinition());
-            if (abie.getClientId() != null) {
-                abieRecord.setClientId(ULong.valueOf(abie.getClientId()));
-            }
-            abieRecord.setVersion(abie.getVersion());
             abieRecord.setRemark(abie.getRemark());
             abieRecord.setBizTerm(abie.getBizTerm());
-            abieRecord.setStatus(abie.getStatus());
 
             abieRecord.setLastUpdatedBy(requesterId);
             abieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
             abieRecord.update(
                     ABIE.DEFINITION,
-                    ABIE.CLIENT_ID,
-                    ABIE.VERSION,
                     ABIE.REMARK,
                     ABIE.BIZ_TERM,
-                    ABIE.STATUS,
                     ABIE.LAST_UPDATED_BY,
                     ABIE.LAST_UPDATE_TIMESTAMP
             );
         }
 
-        return readRepository.getAbie(request.getTopLevelAbieId(), hashPath);
+        return readRepository.getAbie(request.getTopLevelAsbiepId(), hashPath);
     }
 
 }

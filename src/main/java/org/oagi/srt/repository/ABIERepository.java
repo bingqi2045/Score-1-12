@@ -1,6 +1,7 @@
 package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
+import org.jooq.Record13;
 import org.jooq.Record16;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
@@ -23,22 +24,18 @@ public class ABIERepository implements SrtRepository<ABIE> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectJoinStep<Record16<
-            ULong, ULong, ULong, ULong, LocalDateTime,
-            Integer, ULong, String, String, String,
-            ULong, ULong, String, String, String,
-            LocalDateTime>> getSelectJoinStep() {
+    private SelectJoinStep<Record13<
+                ULong, ULong, ULong, ULong, LocalDateTime,
+                Integer, ULong, String, ULong, String, String, String,
+                LocalDateTime>> getSelectJoinStep() {
         return dslContext.select(Tables.ABIE.ABIE_ID,
                 Tables.ABIE.BASED_ACC_MANIFEST_ID,
                 Tables.ABIE.BIZ_CTX_ID,
-                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID,
+                Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID,
                 Tables.ABIE.LAST_UPDATE_TIMESTAMP,
                 Tables.ABIE.STATE,
                 Tables.ABIE.LAST_UPDATED_BY,
-                Tables.ABIE.STATUS,
-                Tables.ABIE.VERSION,
                 Tables.ABIE.BIZ_TERM,
-                Tables.ABIE.CLIENT_ID,
                 Tables.ABIE.CREATED_BY,
                 Tables.ABIE.DEFINITION,
                 Tables.ABIE.GUID,
@@ -76,9 +73,9 @@ public class ABIERepository implements SrtRepository<ABIE> {
         return getSelectJoinStep()
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.ABIE.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )
                 .fetchInto(ABIE.class);

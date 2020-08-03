@@ -29,6 +29,9 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
     private String bizTerm;
     private String remark;
 
+    private String bccDen;
+    private String bccpDen;
+
     private BigInteger bdtId;
     private String bdtDen;
 
@@ -48,12 +51,16 @@ public class BieEditBbiepNodeDetail extends BieEditBbiepNode implements BieEditN
 
     public BieEditBbiepNodeDetail append(BieEditBbiepNode bbiepNode) {
 
-        this.setTopLevelAbieId(bbiepNode.getTopLevelAbieId());
+        this.setTopLevelAsbiepId(bbiepNode.getTopLevelAsbiepId());
         this.setReleaseId(bbiepNode.getReleaseId());
         this.setType(bbiepNode.getType());
         this.setGuid(bbiepNode.getGuid());
         this.setName(bbiepNode.getName());
         this.setHasChild(bbiepNode.isHasChild());
+
+        this.setRequired(bbiepNode.isRequired());
+        this.setDerived(bbiepNode.isDerived());
+        this.setLocked(bbiepNode.isLocked());
 
         this.setBbieId(bbiepNode.getBbieId());
         this.setBccManifestId(bbiepNode.getBccManifestId());

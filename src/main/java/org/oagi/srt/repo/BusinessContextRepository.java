@@ -31,22 +31,22 @@ public class BusinessContextRepository {
 
     public class SelectBusinessContextArguments {
 
-        private ULong topLevelAbieId;
+        private ULong topLevelAsbiepId;
         private List<ULong> bizCtxIds = new ArrayList();
         private List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;
 
-        public SelectBusinessContextArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
-            if (topLevelAbieId != null) {
-                return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        public SelectBusinessContextArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+            if (topLevelAsbiepId != null) {
+                return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
             }
             return this;
         }
 
-        public SelectBusinessContextArguments setTopLevelAbieId(ULong topLevelAbieId) {
-            this.topLevelAbieId = topLevelAbieId;
+        public SelectBusinessContextArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+            this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
 
@@ -119,11 +119,11 @@ public class BusinessContextRepository {
         }
 
         public List<Condition> getConditions() {
-            if (topLevelAbieId != null) {
+            if (topLevelAsbiepId != null) {
                 List<ULong> bizCtxIds = dslContext.selectDistinct(
                         BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID)
                         .from(BIZ_CTX_ASSIGNMENT)
-                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID.eq(topLevelAbieId))
+                        .where(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                         .fetchInto(ULong.class);
 
                 setBizCtxIds(bizCtxIds);

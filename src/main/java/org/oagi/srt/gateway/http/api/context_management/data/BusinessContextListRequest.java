@@ -12,7 +12,7 @@ import java.util.List;
 public class BusinessContextListRequest {
 
     private String name;
-    private BigInteger topLevelAbieId = BigInteger.ZERO;
+    private BigInteger topLevelAsbiepId = BigInteger.ZERO;
     private List<Long> bizCtxIds = Collections.emptyList();
     private List<String> updaterLoginIds = Collections.emptyList();
     private Date updateStartDate;

@@ -8,7 +8,7 @@ import org.oagi.srt.data.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.OpenAPIExpressionFormat;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.repository.TopLevelAbieRepository;
+import org.oagi.srt.repository.TopLevelAsbiepRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,7 +45,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     private ApplicationContext applicationContext;
 
     @Autowired
-    private TopLevelAbieRepository topLevelAbieRepository;
+    private TopLevelAsbiepRepository topLevelAsbiepRepository;
 
     private GenerationContext generationContext;
 
@@ -63,28 +63,28 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     @Override
-    public GenerationContext generateContext(List<TopLevelAbie> topLevelAbies, GenerateExpressionOption option) {
-        List<TopLevelAbie> mergedTopLevelAbies = new ArrayList(topLevelAbies);
+    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
+        List<TopLevelAsbiep> mergedTopLevelAbies = new ArrayList(topLevelAbies);
 
         /*
          * Issue #587
          */
         if (option.isIncludeMetaHeaderForJsonForOpenAPI30GetTemplate()) {
-            TopLevelAbie metaHeaderTopLevelAbie =
-                    topLevelAbieRepository.findById(option.getMetaHeaderTopLevelAbieIdForOpenAPI30GetTemplate());
-            mergedTopLevelAbies.add(metaHeaderTopLevelAbie);
+            TopLevelAsbiep metaHeaderTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepIdForOpenAPI30GetTemplate());
+            mergedTopLevelAbies.add(metaHeaderTopLevelAsbiep);
         }
         if (option.isIncludePaginationResponseForJsonForOpenAPI30GetTemplate()) {
-            TopLevelAbie paginationResponseTopLevelAbie =
-                    topLevelAbieRepository.findById(option.getPaginationResponseTopLevelAbieIdForOpenAPI30GetTemplate());
-            mergedTopLevelAbies.add(paginationResponseTopLevelAbie);
+            TopLevelAsbiep paginationResponseTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getPaginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate());
+            mergedTopLevelAbies.add(paginationResponseTopLevelAsbiep);
         }
 
         return applicationContext.getBean(GenerationContext.class, mergedTopLevelAbies);
     }
 
     @Override
-    public void generate(TopLevelAbie topLevelAbie, GenerationContext generationContext, GenerateExpressionOption option) {
+    public void generate(TopLevelAsbiep topLevelAsbiep, GenerationContext generationContext, GenerateExpressionOption option) {
         this.generationContext = generationContext;
         this.option = option;
 
@@ -105,11 +105,11 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
         expressionMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        generateTopLevelAbie(topLevelAbie);
+        generateTopLevelAbie(topLevelAsbiep);
     }
 
-    private void generateTopLevelAbie(TopLevelAbie topLevelAbie) {
-        ABIE abie = generationContext.findAbie(topLevelAbie.getAbieId());
+    private void generateTopLevelAbie(TopLevelAsbiep topLevelAsbiep) {
+        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
 
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
@@ -237,14 +237,14 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
          * Issue #587
          */
         if (option.isIncludeMetaHeaderForJsonForOpenAPI30GetTemplate()) {
-            TopLevelAbie metaHeaderTopLevelAbie =
-                    topLevelAbieRepository.findById(option.getMetaHeaderTopLevelAbieIdForOpenAPI30GetTemplate());
-            fillProperties(parent, schemas, metaHeaderTopLevelAbie, generationContext);
+            TopLevelAsbiep metaHeaderTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepIdForOpenAPI30GetTemplate());
+            fillProperties(parent, schemas, metaHeaderTopLevelAsbiep, generationContext);
         }
         if (option.isIncludePaginationResponseForJsonForOpenAPI30GetTemplate()) {
-            TopLevelAbie paginationResponseTopLevelAbie =
-                    topLevelAbieRepository.findById(option.getPaginationResponseTopLevelAbieIdForOpenAPI30GetTemplate());
-            fillProperties(parent, schemas, paginationResponseTopLevelAbie, generationContext);
+            TopLevelAsbiep paginationResponseTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getPaginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate());
+            fillProperties(parent, schemas, paginationResponseTopLevelAsbiep, generationContext);
         }
 
         fillProperties(parent, schemas, asbiep, abie,
@@ -259,9 +259,9 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
          * Issue #587
          */
         if (option.isIncludeMetaHeaderForJsonForOpenAPI30PostTemplate()) {
-            TopLevelAbie metaHeaderTopLevelAbie =
-                    topLevelAbieRepository.findById(option.getMetaHeaderTopLevelAbieIdForOpenAPI30PostTemplate());
-            fillProperties(parent, schemas, metaHeaderTopLevelAbie, generationContext);
+            TopLevelAsbiep metaHeaderTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepIdForOpenAPI30PostTemplate());
+            fillProperties(parent, schemas, metaHeaderTopLevelAsbiep, generationContext);
         }
 
         fillProperties(parent, schemas, asbiep, abie,
@@ -295,10 +295,10 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private void fillProperties(Map<String, Object> parent, Map<String, Object> schemas,
-                                TopLevelAbie topLevelAbie,
+                                TopLevelAsbiep topLevelAsbiep,
                                 GenerationContext generationContext) {
 
-        ABIE abie = generationContext.findAbie(topLevelAbie.getAbieId());
+        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 

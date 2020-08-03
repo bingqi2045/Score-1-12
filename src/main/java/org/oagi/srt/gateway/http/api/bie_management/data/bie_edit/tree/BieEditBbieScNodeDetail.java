@@ -41,12 +41,16 @@ public class BieEditBbieScNodeDetail extends BieEditBbieScNode implements BieEdi
 
     public BieEditBbieScNodeDetail append(BieEditBbieScNode bbieScNode) {
 
-        this.setTopLevelAbieId(bbieScNode.getTopLevelAbieId());
+        this.setTopLevelAsbiepId(bbieScNode.getTopLevelAsbiepId());
         this.setReleaseId(bbieScNode.getReleaseId());
         this.setType(bbieScNode.getType());
         this.setGuid(bbieScNode.getGuid());
         this.setName(bbieScNode.getName());
         this.setHasChild(bbieScNode.isHasChild());
+
+        this.setRequired(bbieScNode.isRequired());
+        this.setDerived(bbieScNode.isDerived());
+        this.setLocked(bbieScNode.isLocked());
 
         this.setBbieScManifestId(bbieScNode.getBbieScManifestId());
         this.setDtScManifestId(bbieScNode.getDtScManifestId());

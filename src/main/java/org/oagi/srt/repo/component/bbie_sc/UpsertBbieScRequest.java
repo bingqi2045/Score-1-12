@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
 
 public class UpsertBbieScRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAbieId;
+    private final BigInteger topLevelAsbiepId;
     private final BbieScNode.BbieSc bbieSc;
 
     public UpsertBbieScRequest(User user, LocalDateTime localDateTime,
-                               BigInteger topLevelAbieId, BbieScNode.BbieSc bbieSc) {
+                               BigInteger topLevelAsbiepId, BbieScNode.BbieSc bbieSc) {
         super(user, localDateTime);
-        this.topLevelAbieId = topLevelAbieId;
+        this.topLevelAsbiepId = topLevelAsbiepId;
         this.bbieSc = bbieSc;
     }
 
-    public BigInteger getTopLevelAbieId() {
-        return topLevelAbieId;
+    public BigInteger getTopLevelAsbiepId() {
+        return topLevelAsbiepId;
     }
 
     public BbieScNode.BbieSc getBbieSc() {

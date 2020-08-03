@@ -1,6 +1,6 @@
 package org.oagi.srt.gateway.http.api.bie_management.service.generate_expression;
 
-import org.oagi.srt.data.TopLevelAbie;
+import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.srt.gateway.http.helper.Utility;
 import org.springframework.util.StringUtils;
@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 
 public interface BieGenerateExpression {
 
-    GenerationContext generateContext(List<TopLevelAbie> topLevelAbies, GenerateExpressionOption option);
+    GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option);
 
     void reset() throws Exception;
 
-    void generate(TopLevelAbie topLevelAbie, GenerationContext generationContext, GenerateExpressionOption option);
+    void generate(TopLevelAsbiep topLevelAsbiep, GenerationContext generationContext, GenerateExpressionOption option);
 
     File asFile(String filename) throws IOException;
 

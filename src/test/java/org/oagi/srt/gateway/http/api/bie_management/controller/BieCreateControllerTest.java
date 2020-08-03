@@ -97,6 +97,6 @@ public class BieCreateControllerTest {
                 );
 
         assertNotNull(response);
-        assertTrue(response.getTopLevelAbieId().longValue() > 0L);
+        assertTrue(response.getTopLevelAsbiepId().longValue() > 0L);
     }
 }

@@ -18,5 +18,5 @@ public class BBIEP implements BIE {
     private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private BigInteger ownerTopLevelAbieId = BigInteger.ZERO;
+    private BigInteger ownerTopLevelAsbiepId = BigInteger.ZERO;
 }

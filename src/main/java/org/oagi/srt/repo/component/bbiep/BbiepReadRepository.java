@@ -28,10 +28,10 @@ public class BbiepReadRepository {
     @Autowired
     private DtReadRepository dtReadRepository;
 
-    private BbiepRecord getBbiepByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
+    private BbiepRecord getBbiepByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(BBIEP)
                 .where(and(
-                        BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -80,7 +80,7 @@ public class BbiepReadRepository {
         bbiep.setUsed(true);
         bbiep.setHashPath(hashPath);
 
-        BbiepRecord bbiepRecord = getBbiepByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
+        BbiepRecord bbiepRecord = getBbiepByTopLevelAsbiepIdAndHashPath(topLevelAbieId, hashPath);
         if (bbiepRecord != null) {
             bbiep.setBbiepId(bbiepRecord.getBbiepId().toBigInteger());
             bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId().toBigInteger());

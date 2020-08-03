@@ -232,8 +232,8 @@ public class CcListService {
                 APP_USER.LOGIN_ID,
                 APP_USER.APP_USER_ID,
                 APP_USER.as("updater").LOGIN_ID,
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                TOP_LEVEL_ABIE.STATE,
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                TOP_LEVEL_ASBIEP.STATE,
                 ASCCP.as("bie").PROPERTY_TERM,
                 ASCCP.PROPERTY_TERM,
                 ASBIE.SEQ_KEY)
@@ -244,9 +244,8 @@ public class CcListService {
                 .join(ASCCP).on(ASCC.TO_ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
-                .join(TOP_LEVEL_ABIE).on(ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
-                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
+                .join(TOP_LEVEL_ASBIEP).on(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASBIEP.BASED_ASCCP_MANIFEST_ID))
                 .join(ASCCP.as("bie")).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.as("bie").ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
@@ -260,8 +259,8 @@ public class CcListService {
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
-                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
-                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(ASCCP.PROPERTY_TERM));
                     item.setSeqKey(e.get(ASBIE.SEQ_KEY).intValue());
@@ -277,8 +276,8 @@ public class CcListService {
                 APP_USER.LOGIN_ID,
                 APP_USER.APP_USER_ID,
                 APP_USER.as("updater").LOGIN_ID,
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
-                TOP_LEVEL_ABIE.STATE,
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                TOP_LEVEL_ASBIEP.STATE,
                 ASCCP.as("bie").PROPERTY_TERM,
                 BCCP.PROPERTY_TERM,
                 BBIE.SEQ_KEY)
@@ -289,9 +288,8 @@ public class CcListService {
                 .join(BCCP).on(BCC.TO_BCCP_ID.eq(BCCP.BCCP_ID))
                 .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(APP_USER.as("updater")).on(ACC.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
-                .join(TOP_LEVEL_ABIE).on(BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID))
-                .join(ABIE).on(TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(ASBIEP).on(ABIE.ABIE_ID.eq(ASBIEP.ROLE_OF_ABIE_ID))
+                .join(TOP_LEVEL_ASBIEP).on(BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP.as("bie")).on(ASCCP.as("bie").ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .where(ACC.ACC_ID.in(uegIds))
@@ -305,8 +303,8 @@ public class CcListService {
                     item.setLastUpdateUser(e.get(APP_USER.as("updater").LOGIN_ID));
                     item.setOwnerUsername(e.get(APP_USER.LOGIN_ID));
                     item.setOwnerUserId(e.get(APP_USER.APP_USER_ID).toBigInteger());
-                    item.setTopLevelAbieId(e.get(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID).toBigInteger());
-                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ABIE.STATE)));
+                    item.setTopLevelAsbiepId(e.get(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID).toBigInteger());
+                    item.setBieState(BieState.valueOf(e.get(TOP_LEVEL_ASBIEP.STATE)));
                     item.setPropertyTerm(e.get(ASCCP.as("bie").PROPERTY_TERM));
                     item.setAssociationPropertyTerm(e.get(BCCP.PROPERTY_TERM));
                     item.setSeqKey(e.get(BBIE.SEQ_KEY).intValue());

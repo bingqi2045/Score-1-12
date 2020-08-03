@@ -27,7 +27,7 @@ public class BusinessContextController {
     public PageResponse<BusinessContext> getBusinessContextList(
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "bizCtxIds", required = false) String bizCtxIds,
-            @RequestParam(name = "topLevelAbieId", required = false) BigInteger topLevelAbieId,
+            @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId,
             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
@@ -39,7 +39,7 @@ public class BusinessContextController {
         BusinessContextListRequest request = new BusinessContextListRequest();
 
         request.setName(name);
-        request.setTopLevelAbieId(topLevelAbieId);
+        request.setTopLevelAsbiepId(topLevelAsbiepId);
         request.setBizCtxIds(StringUtils.isEmpty(bizCtxIds) ? Collections.emptyList() :
                 Arrays.asList(bizCtxIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> Long.valueOf(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
@@ -111,8 +111,8 @@ public class BusinessContextController {
     public ResponseEntity assign(
             @AuthenticationPrincipal User user,
             @PathVariable("id") BigInteger id,
-            @RequestParam(name = "topLevelAbieId", required = true) BigInteger topLevelAbieId) {
-        service.assign(id, topLevelAbieId);
+            @RequestParam(name = "topLevelAsbiepId", required = true) BigInteger topLevelAsbiepId) {
+        service.assign(id, topLevelAsbiepId);
         return ResponseEntity.noContent().build();
     }
 
@@ -120,9 +120,9 @@ public class BusinessContextController {
     public ResponseEntity delete(
             @AuthenticationPrincipal User user,
             @PathVariable("id") BigInteger id,
-            @RequestParam(name = "topLevelAbieId", required = false) BigInteger topLevelAbieId) {
-        if (topLevelAbieId != null) {
-            service.dismiss(id, topLevelAbieId);
+            @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId) {
+        if (topLevelAsbiepId != null) {
+            service.dismiss(id, topLevelAsbiepId);
         } else {
             service.delete(id);
         }

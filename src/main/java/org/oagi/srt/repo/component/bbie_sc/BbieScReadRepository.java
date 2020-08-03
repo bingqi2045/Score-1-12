@@ -29,7 +29,7 @@ public class BbieScReadRepository {
     private BbieScRecord getBbieScByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
         return dslContext.selectFrom(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                         BBIE_SC.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -83,7 +83,7 @@ public class BbieScReadRepository {
             bbieSc.setBbieHashPath(dslContext.select(BBIE.HASH_PATH)
                     .from(BBIE)
                     .where(and(
-                            BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                             BBIE.BBIE_ID.eq(bbieScRecord.getBbieId())
                     ))
                     .fetchOneInto(String.class));
@@ -114,14 +114,14 @@ public class BbieScReadRepository {
         return dslContext.select(BBIE_SC.HASH_PATH)
                 .from(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                         BBIE_SC.IS_USED.eq((byte) 1)
                 ))
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("BBIE_SC");
                     bieEditUsed.setHashPath(record.get(BBIE_SC.HASH_PATH));
-                    bieEditUsed.setTopLevelAbieId(topLevelAbieId);
+                    bieEditUsed.setTopLevelAsbiepId(topLevelAbieId);
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 })

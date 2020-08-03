@@ -3,7 +3,7 @@ package org.oagi.srt.repo;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.BieState;
-import org.oagi.srt.entity.jooq.tables.records.TopLevelAbieRecord;
+import org.oagi.srt.entity.jooq.tables.records.TopLevelAsbiepRecord;
 import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,44 +32,44 @@ public class BusinessInformationEntityRepository {
     @Autowired
     private DSLContext dslContext;
 
-    public class InsertTopLevelAbieArguments {
+    public class InsertTopLevelAsbiepArguments {
         private ULong releaseId;
         private ULong userId;
         private BieState bieState = WIP;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
-        public InsertTopLevelAbieArguments setReleaseId(BigInteger releaseId) {
+        public InsertTopLevelAsbiepArguments setReleaseId(BigInteger releaseId) {
             return setReleaseId(ULong.valueOf(releaseId));
         }
 
-        public InsertTopLevelAbieArguments setReleaseId(ULong releaseId) {
+        public InsertTopLevelAsbiepArguments setReleaseId(ULong releaseId) {
             this.releaseId = releaseId;
             return this;
         }
 
-        public InsertTopLevelAbieArguments setBieState(BieState bieState) {
+        public InsertTopLevelAsbiepArguments setBieState(BieState bieState) {
             this.bieState = bieState;
             return this;
         }
 
-        public InsertTopLevelAbieArguments setUserId(BigInteger userId) {
+        public InsertTopLevelAsbiepArguments setUserId(BigInteger userId) {
             return setUserId(ULong.valueOf(userId));
         }
 
-        public InsertTopLevelAbieArguments setUserId(ULong userId) {
+        public InsertTopLevelAsbiepArguments setUserId(ULong userId) {
             this.userId = userId;
             return this;
         }
 
-        public InsertTopLevelAbieArguments setTimestamp(long millis) {
+        public InsertTopLevelAsbiepArguments setTimestamp(long millis) {
             return setTimestamp(new Timestamp(millis).toLocalDateTime());
         }
 
-        public InsertTopLevelAbieArguments setTimestamp(Date date) {
+        public InsertTopLevelAsbiepArguments setTimestamp(Date date) {
             return setTimestamp(new Timestamp(date.getTime()).toLocalDateTime());
         }
 
-        public InsertTopLevelAbieArguments setTimestamp(LocalDateTime timestamp) {
+        public InsertTopLevelAsbiepArguments setTimestamp(LocalDateTime timestamp) {
             this.timestamp = timestamp;
             return this;
         }
@@ -91,25 +91,25 @@ public class BusinessInformationEntityRepository {
         }
 
         public ULong execute() {
-            return insertTopLevelAbie(this);
+            return insertTopLevelAsbiep(this);
         }
     }
 
-    public InsertTopLevelAbieArguments insertTopLevelAbie() {
-        return new InsertTopLevelAbieArguments();
+    public InsertTopLevelAsbiepArguments insertTopLevelAsbiep() {
+        return new InsertTopLevelAsbiepArguments();
     }
 
-    private ULong insertTopLevelAbie(InsertTopLevelAbieArguments arguments) {
-        TopLevelAbieRecord record = new TopLevelAbieRecord();
+    private ULong insertTopLevelAsbiep(InsertTopLevelAsbiepArguments arguments) {
+        TopLevelAsbiepRecord record = new TopLevelAsbiepRecord();
         record.setOwnerUserId(arguments.getUserId());
         record.setReleaseId(arguments.getReleaseId());
         record.setState(arguments.getBieState().name());
         record.setLastUpdatedBy(arguments.getUserId());
         record.setLastUpdateTimestamp(arguments.getTimestamp());
 
-        return dslContext.insertInto(TOP_LEVEL_ABIE)
+        return dslContext.insertInto(TOP_LEVEL_ASBIEP)
                 .set(record)
-                .returningResult(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                .returningResult(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                 .fetchOne().value1();
     }
 
@@ -117,7 +117,7 @@ public class BusinessInformationEntityRepository {
         private ULong userId;
         private ULong accManifestId;
         private String path;
-        private ULong topLevelAbieId;
+        private ULong topLevelAsbiepId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
 
         public InsertAbieArguments setUserId(BigInteger userId) {
@@ -147,12 +147,12 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAbieArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
-            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        public InsertAbieArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+            return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
         }
 
-        public InsertAbieArguments setTopLevelAbieId(ULong topLevelAbieId) {
-            this.topLevelAbieId = topLevelAbieId;
+        public InsertAbieArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+            this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
 
@@ -177,8 +177,8 @@ public class BusinessInformationEntityRepository {
             return accManifestId;
         }
 
-        public ULong getTopLevelAbieId() {
-            return topLevelAbieId;
+        public ULong getTopLevelAsbiepId() {
+            return topLevelAsbiepId;
         }
 
         public LocalDateTime getTimestamp() {
@@ -204,21 +204,21 @@ public class BusinessInformationEntityRepository {
                 .set(ABIE.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ABIE.CREATION_TIMESTAMP, arguments.getTimestamp())
                 .set(ABIE.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
-                .set(ABIE.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
+                .set(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID, arguments.getTopLevelAsbiepId())
                 .returningResult(ABIE.ABIE_ID)
                 .fetchOne().value1();
     }
 
     public class InsertBizCtxAssignmentArguments {
-        private ULong topLevelAbieId;
+        private ULong topLevelAsbiepId;
         private List<ULong> bizCtxIds = Collections.emptyList();
 
-        public InsertBizCtxAssignmentArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
-            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        public InsertBizCtxAssignmentArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+            return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
         }
 
-        public InsertBizCtxAssignmentArguments setTopLevelAbieId(ULong topLevelAbieId) {
-            this.topLevelAbieId = topLevelAbieId;
+        public InsertBizCtxAssignmentArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+            this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
 
@@ -229,8 +229,8 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public ULong getTopLevelAbieId() {
-            return topLevelAbieId;
+        public ULong getTopLevelAsbiepId() {
+            return topLevelAsbiepId;
         }
 
         public List<ULong> getBizCtxIds() {
@@ -250,7 +250,7 @@ public class BusinessInformationEntityRepository {
         dslContext.batch(
                 arguments.getBizCtxIds().stream().map(bizCtxId -> {
                     return dslContext.insertInto(BIZ_CTX_ASSIGNMENT)
-                            .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ABIE_ID, arguments.topLevelAbieId)
+                            .set(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID, arguments.topLevelAsbiepId)
                             .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, bizCtxId);
                 }).collect(Collectors.toList())
         ).execute();
@@ -259,7 +259,7 @@ public class BusinessInformationEntityRepository {
     public class InsertAsbiepArguments {
         private ULong asccpManifestId;
         private ULong roleOfAbieId;
-        private ULong topLevelAbieId;
+        private ULong topLevelAsbiepId;
         private String path;
         private ULong userId;
         private LocalDateTime timestamp = new Timestamp(System.currentTimeMillis()).toLocalDateTime();
@@ -282,12 +282,12 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public InsertAsbiepArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
-            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        public InsertAsbiepArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+            return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
         }
 
-        public InsertAsbiepArguments setTopLevelAbieId(ULong topLevelAbieId) {
-            this.topLevelAbieId = topLevelAbieId;
+        public InsertAsbiepArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+            this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
 
@@ -330,8 +330,8 @@ public class BusinessInformationEntityRepository {
             return roleOfAbieId;
         }
 
-        public ULong getTopLevelAbieId() {
-            return topLevelAbieId;
+        public ULong getTopLevelAsbiepId() {
+            return topLevelAsbiepId;
         }
 
         public ULong getUserId() {
@@ -362,39 +362,39 @@ public class BusinessInformationEntityRepository {
                 .set(ASBIEP.LAST_UPDATED_BY, arguments.getUserId())
                 .set(ASBIEP.CREATION_TIMESTAMP, arguments.getTimestamp())
                 .set(ASBIEP.LAST_UPDATE_TIMESTAMP, arguments.getTimestamp())
-                .set(ASBIEP.OWNER_TOP_LEVEL_ABIE_ID, arguments.getTopLevelAbieId())
+                .set(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, arguments.getTopLevelAsbiepId())
                 .returningResult(ASBIEP.ASBIEP_ID)
                 .fetchOne().value1();
     }
 
     public class UpdateTopLevelAbieArguments {
-        private ULong abieId;
-        private ULong topLevelAbieId;
+        private ULong asbiepId;
+        private ULong topLevelAsbiepId;
 
-        public UpdateTopLevelAbieArguments setAbieId(BigInteger abieId) {
-            return setAbieId(ULong.valueOf(abieId));
+        public UpdateTopLevelAbieArguments setAsbiepId(BigInteger asbiepId) {
+            return setAbieId(ULong.valueOf(asbiepId));
         }
 
         public UpdateTopLevelAbieArguments setAbieId(ULong abieId) {
-            this.abieId = abieId;
+            this.asbiepId = abieId;
             return this;
         }
 
-        public UpdateTopLevelAbieArguments setTopLevelAbieId(BigInteger topLevelAbieId) {
-            return setTopLevelAbieId(ULong.valueOf(topLevelAbieId));
+        public UpdateTopLevelAbieArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+            return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
         }
 
-        public UpdateTopLevelAbieArguments setTopLevelAbieId(ULong topLevelAbieId) {
-            this.topLevelAbieId = topLevelAbieId;
+        public UpdateTopLevelAbieArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+            this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
 
-        public ULong getAbieId() {
-            return abieId;
+        public ULong getAsbiepId() {
+            return asbiepId;
         }
 
-        public ULong getTopLevelAbieId() {
-            return topLevelAbieId;
+        public ULong getTopLevelAsbiepId() {
+            return topLevelAsbiepId;
         }
 
         public void execute() {
@@ -407,9 +407,9 @@ public class BusinessInformationEntityRepository {
     }
 
     private void updateTopLevelAbie(UpdateTopLevelAbieArguments arguments) {
-        dslContext.update(TOP_LEVEL_ABIE)
-                .set(TOP_LEVEL_ABIE.ABIE_ID, arguments.getAbieId())
-                .where(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(arguments.getTopLevelAbieId()))
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.ASBIEP_ID, arguments.getAsbiepId())
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(arguments.getTopLevelAsbiepId()))
                 .execute();
     }
 
@@ -448,10 +448,10 @@ public class BusinessInformationEntityRepository {
             return this;
         }
 
-        public SelectBieListArguments setExcludeTopLevelAbieIds(List<BigInteger> excludeTopLevelAbieIds) {
-            if (!excludeTopLevelAbieIds.isEmpty()) {
-                conditions.add(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.notIn(
-                        excludeTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
+        public SelectBieListArguments setExcludeTopLevelAsbiepIds(List<BigInteger> excludeTopLevelAsbiepIds) {
+            if (!excludeTopLevelAsbiepIds.isEmpty()) {
+                conditions.add(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.notIn(
+                        excludeTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())
                 ));
             }
             return this;
@@ -459,7 +459,7 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setStates(List<BieState> states) {
             if (!states.isEmpty()) {
-                conditions.add(TOP_LEVEL_ABIE.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
+                conditions.add(TOP_LEVEL_ASBIEP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
             }
             return this;
         }
@@ -487,10 +487,10 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setUpdateDate(LocalDateTime from, LocalDateTime to) {
             if (from != null) {
-                conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.greaterOrEqual(from));
+                conditions.add(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.greaterOrEqual(from));
             }
             if (to != null) {
-                conditions.add(TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.lessThan(to));
+                conditions.add(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.lessThan(to));
             }
             return this;
         }
@@ -501,8 +501,8 @@ public class BusinessInformationEntityRepository {
                     case CanEdit:
                         conditions.add(
                                 and(
-                                        TOP_LEVEL_ABIE.STATE.notEqual(Initiating.name()),
-                                        TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
+                                        TOP_LEVEL_ASBIEP.STATE.notEqual(Initiating.name()),
+                                        TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(userId)
                                 )
                         );
                         break;
@@ -510,10 +510,10 @@ public class BusinessInformationEntityRepository {
                     case CanView:
                         conditions.add(
                                 or(
-                                        TOP_LEVEL_ABIE.STATE.in(QA.name(), Production.name()),
+                                        TOP_LEVEL_ASBIEP.STATE.in(QA.name(), Production.name()),
                                         and(
-                                                TOP_LEVEL_ABIE.STATE.notEqual(Initiating.name()),
-                                                TOP_LEVEL_ABIE.OWNER_USER_ID.eq(userId)
+                                                TOP_LEVEL_ASBIEP.STATE.notEqual(Initiating.name()),
+                                                TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(userId)
                                         )
                                 )
                         );
@@ -528,9 +528,9 @@ public class BusinessInformationEntityRepository {
                 switch (field) {
                     case "state":
                         if ("asc".equals(direction)) {
-                            this.sortField = TOP_LEVEL_ABIE.STATE.asc();
+                            this.sortField = TOP_LEVEL_ASBIEP.STATE.asc();
                         } else if ("desc".equals(direction)) {
-                            this.sortField = TOP_LEVEL_ABIE.STATE.desc();
+                            this.sortField = TOP_LEVEL_ASBIEP.STATE.desc();
                         }
 
                         break;
@@ -555,9 +555,9 @@ public class BusinessInformationEntityRepository {
 
                     case "lastUpdateTimestamp":
                         if ("asc".equals(direction)) {
-                            this.sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.asc();
+                            this.sortField = TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.asc();
                         } else if ("desc".equals(direction)) {
-                            this.sortField = TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP.desc();
+                            this.sortField = TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.desc();
                         }
 
                         break;
@@ -575,7 +575,7 @@ public class BusinessInformationEntityRepository {
 
         public SelectBieListArguments setReleaseId(BigInteger releaseId) {
             if (releaseId != null) {
-                conditions.add(TOP_LEVEL_ABIE.RELEASE_ID.eq(ULong.valueOf(releaseId)));
+                conditions.add(TOP_LEVEL_ASBIEP.RELEASE_ID.eq(ULong.valueOf(releaseId)));
             }
             return this;
         }
@@ -605,58 +605,51 @@ public class BusinessInformationEntityRepository {
         return new SelectBieListArguments();
     }
 
-    private SelectOnConditionStep<Record13<
+    private SelectOnConditionStep<Record11<
             ULong, String, String, String, ULong,
-            String, String, String, String, String,
+            String, String, String,
             LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.select(
-                TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID,
+                TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
                 ABIE.GUID,
                 ASCCP.PROPERTY_TERM,
                 RELEASE.RELEASE_NUM,
-                TOP_LEVEL_ABIE.OWNER_USER_ID,
+                TOP_LEVEL_ASBIEP.OWNER_USER_ID,
                 APP_USER.LOGIN_ID.as("owner"),
-                ABIE.VERSION,
-                ABIE.STATUS,
-                ABIE.BIZ_TERM,
-                ABIE.REMARK,
-                TOP_LEVEL_ABIE.LAST_UPDATE_TIMESTAMP,
+                ASBIEP.BIZ_TERM,
+                ASBIEP.REMARK,
+                TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP,
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
-                TOP_LEVEL_ABIE.STATE)
-                .from(TOP_LEVEL_ABIE)
-                .join(ABIE).on(and(
-                        TOP_LEVEL_ABIE.ABIE_ID.eq(ABIE.ABIE_ID),
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
-                ))
-                .and(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ABIE.OWNER_TOP_LEVEL_ABIE_ID))
+                TOP_LEVEL_ASBIEP.STATE)
+                .from(TOP_LEVEL_ASBIEP)
                 .join(ASBIEP).on(and(
                         ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID)
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
                 ))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ABIE.OWNER_USER_ID))
-                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ABIE.LAST_UPDATED_BY))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ABIE.RELEASE_ID));
+                .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ASBIEP.OWNER_USER_ID))
+                .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY))
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ASBIEP.RELEASE_ID));
     }
 
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
-        SelectOnConditionStep<Record13<
+        SelectOnConditionStep<Record11<
                 ULong, String, String, String, ULong,
-                String, String, String, String, String,
+                String, String, String,
                 LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
-        SelectConnectByStep<Record13<
+        SelectConnectByStep<Record11<
                 ULong, String, String, String, ULong,
-                String, String, String, String, String,
+                String, String, String,
                 LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
         SortField sortField = arguments.getSortField();
-        SelectWithTiesAfterOffsetStep<Record13<
+        SelectWithTiesAfterOffsetStep<Record11<
                 ULong, String, String, String, ULong,
-                String, String, String, String, String,
+                String, String, String,
                 LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {
@@ -675,17 +668,16 @@ public class BusinessInformationEntityRepository {
                         offsetStep.fetchInto(type) : conditionStep.fetchInto(type));
     }
 
-    public BigInteger getAsccpManifestIdByTopLevelAbieId(BigInteger topLevelAbieId) {
+    public BigInteger getAsccpManifestIdByTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
         return dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
                 .from(ASBIEP)
-                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(TOP_LEVEL_ABIE).on(and(
-                        ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID),
-                        ABIE.ABIE_ID.eq(TOP_LEVEL_ABIE.ABIE_ID)
+                .join(TOP_LEVEL_ASBIEP).on(and(
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                        ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID)
                 ))
                 .where(and(
-                        TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId)),
-                        ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(ULong.valueOf(topLevelAbieId))
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId))
                 ))
                 .fetchOptionalInto(BigInteger.class).orElse(null);
     }

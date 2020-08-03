@@ -32,7 +32,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.CREATION_TIMESTAMP,
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
-                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
+                Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIEP)
                 .fetchInto(BBIEP.class);
     }
@@ -52,7 +52,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.CREATION_TIMESTAMP,
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
-                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
+                Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIEP)
                 .where(Tables.BBIEP.BBIEP_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(BBIEP.class);
@@ -76,13 +76,13 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.CREATION_TIMESTAMP,
                 Tables.BBIEP.LAST_UPDATED_BY,
                 Tables.BBIEP.LAST_UPDATE_TIMESTAMP,
-                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID)
+                Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIEP)
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.BBIEP.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )
                 .fetchInto(BBIEP.class);

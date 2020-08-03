@@ -21,20 +21,20 @@ public class GenerateExpressionOption {
 
     private boolean arrayForJsonExpression;
     private boolean includeMetaHeaderForJson;
-    private BigInteger metaHeaderTopLevelAbieId;
+    private BigInteger metaHeaderTopLevelAsbiepId;
     private boolean includePaginationResponseForJson;
-    private BigInteger paginationResponseTopLevelAbieId;
+    private BigInteger paginationResponseTopLevelAsbiepId;
 
     private String openAPIExpressionFormat;
     private boolean openAPI30GetTemplate;
     private boolean arrayForJsonExpressionForOpenAPI30GetTemplate;
     private boolean includeMetaHeaderForJsonForOpenAPI30GetTemplate;
-    private BigInteger metaHeaderTopLevelAbieIdForOpenAPI30GetTemplate;
+    private BigInteger metaHeaderTopLevelAsbiepIdForOpenAPI30GetTemplate;
     private boolean includePaginationResponseForJsonForOpenAPI30GetTemplate;
-    private BigInteger paginationResponseTopLevelAbieIdForOpenAPI30GetTemplate;
+    private BigInteger paginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate;
 
     private boolean openAPI30PostTemplate;
     private boolean arrayForJsonExpressionForOpenAPI30PostTemplate;
     private boolean includeMetaHeaderForJsonForOpenAPI30PostTemplate;
-    private BigInteger metaHeaderTopLevelAbieIdForOpenAPI30PostTemplate;
+    private BigInteger metaHeaderTopLevelAsbiepIdForOpenAPI30PostTemplate;
 }

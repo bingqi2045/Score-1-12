@@ -36,11 +36,11 @@ public class BieGenerateController {
                                                         @RequestParam("data") String data) throws IOException {
 
         Map<String, Object> params = convertValue(data);
-        List<BigInteger> topLevelAbieIds = popTopLevelAbieIds(params);
+        List<BigInteger> topLevelAsbiepIds = popTopLevelAsbiepIds(params);
         GenerateExpressionOption option =
                 objectMapper.convertValue(params, GenerateExpressionOption.class);
 
-        BieGenerateExpressionResult bieGenerateExpressionResult = service.generate(user, topLevelAbieIds, option);
+        BieGenerateExpressionResult bieGenerateExpressionResult = service.generate(user, topLevelAsbiepIds, option);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + bieGenerateExpressionResult.getFilename() + "\"")
@@ -58,8 +58,8 @@ public class BieGenerateController {
         return params;
     }
 
-    private List<BigInteger> popTopLevelAbieIds(Map<String, Object> params) {
-        Object obj = params.remove("topLevelAbieIds");
+    private List<BigInteger> popTopLevelAsbiepIds(Map<String, Object> params) {
+        Object obj = params.remove("topLevelAsbiepIds");
         if (obj == null) {
             return Collections.emptyList();
         }

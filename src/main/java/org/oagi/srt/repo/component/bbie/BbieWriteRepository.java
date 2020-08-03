@@ -41,11 +41,11 @@ public class BbieWriteRepository {
 
     public BbieNode.Bbie upsertBbie(UpsertBbieRequest request) {
         BbieNode.Bbie bbie = request.getBbie();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         String hashPath = bbie.getHashPath();
         BbieRecord bbieRecord = dslContext.selectFrom(BBIE)
                 .where(and(
-                        BBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -62,14 +62,14 @@ public class BbieWriteRepository {
             bbieRecord.setFromAbieId(dslContext.select(ABIE.ABIE_ID)
                     .from(ABIE)
                     .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                            ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ABIE.HASH_PATH.eq(bbie.getFromAbieHashPath())
                     ))
                     .fetchOneInto(ULong.class));
             bbieRecord.setToBbiepId(dslContext.select(BBIEP.BBIEP_ID)
                     .from(BBIEP)
                     .where(and(
-                            BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                            BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             BBIEP.HASH_PATH.eq(bbie.getToBbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
@@ -127,7 +127,7 @@ public class BbieWriteRepository {
                 }
             }
 
-            bbieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
+            bbieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             bbieRecord.setCreatedBy(requesterId);
             bbieRecord.setLastUpdatedBy(requesterId);
@@ -198,7 +198,7 @@ public class BbieWriteRepository {
             );
         }
 
-        return bbieReadRepository.getBbie(request.getTopLevelAbieId(), hashPath);
+        return bbieReadRepository.getBbie(request.getTopLevelAsbiepId(), hashPath);
     }
 
 }

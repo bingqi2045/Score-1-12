@@ -26,11 +26,11 @@ public class BbiepWriteRepository {
 
     public BbiepNode.Bbiep upsertBbiep(UpsertBbiepRequest request) {
         BbiepNode.Bbiep bbiep = request.getBbiep();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         String hashPath = bbiep.getHashPath();
         BbiepRecord bbiepRecord = dslContext.selectFrom(BBIEP)
                 .where(and(
-                        BBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         BBIEP.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -49,7 +49,7 @@ public class BbiepWriteRepository {
             bbiepRecord.setRemark(bbiep.getRemark());
             bbiepRecord.setBizTerm(bbiep.getBizTerm());
 
-            bbiepRecord.setOwnerTopLevelAbieId(topLevelAbieId);
+            bbiepRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             bbiepRecord.setCreatedBy(requesterId);
             bbiepRecord.setLastUpdatedBy(requesterId);
@@ -79,6 +79,6 @@ public class BbiepWriteRepository {
             );
         }
 
-        return readRepository.getBbiep(request.getTopLevelAbieId(), hashPath);
+        return readRepository.getBbiep(request.getTopLevelAsbiepId(), hashPath);
     }
 }

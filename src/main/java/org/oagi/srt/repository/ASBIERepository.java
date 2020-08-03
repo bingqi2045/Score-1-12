@@ -38,7 +38,7 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
                 Tables.ASBIE.LAST_UPDATED_BY,
                 Tables.ASBIE.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIE.SEQ_KEY,
-                Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID).from(Tables.ASBIE).fetchInto(ASBIE.class);
+                Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID).from(Tables.ASBIE).fetchInto(ASBIE.class);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
                 Tables.ASBIE.LAST_UPDATED_BY,
                 Tables.ASBIE.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIE.SEQ_KEY,
-                Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID).from(Tables.ASBIE)
+                Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID).from(Tables.ASBIE)
                 .where(Tables.ASBIE.ASBIE_ID.eq(ULong.valueOf(id))).fetchOneInto(ASBIE.class);
     }
 
@@ -93,12 +93,12 @@ public class ASBIERepository implements SrtRepository<ASBIE> {
                 Tables.ASBIE.LAST_UPDATED_BY,
                 Tables.ASBIE.LAST_UPDATE_TIMESTAMP,
                 Tables.ASBIE.SEQ_KEY,
-                Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID).from(Tables.ASBIE)
+                Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID).from(Tables.ASBIE)
                 .where(
                         (ownerTopLevelAbieIds.size() == 1) ?
-                                Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(
+                                Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
                                         ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
-                                Tables.ASBIE.OWNER_TOP_LEVEL_ABIE_ID.in(
+                                Tables.ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
                                         ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )
                 .fetchInto(ASBIE.class);

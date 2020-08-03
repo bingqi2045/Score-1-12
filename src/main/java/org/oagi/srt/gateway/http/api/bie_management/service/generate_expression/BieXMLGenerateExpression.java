@@ -71,7 +71,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     @Override
-    public GenerationContext generateContext(List<TopLevelAbie> topLevelAbies, GenerateExpressionOption option) {
+    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
         return applicationContext.getBean(GenerationContext.class, topLevelAbies);
     }
 
@@ -81,13 +81,13 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     @Override
-    public void generate(TopLevelAbie topLevelAbie,
+    public void generate(TopLevelAsbiep topLevelAsbiep,
                          GenerationContext generationContext,
                          GenerateExpressionOption option) {
         this.generationContext = generationContext;
         this.option = option;
 
-        generateTopLevelAbie(topLevelAbie);
+        generateTopLevelAbie(topLevelAsbiep);
     }
 
     @Override
@@ -106,12 +106,12 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         return tempFile;
     }
 
-    private void generateTopLevelAbie(TopLevelAbie topLevelAbie) {
-        ABIE abie = generationContext.findAbie(topLevelAbie.getAbieId());
+    private void generateTopLevelAbie(TopLevelAsbiep topLevelAsbiep) {
+        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);
         logger.debug("Generating Top Level ABIE w/ given ASBIEP Id: " + asbiep.getAsbiepId());
 
-        rootElementNode = generateTopLevelASBIEP(asbiep, topLevelAbie);
+        rootElementNode = generateTopLevelASBIEP(asbiep, topLevelAsbiep);
 
         abie = generationContext.queryTargetABIE(asbiep);
         Element rootSeqNode = generateABIE(abie, rootElementNode);
@@ -205,7 +205,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         annotation.addContent(documentation);
     }
 
-    private void setBusinessContext(Element node, TopLevelAbie topLevelAbie) {
+    private void setBusinessContext(Element node, TopLevelAsbiep topLevelAsbiep) {
         if (!option.isBusinessContext()) {
             return;
         }
@@ -215,7 +215,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         Element documentation = newElement("documentation");
         annotation.addContent(documentation);
-        List<BizCtx> bizCtxList = generationContext.findBusinessContexts(topLevelAbie);
+        List<BizCtx> bizCtxList = generationContext.findBusinessContexts(topLevelAsbiep);
 
         for (BizCtx bizCtx : bizCtxList) {
             Element ccts_BusinessContext = new Element("ccts_BusinessContext", OAGI_NS);
@@ -523,7 +523,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
     }
 
-    public Element generateTopLevelASBIEP(ASBIEP asbiep, TopLevelAbie topLevelAbie) {
+    public Element generateTopLevelASBIEP(ASBIEP asbiep, TopLevelAsbiep topLevelAsbiep) {
         if (isProcessed(asbiep)) {
             return getProcessedElement(asbiep);
         }
@@ -538,9 +538,9 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         setDefinition(rootEleNode, asbiep.getDefinition());
-        setBusinessContext(rootEleNode, topLevelAbie);
+        setBusinessContext(rootEleNode, topLevelAsbiep);
         setOptionalDocumentation(rootEleNode,
-                new ASBIEPDocumentation(asbiep, asccp, topLevelAbie));
+                new ASBIEPDocumentation(asbiep, asccp, topLevelAsbiep));
 
         setProcessedElement(asbiep, rootEleNode);
 
@@ -1627,7 +1627,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     private class ASBIEPDocumentation extends AbstractBIEDocumentation {
         private final ASBIEP asbiep;
         private final ASCCP asccp;
-        private TopLevelAbie topLevelAbie;
+        private TopLevelAsbiep topLevelAsbiep;
 
         public ASBIEPDocumentation(
                 ASBIEP asbiep,
@@ -1638,10 +1638,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         public ASBIEPDocumentation(
                 ASBIEP asbiep,
                 ASCCP asccp,
-                TopLevelAbie topLevelAbie) {
+                TopLevelAsbiep topLevelAsbiep) {
             this.asbiep = asbiep;
             this.asccp = asccp;
-            this.topLevelAbie = topLevelAbie;
+            this.topLevelAsbiep = topLevelAsbiep;
         }
 
         @Override
@@ -1666,24 +1666,24 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
         @Override
         public String getReleaseNumber() {
-            if (topLevelAbie != null) {
-                return generationContext.findReleaseNumber(topLevelAbie.getReleaseId());
+            if (topLevelAsbiep != null) {
+                return generationContext.findReleaseNumber(topLevelAsbiep.getReleaseId());
             }
             return null;
         }
 
         @Override
         public String getStateCode() {
-            if (topLevelAbie != null) {
-                return topLevelAbie.getState().name();
+            if (topLevelAsbiep != null) {
+                return topLevelAsbiep.getState().name();
             }
             return null;
         }
 
         @Override
         public String getOwnerUserName() {
-            if (topLevelAbie != null) {
-                return generationContext.findUserName(topLevelAbie.getOwnerUserId());
+            if (topLevelAsbiep != null) {
+                return generationContext.findUserName(topLevelAsbiep.getOwnerUserId());
             }
             return null;
         }

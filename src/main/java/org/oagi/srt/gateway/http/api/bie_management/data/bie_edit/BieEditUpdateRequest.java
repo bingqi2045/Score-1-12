@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class BieEditUpdateRequest {
 
-    private BigInteger topLevelAbieId;
+    private BigInteger topLevelAsbiepId;
     private BieEditAbieNodeDetail abieNodeDetail;
     private List<BieEditAsbiepNodeDetail> asbiepNodeDetails = Collections.emptyList();
     private List<BieEditBbiepNodeDetail> bbiepNodeDetails = Collections.emptyList();

@@ -6,16 +6,18 @@ import lombok.NoArgsConstructor;
 import org.oagi.srt.redis.event.Event;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BieCopyRequestEvent implements Event {
+public class BieCreateFromExistingBieRequestEvent implements Event {
 
     private BigInteger sourceTopLevelAsbiepId;
-    private BigInteger copiedTopLevelAsbiepId;
-    private List<BigInteger> bizCtxIds;
+    private BigInteger targetTopLevelAsbiepId;
+    private BigInteger asbiepId;
+    private List<BigInteger> bizCtxIds = Collections.emptyList();
     private BigInteger userId;
 
 }

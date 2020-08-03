@@ -33,11 +33,11 @@ public class AsbieWriteRepository {
 
     public AsbieNode.Asbie upsertAsbie(UpsertAsbieRequest request) {
         AsbieNode.Asbie asbie = request.getAsbie();
-        ULong topLevelAbieId = ULong.valueOf(request.getTopLevelAbieId());
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
         String hashPath = asbie.getHashPath();
         AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
                 .where(and(
-                        ASBIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                         ASBIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
@@ -54,14 +54,14 @@ public class AsbieWriteRepository {
             asbieRecord.setFromAbieId(dslContext.select(ABIE.ABIE_ID)
                     .from(ABIE)
                     .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                            ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ABIE.HASH_PATH.eq(asbie.getFromAbieHashPath())
                     ))
                     .fetchOneInto(ULong.class));
             asbieRecord.setToAsbiepId(dslContext.select(ASBIEP.ASBIEP_ID)
                     .from(ASBIEP)
                     .where(and(
-                            ASBIEP.OWNER_TOP_LEVEL_ABIE_ID.eq(topLevelAbieId),
+                            ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId),
                             ASBIEP.HASH_PATH.eq(asbie.getToAsbiepHashPath())
                     ))
                     .fetchOneInto(ULong.class));
@@ -84,7 +84,7 @@ public class AsbieWriteRepository {
             }
             asbieRecord.setRemark(asbie.getRemark());
 
-            asbieRecord.setOwnerTopLevelAbieId(topLevelAbieId);
+            asbieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
 
             asbieRecord.setCreatedBy(requesterId);
             asbieRecord.setLastUpdatedBy(requesterId);
@@ -124,7 +124,7 @@ public class AsbieWriteRepository {
             );
         }
 
-        return asbieReadRepository.getAsbie(request.getTopLevelAbieId(), hashPath);
+        return asbieReadRepository.getAsbie(request.getTopLevelAsbiepId(), hashPath);
     }
 
 }
