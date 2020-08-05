@@ -622,10 +622,8 @@ public class BusinessInformationEntityRepository {
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 TOP_LEVEL_ASBIEP.STATE)
                 .from(TOP_LEVEL_ASBIEP)
-                .join(ASBIEP).on(and(
-                        ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID),
-                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID)
-                ))
+                .join(ASBIEP).on(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ASBIEP.OWNER_USER_ID))

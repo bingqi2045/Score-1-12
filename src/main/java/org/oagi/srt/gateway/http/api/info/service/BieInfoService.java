@@ -63,7 +63,7 @@ public class BieInfoService {
         pageRequest.setSortDirection("desc");
         pageRequest.setPageIndex(0);
         pageRequest.setPageSize(5);
-        request.setOwnerLoginIds(Arrays.asList(String.valueOf(requester.getAppUserId())));
+        request.setOwnerLoginIds(Arrays.asList(String.valueOf(requester.getLoginId())));
         request.setPageRequest(pageRequest);
 
         info.setMyRecentBIEs(bieService.getBieList(user, request).getList());
