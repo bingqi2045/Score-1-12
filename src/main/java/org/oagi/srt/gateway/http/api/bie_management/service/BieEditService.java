@@ -14,7 +14,6 @@ import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditNodeDetail;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.BieEditTreeController;
 import org.oagi.srt.gateway.http.api.bie_management.service.edit_tree.DefaultBieEditTreeController;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
@@ -57,7 +56,6 @@ import org.oagi.srt.repo.component.code_list.CodeListReadRepository;
 import org.oagi.srt.repo.component.dt.BdtNode;
 import org.oagi.srt.repo.component.dt.DtReadRepository;
 import org.oagi.srt.repository.TopLevelAsbiepRepository;
-import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,13 +63,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -485,7 +481,7 @@ public class BieEditService implements InitializingBean {
 
         AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
                 .where(and(
-                        ASBIE.HASH_PATH.eq(request.getAsbiepHashPath()),
+                        ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
                         ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepRecord.getTopLevelAsbiepId())
                 ))
                 .fetchOne();

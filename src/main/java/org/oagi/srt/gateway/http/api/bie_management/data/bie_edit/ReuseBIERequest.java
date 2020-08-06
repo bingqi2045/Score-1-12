@@ -9,6 +9,6 @@ public class ReuseBIERequest {
 
     private BigInteger topLevelAsbiepId;
     private BigInteger asccpManifestId;
-    private String asbiepHashPath;
+    private String asbieHashPath;
     private BigInteger reuseTopLevelAsbiepId;
 }
