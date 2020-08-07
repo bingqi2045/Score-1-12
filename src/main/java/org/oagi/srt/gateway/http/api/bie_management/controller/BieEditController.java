@@ -226,6 +226,14 @@ public class BieEditController {
         return service.getBieUsedList(user, topLevelAsbiepId);
     }
 
+    @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/ref_list",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BieEditRef> getRefAsbieList(@AuthenticationPrincipal User user,
+                                           @PathVariable("topLevelAsbiepId") BigInteger topLevelAsbiepId) {
+        return service.getBieRefList(user, topLevelAsbiepId);
+    }
+
     @RequestMapping(value = "/profile_bie/node/root/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void updateState(@AuthenticationPrincipal User user,

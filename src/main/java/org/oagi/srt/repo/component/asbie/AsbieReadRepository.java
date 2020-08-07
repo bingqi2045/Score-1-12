@@ -5,12 +5,15 @@ import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AsbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
+import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.component.ascc.AsccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,10 +104,7 @@ public class AsbieReadRepository {
     public List<BieEditUsed> getUsedAsbieList(BigInteger topLevelAbieId) {
         return dslContext.select(ASBIEP.HASH_PATH)
                 .from(ASBIE)
-                .join(ASBIEP).on(and(
-                        ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID),
-                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
-                ))
+                .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .where(and(
                         ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
                         ASBIE.IS_USED.eq((byte) 1)
@@ -117,5 +117,35 @@ public class AsbieReadRepository {
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 }).collect(Collectors.toList());
+    }
+
+    public List<BieEditRef> getBieRefList(BigInteger topLevelAsbiepId) {
+        if (topLevelAsbiepId == null || topLevelAsbiepId.longValue() <= 0L) {
+            return Collections.emptyList();
+        }
+
+        List<BieEditRef> bieEditRefList = new ArrayList();
+        List<BieEditRef> refTopLevelAbieIdList = getRefTopLevelAsbiepIdList(topLevelAsbiepId);
+        bieEditRefList.addAll(refTopLevelAbieIdList);
+
+        if (!bieEditRefList.isEmpty()) {
+            refTopLevelAbieIdList.stream().map(e -> e.getRefTopLevelAsbiepId()).distinct().forEach(refTopLevelAbieId -> {
+                bieEditRefList.addAll(getBieRefList(refTopLevelAbieId));
+            });
+        }
+        return bieEditRefList;
+    }
+
+    private List<BieEditRef> getRefTopLevelAsbiepIdList(BigInteger topLevelAsbiepId) {
+        return dslContext.select(
+                ASBIE.HASH_PATH,
+                ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.as("top_level_asbiep_id"),
+                ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.as("ref_top_level_asbiep_id"))
+                .from(ASBIE)
+                .join(ASBIEP).on(
+                        and(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID),
+                            ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.notEqual(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID)))
+                .where(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                .fetchInto(BieEditRef.class);
     }
 }

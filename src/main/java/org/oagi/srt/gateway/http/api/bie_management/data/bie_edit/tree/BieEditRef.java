@@ -10,6 +10,6 @@ import java.math.BigInteger;
 public class BieEditRef {
 
     private String hashPath;
-    private BigInteger topLevelAbieId;
-    private BigInteger refTopLevelAbieId;
+    private BigInteger topLevelAsbiepId;
+    private BigInteger refTopLevelAsbiepId;
 }
