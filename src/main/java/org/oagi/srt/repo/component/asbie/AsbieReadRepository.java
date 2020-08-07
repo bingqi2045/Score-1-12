@@ -102,7 +102,7 @@ public class AsbieReadRepository {
     }
 
     public List<BieEditUsed> getUsedAsbieList(BigInteger topLevelAbieId) {
-        return dslContext.select(ASBIEP.HASH_PATH)
+        return dslContext.select(ASBIE.HASH_PATH)
                 .from(ASBIE)
                 .join(ASBIEP).on(ASBIE.TO_ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
                 .where(and(
@@ -111,8 +111,8 @@ public class AsbieReadRepository {
                 ))
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
-                    bieEditUsed.setType("ASBIEP");
-                    bieEditUsed.setHashPath(record.get(ASBIEP.HASH_PATH));
+                    bieEditUsed.setType("ASBIE");
+                    bieEditUsed.setHashPath(record.get(ASBIE.HASH_PATH));
                     bieEditUsed.setTopLevelAsbiepId(topLevelAbieId);
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;

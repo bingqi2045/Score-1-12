@@ -9,6 +9,5 @@ public class RemoveReusedBIERequest {
 
     private BigInteger topLevelAsbiepId;
     private BigInteger asccpManifestId;
-    private String asbiepHashPath;
-    private String abieHashPath;
+    private String asbieHashPath;
 }

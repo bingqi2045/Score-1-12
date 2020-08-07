@@ -627,26 +627,23 @@ public class BieEditService implements InitializingBean {
                     .where(ABIE.ABIE_ID.in(unreferencedAbieList))
                     .execute();
         }
-
     }
 
     @Transactional
     public void removeReusedBIE(User user, RemoveReusedBIERequest request) {
         AppUser requester = sessionService.getAppUser(user);
 
-        Record3<ULong, ULong, ULong> res =
-                dslContext.select(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ASBIE.TO_ASBIEP_ID, ASBIE.ASBIE_ID)
-                        .from(ASBIE)
-                        .where(and(ASBIE.HASH_PATH.eq(request.getAbieHashPath()),
-                                ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId()))))
-                        .fetchOne();
+        AsbieRecord asbieRecord = dslContext.selectFrom(ASBIE)
+                .where(and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
+                        ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(request.getTopLevelAsbiepId()))))
+                .fetchOne();
 
-        ULong topLevelAsbiepId = res.get(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID);
-        ULong asbiepId = res.get(ASBIE.TO_ASBIEP_ID);
-        ULong asbieId = res.get(ASBIE.ASBIE_ID);
+        if (asbieRecord == null) {
+            throw new IllegalArgumentException("Can not fount target BIE.");
+        }
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(asbieRecord.getOwnerTopLevelAsbiepId()))
                 .fetchOne();
 
         AppUserRecord bieOwnerRecord = dslContext.selectFrom(APP_USER)
@@ -664,62 +661,15 @@ public class BieEditService implements InitializingBean {
             throw new IllegalArgumentException("Target BIE cannot edit.");
         }
 
-        Record3<ULong, ULong, ULong> currentAsbiep = dslContext.select(
-                ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID, ASBIEP.BASED_ASCCP_MANIFEST_ID, ASBIEP.ROLE_OF_ABIE_ID)
-                .from(ASBIEP)
-                .where(ASBIEP.ASBIEP_ID.eq(asbiepId))
+        AsbiepRecord asbiepRecord = dslContext.selectFrom(ASBIEP)
+                .where(ASBIEP.ASBIEP_ID.eq(asbieRecord.getToAsbiepId()))
                 .fetchOne();
 
-        boolean isReused = !currentAsbiep.get(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID).equals(topLevelAsbiepId);
+        boolean isReused = !asbiepRecord.getOwnerTopLevelAsbiepId().equals(asbieRecord.getOwnerTopLevelAsbiepId());
         if (!isReused) {
             throw new IllegalArgumentException("Target BIE does not have reused BIE.");
         }
 
-        ULong basedAsccpManifestId = currentAsbiep.get(ASBIEP.BASED_ASCCP_MANIFEST_ID);
-        ULong basedAccManifestId = dslContext.select(ABIE.BASED_ACC_MANIFEST_ID)
-                .from(ABIE)
-                .where(ABIE.ABIE_ID.eq(currentAsbiep.get(ASBIEP.ROLE_OF_ABIE_ID)))
-                .fetchOneInto(ULong.class);
-
-        ULong userId = ULong.valueOf(requester.getAppUserId());
-        LocalDateTime timestamp = LocalDateTime.now();
-
-        AbieRecord abieRecord = new AbieRecord();
-        abieRecord.setGuid(SrtGuid.randomGuid());
-        abieRecord.setBasedAccManifestId(basedAccManifestId);
-        abieRecord.setCreatedBy(userId);
-        abieRecord.setLastUpdatedBy(userId);
-        abieRecord.setCreationTimestamp(timestamp);
-        abieRecord.setLastUpdateTimestamp(timestamp);
-        abieRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
-
-        abieRecord.setAbieId(
-                dslContext.insertInto(ABIE)
-                        .set(abieRecord)
-                        .returning(ABIE.ABIE_ID).fetchOne().getAbieId()
-        );
-
-        AsbiepRecord asbiepRecord = new AsbiepRecord();
-        asbiepRecord.setGuid(SrtGuid.randomGuid());
-        asbiepRecord.setBasedAsccpManifestId(basedAsccpManifestId);
-        asbiepRecord.setRoleOfAbieId(abieRecord.getAbieId());
-        asbiepRecord.setCreatedBy(userId);
-        asbiepRecord.setLastUpdatedBy(userId);
-        asbiepRecord.setCreationTimestamp(timestamp);
-        asbiepRecord.setLastUpdateTimestamp(timestamp);
-        asbiepRecord.setOwnerTopLevelAsbiepId(topLevelAsbiepId);
-
-        asbiepRecord.setAsbiepId(
-                dslContext.insertInto(ASBIEP)
-                        .set(asbiepRecord)
-                        .returning(ASBIEP.ASBIEP_ID).fetchOne().getAsbiepId()
-        );
-
-        dslContext.update(ASBIE)
-                .set(ASBIE.TO_ASBIEP_ID, asbiepRecord.getAsbiepId())
-                .set(ASBIE.LAST_UPDATED_BY, userId)
-                .set(ASBIE.LAST_UPDATE_TIMESTAMP, timestamp)
-                .where(ASBIE.ASBIE_ID.eq(asbieId))
-                .execute();
+        dslContext.deleteFrom(ASBIE).where(ASBIE.ASBIE_ID.eq(asbieRecord.getAsbieId())).execute();
     }
 }
