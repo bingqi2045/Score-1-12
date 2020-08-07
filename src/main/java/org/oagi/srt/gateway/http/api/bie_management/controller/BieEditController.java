@@ -2,6 +2,7 @@ package org.oagi.srt.gateway.http.api.bie_management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.oagi.srt.data.BieState;
+import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -87,6 +88,15 @@ public class BieEditController {
         rootNode.setAccess(accessPrivilege.name());
 
         return rootNode;
+    }
+
+    @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public BieEditNode updateRootNode(@AuthenticationPrincipal User user,
+                                      @PathVariable("id") BigInteger topLevelAsbiepId,
+                                      @RequestBody TopLevelAsbiepRequest request) {
+
+        return service.updateRootNode(user, request);
     }
 
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/abie/{manifestId}",

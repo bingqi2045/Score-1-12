@@ -21,6 +21,9 @@ public class BieEditNode {
     private boolean derived;
     private boolean hasChild;
 
+    private String version;
+    private String status;
+
     private String releaseNum;
     private BieState topLevelAsbiepState;
     private String ownerLoginId;

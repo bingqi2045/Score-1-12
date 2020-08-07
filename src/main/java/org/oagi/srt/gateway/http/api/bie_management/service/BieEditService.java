@@ -10,6 +10,7 @@ import org.oagi.srt.data.BieState;
 import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.entity.jooq.Tables;
 import org.oagi.srt.entity.jooq.tables.records.*;
+import org.oagi.srt.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAsbiepNode;
@@ -56,6 +57,8 @@ import org.oagi.srt.repo.component.code_list.AvailableCodeList;
 import org.oagi.srt.repo.component.code_list.CodeListReadRepository;
 import org.oagi.srt.repo.component.dt.BdtNode;
 import org.oagi.srt.repo.component.dt.DtReadRepository;
+import org.oagi.srt.repo.component.top_level_asbiep.TopLevelAsbiepWriteRepository;
+import org.oagi.srt.repo.component.top_level_asbiep.UpdateTopLevelAsbiepRequest;
 import org.oagi.srt.repository.TopLevelAsbiepRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +111,9 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private EventListenerContainer eventListenerContainer;
 
+    @Autowired
+    private TopLevelAsbiepWriteRepository topLevelAsbiepWriteRepository;
+
     private String PURGE_BIE_EVENT_NAME = "purgeBieEvent";
 
     @Override
@@ -143,6 +149,15 @@ public class BieEditService implements InitializingBean {
     public BieEditAbieNode getRootNode(User user, BigInteger topLevelAsbiepId) {
         BieEditTreeController treeController = getTreeController(user, topLevelAsbiepId);
         return treeController.getRootNode(topLevelAsbiepId);
+    }
+
+    @Transactional
+    public BieEditAbieNode updateRootNode(User user, TopLevelAsbiepRequest request) {
+        UpdateTopLevelAsbiepRequest updateTopLevelAsbiepRequest = new UpdateTopLevelAsbiepRequest(
+                user, LocalDateTime.now(), request.getTopLevelAsbiepId(), request.getStatus(), request.getVersion());
+        topLevelAsbiepWriteRepository.updateTopLevelAsbiep(updateTopLevelAsbiepRequest);
+        BieEditTreeController treeController = getTreeController(user, request.getTopLevelAsbiepId());
+        return treeController.getRootNode(request.getTopLevelAsbiepId());
     }
 
     @Transactional

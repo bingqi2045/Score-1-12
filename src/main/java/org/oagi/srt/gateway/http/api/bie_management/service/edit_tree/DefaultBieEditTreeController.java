@@ -98,6 +98,8 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                 TOP_LEVEL_ASBIEP.RELEASE_ID,
                 TOP_LEVEL_ASBIEP.STATE.as("top_level_asbiep_state"),
                 TOP_LEVEL_ASBIEP.OWNER_USER_ID,
+                TOP_LEVEL_ASBIEP.VERSION,
+                TOP_LEVEL_ASBIEP.STATUS,
                 RELEASE.RELEASE_NUM,
                 APP_USER.LOGIN_ID,
                 ASCCP.GUID,
