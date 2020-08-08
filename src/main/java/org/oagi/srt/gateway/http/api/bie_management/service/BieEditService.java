@@ -549,7 +549,7 @@ public class BieEditService implements InitializingBean {
         /*
          * Message Publishing
          */
-        redisTemplate.convertAndSend(PURGE_BIE_EVENT_NAME, event);
+        // redisTemplate.convertAndSend(PURGE_BIE_EVENT_NAME, event);
     }
 
     /**

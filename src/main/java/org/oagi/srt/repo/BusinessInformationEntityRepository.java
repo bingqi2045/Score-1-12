@@ -367,24 +367,20 @@ public class BusinessInformationEntityRepository {
                 .fetchOne().value1();
     }
 
-    public class UpdateTopLevelAbieArguments {
+    public class UpdateTopLevelAsbiepArguments {
         private ULong asbiepId;
         private ULong topLevelAsbiepId;
 
-        public UpdateTopLevelAbieArguments setAsbiepId(BigInteger asbiepId) {
-            return setAbieId(ULong.valueOf(asbiepId));
-        }
-
-        public UpdateTopLevelAbieArguments setAbieId(ULong abieId) {
-            this.asbiepId = abieId;
+        public UpdateTopLevelAsbiepArguments setAsbiepId(ULong asbiepId) {
+            this.asbiepId = asbiepId;
             return this;
         }
 
-        public UpdateTopLevelAbieArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
+        public UpdateTopLevelAsbiepArguments setTopLevelAsbiepId(BigInteger topLevelAsbiepId) {
             return setTopLevelAsbiepId(ULong.valueOf(topLevelAsbiepId));
         }
 
-        public UpdateTopLevelAbieArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
+        public UpdateTopLevelAsbiepArguments setTopLevelAsbiepId(ULong topLevelAsbiepId) {
             this.topLevelAsbiepId = topLevelAsbiepId;
             return this;
         }
@@ -398,15 +394,15 @@ public class BusinessInformationEntityRepository {
         }
 
         public void execute() {
-            updateTopLevelAbie(this);
+            updateTopLevelAsbiep(this);
         }
     }
 
-    public UpdateTopLevelAbieArguments updateTopLevelAbie() {
-        return new UpdateTopLevelAbieArguments();
+    public UpdateTopLevelAsbiepArguments updateTopLevelAsbiep() {
+        return new UpdateTopLevelAsbiepArguments();
     }
 
-    private void updateTopLevelAbie(UpdateTopLevelAbieArguments arguments) {
+    private void updateTopLevelAsbiep(UpdateTopLevelAsbiepArguments arguments) {
         dslContext.update(TOP_LEVEL_ASBIEP)
                 .set(TOP_LEVEL_ASBIEP.ASBIEP_ID, arguments.getAsbiepId())
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(arguments.getTopLevelAsbiepId()))
@@ -605,12 +601,14 @@ public class BusinessInformationEntityRepository {
         return new SelectBieListArguments();
     }
 
-    private SelectOnConditionStep<Record11<
-            ULong, String, String, String, ULong,
-            String, String, String,
+    private SelectOnConditionStep<Record13<
+            ULong, String, String, String, String,
+            String, ULong, String, String, String,
             LocalDateTime, String, String>> getSelectOnConditionStep() {
         return dslContext.select(
                 TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
+                TOP_LEVEL_ASBIEP.VERSION,
+                TOP_LEVEL_ASBIEP.STATUS,
                 ABIE.GUID,
                 ASCCP.PROPERTY_TERM,
                 RELEASE.RELEASE_NUM,
@@ -622,7 +620,10 @@ public class BusinessInformationEntityRepository {
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"),
                 TOP_LEVEL_ASBIEP.STATE)
                 .from(TOP_LEVEL_ASBIEP)
-                .join(ASBIEP).on(ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID))
+                .join(ASBIEP).on(and(
+                        ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID),
+                        ASBIEP.ASBIEP_ID.eq(TOP_LEVEL_ASBIEP.ASBIEP_ID))
+                )
                 .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
@@ -632,22 +633,22 @@ public class BusinessInformationEntityRepository {
     }
 
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
-        SelectOnConditionStep<Record11<
-                ULong, String, String, String, ULong,
-                String, String, String,
+        SelectOnConditionStep<Record13<
+                ULong, String, String, String, String,
+                String, ULong, String, String, String,
                 LocalDateTime, String, String>> step = getSelectOnConditionStep();
 
-        SelectConnectByStep<Record11<
-                ULong, String, String, String, ULong,
-                String, String, String,
+        SelectConnectByStep<Record13<
+                ULong, String, String, String, String,
+                String, ULong, String, String, String,
                 LocalDateTime, String, String>> conditionStep = step.where(arguments.getConditions());
 
         int pageCount = dslContext.fetchCount(conditionStep);
 
         SortField sortField = arguments.getSortField();
-        SelectWithTiesAfterOffsetStep<Record11<
-                ULong, String, String, String, ULong,
-                String, String, String,
+        SelectWithTiesAfterOffsetStep<Record13<
+                ULong, String, String, String, String,
+                String, ULong, String, String, String,
                 LocalDateTime, String, String>> offsetStep = null;
         if (sortField != null) {
             if (arguments.getOffset() >= 0 && arguments.getNumberOfRows() >= 0) {

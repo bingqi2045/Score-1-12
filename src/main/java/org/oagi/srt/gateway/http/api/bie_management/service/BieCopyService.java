@@ -431,8 +431,8 @@ public class BieCopyService implements InitializingBean {
                 fireChangeEvent("abie", previousAbieId, nextAbieId);
             }
 
-            bieRepository.updateTopLevelAbie()
-                    .setAsbiepId(copiedTopLevelAsbiep.getAsbiepId())
+            bieRepository.updateTopLevelAsbiep()
+                    .setAsbiepId(ULong.valueOf(copiedTopLevelAsbiep.getAsbiepId()))
                     .setTopLevelAsbiepId(copiedTopLevelAsbiep.getTopLevelAsbiepId())
                     .execute();
 

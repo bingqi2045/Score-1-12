@@ -106,7 +106,7 @@ public class BieService {
                 .setBizCtxIds(request.getBizCtxIds())
                 .execute();
 
-        bieRepository.insertAsbiep()
+        ULong asbiepId = bieRepository.insertAsbiep()
                 .setAsccpManifestId(asccpManifest.getAsccpManifestId())
                 .setRoleOfAbieId(abieId)
                 .setTopLevelAsbiepId(topLevelAsbiepId)
@@ -115,8 +115,8 @@ public class BieService {
                 .setTimestamp(millis)
                 .execute();
 
-        bieRepository.updateTopLevelAbie()
-                .setAbieId(abieId)
+        bieRepository.updateTopLevelAsbiep()
+                .setAsbiepId(asbiepId)
                 .setTopLevelAsbiepId(topLevelAsbiepId)
                 .execute();
 
