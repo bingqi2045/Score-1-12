@@ -477,6 +477,7 @@ public class CoreComponentGraphContext implements GraphContext {
                 CcState.valueOf(dtScManifest.getState()));
         node.setPrevManifestId(dtScManifest.getPrevDtScManifestId());
         node.put("propertyTerm", dtScManifest.getPropertyTerm());
+        node.put("state", dtScManifest.getState());
         node.put("representationTerm", dtScManifest.getRepresentationTerm());
         node.put("cardinalityMin", dtScManifest.getCardinalityMin());
         node.put("cardinalityMax", dtScManifest.getCardinalityMax());
