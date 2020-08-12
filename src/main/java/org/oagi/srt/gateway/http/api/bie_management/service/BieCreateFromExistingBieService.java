@@ -9,6 +9,7 @@ import org.oagi.srt.data.TopLevelAsbiep;
 import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAsbiepRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.CreateBieFromExistingBieRequest;
+import org.oagi.srt.gateway.http.api.cc_management.data.CcType;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.event.BieCreateFromExistingBieRequestEvent;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
@@ -352,7 +353,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private TopLevelAsbiep targetTopLevelAsbiep;
         private List<BigInteger> bizCtxIds;
         private BigInteger userId;
-        private BigInteger sourceAsccpId;
+        private String sourceAsccpKey;
 
         private LocalDateTime timestamp;
 
@@ -376,10 +377,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private Map<BigInteger, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
 
         public BieCreateFromExistingBieContext(BieCreateFromExistingBieRequestEvent event) {
-            sourceAsccpId = dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
+            sourceAsccpKey = CcType.ASCCP.name() + "-" + dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
                     .from(ASBIEP)
                     .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(event.getAsbiepId())))
-                    .fetchOneInto(ULong.class).toBigInteger();
+                    .fetchOneInto(ULong.class).toBigInteger().toString();
             BigInteger sourceTopLevelAsbiepId = event.getSourceTopLevelAsbiepId();
             sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(sourceTopLevelAsbiepId);
 
@@ -711,10 +712,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         }
 
         private String getPath(String path) {
-            String seperator = "ASCCP-" + sourceAsccpId + ">";
-            String[] tokens = path.split(seperator);
+            String seperator = sourceAsccpKey + ">";
+            String[] tokens = path.split(sourceAsccpKey);
             if (tokens.length < 2) {
-                return seperator;
+                return sourceAsccpKey;
             } else {
                 return seperator + path.split(seperator)[1];
             }
