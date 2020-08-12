@@ -7,5 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CreateBieFromExistingBieRequest {
 
-    private BigInteger asbieId;
+    private String asbieHashPath;
+    private BigInteger topLevelAsbiepId;
 }

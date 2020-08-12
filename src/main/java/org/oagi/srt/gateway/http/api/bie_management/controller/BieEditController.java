@@ -306,14 +306,11 @@ public class BieEditController {
         service.removeReusedBIE(user, removeReusedBIERequest);
     }
 
-    @RequestMapping(value = "/profile_bie/node/asbie/{asbieId}/create_bie_from_existing_bie",
+    @RequestMapping(value = "/profile_bie/node/create_bie_from_existing_bie",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public void createBieFromExistingBie(@AuthenticationPrincipal User user,
-                                         @PathVariable("asbieId") BigInteger asbieId) {
-
-        CreateBieFromExistingBieRequest request = new CreateBieFromExistingBieRequest();
-        request.setAsbieId(asbieId);
+                                         @RequestBody CreateBieFromExistingBieRequest request) {
 
         createBieFromExistingBieService.createBieFromExistingBie(user, request);
     }

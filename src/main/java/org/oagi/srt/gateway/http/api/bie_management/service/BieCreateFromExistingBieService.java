@@ -2,7 +2,6 @@ package org.oagi.srt.gateway.http.api.bie_management.service;
 
 import lombok.Data;
 import org.jooq.DSLContext;
-import org.jooq.Record2;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.data.BieState;
@@ -29,15 +28,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.data.BieState.Initiating;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.Utility.sha256;
 
 @Service
 @Transactional
@@ -77,16 +77,14 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Transactional
     public void createBieFromExistingBie(User user, CreateBieFromExistingBieRequest request) {
         AppUser requester = sessionService.getAppUser(user);
-        ULong asbieId = ULong.valueOf(request.getAsbieId());
 
-        Record2<ULong, ULong> res =
-                dslContext.select(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID, ASBIE.TO_ASBIEP_ID)
-                        .from(ASBIE)
-                        .where(ASBIE.ASBIE_ID.eq(asbieId))
-                        .fetchOne();
-
-        ULong topLevelAsbiepId = res.get(ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID);
-        ULong asbiepId = res.get(ASBIE.TO_ASBIEP_ID);
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        ULong asbiepId = dslContext.select(ASBIE.TO_ASBIEP_ID)
+                .from(ASBIE)
+                .where(
+                        and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
+                            ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)))
+                .fetchOneInto(ULong.class);;
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
@@ -141,6 +139,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 ABIE.ABIE_ID,
                 ABIE.GUID,
+                ABIE.PATH,
                 ABIE.BASED_ACC_MANIFEST_ID
         ).from(ABIE)
                 .where(ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(ownerTopLevelAsbiepId)))
@@ -151,6 +150,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 ASBIE.ASBIE_ID,
                 ASBIE.GUID,
+                ASBIE.PATH,
                 ASBIE.FROM_ABIE_ID,
                 ASBIE.TO_ASBIEP_ID,
                 ASBIE.BASED_ASCC_MANIFEST_ID,
@@ -169,6 +169,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 BBIE.BBIE_ID,
                 BBIE.GUID,
+                BBIE.PATH,
                 BBIE.BASED_BCC_MANIFEST_ID,
                 BBIE.FROM_ABIE_ID,
                 BBIE.TO_BBIEP_ID,
@@ -194,6 +195,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 ASBIEP.ASBIEP_ID,
                 ASBIEP.GUID,
+                ASBIEP.PATH,
                 ASBIEP.BASED_ASCCP_MANIFEST_ID,
                 ASBIEP.ROLE_OF_ABIE_ID,
                 ASBIEP.DEFINITION,
@@ -207,6 +209,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 BBIEP.BBIEP_ID,
                 BBIEP.GUID,
+                BBIEP.PATH,
                 BBIEP.BASED_BCCP_MANIFEST_ID,
                 BBIEP.DEFINITION,
                 BBIEP.REMARK,
@@ -219,6 +222,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         return dslContext.select(
                 BBIE_SC.BBIE_SC_ID,
                 BBIE_SC.GUID,
+                BBIE_SC.PATH,
                 BBIE_SC.BBIE_ID,
                 BBIE_SC.BASED_DT_SC_MANIFEST_ID,
                 BBIE_SC.DT_SC_PRI_RESTRI_ID,
@@ -242,6 +246,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger abieId;
         private String guid;
+        private String path;
         private BigInteger basedAccManifestId;
 
     }
@@ -251,6 +256,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger asbieId;
         private String guid;
+        private String path;
         private BigInteger fromAbieId;
         private BigInteger toAsbiepId;
         private BigInteger basedAsccManifestId;
@@ -269,6 +275,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger bbieId;
         private String guid;
+        private String path;
         private BigInteger basedBccManifestId;
         private BigInteger fromAbieId;
         private BigInteger toBbiepId;
@@ -294,6 +301,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger asbiepId;
         private String guid;
+        private String path;
         private BigInteger basedAsccpManifestId;
         private BigInteger roleOfAbieId;
         private String definition;
@@ -307,6 +315,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger bbiepId;
         private String guid;
+        private String path;
         private BigInteger basedBccpManifestId;
         private String definition;
         private String remark;
@@ -319,8 +328,9 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
         private BigInteger bbieScId;
         private String guid;
+        private String path;
         private BigInteger bbieId;
-        private BigInteger dtScManifestId;
+        private BigInteger basedDtScManifestId;
         private Long dtScPriRestriId;
         private Long codeListId;
         private Long agencyIdListId;
@@ -342,6 +352,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private TopLevelAsbiep targetTopLevelAsbiep;
         private List<BigInteger> bizCtxIds;
         private BigInteger userId;
+        private BigInteger sourceAsccpId;
 
         private LocalDateTime timestamp;
 
@@ -365,6 +376,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private Map<BigInteger, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
 
         public BieCreateFromExistingBieContext(BieCreateFromExistingBieRequestEvent event) {
+            sourceAsccpId = dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)
+                    .from(ASBIEP)
+                    .where(ASBIEP.ASBIEP_ID.eq(ULong.valueOf(event.getAsbiepId())))
+                    .fetchOneInto(ULong.class).toBigInteger();
             BigInteger sourceTopLevelAsbiepId = event.getSourceTopLevelAsbiepId();
             sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(sourceTopLevelAsbiepId);
 
@@ -567,6 +582,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(ABIE)
                     .set(ABIE.GUID, SrtGuid.randomGuid())
+                    .set(ABIE.PATH, getPath(abie.getPath()))
+                    .set(ABIE.HASH_PATH, getHashPath(abie.getPath()))
                     .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
                     .set(ABIE.CREATED_BY, ULong.valueOf(userId))
                     .set(ABIE.LAST_UPDATED_BY, ULong.valueOf(userId))
@@ -581,6 +598,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(ASBIEP)
                     .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                    .set(ASBIEP.PATH, getPath(asbiep.getPath()))
+                    .set(ASBIEP.HASH_PATH, getHashPath(asbiep.getPath()))
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
                     .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(asbiep.getRoleOfAbieId()))
                     .set(ASBIEP.DEFINITION, asbiep.getDefinition())
@@ -598,6 +617,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(BBIEP)
                     .set(BBIEP.GUID, SrtGuid.randomGuid())
+                    .set(BBIEP.PATH, getPath(bbiep.getPath()))
+                    .set(BBIEP.HASH_PATH, getHashPath(bbiep.getPath()))
                     .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(bbiep.getBasedBccpManifestId()))
                     .set(BBIEP.DEFINITION, bbiep.getDefinition())
                     .set(BBIEP.REMARK, bbiep.getRemark())
@@ -614,6 +635,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(ASBIE)
                     .set(ASBIE.GUID, SrtGuid.randomGuid())
+                    .set(ASBIE.PATH, getPath(asbie.getPath()))
+                    .set(ASBIE.HASH_PATH, getHashPath(asbie.getPath()))
                     .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(asbie.getFromAbieId()))
                     .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(asbie.getToAsbiepId()))
                     .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(asbie.getBasedAsccManifestId()))
@@ -636,6 +659,8 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(BBIE)
                     .set(BBIE.GUID, SrtGuid.randomGuid())
+                    .set(BBIE.PATH, getPath(bbie.getPath()))
+                    .set(BBIE.HASH_PATH, getHashPath(bbie.getPath()))
                     .set(BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
                     .set(BBIE.TO_BBIEP_ID, ULong.valueOf(bbie.getToBbiepId()))
                     .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(bbie.getBasedBccManifestId()))
@@ -665,8 +690,10 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
             return dslContext.insertInto(BBIE_SC)
                     .set(BBIE_SC.GUID, SrtGuid.randomGuid())
+                    .set(BBIE_SC.PATH, getPath(bbieSc.getPath()))
+                    .set(BBIE_SC.HASH_PATH, getHashPath(bbieSc.getPath()))
                     .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))
-                    .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(bbieSc.getDtScManifestId()))
+                    .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(bbieSc.getBasedDtScManifestId()))
                     .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, (bbieSc.getDtScPriRestriId() != null) ? ULong.valueOf(bbieSc.getDtScPriRestriId()) : null)
                     .set(BBIE_SC.CODE_LIST_ID, (bbieSc.getCodeListId() != null) ? ULong.valueOf(bbieSc.getCodeListId()) : null)
                     .set(BBIE_SC.AGENCY_ID_LIST_ID, (bbieSc.getAgencyIdListId() != null) ? ULong.valueOf(bbieSc.getAgencyIdListId()) : null)
@@ -681,6 +708,20 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
                     .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(targetTopLevelAsbiep.getTopLevelAsbiepId()))
                     .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();
+        }
+
+        private String getPath(String path) {
+            String seperator = "ASCCP-" + sourceAsccpId + ">";
+            String[] tokens = path.split(seperator);
+            if (tokens.length < 2) {
+                return seperator;
+            } else {
+                return seperator + path.split(seperator)[1];
+            }
+        }
+
+        private String getHashPath(String path) {
+            return sha256(getPath(path));
         }
     }
 
