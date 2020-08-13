@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class AsbieWriteRepository {
@@ -67,8 +68,14 @@ public class AsbieWriteRepository {
                     .fetchOneInto(ULong.class));
             asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
 
-            asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
-            asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
+            if (asbie.getUsed() != null) {
+                asbieRecord.setIsUsed((byte) (asbie.getUsed() ? 1 : 0));
+            }
+
+            if (asbie.getNillable() != null) {
+                asbieRecord.setIsNillable((byte) (asbie.getNillable() ? 1 : 0));
+            }
+
             asbieRecord.setDefinition(asbie.getDefinition());
             if (asbie.isEmptyCardinality()) {
                 AsccRecord asccRecord = asccReadRepository.getAsccByManifestId(asbie.getBasedAsccManifestId());
@@ -99,29 +106,42 @@ public class AsbieWriteRepository {
             );
         } else {
             asbieRecord.setSeqKey(BigDecimal.valueOf(asbie.getSeqKey().longValue()));
-            asbieRecord.setIsUsed((byte) (asbie.isUsed() ? 1 : 0));
-            asbieRecord.setIsNillable((byte) (asbie.isNillable() ? 1 : 0));
-            asbieRecord.setDefinition(asbie.getDefinition());
+            if (asbie.getUsed() != null) {
+                asbieRecord.setIsUsed((byte) (asbie.getUsed() ? 1 : 0));
+            }
+
+            if (asbie.getNillable() != null) {
+                asbieRecord.setIsNillable((byte) (asbie.getNillable() ? 1 : 0));
+            }
+
+            if (asbie.getDefinition() != null) {
+                asbieRecord.setDefinition(emptyToNull(asbie.getDefinition()));
+            }
+
             if (!asbie.isEmptyCardinality()) {
                 asbieRecord.setCardinalityMin(asbie.getCardinalityMin());
                 asbieRecord.setCardinalityMax(asbie.getCardinalityMax());
             }
-            asbieRecord.setRemark(asbie.getRemark());
 
-            asbieRecord.setLastUpdatedBy(requesterId);
-            asbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+            if (asbie.getRemark() != null) {
+                asbieRecord.setRemark(emptyToNull(asbie.getRemark()));
+            }
 
-            asbieRecord.update(
-                    ASBIE.SEQ_KEY,
-                    ASBIE.IS_USED,
-                    ASBIE.IS_NILLABLE,
-                    ASBIE.DEFINITION,
-                    ASBIE.CARDINALITY_MIN,
-                    ASBIE.CARDINALITY_MAX,
-                    ASBIE.REMARK,
-                    ASBIE.LAST_UPDATED_BY,
-                    ASBIE.LAST_UPDATE_TIMESTAMP
-            );
+            if (asbieRecord.changed()) {
+                asbieRecord.setLastUpdatedBy(requesterId);
+                asbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+                asbieRecord.update(
+                        ASBIE.SEQ_KEY,
+                        ASBIE.IS_USED,
+                        ASBIE.IS_NILLABLE,
+                        ASBIE.DEFINITION,
+                        ASBIE.CARDINALITY_MIN,
+                        ASBIE.CARDINALITY_MAX,
+                        ASBIE.REMARK,
+                        ASBIE.LAST_UPDATED_BY,
+                        ASBIE.LAST_UPDATE_TIMESTAMP
+                );
+            }
         }
 
         return asbieReadRepository.getAsbie(request.getTopLevelAsbiepId(), hashPath);

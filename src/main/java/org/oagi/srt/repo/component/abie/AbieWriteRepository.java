@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.ABIE;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class AbieWriteRepository {
@@ -63,20 +64,29 @@ public class AbieWriteRepository {
                             .fetchOne().getAbieId()
             );
         } else {
-            abieRecord.setDefinition(abie.getDefinition());
-            abieRecord.setRemark(abie.getRemark());
-            abieRecord.setBizTerm(abie.getBizTerm());
+            if (abie.getDefinition() != null) {
+                abieRecord.setDefinition(emptyToNull(abie.getDefinition()));
+            }
 
-            abieRecord.setLastUpdatedBy(requesterId);
-            abieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+            if (abie.getRemark() != null) {
+                abieRecord.setRemark(emptyToNull(abie.getRemark()));
+            }
 
-            abieRecord.update(
-                    ABIE.DEFINITION,
-                    ABIE.REMARK,
-                    ABIE.BIZ_TERM,
-                    ABIE.LAST_UPDATED_BY,
-                    ABIE.LAST_UPDATE_TIMESTAMP
-            );
+            if (abie.getBizTerm() != null) {
+                abieRecord.setBizTerm(emptyToNull(abie.getBizTerm()));
+            }
+
+            if (abieRecord.changed()) {
+                abieRecord.setLastUpdatedBy(requesterId);
+                abieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+                abieRecord.update(
+                        ABIE.DEFINITION,
+                        ABIE.REMARK,
+                        ABIE.BIZ_TERM,
+                        ABIE.LAST_UPDATED_BY,
+                        ABIE.LAST_UPDATE_TIMESTAMP
+                );
+            }
         }
 
         return readRepository.getAbie(request.getTopLevelAsbiepId(), hashPath);

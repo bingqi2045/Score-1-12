@@ -217,4 +217,8 @@ public class Utility {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         return new String(Hex.encode(digest.digest(str.getBytes())));
     }
+
+    public static String emptyToNull(String str) {
+        return str.equals("") ? null : str;
+    }
 }

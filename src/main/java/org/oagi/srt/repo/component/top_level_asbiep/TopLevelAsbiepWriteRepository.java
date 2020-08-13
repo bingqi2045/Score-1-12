@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.ABIE;
 import static org.oagi.srt.entity.jooq.Tables.TOP_LEVEL_ASBIEP;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class TopLevelAsbiepWriteRepository {
@@ -43,10 +44,20 @@ public class TopLevelAsbiepWriteRepository {
             throw new IllegalArgumentException("Only the owner can modify it.");
         }
 
-        record.setStatus(request.getStatus());
-        record.setVersion(request.getVersion());
-        record.setLastUpdateTimestamp(request.getLocalDateTime());
-        record.update(TOP_LEVEL_ASBIEP.STATUS, TOP_LEVEL_ASBIEP.VERSION, TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP);
+        if (request.getStatus() != null) {
+            record.setStatus(emptyToNull(request.getStatus()));
+        }
+
+        if (request.getVersion() != null) {
+            record.setVersion(emptyToNull(request.getVersion()));
+        }
+
+        if (record.changed()) {
+            record.setLastUpdateTimestamp(request.getLocalDateTime());
+            record.update(TOP_LEVEL_ASBIEP.STATUS,
+                    TOP_LEVEL_ASBIEP.VERSION,
+                    TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP);
+        }
     }
 
 }

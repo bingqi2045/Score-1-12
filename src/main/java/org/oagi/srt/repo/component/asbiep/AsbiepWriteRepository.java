@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.ABIE;
 import static org.oagi.srt.entity.jooq.Tables.ASBIEP;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class AsbiepWriteRepository {
@@ -78,35 +79,28 @@ public class AsbiepWriteRepository {
                             .fetchOne().getAsbiepId()
             );
         } else {
-            UpdateSetStep updateSetStep = dslContext.update(ASBIEP);
-            if (!StringUtils.equals(asbiepRecord.getDefinition(), asbiep.getDefinition())) {
-                if (!StringUtils.isEmpty(asbiep.getDefinition())) {
-                    updateSetStep = updateSetStep.set(ASBIEP.DEFINITION, asbiep.getDefinition());
-                } else {
-                    updateSetStep = updateSetStep.setNull(ASBIEP.DEFINITION);
-                }
+            if (asbiep.getDefinition() != null) {
+                asbiepRecord.setDefinition(emptyToNull(asbiep.getDefinition()));
             }
-            if (!StringUtils.equals(asbiepRecord.getRemark(), asbiep.getRemark())) {
-                if (!StringUtils.isEmpty(asbiep.getRemark())) {
-                    updateSetStep = updateSetStep.set(ASBIEP.REMARK, asbiep.getRemark());
-                } else {
-                    updateSetStep = updateSetStep.setNull(ASBIEP.REMARK);
-                }
+
+            if (asbiep.getRemark() != null) {
+                asbiepRecord.setRemark(emptyToNull(asbiep.getRemark()));
             }
-            if (!StringUtils.equals(asbiepRecord.getBizTerm(), asbiep.getBizTerm())) {
-                if (!StringUtils.isEmpty(asbiep.getBizTerm())) {
-                    updateSetStep = updateSetStep.set(ASBIEP.BIZ_TERM, asbiep.getBizTerm());
-                } else {
-                    updateSetStep = updateSetStep.setNull(ASBIEP.BIZ_TERM);
-                }
+
+            if (asbiep.getBizTerm() != null) {
+                asbiepRecord.setBizTerm(emptyToNull(asbiep.getBizTerm()));
             }
-            if (request.getRoleOfAbieId() != null) {
-                updateSetStep = updateSetStep.set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(request.getRoleOfAbieId()));
+
+            if (asbiepRecord.changed()) {
+                asbiepRecord.setLastUpdatedBy(requesterId);
+                asbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+                asbiepRecord.update(ASBIEP.DEFINITION,
+                        ASBIEP.REMARK,
+                        ASBIEP.BIZ_TERM,
+                        ASBIEP.LAST_UPDATED_BY,
+                        ASBIEP.LAST_UPDATE_TIMESTAMP);
             }
-            updateSetStep.set(ASBIEP.LAST_UPDATED_BY, requesterId)
-                    .set(ASBIEP.LAST_UPDATE_TIMESTAMP, request.getLocalDateTime())
-                    .where(ASBIEP.ASBIEP_ID.eq(asbiepRecord.getAsbiepId()))
-                    .execute();
+
         }
 
         return readRepository.getAsbiep(request.getTopLevelAbieId(), hashPath);

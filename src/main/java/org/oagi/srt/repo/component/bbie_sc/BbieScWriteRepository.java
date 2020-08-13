@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.BBIE;
 import static org.oagi.srt.entity.jooq.Tables.BBIE_SC;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class BbieScWriteRepository {
@@ -67,7 +68,10 @@ public class BbieScWriteRepository {
                     ))
                     .fetchOneInto(ULong.class));
 
-            bbieScRecord.setIsUsed((byte) (bbieSc.isUsed() ? 1 : 0));
+            if (bbieSc.getUsed() != null){
+                bbieScRecord.setIsUsed((byte) (bbieSc.getUsed() ? 1 : 0));
+            }
+
             bbieScRecord.setDefinition(bbieSc.getDefinition());
             if (bbieSc.isEmptyCardinality()) {
                 DtScRecord dtScRecord = dtScReadRepository.getDtScByManifestId(bbieSc.getBasedDtScManifestId());
@@ -132,14 +136,26 @@ public class BbieScWriteRepository {
                             .fetchOne().getBbieScId()
             );
         } else {
-            bbieScRecord.setIsUsed((byte) (bbieSc.isUsed() ? 1 : 0));
-            bbieScRecord.setDefinition(bbieSc.getDefinition());
+            if (bbieSc.getUsed() != null) {
+                bbieScRecord.setIsUsed((byte) (bbieSc.getUsed() ? 1 : 0));
+            }
+
+            if (bbieSc.getDefinition() != null) {
+                bbieScRecord.setDefinition(emptyToNull(bbieSc.getDefinition()));
+            }
+
             if (!bbieSc.isEmptyCardinality()) {
                 bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
                 bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
             }
-            bbieScRecord.setExample(bbieSc.getExample());
-            bbieScRecord.setRemark(bbieSc.getRemark());
+
+            if (bbieSc.getExample() != null) {
+                bbieScRecord.setExample(emptyToNull(bbieSc.getExample()));
+            }
+
+            if (bbieSc.getRemark() != null) {
+                bbieScRecord.setRemark(emptyToNull(bbieSc.getRemark()));
+            }
 
             if (!StringUtils.isEmpty(bbieSc.getDefaultValue())) {
                 bbieScRecord.setDefaultValue(bbieSc.getDefaultValue());
@@ -165,24 +181,26 @@ public class BbieScWriteRepository {
                 }
             }
 
-            bbieScRecord.setLastUpdatedBy(requesterId);
-            bbieScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+            if (bbieScRecord.changed()) {
+                bbieScRecord.setLastUpdatedBy(requesterId);
+                bbieScRecord.setLastUpdateTimestamp(request.getLocalDateTime());
 
-            bbieScRecord.update(
-                    BBIE_SC.IS_USED,
-                    BBIE_SC.DEFINITION,
-                    BBIE_SC.CARDINALITY_MIN,
-                    BBIE_SC.CARDINALITY_MAX,
-                    BBIE_SC.EXAMPLE,
-                    BBIE_SC.REMARK,
-                    BBIE_SC.DEFAULT_VALUE,
-                    BBIE_SC.FIXED_VALUE,
-                    BBIE_SC.DT_SC_PRI_RESTRI_ID,
-                    BBIE_SC.CODE_LIST_ID,
-                    BBIE_SC.AGENCY_ID_LIST_ID,
-                    BBIE_SC.LAST_UPDATED_BY,
-                    BBIE_SC.LAST_UPDATE_TIMESTAMP
-            );
+                bbieScRecord.update(
+                        BBIE_SC.IS_USED,
+                        BBIE_SC.DEFINITION,
+                        BBIE_SC.CARDINALITY_MIN,
+                        BBIE_SC.CARDINALITY_MAX,
+                        BBIE_SC.EXAMPLE,
+                        BBIE_SC.REMARK,
+                        BBIE_SC.DEFAULT_VALUE,
+                        BBIE_SC.FIXED_VALUE,
+                        BBIE_SC.DT_SC_PRI_RESTRI_ID,
+                        BBIE_SC.CODE_LIST_ID,
+                        BBIE_SC.AGENCY_ID_LIST_ID,
+                        BBIE_SC.LAST_UPDATED_BY,
+                        BBIE_SC.LAST_UPDATE_TIMESTAMP
+                );
+            }
         }
 
         return bbieScReadRepository.getBbieSc(request.getTopLevelAsbiepId(), hashPath);

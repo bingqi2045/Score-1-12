@@ -26,7 +26,7 @@ public class BbieScNode {
 
     @Data
     public static class BbieSc {
-        private boolean used;
+        private Boolean used;
         private String path;
         private String hashPath;
         private String bbiePath;

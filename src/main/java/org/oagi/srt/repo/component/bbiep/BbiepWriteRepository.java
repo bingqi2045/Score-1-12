@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.BBIEP;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class BbiepWriteRepository {
@@ -63,20 +64,30 @@ public class BbiepWriteRepository {
                             .fetchOne().getBbiepId()
             );
         } else {
-            bbiepRecord.setDefinition(bbiep.getDefinition());
-            bbiepRecord.setRemark(bbiep.getRemark());
-            bbiepRecord.setBizTerm(bbiep.getBizTerm());
+            if (bbiep.getDefinition() != null) {
+                bbiepRecord.setDefinition(emptyToNull(bbiep.getDefinition()));
+            }
 
-            bbiepRecord.setLastUpdatedBy(requesterId);
-            bbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+            if (bbiep.getRemark() != null) {
+                bbiepRecord.setRemark(emptyToNull(bbiep.getRemark()));
+            }
 
-            bbiepRecord.update(
-                    BBIEP.DEFINITION,
-                    BBIEP.REMARK,
-                    BBIEP.BIZ_TERM,
-                    BBIEP.LAST_UPDATED_BY,
-                    BBIEP.LAST_UPDATE_TIMESTAMP
-            );
+            if (bbiep.getBizTerm() != null) {
+                bbiepRecord.setBizTerm(emptyToNull(bbiep.getBizTerm()));
+            }
+
+            if (bbiepRecord.changed()) {
+                bbiepRecord.setLastUpdatedBy(requesterId);
+                bbiepRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+
+                bbiepRecord.update(
+                        BBIEP.DEFINITION,
+                        BBIEP.REMARK,
+                        BBIEP.BIZ_TERM,
+                        BBIEP.LAST_UPDATED_BY,
+                        BBIEP.LAST_UPDATE_TIMESTAMP
+                );
+            }
         }
 
         return readRepository.getBbiep(request.getTopLevelAsbiepId(), hashPath);

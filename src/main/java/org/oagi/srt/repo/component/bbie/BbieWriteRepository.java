@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 
 @Repository
 public class BbieWriteRepository {
@@ -75,8 +76,14 @@ public class BbieWriteRepository {
                     .fetchOneInto(ULong.class));
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
 
-            bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
-            bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
+            if (bbie.getUsed() != null) {
+                bbieRecord.setIsUsed((byte) (bbie.getUsed() ? 1 : 0));
+            }
+
+            if (bbie.getNillable() != null) {
+                bbieRecord.setIsNillable((byte) (bbie.getNillable() ? 1 : 0));
+            }
+
             bbieRecord.setDefinition(bbie.getDefinition());
             if (bbie.isEmptyCardinality()) {
                 BccRecord bccRecord = bccReadRepository.getBccByManifestId(bbie.getBasedBccManifestId());
@@ -142,15 +149,31 @@ public class BbieWriteRepository {
             );
         } else {
             bbieRecord.setSeqKey(BigDecimal.valueOf(bbie.getSeqKey().longValue()));
-            bbieRecord.setIsUsed((byte) (bbie.isUsed() ? 1 : 0));
-            bbieRecord.setIsNillable((byte) (bbie.isNillable() ? 1 : 0));
-            bbieRecord.setDefinition(bbie.getDefinition());
+
+            if (bbie.getUsed() != null) {
+                bbieRecord.setIsUsed((byte) (bbie.getUsed() ? 1 : 0));
+            }
+
+            if (bbie.getNillable() != null) {
+                bbieRecord.setIsNillable((byte) (bbie.getNillable() ? 1 : 0));
+            }
+
+            if (bbie.getDefinition() != null) {
+                bbieRecord.setDefinition(emptyToNull(bbie.getDefinition()));
+            }
+
             if (!bbie.isEmptyCardinality()) {
                 bbieRecord.setCardinalityMin(bbie.getCardinalityMin());
                 bbieRecord.setCardinalityMax(bbie.getCardinalityMax());
             }
-            bbieRecord.setExample(bbie.getExample());
-            bbieRecord.setRemark(bbie.getRemark());
+
+            if (bbie.getExample() != null) {
+                bbieRecord.setExample(emptyToNull(bbie.getExample()));
+            }
+
+            if (bbie.getRemark() != null) {
+                bbieRecord.setRemark(emptyToNull(bbie.getRemark()));
+            }
 
             if (!StringUtils.isEmpty(bbie.getDefaultValue())) {
                 bbieRecord.setDefaultValue(bbie.getDefaultValue());
@@ -176,28 +199,28 @@ public class BbieWriteRepository {
                 }
             }
 
-            bbieRecord.setLastUpdatedBy(requesterId);
-            bbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
-
-            bbieRecord.update(
-                    BBIE.SEQ_KEY,
-                    BBIE.IS_USED,
-                    BBIE.IS_NILLABLE,
-                    BBIE.DEFINITION,
-                    BBIE.CARDINALITY_MIN,
-                    BBIE.CARDINALITY_MAX,
-                    BBIE.EXAMPLE,
-                    BBIE.REMARK,
-                    BBIE.DEFAULT_VALUE,
-                    BBIE.FIXED_VALUE,
-                    BBIE.BDT_PRI_RESTRI_ID,
-                    BBIE.CODE_LIST_ID,
-                    BBIE.AGENCY_ID_LIST_ID,
-                    BBIE.LAST_UPDATED_BY,
-                    BBIE.LAST_UPDATE_TIMESTAMP
-            );
+            if (bbieRecord.changed()){
+                bbieRecord.setLastUpdatedBy(requesterId);
+                bbieRecord.setLastUpdateTimestamp(request.getLocalDateTime());
+                bbieRecord.update(
+                        BBIE.SEQ_KEY,
+                        BBIE.IS_USED,
+                        BBIE.IS_NILLABLE,
+                        BBIE.DEFINITION,
+                        BBIE.CARDINALITY_MIN,
+                        BBIE.CARDINALITY_MAX,
+                        BBIE.EXAMPLE,
+                        BBIE.REMARK,
+                        BBIE.DEFAULT_VALUE,
+                        BBIE.FIXED_VALUE,
+                        BBIE.BDT_PRI_RESTRI_ID,
+                        BBIE.CODE_LIST_ID,
+                        BBIE.AGENCY_ID_LIST_ID,
+                        BBIE.LAST_UPDATED_BY,
+                        BBIE.LAST_UPDATE_TIMESTAMP
+                );
+            }
         }
-
         return bbieReadRepository.getBbie(request.getTopLevelAsbiepId(), hashPath);
     }
 

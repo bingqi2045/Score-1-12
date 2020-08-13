@@ -23,7 +23,7 @@ public class AsbieNode {
 
     @Data
     public static class Asbie {
-        private boolean used;
+        private Boolean used;
         private String path;
         private String hashPath;
         private String fromAbiePath;
@@ -37,7 +37,7 @@ public class AsbieNode {
         private BigInteger seqKey;
         private Integer cardinalityMin;
         private Integer cardinalityMax;
-        private boolean nillable;
+        private Boolean nillable;
         private String remark;
         private String definition;
 

@@ -27,7 +27,7 @@ public class BbieNode {
 
     @Data
     public static class Bbie {
-        private boolean used;
+        private Boolean used;
         private String path;
         private String hashPath;
         private String fromAbiePath;
@@ -41,7 +41,7 @@ public class BbieNode {
         private BigInteger seqKey;
         private Integer cardinalityMin;
         private Integer cardinalityMax;
-        private boolean nillable;
+        private Boolean nillable;
         private String remark;
         private String definition;
         private String defaultValue;
