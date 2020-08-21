@@ -230,6 +230,17 @@ SELECT
 FROM `acc_manifest` JOIN `release` ON `acc_manifest`.`release_id` = `release`.`release_id`
 WHERE `release`.`release_num` != 'Working';
 
+-- Updating `based_acc_manifest_id` for Working release
+UPDATE `acc_manifest`, (
+    SELECT
+        `acc_manifest`.`acc_manifest_id`, b.`acc_manifest_id` as `based_acc_manifest_id`
+    FROM `acc_manifest`
+    JOIN `acc` ON `acc_manifest`.`acc_id` = `acc`.`acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+    JOIN `acc_manifest` AS b ON `acc`.`based_acc_id` = b.`acc_id` AND  b.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+) t
+SET `acc_manifest`.`based_acc_manifest_id` = t.`based_acc_manifest_id`
+WHERE `acc_manifest`.`acc_manifest_id` = t.`acc_manifest_id`;
+
 SET @sql = CONCAT('ALTER TABLE `acc_manifest` AUTO_INCREMENT = ', (SELECT MAX(acc_manifest_id) + 1 FROM acc_manifest));
 
 PREPARE stmt from @sql;
@@ -322,10 +333,11 @@ DEALLOCATE PREPARE stmt;
 -- Copying asccp_manifest records for 'Working' release from 10.x release
 INSERT `asccp_manifest` (`release_id`, `module_id`, `asccp_id`, `role_of_acc_manifest_id`)
 SELECT
-    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `asccp_manifest`.`module_id`, `asccp_manifest`.`asccp_id`, `asccp_manifest`.`role_of_acc_manifest_id`
-FROM `asccp_manifest` JOIN `release` ON `asccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'), `asccp`.`module_id`,
+    `asccp`.`asccp_id`, `acc_manifest`.`acc_manifest_id`
+FROM `asccp`
+JOIN `acc_manifest` ON `asccp`.`role_of_acc_id` = `acc_manifest`.`acc_id` AND `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+WHERE `asccp`.`state` = 'Published' and `asccp`.`current_asccp_id` is not null;
 
 SET @sql = CONCAT('ALTER TABLE `asccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(asccp_manifest_id) + 1 FROM asccp_manifest));
 
@@ -495,9 +507,11 @@ DEALLOCATE PREPARE stmt;
 INSERT `dt_sc_manifest` (`release_id`, `dt_sc_id`, `owner_dt_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `dt_sc_manifest`.`dt_sc_id`, `dt_sc_manifest`.`owner_dt_manifest_id`
-FROM `dt_sc_manifest` JOIN `release` ON `dt_sc_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+    `dt_sc_manifest`.`dt_sc_id`, `dt_manifest`.`dt_manifest_id`
+    FROM `dt_sc_manifest`
+	JOIN `dt_sc` on `dt_sc_manifest`.`dt_sc_id` = `dt_sc`.`dt_sc_id`
+	JOIN `dt_manifest` on `dt_sc`.`owner_dt_id` = `dt_manifest`.`dt_id` and `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+
 
 SET @sql = CONCAT('ALTER TABLE `dt_sc_manifest` AUTO_INCREMENT = ', (SELECT MAX(dt_sc_manifest_id) + 1 FROM dt_sc_manifest));
 
@@ -565,9 +579,10 @@ DEALLOCATE PREPARE stmt;
 INSERT `bccp_manifest` (`release_id`, `module_id`, `bccp_id`, `bdt_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `bccp_manifest`.`module_id`, `bccp_manifest`.`bccp_id`, `bccp_manifest`.`bdt_manifest_id`
-FROM `bccp_manifest` JOIN `release` ON `bccp_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+    `bccp_manifest`.`module_id`, `bccp_manifest`.`bccp_id`, `dt_manifest`.`dt_manifest_id`
+FROM `bccp_manifest` JOIN `bccp` ON `bccp_manifest`.`bccp_id` = `bccp`.`bccp_id`
+	JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `bccp`.`bdt_id` AND `dt_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+
 
 SET @sql = CONCAT('ALTER TABLE `bccp_manifest` AUTO_INCREMENT = ', (SELECT MAX(bccp_manifest_id) + 1 FROM bccp_manifest));
 
@@ -672,9 +687,11 @@ DEALLOCATE PREPARE stmt;
 INSERT `ascc_manifest` (`release_id`, `ascc_id`, `from_acc_manifest_id`, `to_asccp_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `ascc_manifest`.`ascc_id`, `ascc_manifest`.`from_acc_manifest_id`, `ascc_manifest`.`to_asccp_manifest_id`
-FROM `ascc_manifest` JOIN `release` ON `ascc_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+    `ascc_manifest`.`ascc_id`, `acc_manifest`.`acc_manifest_id`, `asccp_manifest`.`asccp_manifest_id`
+FROM `ascc_manifest`
+	JOIN `ascc` ON `ascc`.`ascc_id` = `ascc_manifest`.`ascc_id`
+	JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `ascc`.`from_acc_id` and `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+	JOIN `asccp_manifest` ON `asccp_manifest`.`asccp_id` = `ascc`.`to_asccp_id` and `asccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 SET @sql = CONCAT('ALTER TABLE `ascc_manifest` AUTO_INCREMENT = ', (SELECT MAX(ascc_manifest_id) + 1 FROM ascc_manifest));
 
@@ -781,9 +798,11 @@ DEALLOCATE PREPARE stmt;
 INSERT `bcc_manifest` (`release_id`, `bcc_id`, `from_acc_manifest_id`, `to_bccp_manifest_id`)
 SELECT
     (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
-    `bcc_manifest`.`bcc_id`, `bcc_manifest`.`from_acc_manifest_id`, `bcc_manifest`.`to_bccp_manifest_id`
-FROM `bcc_manifest` JOIN `release` ON `bcc_manifest`.`release_id` = `release`.`release_id`
-WHERE `release`.`release_num` != 'Working';
+    `bcc_manifest`.`bcc_id`, `acc_manifest`.`acc_manifest_id`, `bccp_manifest`.`bccp_manifest_id`
+FROM `bcc_manifest`
+	JOIN `bcc` ON `bcc`.`bcc_id` = `bcc_manifest`.`bcc_id`
+	JOIN `acc_manifest` ON `acc_manifest`.`acc_id` = `bcc`.`from_acc_id` and `acc_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working')
+	JOIN `bccp_manifest` ON `bccp_manifest`.`bccp_id` = `bcc`.`to_bccp_id` and `bccp_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
 
 -- Updating core component states' names.
 UPDATE `bcc`
