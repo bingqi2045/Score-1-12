@@ -15,7 +15,7 @@ import org.oagi.srt.repo.component.namespace.NamespaceReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +44,12 @@ public class NamespaceService {
                 .fetchInto(SimpleNamespace.class);
     }
 
-    public PageResponse<NamespaceList> getNamespaceList(User user, NamespaceListRequest request) {
+    public PageResponse<NamespaceList> getNamespaceList(AuthenticatedPrincipal user, NamespaceListRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         return readRepository.fetch(requester, request);
     }
 
-    public Namespace getNamespace(User user, BigInteger namespaceId) {
+    public Namespace getNamespace(AuthenticatedPrincipal user, BigInteger namespaceId) {
         BigInteger userId = sessionService.userId(user);
 
         Record5<ULong, String, String, String, ULong> result =
@@ -72,7 +72,7 @@ public class NamespaceService {
     }
 
     @Transactional
-    public BigInteger create(User user, Namespace namespace) {
+    public BigInteger create(AuthenticatedPrincipal user, Namespace namespace) {
         String uri = namespace.getUri();
         boolean isExist = dslContext.selectCount()
                 .from(NAMESPACE)
@@ -104,7 +104,7 @@ public class NamespaceService {
     }
 
     @Transactional
-    public void update(User user, Namespace namespace) {
+    public void update(AuthenticatedPrincipal user, Namespace namespace) {
         String uri = namespace.getUri();
         boolean isExist = dslContext.selectCount()
                 .from(NAMESPACE)
@@ -135,7 +135,7 @@ public class NamespaceService {
     }
 
     @Transactional
-    public void discard(User user, BigInteger namespaceId) {
+    public void discard(AuthenticatedPrincipal user, BigInteger namespaceId) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
 
         NamespaceRecord namespaceRecord = dslContext.selectFrom(NAMESPACE)

@@ -9,8 +9,8 @@ import org.oagi.srt.gateway.http.api.cc_management.service.ExtensionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -25,7 +25,7 @@ public class ExtensionController {
     @RequestMapping(value = "/core_component/node/extension/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getCcNode(@AuthenticationPrincipal User user,
+    public CcNode getCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                             @PathVariable("manifestId") BigInteger manifestId) {
         return service.getExtensionNode(user, manifestId);
     }
@@ -33,7 +33,7 @@ public class ExtensionController {
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity doExtensionAction(@AuthenticationPrincipal User user,
+    public ResponseEntity doExtensionAction(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("manifestId") BigInteger manifestId,
                                             @RequestBody CcActionRequest actionRequest) {
 
@@ -69,7 +69,7 @@ public class ExtensionController {
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateExtensionState(@AuthenticationPrincipal User user,
+    public ResponseEntity updateExtensionState(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                @PathVariable("manifestId") BigInteger manifestId,
                                                @RequestBody Map<String, Object> body) {
         CcState state = CcState.valueOf((String) body.get("state"));
@@ -81,7 +81,7 @@ public class ExtensionController {
     @RequestMapping(value = "/core_component/extension/{manifestId:[\\d]+}/detail",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal User user,
+    public ExtensionUpdateResponse updateDetails(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                  @PathVariable("manifestId") BigInteger manifestId,
                                                  @RequestBody ExtensionUpdateRequest request) {
         request.setManifestId(manifestId);
@@ -91,7 +91,7 @@ public class ExtensionController {
     @RequestMapping(value = "/core_component/extension//{type}/{manifestId:[\\d]+}/revision",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getLastCcNode(@AuthenticationPrincipal User user,
+    public CcNode getLastCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                 @PathVariable("type") String type,
                                 @PathVariable("manifestId") BigInteger manifestId) {
         return service.getLastRevisionCc(user, type, manifestId);

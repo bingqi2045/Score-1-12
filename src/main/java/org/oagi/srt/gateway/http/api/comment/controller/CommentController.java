@@ -8,8 +8,8 @@ import org.oagi.srt.gateway.http.api.comment.data.UpdateCommentRequest;
 import org.oagi.srt.gateway.http.api.comment.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class CommentController {
 
     @RequestMapping(value = "/comments/{reference}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Comment> getComments(@AuthenticationPrincipal User user,
+    public List<Comment> getComments(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @PathVariable("reference") String reference) {
         if (StringUtils.isEmpty(reference)) {
             throw new IllegalArgumentException("'reference' parameter must not be empty.");
@@ -35,7 +35,7 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/comment/{reference}", method = RequestMethod.PUT)
-    public void postComment(@AuthenticationPrincipal User user,
+    public void postComment(@AuthenticationPrincipal AuthenticatedPrincipal user,
                             @PathVariable("reference") String reference,
                             @RequestBody PostCommentRequest request) {
         if (StringUtils.isEmpty(reference)) {
@@ -48,7 +48,7 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/comment/{commentId}", method = RequestMethod.POST)
-    public void updateComment(@AuthenticationPrincipal User user,
+    public void updateComment(@AuthenticationPrincipal AuthenticatedPrincipal user,
                               @PathVariable("commentId") long commentId,
                               @RequestBody UpdateCommentRequest request) {
         request.setCommentId(commentId);

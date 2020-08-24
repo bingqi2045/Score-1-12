@@ -1,6 +1,5 @@
 package org.oagi.srt.gateway.http.api.release_management.service;
 
-import io.netty.util.internal.EmptyArrays;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.Release;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -102,7 +102,7 @@ public class ReleaseService implements InitializingBean {
                 .fetchOneInto(SimpleRelease.class);
     }
 
-    public List<ReleaseList> getReleaseList(User user) {
+    public List<ReleaseList> getReleaseList(AuthenticatedPrincipal user) {
         List<ReleaseList> releaseLists = dslContext.select(
                 RELEASE.RELEASE_ID,
                 RELEASE.GUID,
@@ -144,7 +144,7 @@ public class ReleaseService implements InitializingBean {
                 .on(RELEASE.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
     }
 
-    public PageResponse<ReleaseList> getReleases(User user, ReleaseListRequest request) {
+    public PageResponse<ReleaseList> getReleases(AuthenticatedPrincipal user, ReleaseListRequest request) {
         SelectOnConditionStep<Record10<
                 ULong, String, String, String, String,
                 String, String, LocalDateTime, String, LocalDateTime>> step = getSelectOnConditionStep();
@@ -247,7 +247,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public ReleaseResponse createRelease(User user, ReleaseDetail releaseDetail) {
+    public ReleaseResponse createRelease(AuthenticatedPrincipal user, ReleaseDetail releaseDetail) {
         BigInteger userId = sessionService.userId(user);
         ReleaseResponse response = new ReleaseResponse();
 
@@ -274,7 +274,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public void updateRelease(User user, ReleaseDetail releaseDetail) {
+    public void updateRelease(AuthenticatedPrincipal user, ReleaseDetail releaseDetail) {
         BigInteger userId = sessionService.userId(user);
 
         repository.update(userId,
@@ -285,7 +285,7 @@ public class ReleaseService implements InitializingBean {
                 releaseDetail.getNamespaceId());
     }
 
-    public ReleaseDetail getReleaseDetail(User user, BigInteger releaseId) {
+    public ReleaseDetail getReleaseDetail(AuthenticatedPrincipal user, BigInteger releaseId) {
         Release release = repository.findById(releaseId);
         ReleaseDetail detail = new ReleaseDetail();
         detail.setReleaseId(release.getReleaseId());
@@ -298,7 +298,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public void discard(User user, List<BigInteger> releaseIds) {
+    public void discard(AuthenticatedPrincipal user, List<BigInteger> releaseIds) {
         for (BigInteger releaseId : releaseIds) {
             ReleaseRepositoryDiscardRequest request = new ReleaseRepositoryDiscardRequest(user, releaseId);
             repository.discard(request);
@@ -310,7 +310,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public void transitState(User user,
+    public void transitState(AuthenticatedPrincipal user,
                              TransitStateRequest request) {
 
         repository.transitState(user, request);
@@ -326,7 +326,7 @@ public class ReleaseService implements InitializingBean {
         }
     }
 
-    public ReleaseValidationResponse validate(User user,
+    public ReleaseValidationResponse validate(AuthenticatedPrincipal user,
                                               ReleaseValidationRequest request) {
 
         ReleaseValidator validator = new ReleaseValidator(dslContext);
@@ -338,7 +338,7 @@ public class ReleaseService implements InitializingBean {
     }
 
     @Transactional
-    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal User user,
+    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                  BigInteger releaseId,
                                                  @RequestBody ReleaseValidationRequest request) {
         if (repository.isThereAnyDraftRelease(releaseId)) {

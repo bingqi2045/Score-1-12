@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.asccp;
 
 import org.oagi.srt.data.RepositoryRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class UpdateAsccpStateRepositoryRequest extends RepositoryRequest {
     private final CcState fromState;
     private final CcState toState;
 
-    public UpdateAsccpStateRepositoryRequest(User user,
+    public UpdateAsccpStateRepositoryRequest(AuthenticatedPrincipal user,
                                              BigInteger asccpManifestId,
                                              CcState fromState,
                                              CcState toState) {
@@ -23,7 +23,7 @@ public class UpdateAsccpStateRepositoryRequest extends RepositoryRequest {
         this.toState = toState;
     }
 
-    public UpdateAsccpStateRepositoryRequest(User user,
+    public UpdateAsccpStateRepositoryRequest(AuthenticatedPrincipal user,
                                              LocalDateTime localDateTime,
                                              BigInteger asccpManifestId,
                                              CcState fromState,

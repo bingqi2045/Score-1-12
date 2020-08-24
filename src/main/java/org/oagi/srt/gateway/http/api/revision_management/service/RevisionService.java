@@ -5,7 +5,7 @@ import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
 import org.oagi.srt.repo.RevisionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ public class RevisionService {
         return repository.getRevisionByReference(request);
     }
 
-    public String getSnapshotById(User user, BigInteger revisionId) {
+    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger revisionId) {
         return repository.getSnapshotById(user, revisionId);
     }
 }

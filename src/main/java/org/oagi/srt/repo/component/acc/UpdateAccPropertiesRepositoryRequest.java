@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.acc;
 
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -19,13 +19,13 @@ public class UpdateAccPropertiesRepositoryRequest extends RepositoryRequest {
     private boolean deprecated;
     private BigInteger namespaceId;
 
-    public UpdateAccPropertiesRepositoryRequest(User user,
+    public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 BigInteger accManifestId) {
         super(user);
         this.accManifestId = accManifestId;
     }
 
-    public UpdateAccPropertiesRepositoryRequest(User user,
+    public UpdateAccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
                                                 BigInteger accManifestId) {
         super(user, localDateTime);

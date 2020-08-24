@@ -2,7 +2,6 @@ package org.oagi.srt.gateway.http.helper.filter;
 
 import org.jooq.Condition;
 import org.jooq.Field;
-import org.jooq.TableField;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;

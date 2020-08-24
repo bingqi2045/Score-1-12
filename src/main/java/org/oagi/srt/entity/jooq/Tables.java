@@ -4,75 +4,8 @@
 package org.oagi.srt.entity.jooq;
 
 
-import org.oagi.srt.entity.jooq.tables.Abie;
-import org.oagi.srt.entity.jooq.tables.Acc;
-import org.oagi.srt.entity.jooq.tables.AccManifest;
-import org.oagi.srt.entity.jooq.tables.AgencyIdList;
-import org.oagi.srt.entity.jooq.tables.AgencyIdListValue;
-import org.oagi.srt.entity.jooq.tables.AppGroup;
-import org.oagi.srt.entity.jooq.tables.AppGroupUser;
-import org.oagi.srt.entity.jooq.tables.AppPermission;
-import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
-import org.oagi.srt.entity.jooq.tables.AppUser;
-import org.oagi.srt.entity.jooq.tables.Asbie;
-import org.oagi.srt.entity.jooq.tables.Asbiep;
-import org.oagi.srt.entity.jooq.tables.Ascc;
-import org.oagi.srt.entity.jooq.tables.AsccManifest;
-import org.oagi.srt.entity.jooq.tables.Asccp;
-import org.oagi.srt.entity.jooq.tables.AsccpManifest;
-import org.oagi.srt.entity.jooq.tables.Bbie;
-import org.oagi.srt.entity.jooq.tables.BbieSc;
-import org.oagi.srt.entity.jooq.tables.Bbiep;
-import org.oagi.srt.entity.jooq.tables.Bcc;
-import org.oagi.srt.entity.jooq.tables.BccManifest;
-import org.oagi.srt.entity.jooq.tables.Bccp;
-import org.oagi.srt.entity.jooq.tables.BccpManifest;
-import org.oagi.srt.entity.jooq.tables.BdtPriRestri;
-import org.oagi.srt.entity.jooq.tables.BdtScPriRestri;
-import org.oagi.srt.entity.jooq.tables.BieUsageRule;
-import org.oagi.srt.entity.jooq.tables.BieUserExtRevision;
-import org.oagi.srt.entity.jooq.tables.BizCtx;
-import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
-import org.oagi.srt.entity.jooq.tables.BizCtxValue;
-import org.oagi.srt.entity.jooq.tables.BlobContent;
-import org.oagi.srt.entity.jooq.tables.CdtAwdPri;
-import org.oagi.srt.entity.jooq.tables.CdtAwdPriXpsTypeMap;
-import org.oagi.srt.entity.jooq.tables.CdtPri;
-import org.oagi.srt.entity.jooq.tables.CdtScAwdPri;
-import org.oagi.srt.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
-import org.oagi.srt.entity.jooq.tables.CodeList;
-import org.oagi.srt.entity.jooq.tables.CodeListManifest;
-import org.oagi.srt.entity.jooq.tables.CodeListValue;
-import org.oagi.srt.entity.jooq.tables.CodeListValueManifest;
-import org.oagi.srt.entity.jooq.tables.Comment;
-import org.oagi.srt.entity.jooq.tables.CtxCategory;
-import org.oagi.srt.entity.jooq.tables.CtxScheme;
-import org.oagi.srt.entity.jooq.tables.CtxSchemeValue;
-import org.oagi.srt.entity.jooq.tables.Dt;
-import org.oagi.srt.entity.jooq.tables.DtManifest;
-import org.oagi.srt.entity.jooq.tables.DtSc;
-import org.oagi.srt.entity.jooq.tables.DtScManifest;
-import org.oagi.srt.entity.jooq.tables.DtUsageRule;
 import org.oagi.srt.entity.jooq.tables.Module;
-import org.oagi.srt.entity.jooq.tables.ModuleAccManifest;
-import org.oagi.srt.entity.jooq.tables.ModuleAsccpManifest;
-import org.oagi.srt.entity.jooq.tables.ModuleBccpManifest;
-import org.oagi.srt.entity.jooq.tables.ModuleCodeListManifest;
-import org.oagi.srt.entity.jooq.tables.ModuleDep;
-import org.oagi.srt.entity.jooq.tables.ModuleDir;
-import org.oagi.srt.entity.jooq.tables.ModuleDtManifest;
-import org.oagi.srt.entity.jooq.tables.ModuleSet;
-import org.oagi.srt.entity.jooq.tables.ModuleSetAssignment;
-import org.oagi.srt.entity.jooq.tables.ModuleSetRelease;
-import org.oagi.srt.entity.jooq.tables.Namespace;
-import org.oagi.srt.entity.jooq.tables.Release;
-import org.oagi.srt.entity.jooq.tables.Revision;
-import org.oagi.srt.entity.jooq.tables.SeqKey;
-import org.oagi.srt.entity.jooq.tables.TopLevelAsbiep;
-import org.oagi.srt.entity.jooq.tables.UsageRule;
-import org.oagi.srt.entity.jooq.tables.UsageRuleExpression;
-import org.oagi.srt.entity.jooq.tables.Xbt;
-import org.oagi.srt.entity.jooq.tables.XbtManifest;
+import org.oagi.srt.entity.jooq.tables.*;
 
 
 /**
@@ -121,6 +54,11 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
      * The table <code>oagi.app_group_user</code>.
      */
     public static final AppGroupUser APP_GROUP_USER = AppGroupUser.APP_GROUP_USER;
+
+    /**
+     * The table <code>oagi.app_oauth2_user</code>.
+     */
+    public static final AppOauth2User APP_OAUTH2_USER = AppOauth2User.APP_OAUTH2_USER;
 
     /**
      * The table <code>oagi.app_permission</code>.
@@ -397,6 +335,16 @@ If we use a separate table for each expression, then we need binding all the way
      * This table stores information about a namespace. Namespace is the namespace as in the XML schema specification.
      */
     public static final Namespace NAMESPACE = Namespace.NAMESPACE;
+
+    /**
+     * The table <code>oagi.oauth2_app</code>.
+     */
+    public static final Oauth2App OAUTH2_APP = Oauth2App.OAUTH2_APP;
+
+    /**
+     * The table <code>oagi.oauth2_app_scope</code>.
+     */
+    public static final Oauth2AppScope OAUTH2_APP_SCOPE = Oauth2AppScope.OAUTH2_APP_SCOPE;
 
     /**
      * The is table store the release information.

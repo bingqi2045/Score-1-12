@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.top_level_asbiep;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class UpdateTopLevelAsbiepRequest extends RepositoryRequest {
     private final String status;
     private final String version;
 
-    public UpdateTopLevelAsbiepRequest(User user, LocalDateTime localDateTime,
+    public UpdateTopLevelAsbiepRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
                                        BigInteger topLevelAsbiepId, String status, String version) {
         super(user, localDateTime);
         this.topLevelAsbiepId = topLevelAsbiepId;

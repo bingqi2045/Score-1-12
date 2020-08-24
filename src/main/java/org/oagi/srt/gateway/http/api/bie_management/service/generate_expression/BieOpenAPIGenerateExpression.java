@@ -64,23 +64,28 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
 
     @Override
     public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
-        List<TopLevelAsbiep> mergedTopLevelAbies = new ArrayList(topLevelAbies);
+        List<TopLevelAsbiep> mergedTopLevelAsbieps = new ArrayList(topLevelAbies);
 
         /*
          * Issue #587
          */
         if (option.isIncludeMetaHeaderForJsonForOpenAPI30GetTemplate()) {
-            TopLevelAsbiep metaHeaderTopLevelAsbiep =
+            TopLevelAsbiep getMetaHeaderTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepIdForOpenAPI30GetTemplate());
-            mergedTopLevelAbies.add(metaHeaderTopLevelAsbiep);
+            mergedTopLevelAsbieps.add(getMetaHeaderTopLevelAsbiep);
+        }
+        if (option.isIncludeMetaHeaderForJsonForOpenAPI30PostTemplate()) {
+            TopLevelAsbiep postMetaHeaderTopLevelAsbiep =
+                    topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepIdForOpenAPI30PostTemplate());
+            mergedTopLevelAsbieps.add(postMetaHeaderTopLevelAsbiep);
         }
         if (option.isIncludePaginationResponseForJsonForOpenAPI30GetTemplate()) {
             TopLevelAsbiep paginationResponseTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getPaginationResponseTopLevelAsbiepIdForOpenAPI30GetTemplate());
-            mergedTopLevelAbies.add(paginationResponseTopLevelAsbiep);
+            mergedTopLevelAsbieps.add(paginationResponseTopLevelAsbiep);
         }
 
-        return applicationContext.getBean(GenerationContext.class, mergedTopLevelAbies);
+        return applicationContext.getBean(GenerationContext.class, mergedTopLevelAsbieps);
     }
 
     @Override

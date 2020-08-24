@@ -7,27 +7,7 @@ package org.oagi.srt.entity.jooq;
 import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.Internal;
-import org.oagi.srt.entity.jooq.tables.Abie;
-import org.oagi.srt.entity.jooq.tables.Acc;
-import org.oagi.srt.entity.jooq.tables.AppGroupUser;
-import org.oagi.srt.entity.jooq.tables.AppPermissionGroup;
-import org.oagi.srt.entity.jooq.tables.Asbie;
-import org.oagi.srt.entity.jooq.tables.Asbiep;
-import org.oagi.srt.entity.jooq.tables.Ascc;
-import org.oagi.srt.entity.jooq.tables.Asccp;
-import org.oagi.srt.entity.jooq.tables.Bbie;
-import org.oagi.srt.entity.jooq.tables.BbieSc;
-import org.oagi.srt.entity.jooq.tables.Bbiep;
-import org.oagi.srt.entity.jooq.tables.Bcc;
-import org.oagi.srt.entity.jooq.tables.Bccp;
-import org.oagi.srt.entity.jooq.tables.BizCtxAssignment;
-import org.oagi.srt.entity.jooq.tables.Comment;
-import org.oagi.srt.entity.jooq.tables.Dt;
-import org.oagi.srt.entity.jooq.tables.DtSc;
-import org.oagi.srt.entity.jooq.tables.ModuleDir;
-import org.oagi.srt.entity.jooq.tables.Revision;
-import org.oagi.srt.entity.jooq.tables.SeqKey;
-import org.oagi.srt.entity.jooq.tables.Xbt;
+import org.oagi.srt.entity.jooq.tables.*;
 
 
 /**

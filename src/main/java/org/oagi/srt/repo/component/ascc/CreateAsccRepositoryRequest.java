@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.ascc;
 
 import org.oagi.srt.data.RepositoryRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
     private int cardinalityMin = 0;
     private int cardinalityMax = -1;
 
-    public CreateAsccRepositoryRequest(User user,
+    public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        BigInteger releaseId,
                                        BigInteger accManifestId,
                                        BigInteger asccpManifestId) {
@@ -28,7 +28,7 @@ public class CreateAsccRepositoryRequest extends RepositoryRequest {
         this.asccpManifestId = asccpManifestId;
     }
 
-    public CreateAsccRepositoryRequest(User user,
+    public CreateAsccRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
                                        BigInteger releaseId,
                                        BigInteger accManifestId,

@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.code_list_value;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -19,13 +19,13 @@ public class UpdateCodeListValueRepositoryRequest extends RepositoryRequest {
     private boolean locked;
     private boolean extension;
 
-    public UpdateCodeListValueRepositoryRequest(User user,
+    public UpdateCodeListValueRepositoryRequest(AuthenticatedPrincipal user,
                                                 BigInteger codeListValueManifestId) {
         super(user);
         this.codeListValueManifestId = codeListValueManifestId;
     }
 
-    public UpdateCodeListValueRepositoryRequest(User user,
+    public UpdateCodeListValueRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
                                                 BigInteger codeListValueManifestId) {
         super(user, localDateTime);

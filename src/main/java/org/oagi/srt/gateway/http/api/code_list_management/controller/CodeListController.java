@@ -9,8 +9,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<CodeListForList> getCodeLists(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "states", required = false) String states,
@@ -92,14 +92,14 @@ public class CodeListController {
 
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CodeList getCodeList(@AuthenticationPrincipal User user,
+    public CodeList getCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                 @PathVariable("manifestId") BigInteger manifestId) {
         return service.getCodeList(user, manifestId);
     }
 
     @RequestMapping(value = "/code_list", method = RequestMethod.PUT)
     public CcCreateResponse create(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestBody CodeList codeList) {
         BigInteger manifestId = service.createCodeList(user, codeList);
 
@@ -111,7 +111,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/{manifestId}", method = RequestMethod.POST)
     public ResponseEntity update(
             @PathVariable("manifestId") BigInteger manifestId,
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestBody CodeList codeList) {
         codeList.setCodeListManifestId(manifestId);
         service.update(user, codeList);
@@ -121,7 +121,7 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/{manifestId}/revision", method = RequestMethod.POST)
     public ResponseEntity makeNewRevision(
             @PathVariable("manifestId") BigInteger manifestId,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal AuthenticatedPrincipal user) {
 
         service.makeNewRevision(user, manifestId);
         return ResponseEntity.noContent().build();
@@ -130,28 +130,28 @@ public class CodeListController {
     @RequestMapping(value = "/code_list/{manifestId}/revision", method = RequestMethod.GET)
     public CodeList getCodeListRevision(
             @PathVariable("manifestId") BigInteger manifestId,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal AuthenticatedPrincipal user) {
         return service.getCodeListRevision(user, manifestId);
     }
 
     @RequestMapping(value = "/code_list/{manifestId}/revision/discard", method = RequestMethod.POST)
     public ResponseEntity discardRevision(
             @PathVariable("manifestId") BigInteger manifestId,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal AuthenticatedPrincipal user) {
 
         service.discardRevision(user, manifestId);
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/code_list/delete", method = RequestMethod.POST)
-    public ResponseEntity deleteCodeList(@AuthenticationPrincipal User user,
+    public ResponseEntity deleteCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                   @RequestBody DeleteCodeListRequest request) {
         service.deleteCodeList(user, request.getCodeListManifestIds());
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/code_list/restore", method = RequestMethod.POST)
-    public ResponseEntity restoreCodeList(@AuthenticationPrincipal User user,
+    public ResponseEntity restoreCodeList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                   @RequestBody DeleteCodeListRequest request) {
         service.restoreCodeList(user, request.getCodeListManifestIds());
         return ResponseEntity.noContent().build();

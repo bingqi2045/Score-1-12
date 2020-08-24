@@ -18,7 +18,7 @@ import org.oagi.srt.gateway.http.api.revision_management.data.Revision;
 import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListRequest;
 import org.oagi.srt.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.jooq.impl.DSL.condition;
 import static org.oagi.srt.entity.jooq.Tables.*;
 
 @Repository
@@ -82,7 +81,7 @@ public class RevisionRepository {
         return response;
     }
 
-    public String getSnapshotById(User user, BigInteger revisionId) {
+    public String getSnapshotById(AuthenticatedPrincipal user, BigInteger revisionId) {
         if (revisionId == null || revisionId.longValue() <= 0L) {
             return "{}";
         }

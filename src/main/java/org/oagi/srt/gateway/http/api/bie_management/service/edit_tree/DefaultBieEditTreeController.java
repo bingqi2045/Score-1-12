@@ -21,7 +21,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,12 +65,12 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     private RedissonClient redissonClient;
 
     private boolean initialized;
-    private User user;
+    private AuthenticatedPrincipal user;
     private TopLevelAsbiep topLevelAsbiep;
     private BieState state;
     private boolean forceBieUpdate;
 
-    public void initialize(User user, TopLevelAsbiep topLevelAsbiep) {
+    public void initialize(AuthenticatedPrincipal user, TopLevelAsbiep topLevelAsbiep) {
         this.user = user;
         this.topLevelAsbiep = topLevelAsbiep;
 
@@ -79,7 +79,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         switch (this.state) {
             case WIP:
                 if (!sessionService.userId(user).equals(topLevelAsbiep.getOwnerUserId())) {
-                    throw new DataAccessForbiddenException("'" + user.getUsername() +
+                    throw new DataAccessForbiddenException("'" + sessionService.getAppUser(user).getLoginId() +
                             "' doesn't have an access privilege.");
                 }
                 break;
@@ -137,7 +137,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         BigInteger topLevelAsbiepId = abieNode.getTopLevelAsbiepId();
         BigInteger releaseId = abieNode.getReleaseId();
         BieEditAcc acc = null;
-        if (topLevelAsbiepId.compareTo(BigInteger.ZERO) > 0) {
+        if (topLevelAsbiepId != null && topLevelAsbiepId.compareTo(BigInteger.ZERO) > 0) {
             fromAccManifestId = repository.getAccManifestIdByTopLevelAsbiepId(topLevelAsbiepId, releaseId);
         } else {
             acc = repository.getAcc(abieNode.getAccManifestId(), releaseId);
@@ -167,7 +167,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
     }
 
     @Override
-    public List<BieEditNode> getDescendants(User user, BieEditNode node, boolean hideUnused) {
+    public List<BieEditNode> getDescendants(AuthenticatedPrincipal user, BieEditNode node, boolean hideUnused) {
         /*
          * If this profile BIE is in Editing state, descendants of given node will create during this process,
          * and this must be thread-safe.

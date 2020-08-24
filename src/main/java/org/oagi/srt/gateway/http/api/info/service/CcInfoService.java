@@ -2,7 +2,6 @@ package org.oagi.srt.gateway.http.api.info.service;
 
 import org.oagi.srt.data.AppUser;
 import org.oagi.srt.gateway.http.api.DataAccessForbiddenException;
-import org.oagi.srt.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.gateway.http.api.cc_management.service.CcListService;
 import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
@@ -10,7 +9,7 @@ import org.oagi.srt.gateway.http.api.info.data.SummaryCcExtInfo;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.CoreComponentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class CcInfoService {
     @Autowired
     private SessionService sessionService;
 
-    public SummaryCcExtInfo getSummaryCcExtInfo(User user) {
+    public SummaryCcExtInfo getSummaryCcExtInfo(AuthenticatedPrincipal user) {
         AppUser requester = sessionService.getAppUser(user);
         if (user == null || requester == null) {
             throw new DataAccessForbiddenException("Need authentication to access information.");

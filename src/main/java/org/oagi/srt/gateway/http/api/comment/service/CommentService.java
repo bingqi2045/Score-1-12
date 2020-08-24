@@ -11,7 +11,7 @@ import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +32,13 @@ public class CommentService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    public List<Comment> getComments(User user, GetCommentRequest request) {
+    public List<Comment> getComments(AuthenticatedPrincipal user, GetCommentRequest request) {
         List<Comment> comments = repository.getCommentsByReference(request.getReference());
         return comments;
     }
 
     @Transactional
-    public void postComments(User user, PostCommentRequest request) {
+    public void postComments(AuthenticatedPrincipal user, PostCommentRequest request) {
         BigInteger userId = sessionService.userId(user);
 
         long commentId = repository.insertComment()
@@ -52,7 +52,7 @@ public class CommentService {
 
         CcEvent event = new CcEvent();
         event.setAction("AddComment");
-        event.addProperty("actor", user.getUsername());
+        event.addProperty("actor", user.getName());
         event.addProperty("text", comment.getText());
         event.addProperty("prevCommentId", comment.getPrevCommentId());
         event.addProperty("commentId", commentId);
@@ -64,7 +64,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComments(User user, UpdateCommentRequest request) {
+    public void updateComments(AuthenticatedPrincipal user, UpdateCommentRequest request) {
         BigInteger userId = sessionService.userId(user);
         BigInteger ownerId = repository.getOwnerIdByCommentId(request.getCommentId());
         if (ownerId.equals(BigInteger.ZERO)) {

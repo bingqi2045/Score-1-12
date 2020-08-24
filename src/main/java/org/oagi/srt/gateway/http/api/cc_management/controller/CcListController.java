@@ -7,8 +7,8 @@ import org.oagi.srt.gateway.http.api.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,7 +103,7 @@ public class CcListController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/transfer_ownership",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("type") String type,
                                             @PathVariable("manifestId") BigInteger manifestId,
                                             @RequestBody Map<String, String> request) {
@@ -115,7 +115,7 @@ public class CcListController {
     @RequestMapping(value = "/core_component/state/{type}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateCcState(@AuthenticationPrincipal User user,
+    public ResponseEntity updateCcState(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("type") String type,
                                             @RequestBody CcUpdateStateListRequest ccUpdateStateListRequest) {
         if (type.toUpperCase().equals(Deleted.name().toUpperCase())) {

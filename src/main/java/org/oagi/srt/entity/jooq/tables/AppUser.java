@@ -4,26 +4,16 @@
 package org.oagi.srt.entity.jooq.tables;
 
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Row6;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.TableOptions;
-import org.jooq.UniqueKey;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.Keys;
 import org.oagi.srt.entity.jooq.Oagi;
 import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -33,7 +23,7 @@ import org.oagi.srt.entity.jooq.tables.records.AppUserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUser extends TableImpl<AppUserRecord> {
 
-    private static final long serialVersionUID = -533400647;
+    private static final long serialVersionUID = 1019522616;
 
     /**
      * The reference instance of <code>oagi.app_user</code>
@@ -61,7 +51,7 @@ public class AppUser extends TableImpl<AppUserRecord> {
     /**
      * The column <code>oagi.app_user.password</code>. Password to authenticate the user.
      */
-    public final TableField<AppUserRecord, String> PASSWORD = createField(DSL.name("password"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "Password to authenticate the user.");
+    public final TableField<AppUserRecord, String> PASSWORD = createField(DSL.name("password"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "Password to authenticate the user.");
 
     /**
      * The column <code>oagi.app_user.name</code>. Full name of the user.

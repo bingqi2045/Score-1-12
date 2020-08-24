@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.bccp;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -10,13 +10,13 @@ public class DeleteBccpRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger bccpManifestId;
 
-    public DeleteBccpRepositoryRequest(User user,
+    public DeleteBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        BigInteger bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public DeleteBccpRepositoryRequest(User user,
+    public DeleteBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
                                        BigInteger bccpManifestId) {
         super(user, localDateTime);

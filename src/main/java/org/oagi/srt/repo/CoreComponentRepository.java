@@ -10,7 +10,7 @@ import org.oagi.srt.gateway.http.api.info.data.SummaryCcExt;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.cc_arguments.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -238,7 +238,7 @@ public class CoreComponentRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public CcBccpNode getBccpNodeByBccpId(User user, long bccpId) {
+    public CcBccpNode getBccpNodeByBccpId(AuthenticatedPrincipal user, long bccpId) {
         return dslContext.select(
                 BCCP.BCCP_ID,
                 BCCP.GUID,

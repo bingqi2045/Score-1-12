@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.asbiep;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ public class UpsertAsbiepRequest extends RepositoryRequest {
     private BigInteger refTopLevelAbieId;
     private boolean refTopLevelAbieIdNull;
 
-    public UpsertAsbiepRequest(User user, LocalDateTime localDateTime,
+    public UpsertAsbiepRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
                                BigInteger topLevelAbieId, AsbiepNode.Asbiep asbiep) {
         super(user, localDateTime);
         this.topLevelAbieId = topLevelAbieId;

@@ -21,7 +21,7 @@ import org.oagi.srt.repo.component.bcc.*;
 import org.oagi.srt.repo.component.bccp.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,20 +71,20 @@ public class CcNodeService extends EventHandler {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
-    public CcAccNode getAccNode(User user, BigInteger manifestId) {
+    public CcAccNode getAccNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getAccNodeByAccManifestId(user, manifestId);
     }
 
-    public CcAsccpNode getAsccpNode(User user, BigInteger manifestId) {
+    public CcAsccpNode getAsccpNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getAsccpNodeByAsccpManifestId(user, manifestId);
     }
 
-    public CcBccpNode getBccpNode(User user, BigInteger manifestId) {
+    public CcBccpNode getBccpNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getBccpNodeByBccpManifestId(user, manifestId);
     }
 
     @Transactional
-    public void deleteAcc(User user, BigInteger manifestId) {
+    public void deleteAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
         DeleteAccRepositoryRequest repositoryRequest =
                 new DeleteAccRepositoryRequest(user, manifestId);
 
@@ -95,7 +95,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteAsccp(User user, BigInteger manifestId) {
+    public void deleteAsccp(AuthenticatedPrincipal user, BigInteger manifestId) {
         DeleteAsccpRepositoryRequest repositoryRequest =
                 new DeleteAsccpRepositoryRequest(user, manifestId);
 
@@ -106,7 +106,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteBccp(User user, BigInteger manifestId) {
+    public void deleteBccp(AuthenticatedPrincipal user, BigInteger manifestId) {
         DeleteBccpRepositoryRequest repositoryRequest =
                 new DeleteBccpRepositoryRequest(user, manifestId);
 
@@ -117,7 +117,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteAscc(User user, BigInteger asccManifestId) {
+    public void deleteAscc(AuthenticatedPrincipal user, BigInteger asccManifestId) {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
@@ -127,7 +127,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void deleteBcc(User user, BigInteger bccManifestId) {
+    public void deleteBcc(AuthenticatedPrincipal user, BigInteger bccManifestId) {
         DeleteBccRepositoryRequest request =
                 new DeleteBccRepositoryRequest(user, bccManifestId);
 
@@ -136,19 +136,19 @@ public class CcNodeService extends EventHandler {
         fireEvent(new DeletedBccEvent());
     }
 
-    public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
+    public CcAccNodeDetail getAccNodeDetail(AuthenticatedPrincipal user, CcAccNode accNode) {
         return repository.getAccNodeDetail(user, accNode);
     }
 
-    public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
+    public CcAsccpNodeDetail getAsccpNodeDetail(AuthenticatedPrincipal user, CcAsccpNode asccpNode) {
         return repository.getAsccpNodeDetail(user, asccpNode);
     }
 
-    public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {
+    public CcBccpNodeDetail getBccpNodeDetail(AuthenticatedPrincipal user, CcBccpNode bccpNode) {
         return repository.getBccpNodeDetail(user, bccpNode);
     }
 
-    public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
+    public CcBdtScNodeDetail getBdtScNodeDetail(AuthenticatedPrincipal user, CcBdtScNode bdtScNode) {
         return repository.getBdtScNodeDetail(user, bdtScNode);
     }
 
@@ -157,7 +157,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createAcc(User user, CcAccCreateRequest request) {
+    public BigInteger createAcc(AuthenticatedPrincipal user, CcAccCreateRequest request) {
         CreateAccRepositoryRequest repositoryRequest =
                 new CreateAccRepositoryRequest(user, request.getReleaseId());
 
@@ -170,7 +170,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createAsccp(User user, CcAsccpCreateRequest request) {
+    public BigInteger createAsccp(AuthenticatedPrincipal user, CcAsccpCreateRequest request) {
         CreateAsccpRepositoryRequest repositoryRequest =
                 new CreateAsccpRepositoryRequest(user,
                         request.getRoleOfAccManifestId(), request.getReleaseId());
@@ -184,7 +184,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createBccp(User user, CcBccpCreateRequest request) {
+    public BigInteger createBccp(AuthenticatedPrincipal user, CcBccpCreateRequest request) {
         CreateBccpRepositoryRequest repositoryRequest =
                 new CreateBccpRepositoryRequest(user,
                         request.getBdtManifestId(), request.getReleaseId());
@@ -198,7 +198,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcUpdateResponse updateCcDetails(User user, CcUpdateRequest ccUpdateRequest) {
+    public CcUpdateResponse updateCcDetails(AuthenticatedPrincipal user, CcUpdateRequest ccUpdateRequest) {
         CcUpdateResponse ccUpdateResponse = new CcUpdateResponse();
 
         ccUpdateResponse.setAccNodeResults(
@@ -212,7 +212,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void updateCcSeq(User user,
+    public void updateCcSeq(AuthenticatedPrincipal user,
                             BigInteger accManifestId,
                             Pair<CcId, CcId> itemAfterPair) {
 
@@ -223,7 +223,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public List<CcAccNodeDetail> updateAccDetail(User user, List<CcAccNodeDetail> ccAccNodeDetails) {
+    public List<CcAccNodeDetail> updateAccDetail(AuthenticatedPrincipal user, List<CcAccNodeDetail> ccAccNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcAccNodeDetail> updatedAccNodeDetails = new ArrayList<>();
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
@@ -234,7 +234,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public List<CcAsccpNodeDetail> updateAsccp(User user, List<CcAsccpNodeDetail> asccpNodeDetails) {
+    public List<CcAsccpNodeDetail> updateAsccp(AuthenticatedPrincipal user, List<CcAsccpNodeDetail> asccpNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcAsccpNodeDetail> updatedAsccpNodeDetails = new ArrayList<>();
         for (CcAsccpNodeDetail detail : asccpNodeDetails) {
@@ -250,7 +250,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public List<CcBccpNodeDetail> updateBccpDetail(User user, List<CcBccpNodeDetail> bccpNodeDetails) {
+    public List<CcBccpNodeDetail> updateBccpDetail(AuthenticatedPrincipal user, List<CcBccpNodeDetail> bccpNodeDetails) {
         LocalDateTime timestamp = LocalDateTime.now();
         List<CcBccpNodeDetail> updatedBccpNodeDetails = new ArrayList<>();
         for (CcBccpNodeDetail detail : bccpNodeDetails) {
@@ -265,7 +265,7 @@ public class CcNodeService extends EventHandler {
         return updatedBccpNodeDetails;
     }
 
-    private CcAccNode updateAccDetail(User user, LocalDateTime timestamp, CcAccNodeDetail detail) {
+    private CcAccNode updateAccDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcAccNodeDetail detail) {
         UpdateAccPropertiesRepositoryRequest request =
                 new UpdateAccPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
 
@@ -285,7 +285,7 @@ public class CcNodeService extends EventHandler {
         return repository.getAccNodeByAccManifestId(user, response.getAccManifestId());
     }
 
-    public CcAsccpNode updateAsccpDetail(User user, LocalDateTime timestamp, CcAsccpNodeDetail.Asccp detail) {
+    public CcAsccpNode updateAsccpDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcAsccpNodeDetail.Asccp detail) {
         UpdateAsccpPropertiesRepositoryRequest request =
                 new UpdateAsccpPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
 
@@ -305,7 +305,7 @@ public class CcNodeService extends EventHandler {
         return repository.getAsccpNodeByAsccpManifestId(user, response.getAsccpManifestId());
     }
 
-    private void updateAsccDetail(User user, LocalDateTime timestamp, CcAsccpNodeDetail.Ascc detail) {
+    private void updateAsccDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcAsccpNodeDetail.Ascc detail) {
         UpdateAsccPropertiesRepositoryRequest request =
                 new UpdateAsccPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
 
@@ -320,7 +320,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAsccPropertiesEvent());
     }
 
-    private void updateBccDetail(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bcc detail) {
+    private void updateBccDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcBccpNodeDetail.Bcc detail) {
         UpdateBccPropertiesRepositoryRequest request =
                 new UpdateBccPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
 
@@ -348,7 +348,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedBccPropertiesEvent());
     }
 
-    private CcBccpNode updateBccpDetail(User user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
+    private CcBccpNode updateBccpDetail(AuthenticatedPrincipal user, LocalDateTime timestamp, CcBccpNodeDetail.Bccp detail) {
         UpdateBccpPropertiesRepositoryRequest request =
                 new UpdateBccpPropertiesRepositoryRequest(user, timestamp, detail.getManifestId());
 
@@ -370,7 +370,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendAsccp(User user, BigInteger releaseId,
+    public BigInteger appendAsccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                   BigInteger accManifestId, BigInteger asccpManifestId,
                                   int pos) {
         LocalDateTime timestamp = LocalDateTime.now();
@@ -384,7 +384,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger appendBccp(User user, BigInteger releaseId,
+    public BigInteger appendBccp(AuthenticatedPrincipal user, BigInteger releaseId,
                                  BigInteger accManifestId, BigInteger bccpManifestId,
                                  int pos) {
         LocalDateTime timestamp = LocalDateTime.now();
@@ -398,7 +398,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAccBasedAcc(User user, BigInteger accManifestId, BigInteger basedAccManifestId) {
+    public BigInteger updateAccBasedAcc(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger basedAccManifestId) {
         UpdateAccBasedAccRepositoryRequest repositoryRequest =
                 new UpdateAccBasedAccRepositoryRequest(user, accManifestId, basedAccManifestId);
 
@@ -411,7 +411,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAsccpRoleOfAcc(User user, BigInteger asccpManifestId, BigInteger roleOfAccManifestId) {
+    public BigInteger updateAsccpRoleOfAcc(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger roleOfAccManifestId) {
         UpdateAsccpRoleOfAccRepositoryRequest repositoryRequest =
                 new UpdateAsccpRoleOfAccRepositoryRequest(user, asccpManifestId, roleOfAccManifestId);
 
@@ -424,7 +424,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateBccpBdt(User user, BigInteger bccpManifestId, BigInteger bdtManifestId) {
+    public BigInteger updateBccpBdt(AuthenticatedPrincipal user, BigInteger bccpManifestId, BigInteger bdtManifestId) {
         UpdateBccpBdtRepositoryRequest repositoryRequest =
                 new UpdateBccpBdtRepositoryRequest(user, bccpManifestId, bdtManifestId);
 
@@ -437,13 +437,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAccState(User user, BigInteger accManifestId, CcState toState) {
+    public BigInteger updateAccState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState toState) {
         CcState fromState = repository.getAccState(accManifestId);
         return updateAccState(user, accManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateAccState(User user, BigInteger accManifestId, CcState fromState, CcState toState) {
+    public BigInteger updateAccState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState fromState, CcState toState) {
         UpdateAccStateRepositoryRequest repositoryRequest =
                 new UpdateAccStateRepositoryRequest(user, accManifestId, fromState, toState);
 
@@ -456,13 +456,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAsccpState(User user, BigInteger asccpManifestId, CcState toState) {
+    public BigInteger updateAsccpState(AuthenticatedPrincipal user, BigInteger asccpManifestId, CcState toState) {
         CcState fromState = repository.getAsccpState(asccpManifestId);
         return updateAsccpState(user, asccpManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateAsccpState(User user, BigInteger asccpManifestId, CcState fromState, CcState toState) {
+    public BigInteger updateAsccpState(AuthenticatedPrincipal user, BigInteger asccpManifestId, CcState fromState, CcState toState) {
         UpdateAsccpStateRepositoryRequest repositoryRequest =
                 new UpdateAsccpStateRepositoryRequest(user, asccpManifestId, fromState, toState);
 
@@ -475,13 +475,13 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateBccpState(User user, BigInteger bccpManifestId, CcState toState) {
+    public BigInteger updateBccpState(AuthenticatedPrincipal user, BigInteger bccpManifestId, CcState toState) {
         CcState fromState = repository.getBccpState(bccpManifestId);
         return updateBccpState(user, bccpManifestId, fromState, toState);
     }
 
     @Transactional
-    public BigInteger updateBccpState(User user, BigInteger bccpManifestId, CcState fromState, CcState toState) {
+    public BigInteger updateBccpState(AuthenticatedPrincipal user, BigInteger bccpManifestId, CcState fromState, CcState toState) {
         UpdateBccpStateRepositoryRequest repositoryRequest =
                 new UpdateBccpStateRepositoryRequest(user, bccpManifestId, fromState, toState);
 
@@ -494,7 +494,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForAcc(User user, BigInteger accManifestId) {
+    public BigInteger makeNewRevisionForAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
         ReviseAccRepositoryRequest repositoryRequest =
                 new ReviseAccRepositoryRequest(user, accManifestId);
 
@@ -507,7 +507,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForAsccp(User user, BigInteger asccpManifestId) {
+    public BigInteger makeNewRevisionForAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
         ReviseAsccpRepositoryRequest repositoryRequest =
                 new ReviseAsccpRepositoryRequest(user, asccpManifestId);
 
@@ -520,7 +520,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevisionForBccp(User user, BigInteger bccpManifestId) {
+    public BigInteger makeNewRevisionForBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
         ReviseBccpRepositoryRequest repositoryRequest =
                 new ReviseBccpRepositoryRequest(user, bccpManifestId);
 
@@ -533,7 +533,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CcAccNode discardAccBasedId(User user, BigInteger accManifestId) {
+    public CcAccNode discardAccBasedId(AuthenticatedPrincipal user, BigInteger accManifestId) {
 
         LocalDateTime timestamp = LocalDateTime.now();
         ULong userId = ULong.valueOf(sessionService.userId(user));
@@ -630,7 +630,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    public CcRevisionResponse getAccNodeRevision(User user, BigInteger manifestId) {
+    public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
         BigInteger lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -677,7 +677,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getBccpNodeRevision(User user, BigInteger manifestId) {
+    public CcRevisionResponse getBccpNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcBccpNode bccpNode = getBccpNode(user, manifestId);
         BigInteger lastPublishedCcId = getLastPublishedCcId(bccpNode.getBccpId(), BCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -694,7 +694,7 @@ public class CcNodeService extends EventHandler {
         return ccRevisionResponse;
     }
 
-    public CcRevisionResponse getAsccpNodeRevision(User user, BigInteger manifestId) {
+    public CcRevisionResponse getAsccpNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcAsccpNode asccpNode = getAsccpNode(user, manifestId);
         BigInteger lastPublishedCcId = getLastPublishedCcId(asccpNode.getAsccpId(), ASCCP);
         CcRevisionResponse ccRevisionResponse = new CcRevisionResponse();
@@ -931,7 +931,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    public void updateAccOwnerUserId(User user, BigInteger accManifestId, BigInteger ownerUserId) {
+    public void updateAccOwnerUserId(AuthenticatedPrincipal user, BigInteger accManifestId, BigInteger ownerUserId) {
         UpdateAccOwnerRepositoryRequest request =
                 new UpdateAccOwnerRepositoryRequest(user, accManifestId, ownerUserId);
         accWriteRepository.updateAccOwner(request);
@@ -939,7 +939,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAccOwnerEvent());
     }
 
-    public void updateAsccpOwnerUserId(User user, BigInteger asccpManifestId, BigInteger ownerUserId) {
+    public void updateAsccpOwnerUserId(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger ownerUserId) {
         UpdateAsccpOwnerRepositoryRequest request =
                 new UpdateAsccpOwnerRepositoryRequest(user, asccpManifestId, ownerUserId);
         asccpWriteRepository.updateAsccpOwner(request);
@@ -947,7 +947,7 @@ public class CcNodeService extends EventHandler {
         fireEvent(new UpdatedAsccpOwnerEvent());
     }
 
-    public void updateBccpOwnerUserId(User user, BigInteger bccpManifestId, BigInteger ownerUserId) {
+    public void updateBccpOwnerUserId(AuthenticatedPrincipal user, BigInteger bccpManifestId, BigInteger ownerUserId) {
         UpdateBccpOwnerRepositoryRequest request =
                 new UpdateBccpOwnerRepositoryRequest(user, bccpManifestId, ownerUserId);
         bccpWriteRepository.updateBccpOwner(request);
@@ -956,7 +956,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void discardRevisionBccp(User user, BigInteger bccpManifestId) {
+    public void discardRevisionBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
         DiscardRevisionBccpRepositoryRequest request
                 = new DiscardRevisionBccpRepositoryRequest(user, bccpManifestId);
         bccpWriteRepository.discardRevisionBccp(request);
@@ -965,7 +965,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void discardRevisionAsccp(User user, BigInteger asccpManifestId) {
+    public void discardRevisionAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
         DiscardRevisionAsccpRepositoryRequest request
                 = new DiscardRevisionAsccpRepositoryRequest(user, asccpManifestId);
         asccpWriteRepository.discardRevisionAsccp(request);
@@ -974,7 +974,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void discardRevisionAcc(User user, BigInteger accManifestId) {
+    public void discardRevisionAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
         DiscardRevisionAccRepositoryRequest request
                 = new DiscardRevisionAccRepositoryRequest(user, accManifestId);
         accWriteRepository.discardRevisionAcc(request);

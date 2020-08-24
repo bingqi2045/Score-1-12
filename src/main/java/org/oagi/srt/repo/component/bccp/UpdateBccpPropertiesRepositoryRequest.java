@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.bccp;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -19,13 +19,13 @@ public class UpdateBccpPropertiesRepositoryRequest extends RepositoryRequest {
     private boolean nillable;
     private BigInteger namespaceId;
 
-    public UpdateBccpPropertiesRepositoryRequest(User user,
+    public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }
 
-    public UpdateBccpPropertiesRepositoryRequest(User user,
+    public UpdateBccpPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
                                                  BigInteger bccpManifestId) {
         super(user, localDateTime);

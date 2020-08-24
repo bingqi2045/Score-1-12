@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.acc;
 
 import org.oagi.srt.data.RepositoryRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class UpdateAccStateRepositoryRequest extends RepositoryRequest {
     private final CcState fromState;
     private final CcState toState;
 
-    public UpdateAccStateRepositoryRequest(User user,
+    public UpdateAccStateRepositoryRequest(AuthenticatedPrincipal user,
                                            BigInteger accManifestId,
                                            CcState fromState,
                                            CcState toState) {
@@ -23,7 +23,7 @@ public class UpdateAccStateRepositoryRequest extends RepositoryRequest {
         this.toState = toState;
     }
 
-    public UpdateAccStateRepositoryRequest(User user,
+    public UpdateAccStateRepositoryRequest(AuthenticatedPrincipal user,
                                            LocalDateTime localDateTime,
                                            BigInteger accManifestId,
                                            CcState fromState,

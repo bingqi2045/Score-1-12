@@ -6,8 +6,8 @@ import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.api.module_management.service.ModuleSetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class ModuleSetController {
 
     @RequestMapping(value = "/module_set", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<ModuleSet> getModuleSetList(@AuthenticationPrincipal User user,
+    public PageResponse<ModuleSet> getModuleSetList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                     @RequestParam(name = "name", required = false) String name,
                                                     @RequestParam(name = "description", required = false) String description,
                                                     @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
@@ -64,21 +64,21 @@ public class ModuleSetController {
 
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ModuleSet getModuleSet(@AuthenticationPrincipal User user,
+    public ModuleSet getModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                   @PathVariable("id") BigInteger moduleSetId) {
         return service.getModuleSet(user, moduleSetId);
     }
 
     @RequestMapping(value = "/module_set", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ModuleSet createModuleSet(@AuthenticationPrincipal User user,
+    public ModuleSet createModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                      @RequestBody CreateModuleSetRequest request) {
         return service.createModuleSet(user, request);
     }
 
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateModuleSet(@AuthenticationPrincipal User user,
+    public void updateModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                 @PathVariable("id") BigInteger moduleSetId,
                                 @RequestBody UpdateModuleSetRequest request) {
         request.setModuleSetId(moduleSetId);
@@ -87,14 +87,14 @@ public class ModuleSetController {
 
     @RequestMapping(value = "/module_set/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void discardModuleSet(@AuthenticationPrincipal User user,
+    public void discardModuleSet(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                  @PathVariable("id") BigInteger moduleSetId) {
         service.discardModuleSet(user, moduleSetId);
     }
 
     @RequestMapping(value = "/module_set/{id}/module", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<ModuleSetModule> getModuleSetModuleList(@AuthenticationPrincipal User user,
+    public PageResponse<ModuleSetModule> getModuleSetModuleList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                                 @PathVariable("id") BigInteger moduleSetId,
                                                                 @RequestParam(name = "path", required = false) String path,
                                                                 @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,

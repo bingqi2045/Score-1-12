@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.code_list;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 
@@ -9,7 +9,7 @@ public class DiscardRevisionCodeListRepositoryRequest extends RepositoryRequest 
 
     private final BigInteger codeListManifestId;
 
-    public DiscardRevisionCodeListRepositoryRequest(User user,
+    public DiscardRevisionCodeListRepositoryRequest(AuthenticatedPrincipal user,
                                                     BigInteger codeListManifestId) {
         super(user);
         this.codeListManifestId = codeListManifestId;

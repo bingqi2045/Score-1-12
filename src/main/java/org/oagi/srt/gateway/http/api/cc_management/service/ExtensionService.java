@@ -29,7 +29,7 @@ import org.oagi.srt.repo.component.asccp.AsccpWriteRepository;
 import org.oagi.srt.repo.component.asccp.CreateAsccpRepositoryRequest;
 import org.oagi.srt.repo.component.asccp.CreateAsccpRepositoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +73,7 @@ public class ExtensionService {
                 .fetchOptional().orElse(null);
     }
 
-    public CcAccNode getExtensionNode(User user, BigInteger manifestId) {
+    public CcAccNode getExtensionNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
@@ -114,7 +114,7 @@ public class ExtensionService {
 
     @Transactional
     public BigInteger appendUserExtension(BieEditAcc eAcc, ACC ueAcc,
-                                          BigInteger releaseId, User user) {
+                                          BigInteger releaseId, AuthenticatedPrincipal user) {
         AppUser appUser = sessionService.getAppUser(user);
         if (appUser.isDeveloper()) {
             throw new IllegalArgumentException("Developer cannot create User Extension.");
@@ -148,7 +148,7 @@ public class ExtensionService {
     @Autowired
     private AsccWriteRepository asccWriteRepository;
 
-    private BigInteger createNewUserExtensionGroupACC(ACC eAcc, BigInteger releaseId, User user) {
+    private BigInteger createNewUserExtensionGroupACC(ACC eAcc, BigInteger releaseId, AuthenticatedPrincipal user) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateAccRepositoryRequest createUeAccRequest = new CreateAccRepositoryRequest(user, timestamp, releaseId);
 
@@ -184,7 +184,7 @@ public class ExtensionService {
         return createUeAccResponse.getAccManifestId();
     }
 
-    private AccRecord createACCForExtension(ACC eAcc, User user) {
+    private AccRecord createACCForExtension(ACC eAcc, AuthenticatedPrincipal user) {
         String objectClassTerm = Utility.getUserExtensionGroupObjectClassTerm(eAcc.getObjectClassTerm());
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
@@ -225,7 +225,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AsccpRecord createASCCPForExtension(ACC eAcc, User user, AccRecord ueAcc) {
+    private AsccpRecord createASCCPForExtension(ACC eAcc, AuthenticatedPrincipal user, AccRecord ueAcc) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -274,7 +274,7 @@ public class ExtensionService {
         ).returning().fetchOne();
     }
 
-    private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, User user) {
+    private AsccRecord createASCCForExtension(ACC eAcc, AsccpRecord ueAsccp, AuthenticatedPrincipal user) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -326,7 +326,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void appendAsccp(User user, BigInteger manifestId, BigInteger asccpManifestId) {
+    public void appendAsccp(AuthenticatedPrincipal user, BigInteger manifestId, BigInteger asccpManifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         AsccpManifestRecord asccpManifestRecord =
                 dslContext.selectFrom(ASCCP_MANIFEST)
@@ -339,7 +339,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void appendBccp(User user, BigInteger manifestId, BigInteger bccpManifestId) {
+    public void appendBccp(AuthenticatedPrincipal user, BigInteger manifestId, BigInteger bccpManifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         BccpManifestRecord bccpManifestRecord =
                 dslContext.selectFrom(BCCP_MANIFEST)
@@ -352,12 +352,12 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void updateState(User user, BigInteger manifestId, CcState state) {
+    public void updateState(AuthenticatedPrincipal user, BigInteger manifestId, CcState state) {
         ccNodeService.updateAccState(user, manifestId, state);
     }
 
     @Transactional
-    public ExtensionUpdateResponse updateDetails(User user, ExtensionUpdateRequest request) {
+    public ExtensionUpdateResponse updateDetails(AuthenticatedPrincipal user, ExtensionUpdateRequest request) {
         ExtensionUpdateResponse response = new ExtensionUpdateResponse();
 
         AccManifestRecord extensionAcc = getExtensionAcc(request.getManifestId());
@@ -468,7 +468,7 @@ public class ExtensionService {
     }
 
     @Transactional
-    public void transferOwnership(User user, long accManifestId, String targetLoginId) {
+    public void transferOwnership(AuthenticatedPrincipal user, long accManifestId, String targetLoginId) {
         long targetAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
                 .where(APP_USER.LOGIN_ID.equalIgnoreCase(targetLoginId))
@@ -592,7 +592,7 @@ public class ExtensionService {
         }
     }
 
-    public CcNode getLastRevisionCc(User user, String type, BigInteger manifestId) {
+    public CcNode getLastRevisionCc(AuthenticatedPrincipal user, String type, BigInteger manifestId) {
 
         if (type.equals(CcType.ASCC.name())) {
             AsccManifestRecord asccManifest = manifestRepository.getAsccManifestById(manifestId);

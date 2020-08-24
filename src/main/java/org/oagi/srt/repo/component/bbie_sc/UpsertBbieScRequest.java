@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.bbie_sc;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class UpsertBbieScRequest extends RepositoryRequest {
     private final BigInteger topLevelAsbiepId;
     private final BbieScNode.BbieSc bbieSc;
 
-    public UpsertBbieScRequest(User user, LocalDateTime localDateTime,
+    public UpsertBbieScRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
                                BigInteger topLevelAsbiepId, BbieScNode.BbieSc bbieSc) {
         super(user, localDateTime);
         this.topLevelAsbiepId = topLevelAsbiepId;

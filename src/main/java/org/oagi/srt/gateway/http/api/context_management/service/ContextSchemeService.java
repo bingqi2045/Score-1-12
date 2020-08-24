@@ -10,7 +10,7 @@ import org.oagi.srt.gateway.http.api.context_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -314,7 +314,7 @@ public class ContextSchemeService {
     }
 
     @Transactional
-    public void insert(User user, ContextScheme contextScheme) {
+    public void insert(AuthenticatedPrincipal user, ContextScheme contextScheme) {
         if (StringUtils.isEmpty(contextScheme.getGuid())) {
             contextScheme.setGuid(SrtGuid.randomGuid());
         }
@@ -369,7 +369,7 @@ public class ContextSchemeService {
     }
 
     @Transactional
-    public void update(User user, ContextScheme contextScheme) {
+    public void update(AuthenticatedPrincipal user, ContextScheme contextScheme) {
         dslContext.update(CTX_SCHEME)
                 .set(CTX_SCHEME.SCHEME_NAME, contextScheme.getSchemeName())
                 .set(CTX_SCHEME.CTX_CATEGORY_ID, ULong.valueOf(contextScheme.getCtxCategoryId()))

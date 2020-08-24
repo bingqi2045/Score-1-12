@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.bccp;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,14 +13,14 @@ public class CreateBccpRepositoryRequest extends RepositoryRequest {
 
     private String initialPropertyTerm = "Property Term";
 
-    public CreateBccpRepositoryRequest(User user,
+    public CreateBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        BigInteger bdtManifestId, BigInteger releaseId) {
         super(user);
         this.bdtManifestId = bdtManifestId;
         this.releaseId = releaseId;
     }
 
-    public CreateBccpRepositoryRequest(User user,
+    public CreateBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        LocalDateTime localDateTime,
                                        BigInteger bdtManifestId, BigInteger releaseId) {
         super(user, localDateTime);

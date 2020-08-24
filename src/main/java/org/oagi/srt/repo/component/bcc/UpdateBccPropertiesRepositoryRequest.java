@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.bcc;
 
 import org.oagi.srt.data.BCCEntityType;
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -21,13 +21,13 @@ public class UpdateBccPropertiesRepositoryRequest extends RepositoryRequest {
     private String defaultValue;
     private String fixedValue;
 
-    public UpdateBccPropertiesRepositoryRequest(User user,
+    public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 BigInteger bccManifestId) {
         super(user);
         this.bccManifestId = bccManifestId;
     }
 
-    public UpdateBccPropertiesRepositoryRequest(User user,
+    public UpdateBccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                 LocalDateTime localDateTime,
                                                 BigInteger bccManifestId) {
         super(user, localDateTime);

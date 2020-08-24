@@ -4,16 +4,12 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 import org.oagi.srt.entity.jooq.tables.records.AsccpRecord;
-import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcState;
 import org.oagi.srt.repo.component.asccp.AsccpReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.srt.entity.jooq.Tables.*;

@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.bccp;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 
@@ -9,7 +9,7 @@ public class ReviseBccpRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger bccpManifestId;
 
-    public ReviseBccpRepositoryRequest(User user,
+    public ReviseBccpRepositoryRequest(AuthenticatedPrincipal user,
                                        BigInteger bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;

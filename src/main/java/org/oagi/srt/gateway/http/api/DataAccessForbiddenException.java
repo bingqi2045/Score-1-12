@@ -1,7 +1,7 @@
 package org.oagi.srt.gateway.http.api;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 public class DataAccessForbiddenException extends DataAccessException {
 
@@ -9,8 +9,8 @@ public class DataAccessForbiddenException extends DataAccessException {
         super(msg);
     }
 
-    public DataAccessForbiddenException(User user) {
-        super("'" + user.getUsername() + "' doesn't have an access privilege.");
+    public DataAccessForbiddenException(AuthenticatedPrincipal user) {
+        super("'" + user.getName() + "' doesn't have an access privilege.");
     }
 
 }

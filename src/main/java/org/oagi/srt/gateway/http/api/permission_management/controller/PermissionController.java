@@ -7,8 +7,8 @@ import org.oagi.srt.gateway.http.api.permission_management.service.PermissionSer
 import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -21,7 +21,7 @@ public class PermissionController {
 
     @RequestMapping(value = "/permission/list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PaginationResponse<AppPermission> getPermissions(@AuthenticationPrincipal User user,
+    public PaginationResponse<AppPermission> getPermissions(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                             @RequestParam(name = "segment", required = false) String segment,
                                                             @RequestParam(name = "object", required = false) String object,
                                                             @RequestParam(name = "sortActive") String sortActive,
@@ -43,7 +43,7 @@ public class PermissionController {
 
     @RequestMapping(value = "/permission/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppPermission getPermissions(@AuthenticationPrincipal User user,
+    public AppPermission getPermissions(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @PathVariable(name = "id", required = true) int appPermissionId) {
 
         return service.getPermission(appPermissionId);
@@ -51,7 +51,7 @@ public class PermissionController {
 
     @RequestMapping(value = "/permission/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppPermission updatePermissions(@AuthenticationPrincipal User user,
+    public AppPermission updatePermissions(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                            @PathVariable(name = "id", required = true) int appPermissionId,
                                            @RequestBody Map<String, String> body) {
 

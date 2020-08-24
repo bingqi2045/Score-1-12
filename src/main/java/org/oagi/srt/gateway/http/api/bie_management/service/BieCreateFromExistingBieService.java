@@ -23,7 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,7 +76,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     }
 
     @Transactional
-    public void createBieFromExistingBie(User user, CreateBieFromExistingBieRequest request) {
+    public void createBieFromExistingBie(AuthenticatedPrincipal user, CreateBieFromExistingBieRequest request) {
         AppUser requester = sessionService.getAppUser(user);
 
         ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());

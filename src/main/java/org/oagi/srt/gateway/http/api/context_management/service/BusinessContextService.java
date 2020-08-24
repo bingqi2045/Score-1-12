@@ -13,7 +13,7 @@ import org.oagi.srt.gateway.http.helper.SrtGuid;
 import org.oagi.srt.repo.BusinessContextRepository;
 import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -88,7 +88,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void insert(User user, BusinessContext bizCtx) {
+    public void insert(AuthenticatedPrincipal user, BusinessContext bizCtx) {
         ULong userId = ULong.valueOf(sessionService.userId(user));
         LocalDateTime timestamp = LocalDateTime.now();
 
@@ -109,7 +109,7 @@ public class BusinessContextService {
     }
 
     @Transactional
-    public void update(User user, BusinessContext bizCtx) {
+    public void update(AuthenticatedPrincipal user, BusinessContext bizCtx) {
         BigInteger userId = sessionService.userId(user);
         LocalDateTime timestamp = LocalDateTime.now();
 

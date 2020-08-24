@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.code_list;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class CreateCodeListRepositoryRequest extends RepositoryRequest {
 
     private String initialName = "Code List";
 
-    public CreateCodeListRepositoryRequest(User user,
+    public CreateCodeListRepositoryRequest(AuthenticatedPrincipal user,
                                            LocalDateTime localDateTime,
                                            BigInteger basedCodeListManifestId,
                                            BigInteger releaseId) {

@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.ascc;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -16,13 +16,13 @@ public class UpdateAsccPropertiesRepositoryRequest extends RepositoryRequest {
     private String definitionSource;
     private boolean deprecated;
 
-    public UpdateAsccPropertiesRepositoryRequest(User user,
+    public UpdateAsccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  BigInteger asccManifestId) {
         super(user);
         this.asccManifestId = asccManifestId;
     }
 
-    public UpdateAsccPropertiesRepositoryRequest(User user,
+    public UpdateAsccPropertiesRepositoryRequest(AuthenticatedPrincipal user,
                                                  LocalDateTime localDateTime,
                                                  BigInteger asccManifestId) {
         super(user, localDateTime);

@@ -13,8 +13,8 @@ import org.oagi.srt.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +31,7 @@ public class BieListController {
     @RequestMapping(value = "/bie_list",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<BieList> getBieList(@AuthenticationPrincipal User user,
+    public PageResponse<BieList> getBieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @RequestParam(name = "propertyTerm", required = false) String propertyTerm,
                                             @RequestParam(name = "businessContext", required = false) String businessContext,
                                             @RequestParam(name = "accManifestId", required = false) BigInteger accManifestId,
@@ -95,7 +95,7 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie_list/delete", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteBieList(@AuthenticationPrincipal User user,
+    public ResponseEntity deleteBieList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @RequestBody DeleteBieListRequest request) {
         List<BigInteger> topLevelAsbiepIds = request.getTopLevelAsbiepIds();
         service.deleteBieList(user, topLevelAsbiepIds);
@@ -116,7 +116,7 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie/{id}/assign_biz_ctx", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity assignBizCtx(@AuthenticationPrincipal User user,
+    public ResponseEntity assignBizCtx(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("id") BigInteger topLevelAsbiepId,
                                        @RequestBody Map<String, List<Long>> request) {
         service.assignBizCtx(user, topLevelAsbiepId, request.getOrDefault("bizCtxList", Collections.emptyList()));
@@ -125,7 +125,7 @@ public class BieListController {
 
     @RequestMapping(value = "/profile_bie/{id}/transfer_ownership", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity transferOwnership(@AuthenticationPrincipal User user,
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("id") BigInteger topLevelAsbiepId,
                                             @RequestBody Map<String, String> request) {
         String targetLoginId = request.get("targetLoginId");

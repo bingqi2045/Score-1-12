@@ -1,25 +1,26 @@
 package org.oagi.srt.data;
 
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDateTime;
 
 public class RepositoryRequest {
 
-    private final User user;
+    private final AuthenticatedPrincipal user;
     private final LocalDateTime localDateTime;
 
-    public RepositoryRequest(User user) {
+    public RepositoryRequest(AuthenticatedPrincipal user) {
         this(user, LocalDateTime.now());
     }
 
-    public RepositoryRequest(User user,
+    public RepositoryRequest(AuthenticatedPrincipal user,
                              LocalDateTime localDateTime) {
         this.user = user;
         this.localDateTime = localDateTime;
     }
 
-    public User getUser() {
+    public AuthenticatedPrincipal getUser() {
         return user;
     }
 

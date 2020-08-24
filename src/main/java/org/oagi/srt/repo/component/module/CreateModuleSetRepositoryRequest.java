@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.module;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.time.LocalDateTime;
 
@@ -10,11 +10,11 @@ public class CreateModuleSetRepositoryRequest extends RepositoryRequest {
     private String name;
     private String description;
 
-    public CreateModuleSetRepositoryRequest(User user) {
+    public CreateModuleSetRepositoryRequest(AuthenticatedPrincipal user) {
         super(user);
     }
 
-    public CreateModuleSetRepositoryRequest(User user,
+    public CreateModuleSetRepositoryRequest(AuthenticatedPrincipal user,
                                             LocalDateTime localDateTime) {
         super(user, localDateTime);
     }

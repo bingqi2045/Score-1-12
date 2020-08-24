@@ -6,7 +6,7 @@ import org.oagi.srt.gateway.http.api.account_management.data.AppUser;
 import org.oagi.srt.gateway.http.api.account_management.data.UpdatePasswordRequest;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ public class SettingsService {
     private DSLContext dslContext;
 
     @Transactional
-    public void updatePassword(User user, UpdatePasswordRequest request) {
+    public void updatePassword(AuthenticatedPrincipal user, UpdatePasswordRequest request) {
         BigInteger userId = sessionService.userId(user);
 
         String oldPassword = validate(request.getOldPassword());

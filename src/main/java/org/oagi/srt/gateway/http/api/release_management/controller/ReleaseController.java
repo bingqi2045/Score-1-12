@@ -6,8 +6,8 @@ import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.api.release_management.service.ReleaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,14 +41,14 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ReleaseList> getReleaseList(@AuthenticationPrincipal User user) {
+    public List<ReleaseList> getReleaseList(@AuthenticationPrincipal AuthenticatedPrincipal user) {
         return service.getReleaseList(user);
     }
 
     @RequestMapping(value = "/releases",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<ReleaseList> getReleases(@AuthenticationPrincipal User user,
+    public PageResponse<ReleaseList> getReleases(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                  @RequestParam(name = "releaseNum", required = false) String releaseNum,
                                                  @RequestParam(name = "states", required = false) String states,
                                                  @RequestParam(name = "excludes", required = false) String excludes,
@@ -107,14 +107,14 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release/create", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReleaseResponse createRelease(@AuthenticationPrincipal User user,
+    public ReleaseResponse createRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @RequestBody ReleaseDetail releaseDetail) {
         return service.createRelease(user, releaseDetail);
     }
 
     @RequestMapping(value = "/release/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateRelease(@AuthenticationPrincipal User user,
+    public void updateRelease(@AuthenticationPrincipal AuthenticatedPrincipal user,
                               @PathVariable("id") BigInteger releaseId,
                               @RequestBody ReleaseDetail releaseDetail) {
         releaseDetail.setReleaseId(releaseId);
@@ -123,21 +123,21 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReleaseDetail getReleaseDetail(@AuthenticationPrincipal User user,
+    public ReleaseDetail getReleaseDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                           @PathVariable("id") BigInteger releaseId) {
         return service.getReleaseDetail(user, releaseId);
     }
 
     @RequestMapping(value = "/release/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void discard(@AuthenticationPrincipal User user,
+    public void discard(@AuthenticationPrincipal AuthenticatedPrincipal user,
                         @PathVariable("id") BigInteger releaseId) {
         service.discard(user, Arrays.asList(releaseId));
     }
 
     @RequestMapping(value = "/release", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void discard(@AuthenticationPrincipal User user,
+    public void discard(@AuthenticationPrincipal AuthenticatedPrincipal user,
                         @RequestParam(name = "releaseIds") String releaseIds) {
         service.discard(user, Arrays.asList(releaseIds.split(",")).stream()
                 .map(e -> new BigInteger(e)).collect(Collectors.toList()));
@@ -145,14 +145,14 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release/{id}/assignable", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AssignComponents assignComponents(@AuthenticationPrincipal User user,
+    public AssignComponents assignComponents(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                              @PathVariable("id") BigInteger releaseId) {
         return service.getAssignComponents(releaseId);
     }
 
     @RequestMapping(value = "/release/{id}/state", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void transitState(@AuthenticationPrincipal User user,
+    public void transitState(@AuthenticationPrincipal AuthenticatedPrincipal user,
                              @PathVariable("id") BigInteger releaseId,
                              @RequestBody TransitStateRequest request) {
         request.setReleaseId(releaseId);
@@ -161,14 +161,14 @@ public class ReleaseController {
 
     @RequestMapping(value = "/release/validate", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReleaseValidationResponse validate(@AuthenticationPrincipal User user,
+    public ReleaseValidationResponse validate(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                               @RequestBody ReleaseValidationRequest request) {
         return service.validate(user, request);
     }
 
     @RequestMapping(value = "/release/{id}/draft", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal User user,
+    public ReleaseValidationResponse createDraft(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                  @PathVariable("id") BigInteger releaseId,
                                                  @RequestBody ReleaseValidationRequest request) {
         return service.createDraft(user, releaseId, request);

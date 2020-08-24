@@ -2,19 +2,16 @@ package org.oagi.srt.gateway.http.configuration.intializer;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.srt.data.OagisComponentType;
-import org.oagi.srt.entity.jooq.tables.records.AsbiepRecord;
 import org.oagi.srt.gateway.http.api.bie_management.data.bie_edit.PurgeBieEvent;
 import org.oagi.srt.gateway.http.api.bie_management.service.BieEditService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.*;
+import static org.oagi.srt.entity.jooq.Tables.ABIE;
+import static org.oagi.srt.entity.jooq.Tables.ASBIEP;
 
 @Component
 public class OrphanBIEAfterReusedCleanUpInitializer implements InitializingBean {

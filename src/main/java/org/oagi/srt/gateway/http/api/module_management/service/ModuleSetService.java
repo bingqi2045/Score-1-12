@@ -7,7 +7,7 @@ import org.oagi.srt.gateway.http.api.module_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repo.component.module.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public class ModuleSetService {
     @Autowired
     private ModuleSetWriteRepository writeRepository;
 
-    public PageResponse<ModuleSet> getModuleSetList(User user, ModuleSetListRequest request) {
+    public PageResponse<ModuleSet> getModuleSetList(AuthenticatedPrincipal user, ModuleSetListRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);
@@ -34,7 +34,7 @@ public class ModuleSetService {
         return readRepository.fetch(requester, request);
     }
 
-    public ModuleSet getModuleSet(User user, BigInteger moduleSetId) {
+    public ModuleSet getModuleSet(AuthenticatedPrincipal user, BigInteger moduleSetId) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);
@@ -43,7 +43,7 @@ public class ModuleSetService {
     }
 
     @Transactional
-    public ModuleSet createModuleSet(User user, CreateModuleSetRequest request) {
+    public ModuleSet createModuleSet(AuthenticatedPrincipal user, CreateModuleSetRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);
@@ -59,7 +59,7 @@ public class ModuleSetService {
     }
 
     @Transactional
-    public void updateModuleSet(User user, UpdateModuleSetRequest request) {
+    public void updateModuleSet(AuthenticatedPrincipal user, UpdateModuleSetRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);
@@ -74,7 +74,7 @@ public class ModuleSetService {
     }
 
     @Transactional
-    public void discardModuleSet(User user, BigInteger moduleSetId) {
+    public void discardModuleSet(AuthenticatedPrincipal user, BigInteger moduleSetId) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);
@@ -86,7 +86,7 @@ public class ModuleSetService {
         writeRepository.deleteModuleSet(repositoryRequest);
     }
 
-    public PageResponse<ModuleSetModule> getModuleSetModuleList(User user, ModuleSetModuleListRequest request) {
+    public PageResponse<ModuleSetModule> getModuleSetModuleList(AuthenticatedPrincipal user, ModuleSetModuleListRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new DataAccessForbiddenException(user);

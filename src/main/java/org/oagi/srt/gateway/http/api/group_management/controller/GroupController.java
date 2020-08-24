@@ -7,8 +7,8 @@ import org.oagi.srt.gateway.http.api.group_management.service.GroupService;
 import org.oagi.srt.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class GroupController {
 
     @RequestMapping(value = "/group/list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PaginationResponse<AppGroup> getGroups(@AuthenticationPrincipal User user,
+    public PaginationResponse<AppGroup> getGroups(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                   @RequestParam(name = "name", required = false) String name,
                                                   @RequestParam(name = "sortActive") String sortActive,
                                                   @RequestParam(name = "sortDirection") String sortDirection,
@@ -43,7 +43,7 @@ public class GroupController {
 
     @RequestMapping(value = "/group/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppGroup getGroups(@AuthenticationPrincipal User user,
+    public AppGroup getGroups(@AuthenticationPrincipal AuthenticatedPrincipal user,
                               @PathVariable(name = "id", required = true) int appGroupId) {
 
         return service.getGroup(appGroupId);
@@ -51,7 +51,7 @@ public class GroupController {
 
     @RequestMapping(value = "/group/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppGroup updateGroups(@AuthenticationPrincipal User user,
+    public AppGroup updateGroups(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                  @PathVariable(name = "id", required = true) int appGroupId,
                                  @RequestBody Map<String, String> body) {
 

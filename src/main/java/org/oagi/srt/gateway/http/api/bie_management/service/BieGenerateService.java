@@ -12,7 +12,7 @@ import org.oagi.srt.gateway.http.helper.Zip;
 import org.oagi.srt.repository.TopLevelAsbiepRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +40,7 @@ public class BieGenerateService {
     private DSLContext dslContext;
 
     public BieGenerateExpressionResult generate(
-            User user, List<BigInteger> topLevelAsbiepIds,
+            AuthenticatedPrincipal user, List<BigInteger> topLevelAsbiepIds,
             GenerateExpressionOption option) throws BieGenerateFailureException {
 
         List<TopLevelAsbiep> topLevelAsbieps = topLevelAsbiepRepository.findByIdIn(topLevelAsbiepIds);

@@ -1,7 +1,7 @@
 package org.oagi.srt.repo.component.acc;
 
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class UpdateAccBasedAccRepositoryRequest extends RepositoryRequest {
     private final BigInteger accManifestId;
     private final BigInteger basedAccManifestId;
 
-    public UpdateAccBasedAccRepositoryRequest(User user,
+    public UpdateAccBasedAccRepositoryRequest(AuthenticatedPrincipal user,
                                               BigInteger accManifestId,
                                               BigInteger basedAccManifestId) {
         super(user);
@@ -19,7 +19,7 @@ public class UpdateAccBasedAccRepositoryRequest extends RepositoryRequest {
         this.basedAccManifestId = basedAccManifestId;
     }
 
-    public UpdateAccBasedAccRepositoryRequest(User user,
+    public UpdateAccBasedAccRepositoryRequest(AuthenticatedPrincipal user,
                                               LocalDateTime localDateTime,
                                               BigInteger accManifestId,
                                               BigInteger basedAccManifestId) {

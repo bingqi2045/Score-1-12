@@ -11,8 +11,8 @@ import org.oagi.srt.gateway.http.api.namespace_management.service.NamespaceServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +34,7 @@ public class NamespaceController {
 
     @RequestMapping(value = "/namespace_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<NamespaceList> getNamespaceList(@AuthenticationPrincipal User user,
+    public PageResponse<NamespaceList> getNamespaceList(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                         @RequestParam(name = "uri", required = false) String uri,
                                                         @RequestParam(name = "prefix", required = false) String prefix,
                                                         @RequestParam(name = "description", required = false) String description,
@@ -77,14 +77,14 @@ public class NamespaceController {
 
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Namespace getNamespace(@AuthenticationPrincipal User user,
+    public Namespace getNamespace(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                   @PathVariable("id") BigInteger namespaceId) {
         return service.getNamespace(user, namespaceId);
     }
 
     @RequestMapping(value = "/namespace", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> createNamespace(@AuthenticationPrincipal User user,
+    public Map<String, Object> createNamespace(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                @RequestBody Namespace namespace) {
         BigInteger namespaceId = service.create(user, namespace);
         return ImmutableMap.<String, Object>builder()
@@ -95,7 +95,7 @@ public class NamespaceController {
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateNamespace(@PathVariable("id") BigInteger namespaceId,
-                                          @AuthenticationPrincipal User user,
+                                          @AuthenticationPrincipal AuthenticatedPrincipal user,
                                           @RequestBody Namespace namespace) {
         namespace.setNamespaceId(namespaceId);
         service.update(user, namespace);
@@ -105,7 +105,7 @@ public class NamespaceController {
     @RequestMapping(value = "/namespace/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity discardNamespace(@PathVariable("id") BigInteger namespaceId,
-                                           @AuthenticationPrincipal User user) {
+                                           @AuthenticationPrincipal AuthenticatedPrincipal user) {
         service.discard(user, namespaceId);
         return ResponseEntity.accepted().build();
     }

@@ -2,7 +2,7 @@ package org.oagi.srt.repo.component.acc;
 
 import org.oagi.srt.data.OagisComponentType;
 import org.oagi.srt.data.RepositoryRequest;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -15,12 +15,12 @@ public class CreateAccRepositoryRequest extends RepositoryRequest {
     private OagisComponentType initialComponentType = OagisComponentType.Semantics;
     private String initialDefinition;
 
-    public CreateAccRepositoryRequest(User user, BigInteger releaseId) {
+    public CreateAccRepositoryRequest(AuthenticatedPrincipal user, BigInteger releaseId) {
         super(user);
         this.releaseId = releaseId;
     }
 
-    public CreateAccRepositoryRequest(User user,
+    public CreateAccRepositoryRequest(AuthenticatedPrincipal user,
                                       LocalDateTime localDateTime,
                                       BigInteger releaseId) {
         super(user, localDateTime);

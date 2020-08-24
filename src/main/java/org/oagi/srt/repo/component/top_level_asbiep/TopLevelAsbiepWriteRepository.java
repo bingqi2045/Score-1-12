@@ -3,18 +3,11 @@ package org.oagi.srt.repo.component.top_level_asbiep;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.AppUser;
-import org.oagi.srt.entity.jooq.tables.records.AbieRecord;
 import org.oagi.srt.entity.jooq.tables.records.TopLevelAsbiepRecord;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
-import org.oagi.srt.gateway.http.helper.SrtGuid;
-import org.oagi.srt.repo.component.abie.AbieNode;
-import org.oagi.srt.repo.component.abie.AbieReadRepository;
-import org.oagi.srt.repo.component.abie.UpsertAbieRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import static org.jooq.impl.DSL.and;
-import static org.oagi.srt.entity.jooq.Tables.ABIE;
 import static org.oagi.srt.entity.jooq.Tables.TOP_LEVEL_ASBIEP;
 import static org.oagi.srt.gateway.http.helper.Utility.emptyToNull;
 

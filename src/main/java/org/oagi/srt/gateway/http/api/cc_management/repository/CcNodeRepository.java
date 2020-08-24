@@ -19,7 +19,7 @@ import org.oagi.srt.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -76,7 +76,7 @@ public class CcNodeRepository {
                 .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
-    public CcAccNode getAccNodeByAccId(User user, BigInteger accId, BigInteger releaseId) {
+    public CcAccNode getAccNodeByAccId(AuthenticatedPrincipal user, BigInteger accId, BigInteger releaseId) {
         AccManifestRecord accManifestRecord =
                 dslContext.selectFrom(ACC_MANIFEST)
                         .where(and(
@@ -88,14 +88,14 @@ public class CcNodeRepository {
         return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId().toBigInteger());
     }
 
-    public CcAccNode getAccNodeByAccManifestId(User user, BigInteger accManifestId) {
+    public CcAccNode getAccNodeByAccManifestId(AuthenticatedPrincipal user, BigInteger accManifestId) {
         CcAccNode accNode = getSelectJoinStepForAccNode()
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOneInto(CcAccNode.class);
         return arrangeAccNode(user, accNode);
     }
 
-    public CcAccNode getAccNodeFromAsccByAsccpId(User user, BigInteger toAsccpId, ULong releaseId) {
+    public CcAccNode getAccNodeFromAsccByAsccpId(AuthenticatedPrincipal user, BigInteger toAsccpId, ULong releaseId) {
         CcAsccNode asccNode = dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
@@ -120,7 +120,7 @@ public class CcNodeRepository {
         return getAccNodeByAccManifestId(user, accManifestRecord.getAccManifestId().toBigInteger());
     }
 
-    private CcAccNode arrangeAccNode(User user, CcAccNode accNode) {
+    private CcAccNode arrangeAccNode(AuthenticatedPrincipal user, CcAccNode accNode) {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
         accNode.setGroup(oagisComponentType.isGroup());
@@ -187,7 +187,7 @@ public class CcNodeRepository {
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID));
     }
 
-    public CcAsccpNode getAsccpNodeByAsccpManifestId(User user, BigInteger manifestId) {
+    public CcAsccpNode getAsccpNodeByAsccpManifestId(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcAsccpNode asccpNode = selectOnConditionStepForAsccpNode()
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcAsccpNode.class);
@@ -246,7 +246,7 @@ public class CcNodeRepository {
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID));
     }
 
-    public CcBccpNode getBccpNodeByBccpManifestId(User user, BigInteger manifestId) {
+    public CcBccpNode getBccpNodeByBccpManifestId(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcBccpNode bccpNode = selectOnConditionStepForBccpNode()
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBccpNode.class);
@@ -271,7 +271,7 @@ public class CcNodeRepository {
         return (dtScCount > 0);
     }
 
-    public List<? extends CcNode> getDescendants(User user, CcAccNode accNode) {
+    public List<? extends CcNode> getDescendants(AuthenticatedPrincipal user, CcAccNode accNode) {
         if (accNode == null) {
             return Collections.emptyList();
         }
@@ -329,7 +329,7 @@ public class CcNodeRepository {
         return OagisComponentType.valueOf(oagisComponentType);
     }
 
-    private List<CcAsccpNode> getAsccpNodes(User user, BigInteger fromAccManifestId) {
+    private List<CcAsccpNode> getAsccpNodes(AuthenticatedPrincipal user, BigInteger fromAccManifestId) {
         List<CcAsccNode> asccNodes = dslContext.select(
                 ASCC.ASCC_ID,
                 ASCC_MANIFEST.ASCC_MANIFEST_ID.as("manifest_id"),
@@ -365,7 +365,7 @@ public class CcNodeRepository {
         }).collect(Collectors.toList());
     }
 
-    private List<CcBccpNode> getBccpNodes(User user, long fromAccManifestId) {
+    private List<CcBccpNode> getBccpNodes(AuthenticatedPrincipal user, long fromAccManifestId) {
         List<CcBccNode> bccNodes = dslContext.select(
                 BCC.BCC_ID,
                 BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"),
@@ -404,7 +404,7 @@ public class CcNodeRepository {
         }).collect(Collectors.toList());
     }
 
-    public CcAccNodeDetail getAccNodeDetail(User user, CcAccNode accNode) {
+    public CcAccNodeDetail getAccNodeDetail(AuthenticatedPrincipal user, CcAccNode accNode) {
         return dslContext.select(
                 ACC.ACC_ID,
                 ACC.GUID,
@@ -437,7 +437,7 @@ public class CcNodeRepository {
                 .fetchOneInto(CcAccNodeDetail.class);
     }
 
-    public CcAsccpNodeDetail getAsccpNodeDetail(User user, CcAsccpNode asccpNode) {
+    public CcAsccpNodeDetail getAsccpNodeDetail(AuthenticatedPrincipal user, CcAsccpNode asccpNode) {
         CcAsccpNodeDetail asccpNodeDetail = new CcAsccpNodeDetail();
 
         BigInteger asccManifestId = asccpNode.getAsccManifestId();
@@ -533,7 +533,7 @@ public class CcNodeRepository {
                 .fetchOne();
     }
 
-    public CcBccpNodeDetail getBccpNodeDetail(User user, CcBccpNode bccpNode) {
+    public CcBccpNodeDetail getBccpNodeDetail(AuthenticatedPrincipal user, CcBccpNode bccpNode) {
         CcBccpNodeDetail bccpNodeDetail = new CcBccpNodeDetail();
 
         BigInteger bccManifestId = bccpNode.getBccManifestId();
@@ -644,7 +644,7 @@ public class CcNodeRepository {
         return bccpNodeDetail;
     }
 
-    public CcBdtScNodeDetail getBdtScNodeDetail(User user, CcBdtScNode bdtScNode) {
+    public CcBdtScNodeDetail getBdtScNodeDetail(AuthenticatedPrincipal user, CcBdtScNode bdtScNode) {
         BigInteger manifestId = bdtScNode.getManifestId();
         return dslContext.select(
                 DT_SC_MANIFEST.DT_SC_MANIFEST_ID.as("manifestId"),
@@ -926,7 +926,7 @@ public class CcNodeRepository {
                 .execute();
     }
 
-    public void duplicateAssociationValidate(User user, ULong accManifestId, ULong asccpManifestId, ULong bccpManifestId) {
+    public void duplicateAssociationValidate(AuthenticatedPrincipal user, ULong accManifestId, ULong asccpManifestId, ULong bccpManifestId) {
         AccManifestRecord accManifest = manifestRepository.getAccManifestById(accManifestId);
 
         if (asccpManifestId != null) {

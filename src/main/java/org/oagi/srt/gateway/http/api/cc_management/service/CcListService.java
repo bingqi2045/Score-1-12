@@ -22,6 +22,7 @@ import org.oagi.srt.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -167,7 +168,7 @@ public class CcListService {
     }
 
     @Transactional
-    public void transferOwnership(User user, String type, BigInteger manifestId, String targetLoginId) {
+    public void transferOwnership(AuthenticatedPrincipal user, String type, BigInteger manifestId, String targetLoginId) {
         AppUser targetUser = sessionService.getAppUser(targetLoginId);
         if (targetUser == null) {
             throw new IllegalArgumentException("Not found a target user.");
@@ -206,7 +207,7 @@ public class CcListService {
         }
     }
 
-    public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(User user) {
+    public List<SummaryCcExt> getMyExtensionsUnusedInBIEs(AuthenticatedPrincipal user) {
         BigInteger requesterId = sessionService.userId(user);
 
         Release workingRelease = releaseRepository.getWorkingRelease();
@@ -327,7 +328,7 @@ public class CcListService {
     }
 
     @Transactional
-    public void deleteCcs(User user, CcUpdateStateListRequest request) {
+    public void deleteCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
         request.getAccManifestIds().forEach(e -> {
             ccNodeService.deleteAcc(user, e);
         });
@@ -340,7 +341,7 @@ public class CcListService {
     }
 
     @Transactional
-    public void restoreCcs(User user, CcUpdateStateListRequest request) {
+    public void restoreCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
         request.getAccManifestIds().forEach(e -> {
             ccNodeService.updateAccState(user, e, CcState.WIP);
         });

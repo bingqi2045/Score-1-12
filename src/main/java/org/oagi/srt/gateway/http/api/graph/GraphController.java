@@ -4,7 +4,6 @@ import org.jooq.tools.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -23,7 +22,7 @@ public class GraphController {
     @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getGraph(@AuthenticationPrincipal User user,
+    public Map<String, Object> getGraph(@AuthenticationPrincipal AuthenticationPrincipal user,
                                         @PathVariable("type") String type,
                                         @PathVariable("id") BigInteger id,
                                         @RequestParam(value = "q", required = false) String query) {

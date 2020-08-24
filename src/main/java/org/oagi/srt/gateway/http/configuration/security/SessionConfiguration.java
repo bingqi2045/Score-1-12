@@ -8,7 +8,6 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -29,6 +28,8 @@ public class SessionConfiguration extends RedisHttpSessionConfiguration {
     public HttpSessionIdResolver httpSessionIdResolver() {
         CookieHttpSessionIdResolver httpSessionIdResolver = new CookieHttpSessionIdResolver();
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+        cookieSerializer.setDomainNamePattern("^([\\s\\S]+)$");
+        cookieSerializer.setCookiePath("/");
         cookieSerializer.setUseHttpOnlyCookie(true);
         cookieSerializer.setSameSite("Strict");
         httpSessionIdResolver.setCookieSerializer(cookieSerializer);

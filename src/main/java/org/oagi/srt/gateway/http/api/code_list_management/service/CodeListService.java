@@ -21,7 +21,7 @@ import org.oagi.srt.repo.RevisionRepository;
 import org.oagi.srt.repo.component.code_list.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +85,7 @@ public class CodeListService extends EventHandler {
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID));
     }
 
-    public PageResponse<CodeListForList> getCodeLists(User user, CodeListForListRequest request) {
+    public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
         SelectOnConditionStep<
                 Record17<ULong, String, String, ULong, String,
                         String, ULong, String, String, LocalDateTime,
@@ -196,7 +196,7 @@ public class CodeListService extends EventHandler {
         return response;
     }
 
-    public CodeList getCodeList(User user, BigInteger manifestId) {
+    public CodeList getCodeList(AuthenticatedPrincipal user, BigInteger manifestId) {
         CodeList codeList = dslContext.select(
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
@@ -269,7 +269,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger createCodeList(User user, CodeList codeList) {
+    public BigInteger createCodeList(AuthenticatedPrincipal user, CodeList codeList) {
         LocalDateTime timestamp = LocalDateTime.now();
         CreateCodeListRepositoryRequest repositoryRequest =
                 new CreateCodeListRepositoryRequest(user, timestamp, codeList.getBasedCodeListManifestId(),
@@ -331,7 +331,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void update(User user, CodeList codeList) {
+    public void update(AuthenticatedPrincipal user, CodeList codeList) {
         LocalDateTime timestamp = LocalDateTime.now();
         if (!StringUtils.isEmpty(codeList.getState())) {
             updateCodeListState(user, timestamp, codeList.getCodeListManifestId(), CcState.valueOf(codeList.getState()));
@@ -342,7 +342,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger makeNewRevision(User user, BigInteger codeListManifestId) {
+    public BigInteger makeNewRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
         LocalDateTime timestamp = LocalDateTime.now();
         ReviseCodeListRepositoryRequest reviseCodeListRepositoryRequest
                 = new ReviseCodeListRepositoryRequest(user, codeListManifestId, timestamp);
@@ -356,7 +356,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger discardRevision(User user, BigInteger codeListManifestId) {
+    public BigInteger discardRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
         DiscardRevisionCodeListRepositoryRequest request
                 = new DiscardRevisionCodeListRepositoryRequest(user, codeListManifestId);
 
@@ -368,7 +368,7 @@ public class CodeListService extends EventHandler {
         return response.getCodeListManifestId();
     }
 
-    public CodeList getCodeListRevision(User user, BigInteger manifestId) {
+    public CodeList getCodeListRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOne();
@@ -427,7 +427,7 @@ public class CodeListService extends EventHandler {
         return codeList;
     }
 
-    public void updateCodeListState(User user, LocalDateTime timestamp, BigInteger codeListManifestId, CcState state) {
+    public void updateCodeListState(AuthenticatedPrincipal user, LocalDateTime timestamp, BigInteger codeListManifestId, CcState state) {
         UpdateCodeListStateRepositoryRequest request =
                 new UpdateCodeListStateRepositoryRequest(user, timestamp, codeListManifestId, state);
 
@@ -437,7 +437,7 @@ public class CodeListService extends EventHandler {
         fireEvent(new UpdatedCodeListStateEvent());
     }
 
-    private void updateCodeListProperties(User user, LocalDateTime timestamp, CodeList codeList) {
+    private void updateCodeListProperties(AuthenticatedPrincipal user, LocalDateTime timestamp, CodeList codeList) {
         UpdateCodeListPropertiesRepositoryRequest request =
                 new UpdateCodeListPropertiesRepositoryRequest(user, timestamp, codeList.getCodeListManifestId());
 
@@ -457,7 +457,7 @@ public class CodeListService extends EventHandler {
         fireEvent(new UpdatedCodeListPropertiesEvent());
     }
 
-    private void updateCodeListValues(User user, LocalDateTime timestamp, CodeList codeList) {
+    private void updateCodeListValues(AuthenticatedPrincipal user, LocalDateTime timestamp, CodeList codeList) {
         ModifyCodeListValuesRepositoryRequest request =
                 new ModifyCodeListValuesRepositoryRequest(user, timestamp,
                         codeList.getCodeListManifestId());
@@ -492,7 +492,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void update(User user,
+    public void update(AuthenticatedPrincipal user,
                        CodeListRecord codeListRecord, CodeListManifestRecord manifestRecord,
                        List<CodeListValue> codeListValues) {
 
@@ -534,7 +534,7 @@ public class CodeListService extends EventHandler {
                 LocalDateTime timestamp = codeListRecord.getLastUpdateTimestamp();
 
                 if (!codeListValueRecord.getOwnerUserId().equals(requesterId)) {
-                    throw new DataAccessForbiddenException("'" + user.getUsername() +
+                    throw new DataAccessForbiddenException("'" + user.getName() +
                             "' doesn't have an access privilege.");
                 }
 
@@ -601,7 +601,7 @@ public class CodeListService extends EventHandler {
 
             if (codeListValueRecord.getOwnerUserId() != null &&
                     !codeListValueRecord.getOwnerUserId().equals(requesterId)) {
-                throw new DataAccessForbiddenException("'" + user.getUsername() +
+                throw new DataAccessForbiddenException("'" + user.getName() +
                         "' doesn't have an access privilege.");
             } else {
                 codeListValueRecord.setOwnerUserId(requesterId);
@@ -640,7 +640,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(User user, BigInteger codeListManifestIds) {
+    public void deleteCodeList(AuthenticatedPrincipal user, BigInteger codeListManifestIds) {
         DeleteCodeListRepositoryRequest repositoryRequest =
                 new DeleteCodeListRepositoryRequest(user, codeListManifestIds);
 
@@ -651,7 +651,7 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void restoreCodeList(User user, BigInteger codeListManifestIds) {
+    public void restoreCodeList(AuthenticatedPrincipal user, BigInteger codeListManifestIds) {
         RestoreCodeListRepositoryRequest repositoryRequest =
                 new RestoreCodeListRepositoryRequest(user, codeListManifestIds);
 
@@ -662,12 +662,12 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public void deleteCodeList(User user, List<BigInteger> codeListManifestIds) {
+    public void deleteCodeList(AuthenticatedPrincipal user, List<BigInteger> codeListManifestIds) {
         codeListManifestIds.stream().forEach(e -> deleteCodeList(user, e));
     }
 
     @Transactional
-    public void restoreCodeList(User user, List<BigInteger> codeListManifestIds) {
+    public void restoreCodeList(AuthenticatedPrincipal user, List<BigInteger> codeListManifestIds) {
         codeListManifestIds.stream().forEach(e -> restoreCodeList(user, e));
     }
 

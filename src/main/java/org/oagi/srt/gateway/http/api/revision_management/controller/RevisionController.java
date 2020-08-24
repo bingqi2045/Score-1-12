@@ -8,8 +8,8 @@ import org.oagi.srt.gateway.http.api.revision_management.data.RevisionListReques
 import org.oagi.srt.gateway.http.api.revision_management.service.RevisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -22,7 +22,7 @@ public class RevisionController {
 
     @RequestMapping(value = "/revisions/{reference}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public PageResponse<Revision> getRevisions(@AuthenticationPrincipal User user,
+    public PageResponse<Revision> getRevisions(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                @PathVariable("reference") String reference,
                                                @RequestParam(name = "sortActive") String sortActive,
                                                @RequestParam(name = "sortDirection") String sortDirection,
@@ -47,7 +47,7 @@ public class RevisionController {
 
     @RequestMapping(value = "/revisions/{revisionId}/snapshot", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getSnapshot(@AuthenticationPrincipal User user,
+    public String getSnapshot(@AuthenticationPrincipal AuthenticatedPrincipal user,
                               @PathVariable("revisionId") BigInteger revisionId) {
         return service.getSnapshotById(user, revisionId);
     }

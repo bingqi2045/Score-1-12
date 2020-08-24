@@ -9,8 +9,8 @@ import org.oagi.srt.gateway.http.api.common.data.AccessPrivilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -31,7 +31,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getAccNode(@AuthenticationPrincipal User user,
+    public CcNode getAccNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                              @PathVariable("manifestId") BigInteger manifestId) {
         return service.getAccNode(user, manifestId);
     }
@@ -39,7 +39,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/asccp/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getAsccpNode(@AuthenticationPrincipal User user,
+    public CcNode getAsccpNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                @PathVariable("manifestId") BigInteger manifestId) {
         return service.getAsccpNode(user, manifestId);
     }
@@ -47,7 +47,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/bccp/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNode getBccpNode(@AuthenticationPrincipal User user,
+    public CcNode getBccpNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                               @PathVariable("manifestId") BigInteger manifestId) {
         return service.getBccpNode(user, manifestId);
     }
@@ -55,7 +55,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal User user,
+    public CcUpdateResponse updateCcNodeDetails(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @RequestBody CcUpdateRequest ccUpdateRequest) {
         return service.updateCcDetails(user, ccUpdateRequest);
     }
@@ -63,7 +63,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/seq_key",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateCcSeq(@AuthenticationPrincipal User user,
+    public void updateCcSeq(@AuthenticationPrincipal AuthenticatedPrincipal user,
                             @PathVariable("manifestId") BigInteger manifestId,
                             @RequestBody CcSeqUpdateRequest request) {
         service.updateCcSeq(user, manifestId,
@@ -73,7 +73,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse updateCcNodeManifest(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                      @PathVariable("type") String type,
                                                      @PathVariable("manifestId") BigInteger manifestId,
                                                      @RequestBody CcUpdateManifestRequest ccUpdateManifestRequest) {
@@ -107,7 +107,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/state",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse updateState(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse updateState(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                             @PathVariable("type") String type,
                                             @PathVariable("manifestId") BigInteger manifestId,
                                             @RequestBody CcUpdateStateRequest ccUpdateStateRequest) {
@@ -146,7 +146,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse makeNewRevision(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse makeNewRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @PathVariable("type") String type,
                                                 @PathVariable("manifestId") BigInteger manifestId) {
 
@@ -182,7 +182,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteCcNode(@AuthenticationPrincipal User user,
+    public ResponseEntity deleteCcNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("type") String type,
                                        @PathVariable("manifestId") BigInteger manifestId) {
         switch (CcType.valueOf(type.toUpperCase())) {
@@ -223,7 +223,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/detail",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeDetail getNodeDetail(@AuthenticationPrincipal User user,
+    public CcNodeDetail getNodeDetail(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                       @PathVariable("type") String type,
                                       @RequestParam("data") String data) {
         switch (CcType.valueOf(type.toUpperCase())) {
@@ -247,7 +247,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/append",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcCreateResponse appendNode(@AuthenticationPrincipal User user,
+    public CcCreateResponse appendNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @PathVariable("manifestId") BigInteger manifestId,
                                        @RequestBody CcAppendRequest request) {
 
@@ -276,7 +276,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/base",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse setBasedNode(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse setBasedNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                              @PathVariable("manifestId") BigInteger manifestId,
                                              @RequestBody CcSetBaseAccRequest ccSetBaseAccRequest) {
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
@@ -291,7 +291,7 @@ public class CcNodeController {
     }
 
     @RequestMapping(value = "/core_component/acc", method = RequestMethod.POST)
-    public CcCreateResponse createAcc(@AuthenticationPrincipal User user,
+    public CcCreateResponse createAcc(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                       @RequestBody CcAccCreateRequest request) {
         BigInteger manifestId = service.createAcc(user, request);
 
@@ -302,7 +302,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/asccp", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcCreateResponse createAsccp(@AuthenticationPrincipal User user,
+    public CcCreateResponse createAsccp(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @RequestBody CcAsccpCreateRequest request) {
         BigInteger manifestId = service.createAsccp(user, request);
 
@@ -313,7 +313,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/bccp", method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcCreateResponse createBccp(@AuthenticationPrincipal User user,
+    public CcCreateResponse createBccp(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                        @RequestBody CcBccpCreateRequest request) {
         BigInteger manifestId = service.createBccp(user, request);
 
@@ -324,7 +324,7 @@ public class CcNodeController {
 
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal User user,
+    public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @PathVariable("type") String type,
                                                 @PathVariable("manifestId") BigInteger manifestId) {
         switch (CcType.valueOf(type.toUpperCase())) {
@@ -342,7 +342,7 @@ public class CcNodeController {
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision/discard",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse discardRevision(@AuthenticationPrincipal User user,
+    public CcNodeUpdateResponse discardRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                 @PathVariable("type") String type,
                                                 @PathVariable("manifestId") BigInteger manifestId) {
 

@@ -16,7 +16,7 @@ import org.oagi.srt.gateway.http.api.release_management.data.*;
 import org.oagi.srt.gateway.http.configuration.security.SessionService;
 import org.oagi.srt.repository.SrtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -923,7 +923,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
         return assignComponents;
     }
 
-    public void transitState(User user,
+    public void transitState(AuthenticatedPrincipal user,
                              TransitStateRequest request) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
@@ -1036,7 +1036,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
         }
     }
 
-    private void updateCCStates(User user, CcState fromCcState, CcState toCcState, LocalDateTime timestamp) {
+    private void updateCCStates(AuthenticatedPrincipal user, CcState fromCcState, CcState toCcState, LocalDateTime timestamp) {
         for (BigInteger accManifestId : dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))

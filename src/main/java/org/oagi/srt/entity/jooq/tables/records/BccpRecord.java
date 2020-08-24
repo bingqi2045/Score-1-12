@@ -4,8 +4,6 @@
 package org.oagi.srt.entity.jooq.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record21;
@@ -13,6 +11,8 @@ import org.jooq.Row21;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.srt.entity.jooq.tables.Bccp;
+
+import java.time.LocalDateTime;
 
 
 /**

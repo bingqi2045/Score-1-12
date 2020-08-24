@@ -3,7 +3,7 @@ package org.oagi.srt.repo.component.acc;
 import org.apache.commons.lang3.tuple.Pair;
 import org.oagi.srt.data.RepositoryRequest;
 import org.oagi.srt.gateway.http.api.cc_management.data.CcId;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class UpdateSeqKeyRequest extends RepositoryRequest {
     private final BigInteger accManifestId;
     private final Pair<CcId, CcId> itemAfterPair;
 
-    public UpdateSeqKeyRequest(User user,
+    public UpdateSeqKeyRequest(AuthenticatedPrincipal user,
                                BigInteger accManifestId,
                                Pair<CcId, CcId> itemAfterPair) {
         super(user);
@@ -21,7 +21,7 @@ public class UpdateSeqKeyRequest extends RepositoryRequest {
         this.itemAfterPair = itemAfterPair;
     }
 
-    public UpdateSeqKeyRequest(User user,
+    public UpdateSeqKeyRequest(AuthenticatedPrincipal user,
                                LocalDateTime localDateTime,
                                BigInteger accManifestId,
                                Pair<CcId, CcId> itemAfterPair) {

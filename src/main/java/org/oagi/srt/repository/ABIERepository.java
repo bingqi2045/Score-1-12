@@ -2,7 +2,6 @@ package org.oagi.srt.repository;
 
 import org.jooq.DSLContext;
 import org.jooq.Record13;
-import org.jooq.Record16;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.srt.data.ABIE;

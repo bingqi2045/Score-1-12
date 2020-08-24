@@ -29,6 +29,7 @@ import org.oagi.srt.repo.PaginationResponse;
 import org.oagi.srt.repository.ABIERepository;
 import org.oagi.srt.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +73,7 @@ public class BieService {
     private DSLContext dslContext;
 
     @Transactional
-    public BieCreateResponse createBie(User user, BieCreateRequest request) {
+    public BieCreateResponse createBie(AuthenticatedPrincipal user, BieCreateRequest request) {
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(request.asccpManifestId());
         if (asccpManifest == null) {
@@ -125,7 +126,7 @@ public class BieService {
         return response;
     }
 
-    public PageResponse<BieList> getBieList(User user, BieListRequest request) {
+    public PageResponse<BieList> getBieList(AuthenticatedPrincipal user, BieListRequest request) {
         PageRequest pageRequest = request.getPageRequest();
         AppUser requester = sessionService.getAppUser(user);
 
@@ -174,7 +175,7 @@ public class BieService {
     }
 
     @Transactional
-    public void deleteBieList(User requester, List<BigInteger> topLevelAsbiepIds) {
+    public void deleteBieList(AuthenticatedPrincipal requester, List<BigInteger> topLevelAsbiepIds) {
         if (topLevelAsbiepIds == null || topLevelAsbiepIds.isEmpty()) {
             return;
         }
@@ -200,7 +201,7 @@ public class BieService {
         dslContext.query("SET FOREIGN_KEY_CHECKS = 1").execute();
     }
 
-    private void ensureProperDeleteBieRequest(User requester, List<BigInteger> topLevelAsbiepIds) {
+    private void ensureProperDeleteBieRequest(AuthenticatedPrincipal requester, List<BigInteger> topLevelAsbiepIds) {
         Result<Record2<String, ULong>> result =
                 dslContext.select(TOP_LEVEL_ASBIEP.STATE, TOP_LEVEL_ASBIEP.OWNER_USER_ID)
                         .from(TOP_LEVEL_ASBIEP)
@@ -223,10 +224,12 @@ public class BieService {
     }
 
     @Transactional
-    public void transferOwnership(User user, BigInteger topLevelAsbiepId, String targetLoginId) {
+    public void transferOwnership(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, String targetLoginId) {
         long ownerAppUserId = dslContext.select(APP_USER.APP_USER_ID)
                 .from(APP_USER)
-                .where(APP_USER.LOGIN_ID.equalIgnoreCase(user.getUsername()))
+                .where(APP_USER.LOGIN_ID.equalIgnoreCase(
+                        sessionService.getAppUser(user).getLoginId()
+                ))
                 .fetchOptionalInto(Long.class).orElse(0L);
         if (ownerAppUserId == 0L) {
             throw new IllegalArgumentException("Not found an owner user.");
@@ -261,7 +264,7 @@ public class BieService {
     }
 
     @Transactional
-    public void assignBizCtx(User user, BigInteger topLevelAsbiepId, Collection<Long> biz_ctx_list) {
+    public void assignBizCtx(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId, Collection<Long> biz_ctx_list) {
         ArrayList<Long> newList = new ArrayList<>(biz_ctx_list);
         //remove all records of previous assignment if not in the current assignment
         dslContext.delete(BIZ_CTX_ASSIGNMENT)
