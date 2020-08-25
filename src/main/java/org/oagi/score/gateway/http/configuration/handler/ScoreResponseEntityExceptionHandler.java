@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RestControllerAdvice
-public class SrtResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class ScoreResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
