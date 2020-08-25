@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.CodeListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1834800623;
+    private static final long serialVersionUID = 813385781;
 
     /**
      * Setter for <code>oagi.code_list_manifest.code_list_manifest_id</code>.

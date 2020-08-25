@@ -4,16 +4,26 @@
 package org.oagi.score.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row3;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.Keys;
 import org.oagi.score.entity.jooq.Oagi;
 import org.oagi.score.entity.jooq.tables.records.CdtScAwdPriXpsTypeMapRecord;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -25,7 +35,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPriXpsTypeMap extends TableImpl<CdtScAwdPriXpsTypeMapRecord> {
 
-    private static final long serialVersionUID = -1778692740;
+    private static final long serialVersionUID = 742610070;
 
     /**
      * The reference instance of <code>oagi.cdt_sc_awd_pri_xps_type_map</code>

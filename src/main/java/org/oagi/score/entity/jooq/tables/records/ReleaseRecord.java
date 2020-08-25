@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record11;
@@ -12,8 +14,6 @@ import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Release;
 
-import java.time.LocalDateTime;
-
 
 /**
  * The is table store the release information.
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record11<ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String> {
 
-    private static final long serialVersionUID = -1585581230;
+    private static final long serialVersionUID = 182272562;
 
     /**
      * Setter for <code>oagi.release.release_id</code>. RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.

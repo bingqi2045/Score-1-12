@@ -20,7 +20,7 @@ import org.oagi.score.entity.jooq.tables.CtxSchemeValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValueRecord extends UpdatableRecordImpl<CtxSchemeValueRecord> implements Record5<ULong, String, String, String, ULong> {
 
-    private static final long serialVersionUID = -763708456;
+    private static final long serialVersionUID = 523862610;
 
     /**
      * Setter for <code>oagi.ctx_scheme_value.ctx_scheme_value_id</code>. Primary, internal database key.

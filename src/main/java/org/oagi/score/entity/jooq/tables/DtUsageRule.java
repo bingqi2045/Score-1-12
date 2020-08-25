@@ -4,16 +4,26 @@
 package org.oagi.score.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row4;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.Keys;
 import org.oagi.score.entity.jooq.Oagi;
 import org.oagi.score.entity.jooq.tables.records.DtUsageRuleRecord;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -26,7 +36,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
 
-    private static final long serialVersionUID = -131230458;
+    private static final long serialVersionUID = 148456428;
 
     /**
      * The reference instance of <code>oagi.dt_usage_rule</code>

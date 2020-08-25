@@ -20,7 +20,7 @@ import org.oagi.score.entity.jooq.tables.SeqKey;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements Record6<ULong, ULong, SeqKeyType, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1866435500;
+    private static final long serialVersionUID = -364609995;
 
     /**
      * Setter for <code>oagi.seq_key.seq_key_id</code>.

@@ -4,16 +4,26 @@
 package org.oagi.score.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row8;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.Keys;
 import org.oagi.score.entity.jooq.Oagi;
 import org.oagi.score.entity.jooq.tables.records.AccManifestRecord;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -22,7 +32,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifest extends TableImpl<AccManifestRecord> {
 
-    private static final long serialVersionUID = -927613350;
+    private static final long serialVersionUID = -1689338060;
 
     /**
      * The reference instance of <code>oagi.acc_manifest</code>

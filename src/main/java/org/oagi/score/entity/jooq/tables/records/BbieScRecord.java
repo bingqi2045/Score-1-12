@@ -4,12 +4,12 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.BbieSc;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = -468178026;
+    private static final long serialVersionUID = -1339541002;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.

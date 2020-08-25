@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record20;
@@ -11,8 +13,6 @@ import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Acc;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record20<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1855032391;
+    private static final long serialVersionUID = 1176296089;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.

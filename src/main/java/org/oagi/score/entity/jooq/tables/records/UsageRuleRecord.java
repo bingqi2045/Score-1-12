@@ -22,7 +22,7 @@ import org.oagi.score.entity.jooq.tables.UsageRule;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implements Record3<ULong, String, Integer> {
 
-    private static final long serialVersionUID = -696736486;
+    private static final long serialVersionUID = 2016379104;
 
     /**
      * Setter for <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the usage rule.

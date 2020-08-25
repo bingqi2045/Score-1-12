@@ -4,12 +4,12 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Dt;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = 145765868;
+    private static final long serialVersionUID = 1492061260;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.

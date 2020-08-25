@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record15;
@@ -11,8 +13,6 @@ import org.jooq.Row15;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Abie;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> {
 
-    private static final long serialVersionUID = -1199597908;
+    private static final long serialVersionUID = -1802042420;
 
     /**
      * Setter for <code>oagi.abie.abie_id</code>. A internal, primary database key of an ABIE.

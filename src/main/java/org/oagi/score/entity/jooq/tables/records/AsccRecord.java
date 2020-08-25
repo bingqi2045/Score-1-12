@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record20;
@@ -11,8 +13,6 @@ import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Ascc;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
-    private static final long serialVersionUID = 1492743447;
+    private static final long serialVersionUID = -423162889;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.

@@ -4,7 +4,23 @@
 package org.oagi.score.entity.jooq.tables;
 
 
-import org.jooq.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jooq.Field;
+import org.jooq.ForeignKey;
+import org.jooq.Identity;
+import org.jooq.Index;
+import org.jooq.Name;
+import org.jooq.Record;
+import org.jooq.Row19;
+import org.jooq.Schema;
+import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -12,11 +28,6 @@ import org.oagi.score.entity.jooq.Indexes;
 import org.oagi.score.entity.jooq.Keys;
 import org.oagi.score.entity.jooq.Oagi;
 import org.oagi.score.entity.jooq.tables.records.AsbieRecord;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -26,7 +37,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asbie extends TableImpl<AsbieRecord> {
 
-    private static final long serialVersionUID = -847291600;
+    private static final long serialVersionUID = 1300600947;
 
     /**
      * The reference instance of <code>oagi.asbie</code>

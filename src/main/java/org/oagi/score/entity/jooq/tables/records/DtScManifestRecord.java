@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.DtScManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> implements Record7<ULong, ULong, ULong, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 505999865;
+    private static final long serialVersionUID = -395738817;
 
     /**
      * Setter for <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.

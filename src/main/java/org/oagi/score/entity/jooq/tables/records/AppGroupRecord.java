@@ -20,7 +20,7 @@ import org.oagi.score.entity.jooq.tables.AppGroup;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppGroupRecord extends UpdatableRecordImpl<AppGroupRecord> implements Record3<ULong, String, UInteger> {
 
-    private static final long serialVersionUID = 229897117;
+    private static final long serialVersionUID = 1539308451;
 
     /**
      * Setter for <code>oagi.app_group.app_group_id</code>.

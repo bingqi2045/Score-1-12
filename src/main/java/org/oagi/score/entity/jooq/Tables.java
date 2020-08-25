@@ -4,9 +4,78 @@
 package org.oagi.score.entity.jooq;
 
 
-import org.oagi.score.entity.jooq.tables.*;
+import org.oagi.score.entity.jooq.tables.Abie;
+import org.oagi.score.entity.jooq.tables.Acc;
+import org.oagi.score.entity.jooq.tables.AccManifest;
+import org.oagi.score.entity.jooq.tables.AgencyIdList;
+import org.oagi.score.entity.jooq.tables.AgencyIdListValue;
+import org.oagi.score.entity.jooq.tables.AppGroup;
+import org.oagi.score.entity.jooq.tables.AppGroupUser;
+import org.oagi.score.entity.jooq.tables.AppOauth2User;
+import org.oagi.score.entity.jooq.tables.AppPermission;
+import org.oagi.score.entity.jooq.tables.AppPermissionGroup;
+import org.oagi.score.entity.jooq.tables.AppUser;
+import org.oagi.score.entity.jooq.tables.Asbie;
+import org.oagi.score.entity.jooq.tables.Asbiep;
+import org.oagi.score.entity.jooq.tables.Ascc;
+import org.oagi.score.entity.jooq.tables.AsccManifest;
+import org.oagi.score.entity.jooq.tables.Asccp;
+import org.oagi.score.entity.jooq.tables.AsccpManifest;
+import org.oagi.score.entity.jooq.tables.Bbie;
+import org.oagi.score.entity.jooq.tables.BbieSc;
+import org.oagi.score.entity.jooq.tables.Bbiep;
+import org.oagi.score.entity.jooq.tables.Bcc;
+import org.oagi.score.entity.jooq.tables.BccManifest;
+import org.oagi.score.entity.jooq.tables.Bccp;
+import org.oagi.score.entity.jooq.tables.BccpManifest;
+import org.oagi.score.entity.jooq.tables.BdtPriRestri;
+import org.oagi.score.entity.jooq.tables.BdtScPriRestri;
+import org.oagi.score.entity.jooq.tables.BieUsageRule;
+import org.oagi.score.entity.jooq.tables.BieUserExtRevision;
+import org.oagi.score.entity.jooq.tables.BizCtx;
+import org.oagi.score.entity.jooq.tables.BizCtxAssignment;
+import org.oagi.score.entity.jooq.tables.BizCtxValue;
+import org.oagi.score.entity.jooq.tables.BlobContent;
+import org.oagi.score.entity.jooq.tables.CdtAwdPri;
+import org.oagi.score.entity.jooq.tables.CdtAwdPriXpsTypeMap;
+import org.oagi.score.entity.jooq.tables.CdtPri;
+import org.oagi.score.entity.jooq.tables.CdtScAwdPri;
+import org.oagi.score.entity.jooq.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.entity.jooq.tables.CodeList;
+import org.oagi.score.entity.jooq.tables.CodeListManifest;
+import org.oagi.score.entity.jooq.tables.CodeListValue;
+import org.oagi.score.entity.jooq.tables.CodeListValueManifest;
+import org.oagi.score.entity.jooq.tables.Comment;
+import org.oagi.score.entity.jooq.tables.CtxCategory;
+import org.oagi.score.entity.jooq.tables.CtxScheme;
+import org.oagi.score.entity.jooq.tables.CtxSchemeValue;
+import org.oagi.score.entity.jooq.tables.Dt;
+import org.oagi.score.entity.jooq.tables.DtManifest;
+import org.oagi.score.entity.jooq.tables.DtSc;
+import org.oagi.score.entity.jooq.tables.DtScManifest;
+import org.oagi.score.entity.jooq.tables.DtUsageRule;
 import org.oagi.score.entity.jooq.tables.Module;
-import org.oagi.score.jooq.tables.*;
+import org.oagi.score.entity.jooq.tables.ModuleAccManifest;
+import org.oagi.score.entity.jooq.tables.ModuleAsccpManifest;
+import org.oagi.score.entity.jooq.tables.ModuleBccpManifest;
+import org.oagi.score.entity.jooq.tables.ModuleCodeListManifest;
+import org.oagi.score.entity.jooq.tables.ModuleDep;
+import org.oagi.score.entity.jooq.tables.ModuleDir;
+import org.oagi.score.entity.jooq.tables.ModuleDtManifest;
+import org.oagi.score.entity.jooq.tables.ModuleSet;
+import org.oagi.score.entity.jooq.tables.ModuleSetAssignment;
+import org.oagi.score.entity.jooq.tables.ModuleSetRelease;
+import org.oagi.score.entity.jooq.tables.Namespace;
+import org.oagi.score.entity.jooq.tables.Oauth2App;
+import org.oagi.score.entity.jooq.tables.Oauth2AppScope;
+import org.oagi.score.entity.jooq.tables.Release;
+import org.oagi.score.entity.jooq.tables.Revision;
+import org.oagi.score.entity.jooq.tables.SeqKey;
+import org.oagi.score.entity.jooq.tables.TopLevelAsbiep;
+import org.oagi.score.entity.jooq.tables.UsageRule;
+import org.oagi.score.entity.jooq.tables.UsageRuleExpression;
+import org.oagi.score.entity.jooq.tables.Xbt;
+import org.oagi.score.entity.jooq.tables.XbtManifest;
 
 
 /**
@@ -280,7 +349,7 @@ If we use a separate table for each expression, then we need binding all the way
     /**
      * The module table stores information about a physical file, into which CC components will be generated during the expression generation.
      */
-    public static final org.oagi.score.entity.jooq.tables.Module MODULE = Module.MODULE;
+    public static final Module MODULE = Module.MODULE;
 
     /**
      * The table <code>oagi.module_acc_manifest</code>.

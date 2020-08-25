@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record16;
@@ -11,8 +13,6 @@ import org.jooq.Row16;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Xbt;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
-    private static final long serialVersionUID = -754923466;
+    private static final long serialVersionUID = -705768106;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.

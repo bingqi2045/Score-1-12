@@ -4,6 +4,9 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record19;
@@ -11,9 +14,6 @@ import org.jooq.Row19;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Asbie;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 
 /**
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = 1103912453;
+    private static final long serialVersionUID = -1843315509;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.

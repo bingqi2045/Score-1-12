@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record13;
@@ -11,8 +13,6 @@ import org.jooq.Row13;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Bbiep;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = -129321619;
+    private static final long serialVersionUID = -307295603;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.

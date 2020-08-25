@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.AppPermission;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppPermissionRecord extends UpdatableRecordImpl<AppPermissionRecord> implements Record5<ULong, String, String, String, String> {
 
-    private static final long serialVersionUID = 1276891142;
+    private static final long serialVersionUID = 644727424;
 
     /**
      * Setter for <code>oagi.app_permission.app_permission_id</code>.

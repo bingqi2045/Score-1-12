@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.AsccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1744254768;
+    private static final long serialVersionUID = -234657590;
 
     /**
      * Setter for <code>oagi.ascc_manifest.ascc_manifest_id</code>.

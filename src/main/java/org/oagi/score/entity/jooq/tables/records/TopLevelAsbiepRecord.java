@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record9;
@@ -11,8 +13,6 @@ import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.TopLevelAsbiep;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepRecord> implements Record9<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String, String, String> {
 
-    private static final long serialVersionUID = -1562641705;
+    private static final long serialVersionUID = -121383305;
 
     /**
      * Setter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A internal, primary database key of an top-level ASBIEP.

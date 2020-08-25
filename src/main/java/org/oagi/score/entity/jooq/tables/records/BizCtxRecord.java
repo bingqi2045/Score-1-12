@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
@@ -11,8 +13,6 @@ import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.BizCtx;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1645936985;
+    private static final long serialVersionUID = 410377721;
 
     /**
      * Setter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal database key.

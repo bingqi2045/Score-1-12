@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.BizCtxAssignment;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignmentRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 660945868;
+    private static final long serialVersionUID = -581916602;
 
     /**
      * Setter for <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.

@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.BccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 208432638;
+    private static final long serialVersionUID = -1003861640;
 
     /**
      * Setter for <code>oagi.bcc_manifest.bcc_manifest_id</code>.

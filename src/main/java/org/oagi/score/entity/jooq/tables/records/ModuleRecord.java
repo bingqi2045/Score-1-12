@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
@@ -11,8 +13,6 @@ import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Module;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 113499139;
+    private static final long serialVersionUID = -280952541;
 
     /**
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database key.

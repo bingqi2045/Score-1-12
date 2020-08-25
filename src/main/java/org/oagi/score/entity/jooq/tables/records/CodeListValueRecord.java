@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record18;
@@ -11,8 +13,6 @@ import org.jooq.Row18;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.CodeListValue;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record18<ULong, String, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = 447668675;
+    private static final long serialVersionUID = 1971689187;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.

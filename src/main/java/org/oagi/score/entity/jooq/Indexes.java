@@ -7,8 +7,27 @@ package org.oagi.score.entity.jooq;
 import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.Internal;
-import org.oagi.score.entity.jooq.tables.*;
-import org.oagi.score.jooq.tables.*;
+import org.oagi.score.entity.jooq.tables.Abie;
+import org.oagi.score.entity.jooq.tables.Acc;
+import org.oagi.score.entity.jooq.tables.AppGroupUser;
+import org.oagi.score.entity.jooq.tables.AppPermissionGroup;
+import org.oagi.score.entity.jooq.tables.Asbie;
+import org.oagi.score.entity.jooq.tables.Asbiep;
+import org.oagi.score.entity.jooq.tables.Ascc;
+import org.oagi.score.entity.jooq.tables.Asccp;
+import org.oagi.score.entity.jooq.tables.Bbie;
+import org.oagi.score.entity.jooq.tables.BbieSc;
+import org.oagi.score.entity.jooq.tables.Bbiep;
+import org.oagi.score.entity.jooq.tables.Bcc;
+import org.oagi.score.entity.jooq.tables.Bccp;
+import org.oagi.score.entity.jooq.tables.BizCtxAssignment;
+import org.oagi.score.entity.jooq.tables.Comment;
+import org.oagi.score.entity.jooq.tables.Dt;
+import org.oagi.score.entity.jooq.tables.DtSc;
+import org.oagi.score.entity.jooq.tables.ModuleDir;
+import org.oagi.score.entity.jooq.tables.Revision;
+import org.oagi.score.entity.jooq.tables.SeqKey;
+import org.oagi.score.entity.jooq.tables.Xbt;
 
 
 /**

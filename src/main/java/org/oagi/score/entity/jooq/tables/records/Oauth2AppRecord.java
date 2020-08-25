@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.Oauth2App;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oauth2AppRecord extends UpdatableRecordImpl<Oauth2AppRecord> implements Record18<ULong, String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, Integer, Byte> {
 
-    private static final long serialVersionUID = -1240220800;
+    private static final long serialVersionUID = -650952646;
 
     /**
      * Setter for <code>oagi.oauth2_app.oauth2_app_id</code>.

@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.AccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -652517400;
+    private static final long serialVersionUID = 196425826;
 
     /**
      * Setter for <code>oagi.acc_manifest.acc_manifest_id</code>.

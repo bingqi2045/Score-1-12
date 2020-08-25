@@ -22,7 +22,7 @@ import org.oagi.score.entity.jooq.tables.DtSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> {
 
-    private static final long serialVersionUID = -1227360565;
+    private static final long serialVersionUID = 1036149073;
 
     /**
      * Setter for <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.

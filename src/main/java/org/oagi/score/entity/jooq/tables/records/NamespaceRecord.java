@@ -4,6 +4,8 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
+import java.time.LocalDateTime;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
@@ -11,8 +13,6 @@ import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Namespace;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implements Record10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -2013057745;
+    private static final long serialVersionUID = -659062193;
 
     /**
      * Setter for <code>oagi.namespace.namespace_id</code>. Primary, internal database key.

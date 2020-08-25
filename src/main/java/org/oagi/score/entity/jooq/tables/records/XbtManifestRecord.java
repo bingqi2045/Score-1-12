@@ -19,7 +19,7 @@ import org.oagi.score.entity.jooq.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -544912612;
+    private static final long serialVersionUID = -1109799914;
 
     /**
      * Setter for <code>oagi.xbt_manifest.xbt_manifest_id</code>.

@@ -4,13 +4,17 @@
 package org.oagi.score.entity.jooq.tables.records;
 
 
-import org.jooq.*;
+import java.time.LocalDateTime;
+
+import org.jooq.Field;
+import org.jooq.JSON;
+import org.jooq.Record1;
+import org.jooq.Record10;
+import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.entity.jooq.tables.Revision;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -19,7 +23,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RevisionRecord extends UpdatableRecordImpl<RevisionRecord> implements Record10<ULong, UInteger, UInteger, String, String, JSON, ULong, ULong, ULong, LocalDateTime> {
 
-    private static final long serialVersionUID = 1868708549;
+    private static final long serialVersionUID = 1888495461;
 
     /**
      * Setter for <code>oagi.revision.revision_id</code>.

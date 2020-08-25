@@ -8,11 +8,11 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
 import org.oagi.score.entity.jooq.tables.records.*;
-import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
+import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repository.SrtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ import static org.jooq.impl.DSL.or;
 import static org.oagi.score.entity.jooq.Tables.*;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.*;
 
 @Repository
 public class ReleaseRepository implements SrtRepository<Release> {
@@ -774,7 +775,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                         RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                         RELEASE.RELEASE_NUM.eq("Working")
                                 ),
-                                ACC.STATE.notEqual(Published.name())
+                                ACC.STATE.notEqual(CcState.Published.name())
                         ))
                         .fetchStream()
                         .collect(groupingBy(e -> e.value1()));
@@ -814,7 +815,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        ASCCP.STATE.notEqual(Published.name())
+                        ASCCP.STATE.notEqual(CcState.Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
@@ -854,7 +855,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        BCCP.STATE.notEqual(Published.name())
+                        BCCP.STATE.notEqual(CcState.Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
@@ -894,7 +895,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                                 RELEASE.RELEASE_NUM.eq("Working")
                         ),
-                        CODE_LIST.STATE.notEqual(Published.name())
+                        CODE_LIST.STATE.notEqual(CcState.Published.name())
                 ))
                 .fetchStream()
                 .collect(groupingBy(e -> e.value1()));
