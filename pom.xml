@@ -279,7 +279,7 @@
                         </database>
 
                         <target>
-                            <packageName>org.oagi.srt.entity.jooq</packageName>
+                            <packageName>org.oagi.score.entity.jooq</packageName>
                             <directory>${project.build.sourceDirectory}</directory>
                         </target>
                     </generator>
@@ -312,8 +312,8 @@
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>4.7.2</version>
                 <configuration>
-                    <sourceDirectory>${basedir}/src/main/java/org/oagi/srt/grammar/xpath</sourceDirectory>
-                    <outputDirectory>${basedir}/src/main/java/org/oagi/srt/grammar/xpath</outputDirectory>
+                    <sourceDirectory>${baseDir}/src/main/java/org/oagi/score/grammar/xpath</sourceDirectory>
+                    <outputDirectory>${baseDir}/src/main/java/org/oagi/score/grammar/xpath</outputDirectory>
                     <visitor>true</visitor>
                 </configuration>
                 <executions>
