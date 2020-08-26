@@ -63,13 +63,29 @@ public class AsccWriteRepository {
 
         if (dslContext.selectCount()
                 .from(ASCC_MANIFEST)
+                .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                 .where(and(
                         ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))
+                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())),
+                        ASCC.STATE.notEqual(CcState.Deleted.name())
                 ))
                 .fetchOneInto(Integer.class) > 0) {
             throw new IllegalArgumentException("Target ASCCP has already included.");
+        }
+
+        if(accManifestRecord.getBasedAccManifestId() != null &&
+                dslContext.selectCount()
+                        .from(ASCC_MANIFEST)
+                        .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                        .where(and(
+                                ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getBasedAccManifestId()),
+                                ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())),
+                                ASCC.STATE.notEqual(CcState.Deleted.name())
+                        ))
+                        .fetchOneInto(Integer.class) > 0) {
+            throw new IllegalArgumentException("Target ASCCP has already included on based ACC.");
         }
 
         if (dslContext.selectCount()

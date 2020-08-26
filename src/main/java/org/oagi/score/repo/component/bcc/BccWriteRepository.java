@@ -61,13 +61,29 @@ public class BccWriteRepository {
 
         if (dslContext.selectCount()
                 .from(BCC_MANIFEST)
+                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                 .where(and(
                         BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())),
+                        BCC.STATE.notEqual(CcState.Deleted.name())
                 ))
                 .fetchOneInto(Integer.class) > 0) {
             throw new IllegalArgumentException("Target BCCP has already included.");
+        }
+
+        if(accManifestRecord.getBasedAccManifestId() != null &&
+                dslContext.selectCount()
+                        .from(BCC_MANIFEST)
+                        .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                        .where(and(
+                                BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
+                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getBasedAccManifestId()),
+                                BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())),
+                                BCC.STATE.notEqual(CcState.Deleted.name())
+                        ))
+                        .fetchOneInto(Integer.class) > 0) {
+            throw new IllegalArgumentException("Target BCCP has already included on based ACC.");
         }
 
         AccRecord accRecord = dslContext.selectFrom(ACC)

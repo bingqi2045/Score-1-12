@@ -724,11 +724,19 @@ public class AccWriteRepository {
                             .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
                             .fetchOneInto(ULong.class)
             );
+
+            CcState prevState = CcState.valueOf(asccRecord.getState());
+
+            // Change owner of CC when it restored.
+            if (prevState == CcState.Deleted && nextState == CcState.WIP) {
+                asccRecord.setOwnerUserId(userId);
+            }
+
             asccRecord.setState(nextState.name());
             asccRecord.setLastUpdatedBy(userId);
             asccRecord.setLastUpdateTimestamp(timestamp);
             asccRecord.update(ASCC.FROM_ACC_ID, ASCC.TO_ASCCP_ID, ASCC.STATE,
-                    ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP);
+                    ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP, ASCC.OWNER_USER_ID);
         }
     }
 
@@ -753,11 +761,19 @@ public class AccWriteRepository {
                             .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
                             .fetchOneInto(ULong.class)
             );
+
+            CcState prevState = CcState.valueOf(bccRecord.getState());
+
+            // Change owner of CC when it restored.
+            if (prevState == CcState.Deleted && nextState == CcState.WIP) {
+                bccRecord.setOwnerUserId(userId);
+            }
+
             bccRecord.setState(nextState.name());
             bccRecord.setLastUpdatedBy(userId);
             bccRecord.setLastUpdateTimestamp(timestamp);
             bccRecord.update(BCC.FROM_ACC_ID, BCC.TO_BCCP_ID, BCC.STATE,
-                    BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
+                    BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP, BCC.OWNER_USER_ID);
         }
     }
 
@@ -790,10 +806,6 @@ public class AccWriteRepository {
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.update(ACC.STATE,
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
-
-        // delete associations.
-        updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
-        updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, CcState.Deleted, userId, timestamp);
 
         // creates new revision for deleted record.
         RevisionRecord revisionRecord =
@@ -1121,6 +1133,10 @@ public class AccWriteRepository {
                 .execute();
 
         // delete SEQ_KEY for current ACC
+        dslContext.update(SEQ_KEY)
+                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId())).execute();
         dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId())).execute();
     }
 
