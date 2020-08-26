@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
 import org.oagi.score.entity.jooq.tables.records.AppOauth2UserRecord;
 import org.oagi.score.entity.jooq.tables.records.Oauth2AppRecord;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.Authentication;
@@ -26,10 +27,17 @@ import static org.oagi.score.entity.jooq.Tables.OAUTH2_APP;
 import static org.oagi.score.entity.jooq.tables.AppOauth2User.APP_OAUTH2_USER;
 
 @Component
-public class ScoreAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class ScoreAuthenticationSuccessHandler
+        extends SimpleUrlAuthenticationSuccessHandler
+        implements InitializingBean {
 
     @Autowired
     private DSLContext dslContext;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setUseReferer(true);
+    }
 
     @Override
     @Transactional
@@ -55,6 +63,12 @@ public class ScoreAuthenticationSuccessHandler extends SimpleUrlAuthenticationSu
             handle(request, response, authentication);
             clearAuthenticationAttributes(request);
         }
+    }
+
+    @Override
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {
+        String targetUrl = super.determineTargetUrl(request, response);
+        return targetUrl.replaceAll("/login", "/");
     }
 
     private void storeOAuth2UserInfoIfAbsent(Authentication authentication, OAuth2User oAuth2User) {
