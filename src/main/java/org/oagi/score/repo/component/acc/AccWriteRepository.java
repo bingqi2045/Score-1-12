@@ -577,12 +577,15 @@ public class AccWriteRepository {
         if (request.getBasedAccManifestId() == null) {
             accRecord.setBasedAccId(null);
         } else {
-            ULong basedAccId = dslContext.select(ACC_MANIFEST.ACC_ID)
-                    .from(ACC_MANIFEST)
+            AccManifestRecord basedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                     .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getBasedAccManifestId())))
-                    .fetchOneInto(ULong.class);
+                    .fetchOne();
 
-            accRecord.setBasedAccId(basedAccId);
+            if (basedAccAlreadyContainAssociation(accManifestRecord, basedAccManifestRecord)) {
+                throw new IllegalArgumentException("Based ACC that already contains an Association with the same property term.");
+            }
+
+            accRecord.setBasedAccId(basedAccManifestRecord.getAccId());
         }
         accRecord.setLastUpdatedBy(userId);
         accRecord.setLastUpdateTimestamp(timestamp);
@@ -605,6 +608,40 @@ public class AccWriteRepository {
         accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
         return new UpdateAccBasedAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
+
+    private boolean basedAccAlreadyContainAssociation(AccManifestRecord accManifestRecord,
+                                                      AccManifestRecord basedAccManifestRecord) {
+        List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+        
+        List<ULong> asccpManifestIds = asccManifestRecords.stream()
+                .map(AsccManifestRecord::getToAsccpManifestId).collect(Collectors.toList());
+        
+        if (dslContext.selectCount()
+                .from(ASCC_MANIFEST)
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
+                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.in(asccpManifestIds)))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0) {
+            return true;
+        }
+
+        List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+
+        List<ULong> bccpManifestIds = bccManifestRecords.stream()
+                .map(BccManifestRecord::getToBccpManifestId).collect(Collectors.toList());
+
+        if (dslContext.selectCount()
+                .from(BCC_MANIFEST)
+                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.in(bccpManifestIds)))
+                .fetchOptionalInto(Integer.class).orElse(0) > 0) {
+            return true;
+        }
+        return false;
     }
 
     public UpdateAccStateRepositoryResponse updateAccState(UpdateAccStateRepositoryRequest request) {
