@@ -633,7 +633,10 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
-        if (!accRecord.getOwnerUserId().equals(userId)) {
+        // Change owner of CC when it restored.
+        if (prevState == CcState.Deleted && nextState == CcState.WIP) {
+            accRecord.setOwnerUserId(userId);
+        } else if (prevState != CcState.Deleted && !accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
@@ -642,7 +645,7 @@ public class AccWriteRepository {
         accRecord.setLastUpdatedBy(userId);
         accRecord.setLastUpdateTimestamp(timestamp);
         accRecord.update(ACC.STATE,
-                ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
+                ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP, ACC.OWNER_USER_ID);
 
         // update associations' state.
         updateAsccListForStateUpdatedRecord(accManifestRecord, accRecord, nextState, userId, timestamp);

@@ -360,7 +360,10 @@ public class AsccpWriteRepository {
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
-        if (!asccpRecord.getOwnerUserId().equals(userId)) {
+        // Change owner of CC when it restored.
+        if (prevState == CcState.Deleted && nextState == CcState.WIP) {
+            asccpRecord.setOwnerUserId(userId);
+        } else if (prevState != CcState.Deleted && !asccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
@@ -369,7 +372,7 @@ public class AsccpWriteRepository {
         asccpRecord.setLastUpdatedBy(userId);
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.update(ASCCP.STATE,
-                ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
+                ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP, ASCCP.OWNER_USER_ID);
 
         // creates new revision for updated record.
         RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)

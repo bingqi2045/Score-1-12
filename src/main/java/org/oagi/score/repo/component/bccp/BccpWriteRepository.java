@@ -371,7 +371,10 @@ public class BccpWriteRepository {
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
-        if (!bccpRecord.getOwnerUserId().equals(userId)) {
+        // Change owner of CC when it restored.
+        if (prevState == CcState.Deleted && nextState == CcState.WIP) {
+            bccpRecord.setOwnerUserId(userId);
+        } else if (prevState != CcState.Deleted && !bccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
@@ -380,7 +383,7 @@ public class BccpWriteRepository {
         bccpRecord.setLastUpdatedBy(userId);
         bccpRecord.setLastUpdateTimestamp(timestamp);
         bccpRecord.update(BCCP.STATE,
-                BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
+                BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP, BCCP.OWNER_USER_ID);
 
         // creates new revision for updated record.
         RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)

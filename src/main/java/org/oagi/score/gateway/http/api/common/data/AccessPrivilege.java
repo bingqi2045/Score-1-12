@@ -18,7 +18,7 @@ public enum AccessPrivilege {
         AccessPrivilege accessPrivilege = Prohibited;
         switch (ccState) {
             case Deleted:
-                if (requester.getAppUserId().equals(owner.getAppUserId())) {
+                if (requester.isDeveloper() && owner.isDeveloper() == requester.isDeveloper()) {
                     accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = Prohibited;
