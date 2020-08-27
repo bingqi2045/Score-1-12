@@ -13,6 +13,7 @@ import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import static org.jooq.impl.DSL.and;
@@ -34,6 +35,25 @@ public class AsccWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toAsccpManifestId) {
+        while(fromAccManifestRecord != null) {
+            if(dslContext.selectCount()
+                    .from(ASCC_MANIFEST)
+                    .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                    .where(and(
+                            ASCC_MANIFEST.RELEASE_ID.eq(fromAccManifestRecord.getReleaseId()),
+                            ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()),
+                            ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(toAsccpManifestId))
+                    ))
+                    .fetchOneInto(Integer.class) > 0) {
+                return true;
+            }
+            fromAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(fromAccManifestRecord.getBasedAccManifestId())).fetchOne();
+        }
+        return false;
+    }
 
     public CreateAsccRepositoryResponse createAscc(CreateAsccRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
@@ -67,24 +87,13 @@ public class AsccWriteRepository {
                 .where(and(
                         ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())),
-                        ASCC.STATE.notEqual(CcState.Deleted.name())
+                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))
                 ))
                 .fetchOneInto(Integer.class) > 0) {
             throw new IllegalArgumentException("Target ASCCP has already included.");
         }
 
-        if(accManifestRecord.getBasedAccManifestId() != null &&
-                dslContext.selectCount()
-                        .from(ASCC_MANIFEST)
-                        .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                        .where(and(
-                                ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getBasedAccManifestId()),
-                                ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())),
-                                ASCC.STATE.notEqual(CcState.Deleted.name())
-                        ))
-                        .fetchOneInto(Integer.class) > 0) {
+        if(basedAccAlreadyContainAssociation(accManifestRecord, request.getAsccpManifestId())) {
             throw new IllegalArgumentException("Target ASCCP has already included on based ACC.");
         }
 
@@ -257,12 +266,10 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        // update acc state.
-        asccRecord.setState(CcState.Deleted.name());
-        asccRecord.setLastUpdatedBy(userId);
-        asccRecord.setLastUpdateTimestamp(timestamp);
-        asccRecord.update(ASCC.STATE,
-                ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP);
+        // delete from Tables
+        asccManifestRecord.delete();
+        asccRecord.delete();
+        new SeqKeyHandler(dslContext, asccRecord).deleteCurrent();
 
         upsertRevisionIntoAccAndAssociations(
                 accRecord, accManifestRecord,

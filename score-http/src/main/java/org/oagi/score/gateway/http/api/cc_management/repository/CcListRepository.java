@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.Release;
@@ -70,7 +71,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ACC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -233,7 +234,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
 
         if (request.getUpdateStartDate() != null) {
@@ -375,7 +376,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -516,7 +517,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -650,7 +651,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -774,7 +775,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), DT.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(or(MODULE.NAME.containsIgnoreCase(request.getModule()), MODULE_DIR.PATH.containsIgnoreCase(request.getModule())));
+            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));

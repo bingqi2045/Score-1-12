@@ -615,31 +615,35 @@ public class AccWriteRepository {
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
-        
-        List<ULong> asccpManifestIds = asccManifestRecords.stream()
-                .map(AsccManifestRecord::getToAsccpManifestId).collect(Collectors.toList());
-        
-        if (dslContext.selectCount()
-                .from(ASCC_MANIFEST)
-                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
-                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.in(asccpManifestIds)))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0) {
-            return true;
-        }
 
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
+        
+        List<ULong> asccpManifestIds = asccManifestRecords.stream()
+                .map(AsccManifestRecord::getToAsccpManifestId).collect(Collectors.toList());
 
         List<ULong> bccpManifestIds = bccManifestRecords.stream()
                 .map(BccManifestRecord::getToBccpManifestId).collect(Collectors.toList());
 
-        if (dslContext.selectCount()
-                .from(BCC_MANIFEST)
-                .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
-                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.in(bccpManifestIds)))
-                .fetchOptionalInto(Integer.class).orElse(0) > 0) {
-            return true;
+
+        while(basedAccManifestRecord != null) {
+            if (dslContext.selectCount()
+                    .from(ASCC_MANIFEST)
+                    .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
+                            ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.in(asccpManifestIds)))
+                    .fetchOptionalInto(Integer.class).orElse(0) > 0) {
+                return true;
+            }
+            if (dslContext.selectCount()
+                    .from(BCC_MANIFEST)
+                    .where(and(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
+                            BCC_MANIFEST.TO_BCCP_MANIFEST_ID.in(bccpManifestIds)))
+                    .fetchOptionalInto(Integer.class).orElse(0) > 0) {
+                return true;
+            }
+            basedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(basedAccManifestRecord.getBasedAccManifestId())).fetchOne();
         }
         return false;
     }

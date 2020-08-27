@@ -583,51 +583,6 @@ public class CcNodeService extends EventHandler {
         return null;
     }
 
-    private void decreaseSeqKeyGreaterThan(BigInteger userId, ULong accManifestId, int seqKey, LocalDateTime timestamp, ULong revisionId) {
-        if (seqKey == 0) {
-            return;
-        }
-
-        List<AsccManifestRecord> asccManifestRecords =
-                ccRepository.getAsccManifestByFromAccManifestId(accManifestId);
-
-        for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
-            AsccRecord asccRecord = ccRepository.getAsccById(asccManifestRecord.getAsccId());
-            if (asccRecord.getSeqKey() <= seqKey || asccRecord.getState().equals(CcState.Deleted.name())) {
-                continue;
-            }
-
-            ULong asccId = ccRepository.updateAsccArguments(asccRecord)
-                    .setLastUpdatedBy(ULong.valueOf(userId))
-                    .setLastUpdateTimestamp(timestamp)
-                    .setSeqKey(asccRecord.getSeqKey() - 1)
-                    .execute();
-
-            ccRepository.updateAsccManifestArguments(asccManifestRecord)
-                    .setAsccId(asccId)
-                    .execute();
-        }
-
-        List<BccManifestRecord> bccManifestRecords =
-                manifestRepository.getBccManifestByFromAccManifestId(accManifestId);
-        for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
-            BccRecord bccRecord = ccRepository.getBccById(bccManifestRecord.getBccId());
-            if (bccRecord.getSeqKey() <= seqKey || bccRecord.getState().equals(CcState.Deleted.name())) {
-                continue;
-            }
-
-            ULong bccId = ccRepository.updateBccArguments(bccRecord)
-                    .setLastUpdatedBy(ULong.valueOf(userId))
-                    .setLastUpdateTimestamp(timestamp)
-                    .setSeqKey(bccRecord.getSeqKey() - 1)
-                    .execute();
-
-            ccRepository.updateBccManifestArguments(bccManifestRecord)
-                    .setBccId(bccId)
-                    .execute();
-        }
-    }
-
     public CcRevisionResponse getAccNodeRevision(AuthenticatedPrincipal user, BigInteger manifestId) {
         CcAccNode accNode = getAccNode(user, manifestId);
         BigInteger lastPublishedCcId = getLastPublishedCcId(accNode.getAccId(), CcType.ACC);

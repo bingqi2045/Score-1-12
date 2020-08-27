@@ -14,6 +14,7 @@ import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import static org.jooq.impl.DSL.and;
@@ -38,6 +39,25 @@ public class BccWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toBccpManifestId) {
+        while(fromAccManifestRecord != null) {
+            if(dslContext.selectCount()
+                    .from(BCC_MANIFEST)
+                    .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                    .where(and(
+                            BCC_MANIFEST.RELEASE_ID.eq(fromAccManifestRecord.getReleaseId()),
+                            BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()),
+                            BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(toBccpManifestId))
+                    ))
+                    .fetchOneInto(Integer.class) > 0) {
+                return true;
+            }
+            fromAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(fromAccManifestRecord.getBasedAccManifestId())).fetchOne();
+        }
+        return false;
+    }
 
     public CreateBccRepositoryResponse createBcc(CreateBccRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
@@ -65,24 +85,13 @@ public class BccWriteRepository {
                 .where(and(
                         BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())),
-                        BCC.STATE.notEqual(CcState.Deleted.name())
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))
                 ))
                 .fetchOneInto(Integer.class) > 0) {
             throw new IllegalArgumentException("Target BCCP has already included.");
         }
 
-        if(accManifestRecord.getBasedAccManifestId() != null &&
-                dslContext.selectCount()
-                        .from(BCC_MANIFEST)
-                        .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                        .where(and(
-                                BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getBasedAccManifestId()),
-                                BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())),
-                                BCC.STATE.notEqual(CcState.Deleted.name())
-                        ))
-                        .fetchOneInto(Integer.class) > 0) {
+        if(basedAccAlreadyContainAssociation(accManifestRecord, request.getBccpManifestId())) {
             throw new IllegalArgumentException("Target BCCP has already included on based ACC.");
         }
 
@@ -282,12 +291,10 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        // update acc state.
-        bccRecord.setState(CcState.Deleted.name());
-        bccRecord.setLastUpdatedBy(userId);
-        bccRecord.setLastUpdateTimestamp(timestamp);
-        bccRecord.update(BCC.STATE,
-                BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
+        // delete from Tables
+        bccManifestRecord.delete();
+        bccRecord.delete();
+        new SeqKeyHandler(dslContext, bccRecord).deleteCurrent();
 
         upsertRevisionIntoAccAndAssociations(
                 accRecord, accManifestRecord,

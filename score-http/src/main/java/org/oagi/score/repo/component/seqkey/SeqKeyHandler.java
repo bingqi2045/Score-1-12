@@ -181,6 +181,12 @@ public class SeqKeyHandler {
         }
     }
 
+    public void deleteCurrent() {
+        brokeLinks(this.current);
+        this.current.delete();
+        this.current = null;
+    }
+
     private void brokeLinks(SeqKeyRecord record) {
         if (record.getPrevSeqKeyId() != null) {
             SeqKeyRecord currentPrevSeqKeyRecord = getSeqKeyRecordById(record.getPrevSeqKeyId());
@@ -286,9 +292,7 @@ public class SeqKeyHandler {
         List<SeqKeySupportable> sorted = new ArrayList();
         SeqKeySupportable current = head;
         while (current != null) {
-            if (!current.getState().equals(CcState.Deleted.name())) {
-                sorted.add(current);
-            }
+            sorted.add(current);
             current = seqKeyMap.get(current.getNextSeqKeyId());
         }
         return sorted;
