@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.entity.jooq.tables.Oauth2App.OAUTH2_APP;
-import static org.oagi.score.entity.jooq.tables.Oauth2AppScope.OAUTH2_APP_SCOPE;
+import static org.oagi.score.repo.entity.jooq.tables.Oauth2App.OAUTH2_APP;
+import static org.oagi.score.repo.entity.jooq.tables.Oauth2AppScope.OAUTH2_APP_SCOPE;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.*;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST;

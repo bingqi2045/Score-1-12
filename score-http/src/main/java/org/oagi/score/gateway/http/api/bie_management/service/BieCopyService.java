@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.oagi.score.data.BieState.Initiating;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Service
 @Transactional

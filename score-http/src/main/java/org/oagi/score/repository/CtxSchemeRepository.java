@@ -3,7 +3,7 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ContextScheme;
-import org.oagi.score.entity.jooq.Tables;
+import org.oagi.score.repo.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

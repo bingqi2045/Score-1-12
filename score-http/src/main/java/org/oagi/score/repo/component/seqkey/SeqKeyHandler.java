@@ -5,10 +5,10 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
-import org.oagi.score.entity.jooq.enums.SeqKeyType;
-import org.oagi.score.entity.jooq.tables.records.AsccRecord;
-import org.oagi.score.entity.jooq.tables.records.BccRecord;
-import org.oagi.score.entity.jooq.tables.records.SeqKeyRecord;
+import org.oagi.score.repo.entity.jooq.enums.SeqKeyType;
+import org.oagi.score.repo.entity.jooq.tables.records.AsccRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.BccRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.SeqKeyRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 
 import java.math.BigInteger;
@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 import static org.oagi.score.repo.component.seqkey.MoveTo.FIRST;
 import static org.oagi.score.repo.component.seqkey.MoveTo.LAST;
 

@@ -3,7 +3,7 @@ package org.oagi.score.gateway.http.api.context_management.service;
 import com.google.common.base.Functions;
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.CtxSchemeValueRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.CtxSchemeValueRecord;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.context_management.data.*;
@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

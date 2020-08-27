@@ -5,7 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.Release;
-import org.oagi.score.entity.jooq.tables.AppUser;
+import org.oagi.score.repo.entity.jooq.tables.AppUser;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.CoreComponentRepository;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.data.DTType.BDT;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Repository
 public class CcListRepository {

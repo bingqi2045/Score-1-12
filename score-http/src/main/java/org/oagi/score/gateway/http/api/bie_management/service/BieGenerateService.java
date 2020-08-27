@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

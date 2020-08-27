@@ -1,8 +1,8 @@
 package org.oagi.score.gateway.http.configuration.security;
 
 import org.jooq.DSLContext;
-import org.oagi.score.entity.jooq.Tables;
-import org.oagi.score.entity.jooq.tables.records.AppUserRecord;
+import org.oagi.score.repo.entity.jooq.Tables;
+import org.oagi.score.repo.entity.jooq.tables.records.AppUserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

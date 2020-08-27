@@ -3,7 +3,7 @@ package org.oagi.score.repo;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
-import org.oagi.score.entity.jooq.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.score.data.BieState.*;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 import static org.oagi.score.gateway.http.helper.Utility.sha256;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 

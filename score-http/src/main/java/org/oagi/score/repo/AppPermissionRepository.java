@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.oagi.score.entity.jooq.Tables.APP_PERMISSION;
+import static org.oagi.score.repo.entity.jooq.Tables.APP_PERMISSION;
 
 @Repository
 public class AppPermissionRepository {

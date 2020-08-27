@@ -5,14 +5,14 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BdtPriRestri;
 import org.oagi.score.data.BdtScPriRestri;
 import org.oagi.score.data.DT;
-import org.oagi.score.entity.jooq.Tables;
+import org.oagi.score.repo.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static org.oagi.score.entity.jooq.Tables.BDT_PRI_RESTRI;
-import static org.oagi.score.entity.jooq.Tables.BDT_SC_PRI_RESTRI;
+import static org.oagi.score.repo.entity.jooq.Tables.BDT_PRI_RESTRI;
+import static org.oagi.score.repo.entity.jooq.Tables.BDT_SC_PRI_RESTRI;
 
 @Repository
 public class BdtRepository {

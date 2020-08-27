@@ -2,10 +2,10 @@ package org.oagi.score.gateway.http.api.graph;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.AccManifestRecord;
-import org.oagi.score.entity.jooq.tables.records.AsccpManifestRecord;
-import org.oagi.score.entity.jooq.tables.records.BccpManifestRecord;
-import org.oagi.score.entity.jooq.tables.records.CodeListManifestRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AccManifestRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.CodeListManifestRecord;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.component.code_list.CodeListReadRepository;

@@ -9,7 +9,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.DTType;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

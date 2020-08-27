@@ -2,8 +2,8 @@ package org.oagi.score.repo.component.abie;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.AbieRecord;
-import org.oagi.score.entity.jooq.tables.records.AccRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AbieRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AccRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.component.acc.AccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.ABIE;
+import static org.oagi.score.repo.entity.jooq.Tables.ABIE;
 
 @Repository
 public class AbieReadRepository {

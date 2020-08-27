@@ -3,8 +3,8 @@ package org.oagi.score.repo.component.asbie;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.entity.jooq.tables.records.AsbieRecord;
-import org.oagi.score.entity.jooq.tables.records.AsccRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsbieRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsccRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.component.ascc.AsccReadRepository;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
 
 @Repository

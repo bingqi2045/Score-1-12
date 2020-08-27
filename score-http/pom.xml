@@ -25,7 +25,6 @@
 
         <cglib.version>3.3.0</cglib.version>
         <aspectj.version>1.9.5</aspectj.version>
-        <mysql-connector-java.version>8.0.20</mysql-connector-java.version>
         <lettuce.version>5.3.0.RELEASE</lettuce.version>
         <redisson.version>3.12.5</redisson.version>
         <netty.version>4.1.50.Final</netty.version>
@@ -36,8 +35,6 @@
         <commons-lang.version>3.9</commons-lang.version>
         <grpc.version>1.29.0</grpc.version>
         <graphql.version>15.0</graphql.version>
-        <jOOQ.version>3.13.2</jOOQ.version>
-        <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 
     <repositories>
@@ -86,11 +83,6 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
-        </dependency>
 
         <!-- Support AOP -->
         <dependency>
@@ -112,23 +104,6 @@
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
             <version>${cglib.version}</version>
-        </dependency>
-
-        <!-- jOOQ -->
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>${jOOQ.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-meta</artifactId>
-            <version>${jOOQ.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen</artifactId>
-            <version>${jOOQ.version}</version>
         </dependency>
 
         <dependency>
@@ -252,50 +227,16 @@
         </extensions>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!-- jOOQ -->
-            <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jOOQ.version}</version>
-                <executions>
-                    <execution>
-                        <id>jooq-codegen</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <skip>${jOOQ.configuration.skip}</skip>
-
-                    <jdbc>
-                        <driver>com.mysql.cj.jdbc.Driver</driver>
-                        <url>jdbc:mysql://localhost:3306/oagi</url>
-                        <user>oagi</user>
-                        <password>oagi</password>
-                    </jdbc>
-
-                    <generator>
-                        <name>org.jooq.codegen.JavaGenerator</name>
-
-                        <database>
-                            <name>org.jooq.meta.mysql.MySQLDatabase</name>
-                            <inputSchema>oagi</inputSchema>
-                            <includes>.*</includes>
-                            <excludes></excludes>
-                        </database>
-
-                        <target>
-                            <packageName>org.oagi.score.entity.jooq</packageName>
-                            <directory>${project.build.sourceDirectory}</directory>
-                        </target>
-                    </generator>
-                </configuration>
             </plugin>
             <!-- gRPC -->
             <plugin>

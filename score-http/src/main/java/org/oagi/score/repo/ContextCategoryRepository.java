@@ -2,7 +2,7 @@ package org.oagi.score.repo;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.CtxCategoryRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.CtxCategoryRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.count;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository

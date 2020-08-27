@@ -2,14 +2,14 @@ package org.oagi.score.repo.component.bccp;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.BccpRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.BccpRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.entity.jooq.Tables.BCCP;
-import static org.oagi.score.entity.jooq.Tables.BCCP_MANIFEST;
+import static org.oagi.score.repo.entity.jooq.Tables.BCCP;
+import static org.oagi.score.repo.entity.jooq.Tables.BCCP_MANIFEST;
 
 @Repository
 public class BccpReadRepository {

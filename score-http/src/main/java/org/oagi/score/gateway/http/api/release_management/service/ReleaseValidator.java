@@ -2,7 +2,7 @@ package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 public class ReleaseValidator {
 

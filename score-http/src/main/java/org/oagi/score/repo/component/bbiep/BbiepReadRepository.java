@@ -2,9 +2,9 @@ package org.oagi.score.repo.component.bbiep;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.BbiepRecord;
-import org.oagi.score.entity.jooq.tables.records.BccpRecord;
-import org.oagi.score.entity.jooq.tables.records.DtRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.BbiepRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.BccpRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.DtRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.component.bccp.BccpReadRepository;
 import org.oagi.score.repo.component.dt.DtReadRepository;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.BBIEP;
+import static org.oagi.score.repo.entity.jooq.Tables.BBIEP;
 
 @Repository
 public class BbiepReadRepository {

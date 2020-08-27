@@ -2,8 +2,8 @@ package org.oagi.score.gateway.http.configuration.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.DSLContext;
-import org.oagi.score.entity.jooq.tables.records.AppOauth2UserRecord;
-import org.oagi.score.entity.jooq.tables.records.Oauth2AppRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AppOauth2UserRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.Oauth2AppRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.oagi.score.entity.jooq.Tables.OAUTH2_APP;
-import static org.oagi.score.entity.jooq.tables.AppOauth2User.APP_OAUTH2_USER;
+import static org.oagi.score.repo.entity.jooq.Tables.OAUTH2_APP;
+import static org.oagi.score.repo.entity.jooq.tables.AppOauth2User.APP_OAUTH2_USER;
 
 @Component
 public class ScoreAuthenticationSuccessHandler

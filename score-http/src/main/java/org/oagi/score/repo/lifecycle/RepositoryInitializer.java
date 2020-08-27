@@ -5,8 +5,8 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.entity.jooq.enums.SeqKeyType;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.enums.SeqKeyType;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.domain.RevisionSerializer;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Component
 public class RepositoryInitializer implements InitializingBean {

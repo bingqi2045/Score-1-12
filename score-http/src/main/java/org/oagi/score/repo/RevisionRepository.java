@@ -10,7 +10,7 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcAction;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Repository
 public class RevisionRepository {

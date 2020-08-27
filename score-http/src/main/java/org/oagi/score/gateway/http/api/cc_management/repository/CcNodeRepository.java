@@ -11,7 +11,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.SeqKeySupportable;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.data.BCCEntityType.Attribute;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Repository
 public class CcNodeRepository {

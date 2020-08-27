@@ -9,7 +9,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.entity.jooq.tables.records.*;
+import org.oagi.score.repo.entity.jooq.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
@@ -26,9 +26,9 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.*;
-import static org.oagi.score.entity.jooq.tables.Bccp.BCCP;
-import static org.oagi.score.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.tables.Bccp.BCCP;
+import static org.oagi.score.repo.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
 public class BccpWriteRepository {

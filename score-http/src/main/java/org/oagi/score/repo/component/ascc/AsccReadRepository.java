@@ -2,14 +2,14 @@ package org.oagi.score.repo.component.ascc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.entity.jooq.tables.records.AsccRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsccRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.entity.jooq.Tables.ASCC;
-import static org.oagi.score.entity.jooq.Tables.ASCC_MANIFEST;
+import static org.oagi.score.repo.entity.jooq.Tables.ASCC;
+import static org.oagi.score.repo.entity.jooq.Tables.ASCC_MANIFEST;
 
 @Repository
 public class AsccReadRepository {

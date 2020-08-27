@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 
 @Repository

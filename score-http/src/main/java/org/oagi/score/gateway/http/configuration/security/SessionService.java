@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.entity.jooq.Tables.APP_OAUTH2_USER;
-import static org.oagi.score.entity.jooq.Tables.APP_USER;
+import static org.oagi.score.repo.entity.jooq.Tables.APP_OAUTH2_USER;
+import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
 
 @Service
 @Transactional(readOnly = true)

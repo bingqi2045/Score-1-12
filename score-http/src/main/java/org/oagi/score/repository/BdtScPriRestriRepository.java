@@ -5,7 +5,7 @@ import org.jooq.Record6;
 import org.jooq.SelectJoinStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BdtScPriRestri;
-import org.oagi.score.entity.jooq.Tables;
+import org.oagi.score.repo.entity.jooq.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

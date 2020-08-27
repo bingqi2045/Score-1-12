@@ -7,11 +7,11 @@ import org.oagi.score.data.ACC;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.entity.jooq.Tables;
-import org.oagi.score.entity.jooq.tables.records.AppUserRecord;
-import org.oagi.score.entity.jooq.tables.records.AsbieRecord;
-import org.oagi.score.entity.jooq.tables.records.AsbiepRecord;
-import org.oagi.score.entity.jooq.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.repo.entity.jooq.Tables;
+import org.oagi.score.repo.entity.jooq.tables.records.AppUserRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsbieRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsbiepRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
@@ -80,7 +80,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.entity.jooq.Tables.*;
+import static org.oagi.score.repo.entity.jooq.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
