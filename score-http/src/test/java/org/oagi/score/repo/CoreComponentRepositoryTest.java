@@ -3,7 +3,7 @@ package org.oagi.score.repo;
 import org.jooq.types.ULong;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oagi.score.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.score.repo.entity.jooq.tables.records.AsccpManifestRecord;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
