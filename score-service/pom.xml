@@ -4,22 +4,30 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.oagi</groupId>
-    <artifactId>score-gateway</artifactId>
+    <artifactId>score-service</artifactId>
     <version>2.0.0</version>
-    <packaging>pom</packaging>
 
-    <name>score-gateway</name>
-    <description>Score Gateway</description>
+    <name>score-service</name>
+    <description>Score Service</description>
 
-    <modules>
-        <module>score-repo</module>
-        <module>score-service</module>
-        <module>score-http</module>
-    </modules>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.3.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>11</maven.compiler.release>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.oagi</groupId>
+            <artifactId>score-repo</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
 </project>
