@@ -10,7 +10,7 @@ echo "Packaging project..."
 
 echo "Preparing files..."
 rm -f docker/*.war
-cp target/*.war docker
+cp score-http/target/*.war docker
 
 echo "Building docker image..."
 cd docker
