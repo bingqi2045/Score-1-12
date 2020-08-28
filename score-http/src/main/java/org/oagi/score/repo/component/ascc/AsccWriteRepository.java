@@ -4,7 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.entity.jooq.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
@@ -17,12 +17,12 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.ASCCP;
-import static org.oagi.score.repo.entity.jooq.Tables.ASCCP_MANIFEST;
-import static org.oagi.score.repo.entity.jooq.tables.Acc.ACC;
-import static org.oagi.score.repo.entity.jooq.tables.AccManifest.ACC_MANIFEST;
-import static org.oagi.score.repo.entity.jooq.tables.Ascc.ASCC;
-import static org.oagi.score.repo.entity.jooq.tables.AsccManifest.ASCC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_MANIFEST;
 
 @Repository
 public class AsccWriteRepository {

@@ -2,7 +2,7 @@ package org.oagi.score.gateway.http.api.info.service;
 
 
 import org.jooq.DSLContext;
-import org.oagi.score.repo.entity.jooq.tables.records.Oauth2AppRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
 import org.oagi.score.gateway.http.api.info.data.OAuth2AppInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.entity.jooq.tables.Oauth2App.OAUTH2_APP;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App.OAUTH2_APP;
 
 @Service
 @Transactional(readOnly = true)

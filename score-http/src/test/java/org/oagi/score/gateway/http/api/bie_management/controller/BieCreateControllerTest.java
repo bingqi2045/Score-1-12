@@ -24,7 +24,7 @@ import java.util.Arrays;
 import static org.jooq.impl.DSL.and;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

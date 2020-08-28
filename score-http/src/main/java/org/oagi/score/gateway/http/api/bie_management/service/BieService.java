@@ -8,8 +8,8 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.entity.jooq.Tables;
-import org.oagi.score.repo.entity.jooq.tables.records.AsccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

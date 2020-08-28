@@ -2,8 +2,8 @@ package org.oagi.score.repo.component.asbie;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.AsbieRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.AsccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class AsbieReadRepository {

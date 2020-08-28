@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.oagi.score.repo.entity.jooq.Tables.ABIE;
-import static org.oagi.score.repo.entity.jooq.Tables.ASBIEP;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ABIE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASBIEP;
 
 @Component
 public class OrphanBIEAfterReusedCleanUpInitializer implements InitializingBean {

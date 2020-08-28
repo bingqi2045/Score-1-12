@@ -12,8 +12,8 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.entity.jooq.enums.SeqKeyType;
-import org.oagi.score.repo.entity.jooq.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -35,10 +35,10 @@ import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
-import static org.oagi.score.repo.entity.jooq.tables.Acc.ACC;
-import static org.oagi.score.repo.entity.jooq.tables.AccManifest.ACC_MANIFEST;
-import static org.oagi.score.repo.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
 public class AccWriteRepository {

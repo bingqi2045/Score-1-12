@@ -4,7 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record5;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.entity.jooq.tables.records.NamespaceRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.NAMESPACE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.NAMESPACE;
 
 @Service
 @Transactional(readOnly = true)

@@ -3,7 +3,7 @@ package org.oagi.score.gateway.http.api.release_management.service;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.Release;
-import org.oagi.score.repo.entity.jooq.tables.records.ReleaseRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
@@ -37,8 +37,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
-import static org.oagi.score.repo.entity.jooq.Tables.RELEASE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.RELEASE;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
 
 @Service

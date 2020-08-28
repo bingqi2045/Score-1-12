@@ -6,8 +6,8 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.entity.jooq.tables.records.AppUserRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.CreateBieFromExistingBieRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.data.BieState.Initiating;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional

@@ -6,7 +6,7 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.CommentRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CommentRecord;
 import org.oagi.score.gateway.http.api.comment.data.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
-import static org.oagi.score.repo.entity.jooq.Tables.COMMENT;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.COMMENT;
 
 @Repository
 public class CommentRepository {

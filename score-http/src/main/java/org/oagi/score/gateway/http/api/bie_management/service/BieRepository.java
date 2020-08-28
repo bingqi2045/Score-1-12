@@ -5,7 +5,7 @@ import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.repo.entity.jooq.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class BieRepository {

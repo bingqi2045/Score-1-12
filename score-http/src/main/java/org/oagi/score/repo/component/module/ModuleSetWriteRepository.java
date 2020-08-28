@@ -6,7 +6,7 @@ import org.jooq.UpdateSetStep;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.entity.jooq.tables.records.ModuleSetRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
-import static org.oagi.score.repo.entity.jooq.Tables.MODULE_SET;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.MODULE_SET;
 
 @Repository
 public class ModuleSetWriteRepository {

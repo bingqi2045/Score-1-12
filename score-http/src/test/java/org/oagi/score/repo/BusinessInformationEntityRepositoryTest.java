@@ -4,9 +4,9 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oagi.score.repo.entity.jooq.tables.records.AbieRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.AsbiepRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.entity.jooq.Tables.CTX_CATEGORY;
-import static org.oagi.score.repo.entity.jooq.Tables.CTX_SCHEME;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_SCHEME;
 
 @Service
 @Transactional(readOnly = true)

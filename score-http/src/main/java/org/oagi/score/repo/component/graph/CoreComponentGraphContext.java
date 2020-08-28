@@ -9,9 +9,9 @@ import org.jooq.Record4;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.repo.entity.jooq.tables.records.AccManifestRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.AsccpManifestRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.graph.Node;
 import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Data
 public class CoreComponentGraphContext implements GraphContext {

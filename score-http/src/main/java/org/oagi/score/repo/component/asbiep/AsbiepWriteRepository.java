@@ -3,15 +3,15 @@ package org.oagi.score.repo.component.asbiep;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.entity.jooq.tables.records.AsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.ABIE;
-import static org.oagi.score.repo.entity.jooq.Tables.ASBIEP;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ABIE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASBIEP;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
 
 @Repository

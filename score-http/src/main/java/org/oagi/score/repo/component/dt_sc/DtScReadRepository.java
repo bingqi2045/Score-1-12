@@ -2,14 +2,14 @@ package org.oagi.score.repo.component.dt_sc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.DtScRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.repo.entity.jooq.Tables.DT_SC;
-import static org.oagi.score.repo.entity.jooq.Tables.DT_SC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.DT_SC;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.DT_SC_MANIFEST;
 
 @Repository
 public class DtScReadRepository {

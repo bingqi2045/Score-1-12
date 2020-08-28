@@ -2,13 +2,13 @@ package org.oagi.score.repo.component.dt;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.DtRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class DtReadRepository {

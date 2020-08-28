@@ -5,7 +5,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.CodeListManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.graph.Node;
 
@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Data
 public class CodeListGraphContext implements GraphContext {

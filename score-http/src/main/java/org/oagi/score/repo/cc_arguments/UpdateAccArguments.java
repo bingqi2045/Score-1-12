@@ -2,7 +2,7 @@ package org.oagi.score.repo.cc_arguments;
 
 import org.jooq.types.ULong;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.repo.entity.jooq.tables.records.AccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.CoreComponentRepository;
 

@@ -7,8 +7,8 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.repo.entity.jooq.Tables;
-import org.oagi.score.repo.entity.jooq.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditAcc;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -43,7 +43,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigInteger;
 
 import static org.jooq.impl.DSL.row;
-import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 
 @Service
 @Transactional(readOnly = true)

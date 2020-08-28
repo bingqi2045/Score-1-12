@@ -12,6 +12,7 @@
     <description>Score Gateway</description>
 
     <modules>
+        <module>score-repo-api</module>
         <module>score-repo</module>
         <module>score-service</module>
         <module>score-http</module>

@@ -3,12 +3,12 @@ package org.oagi.score.repo.component.top_level_asbiep;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.entity.jooq.tables.records.TopLevelAsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import static org.oagi.score.repo.entity.jooq.Tables.TOP_LEVEL_ASBIEP;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.TOP_LEVEL_ASBIEP;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
 
 @Repository

@@ -13,7 +13,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class XbtRepository implements SrtRepository<Xbt> {

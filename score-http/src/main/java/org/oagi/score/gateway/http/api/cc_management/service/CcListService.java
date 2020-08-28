@@ -6,10 +6,10 @@ import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.*;
-import org.oagi.score.repo.entity.jooq.Tables;
-import org.oagi.score.repo.entity.jooq.tables.records.AccManifestRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.AsccpManifestRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.BccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcListRepository;
 import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

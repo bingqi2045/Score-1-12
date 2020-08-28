@@ -2,8 +2,8 @@ package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.AppOauth2UserRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.AppUserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.gateway.http.api.account_management.data.AccountListRequest;
 import org.oagi.score.gateway.http.api.account_management.data.AppUser;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.APP_OAUTH2_USER;
-import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 
 @Service
 @Transactional(readOnly = true)

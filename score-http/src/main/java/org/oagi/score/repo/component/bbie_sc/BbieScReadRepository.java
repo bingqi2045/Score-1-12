@@ -2,8 +2,8 @@ package org.oagi.score.repo.component.bbie_sc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.entity.jooq.tables.records.BbieScRecord;
-import org.oagi.score.repo.entity.jooq.tables.records.DtScRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.component.dt_sc.DtScReadRepository;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class BbieScReadRepository {

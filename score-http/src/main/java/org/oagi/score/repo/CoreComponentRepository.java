@@ -3,7 +3,7 @@ package org.oagi.score.repo;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.repo.entity.jooq.tables.records.*;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.CcBccpNode;
 import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.max;
-import static org.oagi.score.repo.entity.jooq.Tables.*;
-import static org.oagi.score.repo.entity.jooq.tables.Acc.ACC;
-import static org.oagi.score.repo.entity.jooq.tables.Ascc.ASCC;
-import static org.oagi.score.repo.entity.jooq.tables.Bcc.BCC;
-import static org.oagi.score.repo.entity.jooq.tables.Bccp.BCCP;
-import static org.oagi.score.repo.entity.jooq.tables.BccpManifest.BCCP_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BCCP;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BCCP_MANIFEST;
 
 @Repository
 public class CoreComponentRepository {

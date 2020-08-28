@@ -19,8 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.entity.jooq.Tables.APP_USER;
-import static org.oagi.score.repo.entity.jooq.Tables.NAMESPACE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.NAMESPACE;
 
 @Repository
 public class NamespaceReadRepository {
