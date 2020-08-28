@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record3;
+import org.jooq.Record4;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
@@ -44,6 +45,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private ULong accManifestId;
         private ULong basedAccManifestId;
         private String objectClassTerm;
+        private String den;
         private OagisComponentType componentType;
         private String state;
         private ULong releaseId;
@@ -139,14 +141,15 @@ public class CoreComponentGraphContext implements GraphContext {
 
         accManifestMap =
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
-                        ACC.OBJECT_CLASS_TERM, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE,
-                        ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
+                        ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE,
+                        ACC.STATE, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .fetch(record -> new AccManifest(
                                 record.get(ACC_MANIFEST.ACC_MANIFEST_ID),
                                 record.get(ACC_MANIFEST.BASED_ACC_MANIFEST_ID),
                                 record.get(ACC.OBJECT_CLASS_TERM),
+                                record.get(ACC.DEN),
                                 OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)),
                                 record.get(ACC.STATE),
                                 record.get(ACC_MANIFEST.RELEASE_ID),
@@ -350,13 +353,13 @@ public class CoreComponentGraphContext implements GraphContext {
     }
 
     public Node toNode(AccManifestRecord record) {
-        Record3<String, Integer, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE)
+        Record4<String, String, Integer, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE)
                 .from(ACC)
                 .where(ACC.ACC_ID.eq(record.getAccId()))
                 .fetchOne();
         return toNode(new AccManifest(record.getAccManifestId(), record.getBasedAccManifestId(),
-                res.get(ACC.OBJECT_CLASS_TERM), OagisComponentType.valueOf(res.get(ACC.OAGIS_COMPONENT_TYPE)), res.get(ACC.STATE),
-                record.getReleaseId(), record.getPrevAccManifestId()));
+                res.get(ACC.OBJECT_CLASS_TERM), res.get(ACC.DEN), OagisComponentType.valueOf(res.get(ACC.OAGIS_COMPONENT_TYPE)),
+                res.get(ACC.STATE), record.getReleaseId(), record.getPrevAccManifestId()));
     }
 
     public Node toNode(AsccpManifestRecord record) {
@@ -415,6 +418,7 @@ public class CoreComponentGraphContext implements GraphContext {
         node.setPrevManifestId(accManifest.getPrevAccManifestId());
         node.put("state", accManifest.getState());
         node.put("objectClassTerm", accManifest.getObjectClassTerm());
+        node.put("den", accManifest.getDen());
         node.put("componentType", accManifest.getComponentType().name());
         return node;
     }
