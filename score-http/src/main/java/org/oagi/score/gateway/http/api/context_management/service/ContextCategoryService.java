@@ -12,6 +12,8 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.ContextCategoryRepository;
 import org.oagi.score.repo.PaginationResponse;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,9 @@ public class ContextCategoryService {
 
     @Autowired
     private ContextCategoryRepository repository;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     @Autowired
     private DSLContext dslContext;
@@ -71,6 +76,13 @@ public class ContextCategoryService {
     }
 
     public ContextCategory getContextCategory(BigInteger ctxCategoryId) {
+//        return scoreRepositoryFactory
+//                .createContextCategoryReadRepository()
+//                .getContextCategory(
+//                        new GetContextCategoryRequest()
+//                                .withContextCategoryId(ctxCategoryId))
+//                .getContextCategory();
+
         ContextCategoryListRequest request = new ContextCategoryListRequest();
         request.setContextCategoryIds(Arrays.asList(ctxCategoryId));
         List<ContextCategory> contextCategories = getContextCategoryList(request).getList();

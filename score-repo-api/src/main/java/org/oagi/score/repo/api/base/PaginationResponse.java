@@ -2,14 +2,34 @@ package org.oagi.score.repo.api.base;
 
 import java.util.List;
 
-public interface PaginationResponse<T> {
+public class PaginationResponse<T> extends Response {
 
-    List<T> getList();
+    private List<T> results;
+    private int page;
+    private int size;
+    private int length;
 
-    int getPage();
+    public PaginationResponse(List<T> results, int page, int size, int length) {
+        this.results = results;
+        this.page = page;
+        this.size = size;
+        this.length = length;
+    }
 
-    int getSize();
+    public List<T> getResults() {
+        return results;
+    }
 
-    int getLength();
+    public int getPage() {
+        return page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public int getLength() {
+        return length;
+    }
 
 }

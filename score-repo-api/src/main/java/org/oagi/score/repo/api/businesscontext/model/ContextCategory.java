@@ -1,0 +1,48 @@
+package org.oagi.score.repo.api.businesscontext.model;
+
+import org.oagi.score.repo.api.base.Auditable;
+
+import java.math.BigInteger;
+
+public class ContextCategory extends Auditable {
+
+    private BigInteger contextCategoryId;
+
+    private String guid;
+
+    private String name;
+
+    private String description;
+
+    public BigInteger getContextCategoryId() {
+        return contextCategoryId;
+    }
+
+    public void setContextCategoryId(BigInteger contextCategoryId) {
+        this.contextCategoryId = contextCategoryId;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}

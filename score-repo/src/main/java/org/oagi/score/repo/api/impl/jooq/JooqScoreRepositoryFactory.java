@@ -2,7 +2,10 @@ package org.oagi.score.repo.api.impl.jooq;
 
 import org.jooq.DSLContext;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryReadRepository;
+import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryWriteRepository;
 
 public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
@@ -12,33 +15,37 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
         this.dslContext = dslContext;
     }
 
-    @Override
-    public ContextCategoryReadRepository createContextCategoryReadRepository() {
-        return null;
+    public final DSLContext getDslContext() {
+        return dslContext;
     }
 
     @Override
-    public ContextCategoryReadRepository createContextCategoryWriteRepository() {
-        return null;
+    public ContextCategoryReadRepository createContextCategoryReadRepository() throws ScoreDataAccessException {
+        return new JooqContextCategoryReadRepository(this.dslContext);
     }
 
     @Override
-    public ContextSchemeReadRepository createContextSchemeReadRepository() {
-        return null;
+    public ContextCategoryWriteRepository createContextCategoryWriteRepository() throws ScoreDataAccessException {
+        return new JooqContextCategoryWriteRepository(this.dslContext);
     }
 
     @Override
-    public ContextSchemeWriteRepository createContextSchemeWriteRepository() {
-        return null;
+    public ContextSchemeReadRepository createContextSchemeReadRepository() throws ScoreDataAccessException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BusinessContextReadRepository createBusinessContextReadRepository() {
-        return null;
+    public ContextSchemeWriteRepository createContextSchemeWriteRepository() throws ScoreDataAccessException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public BusinessContextWriteRepository createBusinessContextWriteRepository() {
-        return null;
+    public BusinessContextReadRepository createBusinessContextReadRepository() throws ScoreDataAccessException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BusinessContextWriteRepository createBusinessContextWriteRepository() throws ScoreDataAccessException {
+        throw new UnsupportedOperationException();
     }
 }
