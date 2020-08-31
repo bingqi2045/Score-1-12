@@ -48,7 +48,13 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
                         }
                     }
 
-                    return method.invoke(obj, args);
+                    try {
+                        return method.invoke(obj, args);
+                    } catch (ScoreDataAccessException e) {
+                        throw e;
+                    } catch (Throwable e) {
+                        throw new ScoreDataAccessException(e);
+                    }
                 });
     }
 

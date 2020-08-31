@@ -2,11 +2,14 @@ package org.oagi.score.repo.api.base;
 
 public class PaginationRequest<T> extends Request {
 
+    public static int DEFAULT_PAGE_INDEX = 0;
+    public static int DEFAULT_PAGE_SIZE = 10;
+
     private final Class<T> type;
     private String sortActive;
     private SortDirection sortDirection;
-    private int pageIndex;
-    private int pageSize;
+    private int pageIndex = DEFAULT_PAGE_INDEX;
+    private int pageSize = DEFAULT_PAGE_SIZE;
 
     public PaginationRequest(ScoreUser requester, Class<T> type) {
         super(requester);
@@ -51,7 +54,7 @@ public class PaginationRequest<T> extends Request {
 
     public final int getPageOffset() {
         int offset = this.getPageIndex() * this.getPageSize();
-        return (offset <= 0) ? -1 : offset;
+        return (offset < 0) ? -1 : offset;
     }
 
     public final boolean isPagination() {
