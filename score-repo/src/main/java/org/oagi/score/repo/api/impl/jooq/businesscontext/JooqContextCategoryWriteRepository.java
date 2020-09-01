@@ -1,5 +1,6 @@
 package org.oagi.score.repo.api.impl.jooq.businesscontext;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.types.ULong;
@@ -15,7 +16,9 @@ import org.oagi.score.repo.api.security.AccessControl;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.base.ScoreRole.END_USER;
@@ -113,5 +116,29 @@ public class JooqContextCategoryWriteRepository
         }
 
         return new DeleteContextCategoryResponse(request.getContextCategoryId());
+    }
+
+    @Override
+    @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
+    public DeleteContextCategoriesResponse deleteContextCategories(
+            DeleteContextCategoriesRequest request) throws ScoreDataAccessException {
+        Collection<BigInteger> contextCategoryIds = request.getContextCategoryIds();
+        if (contextCategoryIds == null || contextCategoryIds.isEmpty()) {
+            return new DeleteContextCategoriesResponse();
+        }
+
+        Condition condition = contextCategoryIds.size() == 1 ?
+                CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(contextCategoryIds.iterator().next())) :
+                CTX_CATEGORY.CTX_CATEGORY_ID.in(contextCategoryIds.stream()
+                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList()));
+
+        int affectedRows = dslContext().deleteFrom(CTX_CATEGORY)
+                .where(condition)
+                .execute();
+        if (affectedRows != contextCategoryIds.size()) {
+            throw new ScoreDataAccessException(new IllegalStateException());
+        }
+
+        return new DeleteContextCategoriesResponse(contextCategoryIds);
     }
 }

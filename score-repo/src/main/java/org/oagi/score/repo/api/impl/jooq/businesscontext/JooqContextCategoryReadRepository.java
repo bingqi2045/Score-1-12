@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.base.ScoreRole.END_USER;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
@@ -40,6 +39,7 @@ public class JooqContextCategoryReadRepository
                 CTX_CATEGORY.GUID,
                 CTX_CATEGORY.NAME,
                 CTX_CATEGORY.DESCRIPTION,
+                CTX_SCHEME.CTX_SCHEME_ID,
                 APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                 APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                 APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
@@ -50,7 +50,8 @@ public class JooqContextCategoryReadRepository
                 CTX_CATEGORY.LAST_UPDATE_TIMESTAMP)
                 .from(CTX_CATEGORY)
                 .join(APP_USER.as("creator")).on(CTX_CATEGORY.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(CTX_CATEGORY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
+                .join(APP_USER.as("updater")).on(CTX_CATEGORY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .leftJoin(CTX_SCHEME).on(CTX_CATEGORY.CTX_CATEGORY_ID.eq(CTX_SCHEME.CTX_CATEGORY_ID));
     }
 
     private RecordMapper<Record, ContextCategory> mapper() {
@@ -60,6 +61,7 @@ public class JooqContextCategoryReadRepository
             contextCategory.setGuid(record.get(CTX_CATEGORY.GUID));
             contextCategory.setName(record.get(CTX_CATEGORY.NAME));
             contextCategory.setDescription(record.get(CTX_CATEGORY.DESCRIPTION));
+            contextCategory.setUsed(record.get(CTX_SCHEME.CTX_SCHEME_ID) != null);
             contextCategory.setCreatedBy(new ScoreUser(
                     record.get(APP_USER.as("creator").APP_USER_ID.as("creator_user_id")).toBigInteger(),
                     record.get(APP_USER.as("creator").LOGIN_ID.as("creator_login_id")),

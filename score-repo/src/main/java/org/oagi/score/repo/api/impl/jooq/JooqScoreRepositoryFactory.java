@@ -6,6 +6,8 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryReadRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryWriteRepository;
+import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeReadRepository;
+import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeWriteRepository;
 
 public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
@@ -31,12 +33,12 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
     @Override
     public ContextSchemeReadRepository createContextSchemeReadRepository() throws ScoreDataAccessException {
-        throw new UnsupportedOperationException();
+        return new JooqContextSchemeReadRepository(this.dslContext);
     }
 
     @Override
     public ContextSchemeWriteRepository createContextSchemeWriteRepository() throws ScoreDataAccessException {
-        throw new UnsupportedOperationException();
+        return new JooqContextSchemeWriteRepository(this.dslContext);
     }
 
     @Override

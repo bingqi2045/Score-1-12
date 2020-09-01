@@ -11,6 +11,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxCategoryRecord
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
@@ -104,6 +105,42 @@ public class ContextCategoryWriteRepositoryTest
                 .fetchOptional().orElse(null);
 
         assertNull(record);
+    }
+
+    @Test
+    @Order(4)
+    public void deleteContextCategoriesTest() {
+        DeleteContextCategoriesRequest request = new DeleteContextCategoriesRequest(requester);
+        int cnt = 10;
+        for (int i = 0; i < cnt; ++i) {
+            request.addContextCategoryId(createContextCategory().getContextCategoryId());
+        }
+
+        Assumptions.assumeTrue(cnt == dslContext().selectCount()
+                .from(CTX_CATEGORY)
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.in(request.getContextCategoryIds().stream()
+                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
+                .fetchOneInto(Integer.class));
+
+        DeleteContextCategoriesResponse response = repository.deleteContextCategories(request);
+        assertNotNull(response);
+        for (BigInteger contextCategoryId : request.getContextCategoryIds()) {
+            assertTrue(response.getContextCategoryIds().contains(contextCategoryId));
+        }
+
+        assertEquals(0, dslContext().selectCount()
+                .from(CTX_CATEGORY)
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.in(request.getContextCategoryIds().stream()
+                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
+                .fetchOneInto(Integer.class));
+    }
+
+    private CreateContextCategoryResponse createContextCategory() {
+        CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester);
+        request.setName(RandomStringUtils.random(45, true, true));
+        request.setDescription(RandomStringUtils.random(1000, true, true));
+        CreateContextCategoryResponse response = repository.createContextCategory(request);
+        return response;
     }
 
     @AfterAll

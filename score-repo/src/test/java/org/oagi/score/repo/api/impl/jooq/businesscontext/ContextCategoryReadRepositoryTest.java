@@ -32,7 +32,8 @@ public class ContextCategoryReadRepositoryTest
         repository = scoreRepositoryFactory().createContextCategoryReadRepository();
         requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
 
-        for (int i = 0; i < 20; ++i) {
+        int cnt = 20;
+        for (int i = 0; i < cnt; ++i) {
             ContextCategoryWriteRepository writeRepository =
                     scoreRepositoryFactory().createContextCategoryWriteRepository();
 
@@ -67,11 +68,11 @@ public class ContextCategoryReadRepositoryTest
                 .fetchOptional().orElse(null);
 
         assertNotNull(record);
-        assertEquals(contextCategory.getGuid(), record.getGuid());
-        assertEquals(contextCategory.getName(), record.getName());
-        assertEquals(contextCategory.getDescription(), record.getDescription());
-        assertEquals(contextCategory.getCreationTimestamp(), record.getCreationTimestamp());
-        assertEquals(contextCategory.getLastUpdateTimestamp(), record.getLastUpdateTimestamp());
+        assertEquals(record.getGuid(), contextCategory.getGuid());
+        assertEquals(record.getName(), contextCategory.getName());
+        assertEquals(record.getDescription(), contextCategory.getDescription());
+        assertEquals(record.getCreationTimestamp(), contextCategory.getCreationTimestamp());
+        assertEquals(record.getLastUpdateTimestamp(), contextCategory.getLastUpdateTimestamp());
     }
 
     @Test
@@ -95,11 +96,11 @@ public class ContextCategoryReadRepositoryTest
                     .fetchOptional().orElse(null);
 
             assertNotNull(record);
-            assertEquals(contextCategory.getGuid(), record.getGuid());
-            assertEquals(contextCategory.getName(), record.getName());
-            assertEquals(contextCategory.getDescription(), record.getDescription());
-            assertEquals(contextCategory.getCreationTimestamp(), record.getCreationTimestamp());
-            assertEquals(contextCategory.getLastUpdateTimestamp(), record.getLastUpdateTimestamp());
+            assertEquals(record.getGuid(), contextCategory.getGuid());
+            assertEquals(record.getName(), contextCategory.getName());
+            assertEquals(record.getDescription(), contextCategory.getDescription());
+            assertEquals(record.getCreationTimestamp(), contextCategory.getCreationTimestamp());
+            assertEquals(record.getLastUpdateTimestamp(), contextCategory.getLastUpdateTimestamp());
         }
     }
 

@@ -14,6 +14,8 @@ public class ContextCategory extends Auditable {
 
     private String description;
 
+    private boolean used;
+
     public BigInteger getContextCategoryId() {
         return contextCategoryId;
     }
@@ -44,5 +46,13 @@ public class ContextCategory extends Auditable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }

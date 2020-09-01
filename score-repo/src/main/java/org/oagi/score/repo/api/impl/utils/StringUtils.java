@@ -1,6 +1,6 @@
 package org.oagi.score.repo.api.impl.utils;
 
-public class StringUtils {
+public abstract class StringUtils {
 
     public static boolean isEmpty(Object str) {
         if (str == null) {

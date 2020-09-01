@@ -21,7 +21,9 @@
         <jOOQ.version>3.13.4</jOOQ.version>
         <jOOQ.configuration.skip>false</jOOQ.configuration.skip>
 
-        <org.junit.jupiter.version>5.6.2</org.junit.jupiter.version>
+        <junit.version>4.13</junit.version>
+        <junit.platform.version>1.6.2</junit.platform.version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
         <org.apache.commons.lang3.version>3.11</org.apache.commons.lang3.version>
         <org.springframework.version>5.2.8.RELEASE</org.springframework.version>
     </properties>
@@ -62,9 +64,27 @@
 
         <!-- Testing -->
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${org.junit.jupiter.version}</version>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
