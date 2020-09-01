@@ -51,7 +51,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(ACC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(ACC.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
@@ -214,7 +214,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(ASCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(ASCC.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
@@ -356,7 +356,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(BCC.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(BCC.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
@@ -497,7 +497,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(ASCCP.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }
@@ -631,7 +631,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(BCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(BCCP.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }

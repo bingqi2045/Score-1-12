@@ -51,11 +51,9 @@ public class CcListController {
         request.setReleaseId(releaseId);
         request.setTypes(CcListTypes.fromString(types));
         if (!StringUtils.isEmpty(states)) {
-            List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
+            List<String> stateStrings = new ArrayList<>(Arrays.asList(states.split(",")));
             request.setStates(stateStrings.stream()
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
-        } else {
-            request.setStates(Stream.of(CcState.values()).filter(e -> e != CcState.Deleted).collect(Collectors.toList()));
         }
         if (!StringUtils.isEmpty(deprecated)) {
             if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
