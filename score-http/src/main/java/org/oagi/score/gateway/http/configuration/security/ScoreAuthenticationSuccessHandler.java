@@ -12,8 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -66,8 +68,25 @@ public class ScoreAuthenticationSuccessHandler
     }
 
     @Override
-    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) {
         String targetUrl = super.determineTargetUrl(request, response);
+        if ("/".equals(targetUrl)) {
+            if (authentication instanceof OAuth2AuthenticationToken) {
+                OAuth2AuthenticationToken authenticationToken = (OAuth2AuthenticationToken) authentication;
+                String redirectUri = dslContext.select(OAUTH2_APP.REDIRECT_URI)
+                        .from(OAUTH2_APP)
+                        .where(OAUTH2_APP.PROVIDER_NAME.eq(authenticationToken.getAuthorizedClientRegistrationId()))
+                        .fetchOneInto(String.class);
+
+                Assert.isTrue(UrlUtils.isAbsoluteUrl(redirectUri),
+                        "redirectUri must start with 'http(s)'");
+
+                int idx = redirectUri.indexOf('/', redirectUri.indexOf("://") + 3);
+                targetUrl = redirectUri.substring(0, (idx == -1) ? redirectUri.length() : idx + 1);
+                logger.debug("Using redirect Url: " + targetUrl);
+            }
+        }
         return targetUrl.replaceAll("/login", "/");
     }
 
