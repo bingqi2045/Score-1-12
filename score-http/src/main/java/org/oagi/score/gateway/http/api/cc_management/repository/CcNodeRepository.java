@@ -650,7 +650,7 @@ public class CcNodeRepository {
                 DT_SC_MANIFEST.DT_SC_MANIFEST_ID.as("manifestId"),
                 DT_SC.DT_SC_ID.as("bdt_sc_id"),
                 DT_SC.GUID,
-                concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.PROPERTY_TERM).as("den"),
+                concat(DT_SC.PROPERTY_TERM, val(". "), DT_SC.REPRESENTATION_TERM).as("den"),
                 DT_SC.CARDINALITY_MIN,
                 DT_SC.CARDINALITY_MAX,
                 DT_SC.DEFINITION,
