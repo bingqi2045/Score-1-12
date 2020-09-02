@@ -755,7 +755,7 @@ public class CcListRepository {
         if (request.getDeprecated() != null) {
             conditions.add(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
         }
-        if (!request.getStates().isEmpty()) {
+        if (request.getStates() != null) {
             conditions.add(DT.STATE.in(
                     request.getStates().stream().map(CcState::name).collect(Collectors.toList())));
         }

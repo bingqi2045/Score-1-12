@@ -1864,4 +1864,8 @@ ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
                         DROP FOREIGN KEY `code_list_module_id_fk`,
                         DROP COLUMN `module_id`;
 
+ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (prefix);
+ALTER TABLE `dt` CHANGE `type` `type` VARCHAR(64) NOT NULL COMMENT 'This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.';
+
+
 SET FOREIGN_KEY_CHECKS = 1;

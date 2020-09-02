@@ -159,6 +159,9 @@ public class SeqKeyHandler {
                 break;
 
             case LAST:
+                if (this.current.getNextSeqKeyId() == null) {
+                    break;
+                }
                 if (this.tail != null) {
                     brokeLinks(this.current);
 
