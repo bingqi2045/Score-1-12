@@ -4,16 +4,16 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.base.ScoreRole;
-import org.oagi.score.repo.api.base.ScoreUser;
 import org.oagi.score.repo.api.impl.security.AccessControlScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
+import org.oagi.score.repo.api.user.model.ScoreRole;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
-import static org.oagi.score.repo.api.base.ScoreRole.END_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 
 public class JooqAccessControlScoreRepositoryFactory extends AccessControlScoreRepositoryFactory {
 

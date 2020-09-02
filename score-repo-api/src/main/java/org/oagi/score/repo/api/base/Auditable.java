@@ -1,5 +1,7 @@
 package org.oagi.score.repo.api.base;
 
+import org.oagi.score.repo.api.user.model.ScoreUser;
+
 import java.time.LocalDateTime;
 
 public class Auditable {

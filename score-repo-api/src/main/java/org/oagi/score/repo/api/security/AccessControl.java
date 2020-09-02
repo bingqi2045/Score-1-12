@@ -1,6 +1,6 @@
 package org.oagi.score.repo.api.security;
 
-import org.oagi.score.repo.api.base.ScoreRole;
+import org.oagi.score.repo.api.user.model.ScoreRole;
 
 import java.lang.annotation.*;
 
@@ -8,6 +8,8 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Documented
 public @interface AccessControl {
+
+    boolean ignore() default false;
 
     ScoreRole[] requiredAnyRole() default {};
 

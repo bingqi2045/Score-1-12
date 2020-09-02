@@ -3,7 +3,7 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.base.ScoreUser;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

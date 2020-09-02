@@ -1,7 +1,7 @@
 package org.oagi.score.repo.api.businesscontext.model;
 
 import org.oagi.score.repo.api.base.PaginationRequest;
-import org.oagi.score.repo.api.base.ScoreUser;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;

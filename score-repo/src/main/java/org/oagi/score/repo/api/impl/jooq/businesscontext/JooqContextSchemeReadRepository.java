@@ -3,7 +3,7 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.base.ScoreUser;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextSchemeReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.ContextScheme;
 import org.oagi.score.repo.api.businesscontext.model.ContextSchemeValue;
@@ -14,8 +14,8 @@ import org.oagi.score.repo.api.security.AccessControl;
 
 import java.math.BigInteger;
 
-import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
-import static org.oagi.score.repo.api.base.ScoreRole.END_USER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 

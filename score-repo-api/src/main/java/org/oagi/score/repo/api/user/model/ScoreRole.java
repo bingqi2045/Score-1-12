@@ -1,4 +1,4 @@
-package org.oagi.score.repo.api.base;
+package org.oagi.score.repo.api.user.model;
 
 public enum ScoreRole {
 

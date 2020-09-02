@@ -3,11 +3,12 @@ package org.oagi.score.repo.api.impl.security;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.base.ScoreRole;
-import org.oagi.score.repo.api.base.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.security.AccessControlException;
+import org.oagi.score.repo.api.user.ScoreUserReadRepository;
+import org.oagi.score.repo.api.user.model.ScoreRole;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.lang.reflect.Proxy;
 
@@ -31,19 +32,22 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
                             break;
                         }
                     }
-                    if (requester == null) {
-                        throw new AccessControlException("Not allowed to access without a granted requester.");
-                    }
-                    ensureRequester(requester);
 
                     AccessControl accessControl = method.getAnnotation(AccessControl.class);
                     if (accessControl != null) {
-                        // 'requiredAnyRole' processing
-                        ScoreRole[] requiredAnyRole = accessControl.requiredAnyRole();
-                        if (requiredAnyRole != null && requiredAnyRole.length > 0) {
-                            boolean validate = requester.hasAnyRole(requiredAnyRole);
-                            if (!validate) {
-                                throw new AccessControlException(requester);
+                        if (!accessControl.ignore()) {
+                            if (requester == null) {
+                                throw new AccessControlException("Not allowed to access without a granted requester.");
+                            }
+                            ensureRequester(requester);
+
+                            // 'requiredAnyRole' processing
+                            ScoreRole[] requiredAnyRole = accessControl.requiredAnyRole();
+                            if (requiredAnyRole != null && requiredAnyRole.length > 0) {
+                                boolean validate = requester.hasAnyRole(requiredAnyRole);
+                                if (!validate) {
+                                    throw new AccessControlException(requester);
+                                }
                             }
                         }
                     }
@@ -59,6 +63,11 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     }
 
     protected abstract void ensureRequester(ScoreUser requester) throws ScoreDataAccessException;
+
+    @Override
+    public ScoreUserReadRepository createScoreUserReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createScoreUserReadRepository(), ScoreUserReadRepository.class);
+    }
 
     @Override
     public ContextCategoryReadRepository createContextCategoryReadRepository() throws ScoreDataAccessException {

@@ -3,6 +3,8 @@ package org.oagi.score.gateway.http.configuration.security;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.user.model.GetScoreUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -21,6 +23,9 @@ public class SessionService {
 
     @Autowired
     private DSLContext dslContext;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     public BigInteger userId(User user) {
         if (user == null) {
@@ -102,5 +107,11 @@ public class SessionService {
             return getAppUser((OAuth2User) user);
         }
         return getAppUser(user.getName());
+    }
+
+    public org.oagi.score.repo.api.user.model.ScoreUser asScoreUser(AuthenticatedPrincipal user) {
+        return scoreRepositoryFactory.createScoreUserReadRepository()
+                .getScoreUser(new GetScoreUserRequest().withUserName(user.getName()))
+                .getUser();
     }
 }

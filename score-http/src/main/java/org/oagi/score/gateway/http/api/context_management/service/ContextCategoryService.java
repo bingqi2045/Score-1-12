@@ -11,22 +11,27 @@ import org.oagi.score.gateway.http.api.context_management.data.SimpleContextCate
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.ContextCategoryRepository;
-import org.oagi.score.repo.PaginationResponse;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryRequest;
+import org.oagi.score.repo.api.businesscontext.model.ListContextCategoryRequest;
+import org.oagi.score.repo.api.businesscontext.model.ListContextCategoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.oagi.score.repo.api.base.SortDirection.ASC;
+import static org.oagi.score.repo.api.base.SortDirection.DESC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_SCHEME;
 
@@ -46,47 +51,71 @@ public class ContextCategoryService {
     @Autowired
     private DSLContext dslContext;
 
-    public PageResponse<ContextCategory> getContextCategoryList(ContextCategoryListRequest request) {
+    public PageResponse<ContextCategory> getContextCategoryList(
+            AuthenticatedPrincipal requester, ContextCategoryListRequest request) {
+
+        ListContextCategoryRequest listRequest = new ListContextCategoryRequest(sessionService.asScoreUser(requester));
+        listRequest.setContextCategoryIds(request.getContextCategoryIds());
+        listRequest.setName(request.getName());
+        listRequest.setDescription(request.getDescription());
+        listRequest.setUpdaterUsernames(request.getUpdaterLoginIds());
+        if (request.getUpdateStartDate() != null) {
+            listRequest.setUpdateStartDate(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime());
+        }
+        if (request.getUpdateEndDate() != null) {
+            listRequest.setUpdateEndDate(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime());
+        }
         PageRequest pageRequest = request.getPageRequest();
+        if (pageRequest != null) {
+            listRequest.setPageIndex(pageRequest.getPageIndex());
+            listRequest.setPageSize(pageRequest.getPageSize());
+            listRequest.setSortActive(pageRequest.getSortActive());
+            listRequest.setSortDirection("asc".equalsIgnoreCase(pageRequest.getSortDirection()) ? ASC : DESC);
+        }
 
-        PaginationResponse<ContextCategory> result = repository.selectContextCategories()
-                .setContextCategoryIds(request.getContextCategoryIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
-                .setName(request.getName())
-                .setDescription(request.getDescription())
-                .setUpdaterIds(request.getUpdaterLoginIds().stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
-                .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
-                .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
-                .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
-                .fetchInto(ContextCategory.class);
+        ListContextCategoryResponse listResponse =
+                scoreRepositoryFactory.createContextCategoryReadRepository()
+                .listContextCategories(listRequest);
 
-        List<ContextCategory> contextCategories = result.getResult();
-        Map<BigInteger, Boolean> usedMap = repository.used(
-                contextCategories.stream().map(e -> e.getCtxCategoryId()
-                ).collect(Collectors.toList()));
-        contextCategories.forEach(e -> {
-            e.setUsed(usedMap.getOrDefault(e.getCtxCategoryId(), false));
-        });
+        List<ContextCategory> contextCategories =
+                listResponse.getResults().stream()
+                .map(e -> of(e))
+                .collect(Collectors.toList());
 
         PageResponse<ContextCategory> response = new PageResponse();
         response.setList(contextCategories);
-        response.setPage(pageRequest.getPageIndex());
-        response.setSize(pageRequest.getPageSize());
-        response.setLength(result.getPageCount());
+        response.setPage(listResponse.getPage());
+        response.setSize(listResponse.getSize());
+        response.setLength(listResponse.getLength());
         return response;
     }
 
-    public ContextCategory getContextCategory(BigInteger ctxCategoryId) {
-//        return scoreRepositoryFactory
-//                .createContextCategoryReadRepository()
-//                .getContextCategory(
-//                        new GetContextCategoryRequest()
-//                                .withContextCategoryId(ctxCategoryId))
-//                .getContextCategory();
+    private ContextCategory of(org.oagi.score.repo.api.businesscontext.model.ContextCategory e) {
+        if (e == null) {
+            return null;
+        }
 
-        ContextCategoryListRequest request = new ContextCategoryListRequest();
-        request.setContextCategoryIds(Arrays.asList(ctxCategoryId));
-        List<ContextCategory> contextCategories = getContextCategoryList(request).getList();
-        return (contextCategories.isEmpty()) ? null : contextCategories.get(0);
+        ContextCategory contextCategory = new ContextCategory();
+        contextCategory.setCtxCategoryId(e.getContextCategoryId());
+        contextCategory.setGuid(e.getGuid());
+        contextCategory.setName(e.getName());
+        contextCategory.setDescription(e.getDescription());
+        contextCategory.setLastUpdateTimestamp(
+                Date.from(e.getLastUpdateTimestamp().atZone(ZoneId.systemDefault()).toInstant())
+        );
+        contextCategory.setLastUpdateUser(e.getLastUpdatedBy().getUsername());
+        contextCategory.setUsed(e.isUsed());
+        return contextCategory;
+    }
+
+    public ContextCategory getContextCategory(AuthenticatedPrincipal requester, BigInteger ctxCategoryId) {
+        GetContextCategoryRequest request =
+                new GetContextCategoryRequest(sessionService.asScoreUser(requester))
+                        .withContextCategoryId(ctxCategoryId);
+
+        return of(scoreRepositoryFactory.createContextCategoryReadRepository()
+                .getContextCategory(request)
+                .getContextCategory());
     }
 
     public List<SimpleContextCategory> getSimpleContextCategoryList() {

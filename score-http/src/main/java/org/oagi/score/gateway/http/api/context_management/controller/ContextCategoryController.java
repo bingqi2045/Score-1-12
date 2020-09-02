@@ -7,12 +7,15 @@ import org.oagi.score.gateway.http.api.context_management.service.ContextCategor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class ContextCategoryController {
@@ -23,8 +26,12 @@ public class ContextCategoryController {
     @RequestMapping(value = "/context_categories", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<ContextCategory> getContextCategoryList(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "description", required = false) String description,
+            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
+            @RequestParam(name = "updateStart", required = false) String updateStart,
+            @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -34,6 +41,18 @@ public class ContextCategoryController {
 
         request.setName(name);
         request.setDescription(description);
+        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
+                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
+
+        if (!StringUtils.isEmpty(updateStart)) {
+            request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
+        }
+        if (!StringUtils.isEmpty(updateEnd)) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(updateEnd));
+            calendar.add(Calendar.DATE, 1);
+            request.setUpdateEndDate(calendar.getTime());
+        }
 
         PageRequest pageRequest = new PageRequest();
         pageRequest.setSortActive(sortActive);
@@ -42,7 +61,7 @@ public class ContextCategoryController {
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
 
-        return service.getContextCategoryList(request);
+        return service.getContextCategoryList(requester, request);
     }
 
     @RequestMapping(value = "/simple_context_categories", method = RequestMethod.GET,
@@ -54,8 +73,10 @@ public class ContextCategoryController {
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContextCategory getContextCategory(@PathVariable("id") BigInteger id) {
-        return service.getContextCategory(id);
+    public ContextCategory getContextCategory(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger id) {
+        return service.getContextCategory(requester, id);
     }
 
     @RequestMapping(value = "/context_schemes_from_ctg/{id}", method = RequestMethod.GET,

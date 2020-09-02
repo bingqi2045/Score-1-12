@@ -3,7 +3,7 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.base.ScoreUser;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
-import static org.oagi.score.repo.api.base.ScoreRole.END_USER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
@@ -146,7 +146,7 @@ public class JooqContextCategoryReadRepository
                 field = CTX_CATEGORY.DESCRIPTION;
                 break;
 
-            case "lastUpdateTimestamp":
+            case "lastupdatetimestamp":
                 field = CTX_CATEGORY.LAST_UPDATE_TIMESTAMP;
                 break;
 

@@ -8,6 +8,8 @@ import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryRead
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeReadRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeWriteRepository;
+import org.oagi.score.repo.api.impl.jooq.user.JooqScoreUserReadRepository;
+import org.oagi.score.repo.api.user.ScoreUserReadRepository;
 
 public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
@@ -19,6 +21,11 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
     public final DSLContext getDslContext() {
         return dslContext;
+    }
+
+    @Override
+    public ScoreUserReadRepository createScoreUserReadRepository() throws ScoreDataAccessException {
+        return new JooqScoreUserReadRepository(this.dslContext);
     }
 
     @Override

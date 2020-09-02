@@ -4,7 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
 import org.oagi.score.repo.api.base.PaginationRequest;
-import org.oagi.score.repo.api.base.ScoreUser;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryReadRepository;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.repo.api.base.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

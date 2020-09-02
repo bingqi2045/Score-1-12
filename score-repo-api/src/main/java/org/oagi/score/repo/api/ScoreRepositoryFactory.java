@@ -2,8 +2,11 @@ package org.oagi.score.repo.api;
 
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.user.ScoreUserReadRepository;
 
 public interface ScoreRepositoryFactory {
+
+    ScoreUserReadRepository createScoreUserReadRepository() throws ScoreDataAccessException;
 
     ContextCategoryReadRepository createContextCategoryReadRepository() throws ScoreDataAccessException;
     ContextCategoryWriteRepository createContextCategoryWriteRepository() throws ScoreDataAccessException;

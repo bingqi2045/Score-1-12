@@ -1,5 +1,7 @@
 package org.oagi.score.repo.api.base;
 
+import org.oagi.score.repo.api.user.model.ScoreUser;
+
 public class PaginationRequest<T> extends Request {
 
     public static int DEFAULT_PAGE_INDEX = 0;
