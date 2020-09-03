@@ -118,4 +118,15 @@ public class NamespaceController {
         service.discard(user, namespaceId);
         return ResponseEntity.accepted().build();
     }
+
+    @RequestMapping(value = "/namespace/{id}/transfer_ownership", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateNamespace(@PathVariable("id") BigInteger namespaceId,
+                                          @AuthenticationPrincipal AuthenticatedPrincipal user,
+                                          @RequestBody Map<String, String> request) {
+        String targetLoginId = request.get("targetLoginId");
+        service.transferOwnership(user, namespaceId, targetLoginId);
+        return ResponseEntity.accepted().build();
+    }
+
 }

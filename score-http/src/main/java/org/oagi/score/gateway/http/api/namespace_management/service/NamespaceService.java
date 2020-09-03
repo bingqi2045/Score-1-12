@@ -5,6 +5,7 @@ import org.jooq.Record5;
 import org.jooq.Record6;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.namespace_management.data.Namespace;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.NAMESPACE;
 
 @Service
@@ -79,12 +81,19 @@ public class NamespaceService {
     @Transactional
     public BigInteger create(AuthenticatedPrincipal user, Namespace namespace) {
         String uri = namespace.getUri();
-        boolean isExist = dslContext.selectCount()
+        boolean isURIExist = dslContext.selectCount()
                 .from(NAMESPACE)
                 .where(NAMESPACE.URI.eq(uri))
                 .fetchOneInto(Integer.class) > 0;
-        if (isExist) {
+        if (isURIExist) {
             throw new IllegalArgumentException("Namespace '" + uri + "' exists.");
+        }
+        boolean isPrefixExist = dslContext.selectCount()
+                .from(NAMESPACE)
+                .where(NAMESPACE.PREFIX.eq(namespace.getPrefix()))
+                .fetchOneInto(Integer.class) > 0;
+        if (isPrefixExist) {
+            throw new IllegalArgumentException("Namespace Prefix '" + namespace.getPrefix() + "' exists.");
         }
 
         AppUser requester = sessionService.getAppUser(user);
@@ -143,6 +152,37 @@ public class NamespaceService {
                 .set(NAMESPACE.LAST_UPDATED_BY, userId)
                 .set(NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
                 .where(NAMESPACE.OWNER_USER_ID.eq(userId),
+                        NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
+
+        if (res != 1) {
+            throw new AccessDeniedException("Access is denied");
+        }
+    }
+
+    @Transactional
+    public void transferOwnership(AuthenticatedPrincipal user, BigInteger namespaceId, String targetLoginId) {
+        AppUser owner = sessionService.getAppUser(user.getName());
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        AppUserRecord targetUserRecord = dslContext.selectFrom(APP_USER)
+                .where(APP_USER.LOGIN_ID.eq(targetLoginId)).fetchOne();
+
+        Namespace namespace = getNamespace(user, namespaceId);
+
+        boolean isDeveloper = targetUserRecord.getIsDeveloper() == (byte) 1;
+
+        if (namespace.isStd() != isDeveloper) {
+            if (namespace.isStd()) {
+                throw new IllegalArgumentException("Standard namespace can not transfer to End User.");
+            }
+            throw new IllegalArgumentException("Non standard namespace can not transfer to Developer.");
+        }
+
+        int res = dslContext.update(NAMESPACE)
+                .set(NAMESPACE.OWNER_USER_ID, targetUserRecord.getAppUserId())
+                .set(NAMESPACE.LAST_UPDATED_BY, ULong.valueOf(owner.getAppUserId()))
+                .set(NAMESPACE.LAST_UPDATE_TIMESTAMP, timestamp)
+                .where(NAMESPACE.OWNER_USER_ID.eq(ULong.valueOf(owner.getAppUserId())),
                         NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespace.getNamespaceId()))).execute();
 
         if (res != 1) {
