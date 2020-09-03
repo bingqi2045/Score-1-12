@@ -17,6 +17,7 @@ public class NamespaceListRequest {
     private List<String> updaterLoginIds = Collections.emptyList();
     private Date updateStartDate;
     private Date updateEndDate;
+    private Boolean standard;
     private PageRequest pageRequest = PageRequest.EMPTY_INSTANCE;
 
 }

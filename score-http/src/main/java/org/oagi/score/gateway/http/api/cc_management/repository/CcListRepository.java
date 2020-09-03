@@ -4,6 +4,7 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.types.ULong;
+import org.oagi.score.data.DTType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
@@ -22,7 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.data.DTType.BDT;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -750,7 +750,6 @@ public class CcListRepository {
         AppUser appUserUpdater = APP_USER.as("updater");
 
         List<Condition> conditions = new ArrayList();
-        conditions.add(DT.TYPE.eq(BDT.getValue()));
         conditions.add(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
         if (request.getDeprecated() != null) {
             conditions.add(DT.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
@@ -777,6 +776,11 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
+        if(request.getDtTypes().size() > 0) {
+            conditions.add(DT.TYPE.in(request.getDtTypes()));
+        } else {
+            conditions.add(DT.TYPE.notEqual(DTType.Core.toString()));
+        }
         if (request.getUpdateStartDate() != null) {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
@@ -789,6 +793,7 @@ public class CcListRepository {
                 DT.DT_ID,
                 DT.GUID,
                 DT.DEN,
+                DT.TYPE,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
                 MODULE.NAME,
@@ -826,6 +831,7 @@ public class CcListRepository {
                     ccList.setId(row.getValue(DT.DT_ID).toBigInteger());
                     ccList.setGuid(row.getValue(DT.GUID));
                     String den = row.getValue(DT.DEN);
+                    ccList.setDtType(row.getValue(DT.TYPE));
                     if (!StringUtils.isEmpty(den)) {
                         ccList.setDen(den.replaceAll("_", " ").replaceAll("  ", " "));
                     }

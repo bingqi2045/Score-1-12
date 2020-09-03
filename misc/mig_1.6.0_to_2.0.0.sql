@@ -1867,5 +1867,9 @@ ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
 ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (prefix);
 ALTER TABLE `dt` CHANGE `type` `type` VARCHAR(64) NOT NULL COMMENT 'This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.';
 
+UPDATE `dt` SET `type` = 'Core' WHERE `type` = '0';
+UPDATE `dt` JOIN `dt` as `dtbase` ON `dt`.`based_dt_id` = `dtbase`.`dt_id` and `dtbase`.`type` = 'Core' SET `dt`.`type` = 'Default';
+UPDATE `dt` JOIN `dt` as `dtbase` ON `dt`.`based_dt_id` = `dtbase`.`dt_id` and `dtbase`.`type` = 'Default' SET `dt`.`type` = 'Unqualified';
+UPDATE `dt` SET `dt`.`type` = 'Qualified' WHERE `type` = '1';
 
 SET FOREIGN_KEY_CHECKS = 1;

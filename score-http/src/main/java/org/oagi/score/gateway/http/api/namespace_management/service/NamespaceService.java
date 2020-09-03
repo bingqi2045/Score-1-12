@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.namespace_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.Record5;
+import org.jooq.Record6;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
@@ -39,8 +40,10 @@ public class NamespaceService {
     @Autowired
     private NamespaceReadRepository readRepository;
 
-    public List<SimpleNamespace> getSimpleNamespaces() {
+    public List<SimpleNamespace> getSimpleNamespaces(AuthenticatedPrincipal user) {
+        AppUser requester = sessionService.getAppUser(user);
         return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI).from(NAMESPACE)
+                .where(NAMESPACE.IS_STD_NMSP.eq((byte) (requester.isDeveloper() ? 1 : 0)))
                 .fetchInto(SimpleNamespace.class);
     }
 
@@ -52,11 +55,12 @@ public class NamespaceService {
     public Namespace getNamespace(AuthenticatedPrincipal user, BigInteger namespaceId) {
         BigInteger userId = sessionService.userId(user);
 
-        Record5<ULong, String, String, String, ULong> result =
+        Record6<ULong, String, String, String, Byte, ULong> result =
                 dslContext.select(NAMESPACE.NAMESPACE_ID,
                         NAMESPACE.URI,
                         NAMESPACE.PREFIX,
                         NAMESPACE.DESCRIPTION,
+                        NAMESPACE.IS_STD_NMSP,
                         NAMESPACE.OWNER_USER_ID)
                         .from(NAMESPACE)
                         .where(NAMESPACE.NAMESPACE_ID.eq(ULong.valueOf(namespaceId)))
@@ -67,6 +71,7 @@ public class NamespaceService {
         namespace.setUri(result.get(NAMESPACE.URI));
         namespace.setPrefix(result.get(NAMESPACE.PREFIX));
         namespace.setDescription(result.get(NAMESPACE.DESCRIPTION));
+        namespace.setStd(result.get(NAMESPACE.IS_STD_NMSP) == 1);
         namespace.setCanEdit(result.get(NAMESPACE.OWNER_USER_ID).toBigInteger().equals(userId));
         return namespace;
     }
@@ -106,15 +111,26 @@ public class NamespaceService {
     @Transactional
     public void update(AuthenticatedPrincipal user, Namespace namespace) {
         String uri = namespace.getUri();
-        boolean isExist = dslContext.selectCount()
+        boolean isUriExist = dslContext.selectCount()
                 .from(NAMESPACE)
                 .where(and(
                         NAMESPACE.URI.eq(uri),
                         NAMESPACE.NAMESPACE_ID.notEqual(ULong.valueOf(namespace.getNamespaceId()))
                 ))
                 .fetchOneInto(Integer.class) > 0;
-        if (isExist) {
-            throw new IllegalArgumentException("Namespace '" + uri + "' exists.");
+        if (isUriExist) {
+            throw new IllegalArgumentException("Namespace URI '" + uri + "' exists.");
+        }
+
+        boolean isPrefixExist = dslContext.selectCount()
+                .from(NAMESPACE)
+                .where(and(
+                        NAMESPACE.PREFIX.eq(namespace.getPrefix()),
+                        NAMESPACE.NAMESPACE_ID.notEqual(ULong.valueOf(namespace.getNamespaceId()))
+                ))
+                .fetchOneInto(Integer.class) > 0;
+        if (isPrefixExist) {
+            throw new IllegalArgumentException("Namespace Prefix '" + namespace.getPrefix() + "' exists.");
         }
 
         ULong userId = ULong.valueOf(sessionService.userId(user));

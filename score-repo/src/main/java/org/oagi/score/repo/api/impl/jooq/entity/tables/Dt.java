@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -84630298;
+    private static final long serialVersionUID = -1250788490;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -61,9 +61,9 @@ public class Dt extends TableImpl<DtRecord> {
     public final TableField<DtRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "GUID of the data type. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.dt.type</code>. List value: 0 = CDT, 1 = BDT.
+     * The column <code>oagi.dt.type</code>. This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.
      */
-    public final TableField<DtRecord, Integer> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.INTEGER, this, "List value: 0 = CDT, 1 = BDT.");
+    public final TableField<DtRecord, String> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.");
 
     /**
      * The column <code>oagi.dt.version_num</code>. Format X.Y.Z where all of them are integer with no leading zero allowed. X means major version number, Y means minor version number and Z means patch version number. This column is different from the REVISION_NUM column in that the new version is only assigned to the release component while the REVISION_NUM is assigned every time editing life cycle.

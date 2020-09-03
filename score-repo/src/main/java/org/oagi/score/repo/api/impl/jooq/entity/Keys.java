@@ -314,6 +314,7 @@ public class Keys {
     public static final UniqueKey<ModuleSetAssignmentRecord> KEY_MODULE_SET_ASSIGNMENT_PRIMARY = UniqueKeys0.KEY_MODULE_SET_ASSIGNMENT_PRIMARY;
     public static final UniqueKey<ModuleSetReleaseRecord> KEY_MODULE_SET_RELEASE_PRIMARY = UniqueKeys0.KEY_MODULE_SET_RELEASE_PRIMARY;
     public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = UniqueKeys0.KEY_NAMESPACE_PRIMARY;
+    public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = UniqueKeys0.KEY_NAMESPACE_NAMESPACE_UK1;
     public static final UniqueKey<Oauth2AppRecord> KEY_OAUTH2_APP_PRIMARY = UniqueKeys0.KEY_OAUTH2_APP_PRIMARY;
     public static final UniqueKey<Oauth2AppScopeRecord> KEY_OAUTH2_APP_SCOPE_PRIMARY = UniqueKeys0.KEY_OAUTH2_APP_SCOPE_PRIMARY;
     public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = UniqueKeys0.KEY_RELEASE_PRIMARY;
@@ -756,6 +757,7 @@ public class Keys {
         public static final UniqueKey<ModuleSetAssignmentRecord> KEY_MODULE_SET_ASSIGNMENT_PRIMARY = Internal.createUniqueKey(ModuleSetAssignment.MODULE_SET_ASSIGNMENT, "KEY_module_set_assignment_PRIMARY", new TableField[] { ModuleSetAssignment.MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID }, true);
         public static final UniqueKey<ModuleSetReleaseRecord> KEY_MODULE_SET_RELEASE_PRIMARY = Internal.createUniqueKey(ModuleSetRelease.MODULE_SET_RELEASE, "KEY_module_set_release_PRIMARY", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID }, true);
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_PRIMARY", new TableField[] { Namespace.NAMESPACE.NAMESPACE_ID }, true);
+        public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_namespace_uk1", new TableField[] { Namespace.NAMESPACE.PREFIX }, true);
         public static final UniqueKey<Oauth2AppRecord> KEY_OAUTH2_APP_PRIMARY = Internal.createUniqueKey(Oauth2App.OAUTH2_APP, "KEY_oauth2_app_PRIMARY", new TableField[] { Oauth2App.OAUTH2_APP.OAUTH2_APP_ID }, true);
         public static final UniqueKey<Oauth2AppScopeRecord> KEY_OAUTH2_APP_SCOPE_PRIMARY = Internal.createUniqueKey(Oauth2AppScope.OAUTH2_APP_SCOPE, "KEY_oauth2_app_scope_PRIMARY", new TableField[] { Oauth2AppScope.OAUTH2_APP_SCOPE.OAUTH2_APP_SCOPE_ID }, true);
         public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = Internal.createUniqueKey(Release.RELEASE, "KEY_release_PRIMARY", new TableField[] { Release.RELEASE.RELEASE_ID }, true);

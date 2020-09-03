@@ -28,13 +28,12 @@ public class NamespaceReadRepository {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record8<
-            ULong, String, String, ULong, String,
-            String, LocalDateTime, String>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record9<ULong, String, String, ULong, String, String,
+            LocalDateTime, Byte, String>> getSelectOnConditionStep() {
         return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI, NAMESPACE.PREFIX,
                 APP_USER.as("owner").APP_USER_ID.as("owner_user_id"),
                 APP_USER.as("owner").LOGIN_ID.as("owner"),
-                NAMESPACE.DESCRIPTION, NAMESPACE.LAST_UPDATE_TIMESTAMP,
+                NAMESPACE.DESCRIPTION, NAMESPACE.LAST_UPDATE_TIMESTAMP, NAMESPACE.IS_STD_NMSP,
                 APP_USER.as("updater").LOGIN_ID.as("last_update_user"))
                 .from(NAMESPACE)
                 .join(APP_USER.as("owner"))
@@ -47,9 +46,8 @@ public class NamespaceReadRepository {
                                              NamespaceListRequest request) {
 
         PageRequest pageRequest = request.getPageRequest();
-        SelectOnConditionStep<Record8<
-                ULong, String, String, ULong, String,
-                String, LocalDateTime, String>> selectOnConditionStep = getSelectOnConditionStep();
+        SelectOnConditionStep<Record9<ULong, String, String, ULong, String, String,
+                LocalDateTime, Byte, String>> selectOnConditionStep = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         if (!StringUtils.isEmpty(request.getUri())) {
@@ -75,10 +73,12 @@ public class NamespaceReadRepository {
             conditions.add(NAMESPACE.LAST_UPDATE_TIMESTAMP.lessThan(
                     new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
+        if (request.getStandard() != null) {
+            conditions.add(NAMESPACE.IS_STD_NMSP.eq((byte) (request.getStandard() ? 1 : 0)));
+        }
 
-        SelectConditionStep<Record8<
-                ULong, String, String, ULong, String,
-                String, LocalDateTime, String>> conditionStep = selectOnConditionStep.where(conditions);
+        SelectConditionStep<Record9<ULong, String, String, ULong, String, String,
+                LocalDateTime, Byte, String>> conditionStep = selectOnConditionStep.where(conditions);
 
         int length = dslContext.fetchCount(conditionStep);
 
@@ -108,9 +108,9 @@ public class NamespaceReadRepository {
             }
         }
 
-        ResultQuery<Record8<
-                ULong, String, String, ULong, String,
-                String, LocalDateTime, String>> query;
+        ResultQuery<Record9<
+                ULong, String, String, ULong, String, String,
+                LocalDateTime, Byte, String>> query;
         if (sortField != null) {
             if (pageRequest.getOffset() >= 0 && pageRequest.getPageSize() >= 0) {
                 query = conditionStep.orderBy(sortField)
@@ -132,6 +132,7 @@ public class NamespaceReadRepository {
             namespaceList.setUri(record.get(NAMESPACE.URI));
             namespaceList.setPrefix(record.get(NAMESPACE.PREFIX));
             namespaceList.setDescription(record.get(NAMESPACE.DESCRIPTION));
+            namespaceList.setStd(record.get(NAMESPACE.IS_STD_NMSP) == 1);
             namespaceList.setOwner(record.get(APP_USER.as("owner").LOGIN_ID.as("owner")));
             namespaceList.setLastUpdateTimestamp(Date.from(record.get(NAMESPACE.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             namespaceList.setLastUpdateUser(record.get(APP_USER.as("updater").LOGIN_ID.as("last_update_user")));

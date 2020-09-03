@@ -23,6 +23,7 @@ public class CcList {
 
     private String definitionSource;
     private OagisComponentType oagisComponentType;
+    private String dtType;
     private String owner;
     private CcState state;
     private String revision;

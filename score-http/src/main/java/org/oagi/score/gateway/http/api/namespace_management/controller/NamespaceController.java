@@ -28,8 +28,8 @@ public class NamespaceController {
 
     @RequestMapping(value = "/simple_namespaces", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleNamespace> getSimpleNamespaces() {
-        return service.getSimpleNamespaces();
+    public List<SimpleNamespace> getSimpleNamespaces(@AuthenticationPrincipal AuthenticatedPrincipal user) {
+        return service.getSimpleNamespaces(user);
     }
 
     @RequestMapping(value = "/namespace_list", method = RequestMethod.GET,
@@ -42,6 +42,7 @@ public class NamespaceController {
                                                         @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                         @RequestParam(name = "updateStart", required = false) String updateStart,
                                                         @RequestParam(name = "updateEnd", required = false) String updateEnd,
+                                                        @RequestParam(name = "standard", required = false) String standard,
                                                         @RequestParam(name = "sortActive") String sortActive,
                                                         @RequestParam(name = "sortDirection") String sortDirection,
                                                         @RequestParam(name = "pageIndex") int pageIndex,
@@ -64,6 +65,14 @@ public class NamespaceController {
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);
             request.setUpdateEndDate(calendar.getTime());
+        }
+
+        if (!StringUtils.isEmpty(standard)) {
+            if ("true".equalsIgnoreCase(standard.toLowerCase())) {
+                request.setStandard(true);
+            } else if ("false".equalsIgnoreCase(standard.toLowerCase())) {
+                request.setStandard(false);
+            }
         }
 
         PageRequest pageRequest = new PageRequest();

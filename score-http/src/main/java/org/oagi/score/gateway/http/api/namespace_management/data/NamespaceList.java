@@ -13,6 +13,7 @@ public class NamespaceList {
     private String prefix;
     private String owner;
     private String description;
+    private boolean isStd;
     private Date lastUpdateTimestamp;
     private String lastUpdateUser;
 }

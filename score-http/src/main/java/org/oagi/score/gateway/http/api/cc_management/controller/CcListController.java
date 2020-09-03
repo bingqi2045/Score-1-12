@@ -38,6 +38,7 @@ public class CcListController {
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "componentTypes", required = false) String componentTypes,
+            @RequestParam(name = "dtTypes", required = false) String dtTypes,
             @RequestParam(name = "excludes", required = false) String excludes,
             @RequestParam(name = "findUsagesType", required = false) String findUsagesType,
             @RequestParam(name = "findUsagesManifestId", required = false) BigInteger findUsagesManifestId,
@@ -70,6 +71,8 @@ public class CcListController {
         request.setDefinition(definition);
         request.setModule(module);
         request.setComponentTypes(componentTypes);
+        request.setDtTypes(StringUtils.isEmpty(dtTypes) ? Collections.emptyList() :
+                Arrays.asList(dtTypes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setExcludes(StringUtils.isEmpty(excludes) ? Collections.emptyList() :
                 Arrays.asList(excludes.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         if (!StringUtils.isEmpty(findUsagesType) && findUsagesManifestId != null && findUsagesManifestId.compareTo(BigInteger.ZERO) > 0) {

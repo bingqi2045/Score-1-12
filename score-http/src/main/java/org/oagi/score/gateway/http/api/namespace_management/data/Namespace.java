@@ -11,5 +11,6 @@ public class Namespace {
     private String uri;
     private String prefix;
     private String description;
+    private boolean isStd;
     private boolean canEdit;
 }
