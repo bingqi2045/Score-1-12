@@ -1867,9 +1867,52 @@ ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
 ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (prefix);
 ALTER TABLE `dt` CHANGE `type` `type` VARCHAR(64) NOT NULL COMMENT 'This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.';
 
+-- set dt Type Core
 UPDATE `dt` SET `type` = 'Core' WHERE `type` = '0';
-UPDATE `dt` JOIN `dt` as `dtbase` ON `dt`.`based_dt_id` = `dtbase`.`dt_id` and `dtbase`.`type` = 'Core' SET `dt`.`type` = 'Default';
-UPDATE `dt` JOIN `dt` as `dtbase` ON `dt`.`based_dt_id` = `dtbase`.`dt_id` and `dtbase`.`type` = 'Default' SET `dt`.`type` = 'Unqualified';
-UPDATE `dt` SET `dt`.`type` = 'Qualified' WHERE `type` = '1';
+
+-- set dt Type Unqualified
+UPDATE
+	`dt`
+	JOIN (SELECT
+			`dt`.`dt_id`
+		  FROM
+		    `dt`
+			JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `dt`.`dt_id`
+			JOIN `module_dt_manifest` ON `module_dt_manifest`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`
+			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` = 'Fields') AS `t`
+	ON `t`.`dt_id` = `dt`.`dt_id`
+SET
+	`dt`.`type` = 'Unqualified';
+
+-- set dt Type Default
+UPDATE
+	`dt`
+	JOIN (SELECT
+			`dt`.`dt_id`
+		  FROM
+		    `dt`
+			JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `dt`.`dt_id`
+			JOIN `module_dt_manifest` ON `module_dt_manifest`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`
+			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` = 'BusinessDataType_1') AS `t`
+	ON `t`.`dt_id` = `dt`.`dt_id`
+SET
+	`dt`.`type` = 'Default';
+
+-- set dt Type Qualified
+UPDATE
+	`dt`
+SET
+	type = 'Qualified'
+WHERE
+	qualifier is not null;
+
+-- Unqualified dt from Meta
+UPDATE
+	`dt`
+SET
+	`type` = 'Unqualified'
+where
+	`den` IN ('Expression. Type', 'Action Expression. Type', 'Response Expression. Type');
+
 
 SET FOREIGN_KEY_CHECKS = 1;
