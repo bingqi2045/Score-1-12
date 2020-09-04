@@ -4,13 +4,15 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
-import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -35,6 +37,9 @@ public class AsccWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toAsccpManifestId) {
         while(fromAccManifestRecord != null) {
@@ -138,7 +143,7 @@ public class AsccWriteRepository {
                         .set(ascc)
                         .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
         );
-        new SeqKeyHandler(dslContext, ascc).moveTo(request.getPos());
+        seqKeyHandler(request.getUser(), ascc).moveTo(request.getPos());
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());
@@ -269,7 +274,7 @@ public class AsccWriteRepository {
         // delete from Tables
         asccManifestRecord.delete();
         asccRecord.delete();
-        new SeqKeyHandler(dslContext, asccRecord).deleteCurrent();
+        seqKeyHandler(request.getUser(), asccRecord).deleteCurrent();
 
         upsertRevisionIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -278,5 +283,15 @@ public class AsccWriteRepository {
         );
 
         return new DeleteAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
+    }
+
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccRecord asccRecord) {
+        SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
+                sessionService.asScoreUser(user));
+        seqKeyHandler.initAscc(
+                asccRecord.getFromAccId().toBigInteger(),
+                (asccRecord.getSeqKeyId() != null) ? asccRecord.getSeqKeyId().toBigInteger() : null,
+                asccRecord.getAsccId().toBigInteger());
+        return seqKeyHandler;
     }
 }

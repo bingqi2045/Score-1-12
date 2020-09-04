@@ -14,8 +14,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestReco
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.graph.Node;
-import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
-import org.oagi.score.repo.component.seqkey.SeqKeySupportable;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 
 import java.math.BigInteger;
 import java.util.*;

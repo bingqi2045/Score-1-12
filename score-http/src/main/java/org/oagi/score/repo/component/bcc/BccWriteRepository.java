@@ -5,13 +5,15 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
-import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -25,8 +27,8 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
-import static org.oagi.score.repo.component.seqkey.MoveTo.LAST;
-import static org.oagi.score.repo.component.seqkey.MoveTo.LAST_OF_ATTR;
+import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
+import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST_OF_ATTR;
 
 @Repository
 public class BccWriteRepository {
@@ -39,6 +41,9 @@ public class BccWriteRepository {
 
     @Autowired
     private RevisionRepository revisionRepository;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toBccpManifestId) {
         while(fromAccManifestRecord != null) {
@@ -127,7 +132,8 @@ public class BccWriteRepository {
                         .set(bcc)
                         .returning(BCC.BCC_ID).fetchOne().getBccId()
         );
-        new SeqKeyHandler(dslContext, bcc).moveTo(request.getPos());
+
+        seqKeyHandler(request.getUser(), bcc).moveTo(request.getPos());
 
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
@@ -207,9 +213,9 @@ public class BccWriteRepository {
         if (request.getEntityType().getValue() != bccRecord.getEntityType()) {
             bccRecord.setEntityType(request.getEntityType().getValue());
             if (request.getEntityType() == Element) {
-                new SeqKeyHandler(dslContext, bccRecord).moveTo(LAST);
+                seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
             } else if (request.getEntityType() == Attribute) {
-                new SeqKeyHandler(dslContext, bccRecord).moveTo(LAST_OF_ATTR);
+                seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST_OF_ATTR);
             }
         }
         bccRecord.setIsDeprecated((byte) (request.isDeprecated() ? 1 : 0));
@@ -294,7 +300,7 @@ public class BccWriteRepository {
         // delete from Tables
         bccManifestRecord.delete();
         bccRecord.delete();
-        new SeqKeyHandler(dslContext, bccRecord).deleteCurrent();
+        seqKeyHandler(request.getUser(), bccRecord).deleteCurrent();
 
         upsertRevisionIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -303,5 +309,15 @@ public class BccWriteRepository {
         );
 
         return new DeleteBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
+    }
+
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccRecord bccRecord) {
+        SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
+                sessionService.asScoreUser(user));
+        seqKeyHandler.initBcc(
+                bccRecord.getFromAccId().toBigInteger(),
+                (bccRecord.getSeqKeyId() != null) ? bccRecord.getSeqKeyId().toBigInteger() : null,
+                bccRecord.getBccId().toBigInteger());
+        return seqKeyHandler;
     }
 }

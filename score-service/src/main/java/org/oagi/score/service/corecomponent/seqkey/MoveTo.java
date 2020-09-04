@@ -1,4 +1,4 @@
-package org.oagi.score.repo.component.seqkey;
+package org.oagi.score.service.corecomponent.seqkey;
 
 public enum MoveTo {
     FIRST,

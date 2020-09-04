@@ -4,10 +4,14 @@ import org.jooq.DSLContext;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
+import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryReadRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeReadRepository;
 import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeWriteRepository;
+import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyReadRepository;
+import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.user.JooqScoreUserReadRepository;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
 
@@ -56,5 +60,15 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
     @Override
     public BusinessContextWriteRepository createBusinessContextWriteRepository() throws ScoreDataAccessException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SeqKeyReadRepository createSeqKeyReadRepository() throws ScoreDataAccessException {
+        return new JooqSeqKeyReadRepository(this.dslContext);
+    }
+
+    @Override
+    public SeqKeyWriteRepository createSeqKeyWriteRepository() throws ScoreDataAccessException {
+        return new JooqSeqKeyWriteRepository(this.dslContext);
     }
 }

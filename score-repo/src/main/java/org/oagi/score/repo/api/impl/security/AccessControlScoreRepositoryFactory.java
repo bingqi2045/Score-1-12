@@ -4,6 +4,8 @@ import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.base.Request;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
+import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
+import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
 import org.oagi.score.repo.api.security.AccessControl;
 import org.oagi.score.repo.api.security.AccessControlException;
 import org.oagi.score.repo.api.user.ScoreUserReadRepository;
@@ -97,5 +99,15 @@ public abstract class AccessControlScoreRepositoryFactory implements ScoreReposi
     @Override
     public BusinessContextWriteRepository createBusinessContextWriteRepository() throws ScoreDataAccessException {
         return wrapForAccessControl(delegate.createBusinessContextWriteRepository(), BusinessContextWriteRepository.class);
+    }
+
+    @Override
+    public SeqKeyReadRepository createSeqKeyReadRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createSeqKeyReadRepository(), SeqKeyReadRepository.class);
+    }
+
+    @Override
+    public SeqKeyWriteRepository createSeqKeyWriteRepository() throws ScoreDataAccessException {
+        return wrapForAccessControl(delegate.createSeqKeyWriteRepository(), SeqKeyWriteRepository.class);
     }
 }

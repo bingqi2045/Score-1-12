@@ -12,17 +12,21 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
-import org.oagi.score.repo.component.seqkey.MoveTo;
-import org.oagi.score.repo.component.seqkey.SeqKeyHandler;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
+import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.RevisionSerializer;
+import org.oagi.score.service.corecomponent.seqkey.MoveTo;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -54,6 +58,9 @@ public class AccWriteRepository {
 
     @Autowired
     private RevisionSerializer serializer;
+
+    @Autowired
+    private ScoreRepositoryFactory scoreRepositoryFactory;
 
     private String objectClassTerm(ULong accId) {
         return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
@@ -911,7 +918,7 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        moveSeq(userId, accRecord, request.getAccManifestId(),
+        moveSeq(request.getUser(), accRecord, request.getAccManifestId(),
                 request.getItem(), request.getAfter());
 
         RevisionRecord revisionRecord =
@@ -924,19 +931,21 @@ public class AccWriteRepository {
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
     }
 
-    public void moveSeq(ULong userId, AccRecord accRecord, BigInteger accManifestId,
+    public void moveSeq(AuthenticatedPrincipal requester, AccRecord accRecord, BigInteger accManifestId,
                         CcId item, CcId after) {
+        AppUser user = sessionService.getAppUser(requester);
+        ULong userId = ULong.valueOf(user.getAppUserId());
         SeqKeyHandler seqKeyHandler;
 
         switch (item.getType().toLowerCase()) {
             case "asccp":
                 AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
-                seqKeyHandler = new SeqKeyHandler(dslContext, asccRecord);
+                seqKeyHandler = seqKeyHandler(requester, asccRecord);
                 break;
 
             case "bccp":
                 BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
-                seqKeyHandler = new SeqKeyHandler(dslContext, bccRecord);
+                seqKeyHandler = seqKeyHandler(requester, bccRecord);
                 break;
 
             default:
@@ -946,26 +955,29 @@ public class AccWriteRepository {
         if (after == null) {
             seqKeyHandler.moveTo(MoveTo.FIRST);
         } else {
-            SeqKeyRecord seqKeyRecord;
+            SeqKey seqKey;
             switch (after.getType().toLowerCase()) {
                 case "asccp":
                     AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
-                    seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(asccRecord.getSeqKeyId()))
-                            .fetchOne();
+                    seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
+                            .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
+                                    .withSeqKeyId(asccRecord.getSeqKeyId().toBigInteger()))
+                            .getSeqKey();
                     break;
 
                 case "bccp":
                     BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
-                    seqKeyRecord = dslContext.selectFrom(SEQ_KEY)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(bccRecord.getSeqKeyId()))
-                            .fetchOne();
+                    seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
+                            .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
+                                    .withSeqKeyId(bccRecord.getSeqKeyId().toBigInteger()))
+                            .getSeqKey();
                     break;
 
                 default:
                     throw new IllegalArgumentException();
             }
-            seqKeyHandler.moveAfter(seqKeyRecord);
+
+            seqKeyHandler.moveAfter(seqKey);
         }
     }
 
@@ -1283,4 +1295,25 @@ public class AccWriteRepository {
             bccRecord.update();
         }
     }
+
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccRecord asccRecord) {
+        SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
+                sessionService.asScoreUser(user));
+        seqKeyHandler.initAscc(
+                asccRecord.getFromAccId().toBigInteger(),
+                (asccRecord.getSeqKeyId() != null) ? asccRecord.getSeqKeyId().toBigInteger() : null,
+                asccRecord.getAsccId().toBigInteger());
+        return seqKeyHandler;
+    }
+
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccRecord bccRecord) {
+        SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
+                sessionService.asScoreUser(user));
+        seqKeyHandler.initBcc(
+                bccRecord.getFromAccId().toBigInteger(),
+                (bccRecord.getSeqKeyId() != null) ? bccRecord.getSeqKeyId().toBigInteger() : null,
+                bccRecord.getBccId().toBigInteger());
+        return seqKeyHandler;
+    }
+
 }
