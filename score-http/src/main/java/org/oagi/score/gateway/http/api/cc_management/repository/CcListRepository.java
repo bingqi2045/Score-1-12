@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.score.data.DTType;
 import org.oagi.score.data.OagisComponentType;
@@ -10,8 +9,6 @@ import org.oagi.score.data.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
-import org.oagi.score.repo.CoreComponentRepository;
-import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

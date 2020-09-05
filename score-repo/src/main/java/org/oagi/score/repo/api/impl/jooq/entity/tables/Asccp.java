@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = -946249797;
+    private static final long serialVersionUID = -1915958953;
 
     /**
      * The reference instance of <code>oagi.asccp</code>
@@ -59,6 +59,11 @@ public class Asccp extends TableImpl<AsccpRecord> {
      * The column <code>oagi.asccp.guid</code>. A globally unique identifier (GUID) of an ASCCP. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
      */
     public final TableField<AsccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ASCCP. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+
+    /**
+     * The column <code>oagi.asccp.type</code>. The Type of the ASCCP. List: Default, Extension 
+     */
+    public final TableField<AsccpRecord, String> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(32).defaultValue(org.jooq.impl.DSL.inline("Default", org.jooq.impl.SQLDataType.VARCHAR)), this, "The Type of the ASCCP. List: Default, Extension ");
 
     /**
      * The column <code>oagi.asccp.property_term</code>. The role (or property) the ACC as referred to by the Role_Of_ACC_ID play when the ASCCP is used by another ACC. There must be only one ASCCP without a Property_Term for a particular ACC.
@@ -275,11 +280,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

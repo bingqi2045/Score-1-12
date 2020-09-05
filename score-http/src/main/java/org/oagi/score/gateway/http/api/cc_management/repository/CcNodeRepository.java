@@ -2,15 +2,13 @@ package org.oagi.score.gateway.http.api.cc_management.repository;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.jooq.DSLContext;
-import org.jooq.Record14;
-import org.jooq.Record4;
-import org.jooq.SelectOnConditionStep;
+import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.SeqKeySupportable;
+import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
@@ -48,10 +46,8 @@ public class CcNodeRepository {
     @Autowired
     private UserRepository userRepository;
 
-    private SelectOnConditionStep<Record14<
-            ULong, String, String, ULong, Integer,
-            String, String, ULong, UInteger, UInteger,
-            ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
+    private SelectOnConditionStep<Record15<ULong, String, String, ULong, Integer, String, String, String, ULong,
+            UInteger, UInteger, ULong, String, ULong, ULong>> getSelectJoinStepForAccNode() {
         return dslContext.select(
                 ACC.ACC_ID,
                 ACC.GUID,
@@ -60,6 +56,7 @@ public class CcNodeRepository {
                 ACC.OAGIS_COMPONENT_TYPE,
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE,
+                ACC.TYPE.as("accType"),
                 ACC_MANIFEST.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
@@ -127,6 +124,7 @@ public class CcNodeRepository {
         accNode.setAccess(AccessPrivilege.toAccessPrivilege(
                 sessionService.getAppUser(user), sessionService.getAppUser(accNode.getOwnerUserId()), accNode.getState()));
         accNode.setHasChild(hasChild(accNode));
+        accNode.setHasExtension(hasExtension(accNode));
 
         return accNode;
     }
@@ -157,16 +155,33 @@ public class CcNodeRepository {
         return bccCount > 0;
     }
 
-    private SelectOnConditionStep<Record14<
-            ULong, String, String, ULong, String,
-            ULong, UInteger, UInteger, ULong, String,
-            ULong, ULong, ULong, ULong>> selectOnConditionStepForAsccpNode() {
+    private boolean hasExtension(CcAccNode ccAccNode) {
+        ULong accManifestId = ULong.valueOf(ccAccNode.getManifestId());
+        if (ccAccNode.getBasedAccManifestId() != null) {
+            return true;
+        }
+        if (ccAccNode.getManifestId().longValue() == 0L) {
+            return false;
+        }
+
+        return dslContext.selectCount()
+                .from(ASCC_MANIFEST)
+                .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId),
+                        ASCCP.TYPE.eq(CcASCCPType.Extension.name())))
+                .fetchOneInto(long.class) > 0;
+    }
+
+    private SelectOnConditionStep<Record15<ULong, String, String, ULong, String, String, ULong, UInteger, UInteger,
+            ULong, String, ULong, ULong, ULong, ULong>> selectOnConditionStepForAsccpNode() {
         return dslContext.select(
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
                 ASCCP.PROPERTY_TERM.as("name"),
                 ACC_MANIFEST.ACC_ID.as("role_of_acc_id"),
                 ASCCP.STATE,
+                ASCCP.TYPE.as("asccpType"),
                 ASCCP_MANIFEST.REVISION_ID,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,

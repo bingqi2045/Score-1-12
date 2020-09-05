@@ -1,6 +1,7 @@
 package org.oagi.score.repo.component.asccp;
 
 import org.oagi.score.data.RepositoryRequest;
+import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
@@ -13,8 +14,11 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     private final BigInteger releaseId;
 
     private String initialPropertyTerm = "Property Term";
+    private CcASCCPType initialType = CcASCCPType.Default;
+    private BigInteger namespaceId;
     private boolean reusable = true;
     private String definition;
+    private String definitionSoruce;
     private CcState initialState = CcState.WIP;
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
@@ -70,5 +74,29 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
     public void setInitialState(CcState initialState) {
         this.initialState = initialState;
+    }
+
+    public BigInteger getNamespaceId() {
+        return namespaceId;
+    }
+
+    public void setNamespaceId(BigInteger namespaceId) {
+        this.namespaceId = namespaceId;
+    }
+
+    public String getDefinitionSoruce() {
+        return definitionSoruce;
+    }
+
+    public void setDefinitionSoruce(String definitionSoruce) {
+        this.definitionSoruce = definitionSoruce;
+    }
+
+    public CcASCCPType getInitialType() {
+        return initialType;
+    }
+
+    public void setInitialType(CcASCCPType initialType) {
+        this.initialType = initialType;
     }
 }

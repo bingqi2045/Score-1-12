@@ -2,6 +2,7 @@ package org.oagi.score.repo.component.acc;
 
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RepositoryRequest;
+import org.oagi.score.gateway.http.api.cc_management.data.CcACCType;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
@@ -13,7 +14,10 @@ public class CreateAccRepositoryRequest extends RepositoryRequest {
 
     private String initialObjectClassTerm = "Object Class Term";
     private OagisComponentType initialComponentType = OagisComponentType.Semantics;
+    private CcACCType initialType = CcACCType.Default;
     private String initialDefinition;
+    private BigInteger basedAccManifestId;
+    private BigInteger namespaceId;
 
     public CreateAccRepositoryRequest(AuthenticatedPrincipal user, BigInteger releaseId) {
         super(user);
@@ -53,5 +57,29 @@ public class CreateAccRepositoryRequest extends RepositoryRequest {
 
     public void setInitialDefinition(String initialDefinition) {
         this.initialDefinition = initialDefinition;
+    }
+
+    public BigInteger getBasedAccManifestId() {
+        return basedAccManifestId;
+    }
+
+    public void setBasedAccManifestId(BigInteger basedAccManifestId) {
+        this.basedAccManifestId = basedAccManifestId;
+    }
+
+    public BigInteger getNamespaceId() {
+        return namespaceId;
+    }
+
+    public void setNamespaceId(BigInteger namespaceId) {
+        this.namespaceId = namespaceId;
+    }
+
+    public CcACCType getInitialType() {
+        return initialType;
+    }
+
+    public void setInitialType(CcACCType initialType) {
+        this.initialType = initialType;
     }
 }

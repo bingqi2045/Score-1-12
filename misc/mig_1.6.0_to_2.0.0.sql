@@ -1914,5 +1914,35 @@ SET
 where
 	`den` IN ('Expression. Type', 'Action Expression. Type', 'Response Expression. Type');
 
+-- add type column to ACC
+ALTER TABLE `acc` ADD COLUMN `type` VARCHAR(32) DEFAULT 'Default' COMMENT 'The Type of the ACC. List: Default, Extension, AllExtension.' AFTER `guid`;
+
+UPDATE
+	`acc`
+SET
+	`type` = 'Extension'
+WHERE
+	`oagis_component_type` = 2;
+
+UPDATE
+	`acc`
+SET
+	`type` = 'AllExtension'
+WHERE
+	`object_class_term` = 'All Extension' AND `den` = 'All Extension. Details';
+
+
+-- add type column to ASCCP
+ALTER TABLE `asccp` ADD COLUMN `type` VARCHAR(32) DEFAULT 'Default' COMMENT 'The Type of the ASCCP. List: Default, Extension ' AFTER `guid`;
+
+UPDATE
+	`asccp`
+	JOIN (SELECT
+			`asccp`.`asccp_id`
+		  FROM
+			`asccp` JOIN `acc` ON `asccp`.`role_of_acc_id` = `acc`.`acc_id` AND `acc`.`type` IN ('Extension', 'All Extension')) AS t
+	ON `asccp`.`asccp_id` = `t`.`asccp_id`
+SET
+	`asccp`.`type` = 'Extension';
 
 SET FOREIGN_KEY_CHECKS = 1;

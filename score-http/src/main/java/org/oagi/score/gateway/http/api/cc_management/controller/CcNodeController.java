@@ -322,6 +322,17 @@ public class CcNodeController {
         return resp;
     }
 
+    @RequestMapping(value = "/core_component/acc/extension", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CcCreateResponse createAccExtensionComponent(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                          @RequestBody CcExtensionCreateRequest request) {
+        BigInteger manifestId = service.createAccExtension(user, request);
+
+        CcCreateResponse resp = new CcCreateResponse();
+        resp.setManifestId(manifestId);
+        return resp;
+    }
+
     @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public CcRevisionResponse getCcNodeRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,

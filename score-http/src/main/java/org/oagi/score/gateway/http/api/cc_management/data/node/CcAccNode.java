@@ -22,6 +22,8 @@ public class CcAccNode extends CcNode {
     private boolean isDeprecated;
     private boolean isAbstract;
     private BigInteger manifestId = BigInteger.ZERO;
+    private boolean hasExtension;
+    private String accType;
 
     @Override
     public BigInteger getId() {

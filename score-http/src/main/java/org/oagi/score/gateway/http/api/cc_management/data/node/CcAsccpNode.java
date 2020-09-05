@@ -19,6 +19,7 @@ public class CcAsccpNode extends CcNode implements SeqKeySupportable {
     private int seqKey;
     private BigInteger manifestId = BigInteger.ZERO;
     private BigInteger asccManifestId = BigInteger.ZERO;
+    private String asccpType;
 
     @Override
     public BigInteger getId() {

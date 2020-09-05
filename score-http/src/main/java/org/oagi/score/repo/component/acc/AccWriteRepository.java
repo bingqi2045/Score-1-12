@@ -12,6 +12,7 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RevisionAction;
+import org.oagi.score.gateway.http.api.cc_management.data.CcACCType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -71,17 +72,29 @@ public class AccWriteRepository {
     public CreateAccRepositoryResponse createAcc(CreateAccRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
         LocalDateTime timestamp = request.getLocalDateTime();
+        AccManifestRecord basedAccManifest = null;
+
+        if (request.getBasedAccManifestId() != null) {
+            basedAccManifest = dslContext.selectFrom(ACC_MANIFEST)
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getBasedAccManifestId()))).fetchOne();
+        }
 
         AccRecord acc = new AccRecord();
         acc.setGuid(SrtGuid.randomGuid());
         acc.setObjectClassTerm(request.getInitialObjectClassTerm());
         acc.setDen(acc.getObjectClassTerm() + ". Details");
         acc.setOagisComponentType(request.getInitialComponentType().getValue());
+        acc.setType(request.getInitialType().name());
         acc.setDefinition(request.getInitialDefinition());
         acc.setState(CcState.WIP.name());
         acc.setIsAbstract((byte) 0);
         acc.setIsDeprecated((byte) 0);
-        acc.setNamespaceId(null);
+        if (basedAccManifest != null) {
+            acc.setBasedAccId(basedAccManifest.getAccId());
+        }
+        if (request.getNamespaceId() != null) {
+            acc.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
+        }
         acc.setCreatedBy(userId);
         acc.setLastUpdatedBy(userId);
         acc.setOwnerUserId(userId);
@@ -97,6 +110,9 @@ public class AccWriteRepository {
         AccManifestRecord accManifest = new AccManifestRecord();
         accManifest.setAccId(acc.getAccId());
         accManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
+        if (basedAccManifest != null) {
+            accManifest.setBasedAccManifestId(basedAccManifest.getAccManifestId());
+        }
 
         RevisionRecord revisionRecord =
                 revisionRepository.insertAccRevision(

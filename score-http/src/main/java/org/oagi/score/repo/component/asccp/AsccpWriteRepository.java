@@ -65,10 +65,14 @@ public class AsccpWriteRepository {
         asccp.setDen(asccp.getPropertyTerm() + ". " + objectClassTerm(asccp.getRoleOfAccId()));
         asccp.setState(request.getInitialState().name());
         asccp.setDefinition(request.getDefinition());
+        asccp.setDefinitionSource(request.getDefinitionSoruce());
         asccp.setReusableIndicator((byte) (request.isReusable() ? 1 : 0));
         asccp.setIsDeprecated((byte) 0);
         asccp.setIsNillable((byte) 0);
-        asccp.setNamespaceId(null);
+        asccp.setType(request.getInitialType().name());
+        if (request.getNamespaceId() != null) {
+            asccp.setNamespaceId(ULong.valueOf(request.getNamespaceId()));
+        }
         asccp.setCreatedBy(userId);
         asccp.setLastUpdatedBy(userId);
         asccp.setOwnerUserId(userId);

@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 1830801670;
+    private static final long serialVersionUID = -1048858216;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -67,6 +67,11 @@ public class Acc extends TableImpl<AccRecord> {
      * The column <code>oagi.acc.guid</code>. A globally unique identifier (GUID) of an ACC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
      */
     public final TableField<AccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ACC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+
+    /**
+     * The column <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension 
+     */
+    public final TableField<AccRecord, String> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(32).defaultValue(org.jooq.impl.DSL.inline("Default", org.jooq.impl.SQLDataType.VARCHAR)), this, "The Type of the ACC. List: Default, Extension ");
 
     /**
      * The column <code>oagi.acc.object_class_term</code>. Object class name of the ACC concept. For OAGIS, this is generally name of a type with the "Type" truncated from the end. Per CCS the name is space separated. "ID" is expanded to "Identifier".
@@ -278,11 +283,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

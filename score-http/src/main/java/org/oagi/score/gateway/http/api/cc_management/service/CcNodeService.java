@@ -9,7 +9,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
-import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
@@ -20,7 +19,6 @@ import org.oagi.score.repo.component.asccp.*;
 import org.oagi.score.repo.component.bcc.*;
 import org.oagi.score.repo.component.bccp.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +41,9 @@ public class CcNodeService extends EventHandler {
     private CoreComponentRepository ccRepository;
 
     @Autowired
+    private AccReadRepository accReadRepository;
+
+    @Autowired
     private AccWriteRepository accWriteRepository;
 
     @Autowired
@@ -61,13 +62,7 @@ public class CcNodeService extends EventHandler {
     private RevisionRepository revisionRepository;
 
     @Autowired
-    private ManifestRepository manifestRepository;
-
-    @Autowired
     private SessionService sessionService;
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     public CcAccNode getAccNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         return repository.getAccNodeByAccManifestId(user, manifestId);
@@ -193,6 +188,60 @@ public class CcNodeService extends EventHandler {
         fireEvent(new CreatedBccpEvent());
 
         return repositoryResponse.getBccpManifestId();
+    }
+
+    @Transactional
+    public BigInteger createAccExtension(AuthenticatedPrincipal user, CcExtensionCreateRequest request) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(request.getAccManifestId());
+        BigInteger releaseId = accManifestRecord.getReleaseId().toBigInteger();
+        AccRecord accRecord = accReadRepository.getAccByManifestId(request.getAccManifestId());
+
+        AccManifestRecord allExtension
+                = accReadRepository.getAllExtensionAccManifest(releaseId);
+
+        // create extension ACC
+        CreateAccRepositoryRequest createAccRepositoryRequest
+                = new CreateAccRepositoryRequest(user, timestamp, releaseId);
+
+        createAccRepositoryRequest.setInitialComponentType(OagisComponentType.Extension);
+        createAccRepositoryRequest.setInitialType(CcACCType.Extension);
+        createAccRepositoryRequest.setInitialObjectClassTerm(accRecord.getObjectClassTerm() + " Extension");
+        createAccRepositoryRequest.setBasedAccManifestId(allExtension.getAccManifestId().toBigInteger());
+        if (accRecord.getNamespaceId() != null) {
+            createAccRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
+        }
+
+        CreateAccRepositoryResponse createAccRepositoryResponse
+                = accWriteRepository.createAcc(createAccRepositoryRequest);
+
+        BigInteger extensionAccManifestId = createAccRepositoryResponse.getAccManifestId();
+
+        // create extension ASCCP
+        CreateAsccpRepositoryRequest createAsccpRepositoryRequest
+                = new CreateAsccpRepositoryRequest(user, timestamp, extensionAccManifestId, releaseId);
+
+        String extensionAsccpDefintion = "Allows the user of OAGIS to extend the specification in order to " +
+                "provide additional information that is not captured in OAGIS.";
+        String extensionAsccpDefintionSource = "http://www.openapplications.org/oagis/10/platform/2";
+        createAsccpRepositoryRequest.setInitialPropertyTerm("Extension");
+        createAsccpRepositoryRequest.setInitialType(CcASCCPType.Extension);
+        createAsccpRepositoryRequest.setDefinition(extensionAsccpDefintion);
+        createAsccpRepositoryRequest.setDefinitionSoruce(extensionAsccpDefintionSource);
+        createAsccpRepositoryRequest.setReusable(false);
+
+        CreateAsccpRepositoryResponse createAsccpRepositoryResponse
+                = asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
+        BigInteger extensionAsccpManifestId = createAsccpRepositoryResponse.getAsccpManifestId();
+
+        // create ASCC between extension ACC and extension ASCCP
+        CreateAsccRepositoryRequest createAsccRepositoryRequest
+                = new CreateAsccRepositoryRequest(user, timestamp, releaseId,
+                request.getAccManifestId(), extensionAsccpManifestId);
+
+        asccWriteRepository.createAscc(createAsccRepositoryRequest);
+
+        return request.getAccManifestId();
     }
 
     @Transactional
