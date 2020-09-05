@@ -11,6 +11,8 @@ import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
 import org.oagi.score.repo.api.security.AccessControl;
 
+import java.math.BigInteger;
+
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -102,13 +104,53 @@ public class JooqSeqKeyWriteRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteSeqKeyResponse deleteSeqKey(DeleteSeqKeyRequest request) throws ScoreDataAccessException {
-        SeqKey seqKey = request.getSeqKey();
+        BigInteger seqKeyId = request.getSeqKeyId();
+
+        int asccCnt = dslContext().selectCount().from(ASCC)
+                .where(ASCC.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        int bccCnt = dslContext().selectCount().from(BCC)
+                .where(BCC.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                .fetchOptionalInto(Integer.class).orElse(0);
+
+        if (asccCnt + bccCnt > 0) {
+            throw new ScoreDataAccessException(new IllegalStateException());
+        }
+
+        // disconnect links between prev and next
+        {
+            SeqKeyRecord prev = dslContext().selectFrom(SEQ_KEY)
+                    .where(SEQ_KEY.PREV_SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .fetchOptional().orElse(null);
+
+            SeqKeyRecord next = dslContext().selectFrom(SEQ_KEY)
+                    .where(SEQ_KEY.NEXT_SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .fetchOptional().orElse(null);
+
+            SeqKeyRecord current = dslContext().selectFrom(SEQ_KEY)
+                    .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                    .fetchOptional().orElse(null);
+
+            if (prev != null) {
+                dslContext().update(SEQ_KEY)
+                        .set(SEQ_KEY.PREV_SEQ_KEY_ID, current.getPrevSeqKeyId())
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(prev.getSeqKeyId()))
+                        .execute();
+            }
+
+            if (next != null) {
+                dslContext().update(SEQ_KEY)
+                        .set(SEQ_KEY.NEXT_SEQ_KEY_ID, current.getNextSeqKeyId())
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(next.getSeqKeyId()))
+                        .execute();
+            }
+        }
 
         int affectedRows = dslContext().deleteFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKey.getSeqKeyId())))
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
                 .execute();
 
-        return new DeleteSeqKeyResponse((affectedRows == 0) ? null : seqKey.getSeqKeyId());
+        return new DeleteSeqKeyResponse((affectedRows == 0) ? null : seqKeyId);
     }
 
 }

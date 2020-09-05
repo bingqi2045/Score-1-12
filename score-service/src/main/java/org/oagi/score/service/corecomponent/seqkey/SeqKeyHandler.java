@@ -136,7 +136,7 @@ public class SeqKeyHandler {
 
         scoreRepositoryFactory.createSeqKeyWriteRepository()
                 .deleteSeqKey(new DeleteSeqKeyRequest(this.requester)
-                        .withSeqKey(this.current));
+                        .withSeqKeyId(this.current.getSeqKeyId()));
 
         this.current = null;
     }
