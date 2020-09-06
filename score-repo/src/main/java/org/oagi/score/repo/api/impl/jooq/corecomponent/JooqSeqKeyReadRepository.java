@@ -62,7 +62,7 @@ public class JooqSeqKeyReadRepository
 
         Record node = seqKeyRecordMap.values().stream()
                 .filter(e -> e.get(SEQ_KEY.PREV_SEQ_KEY_ID) == null)
-                .findAny().orElseThrow(() -> new IllegalStateException());
+                .findAny().orElse(null);
 
         seqKey = mapper(seqKeyRecordMap, node);
 
@@ -80,6 +80,9 @@ public class JooqSeqKeyReadRepository
     }
 
     private SeqKey mapper(Map<ULong, Record> seqKeyRecordMap, Record node, SeqKey prev) {
+        if (node == null) {
+            return null;
+        }
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(node.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
         seqKey.setFromAccId(node.get(SEQ_KEY.FROM_ACC_ID).toBigInteger());

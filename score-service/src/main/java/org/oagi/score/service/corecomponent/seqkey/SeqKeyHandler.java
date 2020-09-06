@@ -39,17 +39,22 @@ public class SeqKeyHandler {
     }
 
     private void init(BigInteger fromAccId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationId) {
-        for (SeqKey seqKey : scoreRepositoryFactory.createSeqKeyReadRepository()
-                .getSeqKey(new GetSeqKeyRequest(this.requester)
-                        .withFromAccId(fromAccId)).getSeqKey()) {
-            if (seqKey.getPrevSeqKey() == null) {
-                this.head = seqKey;
-            }
-            if (seqKey.getNextSeqKey() == null) {
-                this.tail = seqKey;
-            }
-            if (seqKey.getSeqKeyId().equals(seqKeyId)) {
-                this.current = seqKey;
+        GetSeqKeyRequest getSeqKeyRequest = new GetSeqKeyRequest(this.requester)
+                .withFromAccId(fromAccId);
+        GetSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyReadRepository()
+                .getSeqKey(getSeqKeyRequest);
+
+        if (response.getSeqKey() != null) {
+            for (SeqKey seqKey : response.getSeqKey()) {
+                if (seqKey.getPrevSeqKey() == null) {
+                    this.head = seqKey;
+                }
+                if (seqKey.getNextSeqKey() == null) {
+                    this.tail = seqKey;
+                }
+                if (seqKey.getSeqKeyId().equals(seqKeyId)) {
+                    this.current = seqKey;
+                }
             }
         }
 
