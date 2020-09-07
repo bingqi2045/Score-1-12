@@ -847,6 +847,56 @@ public class AccWriteRepository {
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
+    public DeleteAccRepositoryResponse removeAcc(DeleteAccRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAccManifestId())
+                ))
+                .fetchOne();
+
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+        }
+
+        if (!accRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        if (dslContext.selectCount()
+                .from(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetchOneInto(Long.class) == 0) {
+            if (dslContext.selectCount()
+                    .from(ASCCP_MANIFEST)
+                    .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetchOneInto(Long.class) == 0) {
+                accManifestRecord.delete();
+            }
+        }
+
+        if (dslContext.selectCount()
+                .from(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetchOneInto(Long.class) == 0) {
+            if (dslContext.selectCount()
+                    .from(ASCCP)
+                    .where(ASCCP.ROLE_OF_ACC_ID.eq(accRecord.getAccId()))
+                    .fetchOneInto(Long.class) == 0) {
+                accRecord.delete();
+            }
+        }
+
+        return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
+    }
+
     public UpdateAccOwnerRepositoryResponse updateAccOwner(UpdateAccOwnerRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());

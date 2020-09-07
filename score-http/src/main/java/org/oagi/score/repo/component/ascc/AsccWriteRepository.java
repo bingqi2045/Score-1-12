@@ -4,6 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
+import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
@@ -122,6 +123,19 @@ public class AsccWriteRepository {
 
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
+
+        if (asccpRecord.getType().equals(CcASCCPType.Extension.name())) {
+            if (dslContext.selectCount()
+                    .from(ASCCP_MANIFEST)
+                    .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                    .join(ASCC_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
+                    .where(and(ASCCP.TYPE.eq(CcASCCPType.Extension.name()),
+                            ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId())))
+                    )
+                    .fetchOneInto(Integer.class) > 0) {
+                throw new IllegalArgumentException("This ACC already has Extension ASCCP.");
+            }
+        }
 
         AsccRecord ascc = new AsccRecord();
         ascc.setGuid(SrtGuid.randomGuid());

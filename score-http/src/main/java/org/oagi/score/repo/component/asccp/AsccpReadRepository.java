@@ -2,6 +2,7 @@ package org.oagi.score.repo.component.asccp;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,5 +24,12 @@ public class AsccpReadRepository {
                 .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOptionalInto(AsccpRecord.class).orElse(null);
+    }
+
+    public AsccpManifestRecord getAsccpManifestById(BigInteger asccpManifestId) {
+        return dslContext.select(ASCCP_MANIFEST.fields())
+                .from(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
+                .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
 }

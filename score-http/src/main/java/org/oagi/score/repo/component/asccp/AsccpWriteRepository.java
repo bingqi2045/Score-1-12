@@ -436,6 +436,46 @@ public class AsccpWriteRepository {
         return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
+    public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAsccpManifestId())
+                ))
+                .fetchOne();
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(asccpRecord.getState()))) {
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+        }
+
+        if (!asccpRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
+        if (dslContext.selectCount()
+                .from(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                .fetchOneInto(Long.class) == 0) {
+            asccpManifestRecord.delete();
+        }
+
+        if (dslContext.selectCount()
+                .from(ASCC)
+                .where(ASCC.TO_ASCCP_ID.eq(asccpRecord.getAsccpId()))
+                .fetchOneInto(Long.class) == 0) {
+            asccpRecord.delete();
+        }
+
+        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+    }
+
     public UpdateAsccpOwnerRepositoryResponse updateAsccpOwner(UpdateAsccpOwnerRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
