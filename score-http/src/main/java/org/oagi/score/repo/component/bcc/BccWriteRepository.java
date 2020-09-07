@@ -204,7 +204,7 @@ public class BccWriteRepository {
         // update bcc record.
         bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + dslContext.select(BCCP.DEN)
                 .from(BCCP)
-                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
                 .fetchOneInto(String.class)
         );
