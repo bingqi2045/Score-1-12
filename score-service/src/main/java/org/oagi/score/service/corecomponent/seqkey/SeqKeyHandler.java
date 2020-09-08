@@ -68,6 +68,18 @@ public class SeqKeyHandler {
         }
     }
 
+    public SeqKey getHead() {
+        return head;
+    }
+
+    public SeqKey getTail() {
+        return tail;
+    }
+
+    public SeqKey getCurrent() {
+        return current;
+    }
+
     public void moveTo(int pos) {
         if (pos < -1) {
             throw new IllegalArgumentException();

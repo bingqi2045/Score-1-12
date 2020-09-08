@@ -60,15 +60,17 @@ public class JooqSeqKeyReadRepository
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
 
-        Record node = seqKeyRecordMap.values().stream()
-                .filter(e -> e.get(SEQ_KEY.PREV_SEQ_KEY_ID) == null)
-                .findAny().orElse(null);
+        if (!seqKeyRecordMap.isEmpty()) {
+            Record node = seqKeyRecordMap.values().stream()
+                    .filter(e -> e.get(SEQ_KEY.PREV_SEQ_KEY_ID) == null)
+                    .findAny().orElseThrow(() -> new IllegalStateException());
 
-        seqKey = mapper(seqKeyRecordMap, node);
+            seqKey = mapper(seqKeyRecordMap, node);
 
-        if (!isNull(request.getSeqKeyId())) {
-            while (seqKey != null && !request.getSeqKeyId().equals(seqKey.getSeqKeyId())) {
-                seqKey = seqKey.getNextSeqKey();
+            if (!isNull(request.getSeqKeyId())) {
+                while (seqKey != null && !request.getSeqKeyId().equals(seqKey.getSeqKeyId())) {
+                    seqKey = seqKey.getNextSeqKey();
+                }
             }
         }
 
@@ -80,9 +82,6 @@ public class JooqSeqKeyReadRepository
     }
 
     private SeqKey mapper(Map<ULong, Record> seqKeyRecordMap, Record node, SeqKey prev) {
-        if (node == null) {
-            return null;
-        }
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(node.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
         seqKey.setFromAccId(node.get(SEQ_KEY.FROM_ACC_ID).toBigInteger());
