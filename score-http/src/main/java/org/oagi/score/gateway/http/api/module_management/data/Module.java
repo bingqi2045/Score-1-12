@@ -9,6 +9,8 @@ import java.util.List;
 @Data
 public class Module {
 
+    public static String MODULE_SEPARATOR = "\\";
+
     private BigInteger moduleId;
     private String name;
     private BigInteger namespaceId;

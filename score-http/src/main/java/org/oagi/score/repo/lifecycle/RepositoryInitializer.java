@@ -5,14 +5,15 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
+import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Component
@@ -244,6 +246,7 @@ public class RepositoryInitializer implements InitializingBean {
             ModuleDirRecord parent = dslContext.selectFrom(MODULE_DIR)
                     .where(MODULE_DIR.NAME.eq(""))
                     .fetchOptional().orElse(null);
+
             if (parent == null) {
                 LocalDateTime timestamp = LocalDateTime.now();
                 parent = new ModuleDirRecord();
@@ -263,7 +266,8 @@ public class RepositoryInitializer implements InitializingBean {
 
             for (int i = 0, len = paths.size(); i < len - 1; ++i) {
                 String path = paths.get(i);
-                String fullpath = String.join("/", Arrays.asList(parent.getPath(), path));
+                String fullpath = StringUtils.isEmpty(parent.getName()) ? path :
+                        String.join(MODULE_SEPARATOR, Arrays.asList(parent.getPath(), path));
 
                 ModuleDirRecord moduleDirRecord = dslContext.selectFrom(MODULE_DIR)
                         .where(and(

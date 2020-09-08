@@ -6,9 +6,9 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.DTType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.*;
+import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -180,8 +181,8 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(ACC.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION_SOURCE)));
-                    if(!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
                     ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
@@ -231,7 +232,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
 
         if (request.getUpdateStartDate() != null) {
@@ -325,8 +326,8 @@ public class CcListRepository {
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION_SOURCE)));
                     ccList.setState(CcState.valueOf(row.getValue(ASCC.STATE)));
                     ccList.setDeprecated(row.getValue(ASCC.IS_DEPRECATED) == 1);
-                    if(!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
                     ccList.setOwner((String) row.getValue("owner"));
@@ -373,7 +374,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -470,7 +471,7 @@ public class CcListRepository {
                     ccList.setOwner((String) row.getValue("owner"));
                     ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
                     if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
                     ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
@@ -514,7 +515,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ASCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -599,8 +600,8 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION_SOURCE)));
-                    if(!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
                     ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
@@ -648,7 +649,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), BCCP.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(BCCP.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -723,8 +724,8 @@ public class CcListRepository {
                     ccList.setDen(row.getValue(BCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION_SOURCE)));
-                    if(!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
                     ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
@@ -771,9 +772,9 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), DT.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
-        if(request.getDtTypes().size() > 0) {
+        if (request.getDtTypes().size() > 0) {
             conditions.add(DT.TYPE.in(request.getDtTypes()));
         } else {
             conditions.add(DT.TYPE.notEqual(DTType.Core.toString()));
@@ -834,8 +835,8 @@ public class CcListRepository {
                     }
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION_SOURCE)));
-                    if(!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + "/" + row.getValue(MODULE.NAME));
+                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
+                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
                     }
                     ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
                     ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
