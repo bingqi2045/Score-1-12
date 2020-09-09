@@ -376,4 +376,24 @@ public class CcNodeController {
 
         return resp;
     }
+
+    @RequestMapping(value = "/core_component/oagis/bod",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CreateOagisBodResponse createOagisBod(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                 @RequestBody CreateOagisBodRequest request) {
+
+        CreateOagisBodResponse response = service.createOagisBod(user, request);
+        return response;
+    }
+
+    @RequestMapping(value = "/core_component/oagis/verb",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public CreateOagisVerbResponse createBod(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                             @RequestBody CreateOagisVerbRequest request) {
+
+        CreateOagisVerbResponse response = service.createBod(user, request);
+        return response;
+    }
 }

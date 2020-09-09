@@ -5,7 +5,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
@@ -13,6 +12,7 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
 import org.oagi.score.repo.component.asccp.*;
@@ -20,8 +20,10 @@ import org.oagi.score.repo.component.bcc.*;
 import org.oagi.score.repo.component.bccp.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -1132,6 +1134,28 @@ public class CcNodeService extends EventHandler {
         accWriteRepository.discardRevisionAcc(request);
 
         fireEvent(new DiscardRevisionAccEvent());
+    }
+
+    @Transactional
+    public CreateOagisBodResponse createOagisBod(AuthenticatedPrincipal user,
+                                                 CreateOagisBodRequest request) {
+
+        CreateOagisBodResponse response = new CreateOagisBodResponse();
+
+        // TODO
+
+        return response;
+    }
+
+    @Transactional
+    public CreateOagisVerbResponse createBod(AuthenticatedPrincipal user,
+                                             CreateOagisVerbRequest request) {
+
+        CreateOagisVerbResponse response = new CreateOagisVerbResponse();
+
+        // TODO
+
+        return response;
     }
 }
 
