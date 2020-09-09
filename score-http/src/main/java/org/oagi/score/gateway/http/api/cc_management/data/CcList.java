@@ -16,6 +16,7 @@ public class CcList {
     private String den;
     private String definition;
     private String module;
+    private String name;
 
     public String getModule() {
         return StringUtils.isEmpty(module) ? "" : module;

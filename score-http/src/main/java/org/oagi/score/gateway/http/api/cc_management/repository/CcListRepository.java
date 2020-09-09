@@ -524,6 +524,10 @@ public class CcListRepository {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
+        if (request.getAsccpTypes().size() != 0) {
+            conditions.add(ASCCP.TYPE.in(request.getAsccpTypes()));
+        }
+
         if (request.getFindUsages() != null) {
             CcId findUsages = request.getFindUsages();
             Set<ULong> usages = new HashSet();
@@ -560,6 +564,7 @@ public class CcListRepository {
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
                 ASCCP.ASCCP_ID,
                 ASCCP.GUID,
+                ASCCP.PROPERTY_TERM.as("propertyTerm"),
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
                 ASCCP.DEFINITION_SOURCE,
@@ -597,6 +602,7 @@ public class CcListRepository {
                     ccList.setManifestId(row.getValue(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
                     ccList.setId(row.getValue(ASCCP.ASCCP_ID).toBigInteger());
                     ccList.setGuid(row.getValue(ASCCP.GUID));
+                    ccList.setName((String) row.getValue("propertyTerm"));
                     ccList.setDen(row.getValue(ASCCP.DEN));
                     ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
                     ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION_SOURCE)));
