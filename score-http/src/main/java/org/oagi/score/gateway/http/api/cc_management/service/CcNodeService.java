@@ -647,7 +647,7 @@ public class CcNodeService extends EventHandler {
 //            updateExtensionComponentState(user, accManifestId, fromState, toState);
 //        }
 
-        fireEvent(new UpdatedAccStateEvent(accManifestId, toState, user.getName()));
+        fireEvent(new UpdatedAccStateEvent());
 
         return repositoryResponse.getAccManifestId();
     }
