@@ -197,6 +197,10 @@ public class CcNodeService extends EventHandler {
                 new CreateAsccpRepositoryRequest(user,
                         request.getRoleOfAccManifestId(), request.getReleaseId());
 
+        if (request.getAsccpType() != null) {
+            repositoryRequest.setInitialType(CcASCCPType.valueOf(request.getAsccpType()));
+        }
+
         CreateAsccpRepositoryResponse repositoryResponse =
                 asccpWriteRepository.createAsccp(repositoryRequest);
 
