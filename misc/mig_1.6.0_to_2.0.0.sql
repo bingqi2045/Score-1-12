@@ -1945,4 +1945,20 @@ UPDATE
 SET
 	`asccp`.`type` = 'Extension';
 
+-- Set 'Verb' type.
+UPDATE `asccp`, (
+    SELECT `acc_id` FROM `acc` WHERE `object_class_term` = 'Verb'
+    UNION
+    SELECT `acc_id` FROM `acc` WHERE `based_acc_id` IN (SELECT `acc_id` FROM `acc` WHERE `object_class_term` = 'Verb')
+    UNION
+    SELECT `acc_id` FROM `acc` WHERE `based_acc_id` IN (SELECT `acc_id` FROM `acc` WHERE `based_acc_id` IN (SELECT `acc_id` FROM `acc` WHERE `object_class_term` = 'Verb'))
+) t SET `asccp`.`type` = 'Verb'
+WHERE `asccp`.`role_of_acc_id` = t.`acc_id`;
+
+-- Set 'BOD' type.
+UPDATE `asccp`, (
+    SELECT `acc_id` FROM `acc` WHERE `based_acc_id` IN (SELECT `acc_id` FROM `acc` WHERE `object_class_term` = 'Business Object Document')
+) t SET `asccp`.`type` = 'BOD'
+WHERE `asccp`.`role_of_acc_id` = t.`acc_id`;
+
 SET FOREIGN_KEY_CHECKS = 1;
