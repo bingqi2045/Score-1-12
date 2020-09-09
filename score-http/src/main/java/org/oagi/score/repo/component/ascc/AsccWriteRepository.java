@@ -114,12 +114,14 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("Target ASCCP is not reusable.");
         }
 
+
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-        CcState accState = CcState.valueOf(accRecord.getState());
-        if (accState != request.getInitialState()) {
-            throw new IllegalArgumentException("The initial state of ASCC must be '" + accState + "'.");
-        }
+        // UEG ascc must be created with Production, Not in Published.
+//        CcState accState = CcState.valueOf(accRecord.getState());
+//        if (accState != request.getInitialState()) {
+//            throw new IllegalArgumentException("The initial state of ASCC must be '" + accState + "'.");
+//        }
 
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();

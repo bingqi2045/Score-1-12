@@ -316,6 +316,28 @@ public class CcNodeService extends EventHandler {
         asccpWriteRepository.updateAsccpProperties(updateAsccpPropertiesRepositoryRequest);
     }
 
+    private void updateUserExtensionNamespace(AuthenticatedPrincipal user, CcAccNodeDetail accNodeDetail) {
+        LocalDateTime timestamp = LocalDateTime.now();
+        AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accNodeDetail.getManifestId());
+        AccRecord accRecord = accReadRepository.getAccByManifestId(accManifestRecord.getAccManifestId().toBigInteger());
+
+        AsccpManifestRecord extensionManifestAsccp = asccpReadRepository.getUserExtensionAsccpManifestByAccManifestId(
+                accManifestRecord.getAccManifestId().toBigInteger()
+        );
+
+        // update extension ASCCP
+        UpdateAsccpPropertiesRepositoryRequest updateAsccpPropertiesRepositoryRequest
+                = new UpdateAsccpPropertiesRepositoryRequest(
+                user,
+                timestamp,
+                extensionManifestAsccp.getAsccpManifestId().toBigInteger());
+
+        if (accRecord.getNamespaceId() != null) {
+            updateAsccpPropertiesRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
+        }
+        asccpWriteRepository.updateAsccpNamespace(updateAsccpPropertiesRepositoryRequest);
+    }
+
     private void updateExtensionComponentState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState fromState, CcState toState) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
@@ -385,6 +407,9 @@ public class CcNodeService extends EventHandler {
             if(hasExtensionAssociation(user, ccAccNode.getManifestId())) {
                 updateExtensionComponentProperties(user, detail);
             }
+            if(isUserExtensionGroup(user, ccAccNode.getManifestId())) {
+                updateUserExtensionNamespace(user, detail);
+            }
         }
         return updatedAccNodeDetails;
     }
@@ -393,6 +418,12 @@ public class CcNodeService extends EventHandler {
         AsccpManifestRecord extension
                 = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(accManifestId);
         return extension != null;
+    }
+
+    private boolean isUserExtensionGroup(AuthenticatedPrincipal user, BigInteger accManifestId) {
+        AccRecord acc
+                = accReadRepository.getAccByManifestId(accManifestId);
+        return acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue());
     }
 
     @Transactional
@@ -616,7 +647,7 @@ public class CcNodeService extends EventHandler {
 //            updateExtensionComponentState(user, accManifestId, fromState, toState);
 //        }
 
-        fireEvent(new UpdatedAccStateEvent());
+        fireEvent(new UpdatedAccStateEvent(accManifestId, toState, user.getName()));
 
         return repositoryResponse.getAccManifestId();
     }

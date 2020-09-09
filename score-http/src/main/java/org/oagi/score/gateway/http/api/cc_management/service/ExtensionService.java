@@ -166,7 +166,7 @@ public class ExtensionService {
         createAsccpRepositoryRequest.setInitialPropertyTerm(objectClassTerm);
         createAsccpRepositoryRequest.setReusable(false);
         createAsccpRepositoryRequest.setDefinition("A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".");
-        createAsccpRepositoryRequest.setInitialState(CcState.Published);
+        createAsccpRepositoryRequest.setInitialState(CcState.Production);
         CreateAsccpRepositoryResponse createUeAsccpRepositoryResponse =
                 asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
 
@@ -174,7 +174,7 @@ public class ExtensionService {
                 user, timestamp, releaseId,
                 eAcc.getAccManifestId(), createUeAsccpRepositoryResponse.getAsccpManifestId()
         );
-        createAsccRepositoryRequest.setInitialState(CcState.Published);
+        createAsccRepositoryRequest.setInitialState(CcState.Production);
         createAsccRepositoryRequest.setCardinalityMin(1);
         createAsccRepositoryRequest.setCardinalityMax(1);
 

@@ -287,6 +287,56 @@ public class AsccpWriteRepository {
         return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
+    public UpdateAsccpPropertiesRepositoryResponse updateAsccpNamespace(UpdateAsccpPropertiesRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getAsccpManifestId())
+                ))
+                .fetchOne();
+
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                .fetchOne();
+
+        // update asccp record.
+        UpdateSetFirstStep<AsccpRecord> firstStep = dslContext.update(ASCCP);
+        UpdateSetMoreStep<AsccpRecord> moreStep = null;
+        if (request.getNamespaceId() == null || request.getNamespaceId().longValue() <= 0L) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .setNull(ASCCP.NAMESPACE_ID);
+        } else {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCCP.NAMESPACE_ID, ULong.valueOf(request.getNamespaceId()));
+        }
+
+        if (moreStep != null) {
+            moreStep.set(ASCCP.LAST_UPDATED_BY, userId)
+                    .set(ASCCP.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(ASCCP.ASCCP_ID.eq(asccpRecord.getAsccpId()))
+                    .execute();
+
+            asccpRecord = dslContext.selectFrom(ASCCP)
+                    .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
+                    .fetchOne();
+        }
+
+        // creates new revision for updated record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAsccpRevision(
+                        asccpRecord, asccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
+                        userId, timestamp);
+
+        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+
+        return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+    }
+
     public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpBdt(UpdateAsccpRoleOfAccRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());

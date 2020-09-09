@@ -43,4 +43,11 @@ public class AsccpReadRepository {
                         ASCCP.TYPE.eq(CcASCCPType.Extension.name())))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
     }
+
+    public AsccpManifestRecord getUserExtensionAsccpManifestByAccManifestId(BigInteger accManifestId) {
+        return dslContext.select(ASCCP_MANIFEST.fields())
+                .from(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
+                .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
+    }
 }

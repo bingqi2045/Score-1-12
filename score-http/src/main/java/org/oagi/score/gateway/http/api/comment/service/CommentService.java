@@ -57,7 +57,7 @@ public class CommentService {
         event.addProperty("prevCommentId", comment.getPrevCommentId());
         event.addProperty("commentId", commentId);
         event.addProperty("timestamp", comment.getTimestamp());
-        List<String> parts = Arrays.asList(request.getReference().split("(?<=\\D)(?=\\d)"));
+        List<String> parts = Arrays.asList(request.getReference().split("(?<=\\D)-(?=\\d)"));
         if (parts.size() == 2) {
             simpMessagingTemplate.convertAndSend("/topic/" + parts.get(0) + "/" + parts.get(1), event);
         }
