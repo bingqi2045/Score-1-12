@@ -7,8 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CreateOagisVerbResponse {
 
-    private BigInteger basedVerbAccId;
-
-    private String verbTerm;
+    private BigInteger basedVerbAsccpManifestId;
 
 }

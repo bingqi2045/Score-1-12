@@ -383,9 +383,7 @@ public class CcNodeController {
     public CreateOagisBodResponse createOagisBod(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                                  @RequestBody CreateOagisBodRequest request) {
 
-        request.setUser(user);
-
-        CreateOagisBodResponse response = service.createOagisBod(request);
+        CreateOagisBodResponse response = service.createOagisBod(user, request);
         return response;
     }
 
@@ -395,7 +393,7 @@ public class CcNodeController {
     public CreateOagisVerbResponse createBod(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                              @RequestBody CreateOagisVerbRequest request) {
 
-        CreateOagisVerbResponse response = service.createBod(user, request);
+        CreateOagisVerbResponse response = service.createOagisVerb(user, request);
         return response;
     }
 }

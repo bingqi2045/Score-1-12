@@ -11,11 +11,9 @@ import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.RevisionRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
@@ -1151,21 +1149,20 @@ public class CcNodeService extends EventHandler {
 
         CreateOagisBodResponse response = new CreateOagisBodResponse();
 
-        BigInteger bodManifestId = createOagisBod(
-                user, request.getVerbManifestId(), request.getNounManifestId());
+        BigInteger bodManifestId = _createOagisBod(user, request);
         response.setBodManifestId(bodManifestId);
 
         return response;
     }
 
-    private BigInteger createOagisBod(AuthenticatedPrincipal user, BigInteger verbManifestId, BigInteger nounManifestId) {
+    private BigInteger _createOagisBod(AuthenticatedPrincipal user, CreateOagisBodRequest request) {
         AppUser requester = sessionService.getAppUser(user);
         if (!requester.isDeveloper()) {
             throw new IllegalArgumentException();
         }
 
-        AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(verbManifestId);
-        AsccpRecord noun = asccpReadRepository.getAsccpByManifestId(nounManifestId);
+        AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(request.getVerbManifestId());
+        AsccpRecord noun = asccpReadRepository.getAsccpByManifestId(request.getNounManifestId());
 
         NamespaceRecord namespace = dslContext.selectFrom(NAMESPACE)
                 .where(and(
@@ -1185,13 +1182,13 @@ public class CcNodeService extends EventHandler {
         BigInteger dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
 
         CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, release.getReleaseId().toBigInteger(),
-                dataAreaAccManifestId, verbManifestId);
+                dataAreaAccManifestId, request.getVerbManifestId());
         verbAsccRequest.setCardinalityMin(1);
         verbAsccRequest.setCardinalityMax(1);
         asccWriteRepository.createAscc(verbAsccRequest);
 
         CreateAsccRepositoryRequest nounAsccRequest = new CreateAsccRepositoryRequest(user, release.getReleaseId().toBigInteger(),
-                dataAreaAccManifestId, nounManifestId);
+                dataAreaAccManifestId, request.getNounManifestId());
         nounAsccRequest.setCardinalityMin(1);
         nounAsccRequest.setCardinalityMax(-1);
         asccWriteRepository.createAscc(nounAsccRequest);
@@ -1199,7 +1196,9 @@ public class CcNodeService extends EventHandler {
         CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, release.getReleaseId().toBigInteger());
         dataAreaAsccpRequest.setInitialPropertyTerm("Data Area");
         dataAreaAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
-        dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case ShowCodeList. The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm() + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm() + ").");
+        String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
+                .replaceAll(" ", "");
+        dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
         dataAreaAsccpRequest.setDefinitionSoruce("http://www.openapplications.org/oagis/10");
         BigInteger dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
 
@@ -1237,14 +1236,49 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public CreateOagisVerbResponse createBod(AuthenticatedPrincipal user,
-                                             CreateOagisVerbRequest request) {
+    public CreateOagisVerbResponse createOagisVerb(AuthenticatedPrincipal user,
+                                                   CreateOagisVerbRequest request) {
 
         CreateOagisVerbResponse response = new CreateOagisVerbResponse();
 
-        // TODO
+        BigInteger verbAsccpManifestId = _createOagisVerb(user, request);
+        response.setBasedVerbAsccpManifestId(verbAsccpManifestId);
 
         return response;
+    }
+
+    private BigInteger _createOagisVerb(AuthenticatedPrincipal user,
+                                        CreateOagisVerbRequest request) {
+
+        AppUser requester = sessionService.getAppUser(user);
+        if (!requester.isDeveloper()) {
+            throw new IllegalArgumentException();
+        }
+
+        NamespaceRecord namespace = dslContext.selectFrom(NAMESPACE)
+                .where(and(
+                        NAMESPACE.PREFIX.eq(""),
+                        NAMESPACE.IS_STD_NMSP.eq((byte) 1)
+                ))
+                .fetchAny();
+
+        ReleaseRecord release = dslContext.selectFrom(RELEASE)
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchAny();
+
+        CreateAccRepositoryRequest verbAccRequest = new CreateAccRepositoryRequest(user, release.getReleaseId().toBigInteger());
+        verbAccRequest.setBasedAccManifestId(request.getBasedVerbAccManifestId());
+        verbAccRequest.setInitialComponentType(OagisComponentType.Semantics);
+        verbAccRequest.setInitialObjectClassTerm(request.getInitialObjectClassTerm());
+        verbAccRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        BigInteger verbAccManifestId = accWriteRepository.createAcc(verbAccRequest).getAccManifestId();
+
+        CreateAsccpRepositoryRequest verbAsccpRequest = new CreateAsccpRepositoryRequest(user, verbAccManifestId, release.getReleaseId().toBigInteger());
+        verbAsccpRequest.setInitialPropertyTerm(request.getInitialPrpertyTerm());
+        verbAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        BigInteger verbAsccpManifestId = asccpWriteRepository.createAsccp(verbAsccpRequest).getAsccpManifestId();
+
+        return verbAsccpManifestId;
     }
 }
 
