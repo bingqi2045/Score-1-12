@@ -12,6 +12,8 @@ import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -29,6 +31,8 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_
 
 @Repository
 public class AsccWriteRepository {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -99,7 +103,7 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("Target ASCCP has already included.");
         }
 
-        if(basedAccAlreadyContainAssociation(accManifestRecord, request.getAsccpManifestId())) {
+        if (basedAccAlreadyContainAssociation(accManifestRecord, request.getAsccpManifestId())) {
             throw new IllegalArgumentException("Target ASCCP has already included on based ACC.");
         }
 

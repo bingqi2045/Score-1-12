@@ -1225,9 +1225,9 @@ public class CcNodeService extends EventHandler {
         dataAreaAsccRequest.setCardinalityMax(1);
 //        dataAreaAsccRequest.setDefinition(dataAreaAsccpRequest.getDefinition());
 //        dataAreaAsccRequest.setDefinitionSource(dataAreaAsccpRequest.getDefinitionSoruce());
-        asccWriteRepository.createAscc(verbAsccRequest);
+        asccWriteRepository.createAscc(dataAreaAsccRequest);
 
-        CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, release.getReleaseId().toBigInteger());
+        CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, release.getReleaseId().toBigInteger());
         bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
         bodAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
         BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
