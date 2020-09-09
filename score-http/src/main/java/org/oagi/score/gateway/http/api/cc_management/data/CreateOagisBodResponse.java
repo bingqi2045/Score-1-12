@@ -7,6 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CreateOagisBodResponse {
 
-    private BigInteger bodManifestId;
+    private BigInteger manifestId;
 
 }

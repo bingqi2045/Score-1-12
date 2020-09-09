@@ -1150,7 +1150,7 @@ public class CcNodeService extends EventHandler {
         CreateOagisBodResponse response = new CreateOagisBodResponse();
 
         BigInteger bodManifestId = _createOagisBod(user, request);
-        response.setBodManifestId(bodManifestId);
+        response.setManifestId(bodManifestId);
 
         return response;
     }
