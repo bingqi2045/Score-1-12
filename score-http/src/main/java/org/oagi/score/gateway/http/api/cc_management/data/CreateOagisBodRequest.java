@@ -6,6 +6,9 @@ import java.math.BigInteger;
 
 @Data
 public class CreateOagisBodRequest {
-    public BigInteger verbManifestId;
-    public BigInteger nounManifestId;
+
+    private BigInteger verbManifestId;
+
+    private BigInteger nounManifestId;
+
 }

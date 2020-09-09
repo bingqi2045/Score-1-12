@@ -7,8 +7,6 @@ import java.math.BigInteger;
 @Data
 public class CreateOagisBodResponse {
 
-    private BigInteger verbAsccpId;
-
-    private BigInteger nounAsccpId;
+    private BigInteger bodManifestId;
 
 }
