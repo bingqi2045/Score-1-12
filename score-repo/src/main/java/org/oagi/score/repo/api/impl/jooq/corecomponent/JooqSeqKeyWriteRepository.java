@@ -67,14 +67,104 @@ public class JooqSeqKeyWriteRepository
         return new CreateSeqKeyResponse(seqKey);
     }
 
+    private void setPrev(BigInteger key, BigInteger prev) {
+        if (key == null) {
+            return;
+        }
+        setPrev(ULong.valueOf(key), (prev != null) ? ULong.valueOf(prev) : null);
+    }
+
+    private void setPrev(ULong key, ULong prev) {
+        if (key != null) {
+            if (prev != null) {
+                dslContext().update(SEQ_KEY)
+                        .set(SEQ_KEY.PREV_SEQ_KEY_ID, prev)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(key))
+                        .execute();
+            } else {
+                dslContext().update(SEQ_KEY)
+                        .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(key))
+                        .execute();
+            }
+        }
+    }
+
+    private void setNext(BigInteger key, BigInteger next) {
+        if (key == null) {
+            return;
+        }
+        setNext(ULong.valueOf(key), (next != null) ? ULong.valueOf(next) : null);
+    }
+
+    private void setNext(ULong key, ULong next) {
+        if (key != null) {
+            if (next != null) {
+                dslContext().update(SEQ_KEY)
+                        .set(SEQ_KEY.NEXT_SEQ_KEY_ID, next)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(key))
+                        .execute();
+            } else {
+                dslContext().update(SEQ_KEY)
+                        .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                        .where(SEQ_KEY.SEQ_KEY_ID.eq(key))
+                        .execute();
+            }
+        }
+    }
+
+    private void brokeLinks(SeqKey seqKey) {
+        SeqKeyRecord record = get(seqKey.getSeqKeyId());
+
+        ULong prev = record.getPrevSeqKeyId();
+        ULong next = record.getNextSeqKeyId();
+
+        setNext(prev, next);
+        setPrev(next, prev);
+
+        setPrev(record.getSeqKeyId(), null);
+        setNext(record.getSeqKeyId(), null);
+    }
+
+    private SeqKeyRecord get(BigInteger id) {
+        return dslContext().selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(id)))
+                .fetchOne();
+    }
+
+    @Override
+    public MoveAfterResponse moveAfter(MoveAfterRequest request) throws ScoreDataAccessException {
+        if (request.getAfter() == null) {
+            throw new ScoreDataAccessException(new IllegalArgumentException());
+        }
+
+        brokeLinks(request.getItem());
+
+        // DO NOT change orders of executions.
+
+        BigInteger current = request.getItem().getSeqKeyId();
+        BigInteger after = request.getAfter().getSeqKeyId();
+        BigInteger prev = request.getAfter().getSeqKeyId();
+        BigInteger next = (request.getAfter().getNextSeqKey() != null) ?
+                request.getAfter().getNextSeqKey().getSeqKeyId() : null;
+
+        setPrev(current, prev);
+        if (next != null) {
+            setNext(current, next);
+        }
+
+        setNext(after, current);
+        if (next != null) {
+            setPrev(next, current);
+        }
+
+        return new MoveAfterResponse();
+    }
+
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public UpdateSeqKeyResponse updateSeqKey(UpdateSeqKeyRequest request) throws ScoreDataAccessException {
         SeqKey seqKey = request.getSeqKey();
-
-        SeqKeyRecord record = dslContext().selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKey.getSeqKeyId())))
-                .fetchOne();
 
         UpdateSetStep step = dslContext().update(SEQ_KEY);
         SeqKey prev = seqKey.getPrevSeqKey();

@@ -4,6 +4,8 @@ import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.BccEntityType;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import static org.oagi.score.service.corecomponent.seqkey.MoveTo.FIRST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
 
 public class SeqKeyHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ScoreRepositoryFactory scoreRepositoryFactory;
     private ScoreUser requester;
@@ -104,7 +108,7 @@ public class SeqKeyHandler {
         switch (to) {
             case FIRST:
                 if (this.head != null) {
-                    brokeLinks(this.current);
+                    brokeLinks();
 
                     this.current.setPrevSeqKey(null);
                     this.current.setNextSeqKey(this.head);
@@ -133,7 +137,7 @@ public class SeqKeyHandler {
 
             case LAST:
                 if (this.tail != null) {
-                    brokeLinks(this.current);
+                    brokeLinks();
 
                     this.current.setPrevSeqKey(this.tail);
                     this.current.setNextSeqKey(null);
@@ -149,7 +153,7 @@ public class SeqKeyHandler {
     }
 
     public void deleteCurrent() {
-        brokeLinks(this.current);
+        brokeLinks();
 
         scoreRepositoryFactory.createSeqKeyWriteRepository()
                 .deleteSeqKey(new DeleteSeqKeyRequest(this.requester)
@@ -158,52 +162,44 @@ public class SeqKeyHandler {
         this.current = null;
     }
 
-    private void brokeLinks(SeqKey record) {
-        SeqKey currentPrevSeqKey = record.getPrevSeqKey();
-        SeqKey currentNextSeqKey = record.getNextSeqKey();
+    private void brokeLinks() {
+        SeqKey prev = this.current.getPrevSeqKey();
+        SeqKey next = this.current.getNextSeqKey();
 
-        if (currentPrevSeqKey != null) {
-            currentPrevSeqKey.setNextSeqKey(record.getNextSeqKey());
-            update(currentPrevSeqKey);
+        if (prev != null) {
+            prev.setNextSeqKey(next);
         }
 
-        if (currentNextSeqKey != null) {
-            currentNextSeqKey.setPrevSeqKey(record.getPrevSeqKey());
-            update(currentNextSeqKey);
+        if (next != null) {
+            next.setPrevSeqKey(prev);
         }
+
+        update(prev);
+        update(next);
+
+        this.current.setPrevSeqKey(null);
+        this.current.setNextSeqKey(null);
+        update(this.current);
     }
 
     public void moveAfter(SeqKey after) {
-        if (after == null) {
-            return;
-        }
-
-        if (after.getNextSeqKey() != null && after.getNextSeqKey().equals(this.current.getSeqKeyId())) {
-            return;
-        }
-
-        brokeLinks(this.current);
-
-        // DO NOT change orders of executions.
-
-        current.setPrevSeqKey(after);
-        current.setNextSeqKey(after.getNextSeqKey());
-        update(current);
-
-        SeqKey afterNextSeqKey = after.getNextSeqKey();
-        if (afterNextSeqKey != null) {
-            afterNextSeqKey.setPrevSeqKey(this.current);
-            update(afterNextSeqKey);
-        }
-
-        after.setNextSeqKey(this.current);
-        update(after);
+        scoreRepositoryFactory.createSeqKeyWriteRepository()
+                .moveAfter(new MoveAfterRequest(this.requester)
+                        .withItem(this.current)
+                        .withAfter(after)
+                );
     }
 
     private void update(SeqKey seqKey) {
-        scoreRepositoryFactory.createSeqKeyWriteRepository()
-                .updateSeqKey(new UpdateSeqKeyRequest(this.requester)
-                        .withSeqKey(seqKey));
+        if (seqKey == null) {
+            return;
+        }
+
+        UpdateSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyWriteRepository()
+                .updateSeqKey(new UpdateSeqKeyRequest(requester).withSeqKey(seqKey));
+        if (response != null && seqKey.getSeqKeyId().equals(response.getSeqKeyId())) {
+            logger.debug(seqKey + " changed.");
+        }
     }
 
     public static List<SeqKeySupportable> sort(List<SeqKeySupportable> seqKeyList) {
@@ -219,7 +215,8 @@ public class SeqKeyHandler {
          * To ensure that every CC has different next seq_key id.
          * If not, it would cause a circular reference.
          */
-        if (seqKeyMap.size() != seqKeyMap.values().stream()
+        if (seqKeyMap.size() - 1 != seqKeyMap.values().stream()
+                .filter(e -> e.getNextSeqKeyId() != null)
                 .map(e -> e.getNextSeqKeyId())
                 .collect(Collectors.toSet()).size()) {
             throw new IllegalStateException();

@@ -5,6 +5,7 @@ import org.oagi.score.repo.api.corecomponent.BccEntityType;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class SeqKey implements Iterable<SeqKey>, Serializable {
 
@@ -67,7 +68,18 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
     }
 
     public void setPrevSeqKey(SeqKey prevSeqKey) {
+        if (prevSeqKey != null && prevSeqKey.equals(this.prevSeqKey)) {
+            return;
+        }
+
         this.prevSeqKey = prevSeqKey;
+        if (prevSeqKey != null) {
+            prevSeqKey.setNextSeqKey(this);
+        }
+
+        if (this.nextSeqKey != null && this.nextSeqKey.equals(this.prevSeqKey)) {
+            throw new IllegalStateException();
+        }
     }
 
     public SeqKey getNextSeqKey() {
@@ -75,7 +87,45 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
     }
 
     public void setNextSeqKey(SeqKey nextSeqKey) {
+        if (nextSeqKey != null && nextSeqKey.equals(this.nextSeqKey)) {
+            return;
+        }
+
         this.nextSeqKey = nextSeqKey;
+        if (nextSeqKey != null) {
+            nextSeqKey.setPrevSeqKey(this);
+        }
+
+        if (this.prevSeqKey != null && this.prevSeqKey.equals(this.nextSeqKey)) {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SeqKey seqKey = (SeqKey) o;
+        return fromAccId.equals(seqKey.fromAccId) &&
+                seqKeyType == seqKey.seqKeyType &&
+                ccId.equals(seqKey.ccId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fromAccId, seqKeyType, ccId);
+    }
+
+    @Override
+    public String toString() {
+        return "SeqKey{" +
+                "seqKeyId=" + seqKeyId +
+                ", prevSeqKey=" + ((prevSeqKey != null) ? prevSeqKey.getSeqKeyId() : null) +
+                ", nextSeqKey=" + ((nextSeqKey != null) ? nextSeqKey.getSeqKeyId() : null) +
+                ", fromAccId=" + fromAccId +
+                ", seqKeyType=" + seqKeyType +
+                ", ccId=" + ccId +
+                '}';
     }
 
     @Override

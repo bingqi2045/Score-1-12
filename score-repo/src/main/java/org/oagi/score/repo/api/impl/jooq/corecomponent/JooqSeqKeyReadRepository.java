@@ -56,7 +56,7 @@ public class JooqSeqKeyReadRepository
                         BCC.ENTITY_TYPE)
                 .from(SEQ_KEY)
                 .leftJoin(BCC).on(SEQ_KEY.CC_ID.eq(BCC.BCC_ID))
-                .where(SEQ_KEY.FROM_ACC_ID.eq(ULong.valueOf(request.getFromAccId())))
+                .where(SEQ_KEY.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
 
@@ -88,7 +88,12 @@ public class JooqSeqKeyReadRepository
         seqKey.setSeqKeyType(SeqKeyType.valueOf(node.get(SEQ_KEY.TYPE).toString().toUpperCase()));
         seqKey.setCcId(node.get(SEQ_KEY.CC_ID).toBigInteger());
         if (SeqKeyType.BCC == seqKey.getSeqKeyType()) {
-            seqKey.setEntityType(BccEntityType.valueOf(node.get(BCC.ENTITY_TYPE)));
+            Integer entityType = node.get(BCC.ENTITY_TYPE);
+            seqKey.setEntityType(
+                    (entityType != null) ?
+                            BccEntityType.valueOf(node.get(BCC.ENTITY_TYPE)) :
+                            BccEntityType.Element
+            );
         }
         seqKey.setPrevSeqKey(prev);
 
