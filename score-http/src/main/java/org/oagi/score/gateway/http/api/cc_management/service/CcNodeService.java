@@ -1196,6 +1196,7 @@ public class CcNodeService extends EventHandler {
         CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, release.getReleaseId().toBigInteger());
         dataAreaAsccpRequest.setInitialPropertyTerm("Data Area");
         dataAreaAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        dataAreaAsccpRequest.setReusable(false);
         String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
                 .replaceAll(" ", "");
         dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
