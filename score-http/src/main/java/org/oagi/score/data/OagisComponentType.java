@@ -9,7 +9,11 @@ public enum OagisComponentType {
     UserExtensionGroup(4),
     Embedded(5),
     OAGIS10Nouns(6),
-    OAGIS10BODs(7);
+    OAGIS10BODs(7),
+    // TODO: Would these be on public?
+    BOD(8),
+    Verb(9),
+    Noun(10);
 
     private final int value;
 
