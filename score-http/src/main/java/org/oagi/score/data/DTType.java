@@ -6,5 +6,5 @@ public enum DTType {
     Default,
     Unqualified,
     Qualified
-    
+
 }

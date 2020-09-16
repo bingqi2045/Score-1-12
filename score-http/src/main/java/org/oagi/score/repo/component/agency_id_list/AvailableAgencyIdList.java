@@ -8,6 +8,8 @@ import java.math.BigInteger;
 public class AvailableAgencyIdList {
 
     private BigInteger agencyIdListId;
+    private BigInteger agencyIdListManifestId;
+    private BigInteger basedAgencyIdListManifestId;
     private boolean isDefault;
     private String agencyIdListName;
 
