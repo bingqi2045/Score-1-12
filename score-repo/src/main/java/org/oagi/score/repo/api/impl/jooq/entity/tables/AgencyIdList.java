@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
-    private static final long serialVersionUID = -653964229;
+    private static final long serialVersionUID = -1867304369;
 
     /**
      * The reference instance of <code>oagi.agency_id_list</code>
@@ -85,9 +85,9 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     public final TableField<AgencyIdListRecord, String> VERSION_ID = createField(DSL.name("version_id"), org.jooq.impl.SQLDataType.VARCHAR(10), this, "Version number of the agency identification list (assigned by the agency).");
 
     /**
-     * The column <code>oagi.agency_id_list.module_id</code>. Foreign key to the module table indicating the physical schema the MODULE belongs to.
+     * The column <code>oagi.agency_id_list.based_agency_id_list_id</code>. This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.
      */
-    public final TableField<AgencyIdListRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the module table indicating the physical schema the MODULE belongs to.");
+    public final TableField<AgencyIdListRecord, ULong> BASED_AGENCY_ID_LIST_ID = createField(DSL.name("based_agency_id_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.");
 
     /**
      * The column <code>oagi.agency_id_list.definition</code>. Description of the agency identification list.
@@ -115,9 +115,31 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     public final TableField<AgencyIdListRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the agency ID list was last updated.");
 
     /**
-     * The column <code>oagi.agency_id_list.state</code>. Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.
+     * The column <code>oagi.agency_id_list.state</code>. Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only the agency ID list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.
      */
-    public final TableField<AgencyIdListRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(10), this, "Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.");
+    public final TableField<AgencyIdListRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only the agency ID list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.");
+
+    /**
+     * The column <code>oagi.agency_id_list.is_deprecated</code>. Indicates whether the agency id list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
+     */
+    public final TableField<AgencyIdListRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the agency id list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
+
+    /**
+     * The column <code>oagi.agency_id_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
+
+The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
+     */
+    public final TableField<AgencyIdListRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership.");
+
+    /**
+     * The column <code>oagi.agency_id_list.prev_agency_id_list_id</code>. A self-foreign key to indicate the previous history record.
+     */
+    public final TableField<AgencyIdListRecord, ULong> PREV_AGENCY_ID_LIST_ID = createField(DSL.name("prev_agency_id_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the previous history record.");
+
+    /**
+     * The column <code>oagi.agency_id_list.next_agency_id_list_id</code>. A self-foreign key to indicate the next history record.
+     */
+    public final TableField<AgencyIdListRecord, ULong> NEXT_AGENCY_ID_LIST_ID = createField(DSL.name("next_agency_id_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A self-foreign key to indicate the next history record.");
 
     /**
      * Create a <code>oagi.agency_id_list</code> table reference
@@ -174,15 +196,15 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
     @Override
     public List<ForeignKey<AgencyIdListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_MODULE_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
         return new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK);
     }
 
-    public Module module() {
-        return new Module(this, Keys.AGENCY_ID_LIST_MODULE_ID_FK);
+    public AgencyIdList agencyIdListBasedAgencyIdListIdFk() {
+        return new AgencyIdList(this, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK);
     }
 
     public AppUser agencyIdListCreatedByFk() {
@@ -191,6 +213,18 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
     public AppUser agencyIdListLastUpdatedByFk() {
         return new AppUser(this, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK);
+    }
+
+    public AppUser agencyIdListOwnerUserIdFk() {
+        return new AppUser(this, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK);
+    }
+
+    public AgencyIdList agencyIdListPrevAgencyIdListIdFk() {
+        return new AgencyIdList(this, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK);
+    }
+
+    public AgencyIdList agencyIdListNextAgencyIdListIdFk() {
+        return new AgencyIdList(this, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
     }
 
     @Override
@@ -220,11 +254,11 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row18<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }

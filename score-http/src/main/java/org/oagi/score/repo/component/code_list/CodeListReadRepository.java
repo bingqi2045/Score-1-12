@@ -1,13 +1,19 @@
 package org.oagi.score.repo.component.code_list;
 
 import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Result;
+import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -25,7 +31,20 @@ public class CodeListReadRepository {
     }
 
     public List<AvailableCodeList> availableCodeListByBccpManifestId(BigInteger bccpManifestId) {
-        return dslContext.select(
+        Result<Record2<ULong, ULong>> result = dslContext.selectDistinct(
+                CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                BCCP_MANIFEST.RELEASE_ID)
+                .from(BCCP_MANIFEST)
+                .join(DT_MANIFEST).on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
+                .join(BDT_PRI_RESTRI).on(DT_MANIFEST.DT_ID.eq(BDT_PRI_RESTRI.BDT_ID))
+                .leftJoin(CODE_LIST_MANIFEST).on(and(
+                        BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
+                        BCCP_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)
+                ))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .fetch();
+
+        SelectOnConditionStep step = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                 BDT_PRI_RESTRI.IS_DEFAULT,
@@ -33,28 +52,79 @@ public class CodeListReadRepository {
                 CODE_LIST.NAME.as("code_list_name"))
                 .from(BDT_PRI_RESTRI)
                 .join(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
-                .join(BCCP).on(BDT_PRI_RESTRI.BDT_ID.eq(BCCP.BDT_ID))
-                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
-                .join(CODE_LIST_MANIFEST).on(and(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
-                        BCCP_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)))
-                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID));
+
+        return result.stream().map(e ->
+                availableCodeListByCodeListManifestIdOrReleaseId(
+                        (e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID) != null) ?
+                                e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger() :
+                                null,
+                        e.get(CODE_LIST_MANIFEST.RELEASE_ID).toBigInteger(), step))
+                .flatMap(e -> e.stream())
+                .distinct()
+                .sorted(Comparator.comparing(AvailableCodeList::getCodeListName))
+                .collect(Collectors.toList());
+    }
+
+    private List<AvailableCodeList> availableCodeListByCodeListManifestIdOrReleaseId(
+            BigInteger codeListManifestId, BigInteger releaseId, SelectOnConditionStep step) {
+        if (codeListManifestId == null) {
+            return step.where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                    .fetchInto(AvailableCodeList.class);
+        }
+
+        List<AvailableCodeList> availableCodeLists = step
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
                 .fetchInto(AvailableCodeList.class);
+
+        List<AvailableCodeList> mergedCodeLists = new ArrayList();
+        mergedCodeLists.addAll(availableCodeLists.stream()
+                .filter(e -> e.getBasedCodeListManifestId() != null)
+                .distinct()
+                .map(e -> availableCodeListByCodeListManifestIdOrReleaseId(
+                        e.getBasedCodeListManifestId(), releaseId, step))
+                .flatMap(e -> e.stream())
+                .collect(Collectors.toList())
+        );
+        mergedCodeLists.addAll(availableCodeLists.stream()
+                .filter(e -> e.getBasedCodeListManifestId() == null)
+                .collect(Collectors.toList())
+        );
+        return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
     public List<AvailableCodeList> availableCodeListByBdtScManifestId(BigInteger bdtScManifestId) {
-        return dslContext.select(
+        Result<Record2<ULong, ULong>> result = dslContext.selectDistinct(
+                CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
+                DT_SC_MANIFEST.RELEASE_ID)
+                .from(DT_SC_MANIFEST)
+                .join(BDT_SC_PRI_RESTRI).on(DT_SC_MANIFEST.DT_SC_ID.eq(BDT_SC_PRI_RESTRI.BDT_SC_ID))
+                .leftJoin(CODE_LIST_MANIFEST).on(and(
+                        BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
+                        DT_SC_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)
+                ))
+                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
+                .fetch();
+
+        SelectOnConditionStep step = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                 BDT_SC_PRI_RESTRI.IS_DEFAULT,
+                CODE_LIST.CODE_LIST_ID,
                 CODE_LIST.NAME.as("code_list_name"))
                 .from(BDT_SC_PRI_RESTRI)
                 .join(CODE_LIST).on(BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
-                .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
-                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
-                .join(CODE_LIST_MANIFEST).on(and(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID),
-                        DT_SC_MANIFEST.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID)))
-                .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
-                .fetchInto(AvailableCodeList.class);
-    }
+                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID));
 
+        return result.stream().map(e ->
+                availableCodeListByCodeListManifestIdOrReleaseId(
+                        (e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID) != null) ?
+                                e.get(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).toBigInteger() :
+                                null,
+                        e.get(CODE_LIST_MANIFEST.RELEASE_ID).toBigInteger(), step))
+                .flatMap(e -> e.stream())
+                .distinct()
+                .sorted(Comparator.comparing(AvailableCodeList::getCodeListName))
+                .collect(Collectors.toList());
+    }
 }

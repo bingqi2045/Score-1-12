@@ -14,7 +14,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroup;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroupUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
@@ -62,6 +64,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
@@ -90,7 +93,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -813935834;
+    private static final long serialVersionUID = -1262966460;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -124,9 +127,19 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
     public final AgencyIdList AGENCY_ID_LIST = AgencyIdList.AGENCY_ID_LIST;
 
     /**
+     * The table <code>oagi.agency_id_list_manifest</code>.
+     */
+    public final AgencyIdListManifest AGENCY_ID_LIST_MANIFEST = AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST;
+
+    /**
      * This table captures the values within an agency identification list.
      */
     public final AgencyIdListValue AGENCY_ID_LIST_VALUE = AgencyIdListValue.AGENCY_ID_LIST_VALUE;
+
+    /**
+     * The table <code>oagi.agency_id_list_value_manifest</code>.
+     */
+    public final AgencyIdListValueManifest AGENCY_ID_LIST_VALUE_MANIFEST = AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST;
 
     /**
      * The table <code>oagi.app_group</code>.
@@ -370,6 +383,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final ModuleAccManifest MODULE_ACC_MANIFEST = ModuleAccManifest.MODULE_ACC_MANIFEST;
 
     /**
+     * The table <code>oagi.module_agency_id_list_manifest</code>.
+     */
+    public final ModuleAgencyIdListManifest MODULE_AGENCY_ID_LIST_MANIFEST = ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST;
+
+    /**
      * The table <code>oagi.module_asccp_manifest</code>.
      */
     public final ModuleAsccpManifest MODULE_ASCCP_MANIFEST = ModuleAsccpManifest.MODULE_ASCCP_MANIFEST;
@@ -489,7 +507,9 @@ If we use a separate table for each expression, then we need binding all the way
             Acc.ACC,
             AccManifest.ACC_MANIFEST,
             AgencyIdList.AGENCY_ID_LIST,
+            AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST,
             AgencyIdListValue.AGENCY_ID_LIST_VALUE,
+            AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST,
             AppGroup.APP_GROUP,
             AppGroupUser.APP_GROUP_USER,
             AppOauth2User.APP_OAUTH2_USER,
@@ -537,6 +557,7 @@ If we use a separate table for each expression, then we need binding all the way
             DtUsageRule.DT_USAGE_RULE,
             Module.MODULE,
             ModuleAccManifest.MODULE_ACC_MANIFEST,
+            ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST,
             ModuleAsccpManifest.MODULE_ASCCP_MANIFEST,
             ModuleBccpManifest.MODULE_BCCP_MANIFEST,
             ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST,

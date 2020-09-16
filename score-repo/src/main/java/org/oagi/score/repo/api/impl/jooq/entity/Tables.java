@@ -8,7 +8,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroup;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroupUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
@@ -56,6 +58,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
@@ -111,9 +114,19 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
     public static final AgencyIdList AGENCY_ID_LIST = AgencyIdList.AGENCY_ID_LIST;
 
     /**
+     * The table <code>oagi.agency_id_list_manifest</code>.
+     */
+    public static final AgencyIdListManifest AGENCY_ID_LIST_MANIFEST = AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST;
+
+    /**
      * This table captures the values within an agency identification list.
      */
     public static final AgencyIdListValue AGENCY_ID_LIST_VALUE = AgencyIdListValue.AGENCY_ID_LIST_VALUE;
+
+    /**
+     * The table <code>oagi.agency_id_list_value_manifest</code>.
+     */
+    public static final AgencyIdListValueManifest AGENCY_ID_LIST_VALUE_MANIFEST = AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST;
 
     /**
      * The table <code>oagi.app_group</code>.
@@ -355,6 +368,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The table <code>oagi.module_acc_manifest</code>.
      */
     public static final ModuleAccManifest MODULE_ACC_MANIFEST = ModuleAccManifest.MODULE_ACC_MANIFEST;
+
+    /**
+     * The table <code>oagi.module_agency_id_list_manifest</code>.
+     */
+    public static final ModuleAgencyIdListManifest MODULE_AGENCY_ID_LIST_MANIFEST = ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST;
 
     /**
      * The table <code>oagi.module_asccp_manifest</code>.

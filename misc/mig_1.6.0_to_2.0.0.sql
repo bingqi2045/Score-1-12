@@ -1022,6 +1022,207 @@ PREPARE stmt from @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+-- Add columns and constraints on `agency_id_list` table.
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `created_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
+    ADD COLUMN `last_updated_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.',
+    ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was created.',
+    ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was last updated.',
+    ADD COLUMN `state` varchar(20) DEFAULT NULL COMMENT 'Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only the agency ID list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.',
+    ADD CONSTRAINT `agency_id_list_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
+
+UPDATE `agency_id_list` SET `created_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `last_updated_by` = `created_by`, `creation_timestamp` = CURRENT_TIMESTAMP(6), `last_update_timestamp` = `creation_timestamp`, `state` = 'Published';
+
+ALTER TABLE `agency_id_list`
+    MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
+    MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
+
+-- Making relations between `agency_id_list` and `release` tables.
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the agency id list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).',
+    ADD COLUMN `based_agency_id_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This is a foreign key to the AGENCY_ID_LIST table itself. This identifies the agency id list on which this agency id list is based, if any. The derivation may be restriction and/or extension.' AFTER `module_id`,
+    ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    ADD COLUMN `prev_agency_id_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    ADD COLUMN `next_agency_id_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+    ADD CONSTRAINT `agency_id_list_based_agency_id_list_id_fk` FOREIGN KEY (`based_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_prev_agency_id_list_id_fk` FOREIGN KEY (`prev_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    ADD CONSTRAINT `agency_id_list_next_agency_id_list_id_fk` FOREIGN KEY (`next_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+
+UPDATE `agency_id_list` SET `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
+
+CREATE TABLE `agency_id_list_manifest` (
+    `agency_id_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `release_id` bigint(20) unsigned NOT NULL,
+    `module_id` bigint(20) unsigned DEFAULT NULL,
+    `agency_id_list_id` bigint(20) unsigned NOT NULL,
+    `based_agency_id_list_manifest_id` bigint(20) unsigned DEFAULT NULL,
+    `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
+    `revision_id` bigint(20) unsigned COMMENT 'A foreign key pointed to revision for the current record.',
+    `prev_agency_id_list_manifest_id` bigint(20) unsigned,
+    `next_agency_id_list_manifest_id` bigint(20) unsigned,
+    PRIMARY KEY (`agency_id_list_manifest_id`),
+    KEY `agency_id_list_manifest_agency_id_list_id_fk` (`agency_id_list_id`),
+    KEY `agency_id_list_manifest_based_agency_id_list_manifest_id_fk` (`based_agency_id_list_manifest_id`),
+    KEY `agency_id_list_manifest_release_id_fk` (`release_id`),
+    KEY `agency_id_list_manifest_module_id_fk` (`module_id`),
+    KEY `agency_id_list_manifest_revision_id_fk` (`revision_id`),
+    KEY `agency_id_list_manifest_prev_agency_id_list_manifest_id_fk` (`prev_agency_id_list_manifest_id`),
+    KEY `agency_id_list_manifest_next_agency_id_list_manifest_id_fk` (`next_agency_id_list_manifest_id`),
+    CONSTRAINT `agency_id_list_manifest_agency_id_list_id_fk` FOREIGN KEY (`agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`),
+    CONSTRAINT `agency_id_list_manifest_based_agency_id_list_manifest_id_fk` FOREIGN KEY (`based_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`),
+    CONSTRAINT `agency_id_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `agency_id_list_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `agency_id_list_manifest_revision_id_fk` FOREIGN KEY (`revision_id`) REFERENCES `revision` (`revision_id`),
+    CONSTRAINT `agency_id_list_manifest_prev_agency_id_list_manifest_id_fk` FOREIGN KEY (`prev_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`),
+    CONSTRAINT `agency_id_list_manifest_next_agency_id_list_manifest_id_fk` FOREIGN KEY (`next_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Inserting initial agency_id_list_manifest records for 10.x release
+INSERT `agency_id_list_manifest` (`release_id`, `module_id`, `agency_id_list_id`)
+SELECT
+    `release`.`release_id`,
+    `agency_id_list`.`module_id`,
+    `agency_id_list`.`agency_id_list_id`
+FROM `agency_id_list`, `release`
+WHERE `release`.`release_num` != 'Working'
+ORDER BY `release_id`, `agency_id_list_id`;
+
+SET @sql = CONCAT('ALTER TABLE `agency_id_list_manifest` AUTO_INCREMENT = ', (SELECT MAX(agency_id_list_manifest_id) + 1 FROM agency_id_list_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying agency_id_list_manifest records for 'Working' release from 10.x release
+INSERT `agency_id_list_manifest` (`release_id`, `module_id`, `agency_id_list_id`, `based_agency_id_list_manifest_id`)
+SELECT
+    (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working') as `release_id`,
+    `agency_id_list_manifest`.`module_id`, `agency_id_list_manifest`.`agency_id_list_id`, `agency_id_list_manifest`.`based_agency_id_list_manifest_id`
+FROM `agency_id_list_manifest` JOIN `release` ON `agency_id_list_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `agency_id_list_manifest` AUTO_INCREMENT = ', (SELECT MAX(agency_id_list_manifest_id) + 1 FROM agency_id_list_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Updating `based_agency_id_list_manifest_id`
+UPDATE `agency_id_list_manifest`, (
+    SELECT a.`agency_id_list_manifest_id`, `agency_id_list`.`agency_id_list_id`, b.`agency_id_list_manifest_id` as `based_agency_id_list_manifest_id`, `agency_id_list`.`based_agency_id_list_id`
+    FROM `agency_id_list` JOIN `agency_id_list_manifest` a ON `agency_id_list`.`agency_id_list_id` = a.`agency_id_list_id`
+                     JOIN `agency_id_list_manifest` b ON `agency_id_list`.`based_agency_id_list_id` = b.`agency_id_list_id`
+    WHERE `agency_id_list`.`based_agency_id_list_id` IS NOT NULL AND a.`release_id` = b.`release_id`
+) t
+SET `agency_id_list_manifest`.`based_agency_id_list_manifest_id` = t.`based_agency_id_list_manifest_id`
+WHERE `agency_id_list_manifest`.`agency_id_list_manifest_id` = t.`agency_id_list_manifest_id`;
+
+-- Making relations between `agency_id_list_value` and `release` tables.
+ALTER TABLE `agency_id_list_value`
+    ADD COLUMN `guid` varchar(41) NOT NULL COMMENT 'GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.' AFTER `agency_id_list_value_id`,
+    ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).' AFTER `owner_list_id`,
+    ADD COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the code list.',
+    ADD COLUMN `owner_user_id` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn''t rollback the ownership.',
+    ADD COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the code list.',
+    ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was created.',
+    ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the code list was last updated.',
+    ADD COLUMN `prev_agency_id_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the previous history record.',
+    ADD COLUMN `next_agency_id_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'A self-foreign key to indicate the next history record.',
+    ADD CONSTRAINT `agency_id_list_value_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_value_owner_user_id_fk` FOREIGN KEY (`owner_user_id`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_value_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    ADD CONSTRAINT `agency_id_list_value_prev_agency_id_list_value_id_fk` FOREIGN KEY (`prev_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    ADD CONSTRAINT `agency_id_list_value_next_agency_id_list_value_id_fk` FOREIGN KEY (`next_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+
+UPDATE `agency_id_list_value`, `agency_id_list`
+SET `agency_id_list_value`.`created_by` = `agency_id_list`.`created_by`,
+    `agency_id_list_value`.`owner_user_id` = `agency_id_list`.`owner_user_id`,
+    `agency_id_list_value`.`last_updated_by` = `agency_id_list`.`last_updated_by`,
+    `agency_id_list_value`.`creation_timestamp` = `agency_id_list`.`creation_timestamp`,
+    `agency_id_list_value`.`last_update_timestamp` = `agency_id_list`.`last_update_timestamp`
+WHERE `agency_id_list_value`.`owner_list_id` = `agency_id_list`.`agency_id_list_id`;
+
+-- Updating prev/next agency_id_list_value_id
+UPDATE `agency_id_list_value`, (
+    SELECT
+        `agency_id_list_value`.`agency_id_list_value_id`, `agency_id_list_value`.`value`, `agency_id_list`.`agency_id_list_id`,
+        base_value.`agency_id_list_value_id` as base_value_id, base_value.`value` as base_value, base.`agency_id_list_id` as base_id
+    FROM `agency_id_list_value`
+             JOIN `agency_id_list` ON `agency_id_list_value`.`owner_list_id` = `agency_id_list`.`agency_id_list_id`
+        AND `agency_id_list`.`based_agency_id_list_id` is not null
+             JOIN `agency_id_list` AS base ON `agency_id_list`.`based_agency_id_list_id` = base.`agency_id_list_id`
+             JOIN `agency_id_list_value` AS base_value ON base_value.`owner_list_id` = base.`agency_id_list_id`
+        AND `agency_id_list_value`.`value` = base_value.`value`
+) t
+SET `agency_id_list_value`.`prev_agency_id_list_value_id` = t.`base_value_id`
+WHERE `agency_id_list_value`.`agency_id_list_value_id` = t.`agency_id_list_value_id`;
+
+UPDATE `agency_id_list_value`, (
+    SELECT
+        `agency_id_list_value`.`agency_id_list_value_id`, `agency_id_list_value`.`value`, `agency_id_list`.`agency_id_list_id`,
+        base_value.`agency_id_list_value_id` as base_value_id, base_value.`value` as base_value, base.`agency_id_list_id` as base_id
+    FROM `agency_id_list_value`
+             JOIN `agency_id_list` ON `agency_id_list_value`.`owner_list_id` = `agency_id_list`.`agency_id_list_id`
+        AND `agency_id_list`.`based_agency_id_list_id` is not null
+             JOIN `agency_id_list` AS base ON `agency_id_list`.`based_agency_id_list_id` = base.`agency_id_list_id`
+             JOIN `agency_id_list_value` AS base_value ON base_value.`owner_list_id` = base.`agency_id_list_id`
+        AND `agency_id_list_value`.`value` = base_value.`value`
+) t
+SET `agency_id_list_value`.`next_agency_id_list_value_id` = t.`agency_id_list_value_id`
+WHERE `agency_id_list_value`.`agency_id_list_value_id` = t.`base_value_id`;
+
+CREATE TABLE `agency_id_list_value_manifest` (
+    `agency_id_list_value_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `release_id` bigint(20) unsigned NOT NULL,
+    `agency_id_list_value_id` bigint(20) unsigned NOT NULL,
+    `agency_id_list_manifest_id` bigint(20) unsigned NOT NULL,
+    `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
+    `prev_agency_id_list_value_manifest_id` bigint(20) unsigned,
+    `next_agency_id_list_value_manifest_id` bigint(20) unsigned,
+    PRIMARY KEY (`agency_id_list_value_manifest_id`),
+    KEY `agency_id_list_value_manifest_agency_id_list_value_id_fk` (`agency_id_list_value_id`),
+    KEY `agency_id_list_value_manifest_release_id_fk` (`release_id`),
+    KEY `agency_id_list_value_manifest_agency_id_list_manifest_id_fk` (`agency_id_list_manifest_id`),
+    KEY `agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk` (`prev_agency_id_list_value_manifest_id`),
+    KEY `agency_id_list_value_manifest_next_agency_id_list_value_manif_fk` (`next_agency_id_list_value_manifest_id`),
+    CONSTRAINT `agency_id_list_value_manifest_agency_id_list_value_id_fk` FOREIGN KEY (`agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`),
+    CONSTRAINT `agency_id_list_value_manifest_agency_id_list_manifest_id_fk` FOREIGN KEY (`agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`),
+    CONSTRAINT `agency_id_list_value_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
+    CONSTRAINT `agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk` FOREIGN KEY (`prev_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`),
+    CONSTRAINT `agency_id_list_value_manifest_next_agency_id_list_value_manif_fk` FOREIGN KEY (`next_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Inserting initial agency_id_list_value_manifest records for 10.x release
+INSERT INTO `agency_id_list_value_manifest` (`release_id`, `agency_id_list_value_id`, `agency_id_list_manifest_id`)
+SELECT
+    `agency_id_list_manifest`.`release_id`, `agency_id_list_value`.`agency_id_list_value_id`, `agency_id_list_manifest`.`agency_id_list_manifest_id`
+FROM `agency_id_list_value`
+         JOIN `agency_id_list_manifest` ON `agency_id_list_value`.`owner_list_id` = `agency_id_list_manifest`.`agency_id_list_id`
+         JOIN `release` ON `agency_id_list_manifest`.`release_id` = `release`.`release_id`
+WHERE `release`.`release_num` != 'Working';
+
+SET @sql = CONCAT('ALTER TABLE `agency_id_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(agency_id_list_value_manifest_id) + 1 FROM agency_id_list_value_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Copying agency_id_list_value_manifest records for 'Working' release from 10.x release
+INSERT `agency_id_list_value_manifest` (`release_id`, `agency_id_list_value_id`, `agency_id_list_manifest_id`)
+SELECT `agency_id_list_manifest`.`release_id`, `agency_id_list_value`.`agency_id_list_value_id`, `agency_id_list_manifest`.`agency_id_list_manifest_id`
+FROM `agency_id_list_value`
+         JOIN `agency_id_list` ON `agency_id_list`.`agency_id_list_id` = `agency_id_list_value`.`owner_list_id`
+         JOIN `agency_id_list_manifest` ON `agency_id_list`.`agency_id_list_id` = `agency_id_list_manifest`.`agency_id_list_id`
+WHERE `agency_id_list_manifest`.`release_id` = (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working');
+
+SET @sql = CONCAT('ALTER TABLE `agency_id_list_value_manifest` AUTO_INCREMENT = ', (SELECT MAX(agency_id_list_value_manifest_id) + 1 FROM agency_id_list_value_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- BIEs
 -- ABIE
 ALTER TABLE `abie` ADD COLUMN `based_acc_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key to the ACC_MANIFEST table refering to the ACC, on which the business context has been applied to derive this ABIE.' AFTER `guid`,
@@ -1336,22 +1537,6 @@ ALTER TABLE `xbt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL CO
 CREATE INDEX `xbt_guid_idx` ON `xbt` (`guid`);
 CREATE INDEX `xbt_last_update_timestamp_desc_idx` ON `xbt` (`last_update_timestamp` DESC);
 
--- Add columns and constraints on `agency_id_list` table.
-ALTER TABLE `agency_id_list`
-    ADD COLUMN `created_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
-    ADD COLUMN `last_updated_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.',
-    ADD COLUMN `creation_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was created.',
-    ADD COLUMN `last_update_timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT 'Timestamp when the agency ID list was last updated.',
-    ADD COLUMN `state` varchar(10) DEFAULT NULL COMMENT 'Life cycle state of the agency ID list. Possible values are Editing, Published, or Deleted. Only a code list in published state is available for derivation and for used by the CC and BIE. Once the agency ID list is published, it cannot go back to Editing. A new version would have to be created.',
-    ADD CONSTRAINT `agency_id_list_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
-    ADD CONSTRAINT `agency_id_list_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`);
-
-UPDATE `agency_id_list` SET `created_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `last_updated_by` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'), `state` = 'Published';
-
-ALTER TABLE `agency_id_list`
-    MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
-    MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
-
 -- Add columns and constraints on `ctx_category` table.
 ALTER TABLE `ctx_category`
     ADD COLUMN `created_by` bigint(20) unsigned COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the context category.',
@@ -1632,6 +1817,47 @@ ALTER TABLE `code_list_manifest`
     DROP FOREIGN KEY `code_list_manifest_module_id_fk`,
     DROP COLUMN `module_id`;
 
+-- 'module_agency_id_list_manifest'
+DROP TABLE IF EXISTS `module_agency_id_list_manifest`;
+CREATE TABLE `module_agency_id_list_manifest` (
+    `module_agency_id_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `agency_id_list_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the code list manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_agency_id_list_manifest_id`),
+    KEY `module_agency_id_list_manifest_created_by_fk` (`created_by`),
+    KEY `module_agency_id_list_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_agency_id_list_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_agency_id_list_manifest_agency_id_list_manifest_id_fk` (`agency_id_list_manifest_id`),
+    KEY `module_agency_id_list_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_agency_id_list_manifest_agency_id_list_manifest_id_fk` FOREIGN KEY (`agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`),
+    CONSTRAINT `module_agency_id_list_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_agency_id_list_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_agency_id_list_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `module_agency_id_list_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Insert initial data of `module_agency_id_list_manifest`
+INSERT INTO `module_agency_id_list_manifest` (
+    `module_set_release_id`, `agency_id_list_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`
+)
+SELECT `module_set_release`.`module_set_release_id`, `agency_id_list_manifest`.`agency_id_list_manifest_id`, `module`.`module_id`,
+       `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
+FROM `agency_id_list_manifest`
+         JOIN `module` ON `agency_id_list_manifest`.`module_id` = `module`.`module_id`
+         JOIN `release` ON `agency_id_list_manifest`.`release_id` = `release`.`release_id`
+         JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+
+UPDATE `agency_id_list_manifest` SET `module_id` = NULL;
+ALTER TABLE `agency_id_list_manifest`
+    DROP FOREIGN KEY `agency_id_list_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
 -- 'module_dt_manifest'
 DROP TABLE IF EXISTS `module_dt_manifest`;
 CREATE TABLE `module_dt_manifest` (
@@ -1858,17 +2084,20 @@ ALTER TABLE `xbt` DROP COLUMN `revision_num`,
                   DROP COLUMN `revision_tracking_num`,
                   DROP COLUMN `revision_action`;
 
--- DROP `based_code_list_id` and `module_id` columns on `code_list` table.
-ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_based_code_list_id_fk`,
-                        DROP COLUMN `based_code_list_id`,
-                        DROP FOREIGN KEY `code_list_module_id_fk`,
+-- DROP `module_id` column on `code_list` table.
+ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_module_id_fk`,
                         DROP COLUMN `module_id`;
+
+-- DROP `module_id` column on `agency_id_list` table.
+ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_module_id_fk`,
+                             DROP COLUMN `module_id`;
 
 ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (prefix);
 ALTER TABLE `dt` CHANGE `type` `type` VARCHAR(64) NOT NULL COMMENT 'This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.';
 
 -- set dt Type Core
 UPDATE `dt` SET `type` = 'Core' WHERE `type` = '0';
+UPDATE `dt` SET `type` = 'Default' WHERE `type` = '1';
 
 -- set dt Type Unqualified
 UPDATE

@@ -29,7 +29,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record21<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1566810923;
+    private static final long serialVersionUID = 1336168597;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -60,14 +60,14 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record2
     }
 
     /**
-     * Setter for <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension 
+     * Setter for <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension, AllExtension.
      */
     public void setType(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension 
+     * Getter for <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension, AllExtension.
      */
     public String getType() {
         return (String) get(2);

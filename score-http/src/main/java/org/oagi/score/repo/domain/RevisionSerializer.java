@@ -390,6 +390,7 @@ public class RevisionSerializer {
         properties.put("extensible", ((byte) 1 == codeListRecord.getExtensibleIndicator()) ? true : false);
 
         properties.put("ownerUserId", (codeListRecord.getOwnerUserId() != null) ? codeListRecord.getOwnerUserId().toBigInteger() : null);
+        properties.put("basedCodeListId", (codeListRecord.getBasedCodeListId() != null) ? codeListRecord.getBasedCodeListId().toBigInteger() : null);
 
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
@@ -411,9 +412,53 @@ public class RevisionSerializer {
         properties.put("name", codeListValueRecord.getName());
         properties.put("definition", codeListValueRecord.getDefinition());
         properties.put("definitionSource", codeListValueRecord.getDefinitionSource());
+        properties.put("deprecated", ((byte) 1 == codeListValueRecord.getIsDeprecated()) ? true : false);
         properties.put("used", ((byte) 1 == codeListValueRecord.getUsedIndicator()) ? true : false);
         properties.put("locked", ((byte) 1 == codeListValueRecord.getLockedIndicator()) ? true : false);
         properties.put("extension", ((byte) 1 == codeListValueRecord.getExtensionIndicator()) ? true : false);
+
+        return properties;
+    }
+
+    @SneakyThrows(JsonIOException.class)
+    public String serialize(AgencyIdListRecord agencyIdListRecord,
+                            List<AgencyIdListValueRecord> agencyIdListValueRecords) {
+        Map<String, Object> properties = new HashMap();
+
+        properties.put("component", "agencyIdList");
+        properties.put("guid", agencyIdListRecord.getGuid());
+        properties.put("enumTypeGuid", agencyIdListRecord.getEnumTypeGuid());
+        properties.put("name", agencyIdListRecord.getName());
+        properties.put("listId", agencyIdListRecord.getListId());
+        properties.put("versionId", agencyIdListRecord.getVersionId());
+        properties.put("definition", agencyIdListRecord.getDefinition());
+        properties.put("state", agencyIdListRecord.getState());
+        properties.put("deprecated", ((byte) 1 == agencyIdListRecord.getIsDeprecated()) ? true : false);
+
+        properties.put("agencyIdListValueId", (agencyIdListRecord.getAgencyIdListValueId() != null) ? agencyIdListRecord.getAgencyIdListValueId().toBigInteger() : null);
+        properties.put("ownerUserId", (agencyIdListRecord.getOwnerUserId() != null) ? agencyIdListRecord.getOwnerUserId().toBigInteger() : null);
+        properties.put("basedAgencyIdListId", (agencyIdListRecord.getBasedAgencyIdListId() != null) ? agencyIdListRecord.getBasedAgencyIdListId().toBigInteger() : null);
+
+        List<Map<String, Object>> values = new ArrayList();
+        properties.put("values", values);
+
+        for (AgencyIdListValueRecord agencyIdListValueRecord : agencyIdListValueRecords) {
+            values.add(serialize(agencyIdListValueRecord));
+        }
+
+        return gson.toJson(properties, HashMap.class);
+    }
+
+    @SneakyThrows(JsonIOException.class)
+    private Map<String, Object> serialize(AgencyIdListValueRecord agencyIdListValueRecord) {
+        Map<String, Object> properties = new HashMap();
+
+        properties.put("component", "agencyIdListValue");
+        properties.put("guid", agencyIdListValueRecord.getGuid());
+        properties.put("value", agencyIdListValueRecord.getValue());
+        properties.put("name", agencyIdListValueRecord.getName());
+        properties.put("definition", agencyIdListValueRecord.getDefinition());
+        properties.put("deprecated", ((byte) 1 == agencyIdListValueRecord.getIsDeprecated()) ? true : false);
 
         return properties;
     }

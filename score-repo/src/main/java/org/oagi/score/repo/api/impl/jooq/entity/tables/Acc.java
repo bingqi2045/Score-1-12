@@ -43,7 +43,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = -1048858216;
+    private static final long serialVersionUID = 115687328;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -69,9 +69,9 @@ public class Acc extends TableImpl<AccRecord> {
     public final TableField<AccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ACC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
 
     /**
-     * The column <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension 
+     * The column <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension, AllExtension.
      */
-    public final TableField<AccRecord, String> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(32).defaultValue(org.jooq.impl.DSL.inline("Default", org.jooq.impl.SQLDataType.VARCHAR)), this, "The Type of the ACC. List: Default, Extension ");
+    public final TableField<AccRecord, String> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(32).defaultValue(org.jooq.impl.DSL.inline("Default", org.jooq.impl.SQLDataType.VARCHAR)), this, "The Type of the ACC. List: Default, Extension, AllExtension.");
 
     /**
      * The column <code>oagi.acc.object_class_term</code>. Object class name of the ACC concept. For OAGIS, this is generally name of a type with the "Type" truncated from the end. Per CCS the name is space separated. "ID" is expanded to "Identifier".

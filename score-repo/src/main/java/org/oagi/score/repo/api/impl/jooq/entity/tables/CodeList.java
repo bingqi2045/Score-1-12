@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 1122983369;
+    private static final long serialVersionUID = 641517786;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -99,6 +99,11 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.definition_source</code>. This is typically a URL which indicates the source of the code list's DEFINITION.
      */
     public final TableField<CodeListRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "This is typically a URL which indicates the source of the code list's DEFINITION.");
+
+    /**
+     * The column <code>oagi.code_list.based_code_list_id</code>. This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.
+     */
+    public final TableField<CodeListRecord, ULong> BASED_CODE_LIST_ID = createField(DSL.name("based_code_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CODE_LIST table itself. This identifies the code list on which this code list is based, if any. The derivation may be restriction and/or extension.");
 
     /**
      * The column <code>oagi.code_list.extensible_indicator</code>. This is a flag to indicate whether the code list is final and shall not be further derived.
@@ -207,11 +212,15 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<CodeListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
+        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
         return new AgencyIdListValue(this, Keys.CODE_LIST_AGENCY_ID_FK);
+    }
+
+    public CodeList codeListBasedCodeListIdFk() {
+        return new CodeList(this, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK);
     }
 
     public AppUser codeListCreatedByFk() {
@@ -261,11 +270,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, ULong, String, String, String, String, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, ULong, String, String, String, String, ULong, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

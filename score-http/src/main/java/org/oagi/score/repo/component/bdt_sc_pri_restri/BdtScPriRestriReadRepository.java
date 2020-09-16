@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -32,7 +34,8 @@ public class BdtScPriRestriReadRepository {
                 .join(DT_SC_MANIFEST)
                 .on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(bdtScManifestId)))
-                .fetchInto(AvailableBdtScPriRestri.class);
+                .fetchStreamInto(AvailableBdtScPriRestri.class)
+                .sorted(Comparator.comparing(AvailableBdtScPriRestri::getXbtName))
+                .collect(Collectors.toList());
     }
-
 }

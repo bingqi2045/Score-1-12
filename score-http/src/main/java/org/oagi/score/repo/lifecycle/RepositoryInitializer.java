@@ -40,6 +40,7 @@ public class RepositoryInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         initCodeListValueGuid();
+        initAgencyIdListValueGuid();
         initSeqKey();
 
         initModuleDir();
@@ -49,6 +50,7 @@ public class RepositoryInitializer implements InitializingBean {
         initBccpRevision();
 
         initCodeListRevision();
+        initAgencyIdListRevision();
         initDtRevision();
 
         initXbtRevision();
@@ -79,6 +81,34 @@ public class RepositoryInitializer implements InitializingBean {
                             codeListValueRecordMapById.get(e.getPrevCodeListValueId());
                     e.setGuid(prevCodeListValueRecord.getGuid());
                     e.update(CODE_LIST_VALUE.GUID);
+                });
+    }
+
+    private void initAgencyIdListValueGuid() {
+        List<AgencyIdListValueRecord> agencyIdListValueRecords = dslContext.selectFrom(AGENCY_ID_LIST_VALUE)
+                .where(or(
+                        AGENCY_ID_LIST_VALUE.GUID.isNull(),
+                        AGENCY_ID_LIST_VALUE.GUID.eq("")
+                ))
+                .fetch();
+
+        agencyIdListValueRecords.stream()
+                .filter(e -> e.getPrevAgencyIdListValueId() == null)
+                .forEach(e -> {
+                    e.setGuid(SrtGuid.randomGuid());
+                    e.update(AGENCY_ID_LIST_VALUE.GUID);
+                });
+
+        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMapById = agencyIdListValueRecords.stream()
+                .collect(Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
+
+        agencyIdListValueRecords.stream()
+                .filter(e -> e.getPrevAgencyIdListValueId() != null)
+                .forEach(e -> {
+                    AgencyIdListValueRecord prevAgencyIdListValueRecord =
+                            agencyIdListValueRecordMapById.get(e.getPrevAgencyIdListValueId());
+                    e.setGuid(prevAgencyIdListValueRecord.getGuid());
+                    e.update(AGENCY_ID_LIST_VALUE.GUID);
                 });
     }
 
@@ -630,6 +660,100 @@ public class RepositoryInitializer implements InitializingBean {
                 nextCodeListValueManifestRecord.setPrevCodeListValueManifestId(
                         prevCodeListValueManifestRecord.getCodeListValueManifestId());
                 nextCodeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID);
+            }
+        }
+    }
+
+    private void initAgencyIdListRevision() {
+        // For 'Non-Working' releases.
+        List<AgencyIdListManifestRecord> agencyIdListManifestRecordList = dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
+                .from(AGENCY_ID_LIST_MANIFEST).join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        RELEASE.RELEASE_NUM.notEqual("Working"),
+                        AGENCY_ID_LIST_MANIFEST.REVISION_ID.isNull()
+                ))
+                .fetchInto(AgencyIdListManifestRecord.class);
+
+        for (AgencyIdListManifestRecord agencyIdListManifestRecord : agencyIdListManifestRecordList) {
+            AgencyIdListRecord agencyIdListRecord = dslContext.selectFrom(AGENCY_ID_LIST)
+                    .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
+                    .fetchOne();
+
+            List<AgencyIdListValueRecord> agencyIdListValueRecordList = dslContext.selectFrom(AGENCY_ID_LIST_VALUE)
+                    .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
+                    .orderBy(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.asc())
+                    .fetch();
+
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(agencyIdListRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(
+                    serializer.serialize(agencyIdListRecord, agencyIdListValueRecordList)
+            ));
+            revisionRecord.setCreatedBy(agencyIdListRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(agencyIdListRecord.getCreationTimestamp());
+
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
+
+            agencyIdListManifestRecord.setRevisionId(revisionId);
+            agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.REVISION_ID);
+        }
+
+        // For 'Working' release.
+        agencyIdListManifestRecordList = dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
+                .from(AGENCY_ID_LIST_MANIFEST).join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        RELEASE.RELEASE_NUM.equal("Working"),
+                        AGENCY_ID_LIST_MANIFEST.REVISION_ID.isNull()
+                ))
+                .fetchInto(AgencyIdListManifestRecord.class);
+
+        for (AgencyIdListManifestRecord nextAgencyIdListManifestRecord : agencyIdListManifestRecordList) {
+            AgencyIdListManifestRecord prevAgencyIdListManifestRecord = dslContext.selectFrom(AGENCY_ID_LIST_MANIFEST)
+                    .where(and(
+                            AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.equal(nextAgencyIdListManifestRecord.getAgencyIdListId()),
+                            AGENCY_ID_LIST_MANIFEST.RELEASE_ID.notEqual(nextAgencyIdListManifestRecord.getReleaseId())
+                    ))
+                    .fetchOne();
+
+            prevAgencyIdListManifestRecord.setNextAgencyIdListManifestId(nextAgencyIdListManifestRecord.getAgencyIdListManifestId());
+            prevAgencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID);
+
+            nextAgencyIdListManifestRecord.setPrevAgencyIdListManifestId(prevAgencyIdListManifestRecord.getAgencyIdListManifestId());
+            nextAgencyIdListManifestRecord.setRevisionId(prevAgencyIdListManifestRecord.getRevisionId());
+            nextAgencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.REVISION_ID);
+
+            // update prev/next code_list_value_manifest_id
+            for (AgencyIdListValueManifestRecord prevAgencyIdListValueManifestRecord :
+                    dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.fields())
+                            .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                            .join(RELEASE).on(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                            .where(and(
+                                    RELEASE.RELEASE_NUM.notEqual("Working"),
+                                    AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(prevAgencyIdListManifestRecord.getAgencyIdListManifestId())
+                            ))
+                            .fetchInto(AgencyIdListValueManifestRecord.class)) {
+
+                AgencyIdListValueManifestRecord nextAgencyIdListValueManifestRecord = dslContext.selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                        .where(and(
+                                AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.notEqual(
+                                        prevAgencyIdListValueManifestRecord.getReleaseId()),
+                                AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID.equal(
+                                        prevAgencyIdListValueManifestRecord.getAgencyIdListValueId())
+                        ))
+                        .fetchOne();
+
+                prevAgencyIdListValueManifestRecord.setNextAgencyIdListValueManifestId(
+                        nextAgencyIdListValueManifestRecord.getAgencyIdListValueManifestId());
+                prevAgencyIdListValueManifestRecord.update(AGENCY_ID_LIST_VALUE_MANIFEST.NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID);
+
+                nextAgencyIdListValueManifestRecord.setPrevAgencyIdListValueManifestId(
+                        prevAgencyIdListValueManifestRecord.getAgencyIdListValueManifestId());
+                nextAgencyIdListValueManifestRecord.update(AGENCY_ID_LIST_VALUE_MANIFEST.PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID);
             }
         }
     }
