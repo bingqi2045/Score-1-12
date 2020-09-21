@@ -20,7 +20,7 @@ public class AgencyIdListRepository implements SrtRepository<AgencyIdList> {
     public List<AgencyIdList> findAll() {
         return dslContext.select(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID, Tables.AGENCY_ID_LIST.NAME,
                 Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID, Tables.AGENCY_ID_LIST.ENUM_TYPE_GUID,
-                Tables.AGENCY_ID_LIST.GUID, Tables.AGENCY_ID_LIST.MODULE_ID, Tables.AGENCY_ID_LIST.DEFINITION,
+                Tables.AGENCY_ID_LIST.GUID, Tables.AGENCY_ID_LIST.DEFINITION,
                 Tables.AGENCY_ID_LIST.LIST_ID, Tables.AGENCY_ID_LIST.VERSION_ID).from(Tables.AGENCY_ID_LIST)
                 .fetchInto(AgencyIdList.class);
     }
@@ -32,7 +32,7 @@ public class AgencyIdListRepository implements SrtRepository<AgencyIdList> {
         }
         return dslContext.select(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID, Tables.AGENCY_ID_LIST.NAME,
                 Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID, Tables.AGENCY_ID_LIST.ENUM_TYPE_GUID,
-                Tables.AGENCY_ID_LIST.GUID, Tables.AGENCY_ID_LIST.MODULE_ID, Tables.AGENCY_ID_LIST.DEFINITION,
+                Tables.AGENCY_ID_LIST.GUID, Tables.AGENCY_ID_LIST.DEFINITION,
                 Tables.AGENCY_ID_LIST.LIST_ID, Tables.AGENCY_ID_LIST.VERSION_ID).from(Tables.AGENCY_ID_LIST)
                 .where(Tables.AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(AgencyIdList.class);
