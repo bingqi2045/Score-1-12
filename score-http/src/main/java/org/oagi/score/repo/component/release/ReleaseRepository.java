@@ -1107,23 +1107,20 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             AccManifestRecord workingRecord = null;
             AccManifestRecord currentRecord = null;
-            List<AccManifestRecord> restOfRecords = new ArrayList();
             for (AccManifestRecord accManifestRecord : accManifestRecords) {
                 if (workingReleaseId.equals(accManifestRecord.getReleaseId())) {
                     workingRecord = accManifestRecord;
                 } else if (currentReleaseId.equals(accManifestRecord.getReleaseId())) {
                     currentRecord = accManifestRecord;
-                } else {
-                    restOfRecords.add(accManifestRecord);
                 }
-
                 accManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(ACC_MANIFEST).set(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID, currentRecord.getAccManifestId())
+                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(workingRecord.getPrevAccManifestId())).execute();
             currentRecord.setPrevAccManifestId(workingRecord.getPrevAccManifestId());
             currentRecord.setNextAccManifestId(workingRecord.getAccManifestId());
             currentRecord.update(ACC_MANIFEST.CONFLICT,
@@ -1132,14 +1129,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevAccManifestId(currentRecord.getAccManifestId());
             workingRecord.update(ACC_MANIFEST.CONFLICT,
                     ACC_MANIFEST.PREV_ACC_MANIFEST_ID);
-
-            for (AccManifestRecord record : restOfRecords) {
-                if (workingRecord.getAccManifestId().equals(record.getNextAccManifestId())) {
-                    record.setNextAccManifestId(currentRecord.getAccManifestId());
-                    record.update(ACC_MANIFEST.CONFLICT,
-                            ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
-                }
-            }
         });
 
         // ASCCs
@@ -1149,14 +1138,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             AsccManifestRecord workingRecord = null;
             AsccManifestRecord currentRecord = null;
-            List<AsccManifestRecord> restOfRecords = new ArrayList();
             for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
                 if (workingReleaseId.equals(asccManifestRecord.getReleaseId())) {
                     workingRecord = asccManifestRecord;
                 } else if (currentReleaseId.equals(asccManifestRecord.getReleaseId())) {
                     currentRecord = asccManifestRecord;
-                } else {
-                    restOfRecords.add(asccManifestRecord);
                 }
 
                 asccManifestRecord.setConflict((byte) 0);
@@ -1165,7 +1151,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(ASCC_MANIFEST).set(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID, currentRecord.getAsccManifestId())
+                    .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(workingRecord.getPrevAsccManifestId())).execute();
             currentRecord.setPrevAsccManifestId(workingRecord.getPrevAsccManifestId());
             currentRecord.setNextAsccManifestId(workingRecord.getAsccManifestId());
             currentRecord.update(ASCC_MANIFEST.CONFLICT,
@@ -1174,14 +1161,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevAsccManifestId(currentRecord.getAsccManifestId());
             workingRecord.update(ASCC_MANIFEST.CONFLICT,
                     ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
-
-            for (AsccManifestRecord record : restOfRecords) {
-                if (workingRecord.getAsccManifestId().equals(record.getNextAsccManifestId())) {
-                    record.setNextAsccManifestId(currentRecord.getAsccManifestId());
-                    record.update(ASCC_MANIFEST.CONFLICT,
-                            ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
-                }
-            }
         });
 
         // BCCs
@@ -1191,14 +1170,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             BccManifestRecord workingRecord = null;
             BccManifestRecord currentRecord = null;
-            List<BccManifestRecord> restOfRecords = new ArrayList();
             for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
                 if (workingReleaseId.equals(bccManifestRecord.getReleaseId())) {
                     workingRecord = bccManifestRecord;
                 } else if (currentReleaseId.equals(bccManifestRecord.getReleaseId())) {
                     currentRecord = bccManifestRecord;
-                } else {
-                    restOfRecords.add(bccManifestRecord);
                 }
 
                 bccManifestRecord.setConflict((byte) 0);
@@ -1207,7 +1183,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(BCC_MANIFEST).set(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID, currentRecord.getBccManifestId())
+                    .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(workingRecord.getPrevBccManifestId())).execute();
             currentRecord.setPrevBccManifestId(workingRecord.getPrevBccManifestId());
             currentRecord.setNextBccManifestId(workingRecord.getBccManifestId());
             currentRecord.update(BCC_MANIFEST.CONFLICT,
@@ -1216,14 +1193,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevBccManifestId(currentRecord.getBccManifestId());
             workingRecord.update(BCC_MANIFEST.CONFLICT,
                     BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
-
-            for (BccManifestRecord record : restOfRecords) {
-                if (workingRecord.getBccManifestId().equals(record.getNextBccManifestId())) {
-                    record.setNextBccManifestId(currentRecord.getBccManifestId());
-                    record.update(BCC_MANIFEST.CONFLICT,
-                            BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
-                }
-            }
         });
 
         // ASCCPs
@@ -1233,23 +1202,20 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             AsccpManifestRecord workingRecord = null;
             AsccpManifestRecord currentRecord = null;
-            List<AsccpManifestRecord> restOfRecords = new ArrayList();
             for (AsccpManifestRecord asccpManifestRecord : asccpManifestRecords) {
                 if (workingReleaseId.equals(asccpManifestRecord.getReleaseId())) {
                     workingRecord = asccpManifestRecord;
                 } else if (currentReleaseId.equals(asccpManifestRecord.getReleaseId())) {
                     currentRecord = asccpManifestRecord;
-                } else {
-                    restOfRecords.add(asccpManifestRecord);
                 }
-
                 asccpManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(ASCCP_MANIFEST).set(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID, currentRecord.getAsccpManifestId())
+                    .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(workingRecord.getPrevAsccpManifestId())).execute();
             currentRecord.setPrevAsccpManifestId(workingRecord.getPrevAsccpManifestId());
             currentRecord.setNextAsccpManifestId(workingRecord.getAsccpManifestId());
             currentRecord.update(ASCCP_MANIFEST.CONFLICT,
@@ -1258,14 +1224,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevAsccpManifestId(currentRecord.getAsccpManifestId());
             workingRecord.update(ASCCP_MANIFEST.CONFLICT,
                     ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID);
-
-            for (AsccpManifestRecord record : restOfRecords) {
-                if (workingRecord.getAsccpManifestId().equals(record.getNextAsccpManifestId())) {
-                    record.setNextAsccpManifestId(currentRecord.getAsccpManifestId());
-                    record.update(ASCCP_MANIFEST.CONFLICT,
-                            ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
-                }
-            }
         });
 
         // BCCPs
@@ -1275,14 +1233,11 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             BccpManifestRecord workingRecord = null;
             BccpManifestRecord currentRecord = null;
-            List<BccpManifestRecord> restOfRecords = new ArrayList();
             for (BccpManifestRecord bccpManifestRecord : bccpManifestRecords) {
                 if (workingReleaseId.equals(bccpManifestRecord.getReleaseId())) {
                     workingRecord = bccpManifestRecord;
                 } else if (currentReleaseId.equals(bccpManifestRecord.getReleaseId())) {
                     currentRecord = bccpManifestRecord;
-                } else {
-                    restOfRecords.add(bccpManifestRecord);
                 }
 
                 bccpManifestRecord.setConflict((byte) 0);
@@ -1291,7 +1246,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(BCCP_MANIFEST).set(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID, currentRecord.getBccpManifestId())
+                    .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(workingRecord.getPrevBccpManifestId())).execute();
             currentRecord.setPrevBccpManifestId(workingRecord.getPrevBccpManifestId());
             currentRecord.setNextBccpManifestId(workingRecord.getBccpManifestId());
             currentRecord.update(BCCP_MANIFEST.CONFLICT,
@@ -1300,14 +1256,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevBccpManifestId(currentRecord.getBccpManifestId());
             workingRecord.update(BCCP_MANIFEST.CONFLICT,
                     BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID);
-
-            for (BccpManifestRecord record : restOfRecords) {
-                if (workingRecord.getBccpManifestId().equals(record.getNextBccpManifestId())) {
-                    record.setNextBccpManifestId(currentRecord.getBccpManifestId());
-                    record.update(BCCP_MANIFEST.CONFLICT,
-                            BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
-                }
-            }
         });
 
         // CODE_LISTs
@@ -1317,23 +1265,20 @@ public class ReleaseRepository implements SrtRepository<Release> {
 
             CodeListManifestRecord workingRecord = null;
             CodeListManifestRecord currentRecord = null;
-            List<CodeListManifestRecord> restOfRecords = new ArrayList();
             for (CodeListManifestRecord codeListManifestRecord : codeListManifestRecords) {
                 if (workingReleaseId.equals(codeListManifestRecord.getReleaseId())) {
                     workingRecord = codeListManifestRecord;
                 } else if (currentReleaseId.equals(codeListManifestRecord.getReleaseId())) {
                     currentRecord = codeListManifestRecord;
-                } else {
-                    restOfRecords.add(codeListManifestRecord);
                 }
-
                 codeListManifestRecord.setConflict((byte) 0);
             }
 
             if (currentRecord == null) {
                 return;
             }
-
+            dslContext.update(CODE_LIST_MANIFEST).set(CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID, currentRecord.getCodeListManifestId())
+                    .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(workingRecord.getPrevCodeListManifestId())).execute();
             currentRecord.setPrevCodeListManifestId(workingRecord.getPrevCodeListManifestId());
             currentRecord.setNextCodeListManifestId(workingRecord.getCodeListManifestId());
             currentRecord.update(CODE_LIST_MANIFEST.CONFLICT,
@@ -1342,14 +1287,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             workingRecord.setPrevCodeListManifestId(currentRecord.getCodeListManifestId());
             workingRecord.update(CODE_LIST_MANIFEST.CONFLICT,
                     CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID);
-
-            for (CodeListManifestRecord record : restOfRecords) {
-                if (workingRecord.getCodeListManifestId().equals(record.getNextCodeListManifestId())) {
-                    record.setNextCodeListManifestId(currentRecord.getCodeListManifestId());
-                    record.update(CODE_LIST_MANIFEST.CONFLICT,
-                            CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID);
-                }
-            }
         });
 
 

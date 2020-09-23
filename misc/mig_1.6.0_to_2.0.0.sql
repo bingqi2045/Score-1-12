@@ -1649,8 +1649,7 @@ CREATE TABLE `module_set_release` (
 
 INSERT INTO `module_set_release` (`module_set_release_id`, `module_set_id`, `release_id`, `is_default`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
 VALUES
-(1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6)),
-(2, 1, 2, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+(1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
 
 -- `module_manifest` tables.
 -- 'module_acc_manifest'
