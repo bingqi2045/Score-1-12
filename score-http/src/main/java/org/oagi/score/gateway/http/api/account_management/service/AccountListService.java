@@ -2,12 +2,12 @@ package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.gateway.http.api.account_management.data.AccountListRequest;
 import org.oagi.score.gateway.http.api.account_management.data.AppUser;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
@@ -146,17 +148,18 @@ public class AccountListService {
     }
 
     public List<String> getAccountLoginIds() {
-        return dslContext.select(
-                APP_USER.LOGIN_ID)
+        return dslContext.select(APP_USER.LOGIN_ID)
                 .from(APP_USER)
-                .fetchInto(String.class);
+                .fetchStreamInto(String.class)
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void insert(AppUser account) {
         AppUserRecord record = new AppUserRecord();
         record.setLoginId(account.getLoginId());
-        if(account.getAppOauth2UserId() == 0) {
+        if (account.getAppOauth2UserId() == 0) {
             record.setPassword(passwordEncoder.encode(account.getPassword()));
         }
         record.setName(account.getName());
@@ -167,7 +170,7 @@ public class AccountListService {
                 .set(record)
                 .returning(APP_USER.APP_USER_ID).fetchOne().getAppUserId();
 
-        if(account.getAppOauth2UserId() > 0 && account.getSub().length() > 0) {
+        if (account.getAppOauth2UserId() > 0 && account.getSub().length() > 0) {
             AppOauth2UserRecord oauth2User = dslContext.selectFrom(APP_OAUTH2_USER).where(
                     and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(account.getAppOauth2UserId())),
                             APP_OAUTH2_USER.SUB.eq(account.getSub()))).fetchOne();

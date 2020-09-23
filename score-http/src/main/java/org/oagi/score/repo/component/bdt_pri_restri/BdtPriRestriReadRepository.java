@@ -2,11 +2,14 @@ package org.oagi.score.repo.component.bdt_pri_restri;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -31,7 +34,9 @@ public class BdtPriRestriReadRepository {
                 .join(BCC_MANIFEST)
                 .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
                 .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
-                .fetchInto(AvailableBdtPriRestri.class);
+                .fetchStreamInto(AvailableBdtPriRestri.class)
+                .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
+                .collect(Collectors.toList());
     }
 
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccpManifestId(BigInteger bccpManifestId) {
@@ -47,7 +52,9 @@ public class BdtPriRestriReadRepository {
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
-                .fetchInto(AvailableBdtPriRestri.class);
+                .fetchStreamInto(AvailableBdtPriRestri.class)
+                .sorted(Comparator.comparing(AvailableBdtPriRestri::getXbtName))
+                .collect(Collectors.toList());
     }
 
 }
