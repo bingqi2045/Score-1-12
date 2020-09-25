@@ -9,12 +9,12 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.api.common.data.TrackableImpl;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -655,6 +655,15 @@ public class CcNodeRepository {
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
+
+        int cardinalityMaxOfDtScListSum = dslContext.select(DT_SC.CARDINALITY_MAX)
+                .from(BCCP_MANIFEST)
+                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .join(DT).on(BCCP.BDT_ID.eq(DT.DT_ID))
+                .join(DT_SC).on(DT.DT_ID.eq(DT_SC.OWNER_DT_ID))
+                .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
+                .fetchStreamInto(Integer.class).reduce(0, Integer::sum);
+        bdt.setHasNoSc(cardinalityMaxOfDtScListSum == 0);
 
         return bccpNodeDetail;
     }

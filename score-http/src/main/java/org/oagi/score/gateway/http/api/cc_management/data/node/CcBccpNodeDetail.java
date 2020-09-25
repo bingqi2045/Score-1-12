@@ -73,6 +73,7 @@ public class CcBccpNodeDetail implements CcNodeDetail {
         private String den;
         private String definition;
         private String definitionSource;
+        private boolean hasNoSc;
 
         private CcState state;
         private String owner;
