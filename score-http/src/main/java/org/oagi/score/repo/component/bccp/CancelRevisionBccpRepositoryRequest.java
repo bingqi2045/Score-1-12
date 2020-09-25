@@ -5,12 +5,12 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 
-public class DiscardRevisionBccpRepositoryRequest extends RepositoryRequest {
+public class CancelRevisionBccpRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger bccpManifestId;
 
-    public DiscardRevisionBccpRepositoryRequest(AuthenticatedPrincipal user,
-                                                BigInteger bccpManifestId) {
+    public CancelRevisionBccpRepositoryRequest(AuthenticatedPrincipal user,
+                                               BigInteger bccpManifestId) {
         super(user);
         this.bccpManifestId = bccpManifestId;
     }

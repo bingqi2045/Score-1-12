@@ -359,13 +359,17 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
                     .fetch();
 
+            List<SeqKeyRecord> seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
+                    .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId()))
+                    .fetch();
+
             RevisionRecord revisionRecord = new RevisionRecord();
             revisionRecord.setReference(accRecord.getGuid());
             revisionRecord.setRevisionNum(UInteger.valueOf(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             revisionRecord.setRevisionAction(RevisionAction.Added.name());
             revisionRecord.setSnapshot(JSON.valueOf(
-                    serializer.serialize(accRecord, asccRecords, bccRecords)
+                    serializer.serialize(accRecord, asccRecords, bccRecords, seqKeyRecords)
             ));
             revisionRecord.setCreatedBy(accRecord.getCreatedBy());
             revisionRecord.setCreationTimestamp(accRecord.getCreationTimestamp());

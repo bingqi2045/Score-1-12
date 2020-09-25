@@ -2,5 +2,5 @@ package org.oagi.score.repo.component.asccp;
 
 import org.oagi.score.redis.event.Event;
 
-public class DiscardRevisionAsccpEvent implements Event {
+public class CancelRevisionAsccpEvent implements Event {
 }

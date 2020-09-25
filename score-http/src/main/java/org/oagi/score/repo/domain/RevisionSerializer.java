@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,7 +35,8 @@ public class RevisionSerializer {
 
     @SneakyThrows(JsonIOException.class)
     public String serialize(AccRecord accRecord,
-                            List<AsccRecord> asccRecords, List<BccRecord> bccRecords) {
+                            List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
+                            List<SeqKeyRecord> seqKeyRecords) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "acc");
@@ -55,7 +57,7 @@ public class RevisionSerializer {
         List<Map<String, Object>> associations = new ArrayList();
         properties.put("associations", associations);
 
-        for (AssocRecord assocRecord : sort(asccRecords, bccRecords)) {
+        for (AssocRecord assocRecord : sort(asccRecords, bccRecords, seqKeyRecords)) {
             Object delegate = assocRecord.getDelegate();
             if (delegate instanceof AsccRecord) {
                 associations.add(serialize((AsccRecord) delegate));
@@ -104,22 +106,32 @@ public class RevisionSerializer {
         }
     }
 
-    private List<AssocRecord> sort(List<AsccRecord> asccRecords, List<BccRecord> bccRecords) {
-        List<AssocRecord> assocRecords = new ArrayList();
-        assocRecords.addAll(
-                asccRecords.stream().map(e -> new AssocRecord(e)).collect(Collectors.toList())
-        );
-        assocRecords.addAll(
-                bccRecords.stream().map(e -> new AssocRecord(e)).collect(Collectors.toList())
-        );
-        Collections.sort(assocRecords, (o1, o2) -> {
-            int comp = Integer.compare(o1.getSeqKey(), o2.getSeqKey());
-            if (comp == 0) {
-                return o1.getTimestamp().compareTo(o2.getTimestamp());
+    private List<AssocRecord> sort(List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
+                                   List<SeqKeyRecord> seqKeyRecords) {
+
+        Map<ULong, AsccRecord> asccRecordMap = asccRecords.stream().collect(
+                Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
+        Map<ULong, BccRecord> bccRecordMap = bccRecords.stream().collect(
+                Collectors.toMap(BccRecord::getBccId, Function.identity()));
+        List<AssocRecord> sortedRecords = new ArrayList();
+
+        Map<ULong, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
+                Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
+        SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
+        while (node != null) {
+            node.getCcId();
+            switch (node.getType()) {
+                case ascc:
+                    sortedRecords.add(new AssocRecord(asccRecordMap.get(node.getCcId())));
+                    break;
+                case bcc:
+                    sortedRecords.add(new AssocRecord(bccRecordMap.get(node.getCcId())));
+                    break;
             }
-            return comp;
-        });
-        return assocRecords;
+            node = seqKeyRecordMap.get(node.getNextSeqKeyId());
+        }
+
+        return sortedRecords;
     }
 
     private class AssocRecord {

@@ -2,11 +2,11 @@ package org.oagi.score.repo.component.bccp;
 
 import java.math.BigInteger;
 
-public class DiscardRevisionBccpRepositoryResponse {
+public class CancelRevisionBccpRepositoryResponse {
 
     private final BigInteger bccpManifestId;
 
-    public DiscardRevisionBccpRepositoryResponse(BigInteger bccpManifestId) {
+    public CancelRevisionBccpRepositoryResponse(BigInteger bccpManifestId) {
         this.bccpManifestId = bccpManifestId;
     }
 

@@ -12,7 +12,6 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.gateway.http.api.cc_management.data.CcACCType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -1090,7 +1089,10 @@ public class AccWriteRepository {
         return bccRecord;
     }
 
-    public DiscardRevisionAccRepositoryResponse discardRevisionAcc(DiscardRevisionAccRepositoryRequest request) {
+    public CancelRevisionAccRepositoryResponse cancelRevisionAcc(CancelRevisionAccRepositoryRequest request) {
+        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        LocalDateTime timestamp = request.getLocalDateTime();
+
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
 
@@ -1105,45 +1107,22 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Not found previous revision");
         }
 
-        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
-                .where(REVISION.REVISION_ID.eq(accManifestRecord.getRevisionId())).fetchOne();
+        AccRecord prevAccRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accRecord.getPrevAccId())).fetchOne();
 
-        UInteger revisionNum = cursorRevision.getRevisionNum();
-
-        if (cursorRevision.getPrevRevisionId() == null) {
-            throw new IllegalArgumentException("There is no change to be reset.");
-        }
-
-        List<ULong> deleteRevisionTargets = new ArrayList<>();
-
-        while(cursorRevision.getPrevRevisionId() != null) {
-            if(cursorRevision.getRevisionNum().compareTo(revisionNum) < 0) {
-                break;
-            }
-            deleteRevisionTargets.add(cursorRevision.getRevisionId());
-            cursorRevision = dslContext.selectFrom(REVISION)
-                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
-        }
+        // creates new revision for canceled record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        prevAccRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
+                        userId, timestamp);
 
         // update ACC MANIFEST's acc_id and revision_id
         accManifestRecord.setAccId(accRecord.getPrevAccId());
-        accManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID);
 
-        // unlink revision
-        cursorRevision.setNextRevisionId(null);
-        cursorRevision.update(REVISION.NEXT_REVISION_ID);
-        dslContext.update(REVISION)
-                .setNull(REVISION.PREV_REVISION_ID)
-                .setNull(REVISION.NEXT_REVISION_ID)
-                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
-                .execute();
-        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
-
         discardRevisionAssociations(accManifestRecord, accRecord);
-
-        AccRecord prevAccRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accRecord.getPrevAccId())).fetchOne();
 
         // unlink prev ACC
         prevAccRecord.setNextAccId(null);
@@ -1152,7 +1131,7 @@ public class AccWriteRepository {
         // delete current ACC
         accRecord.delete();
 
-        return new DiscardRevisionAccRepositoryResponse(request.getAccManifestId());
+        return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
 
     private void discardRevisionAssociations(AccManifestRecord accManifestRecord, AccRecord accRecord) {
@@ -1222,7 +1201,7 @@ public class AccWriteRepository {
         dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId())).execute();
     }
 
-    public DiscardRevisionAccRepositoryResponse resetRevisionAcc(DiscardRevisionAccRepositoryRequest request) {
+    public CancelRevisionAccRepositoryResponse resetRevisionAcc(CancelRevisionAccRepositoryRequest request) {
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
 
@@ -1301,7 +1280,7 @@ public class AccWriteRepository {
                 .execute();
         dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
-        return new DiscardRevisionAccRepositoryResponse(request.getAccManifestId());
+        return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
 
     private void resetAssociations(JsonElement associationElement, AccManifestRecord accManifestRecord) {

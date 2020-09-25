@@ -2,11 +2,11 @@ package org.oagi.score.repo.component.asccp;
 
 import java.math.BigInteger;
 
-public class DiscardRevisionAsccpRepositoryResponse {
+public class CancelRevisionAsccpRepositoryResponse {
 
     private final BigInteger asccpManifestId;
 
-    public DiscardRevisionAsccpRepositoryResponse(BigInteger asccpManifestId) {
+    public CancelRevisionAsccpRepositoryResponse(BigInteger asccpManifestId) {
         this.asccpManifestId = asccpManifestId;
     }
 

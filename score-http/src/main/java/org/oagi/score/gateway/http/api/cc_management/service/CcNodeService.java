@@ -1117,30 +1117,30 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public void discardRevisionBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
-        DiscardRevisionBccpRepositoryRequest request
-                = new DiscardRevisionBccpRepositoryRequest(user, bccpManifestId);
-        bccpWriteRepository.discardRevisionBccp(request);
+    public void cancelRevisionBccp(AuthenticatedPrincipal user, BigInteger bccpManifestId) {
+        CancelRevisionBccpRepositoryRequest request
+                = new CancelRevisionBccpRepositoryRequest(user, bccpManifestId);
+        bccpWriteRepository.cancelRevisionBccp(request);
 
-        fireEvent(new DiscardRevisionBccpEvent());
+        fireEvent(new CancelRevisionBccpEvent());
     }
 
     @Transactional
-    public void discardRevisionAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
-        DiscardRevisionAsccpRepositoryRequest request
-                = new DiscardRevisionAsccpRepositoryRequest(user, asccpManifestId);
-        asccpWriteRepository.discardRevisionAsccp(request);
+    public void cancelRevisionAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
+        CancelRevisionAsccpRepositoryRequest request
+                = new CancelRevisionAsccpRepositoryRequest(user, asccpManifestId);
+        asccpWriteRepository.cancelRevisionAsccp(request);
 
-        fireEvent(new DiscardRevisionAsccpEvent());
+        fireEvent(new CancelRevisionAsccpEvent());
     }
 
     @Transactional
-    public void discardRevisionAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
-        DiscardRevisionAccRepositoryRequest request
-                = new DiscardRevisionAccRepositoryRequest(user, accManifestId);
-        accWriteRepository.discardRevisionAcc(request);
+    public void cancelRevisionAcc(AuthenticatedPrincipal user, BigInteger accManifestId) {
+        CancelRevisionAccRepositoryRequest request
+                = new CancelRevisionAccRepositoryRequest(user, accManifestId);
+        accWriteRepository.cancelRevisionAcc(request);
 
-        fireEvent(new DiscardRevisionAccEvent());
+        fireEvent(new CancelRevisionAccEvent());
     }
 
     @Transactional

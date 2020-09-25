@@ -10,12 +10,12 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcAction;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.revision_management.data.Revision;
 import org.oagi.score.gateway.http.api.revision_management.data.RevisionListRequest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -287,6 +287,22 @@ public class RevisionRepository {
         return insertAccRevision(accRecord, null, revisionAction, requesterId, timestamp);
     }
 
+    private String serialize(AccRecord accRecord) {
+        List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
+                .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        List<BccRecord> bccRecords = dslContext.selectFrom(BCC)
+                .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        List<SeqKeyRecord> seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        return serializer.serialize(accRecord, asccRecords, bccRecords, seqKeyRecords);
+    }
+
     public RevisionRecord insertAccRevision(AccRecord accRecord,
                                             ULong prevRevisionId,
                                             RevisionAction revisionAction,
@@ -305,6 +321,10 @@ public class RevisionRepository {
             assert (prevRevisionRecord != null);
             revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else if (RevisionAction.Canceled.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().subtract(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
         } else {
             if (prevRevisionRecord != null) {
                 revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
@@ -316,15 +336,7 @@ public class RevisionRepository {
         }
         revisionRecord.setRevisionAction(revisionAction.name());
 
-        List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
-                .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
-                .fetch();
-
-        List<BccRecord> bccRecords = dslContext.selectFrom(BCC)
-                .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
-                .fetch();
-
-        revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(accRecord, asccRecords, bccRecords)));
+        revisionRecord.setSnapshot(JSON.valueOf(serialize(accRecord)));
         revisionRecord.setReference(accRecord.getGuid());
         revisionRecord.setCreatedBy(requesterId);
         revisionRecord.setCreationTimestamp(timestamp);
@@ -370,6 +382,10 @@ public class RevisionRepository {
         if (RevisionAction.Revised.equals(revisionAction)) {
             assert (prevRevisionRecord != null);
             revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else if (RevisionAction.Canceled.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().subtract(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
         } else {
             if (prevRevisionRecord != null) {
@@ -428,6 +444,10 @@ public class RevisionRepository {
             assert (prevRevisionRecord != null);
             revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else if (RevisionAction.Canceled.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().subtract(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
         } else {
             if (prevRevisionRecord != null) {
                 revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum());
@@ -484,6 +504,10 @@ public class RevisionRepository {
         if (RevisionAction.Revised.equals(revisionAction)) {
             assert (prevRevisionRecord != null);
             revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().add(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+        } else if (RevisionAction.Canceled.equals(revisionAction)) {
+            assert (prevRevisionRecord != null);
+            revisionRecord.setRevisionNum(prevRevisionRecord.getRevisionNum().subtract(1));
             revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
         } else {
             if (prevRevisionRecord != null) {

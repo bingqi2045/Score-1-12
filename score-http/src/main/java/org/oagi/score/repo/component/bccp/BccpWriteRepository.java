@@ -9,11 +9,11 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -483,7 +483,10 @@ public class BccpWriteRepository {
         return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
 
-    public DiscardRevisionBccpRepositoryResponse discardRevisionBccp(DiscardRevisionBccpRepositoryRequest request) {
+    public CancelRevisionBccpRepositoryResponse cancelRevisionBccp(CancelRevisionBccpRepositoryRequest request) {
+        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        LocalDateTime timestamp = request.getLocalDateTime();
+
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
 
@@ -498,49 +501,26 @@ public class BccpWriteRepository {
             throw new IllegalArgumentException("Not found previous revision");
         }
 
-        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
-                .where(REVISION.REVISION_ID.eq(bccpManifestRecord.getRevisionId())).fetchOne();
+        BccpRecord prevBccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpRecord.getPrevBccpId())).fetchOne();
 
-        UInteger revisionNum = cursorRevision.getRevisionNum();
-
-        if (cursorRevision.getPrevRevisionId() == null) {
-            throw new IllegalArgumentException("There is no change to be reset.");
-        }
-
-        List<ULong> deleteRevisionTargets = new ArrayList<>();
-
-        while(cursorRevision.getPrevRevisionId() != null) {
-            if(cursorRevision.getRevisionNum().compareTo(revisionNum) < 0) {
-                break;
-            }
-            deleteRevisionTargets.add(cursorRevision.getRevisionId());
-            cursorRevision = dslContext.selectFrom(REVISION)
-                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
-        }
+        // creates new revision for canceled record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        prevBccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
+                        userId, timestamp);
 
         // update BCCP MANIFEST's bccp_id and revision_id
         bccpManifestRecord.setBccpId(bccpRecord.getPrevBccpId());
-        bccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID);
-
-        // unlink revision
-        cursorRevision.setNextRevisionId(null);
-        cursorRevision.update(REVISION.NEXT_REVISION_ID);
-        dslContext.update(REVISION)
-                .setNull(REVISION.PREV_REVISION_ID)
-                .setNull(REVISION.NEXT_REVISION_ID)
-                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
-                .execute();
-        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
         // update BCCs which using current BCCP
         dslContext.update(BCC)
                 .set(BCC.TO_BCCP_ID, bccpRecord.getPrevBccpId())
                 .where(BCC.TO_BCCP_ID.eq(bccpRecord.getBccpId()))
                 .execute();
-
-        BccpRecord prevBccpRecord = dslContext.selectFrom(BCCP)
-                .where(BCCP.BCCP_ID.eq(bccpRecord.getPrevBccpId())).fetchOne();
 
         // unlink prev BCCP
         prevBccpRecord.setNextBccpId(null);
@@ -549,10 +529,10 @@ public class BccpWriteRepository {
         // delete current BCCP
         bccpRecord.delete();
 
-        return new DiscardRevisionBccpRepositoryResponse(request.getBccpManifestId());
+        return new CancelRevisionBccpRepositoryResponse(request.getBccpManifestId());
     }
 
-    public DiscardRevisionBccpRepositoryResponse resetRevisionBccp(DiscardRevisionBccpRepositoryRequest request) {
+    public CancelRevisionBccpRepositoryResponse resetRevisionBccp(CancelRevisionBccpRepositoryRequest request) {
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
 
@@ -624,6 +604,6 @@ public class BccpWriteRepository {
                 .execute();
         dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
-        return new DiscardRevisionBccpRepositoryResponse(request.getBccpManifestId());
+        return new CancelRevisionBccpRepositoryResponse(request.getBccpManifestId());
     }
 }

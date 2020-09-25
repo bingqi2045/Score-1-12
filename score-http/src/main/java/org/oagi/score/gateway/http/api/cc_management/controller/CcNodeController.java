@@ -350,25 +350,25 @@ public class CcNodeController {
         }
     }
 
-    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision/discard",
+    @RequestMapping(value = "/core_component/{type}/{manifestId:[\\d]+}/revision/cancel",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcNodeUpdateResponse discardRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                @PathVariable("type") String type,
-                                                @PathVariable("manifestId") BigInteger manifestId) {
+    public CcNodeUpdateResponse cancelRevision(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                               @PathVariable("type") String type,
+                                               @PathVariable("manifestId") BigInteger manifestId) {
 
         CcNodeUpdateResponse resp = new CcNodeUpdateResponse();
         resp.setType(CcType.valueOf(type.toUpperCase()));
 
         switch (resp.getType()) {
             case ACC:
-                service.discardRevisionAcc(user, manifestId);
+                service.cancelRevisionAcc(user, manifestId);
                 break;
             case ASCCP:
-                service.discardRevisionAsccp(user, manifestId);
+                service.cancelRevisionAsccp(user, manifestId);
                 break;
             case BCCP:
-                service.discardRevisionBccp(user, manifestId);
+                service.cancelRevisionBccp(user, manifestId);
                 break;
             default:
                 throw new UnsupportedOperationException();

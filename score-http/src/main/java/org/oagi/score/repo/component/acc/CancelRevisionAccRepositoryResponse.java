@@ -2,11 +2,11 @@ package org.oagi.score.repo.component.acc;
 
 import java.math.BigInteger;
 
-public class DiscardRevisionAccRepositoryResponse {
+public class CancelRevisionAccRepositoryResponse {
 
     private final BigInteger accManifestId;
 
-    public DiscardRevisionAccRepositoryResponse(BigInteger accManifestId) {
+    public CancelRevisionAccRepositoryResponse(BigInteger accManifestId) {
         this.accManifestId = accManifestId;
     }
 
