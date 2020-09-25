@@ -51,8 +51,6 @@ public class CodeListController {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
             request.setStates(stateStrings.stream()
                     .map(e -> CcState.valueOf(e.trim())).collect(Collectors.toList()));
-        } else {
-            request.setStates(Stream.of(CcState.values()).filter(e -> e != CcState.Deleted).collect(Collectors.toList()));
         }
         if (!StringUtils.isEmpty(deprecated)) {
             if ("true".equalsIgnoreCase(deprecated.toLowerCase())) {
