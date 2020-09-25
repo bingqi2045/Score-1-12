@@ -352,6 +352,7 @@ public class RevisionSerializer {
 
         properties.put("ownerUserId", (dtRecord.getOwnerUserId() != null) ? dtRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("basedDtId", (dtRecord.getBasedDtId() != null) ? dtRecord.getBasedDtId().toBigInteger() : null);
+        properties.put("namespaceId", (dtRecord.getNamespaceId() != null) ? dtRecord.getNamespaceId() : null);
 
         List<Map<String, Object>> supplementaryComponents = new ArrayList();
         properties.put("supplementaryComponents", supplementaryComponents);
@@ -383,6 +384,21 @@ public class RevisionSerializer {
         return properties;
     }
 
+    private void dtAddProperties(JsonObject properties) {
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
+    }
+
     @SneakyThrows(JsonIOException.class)
     public String serialize(CodeListRecord codeListRecord,
                             List<CodeListValueRecord> codeListValueRecords) {
@@ -403,6 +419,7 @@ public class RevisionSerializer {
 
         properties.put("ownerUserId", (codeListRecord.getOwnerUserId() != null) ? codeListRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("basedCodeListId", (codeListRecord.getBasedCodeListId() != null) ? codeListRecord.getBasedCodeListId().toBigInteger() : null);
+        properties.put("namespaceId", (codeListRecord.getNamespaceId() != null) ? codeListRecord.getNamespaceId() : null);
 
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
@@ -432,6 +449,21 @@ public class RevisionSerializer {
         return properties;
     }
 
+    private void codeListAddProperties(JsonObject properties) {
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
+    }
+
     @SneakyThrows(JsonIOException.class)
     public String serialize(AgencyIdListRecord agencyIdListRecord,
                             List<AgencyIdListValueRecord> agencyIdListValueRecords) {
@@ -450,6 +482,7 @@ public class RevisionSerializer {
         properties.put("agencyIdListValueId", (agencyIdListRecord.getAgencyIdListValueId() != null) ? agencyIdListRecord.getAgencyIdListValueId().toBigInteger() : null);
         properties.put("ownerUserId", (agencyIdListRecord.getOwnerUserId() != null) ? agencyIdListRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("basedAgencyIdListId", (agencyIdListRecord.getBasedAgencyIdListId() != null) ? agencyIdListRecord.getBasedAgencyIdListId().toBigInteger() : null);
+        properties.put("namespaceId", (agencyIdListRecord.getNamespaceId() != null) ? agencyIdListRecord.getNamespaceId() : null);
 
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
@@ -473,6 +506,21 @@ public class RevisionSerializer {
         properties.put("deprecated", ((byte) 1 == agencyIdListValueRecord.getIsDeprecated()) ? true : false);
 
         return properties;
+    }
+
+    private void agencyIdListAddProperties(JsonObject properties) {
+        if (properties.has("ownerUserId")) {
+            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("ownerUserLoginId",
+                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
+            );
+        }
+        if (properties.has("namespaceId")) {
+            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
+            properties.addProperty("namespaceUrl",
+                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
+            );
+        }
     }
 
     @SneakyThrows(JsonIOException.class)

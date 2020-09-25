@@ -203,6 +203,8 @@ public class CodeListService extends EventHandler {
                 CODE_LIST.NAME.as("code_list_name"),
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                 CODE_LIST.as("based_code_list").NAME.as("based_code_list_name"),
+                NAMESPACE.NAMESPACE_ID,
+                NAMESPACE.URI.as("namespace_uri"),
                 CODE_LIST.AGENCY_ID,
                 AGENCY_ID_LIST_VALUE.NAME.as("agency_id_name"),
                 CODE_LIST.VERSION_ID,
@@ -223,6 +225,7 @@ public class CodeListService extends EventHandler {
                 .leftJoin(CODE_LIST_MANIFEST.as("based")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID))
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
                 .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .leftJoin(NAMESPACE).on(CODE_LIST.NAMESPACE_ID.eq(NAMESPACE.NAMESPACE_ID))
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOptionalInto(CodeList.class).orElse(null);
 
@@ -445,6 +448,7 @@ public class CodeListService extends EventHandler {
         request.setAgencyId(codeList.getAgencyId());
         request.setVersionId(codeList.getVersionId());
         request.setListId(codeList.getListId());
+        request.setNamespaceId(codeList.getNamespaceId());
         request.setDefinition(codeList.getDefinition());
         request.setDefinitionSource(codeList.getDefinitionSource());
         request.setRemark(codeList.getRemark());

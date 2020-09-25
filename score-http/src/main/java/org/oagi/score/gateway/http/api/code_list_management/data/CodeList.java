@@ -16,6 +16,8 @@ public class CodeList {
     private String guid;
     private BigInteger basedCodeListManifestId;
     private String basedCodeListName;
+    private BigInteger namespaceId;
+    private String namespaceUri;
 
     private BigInteger agencyId;
     private String agencyIdName;

@@ -197,6 +197,7 @@ public class CodeListWriteRepository {
         codeListRecord.setAgencyId((request.getAgencyId() != null) ? ULong.valueOf(request.getAgencyId()) : null);
         codeListRecord.setVersionId(request.getVersionId());
         codeListRecord.setListId(request.getListId());
+        codeListRecord.setNamespaceId((request.getNamespaceId() != null) ? ULong.valueOf(request.getNamespaceId()) : null);
         codeListRecord.setDefinition(request.getDefinition());
         codeListRecord.setDefinitionSource(request.getDefinitionSource());
         codeListRecord.setExtensibleIndicator((byte) (request.isExtensible() ? 1 : 0));
@@ -204,7 +205,7 @@ public class CodeListWriteRepository {
         codeListRecord.setLastUpdatedBy(userId);
         codeListRecord.setLastUpdateTimestamp(timestamp);
         codeListRecord.update(CODE_LIST.NAME, CODE_LIST.AGENCY_ID,
-                CODE_LIST.VERSION_ID, CODE_LIST.LIST_ID,
+                CODE_LIST.VERSION_ID, CODE_LIST.LIST_ID, CODE_LIST.NAMESPACE_ID,
                 CODE_LIST.DEFINITION, CODE_LIST.DEFINITION_SOURCE,
                 CODE_LIST.EXTENSIBLE_INDICATOR, CODE_LIST.IS_DEPRECATED,
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
