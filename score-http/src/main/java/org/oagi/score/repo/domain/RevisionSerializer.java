@@ -113,22 +113,24 @@ public class RevisionSerializer {
                 Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
         Map<ULong, BccRecord> bccRecordMap = bccRecords.stream().collect(
                 Collectors.toMap(BccRecord::getBccId, Function.identity()));
-        List<AssocRecord> sortedRecords = new ArrayList();
 
-        Map<ULong, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
-                Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
-        SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
-        while (node != null) {
-            node.getCcId();
-            switch (node.getType()) {
-                case ascc:
-                    sortedRecords.add(new AssocRecord(asccRecordMap.get(node.getCcId())));
-                    break;
-                case bcc:
-                    sortedRecords.add(new AssocRecord(bccRecordMap.get(node.getCcId())));
-                    break;
+        List<AssocRecord> sortedRecords = new ArrayList();
+        if (!seqKeyRecords.isEmpty()) {
+            Map<ULong, SeqKeyRecord> seqKeyRecordMap = seqKeyRecords.stream().collect(
+                    Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
+            SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
+            while (node != null) {
+                node.getCcId();
+                switch (node.getType()) {
+                    case ascc:
+                        sortedRecords.add(new AssocRecord(asccRecordMap.get(node.getCcId())));
+                        break;
+                    case bcc:
+                        sortedRecords.add(new AssocRecord(bccRecordMap.get(node.getCcId())));
+                        break;
+                }
+                node = seqKeyRecordMap.get(node.getNextSeqKeyId());
             }
-            node = seqKeyRecordMap.get(node.getNextSeqKeyId());
         }
 
         return sortedRecords;
