@@ -381,6 +381,13 @@ UPDATE `dt` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `dt` SET `state` = 'Published' where `state` = '3';
 UPDATE `dt` SET `revision_num` = 1, `revision_tracking_num` = 1, `revision_action` = 1;
 
+-- Add `namespace` property in `dt`
+ALTER TABLE `dt` ADD COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user''s component because there is also a namespace assigned at the release level.' AFTER `definition_source`,
+                 ADD CONSTRAINT `dt_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+
+UPDATE `dt` SET `namespace_id` = (SELECT `namespace_id` FROM `namespace` WHERE `uri` = 'http://www.openapplications.org/oagis/10')
+WHERE `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
+
 CREATE TABLE `dt_manifest` (
     `dt_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
@@ -851,6 +858,14 @@ ALTER TABLE `code_list`
     DROP KEY `code_list_uk1`,
     DROP KEY `code_list_uk2`;
 
+-- Add `namespace` property in `code_list`
+ALTER TABLE `code_list`
+    ADD COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user''s component because there is also a namespace assigned at the release level.' AFTER `definition_source`,
+    ADD CONSTRAINT `code_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+
+UPDATE `code_list` SET `namespace_id` = (SELECT `namespace_id` FROM `namespace` WHERE `uri` = 'http://www.openapplications.org/oagis/10')
+WHERE `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
+
 CREATE TABLE `code_list_manifest` (
     `code_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
@@ -1037,6 +1052,14 @@ UPDATE `agency_id_list` SET `created_by` = (SELECT `app_user_id` FROM `app_user`
 ALTER TABLE `agency_id_list`
     MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
     MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
+
+-- Add `namespace` property in `agency_id_list`
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user''s component because there is also a namespace assigned at the release level.' AFTER `definition`,
+    ADD CONSTRAINT `agency_id_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+
+UPDATE `agency_id_list` SET `namespace_id` = (SELECT `namespace_id` FROM `namespace` WHERE `uri` = 'http://www.openapplications.org/oagis/10')
+WHERE `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
 
 -- Making relations between `agency_id_list` and `release` tables.
 ALTER TABLE `agency_id_list`

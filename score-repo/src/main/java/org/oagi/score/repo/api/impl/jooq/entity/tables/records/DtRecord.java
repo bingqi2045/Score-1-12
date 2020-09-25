@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -356585506;
+    private static final long serialVersionUID = 579691640;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -190,31 +190,45 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
     }
 
     /**
+     * Setter for <code>oagi.dt.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
+     */
+    public void setNamespaceId(ULong value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
+     */
+    public ULong getNamespaceId() {
+        return (ULong) get(12);
+    }
+
+    /**
      * Setter for <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
      */
     public void setContentComponentDefinition(String value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
      */
     public String getContentComponentDefinition() {
-        return (String) get(12);
+        return (String) get(13);
     }
 
     /**
      * Setter for <code>oagi.dt.revision_doc</code>. This is for documenting about the revision, e.g., how the newer version of the DT is different from the previous version.
      */
     public void setRevisionDoc(String value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.dt.revision_doc</code>. This is for documenting about the revision, e.g., how the newer version of the DT is different from the previous version.
      */
     public String getRevisionDoc() {
-        return (String) get(13);
+        return (String) get(14);
     }
 
     /**
@@ -223,7 +237,7 @@ public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
@@ -232,21 +246,21 @@ State change can't be undone. But the history record can still keep the records 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
-        return (String) get(14);
+        return (String) get(15);
     }
 
     /**
      * Setter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public void setCreatedBy(ULong value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
      * Getter for <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(15);
+        return (ULong) get(16);
     }
 
     /**
@@ -255,7 +269,7 @@ State change can't be undone. But the history record can still keep the records 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
@@ -264,21 +278,21 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(16);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.dt.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.\n\nThe ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(17);
+        return (ULong) get(18);
     }
 
     /**
@@ -287,7 +301,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
@@ -296,7 +310,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(18);
+        return (LocalDateTime) get(19);
     }
 
     /**
@@ -305,7 +319,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
@@ -314,49 +328,49 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(19);
+        return (LocalDateTime) get(20);
     }
 
     /**
      * Setter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.dt.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(20);
+        return (Byte) get(21);
     }
 
     /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtId(ULong value) {
-        set(21, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtId() {
-        return (ULong) get(21);
+        return (ULong) get(22);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtId(ULong value) {
-        set(22, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtId() {
-        return (ULong) get(22);
+        return (ULong) get(23);
     }
 
     // -------------------------------------------------------------------------
@@ -382,7 +396,7 @@ The value of this column in the latest history record should be the same as that
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -397,16 +411,17 @@ The value of this column in the latest history record should be the same as that
         set(9, contentComponentDen);
         set(10, definition);
         set(11, definitionSource);
-        set(12, contentComponentDefinition);
-        set(13, revisionDoc);
-        set(14, state);
-        set(15, createdBy);
-        set(16, lastUpdatedBy);
-        set(17, ownerUserId);
-        set(18, creationTimestamp);
-        set(19, lastUpdateTimestamp);
-        set(20, isDeprecated);
-        set(21, prevDtId);
-        set(22, nextDtId);
+        set(12, namespaceId);
+        set(13, contentComponentDefinition);
+        set(14, revisionDoc);
+        set(15, state);
+        set(16, createdBy);
+        set(17, lastUpdatedBy);
+        set(18, ownerUserId);
+        set(19, creationTimestamp);
+        set(20, lastUpdateTimestamp);
+        set(21, isDeprecated);
+        set(22, prevDtId);
+        set(23, nextDtId);
     }
 }

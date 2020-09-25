@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -1250788490;
+    private static final long serialVersionUID = 981036628;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -109,6 +109,11 @@ public class Dt extends TableImpl<DtRecord> {
      * The column <code>oagi.dt.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public final TableField<DtRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "This is typically a URL identifying the source of the DEFINITION column.");
+
+    /**
+     * The column <code>oagi.dt.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
+     */
+    public final TableField<DtRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
 
     /**
      * The column <code>oagi.dt.content_component_definition</code>. Description of the content component of the data type.
@@ -233,7 +238,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_NAMESPACE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
     public Dt dtPreviousVersionDtIdFk() {
@@ -242,6 +247,10 @@ The value of this column in the latest history record should be the same as that
 
     public Dt dtBasedDtIdFk() {
         return new Dt(this, Keys.DT_BASED_DT_ID_FK);
+    }
+
+    public Namespace namespace() {
+        return new Namespace(this, Keys.DT_NAMESPACE_ID_FK);
     }
 
     public AppUser dtCreatedByFk() {

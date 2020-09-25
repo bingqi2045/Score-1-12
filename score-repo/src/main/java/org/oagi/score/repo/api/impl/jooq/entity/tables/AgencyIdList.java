@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row18;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
-    private static final long serialVersionUID = -1867304369;
+    private static final long serialVersionUID = -942149600;
 
     /**
      * The reference instance of <code>oagi.agency_id_list</code>
@@ -93,6 +93,11 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
      * The column <code>oagi.agency_id_list.definition</code>. Description of the agency identification list.
      */
     public final TableField<AgencyIdListRecord, String> DEFINITION = createField(DSL.name("definition"), org.jooq.impl.SQLDataType.CLOB, this, "Description of the agency identification list.");
+
+    /**
+     * The column <code>oagi.agency_id_list.namespace_id</code>. Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.
+     */
+    public final TableField<AgencyIdListRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user's component because there is also a namespace assigned at the release level.");
 
     /**
      * The column <code>oagi.agency_id_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the agency ID list.
@@ -196,7 +201,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<AgencyIdListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NAMESPACE_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
@@ -205,6 +210,10 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     public AgencyIdList agencyIdListBasedAgencyIdListIdFk() {
         return new AgencyIdList(this, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK);
+    }
+
+    public Namespace namespace() {
+        return new Namespace(this, Keys.AGENCY_ID_LIST_NAMESPACE_ID_FK);
     }
 
     public AppUser agencyIdListCreatedByFk() {
@@ -254,11 +263,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row18 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row19<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

@@ -366,6 +366,7 @@ public class Keys {
     public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK = ForeignKeys0.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AgencyIdListRecord> AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK;
+    public static final ForeignKey<AgencyIdListRecord, NamespaceRecord> AGENCY_ID_LIST_NAMESPACE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_NAMESPACE_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_CREATED_BY_FK = ForeignKeys0.AGENCY_ID_LIST_CREATED_BY_FK;
     public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_LAST_UPDATED_BY_FK = ForeignKeys0.AGENCY_ID_LIST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_OWNER_USER_ID_FK = ForeignKeys0.AGENCY_ID_LIST_OWNER_USER_ID_FK;
@@ -515,6 +516,7 @@ public class Keys {
     public static final ForeignKey<CdtScAwdPriXpsTypeMapRecord, CdtScAwdPriRecord> CDT_SC_AWD_PRI_XPS_TYPE_MAP_CDT_SC_AWD_PRI_ID_FK = ForeignKeys0.CDT_SC_AWD_PRI_XPS_TYPE_MAP_CDT_SC_AWD_PRI_ID_FK;
     public static final ForeignKey<CdtScAwdPriXpsTypeMapRecord, XbtRecord> CDT_SC_AWD_PRI_XPS_TYPE_MAP_XBT_ID_FK = ForeignKeys0.CDT_SC_AWD_PRI_XPS_TYPE_MAP_XBT_ID_FK;
     public static final ForeignKey<CodeListRecord, AgencyIdListValueRecord> CODE_LIST_AGENCY_ID_FK = ForeignKeys0.CODE_LIST_AGENCY_ID_FK;
+    public static final ForeignKey<CodeListRecord, NamespaceRecord> CODE_LIST_NAMESPACE_ID_FK = ForeignKeys0.CODE_LIST_NAMESPACE_ID_FK;
     public static final ForeignKey<CodeListRecord, CodeListRecord> CODE_LIST_BASED_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_BASED_CODE_LIST_ID_FK;
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = ForeignKeys0.CODE_LIST_CREATED_BY_FK;
     public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_OWNER_USER_ID_FK = ForeignKeys0.CODE_LIST_OWNER_USER_ID_FK;
@@ -549,6 +551,7 @@ public class Keys {
     public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = ForeignKeys0.CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK;
     public static final ForeignKey<DtRecord, DtRecord> DT_PREVIOUS_VERSION_DT_ID_FK = ForeignKeys0.DT_PREVIOUS_VERSION_DT_ID_FK;
     public static final ForeignKey<DtRecord, DtRecord> DT_BASED_DT_ID_FK = ForeignKeys0.DT_BASED_DT_ID_FK;
+    public static final ForeignKey<DtRecord, NamespaceRecord> DT_NAMESPACE_ID_FK = ForeignKeys0.DT_NAMESPACE_ID_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = ForeignKeys0.DT_CREATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = ForeignKeys0.DT_LAST_UPDATED_BY_FK;
     public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = ForeignKeys0.DT_OWNER_USER_ID_FK;
@@ -844,6 +847,7 @@ public class Keys {
         public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_next_acc_manifest_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.NEXT_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_agency_id_list_value_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, AgencyIdListRecord> AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_based_agency_id_list_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.BASED_AGENCY_ID_LIST_ID }, true);
+        public static final ForeignKey<AgencyIdListRecord, NamespaceRecord> AGENCY_ID_LIST_NAMESPACE_ID_FK = Internal.createForeignKey(Keys.KEY_NAMESPACE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_namespace_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.NAMESPACE_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_created_by_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.CREATED_BY }, true);
         public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_last_updated_by_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AgencyIdListRecord, AppUserRecord> AGENCY_ID_LIST_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_owner_user_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.OWNER_USER_ID }, true);
@@ -993,6 +997,7 @@ public class Keys {
         public static final ForeignKey<CdtScAwdPriXpsTypeMapRecord, CdtScAwdPriRecord> CDT_SC_AWD_PRI_XPS_TYPE_MAP_CDT_SC_AWD_PRI_ID_FK = Internal.createForeignKey(Keys.KEY_CDT_SC_AWD_PRI_PRIMARY, CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP, "cdt_sc_awd_pri_xps_type_map_cdt_sc_awd_pri_id_fk", new TableField[] { CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_ID }, true);
         public static final ForeignKey<CdtScAwdPriXpsTypeMapRecord, XbtRecord> CDT_SC_AWD_PRI_XPS_TYPE_MAP_XBT_ID_FK = Internal.createForeignKey(Keys.KEY_XBT_PRIMARY, CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP, "cdt_sc_awd_pri_xps_type_map_xbt_id_fk", new TableField[] { CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP.XBT_ID }, true);
         public static final ForeignKey<CodeListRecord, AgencyIdListValueRecord> CODE_LIST_AGENCY_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, CodeList.CODE_LIST, "code_list_agency_id_fk", new TableField[] { CodeList.CODE_LIST.AGENCY_ID }, true);
+        public static final ForeignKey<CodeListRecord, NamespaceRecord> CODE_LIST_NAMESPACE_ID_FK = Internal.createForeignKey(Keys.KEY_NAMESPACE_PRIMARY, CodeList.CODE_LIST, "code_list_namespace_id_fk", new TableField[] { CodeList.CODE_LIST.NAMESPACE_ID }, true);
         public static final ForeignKey<CodeListRecord, CodeListRecord> CODE_LIST_BASED_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CodeList.CODE_LIST, "code_list_based_code_list_id_fk", new TableField[] { CodeList.CODE_LIST.BASED_CODE_LIST_ID }, true);
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_created_by_fk", new TableField[] { CodeList.CODE_LIST.CREATED_BY }, true);
         public static final ForeignKey<CodeListRecord, AppUserRecord> CODE_LIST_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, CodeList.CODE_LIST, "code_list_owner_user_id_fk", new TableField[] { CodeList.CODE_LIST.OWNER_USER_ID }, true);
@@ -1027,6 +1032,7 @@ public class Keys {
         public static final ForeignKey<CtxSchemeValueRecord, CtxSchemeRecord> CTX_SCHEME_VALUE_OWNER_CTX_SCHEME_ID_FK = Internal.createForeignKey(Keys.KEY_CTX_SCHEME_PRIMARY, CtxSchemeValue.CTX_SCHEME_VALUE, "ctx_scheme_value_owner_ctx_scheme_id_fk", new TableField[] { CtxSchemeValue.CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID }, true);
         public static final ForeignKey<DtRecord, DtRecord> DT_PREVIOUS_VERSION_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Dt.DT, "dt_previous_version_dt_id_fk", new TableField[] { Dt.DT.PREVIOUS_VERSION_DT_ID }, true);
         public static final ForeignKey<DtRecord, DtRecord> DT_BASED_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Dt.DT, "dt_based_dt_id_fk", new TableField[] { Dt.DT.BASED_DT_ID }, true);
+        public static final ForeignKey<DtRecord, NamespaceRecord> DT_NAMESPACE_ID_FK = Internal.createForeignKey(Keys.KEY_NAMESPACE_PRIMARY, Dt.DT, "dt_namespace_id_fk", new TableField[] { Dt.DT.NAMESPACE_ID }, true);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_created_by_fk", new TableField[] { Dt.DT.CREATED_BY }, true);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_last_updated_by_fk", new TableField[] { Dt.DT.LAST_UPDATED_BY }, true);
         public static final ForeignKey<DtRecord, AppUserRecord> DT_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Dt.DT, "dt_owner_user_id_fk", new TableField[] { Dt.DT.OWNER_USER_ID }, true);
