@@ -131,7 +131,11 @@ public class SeqKeyHandler {
                     target = target.getNextSeqKey();
                 }
 
-                moveAfter((target != null && target.getPrevSeqKey() != null) ? target.getPrevSeqKey() : this.head);
+                if (target != null && target.getPrevSeqKey() != null) {
+                    moveAfter(target.getPrevSeqKey());
+                } else {
+                    moveTo(FIRST);
+                }
 
                 break;
 
