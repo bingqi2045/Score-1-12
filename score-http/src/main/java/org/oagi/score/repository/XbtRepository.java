@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -21,9 +22,13 @@ public class XbtRepository implements SrtRepository<Xbt> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record19<ULong, ULong, ULong, ULong, String, ULong, ULong, ULong, String, LocalDateTime, Byte, String, String, LocalDateTime, String, UInteger, UInteger, String, Integer>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record19<
+            ULong, ULong, ULong, ULong, String,
+            ULong, ULong, ULong, String, LocalDateTime,
+            Byte, String, String, LocalDateTime, String,
+            UInteger, UInteger, String, Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
-                XBT.LAST_UPDATED_BY, XBT_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
+                XBT.LAST_UPDATED_BY, MODULE_XBT_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
                 XBT_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
                 XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_DOC,
@@ -31,6 +36,11 @@ public class XbtRepository implements SrtRepository<Xbt> {
                 XBT.STATE)
                 .from(XBT)
                 .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
+                .join(MODULE_SET_RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
+                .join(MODULE_XBT_MANIFEST).on(and(
+                        MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID),
+                        MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
+                ))
                 .join(REVISION).on(XBT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 

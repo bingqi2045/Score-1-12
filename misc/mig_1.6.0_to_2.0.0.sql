@@ -1649,7 +1649,8 @@ CREATE TABLE `module_set_release` (
 
 INSERT INTO `module_set_release` (`module_set_release_id`, `module_set_id`, `release_id`, `is_default`, `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
 VALUES
-(1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
+(1, 1, 1, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6)),
+(2, 1, 2, 1, 1, 1, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6));
 
 -- `module_manifest` tables.
 -- 'module_acc_manifest'
@@ -1930,9 +1931,9 @@ INSERT INTO `module_xbt_manifest` (
 SELECT `module_set_release`.`module_set_release_id`, `xbt_manifest`.`xbt_manifest_id`, `module`.`module_id`,
        `module`.`created_by`, `module`.`last_updated_by`, `module`.`creation_timestamp`, `module`.`last_update_timestamp`
 FROM `xbt_manifest`
-         JOIN `module` ON `xbt_manifest`.`module_id` = `module`.`module_id`
-         JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
-         JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
+JOIN `module` ON `xbt_manifest`.`module_id` = `module`.`module_id`
+JOIN `release` ON `xbt_manifest`.`release_id` = `release`.`release_id`
+JOIN `module_set_release` ON `release`.`release_id` = `module_set_release`.`release_id`;
 
 UPDATE `xbt_manifest` SET `module_id` = NULL;
 ALTER TABLE `xbt_manifest`
