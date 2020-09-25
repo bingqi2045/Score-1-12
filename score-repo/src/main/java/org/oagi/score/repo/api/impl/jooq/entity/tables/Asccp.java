@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = -1915958953;
+    private static final long serialVersionUID = -29206428;
 
     /**
      * The reference instance of <code>oagi.asccp</code>
@@ -148,6 +148,11 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AsccpRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
+     * The column <code>oagi.asccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<AsccpRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+
+    /**
      * The column <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
      */
     public final TableField<AsccpRecord, Byte> IS_NILLABLE = createField(DSL.name("is_nillable"), org.jooq.impl.SQLDataType.TINYINT, this, "This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.");
@@ -222,7 +227,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AsccpRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpRecord, ?>>asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_NAMESPACE_ID_FK, Keys.ASCCP_PREV_ASCCP_ID_FK, Keys.ASCCP_NEXT_ASCCP_ID_FK);
+        return Arrays.<ForeignKey<AsccpRecord, ?>>asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_NAMESPACE_ID_FK, Keys.ASCCP_REPLACED_BY_FK, Keys.ASCCP_PREV_ASCCP_ID_FK, Keys.ASCCP_NEXT_ASCCP_ID_FK);
     }
 
     public Acc acc() {
@@ -243,6 +248,10 @@ State change can't be undone. But the history record can still keep the records 
 
     public Namespace namespace() {
         return new Namespace(this, Keys.ASCCP_NAMESPACE_ID_FK);
+    }
+
+    public Asccp asccpReplacedByFk() {
+        return new Asccp(this, Keys.ASCCP_REPLACED_BY_FK);
     }
 
     public Asccp asccpPrevAsccpIdFk() {
@@ -280,11 +289,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

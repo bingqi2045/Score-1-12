@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = 579691640;
+    private static final long serialVersionUID = -444433679;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -346,31 +346,45 @@ The value of this column in the latest history record should be the same as that
     }
 
     /**
+     * Setter for <code>oagi.dt.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(22, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(22);
+    }
+
+    /**
      * Setter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevDtId(ULong value) {
-        set(22, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevDtId() {
-        return (ULong) get(22);
+        return (ULong) get(23);
     }
 
     /**
      * Setter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextDtId(ULong value) {
-        set(23, value);
+        set(24, value);
     }
 
     /**
      * Getter for <code>oagi.dt.next_dt_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextDtId() {
-        return (ULong) get(23);
+        return (ULong) get(24);
     }
 
     // -------------------------------------------------------------------------
@@ -396,7 +410,7 @@ The value of this column in the latest history record should be the same as that
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacedBy, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -421,7 +435,8 @@ The value of this column in the latest history record should be the same as that
         set(19, creationTimestamp);
         set(20, lastUpdateTimestamp);
         set(21, isDeprecated);
-        set(22, prevDtId);
-        set(23, nextDtId);
+        set(22, replacedBy);
+        set(23, prevDtId);
+        set(24, nextDtId);
     }
 }

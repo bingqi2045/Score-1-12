@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record19;
-import org.jooq.Row19;
+import org.jooq.Record20;
+import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
@@ -20,9 +20,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
  * lists. The list's values are however kept in the AGENCY_ID_LIST_VALUE.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record19<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> {
+public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1389969612;
+    private static final long serialVersionUID = 1364647819;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.
@@ -249,12 +249,26 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     /**
+     * Setter for <code>oagi.agency_id_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(16, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(16);
+    }
+
+    /**
      * Setter for <code>oagi.agency_id_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
@@ -263,35 +277,35 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(16);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list.prev_agency_id_list_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAgencyIdListId(ULong value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list.prev_agency_id_list_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAgencyIdListId() {
-        return (ULong) get(17);
+        return (ULong) get(18);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list.next_agency_id_list_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAgencyIdListId(ULong value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list.next_agency_id_list_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAgencyIdListId() {
-        return (ULong) get(18);
+        return (ULong) get(19);
     }
 
     // -------------------------------------------------------------------------
@@ -304,17 +318,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Record19 type implementation
+    // Record20 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 
     @Override
-    public Row19<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> valuesRow() {
-        return (Row19) super.valuesRow();
+    public Row20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> valuesRow() {
+        return (Row20) super.valuesRow();
     }
 
     @Override
@@ -399,16 +413,21 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public Field<ULong> field17() {
-        return AgencyIdList.AGENCY_ID_LIST.OWNER_USER_ID;
+        return AgencyIdList.AGENCY_ID_LIST.REPLACED_BY;
     }
 
     @Override
     public Field<ULong> field18() {
-        return AgencyIdList.AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID;
+        return AgencyIdList.AGENCY_ID_LIST.OWNER_USER_ID;
     }
 
     @Override
     public Field<ULong> field19() {
+        return AgencyIdList.AGENCY_ID_LIST.PREV_AGENCY_ID_LIST_ID;
+    }
+
+    @Override
+    public Field<ULong> field20() {
         return AgencyIdList.AGENCY_ID_LIST.NEXT_AGENCY_ID_LIST_ID;
     }
 
@@ -494,16 +513,21 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong component17() {
-        return getOwnerUserId();
+        return getReplacedBy();
     }
 
     @Override
     public ULong component18() {
-        return getPrevAgencyIdListId();
+        return getOwnerUserId();
     }
 
     @Override
     public ULong component19() {
+        return getPrevAgencyIdListId();
+    }
+
+    @Override
+    public ULong component20() {
         return getNextAgencyIdListId();
     }
 
@@ -589,16 +613,21 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong value17() {
-        return getOwnerUserId();
+        return getReplacedBy();
     }
 
     @Override
     public ULong value18() {
-        return getPrevAgencyIdListId();
+        return getOwnerUserId();
     }
 
     @Override
     public ULong value19() {
+        return getPrevAgencyIdListId();
+    }
+
+    @Override
+    public ULong value20() {
         return getNextAgencyIdListId();
     }
 
@@ -700,24 +729,30 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public AgencyIdListRecord value17(ULong value) {
-        setOwnerUserId(value);
+        setReplacedBy(value);
         return this;
     }
 
     @Override
     public AgencyIdListRecord value18(ULong value) {
-        setPrevAgencyIdListId(value);
+        setOwnerUserId(value);
         return this;
     }
 
     @Override
     public AgencyIdListRecord value19(ULong value) {
+        setPrevAgencyIdListId(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListRecord value20(ULong value) {
         setNextAgencyIdListId(value);
         return this;
     }
 
     @Override
-    public AgencyIdListRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, String value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, String value15, Byte value16, ULong value17, ULong value18, ULong value19) {
+    public AgencyIdListRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, ULong value8, String value9, ULong value10, ULong value11, ULong value12, LocalDateTime value13, LocalDateTime value14, String value15, Byte value16, ULong value17, ULong value18, ULong value19, ULong value20) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -737,6 +772,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         value17(value17);
         value18(value18);
         value19(value19);
+        value20(value20);
         return this;
     }
 
@@ -754,7 +790,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised AgencyIdListRecord
      */
-    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong basedAgencyIdListId, String definition, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong ownerUserId, ULong prevAgencyIdListId, ULong nextAgencyIdListId) {
+    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong basedAgencyIdListId, String definition, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, ULong ownerUserId, ULong prevAgencyIdListId, ULong nextAgencyIdListId) {
         super(AgencyIdList.AGENCY_ID_LIST);
 
         set(0, agencyIdListId);
@@ -773,8 +809,9 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(13, lastUpdateTimestamp);
         set(14, state);
         set(15, isDeprecated);
-        set(16, ownerUserId);
-        set(17, prevAgencyIdListId);
-        set(18, nextAgencyIdListId);
+        set(16, replacedBy);
+        set(17, ownerUserId);
+        set(18, prevAgencyIdListId);
+        set(19, nextAgencyIdListId);
     }
 }

@@ -6,8 +6,8 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record12;
-import org.jooq.Row12;
+import org.jooq.Record14;
+import org.jooq.Row14;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
@@ -20,9 +20,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
  * a new set of supplementary components is created along with it. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> {
+public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = 2146602653;
+    private static final long serialVersionUID = -723373905;
 
     /**
      * Setter for <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.
@@ -192,6 +192,34 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         return (String) get(11);
     }
 
+    /**
+     * Setter for <code>oagi.dt_sc.is_deprecated</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     */
+    public void setIsDeprecated(Byte value) {
+        set(12, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.is_deprecated</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     */
+    public Byte getIsDeprecated() {
+        return (Byte) get(12);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(13, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(13);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -202,17 +230,17 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     // -------------------------------------------------------------------------
-    // Record12 type implementation
+    // Record14 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 
     @Override
-    public Row12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> valuesRow() {
-        return (Row12) super.valuesRow();
+    public Row14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> valuesRow() {
+        return (Row14) super.valuesRow();
     }
 
     @Override
@@ -276,6 +304,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
+    public Field<Byte> field13() {
+        return DtSc.DT_SC.IS_DEPRECATED;
+    }
+
+    @Override
+    public Field<ULong> field14() {
+        return DtSc.DT_SC.REPLACED_BY;
+    }
+
+    @Override
     public ULong component1() {
         return getDtScId();
     }
@@ -336,6 +374,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
+    public Byte component13() {
+        return getIsDeprecated();
+    }
+
+    @Override
+    public ULong component14() {
+        return getReplacedBy();
+    }
+
+    @Override
     public ULong value1() {
         return getDtScId();
     }
@@ -393,6 +441,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     @Override
     public String value12() {
         return getFixedValue();
+    }
+
+    @Override
+    public Byte value13() {
+        return getIsDeprecated();
+    }
+
+    @Override
+    public ULong value14() {
+        return getReplacedBy();
     }
 
     @Override
@@ -468,7 +526,19 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     @Override
-    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12) {
+    public DtScRecord value13(Byte value) {
+        setIsDeprecated(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord value14(ULong value) {
+        setReplacedBy(value);
+        return this;
+    }
+
+    @Override
+    public DtScRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, Integer value8, Integer value9, ULong value10, String value11, String value12, Byte value13, ULong value14) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -481,6 +551,8 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         value10(value10);
         value11(value11);
         value12(value12);
+        value13(value13);
+        value14(value14);
         return this;
     }
 
@@ -498,7 +570,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     /**
      * Create a detached, initialised DtScRecord
      */
-    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue) {
+    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacedBy) {
         super(DtSc.DT_SC);
 
         set(0, dtScId);
@@ -513,5 +585,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         set(9, basedDtScId);
         set(10, defaultValue);
         set(11, fixedValue);
+        set(12, isDeprecated);
+        set(13, replacedBy);
     }
 }

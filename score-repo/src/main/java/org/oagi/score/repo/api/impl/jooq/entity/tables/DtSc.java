@@ -13,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -37,7 +37,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = -1136374028;
+    private static final long serialVersionUID = -1179221670;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>
@@ -113,6 +113,16 @@ public class DtSc extends TableImpl<DtScRecord> {
     public final TableField<DtScRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
+     * The column <code>oagi.dt_sc.is_deprecated</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     */
+    public final TableField<DtScRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
+
+    /**
+     * The column <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<DtScRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+
+    /**
      * Create a <code>oagi.dt_sc</code> table reference
      */
     public DtSc() {
@@ -172,15 +182,19 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     @Override
     public List<ForeignKey<DtScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK);
+        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK, Keys.DT_SC_REPLACED_BY_FK);
     }
 
     public Dt dt() {
         return new Dt(this, Keys.DT_SC_OWNER_DT_ID_FK);
     }
 
-    public DtSc dtSc() {
+    public DtSc dtScBasedDtScIdFk() {
         return new DtSc(this, Keys.DT_SC_BASED_DT_SC_ID_FK);
+    }
+
+    public DtSc dtScReplacedByFk() {
+        return new DtSc(this, Keys.DT_SC_REPLACED_BY_FK);
     }
 
     @Override
@@ -210,11 +224,11 @@ public class DtSc extends TableImpl<DtScRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }

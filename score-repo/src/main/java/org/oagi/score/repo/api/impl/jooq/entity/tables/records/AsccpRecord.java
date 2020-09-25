@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record20;
-import org.jooq.Row20;
+import org.jooq.Record21;
+import org.jooq.Row21;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
@@ -19,9 +19,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
  * An ASCCP specifies a role (or property) an ACC may play under another ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record20<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> {
+public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 881219369;
+    private static final long serialVersionUID = -1294752103;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.
@@ -286,45 +286,59 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
+     * Setter for <code>oagi.asccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(17, value);
+    }
+
+    /**
+     * Getter for <code>oagi.asccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(17);
+    }
+
+    /**
      * Setter for <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
      */
     public void setIsNillable(Byte value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.is_nillable</code>. This is corresponding to the XML schema nillable flag. Although the nillable may not apply in certain cases of the ASCCP (e.g., when it corresponds to an XSD group), the value is default to false for simplification.
      */
     public Byte getIsNillable() {
-        return (Byte) get(17);
+        return (Byte) get(18);
     }
 
     /**
      * Setter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAsccpId(ULong value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.prev_asccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAsccpId() {
-        return (ULong) get(18);
+        return (ULong) get(19);
     }
 
     /**
      * Setter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAsccpId(ULong value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.asccp.next_asccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAsccpId() {
-        return (ULong) get(19);
+        return (ULong) get(20);
     }
 
     // -------------------------------------------------------------------------
@@ -337,17 +351,17 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Record20 type implementation
+    // Record21 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 
     @Override
-    public Row20<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, Byte, ULong, ULong> valuesRow() {
-        return (Row20) super.valuesRow();
+    public Row21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> valuesRow() {
+        return (Row21) super.valuesRow();
     }
 
     @Override
@@ -436,17 +450,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Field<Byte> field18() {
+    public Field<ULong> field18() {
+        return Asccp.ASCCP.REPLACED_BY;
+    }
+
+    @Override
+    public Field<Byte> field19() {
         return Asccp.ASCCP.IS_NILLABLE;
     }
 
     @Override
-    public Field<ULong> field19() {
+    public Field<ULong> field20() {
         return Asccp.ASCCP.PREV_ASCCP_ID;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field21() {
         return Asccp.ASCCP.NEXT_ASCCP_ID;
     }
 
@@ -536,17 +555,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Byte component18() {
+    public ULong component18() {
+        return getReplacedBy();
+    }
+
+    @Override
+    public Byte component19() {
         return getIsNillable();
     }
 
     @Override
-    public ULong component19() {
+    public ULong component20() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component21() {
         return getNextAsccpId();
     }
 
@@ -636,17 +660,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Byte value18() {
+    public ULong value18() {
+        return getReplacedBy();
+    }
+
+    @Override
+    public Byte value19() {
         return getIsNillable();
     }
 
     @Override
-    public ULong value19() {
+    public ULong value20() {
         return getPrevAsccpId();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value21() {
         return getNextAsccpId();
     }
 
@@ -753,25 +782,31 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public AsccpRecord value18(Byte value) {
+    public AsccpRecord value18(ULong value) {
+        setReplacedBy(value);
+        return this;
+    }
+
+    @Override
+    public AsccpRecord value19(Byte value) {
         setIsNillable(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value19(ULong value) {
+    public AsccpRecord value20(ULong value) {
         setPrevAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord value20(ULong value) {
+    public AsccpRecord value21(ULong value) {
         setNextAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, String value14, ULong value15, Byte value16, Byte value17, Byte value18, ULong value19, ULong value20) {
+    public AsccpRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, ULong value7, String value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, String value14, ULong value15, Byte value16, Byte value17, ULong value18, Byte value19, ULong value20, ULong value21) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -792,6 +827,7 @@ State change can't be undone. But the history record can still keep the records 
         value18(value18);
         value19(value19);
         value20(value20);
+        value21(value21);
         return this;
     }
 
@@ -809,7 +845,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacedBy, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
         super(Asccp.ASCCP);
 
         set(0, asccpId);
@@ -829,8 +865,9 @@ State change can't be undone. But the history record can still keep the records 
         set(14, namespaceId);
         set(15, reusableIndicator);
         set(16, isDeprecated);
-        set(17, isNillable);
-        set(18, prevAsccpId);
-        set(19, nextAsccpId);
+        set(17, replacedBy);
+        set(18, isNillable);
+        set(19, prevAsccpId);
+        set(20, nextAsccpId);
     }
 }

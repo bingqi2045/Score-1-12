@@ -2254,4 +2254,51 @@ UPDATE `asccp`, (
 ) t SET `asccp`.`type` = 'BOD'
 WHERE `asccp`.`role_of_acc_id` = t.`acc_id`;
 
+-- Add `replaced_by` for all components
+ALTER TABLE `acc`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `acc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `acc` (`acc_id`);
+
+ALTER TABLE `ascc`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `ascc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `ascc` (`ascc_id`);
+
+ALTER TABLE `bcc`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `bcc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `bcc` (`bcc_id`);
+
+ALTER TABLE `asccp`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `asccp_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `asccp` (`asccp_id`);
+
+ALTER TABLE `bccp`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `bccp_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `bccp` (`bccp_id`);
+
+ALTER TABLE `dt`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `dt_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `dt` (`dt_id`);
+
+ALTER TABLE `dt_sc`
+    ADD COLUMN `is_deprecated` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).',
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `dt_sc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `dt_sc` (`dt_sc_id`);
+
+ALTER TABLE `code_list`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `code_list_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `code_list` (`code_list_id`);
+
+ALTER TABLE `code_list_value`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `code_list_value_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `code_list_value` (`code_list_value_id`);
+
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `agency_id_list_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+
+ALTER TABLE `agency_id_list_value`
+    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `agency_id_list_value_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+
+
 SET FOREIGN_KEY_CHECKS = 1;

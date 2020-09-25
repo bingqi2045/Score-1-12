@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValue
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
-    private static final long serialVersionUID = 583470273;
+    private static final long serialVersionUID = 254877994;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_value</code>
@@ -82,6 +82,11 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
      * The column <code>oagi.agency_id_list_value.is_deprecated</code>. Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
      */
     public final TableField<AgencyIdListValueRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
+
+    /**
+     * The column <code>oagi.agency_id_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<AgencyIdListValueRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
@@ -175,11 +180,15 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<AgencyIdListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListValueRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListValueRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
     }
 
     public AgencyIdList agencyIdList() {
         return new AgencyIdList(this, Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK);
+    }
+
+    public AgencyIdListValue agencyIdListValueReplacedByFk() {
+        return new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_REPLACED_BY_FK);
     }
 
     public AppUser agencyIdListValueCreatedByFk() {
@@ -229,11 +238,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }

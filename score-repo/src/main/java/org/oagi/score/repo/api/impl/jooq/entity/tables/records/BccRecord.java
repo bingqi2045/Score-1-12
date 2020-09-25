@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1614937545;
+    private static final long serialVersionUID = 347323690;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -320,12 +320,26 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
+     * Setter for <code>oagi.bcc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(19, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(19);
+    }
+
+    /**
      * Setter for <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.
 
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public void setIsNillable(Byte value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
@@ -334,63 +348,63 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
      */
     public Byte getIsNillable() {
-        return (Byte) get(19);
+        return (Byte) get(20);
     }
 
     /**
      * Setter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public void setDefaultValue(String value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.default_value</code>. This set the default value at the association level. 
      */
     public String getDefaultValue() {
-        return (String) get(20);
+        return (String) get(21);
     }
 
     /**
      * Setter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setFixedValue(String value) {
-        set(21, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getFixedValue() {
-        return (String) get(21);
+        return (String) get(22);
     }
 
     /**
      * Setter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevBccId(ULong value) {
-        set(22, value);
+        set(23, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.prev_bcc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevBccId() {
-        return (ULong) get(22);
+        return (ULong) get(23);
     }
 
     /**
      * Setter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextBccId(ULong value) {
-        set(23, value);
+        set(24, value);
     }
 
     /**
      * Getter for <code>oagi.bcc.next_bcc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextBccId() {
-        return (ULong) get(23);
+        return (ULong) get(24);
     }
 
     // -------------------------------------------------------------------------
@@ -416,7 +430,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, ULong seqKeyId, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, ULong seqKeyId, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -438,10 +452,11 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
         set(16, lastUpdateTimestamp);
         set(17, state);
         set(18, isDeprecated);
-        set(19, isNillable);
-        set(20, defaultValue);
-        set(21, fixedValue);
-        set(22, prevBccId);
-        set(23, nextBccId);
+        set(19, replacedBy);
+        set(20, isNillable);
+        set(21, defaultValue);
+        set(22, fixedValue);
+        set(23, prevBccId);
+        set(24, nextBccId);
     }
 }

@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record21;
-import org.jooq.Row21;
+import org.jooq.Record22;
+import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
@@ -20,9 +20,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
  * A BCCP can be then added as a property of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
+public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
 
-    private static final long serialVersionUID = 194144929;
+    private static final long serialVersionUID = -701023939;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.
@@ -165,12 +165,26 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     /**
+     * Setter for <code>oagi.bccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(10);
+    }
+
+    /**
      * Setter for <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
 
 This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
@@ -179,7 +193,7 @@ This column never change between the history and the current record for a given 
 This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(10);
+        return (ULong) get(11);
     }
 
     /**
@@ -188,7 +202,7 @@ This column never change between the history and the current record for a given 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
@@ -197,7 +211,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(11);
+        return (ULong) get(12);
     }
 
     /**
@@ -206,7 +220,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
@@ -215,7 +229,7 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
@@ -224,7 +238,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
@@ -233,7 +247,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(13);
+        return (LocalDateTime) get(14);
     }
 
     /**
@@ -242,7 +256,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
@@ -251,7 +265,7 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the revision has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(14);
+        return (LocalDateTime) get(15);
     }
 
     /**
@@ -260,7 +274,7 @@ The value of this column in the latest history record should be the same as that
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
@@ -269,77 +283,77 @@ State change can't be undone. But the history record can still keep the records 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
-        return (String) get(15);
+        return (String) get(16);
     }
 
     /**
      * Setter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
      */
     public void setIsNillable(Byte value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.is_nillable</code>. This is corresponding to the XML Schema nillable flag. Although the nillable may not apply to certain cases of the BCCP (e.g., when it is only used as XSD attribute), the value is default to false for simplification. 
      */
     public Byte getIsNillable() {
-        return (Byte) get(16);
+        return (Byte) get(17);
     }
 
     /**
      * Setter for <code>oagi.bccp.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setDefaultValue(String value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getDefaultValue() {
-        return (String) get(17);
+        return (String) get(18);
     }
 
     /**
      * Setter for <code>oagi.bccp.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public void setFixedValue(String value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
     public String getFixedValue() {
-        return (String) get(18);
+        return (String) get(19);
     }
 
     /**
      * Setter for <code>oagi.bccp.prev_bccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevBccpId(ULong value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.prev_bccp_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevBccpId() {
-        return (ULong) get(19);
+        return (ULong) get(20);
     }
 
     /**
      * Setter for <code>oagi.bccp.next_bccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextBccpId(ULong value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.bccp.next_bccp_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextBccpId() {
-        return (ULong) get(20);
+        return (ULong) get(21);
     }
 
     // -------------------------------------------------------------------------
@@ -352,17 +366,17 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Record21 type implementation
+    // Record22 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> valuesRow() {
-        return (Row21) super.valuesRow();
+    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> valuesRow() {
+        return (Row22) super.valuesRow();
     }
 
     @Override
@@ -417,56 +431,61 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public Field<ULong> field11() {
-        return Bccp.BCCP.CREATED_BY;
+        return Bccp.BCCP.REPLACED_BY;
     }
 
     @Override
     public Field<ULong> field12() {
-        return Bccp.BCCP.OWNER_USER_ID;
+        return Bccp.BCCP.CREATED_BY;
     }
 
     @Override
     public Field<ULong> field13() {
+        return Bccp.BCCP.OWNER_USER_ID;
+    }
+
+    @Override
+    public Field<ULong> field14() {
         return Bccp.BCCP.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field14() {
+    public Field<LocalDateTime> field15() {
         return Bccp.BCCP.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field15() {
+    public Field<LocalDateTime> field16() {
         return Bccp.BCCP.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<String> field16() {
+    public Field<String> field17() {
         return Bccp.BCCP.STATE;
     }
 
     @Override
-    public Field<Byte> field17() {
+    public Field<Byte> field18() {
         return Bccp.BCCP.IS_NILLABLE;
     }
 
     @Override
-    public Field<String> field18() {
+    public Field<String> field19() {
         return Bccp.BCCP.DEFAULT_VALUE;
     }
 
     @Override
-    public Field<String> field19() {
+    public Field<String> field20() {
         return Bccp.BCCP.FIXED_VALUE;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field21() {
         return Bccp.BCCP.PREV_BCCP_ID;
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<ULong> field22() {
         return Bccp.BCCP.NEXT_BCCP_ID;
     }
 
@@ -522,56 +541,61 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong component11() {
-        return getCreatedBy();
+        return getReplacedBy();
     }
 
     @Override
     public ULong component12() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong component13() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong component14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component14() {
+    public LocalDateTime component15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component15() {
+    public LocalDateTime component16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public String component16() {
+    public String component17() {
         return getState();
     }
 
     @Override
-    public Byte component17() {
+    public Byte component18() {
         return getIsNillable();
     }
 
     @Override
-    public String component18() {
+    public String component19() {
         return getDefaultValue();
     }
 
     @Override
-    public String component19() {
+    public String component20() {
         return getFixedValue();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component21() {
         return getPrevBccpId();
     }
 
     @Override
-    public ULong component21() {
+    public ULong component22() {
         return getNextBccpId();
     }
 
@@ -627,56 +651,61 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong value11() {
-        return getCreatedBy();
+        return getReplacedBy();
     }
 
     @Override
     public ULong value12() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong value13() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong value14() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value14() {
+    public LocalDateTime value15() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value15() {
+    public LocalDateTime value16() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public String value16() {
+    public String value17() {
         return getState();
     }
 
     @Override
-    public Byte value17() {
+    public Byte value18() {
         return getIsNillable();
     }
 
     @Override
-    public String value18() {
+    public String value19() {
         return getDefaultValue();
     }
 
     @Override
-    public String value19() {
+    public String value20() {
         return getFixedValue();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value21() {
         return getPrevBccpId();
     }
 
     @Override
-    public ULong value21() {
+    public ULong value22() {
         return getNextBccpId();
     }
 
@@ -742,72 +771,78 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public BccpRecord value11(ULong value) {
-        setCreatedBy(value);
+        setReplacedBy(value);
         return this;
     }
 
     @Override
     public BccpRecord value12(ULong value) {
-        setOwnerUserId(value);
+        setCreatedBy(value);
         return this;
     }
 
     @Override
     public BccpRecord value13(ULong value) {
+        setOwnerUserId(value);
+        return this;
+    }
+
+    @Override
+    public BccpRecord value14(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public BccpRecord value14(LocalDateTime value) {
+    public BccpRecord value15(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public BccpRecord value15(LocalDateTime value) {
+    public BccpRecord value16(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public BccpRecord value16(String value) {
+    public BccpRecord value17(String value) {
         setState(value);
         return this;
     }
 
     @Override
-    public BccpRecord value17(Byte value) {
+    public BccpRecord value18(Byte value) {
         setIsNillable(value);
         return this;
     }
 
     @Override
-    public BccpRecord value18(String value) {
+    public BccpRecord value19(String value) {
         setDefaultValue(value);
         return this;
     }
 
     @Override
-    public BccpRecord value19(String value) {
+    public BccpRecord value20(String value) {
         setFixedValue(value);
         return this;
     }
 
     @Override
-    public BccpRecord value20(ULong value) {
+    public BccpRecord value21(ULong value) {
         setPrevBccpId(value);
         return this;
     }
 
     @Override
-    public BccpRecord value21(ULong value) {
+    public BccpRecord value22(ULong value) {
         setNextBccpId(value);
         return this;
     }
 
     @Override
-    public BccpRecord values(ULong value1, String value2, String value3, String value4, ULong value5, String value6, String value7, String value8, ULong value9, Byte value10, ULong value11, ULong value12, ULong value13, LocalDateTime value14, LocalDateTime value15, String value16, Byte value17, String value18, String value19, ULong value20, ULong value21) {
+    public BccpRecord values(ULong value1, String value2, String value3, String value4, ULong value5, String value6, String value7, String value8, ULong value9, Byte value10, ULong value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, String value19, String value20, ULong value21, ULong value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -829,6 +864,7 @@ State change can't be undone. But the history record can still keep the records 
         value19(value19);
         value20(value20);
         value21(value21);
+        value22(value22);
         return this;
     }
 
@@ -846,7 +882,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised BccpRecord
      */
-    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
+    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
         super(Bccp.BCCP);
 
         set(0, bccpId);
@@ -859,16 +895,17 @@ State change can't be undone. But the history record can still keep the records 
         set(7, definitionSource);
         set(8, namespaceId);
         set(9, isDeprecated);
-        set(10, createdBy);
-        set(11, ownerUserId);
-        set(12, lastUpdatedBy);
-        set(13, creationTimestamp);
-        set(14, lastUpdateTimestamp);
-        set(15, state);
-        set(16, isNillable);
-        set(17, defaultValue);
-        set(18, fixedValue);
-        set(19, prevBccpId);
-        set(20, nextBccpId);
+        set(10, replacedBy);
+        set(11, createdBy);
+        set(12, ownerUserId);
+        set(13, lastUpdatedBy);
+        set(14, creationTimestamp);
+        set(15, lastUpdateTimestamp);
+        set(16, state);
+        set(17, isNillable);
+        set(18, defaultValue);
+        set(19, fixedValue);
+        set(20, prevBccpId);
+        set(21, nextBccpId);
     }
 }

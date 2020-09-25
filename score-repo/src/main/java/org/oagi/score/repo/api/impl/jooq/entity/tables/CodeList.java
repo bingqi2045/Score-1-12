@@ -13,7 +13,6 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -35,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 19284614;
+    private static final long serialVersionUID = 2028511267;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -119,6 +118,11 @@ public class CodeList extends TableImpl<CodeListRecord> {
      * The column <code>oagi.code_list.is_deprecated</code>. Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).
      */
     public final TableField<CodeListRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the code list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
+
+    /**
+     * The column <code>oagi.code_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<CodeListRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
@@ -217,7 +221,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<CodeListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_NAMESPACE_ID_FK, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
+        return Arrays.<ForeignKey<CodeListRecord, ?>>asList(Keys.CODE_LIST_AGENCY_ID_FK, Keys.CODE_LIST_NAMESPACE_ID_FK, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK, Keys.CODE_LIST_REPLACED_BY_FK, Keys.CODE_LIST_CREATED_BY_FK, Keys.CODE_LIST_OWNER_USER_ID_FK, Keys.CODE_LIST_LAST_UPDATED_BY_FK, Keys.CODE_LIST_PREV_CODE_LIST_ID_FK, Keys.CODE_LIST_NEXT_CODE_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
@@ -230,6 +234,10 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     public CodeList codeListBasedCodeListIdFk() {
         return new CodeList(this, Keys.CODE_LIST_BASED_CODE_LIST_ID_FK);
+    }
+
+    public CodeList codeListReplacedByFk() {
+        return new CodeList(this, Keys.CODE_LIST_REPLACED_BY_FK);
     }
 
     public AppUser codeListCreatedByFk() {
@@ -276,14 +284,5 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     @Override
     public CodeList rename(Name name) {
         return new CodeList(name, null);
-    }
-
-    // -------------------------------------------------------------------------
-    // Row22 type methods
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row22<ULong, String, String, String, String, ULong, String, String, String, String, ULong, ULong, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
-        return (Row22) super.fieldsRow();
     }
 }

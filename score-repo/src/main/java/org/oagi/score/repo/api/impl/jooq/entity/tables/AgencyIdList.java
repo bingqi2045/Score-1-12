@@ -13,7 +13,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
-    private static final long serialVersionUID = -942149600;
+    private static final long serialVersionUID = 1757731877;
 
     /**
      * The reference instance of <code>oagi.agency_id_list</code>
@@ -130,6 +130,11 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     public final TableField<AgencyIdListRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the agency id list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
 
     /**
+     * The column <code>oagi.agency_id_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<AgencyIdListRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+
+    /**
      * The column <code>oagi.agency_id_list.owner_user_id</code>. Foreign key to the APP_USER table. This is the user who owns the entity, is allowed to edit the entity, and who can transfer the ownership to another user.
 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
@@ -201,7 +206,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<AgencyIdListRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NAMESPACE_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListRecord, ?>>asList(Keys.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_BASED_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NAMESPACE_ID_FK, Keys.AGENCY_ID_LIST_CREATED_BY_FK, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_REPLACED_BY_FK, Keys.AGENCY_ID_LIST_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_PREV_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_NEXT_AGENCY_ID_LIST_ID_FK);
     }
 
     public AgencyIdListValue agencyIdListValue() {
@@ -222,6 +227,10 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     public AppUser agencyIdListLastUpdatedByFk() {
         return new AppUser(this, Keys.AGENCY_ID_LIST_LAST_UPDATED_BY_FK);
+    }
+
+    public AgencyIdList agencyIdListReplacedByFk() {
+        return new AgencyIdList(this, Keys.AGENCY_ID_LIST_REPLACED_BY_FK);
     }
 
     public AppUser agencyIdListOwnerUserIdFk() {
@@ -263,11 +272,11 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

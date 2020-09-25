@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = -782074067;
+    private static final long serialVersionUID = 968683450;
 
     /**
      * The reference instance of <code>oagi.bccp</code>
@@ -100,6 +100,11 @@ public class Bccp extends TableImpl<BccpRecord> {
      * The column <code>oagi.bccp.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public final TableField<BccpRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
+
+    /**
+     * The column <code>oagi.bccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<BccpRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.bccp.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
@@ -228,7 +233,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<BccpRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK);
+        return Arrays.<ForeignKey<BccpRecord, ?>>asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_REPLACED_BY_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK);
     }
 
     public Dt dt() {
@@ -237,6 +242,10 @@ State change can't be undone. But the history record can still keep the records 
 
     public Namespace namespace() {
         return new Namespace(this, Keys.BCCP_NAMESPACE_ID_FK);
+    }
+
+    public Bccp bccpReplacedByFk() {
+        return new Bccp(this, Keys.BCCP_REPLACED_BY_FK);
     }
 
     public AppUser bccpCreatedByFk() {
@@ -286,11 +295,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }

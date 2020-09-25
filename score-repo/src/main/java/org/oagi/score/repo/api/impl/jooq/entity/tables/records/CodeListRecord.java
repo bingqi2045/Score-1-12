@@ -6,10 +6,7 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import java.time.LocalDateTime;
 
-import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record22;
-import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
@@ -21,9 +18,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
  * code list will be copied.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implements Record22<ULong, String, String, String, String, ULong, String, String, String, String, ULong, ULong, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
+public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = -1307853386;
+    private static final long serialVersionUID = 424551573;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.
@@ -222,17 +219,31 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implemen
     }
 
     /**
+     * Setter for <code>oagi.code_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(14, value);
+    }
+
+    /**
+     * Getter for <code>oagi.code_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(14);
+    }
+
+    /**
      * Setter for <code>oagi.code_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(ULong value) {
-        set(14, value);
+        set(15, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(14);
+        return (ULong) get(15);
     }
 
     /**
@@ -241,7 +252,7 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> implemen
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(15, value);
+        set(16, value);
     }
 
     /**
@@ -250,91 +261,91 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(15);
+        return (ULong) get(16);
     }
 
     /**
      * Setter for <code>oagi.code_list.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
      */
     public void setLastUpdatedBy(ULong value) {
-        set(16, value);
+        set(17, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(16);
+        return (ULong) get(17);
     }
 
     /**
      * Setter for <code>oagi.code_list.creation_timestamp</code>. Timestamp when the code list was created.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(17, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.creation_timestamp</code>. Timestamp when the code list was created.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(17);
+        return (LocalDateTime) get(18);
     }
 
     /**
      * Setter for <code>oagi.code_list.last_update_timestamp</code>. Timestamp when the code list was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.last_update_timestamp</code>. Timestamp when the code list was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(18);
+        return (LocalDateTime) get(19);
     }
 
     /**
      * Setter for <code>oagi.code_list.state</code>.
      */
     public void setState(String value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.state</code>.
      */
     public String getState() {
-        return (String) get(19);
+        return (String) get(20);
     }
 
     /**
      * Setter for <code>oagi.code_list.prev_code_list_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevCodeListId(ULong value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.prev_code_list_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevCodeListId() {
-        return (ULong) get(20);
+        return (ULong) get(21);
     }
 
     /**
      * Setter for <code>oagi.code_list.next_code_list_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextCodeListId(ULong value) {
-        set(21, value);
+        set(22, value);
     }
 
     /**
      * Getter for <code>oagi.code_list.next_code_list_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextCodeListId() {
-        return (ULong) get(21);
+        return (ULong) get(22);
     }
 
     // -------------------------------------------------------------------------
@@ -344,509 +355,6 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     @Override
     public Record1<ULong> key() {
         return (Record1) super.key();
-    }
-
-    // -------------------------------------------------------------------------
-    // Record22 type implementation
-    // -------------------------------------------------------------------------
-
-    @Override
-    public Row22<ULong, String, String, String, String, ULong, String, String, String, String, ULong, ULong, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
-        return (Row22) super.fieldsRow();
-    }
-
-    @Override
-    public Row22<ULong, String, String, String, String, ULong, String, String, String, String, ULong, ULong, Byte, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
-        return (Row22) super.valuesRow();
-    }
-
-    @Override
-    public Field<ULong> field1() {
-        return CodeList.CODE_LIST.CODE_LIST_ID;
-    }
-
-    @Override
-    public Field<String> field2() {
-        return CodeList.CODE_LIST.GUID;
-    }
-
-    @Override
-    public Field<String> field3() {
-        return CodeList.CODE_LIST.ENUM_TYPE_GUID;
-    }
-
-    @Override
-    public Field<String> field4() {
-        return CodeList.CODE_LIST.NAME;
-    }
-
-    @Override
-    public Field<String> field5() {
-        return CodeList.CODE_LIST.LIST_ID;
-    }
-
-    @Override
-    public Field<ULong> field6() {
-        return CodeList.CODE_LIST.AGENCY_ID;
-    }
-
-    @Override
-    public Field<String> field7() {
-        return CodeList.CODE_LIST.VERSION_ID;
-    }
-
-    @Override
-    public Field<String> field8() {
-        return CodeList.CODE_LIST.DEFINITION;
-    }
-
-    @Override
-    public Field<String> field9() {
-        return CodeList.CODE_LIST.REMARK;
-    }
-
-    @Override
-    public Field<String> field10() {
-        return CodeList.CODE_LIST.DEFINITION_SOURCE;
-    }
-
-    @Override
-    public Field<ULong> field11() {
-        return CodeList.CODE_LIST.NAMESPACE_ID;
-    }
-
-    @Override
-    public Field<ULong> field12() {
-        return CodeList.CODE_LIST.BASED_CODE_LIST_ID;
-    }
-
-    @Override
-    public Field<Byte> field13() {
-        return CodeList.CODE_LIST.EXTENSIBLE_INDICATOR;
-    }
-
-    @Override
-    public Field<Byte> field14() {
-        return CodeList.CODE_LIST.IS_DEPRECATED;
-    }
-
-    @Override
-    public Field<ULong> field15() {
-        return CodeList.CODE_LIST.CREATED_BY;
-    }
-
-    @Override
-    public Field<ULong> field16() {
-        return CodeList.CODE_LIST.OWNER_USER_ID;
-    }
-
-    @Override
-    public Field<ULong> field17() {
-        return CodeList.CODE_LIST.LAST_UPDATED_BY;
-    }
-
-    @Override
-    public Field<LocalDateTime> field18() {
-        return CodeList.CODE_LIST.CREATION_TIMESTAMP;
-    }
-
-    @Override
-    public Field<LocalDateTime> field19() {
-        return CodeList.CODE_LIST.LAST_UPDATE_TIMESTAMP;
-    }
-
-    @Override
-    public Field<String> field20() {
-        return CodeList.CODE_LIST.STATE;
-    }
-
-    @Override
-    public Field<ULong> field21() {
-        return CodeList.CODE_LIST.PREV_CODE_LIST_ID;
-    }
-
-    @Override
-    public Field<ULong> field22() {
-        return CodeList.CODE_LIST.NEXT_CODE_LIST_ID;
-    }
-
-    @Override
-    public ULong component1() {
-        return getCodeListId();
-    }
-
-    @Override
-    public String component2() {
-        return getGuid();
-    }
-
-    @Override
-    public String component3() {
-        return getEnumTypeGuid();
-    }
-
-    @Override
-    public String component4() {
-        return getName();
-    }
-
-    @Override
-    public String component5() {
-        return getListId();
-    }
-
-    @Override
-    public ULong component6() {
-        return getAgencyId();
-    }
-
-    @Override
-    public String component7() {
-        return getVersionId();
-    }
-
-    @Override
-    public String component8() {
-        return getDefinition();
-    }
-
-    @Override
-    public String component9() {
-        return getRemark();
-    }
-
-    @Override
-    public String component10() {
-        return getDefinitionSource();
-    }
-
-    @Override
-    public ULong component11() {
-        return getNamespaceId();
-    }
-
-    @Override
-    public ULong component12() {
-        return getBasedCodeListId();
-    }
-
-    @Override
-    public Byte component13() {
-        return getExtensibleIndicator();
-    }
-
-    @Override
-    public Byte component14() {
-        return getIsDeprecated();
-    }
-
-    @Override
-    public ULong component15() {
-        return getCreatedBy();
-    }
-
-    @Override
-    public ULong component16() {
-        return getOwnerUserId();
-    }
-
-    @Override
-    public ULong component17() {
-        return getLastUpdatedBy();
-    }
-
-    @Override
-    public LocalDateTime component18() {
-        return getCreationTimestamp();
-    }
-
-    @Override
-    public LocalDateTime component19() {
-        return getLastUpdateTimestamp();
-    }
-
-    @Override
-    public String component20() {
-        return getState();
-    }
-
-    @Override
-    public ULong component21() {
-        return getPrevCodeListId();
-    }
-
-    @Override
-    public ULong component22() {
-        return getNextCodeListId();
-    }
-
-    @Override
-    public ULong value1() {
-        return getCodeListId();
-    }
-
-    @Override
-    public String value2() {
-        return getGuid();
-    }
-
-    @Override
-    public String value3() {
-        return getEnumTypeGuid();
-    }
-
-    @Override
-    public String value4() {
-        return getName();
-    }
-
-    @Override
-    public String value5() {
-        return getListId();
-    }
-
-    @Override
-    public ULong value6() {
-        return getAgencyId();
-    }
-
-    @Override
-    public String value7() {
-        return getVersionId();
-    }
-
-    @Override
-    public String value8() {
-        return getDefinition();
-    }
-
-    @Override
-    public String value9() {
-        return getRemark();
-    }
-
-    @Override
-    public String value10() {
-        return getDefinitionSource();
-    }
-
-    @Override
-    public ULong value11() {
-        return getNamespaceId();
-    }
-
-    @Override
-    public ULong value12() {
-        return getBasedCodeListId();
-    }
-
-    @Override
-    public Byte value13() {
-        return getExtensibleIndicator();
-    }
-
-    @Override
-    public Byte value14() {
-        return getIsDeprecated();
-    }
-
-    @Override
-    public ULong value15() {
-        return getCreatedBy();
-    }
-
-    @Override
-    public ULong value16() {
-        return getOwnerUserId();
-    }
-
-    @Override
-    public ULong value17() {
-        return getLastUpdatedBy();
-    }
-
-    @Override
-    public LocalDateTime value18() {
-        return getCreationTimestamp();
-    }
-
-    @Override
-    public LocalDateTime value19() {
-        return getLastUpdateTimestamp();
-    }
-
-    @Override
-    public String value20() {
-        return getState();
-    }
-
-    @Override
-    public ULong value21() {
-        return getPrevCodeListId();
-    }
-
-    @Override
-    public ULong value22() {
-        return getNextCodeListId();
-    }
-
-    @Override
-    public CodeListRecord value1(ULong value) {
-        setCodeListId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value2(String value) {
-        setGuid(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value3(String value) {
-        setEnumTypeGuid(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value4(String value) {
-        setName(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value5(String value) {
-        setListId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value6(ULong value) {
-        setAgencyId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value7(String value) {
-        setVersionId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value8(String value) {
-        setDefinition(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value9(String value) {
-        setRemark(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value10(String value) {
-        setDefinitionSource(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value11(ULong value) {
-        setNamespaceId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value12(ULong value) {
-        setBasedCodeListId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value13(Byte value) {
-        setExtensibleIndicator(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value14(Byte value) {
-        setIsDeprecated(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value15(ULong value) {
-        setCreatedBy(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value16(ULong value) {
-        setOwnerUserId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value17(ULong value) {
-        setLastUpdatedBy(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value18(LocalDateTime value) {
-        setCreationTimestamp(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value19(LocalDateTime value) {
-        setLastUpdateTimestamp(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value20(String value) {
-        setState(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value21(ULong value) {
-        setPrevCodeListId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord value22(ULong value) {
-        setNextCodeListId(value);
-        return this;
-    }
-
-    @Override
-    public CodeListRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, String value7, String value8, String value9, String value10, ULong value11, ULong value12, Byte value13, Byte value14, ULong value15, ULong value16, ULong value17, LocalDateTime value18, LocalDateTime value19, String value20, ULong value21, ULong value22) {
-        value1(value1);
-        value2(value2);
-        value3(value3);
-        value4(value4);
-        value5(value5);
-        value6(value6);
-        value7(value7);
-        value8(value8);
-        value9(value9);
-        value10(value10);
-        value11(value11);
-        value12(value12);
-        value13(value13);
-        value14(value14);
-        value15(value15);
-        value16(value16);
-        value17(value17);
-        value18(value18);
-        value19(value19);
-        value20(value20);
-        value21(value21);
-        value22(value22);
-        return this;
     }
 
     // -------------------------------------------------------------------------
@@ -863,7 +371,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised CodeListRecord
      */
-    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
+    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
         super(CodeList.CODE_LIST);
 
         set(0, codeListId);
@@ -880,13 +388,14 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(11, basedCodeListId);
         set(12, extensibleIndicator);
         set(13, isDeprecated);
-        set(14, createdBy);
-        set(15, ownerUserId);
-        set(16, lastUpdatedBy);
-        set(17, creationTimestamp);
-        set(18, lastUpdateTimestamp);
-        set(19, state);
-        set(20, prevCodeListId);
-        set(21, nextCodeListId);
+        set(14, replacedBy);
+        set(15, createdBy);
+        set(16, ownerUserId);
+        set(17, lastUpdatedBy);
+        set(18, creationTimestamp);
+        set(19, lastUpdateTimestamp);
+        set(20, state);
+        set(21, prevCodeListId);
+        set(22, nextCodeListId);
     }
 }

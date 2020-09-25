@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record14;
-import org.jooq.Row14;
+import org.jooq.Record15;
+import org.jooq.Row15;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
@@ -19,9 +19,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
  * This table captures the values within an agency identification list.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListValueRecord> implements Record14<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
+public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListValueRecord> implements Record15<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = -654831253;
+    private static final long serialVersionUID = 1581536633;
 
     /**
      * Setter for <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary key column.
@@ -122,17 +122,31 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
     }
 
     /**
+     * Setter for <code>oagi.agency_id_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>oagi.agency_id_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(7);
+    }
+
+    /**
      * Setter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
      */
     public void setCreatedBy(ULong value) {
-        set(7, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(7);
+        return (ULong) get(8);
     }
 
     /**
@@ -141,7 +155,7 @@ public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListVal
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public void setOwnerUserId(ULong value) {
-        set(8, value);
+        set(9, value);
     }
 
     /**
@@ -150,77 +164,77 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership.
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(8);
+        return (ULong) get(9);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list_value.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
      */
     public void setLastUpdatedBy(ULong value) {
-        set(9, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the code list.
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(9);
+        return (ULong) get(10);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list_value.creation_timestamp</code>. Timestamp when the code list was created.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(10, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.creation_timestamp</code>. Timestamp when the code list was created.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(10);
+        return (LocalDateTime) get(11);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(11, value);
+        set(12, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.last_update_timestamp</code>. Timestamp when the code list was last updated.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(11);
+        return (LocalDateTime) get(12);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAgencyIdListValueId(ULong value) {
-        set(12, value);
+        set(13, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.prev_agency_id_list_value_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAgencyIdListValueId() {
-        return (ULong) get(12);
+        return (ULong) get(13);
     }
 
     /**
      * Setter for <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAgencyIdListValueId(ULong value) {
-        set(13, value);
+        set(14, value);
     }
 
     /**
      * Getter for <code>oagi.agency_id_list_value.next_agency_id_list_value_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAgencyIdListValueId() {
-        return (ULong) get(13);
+        return (ULong) get(14);
     }
 
     // -------------------------------------------------------------------------
@@ -233,17 +247,17 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     }
 
     // -------------------------------------------------------------------------
-    // Record14 type implementation
+    // Record15 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 
     @Override
-    public Row14<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
-        return (Row14) super.valuesRow();
+    public Row15<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> valuesRow() {
+        return (Row15) super.valuesRow();
     }
 
     @Override
@@ -283,36 +297,41 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public Field<ULong> field8() {
-        return AgencyIdListValue.AGENCY_ID_LIST_VALUE.CREATED_BY;
+        return AgencyIdListValue.AGENCY_ID_LIST_VALUE.REPLACED_BY;
     }
 
     @Override
     public Field<ULong> field9() {
-        return AgencyIdListValue.AGENCY_ID_LIST_VALUE.OWNER_USER_ID;
+        return AgencyIdListValue.AGENCY_ID_LIST_VALUE.CREATED_BY;
     }
 
     @Override
     public Field<ULong> field10() {
+        return AgencyIdListValue.AGENCY_ID_LIST_VALUE.OWNER_USER_ID;
+    }
+
+    @Override
+    public Field<ULong> field11() {
         return AgencyIdListValue.AGENCY_ID_LIST_VALUE.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field11() {
+    public Field<LocalDateTime> field12() {
         return AgencyIdListValue.AGENCY_ID_LIST_VALUE.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field12() {
+    public Field<LocalDateTime> field13() {
         return AgencyIdListValue.AGENCY_ID_LIST_VALUE.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<ULong> field14() {
         return AgencyIdListValue.AGENCY_ID_LIST_VALUE.PREV_AGENCY_ID_LIST_VALUE_ID;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<ULong> field15() {
         return AgencyIdListValue.AGENCY_ID_LIST_VALUE.NEXT_AGENCY_ID_LIST_VALUE_ID;
     }
 
@@ -353,36 +372,41 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong component8() {
-        return getCreatedBy();
+        return getReplacedBy();
     }
 
     @Override
     public ULong component9() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong component10() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong component11() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component11() {
+    public LocalDateTime component12() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component12() {
+    public LocalDateTime component13() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong component13() {
+    public ULong component14() {
         return getPrevAgencyIdListValueId();
     }
 
     @Override
-    public ULong component14() {
+    public ULong component15() {
         return getNextAgencyIdListValueId();
     }
 
@@ -423,36 +447,41 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong value8() {
-        return getCreatedBy();
+        return getReplacedBy();
     }
 
     @Override
     public ULong value9() {
-        return getOwnerUserId();
+        return getCreatedBy();
     }
 
     @Override
     public ULong value10() {
+        return getOwnerUserId();
+    }
+
+    @Override
+    public ULong value11() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value11() {
+    public LocalDateTime value12() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value12() {
+    public LocalDateTime value13() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public ULong value13() {
+    public ULong value14() {
         return getPrevAgencyIdListValueId();
     }
 
     @Override
-    public ULong value14() {
+    public ULong value15() {
         return getNextAgencyIdListValueId();
     }
 
@@ -500,48 +529,54 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public AgencyIdListValueRecord value8(ULong value) {
-        setCreatedBy(value);
+        setReplacedBy(value);
         return this;
     }
 
     @Override
     public AgencyIdListValueRecord value9(ULong value) {
-        setOwnerUserId(value);
+        setCreatedBy(value);
         return this;
     }
 
     @Override
     public AgencyIdListValueRecord value10(ULong value) {
+        setOwnerUserId(value);
+        return this;
+    }
+
+    @Override
+    public AgencyIdListValueRecord value11(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public AgencyIdListValueRecord value11(LocalDateTime value) {
+    public AgencyIdListValueRecord value12(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public AgencyIdListValueRecord value12(LocalDateTime value) {
+    public AgencyIdListValueRecord value13(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public AgencyIdListValueRecord value13(ULong value) {
+    public AgencyIdListValueRecord value14(ULong value) {
         setPrevAgencyIdListValueId(value);
         return this;
     }
 
     @Override
-    public AgencyIdListValueRecord value14(ULong value) {
+    public AgencyIdListValueRecord value15(ULong value) {
         setNextAgencyIdListValueId(value);
         return this;
     }
 
     @Override
-    public AgencyIdListValueRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, Byte value7, ULong value8, ULong value9, ULong value10, LocalDateTime value11, LocalDateTime value12, ULong value13, ULong value14) {
+    public AgencyIdListValueRecord values(ULong value1, String value2, String value3, String value4, String value5, ULong value6, Byte value7, ULong value8, ULong value9, ULong value10, ULong value11, LocalDateTime value12, LocalDateTime value13, ULong value14, ULong value15) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -556,6 +591,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         value12(value12);
         value13(value13);
         value14(value14);
+        value15(value15);
         return this;
     }
 
@@ -573,7 +609,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised AgencyIdListValueRecord
      */
-    public AgencyIdListValueRecord(ULong agencyIdListValueId, String guid, String value, String name, String definition, ULong ownerListId, Byte isDeprecated, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevAgencyIdListValueId, ULong nextAgencyIdListValueId) {
+    public AgencyIdListValueRecord(ULong agencyIdListValueId, String guid, String value, String name, String definition, ULong ownerListId, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevAgencyIdListValueId, ULong nextAgencyIdListValueId) {
         super(AgencyIdListValue.AGENCY_ID_LIST_VALUE);
 
         set(0, agencyIdListValueId);
@@ -583,12 +619,13 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(4, definition);
         set(5, ownerListId);
         set(6, isDeprecated);
-        set(7, createdBy);
-        set(8, ownerUserId);
-        set(9, lastUpdatedBy);
-        set(10, creationTimestamp);
-        set(11, lastUpdateTimestamp);
-        set(12, prevAgencyIdListValueId);
-        set(13, nextAgencyIdListValueId);
+        set(7, replacedBy);
+        set(8, createdBy);
+        set(9, ownerUserId);
+        set(10, lastUpdatedBy);
+        set(11, creationTimestamp);
+        set(12, lastUpdateTimestamp);
+        set(13, prevAgencyIdListValueId);
+        set(14, nextAgencyIdListValueId);
     }
 }

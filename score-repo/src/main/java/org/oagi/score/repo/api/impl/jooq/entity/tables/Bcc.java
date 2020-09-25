@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = -722760051;
+    private static final long serialVersionUID = -306123739;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -162,6 +162,11 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<BccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
+     * The column <code>oagi.bcc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public final TableField<BccRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+
+    /**
      * The column <code>oagi.bcc.is_nillable</code>. @deprecated since 2.0.0 in favor of impossibility of nillable association (element reference) in XML schema.
 
 Indicate whether the field can have a NULL This is corresponding to the nillable flag in the XML schema.
@@ -248,7 +253,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_SEQ_KEY_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
+        return Arrays.<ForeignKey<BccRecord, ?>>asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_SEQ_KEY_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_REPLACED_BY_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
     }
 
     public Bccp bccp() {
@@ -273,6 +278,10 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
 
     public AppUser bccLastUpdatedByFk() {
         return new AppUser(this, Keys.BCC_LAST_UPDATED_BY_FK);
+    }
+
+    public Bcc bccReplacedByFk() {
+        return new Bcc(this, Keys.BCC_REPLACED_BY_FK);
     }
 
     public Bcc bccPrevBccIdFk() {

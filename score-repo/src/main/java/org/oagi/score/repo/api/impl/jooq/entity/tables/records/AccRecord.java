@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record21;
-import org.jooq.Row21;
+import org.jooq.Record22;
+import org.jooq.Row22;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
@@ -27,9 +27,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
  * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record21<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> {
+public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record22<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 1336168597;
+    private static final long serialVersionUID = 1926932440;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -288,45 +288,59 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
+     * Setter for <code>oagi.acc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public void setReplacedBy(ULong value) {
+        set(18, value);
+    }
+
+    /**
+     * Getter for <code>oagi.acc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     */
+    public ULong getReplacedBy() {
+        return (ULong) get(18);
+    }
+
+    /**
      * Setter for <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
      */
     public void setIsAbstract(Byte value) {
-        set(18, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
      */
     public Byte getIsAbstract() {
-        return (Byte) get(18);
+        return (Byte) get(19);
     }
 
     /**
      * Setter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAccId(ULong value) {
-        set(19, value);
+        set(20, value);
     }
 
     /**
      * Getter for <code>oagi.acc.prev_acc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAccId() {
-        return (ULong) get(19);
+        return (ULong) get(20);
     }
 
     /**
      * Setter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAccId(ULong value) {
-        set(20, value);
+        set(21, value);
     }
 
     /**
      * Getter for <code>oagi.acc.next_acc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAccId() {
-        return (ULong) get(20);
+        return (ULong) get(21);
     }
 
     // -------------------------------------------------------------------------
@@ -339,17 +353,17 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Record21 type implementation
+    // Record22 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row22<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, Byte, ULong, ULong> valuesRow() {
-        return (Row21) super.valuesRow();
+    public Row22<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> valuesRow() {
+        return (Row22) super.valuesRow();
     }
 
     @Override
@@ -443,17 +457,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Field<Byte> field19() {
+    public Field<ULong> field19() {
+        return Acc.ACC.REPLACED_BY;
+    }
+
+    @Override
+    public Field<Byte> field20() {
         return Acc.ACC.IS_ABSTRACT;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field21() {
         return Acc.ACC.PREV_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<ULong> field22() {
         return Acc.ACC.NEXT_ACC_ID;
     }
 
@@ -548,17 +567,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Byte component19() {
+    public ULong component19() {
+        return getReplacedBy();
+    }
+
+    @Override
+    public Byte component20() {
         return getIsAbstract();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component21() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong component21() {
+    public ULong component22() {
         return getNextAccId();
     }
 
@@ -653,17 +677,22 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public Byte value19() {
+    public ULong value19() {
+        return getReplacedBy();
+    }
+
+    @Override
+    public Byte value20() {
         return getIsAbstract();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value21() {
         return getPrevAccId();
     }
 
     @Override
-    public ULong value21() {
+    public ULong value22() {
         return getNextAccId();
     }
 
@@ -776,25 +805,31 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     @Override
-    public AccRecord value19(Byte value) {
+    public AccRecord value19(ULong value) {
+        setReplacedBy(value);
+        return this;
+    }
+
+    @Override
+    public AccRecord value20(Byte value) {
         setIsAbstract(value);
         return this;
     }
 
     @Override
-    public AccRecord value20(ULong value) {
+    public AccRecord value21(ULong value) {
         setPrevAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord value21(ULong value) {
+    public AccRecord value22(ULong value) {
         setNextAccId(value);
         return this;
     }
 
     @Override
-    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, Byte value19, ULong value20, ULong value21) {
+    public AccRecord values(ULong value1, String value2, String value3, String value4, String value5, String value6, String value7, ULong value8, String value9, Integer value10, ULong value11, ULong value12, ULong value13, ULong value14, LocalDateTime value15, LocalDateTime value16, String value17, Byte value18, ULong value19, Byte value20, ULong value21, ULong value22) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -816,6 +851,7 @@ State change can't be undone. But the history record can still keep the records 
         value19(value19);
         value20(value20);
         value21(value21);
+        value22(value22);
         return this;
     }
 
@@ -833,7 +869,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
+    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
         super(Acc.ACC);
 
         set(0, accId);
@@ -854,8 +890,9 @@ State change can't be undone. But the history record can still keep the records 
         set(15, lastUpdateTimestamp);
         set(16, state);
         set(17, isDeprecated);
-        set(18, isAbstract);
-        set(19, prevAccId);
-        set(20, nextAccId);
+        set(18, replacedBy);
+        set(19, isAbstract);
+        set(20, prevAccId);
+        set(21, nextAccId);
     }
 }
