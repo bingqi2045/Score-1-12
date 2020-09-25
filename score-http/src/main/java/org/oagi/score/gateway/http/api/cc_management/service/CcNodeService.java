@@ -263,7 +263,7 @@ public class CcNodeService extends EventHandler {
         createAsccpRepositoryRequest.setInitialPropertyTerm("Extension");
         createAsccpRepositoryRequest.setInitialType(CcASCCPType.Extension);
         createAsccpRepositoryRequest.setDefinition(extensionAsccpDefintion);
-        createAsccpRepositoryRequest.setDefinitionSoruce(extensionAsccpDefintionSource);
+        createAsccpRepositoryRequest.setDefinitionSource(extensionAsccpDefintionSource);
         createAsccpRepositoryRequest.setReusable(false);
 
         CreateAsccpRepositoryResponse createAsccpRepositoryResponse
@@ -1200,7 +1200,7 @@ public class CcNodeService extends EventHandler {
         String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
                 .replaceAll(" ", "");
         dataAreaAsccpRequest.setDefinition("Is where the information that the BOD message carries is provided, in this case " + name + ". The information consists of a Verb and one or more Nouns. The verb (" + verb.getPropertyTerm().replaceAll(" ", "") + ") indicates the action to be performed on the Noun (" + noun.getPropertyTerm().replaceAll(" ", "") + ").");
-        dataAreaAsccpRequest.setDefinitionSoruce("http://www.openapplications.org/oagis/10");
+        dataAreaAsccpRequest.setDefinitionSource("http://www.openapplications.org/oagis/10");
         BigInteger dataAreaAsccpManifestId = asccpWriteRepository.createAsccp(dataAreaAsccpRequest).getAsccpManifestId();
 
 

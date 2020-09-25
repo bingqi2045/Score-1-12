@@ -3,22 +3,25 @@ package org.oagi.score.repo.component.asccp;
 import org.oagi.score.data.RepositoryRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+
+import static org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType.Verb;
 
 public class CreateAsccpRepositoryRequest extends RepositoryRequest {
 
     private final BigInteger roleOfAccManifestId;
     private final BigInteger releaseId;
 
-    private String initialPropertyTerm = "Property Term";
+    private String initialPropertyTerm;
     private CcASCCPType initialType = CcASCCPType.Default;
     private BigInteger namespaceId;
     private boolean reusable = true;
     private String definition;
-    private String definitionSoruce;
+    private String definitionSource;
     private CcState initialState = CcState.WIP;
 
     public CreateAsccpRepositoryRequest(AuthenticatedPrincipal user,
@@ -45,6 +48,13 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
     }
 
     public String getInitialPropertyTerm() {
+        if (StringUtils.isEmpty(initialPropertyTerm)) {
+            if (Verb == this.getInitialType()) {
+                return "Do";
+            } else {
+                return "Property Term";
+            }
+        }
         return initialPropertyTerm;
     }
 
@@ -84,12 +94,12 @@ public class CreateAsccpRepositoryRequest extends RepositoryRequest {
         this.namespaceId = namespaceId;
     }
 
-    public String getDefinitionSoruce() {
-        return definitionSoruce;
+    public String getDefinitionSource() {
+        return definitionSource;
     }
 
-    public void setDefinitionSoruce(String definitionSoruce) {
-        this.definitionSoruce = definitionSoruce;
+    public void setDefinitionSource(String definitionSource) {
+        this.definitionSource = definitionSource;
     }
 
     public CcASCCPType getInitialType() {
