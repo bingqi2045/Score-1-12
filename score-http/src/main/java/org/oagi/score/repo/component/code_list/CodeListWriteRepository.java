@@ -93,7 +93,11 @@ public class CodeListWriteRepository {
                     .where(AGENCY_ID_LIST_VALUE.NAME.eq(initialAgencyIdValueName))
                     .fetchOneInto(ULong.class));
             codeList.setVersionId("1");
-            codeList.setExtensibleIndicator((byte) 1);
+            if (user.isDeveloper()) {
+                codeList.setExtensibleIndicator((byte) 1);
+            } else {
+                codeList.setExtensibleIndicator((byte) 0);
+            }
             codeList.setIsDeprecated((byte) 0);
         }
 
