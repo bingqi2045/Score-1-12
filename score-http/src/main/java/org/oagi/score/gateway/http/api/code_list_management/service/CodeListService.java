@@ -356,14 +356,14 @@ public class CodeListService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger discardRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
-        DiscardRevisionCodeListRepositoryRequest request
-                = new DiscardRevisionCodeListRepositoryRequest(user, codeListManifestId);
+    public BigInteger cancelRevision(AuthenticatedPrincipal user, BigInteger codeListManifestId) {
+        CancelRevisionCodeListRepositoryRequest request
+                = new CancelRevisionCodeListRepositoryRequest(user, codeListManifestId);
 
-        DiscardRevisionCodeListRepositoryResponse response =
-                codeListWriteRepository.discardRevisionCodeList(request);
+        CancelRevisionCodeListRepositoryResponse response =
+                codeListWriteRepository.cancelRevisionCodeList(request);
 
-        fireEvent(new ReviseCodeListEvent());
+        fireEvent(new CancelRevisionCodeListEvent());
 
         return response.getCodeListManifestId();
     }

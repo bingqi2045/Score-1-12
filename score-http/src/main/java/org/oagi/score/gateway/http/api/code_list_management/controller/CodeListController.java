@@ -132,12 +132,12 @@ public class CodeListController {
         return service.getCodeListRevision(user, manifestId);
     }
 
-    @RequestMapping(value = "/code_list/{manifestId}/revision/discard", method = RequestMethod.POST)
-    public ResponseEntity discardRevision(
+    @RequestMapping(value = "/code_list/{manifestId}/revision/cancel", method = RequestMethod.POST)
+    public ResponseEntity cancelRevision(
             @PathVariable("manifestId") BigInteger manifestId,
             @AuthenticationPrincipal AuthenticatedPrincipal user) {
 
-        service.discardRevision(user, manifestId);
+        service.cancelRevision(user, manifestId);
         return ResponseEntity.noContent().build();
     }
 

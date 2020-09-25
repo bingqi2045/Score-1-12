@@ -611,7 +611,10 @@ public class CodeListWriteRepository {
         return new ReviseCodeListRepositoryResponse(responseCodeListManifestId.toBigInteger());
     }
 
-    public DiscardRevisionCodeListRepositoryResponse discardRevisionCodeList(DiscardRevisionCodeListRepositoryRequest request) {
+    public CancelRevisionCodeListRepositoryResponse cancelRevisionCodeList(CancelRevisionCodeListRepositoryRequest request) {
+        ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
+        LocalDateTime timestamp = request.getLocalDateTime();
+
         CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(request.getCodeListManifestId()))).fetchOne();
 
@@ -626,56 +629,22 @@ public class CodeListWriteRepository {
             throw new IllegalArgumentException("Not found previous revision");
         }
 
-        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
-                .where(REVISION.REVISION_ID.eq(codeListManifestRecord.getRevisionId())).fetchOne();
+        CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListRecord.getPrevCodeListId())).fetchOne();
 
-        UInteger revisionNum = cursorRevision.getRevisionNum();
-
-        if (cursorRevision.getPrevRevisionId() == null) {
-            throw new IllegalArgumentException("There is no change to be reset.");
-        }
-
-        List<ULong> deleteRevisionTargets = new ArrayList<>();
-
-        while(cursorRevision.getPrevRevisionId() != null) {
-            if(cursorRevision.getRevisionNum().compareTo(revisionNum) < 0) {
-                break;
-            }
-            deleteRevisionTargets.add(cursorRevision.getRevisionId());
-            cursorRevision = dslContext.selectFrom(REVISION)
-                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
-        }
-
-        // update BIE CODE LIST IDs
-        dslContext.update(BBIE)
-                .set(BBIE.CODE_LIST_ID, codeListRecord.getPrevCodeListId())
-                .where(BBIE.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
-                .execute();
-
-        dslContext.update(BBIE_SC)
-                .set(BBIE_SC.CODE_LIST_ID, codeListRecord.getPrevCodeListId())
-                .where(BBIE_SC.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
-                .execute();
+        // creates new revision for canceled record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        prevCodeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
+                        userId, timestamp);
 
         // update CODE LIST MANIFEST's codeList_id and revision_id
         codeListManifestRecord.setCodeListId(codeListRecord.getPrevCodeListId());
-        codeListManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.REVISION_ID);
 
-        // unlink revision
-        cursorRevision.setNextRevisionId(null);
-        cursorRevision.update(REVISION.NEXT_REVISION_ID);
-        dslContext.update(REVISION)
-                .setNull(REVISION.PREV_REVISION_ID)
-                .setNull(REVISION.NEXT_REVISION_ID)
-                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
-                .execute();
-        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
-
         discardRevisionCodeListValues(codeListManifestRecord, codeListRecord);
-
-        CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
-                .where(CODE_LIST.CODE_LIST_ID.eq(codeListRecord.getPrevCodeListId())).fetchOne();
 
         // unlink prev CODE_LIST
         prevCodeListRecord.setNextCodeListId(null);
@@ -684,7 +653,7 @@ public class CodeListWriteRepository {
         // delete current CODE_LIST
         codeListRecord.delete();
 
-        return new DiscardRevisionCodeListRepositoryResponse(request.getCodeListManifestId());
+        return new CancelRevisionCodeListRepositoryResponse(request.getCodeListManifestId());
     }
 
     private void discardRevisionCodeListValues(CodeListManifestRecord codeListManifestRecord, CodeListRecord codeListRecord) {
