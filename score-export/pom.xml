@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>score-gateway</artifactId>
+        <groupId>org.oagi</groupId>
+        <version>2.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>score-export</artifactId>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.release>11</maven.compiler.release>
+
+        <lombok.version>1.18.12</lombok.version>
+        <mysql-connector-java.version>8.0.20</mysql-connector-java.version>
+        <jOOQ.version>3.13.4</jOOQ.version>
+        <jOOQ.configuration.skip>false</jOOQ.configuration.skip>
+
+        <junit.version>4.13</junit.version>
+        <junit.platform.version>1.6.2</junit.platform.version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
+        <org.apache.commons.lang3.version>3.11</org.apache.commons.lang3.version>
+        <org.springframework.version>5.2.8.RELEASE</org.springframework.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.oagi</groupId>
+            <artifactId>score-repo-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <!-- jOOQ -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-codegen</artifactId>
+            <version>${jOOQ.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.2.9.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.3.4.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>2.3.4.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.2.9.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>2.3.4.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>2.0.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.oagi</groupId>
+            <artifactId>score-repo</artifactId>
+            <version>2.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spf4j</groupId>
+            <artifactId>spf4j-ui</artifactId>
+            <version>8.4.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.saxon</artifactId>
+            <version>9.6.0-1_1</version>
+        </dependency>
+
+    </dependencies>
+
+
+</project>
