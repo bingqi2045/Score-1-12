@@ -74,6 +74,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSet;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetRelease;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
@@ -149,6 +150,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetAssignmentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleXbtManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppScopeRecord;
@@ -235,6 +237,7 @@ public class Keys {
     public static final Identity<ModuleSetRecord, ULong> IDENTITY_MODULE_SET = Identities0.IDENTITY_MODULE_SET;
     public static final Identity<ModuleSetAssignmentRecord, ULong> IDENTITY_MODULE_SET_ASSIGNMENT = Identities0.IDENTITY_MODULE_SET_ASSIGNMENT;
     public static final Identity<ModuleSetReleaseRecord, ULong> IDENTITY_MODULE_SET_RELEASE = Identities0.IDENTITY_MODULE_SET_RELEASE;
+    public static final Identity<ModuleXbtManifestRecord, ULong> IDENTITY_MODULE_XBT_MANIFEST = Identities0.IDENTITY_MODULE_XBT_MANIFEST;
     public static final Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Identities0.IDENTITY_NAMESPACE;
     public static final Identity<Oauth2AppRecord, ULong> IDENTITY_OAUTH2_APP = Identities0.IDENTITY_OAUTH2_APP;
     public static final Identity<Oauth2AppScopeRecord, ULong> IDENTITY_OAUTH2_APP_SCOPE = Identities0.IDENTITY_OAUTH2_APP_SCOPE;
@@ -325,6 +328,7 @@ public class Keys {
     public static final UniqueKey<ModuleSetRecord> KEY_MODULE_SET_PRIMARY = UniqueKeys0.KEY_MODULE_SET_PRIMARY;
     public static final UniqueKey<ModuleSetAssignmentRecord> KEY_MODULE_SET_ASSIGNMENT_PRIMARY = UniqueKeys0.KEY_MODULE_SET_ASSIGNMENT_PRIMARY;
     public static final UniqueKey<ModuleSetReleaseRecord> KEY_MODULE_SET_RELEASE_PRIMARY = UniqueKeys0.KEY_MODULE_SET_RELEASE_PRIMARY;
+    public static final UniqueKey<ModuleXbtManifestRecord> KEY_MODULE_XBT_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_XBT_MANIFEST_PRIMARY;
     public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = UniqueKeys0.KEY_NAMESPACE_PRIMARY;
     public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = UniqueKeys0.KEY_NAMESPACE_NAMESPACE_UK1;
     public static final UniqueKey<Oauth2AppRecord> KEY_OAUTH2_APP_PRIMARY = UniqueKeys0.KEY_OAUTH2_APP_PRIMARY;
@@ -615,6 +619,11 @@ public class Keys {
     public static final ForeignKey<ModuleSetReleaseRecord, ReleaseRecord> MODULE_SET_RELEASE_RELEASE_ID_FK = ForeignKeys0.MODULE_SET_RELEASE_RELEASE_ID_FK;
     public static final ForeignKey<ModuleSetReleaseRecord, AppUserRecord> MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK = ForeignKeys0.MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK;
     public static final ForeignKey<ModuleSetReleaseRecord, AppUserRecord> MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK = ForeignKeys0.MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<ModuleXbtManifestRecord, ModuleSetReleaseRecord> MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK = ForeignKeys0.MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK;
+    public static final ForeignKey<ModuleXbtManifestRecord, XbtManifestRecord> MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK = ForeignKeys0.MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK;
+    public static final ForeignKey<ModuleXbtManifestRecord, ModuleRecord> MODULE_XBT_MANIFEST_MODULE_ID_FK = ForeignKeys0.MODULE_XBT_MANIFEST_MODULE_ID_FK;
+    public static final ForeignKey<ModuleXbtManifestRecord, AppUserRecord> MODULE_XBT_MANIFEST_CREATED_BY_FK = ForeignKeys0.MODULE_XBT_MANIFEST_CREATED_BY_FK;
+    public static final ForeignKey<ModuleXbtManifestRecord, AppUserRecord> MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK = ForeignKeys0.MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_OWNER_USER_ID_FK = ForeignKeys0.NAMESPACE_OWNER_USER_ID_FK;
     public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_CREATED_BY_FK = ForeignKeys0.NAMESPACE_CREATED_BY_FK;
     public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_LAST_UPDATED_BY_FK = ForeignKeys0.NAMESPACE_LAST_UPDATED_BY_FK;
@@ -638,7 +647,6 @@ public class Keys {
     public static final ForeignKey<XbtRecord, AppUserRecord> XBT_OWNER_USER_ID_FK = ForeignKeys0.XBT_OWNER_USER_ID_FK;
     public static final ForeignKey<XbtRecord, AppUserRecord> XBT_LAST_UPDATED_BY_FK = ForeignKeys0.XBT_LAST_UPDATED_BY_FK;
     public static final ForeignKey<XbtManifestRecord, ReleaseRecord> XBT_MANIFEST_RELEASE_ID_FK = ForeignKeys0.XBT_MANIFEST_RELEASE_ID_FK;
-    public static final ForeignKey<XbtManifestRecord, ModuleRecord> XBT_MANIFEST_MODULE_ID_FK = ForeignKeys0.XBT_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<XbtManifestRecord, XbtRecord> XBT_MANIFEST_XBT_ID_FK = ForeignKeys0.XBT_MANIFEST_XBT_ID_FK;
     public static final ForeignKey<XbtManifestRecord, RevisionRecord> XBT_MANIFEST_REVISION_ID_FK = ForeignKeys0.XBT_MANIFEST_REVISION_ID_FK;
     public static final ForeignKey<XbtManifestRecord, XbtManifestRecord> XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK = ForeignKeys0.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK;
@@ -711,6 +719,7 @@ public class Keys {
         public static Identity<ModuleSetRecord, ULong> IDENTITY_MODULE_SET = Internal.createIdentity(ModuleSet.MODULE_SET, ModuleSet.MODULE_SET.MODULE_SET_ID);
         public static Identity<ModuleSetAssignmentRecord, ULong> IDENTITY_MODULE_SET_ASSIGNMENT = Internal.createIdentity(ModuleSetAssignment.MODULE_SET_ASSIGNMENT, ModuleSetAssignment.MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID);
         public static Identity<ModuleSetReleaseRecord, ULong> IDENTITY_MODULE_SET_RELEASE = Internal.createIdentity(ModuleSetRelease.MODULE_SET_RELEASE, ModuleSetRelease.MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID);
+        public static Identity<ModuleXbtManifestRecord, ULong> IDENTITY_MODULE_XBT_MANIFEST = Internal.createIdentity(ModuleXbtManifest.MODULE_XBT_MANIFEST, ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID);
         public static Identity<NamespaceRecord, ULong> IDENTITY_NAMESPACE = Internal.createIdentity(Namespace.NAMESPACE, Namespace.NAMESPACE.NAMESPACE_ID);
         public static Identity<Oauth2AppRecord, ULong> IDENTITY_OAUTH2_APP = Internal.createIdentity(Oauth2App.OAUTH2_APP, Oauth2App.OAUTH2_APP.OAUTH2_APP_ID);
         public static Identity<Oauth2AppScopeRecord, ULong> IDENTITY_OAUTH2_APP_SCOPE = Internal.createIdentity(Oauth2AppScope.OAUTH2_APP_SCOPE, Oauth2AppScope.OAUTH2_APP_SCOPE.OAUTH2_APP_SCOPE_ID);
@@ -799,6 +808,7 @@ public class Keys {
         public static final UniqueKey<ModuleSetRecord> KEY_MODULE_SET_PRIMARY = Internal.createUniqueKey(ModuleSet.MODULE_SET, "KEY_module_set_PRIMARY", new TableField[] { ModuleSet.MODULE_SET.MODULE_SET_ID }, true);
         public static final UniqueKey<ModuleSetAssignmentRecord> KEY_MODULE_SET_ASSIGNMENT_PRIMARY = Internal.createUniqueKey(ModuleSetAssignment.MODULE_SET_ASSIGNMENT, "KEY_module_set_assignment_PRIMARY", new TableField[] { ModuleSetAssignment.MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID }, true);
         public static final UniqueKey<ModuleSetReleaseRecord> KEY_MODULE_SET_RELEASE_PRIMARY = Internal.createUniqueKey(ModuleSetRelease.MODULE_SET_RELEASE, "KEY_module_set_release_PRIMARY", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID }, true);
+        public static final UniqueKey<ModuleXbtManifestRecord> KEY_MODULE_XBT_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleXbtManifest.MODULE_XBT_MANIFEST, "KEY_module_xbt_manifest_PRIMARY", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID }, true);
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_PRIMARY", new TableField[] { Namespace.NAMESPACE.NAMESPACE_ID }, true);
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_namespace_uk1", new TableField[] { Namespace.NAMESPACE.PREFIX }, true);
         public static final UniqueKey<Oauth2AppRecord> KEY_OAUTH2_APP_PRIMARY = Internal.createUniqueKey(Oauth2App.OAUTH2_APP, "KEY_oauth2_app_PRIMARY", new TableField[] { Oauth2App.OAUTH2_APP.OAUTH2_APP_ID }, true);
@@ -1087,6 +1097,11 @@ public class Keys {
         public static final ForeignKey<ModuleSetReleaseRecord, ReleaseRecord> MODULE_SET_RELEASE_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, ModuleSetRelease.MODULE_SET_RELEASE, "module_set_release_release_id_fk", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.RELEASE_ID }, true);
         public static final ForeignKey<ModuleSetReleaseRecord, AppUserRecord> MODULE_SET_RELEASE_ASSIGNMENT_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleSetRelease.MODULE_SET_RELEASE, "module_set_release_assignment_created_by_fk", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.CREATED_BY }, true);
         public static final ForeignKey<ModuleSetReleaseRecord, AppUserRecord> MODULE_SET_RELEASE_ASSIGNMENT_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleSetRelease.MODULE_SET_RELEASE, "module_set_release_assignment_last_updated_by_fk", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<ModuleXbtManifestRecord, ModuleSetReleaseRecord> MODULE_XBT_MANIFEST_MODULE_SET_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_SET_RELEASE_PRIMARY, ModuleXbtManifest.MODULE_XBT_MANIFEST, "module_xbt_manifest_module_set_release_id_fk", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID }, true);
+        public static final ForeignKey<ModuleXbtManifestRecord, XbtManifestRecord> MODULE_XBT_MANIFEST_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_XBT_MANIFEST_PRIMARY, ModuleXbtManifest.MODULE_XBT_MANIFEST, "module_xbt_manifest_bccp_manifest_id_fk", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.XBT_MANIFEST_ID }, true);
+        public static final ForeignKey<ModuleXbtManifestRecord, ModuleRecord> MODULE_XBT_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, ModuleXbtManifest.MODULE_XBT_MANIFEST, "module_xbt_manifest_module_id_fk", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_ID }, true);
+        public static final ForeignKey<ModuleXbtManifestRecord, AppUserRecord> MODULE_XBT_MANIFEST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleXbtManifest.MODULE_XBT_MANIFEST, "module_xbt_manifest_created_by_fk", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.CREATED_BY }, true);
+        public static final ForeignKey<ModuleXbtManifestRecord, AppUserRecord> MODULE_XBT_MANIFEST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleXbtManifest.MODULE_XBT_MANIFEST, "module_xbt_manifest_last_updated_by_fk", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Namespace.NAMESPACE, "namespace_owner_user_id_fk", new TableField[] { Namespace.NAMESPACE.OWNER_USER_ID }, true);
         public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Namespace.NAMESPACE, "namespace_created_by_fk", new TableField[] { Namespace.NAMESPACE.CREATED_BY }, true);
         public static final ForeignKey<NamespaceRecord, AppUserRecord> NAMESPACE_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Namespace.NAMESPACE, "namespace_last_updated_by_fk", new TableField[] { Namespace.NAMESPACE.LAST_UPDATED_BY }, true);
@@ -1110,7 +1125,6 @@ public class Keys {
         public static final ForeignKey<XbtRecord, AppUserRecord> XBT_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Xbt.XBT, "xbt_owner_user_id_fk", new TableField[] { Xbt.XBT.OWNER_USER_ID }, true);
         public static final ForeignKey<XbtRecord, AppUserRecord> XBT_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Xbt.XBT, "xbt_last_updated_by_fk", new TableField[] { Xbt.XBT.LAST_UPDATED_BY }, true);
         public static final ForeignKey<XbtManifestRecord, ReleaseRecord> XBT_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, XbtManifest.XBT_MANIFEST, "xbt_manifest_release_id_fk", new TableField[] { XbtManifest.XBT_MANIFEST.RELEASE_ID }, true);
-        public static final ForeignKey<XbtManifestRecord, ModuleRecord> XBT_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, XbtManifest.XBT_MANIFEST, "xbt_manifest_module_id_fk", new TableField[] { XbtManifest.XBT_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<XbtManifestRecord, XbtRecord> XBT_MANIFEST_XBT_ID_FK = Internal.createForeignKey(Keys.KEY_XBT_PRIMARY, XbtManifest.XBT_MANIFEST, "xbt_manifest_xbt_id_fk", new TableField[] { XbtManifest.XBT_MANIFEST.XBT_ID }, true);
         public static final ForeignKey<XbtManifestRecord, RevisionRecord> XBT_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, XbtManifest.XBT_MANIFEST, "xbt_manifest_revision_id_fk", new TableField[] { XbtManifest.XBT_MANIFEST.REVISION_ID }, true);
         public static final ForeignKey<XbtManifestRecord, XbtManifestRecord> XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_XBT_MANIFEST_PRIMARY, XbtManifest.XBT_MANIFEST, "xbt_manifest_prev_xbt_manifest_id_fk", new TableField[] { XbtManifest.XBT_MANIFEST.PREV_XBT_MANIFEST_ID }, true);

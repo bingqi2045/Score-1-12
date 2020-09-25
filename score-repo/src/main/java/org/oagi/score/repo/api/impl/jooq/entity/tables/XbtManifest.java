@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
-    private static final long serialVersionUID = -1772403827;
+    private static final long serialVersionUID = 1937632791;
 
     /**
      * The reference instance of <code>oagi.xbt_manifest</code>
@@ -56,11 +56,6 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
      * The column <code>oagi.xbt_manifest.release_id</code>.
      */
     public final TableField<XbtManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
-
-    /**
-     * The column <code>oagi.xbt_manifest.module_id</code>.
-     */
-    public final TableField<XbtManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.xbt_manifest.xbt_id</code>.
@@ -142,15 +137,11 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     @Override
     public List<ForeignKey<XbtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_MODULE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_REVISION_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_REVISION_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
     }
 
     public Release release() {
         return new Release(this, Keys.XBT_MANIFEST_RELEASE_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.XBT_MANIFEST_MODULE_ID_FK);
     }
 
     public Xbt xbt() {
@@ -196,11 +187,11 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row7<ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

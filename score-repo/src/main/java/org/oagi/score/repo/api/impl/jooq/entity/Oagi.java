@@ -74,6 +74,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSet;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetRelease;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
@@ -93,7 +94,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1262966460;
+    private static final long serialVersionUID = 1568342290;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -433,6 +434,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final ModuleSetRelease MODULE_SET_RELEASE = ModuleSetRelease.MODULE_SET_RELEASE;
 
     /**
+     * The table <code>oagi.module_xbt_manifest</code>.
+     */
+    public final ModuleXbtManifest MODULE_XBT_MANIFEST = ModuleXbtManifest.MODULE_XBT_MANIFEST;
+
+    /**
      * This table stores information about a namespace. Namespace is the namespace as in the XML schema specification.
      */
     public final Namespace NAMESPACE = Namespace.NAMESPACE;
@@ -567,6 +573,7 @@ If we use a separate table for each expression, then we need binding all the way
             ModuleSet.MODULE_SET,
             ModuleSetAssignment.MODULE_SET_ASSIGNMENT,
             ModuleSetRelease.MODULE_SET_RELEASE,
+            ModuleXbtManifest.MODULE_XBT_MANIFEST,
             Namespace.NAMESPACE,
             Oauth2App.OAUTH2_APP,
             Oauth2AppScope.OAUTH2_APP_SCOPE,
