@@ -135,7 +135,7 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
 
     private void createBDT(Map<ULong, SchemaModule> moduleMap) {
         List<DtRecord> bdtList = importedDataProvider.findDT().stream()
-                .filter(e -> e.getType().equals("Default")).collect(Collectors.toList());
+                .filter(e -> !e.getType().equals("Core")).collect(Collectors.toList());
         for (DtRecord bdt : bdtList) {
             if (bdt.getBasedDtId() == null) {
                 throw new IllegalStateException();

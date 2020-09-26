@@ -80,6 +80,15 @@ public class ImportConstants {
             AGENCY_IDENTIFICATION_NAME = "clm63055D16B_AgencyIdentification";
             AGENCY_IDENTIFICATION_LIST_ID = "3055";
             AGENCY_IDENTIFICATION_VERSION_ID = "D16B";
+        } else if (OAGIS_VERSION == 10.6D) {
+            BASE_DATA_PATH = new File(DATA_PATH, "OAGIS_10_6_EnterpriseEdition/OAGi-BPI-Platform/org_openapplications_oagis/10_6").getPath();
+            PLATFORM_PATH = "/Platform/2_6";
+            CODELIST_CHARACTER_SET_CODE_IANA_FILENAME = "CodeList_CharacterSetCode_IANA_20131220";
+
+            IDENTIFIER_SCHEME_AGENCY_IDENTIFICATION_FILENAME = "IdentifierScheme_AgencyIdentification_3055_D16B";
+            AGENCY_IDENTIFICATION_NAME = "clm63055D16B_AgencyIdentification";
+            AGENCY_IDENTIFICATION_LIST_ID = "3055";
+            AGENCY_IDENTIFICATION_VERSION_ID = "D16B";
         } else {
             throw new UnsupportedOperationException("Unsupported version: " + OAGIS_VERSION);
         }
@@ -355,6 +364,57 @@ public class ImportConstants {
                     "recent updates.\n" +
                     "\n" +
                     "OAGIS Release 10_5 includes:\n" +
+                    "\n" +
+                    "  Changes to CarrierRoute Noun.\n" +
+                    "\n" +
+                    "  Add new Nouns:\n" +
+                    "  - ShipmentRequest\n" +
+                    "  - ShipmentStatus\t\n" +
+                    "\n" +
+                    "\n" +
+                    "NOTICE: We recommend that you install on your root directory drive as the \n" +
+                    "paths may be too long otherwise.\n" +
+                    "\t\n" +
+                    "As with all OAGIS releases OAGIS Release 10_2 contains XML Schema. To view \n" +
+                    "XML Schema it is recommended that you use an XML IDE, as the complete structure \n" +
+                    "of the Business Object Documents are not viewable from a single file.\n" +
+                    "\n" +
+                    "Note that the sample files were used to verify the XMLSchema \n" +
+                    "development, and do not necessarily reflect actual business \n" +
+                    "transactions.  In many cases,the data entered in the XML files are just \n" +
+                    "placeholder text.  Real-world examples for each transaction will be \n" +
+                    "provided as they become available. If you are interested in providing \n" +
+                    "real-world examples please contact oagis@openapplications.org\n" +
+                    "\n" +
+                    "Please send suggestions or bug reports to oagis@openapplications.org\n" +
+                    "\n" +
+                    "Thank you for your interest and support.\n" +
+                    "\n" +
+                    "Best Regards,\n" +
+                    "The Open Applications Group Architecture Council\n";
+        } else if (OAGIS_VERSION == 10.6D) {
+            OAGIS_RELEASE_NOTE = "Open Applications Group\n" +
+                    "Interface Specification XMLSchemas and Sample XML Files\n" +
+                    "\n" +
+                    "OAGIS Release 10_6  \n" +
+                    "\n" +
+                    "03 Dec 2018\n" +
+                    "\n" +
+                    "\n" +
+                    "OAGIS Release 10_6 is a general availability release of OAGIS the release\n" +
+                    "date is 03 Dec 2018. \n" +
+                    "\n" +
+                    "This release is the continuation of the focus on enabling integration that \n" +
+                    "the Open Applications Group and its members are known.\n" +
+                    "\n" +
+                    "Please provide all feedback to the OAGI Architecture Team via the Feedback \n" +
+                    "Forum at: oagis@openapplications.org\n" +
+                    "\n" +
+                    "These XML reference files continue to evolve.  Please feel\n" +
+                    "free to use them, but check www.openapplications.org for the most \n" +
+                    "recent updates.\n" +
+                    "\n" +
+                    "OAGIS Release 10_6 includes:\n" +
                     "\n" +
                     "  Changes to CarrierRoute Noun.\n" +
                     "\n" +
