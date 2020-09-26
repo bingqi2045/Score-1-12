@@ -50,9 +50,17 @@ public interface ImportedDataProvider {
 
     public AccRecord findACC(ULong accId);
 
+    public List<AccManifestRecord> findACCManifest();
+
+    public AccManifestRecord findACCManifest(ULong accManifestId);
+
     public List<AsccpRecord> findASCCP();
 
     public AsccpRecord findASCCP(ULong asccpId);
+
+    public List<AsccpManifestRecord> findASCCPManifest();
+
+    public AsccpManifestRecord findASCCPManifest(ULong asccpManifestId);
 
     public AsccpRecord findASCCPByGuid(String guid);
 
@@ -60,11 +68,23 @@ public interface ImportedDataProvider {
 
     public BccpRecord findBCCP(ULong bccpId);
 
+    public List<BccpManifestRecord> findBCCPManifest();
+
+    public BccpManifestRecord findBCCPManifest(ULong bccpManifestId);
+
     public List<BccRecord> findBCCByToBccpId(ULong toBccpId);
 
     public List<BccRecord> findBCCByFromAccId(ULong fromAccId);
 
     public List<AsccRecord> findASCCByFromAccId(ULong fromAccId);
+
+    public BccRecord findBCC(ULong bccId);
+
+    public BccManifestRecord findBCCManifest(ULong bccId);
+
+    public AsccRecord findASCC(ULong asccId);
+
+    public AsccManifestRecord findASCCManifest(ULong asccManifestId);
 
     public ModuleCCID findModuleAgencyIdList(ULong agencyIdListId);
 

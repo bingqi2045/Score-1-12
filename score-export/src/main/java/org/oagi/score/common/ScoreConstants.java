@@ -21,7 +21,7 @@ public class ScoreConstants {
     /*
      * To choose OAGIS version
      */
-    public static final double OAGIS_VERSION = 10.5D;
+
 
     public static final String FOREIGNKEY_ERROR_MSG = "a foreign key constraint fails";
     public static final String CANNOT_DELETE_CONTEXT_CATEGORTY = "Fail to delete. The context category is referenced by the following context schemes: ";
@@ -29,5 +29,6 @@ public class ScoreConstants {
 
     public static final String ANY_ASCCP_DEN = "Any Property. Any Structured Content";
 
-    public static final long MODULE_SET_RELEASE_ID = 3;
+    public static final double OAGIS_VERSION = 10.5D;
+    public static final long MODULE_SET_RELEASE_ID = 1;
 }

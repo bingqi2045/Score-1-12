@@ -15,6 +15,8 @@ import org.oagi.score.export.service.CoreComponentService;
 import org.oagi.score.populate.helper.Context;
 import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.provider.ImportedDataProvider;
+import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -785,62 +787,72 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         complexTypeElement.setAttribute("id", accComplexType.getGuid());
 
         Element sequenceElement = new Element("sequence", XSD_NS);
-        List<CoreComponentRelation> coreComponents = coreComponentService.getCoreComponents(
+        List<SeqKeyRecord> seqKeys = coreComponentService.getCoreComponents(
                 accComplexType.getRawId().toBigInteger().longValue(), coreComponentProvider);
         // for ASCC or BCC (Sequence Key != 0)
-        for (CoreComponentRelation coreComponent : coreComponents) {
-            if (coreComponent.getDen().endsWith("Any Structured Content")) {
-                Element anyElement = new Element("any", XSD_NS);
+        for (SeqKeyRecord seqKey : seqKeys) {
+            if (seqKey.getType() == SeqKeyType.ascc) {
+                AsccRecord ascc = importedDataProvider.findASCC(seqKey.getCcId());
+                if (ascc.getDen().endsWith("Any Structured Content")) {
+                    Element anyElement = new Element("any", XSD_NS);
 
-                anyElement.setAttribute("namespace", "##any");
-                anyElement.setAttribute("processContents", "strict");
-                setCardinalities(anyElement, coreComponent);
-                anyElement.setAttribute("id", coreComponent.getGuid());
+                    anyElement.setAttribute("namespace", "##any");
+                    anyElement.setAttribute("processContents", "strict");
+                    setCardinalities(anyElement, ascc.getCardinalityMin(), ascc.getCardinalityMax());
+                    anyElement.setAttribute("id", ascc.getGuid());
 
-                sequenceElement.addContent(anyElement);
-            } else if (coreComponent instanceof BccRecord) {
-                BccRecord bcc = (BccRecord) coreComponent;
-                BccpRecord bccp = importedDataProvider.findBCCP(bcc.getToBccpId());
+                    sequenceElement.addContent(anyElement);
+
+                } else {
+                    AsccManifestRecord asccManifest = importedDataProvider.findASCCManifest(ascc.getAsccId());
+                    AsccpManifestRecord asccpManifest = importedDataProvider.findASCCPManifest(asccManifest.getToAsccpManifestId());
+                    AccManifestRecord accManifest = importedDataProvider.findACCManifest(asccpManifest.getRoleOfAccManifestId());
+
+                    AsccpRecord asccp = importedDataProvider.findASCCP(asccpManifest.getAsccpId());
+                    AccRecord acc = importedDataProvider.findACC(accManifest.getAccId());
+
+                    if (asccp.getGuid().equals(acc.getGuid())) {
+                        Element groupElement = new Element("group", XSD_NS);
+
+                        groupElement.setAttribute("ref", Utility.toCamelCase(asccp.getPropertyTerm()));
+                        groupElement.setAttribute("id", ascc.getGuid());
+                        setCardinalities(groupElement, ascc.getCardinalityMin(), ascc.getCardinalityMax());
+
+                        sequenceElement.addContent(groupElement);
+                        setDocumentation(groupElement, ascc.getDefinition(), ascc.getDefinitionSource());
+                    } else {
+                        Element element = new Element("element", XSD_NS);
+
+                        if (asccp.getReusableIndicator() == 1) {
+                            element.setAttribute("ref", Utility.toCamelCase(asccp.getPropertyTerm()));
+                        } else {
+                            element.setAttribute("name", Utility.toCamelCase(asccp.getPropertyTerm()));
+                            element.setAttribute("type", Utility.toCamelCase(asccp.getDen().substring((asccp.getPropertyTerm() + ". ").length())) + "Type");
+                        }
+
+                        element.setAttribute("id", ascc.getGuid());
+                        setCardinalities(element, ascc.getCardinalityMin(), ascc.getCardinalityMax());
+
+                        sequenceElement.addContent(element);
+                        setDocumentation(element, ascc.getDefinition(), ascc.getDefinitionSource());
+                    }
+
+                }
+            } else {
+                BccRecord bcc = importedDataProvider.findBCC(seqKey.getCcId());
+                BccManifestRecord bccManifest = importedDataProvider.findBCCManifest(bcc.getBccId());
+                BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
+                BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
 
                 if (bcc.getSeqKey() > 0) {
                     Element element = new Element("element", XSD_NS);
 
                     element.setAttribute("ref", Utility.toCamelCase(bccp.getPropertyTerm()));
                     element.setAttribute("id", bcc.getGuid());
-                    setCardinalities(element, (CoreComponentRelation) bcc);
+                    setCardinalities(element, bcc.getCardinalityMin(), bcc.getCardinalityMax());
 
                     sequenceElement.addContent(element);
                     setDocumentation(element, bcc.getDefinition(), bcc.getDefinitionSource());
-                }
-            } else if (coreComponent instanceof AsccRecord) {
-                AsccRecord ascc = (AsccRecord) coreComponent;
-                AsccpRecord asccp = importedDataProvider.findASCCP(ascc.getToAsccpId());
-                AccRecord acc = importedDataProvider.findACC(asccp.getRoleOfAccId());
-
-                if (asccp.getGuid().equals(acc.getGuid())) {
-                    Element groupElement = new Element("group", XSD_NS);
-
-                    groupElement.setAttribute("ref", asccp.getPropertyTerm());
-                    groupElement.setAttribute("id", ascc.getGuid());
-                    setCardinalities(groupElement, (CoreComponentRelation) ascc);
-
-                    sequenceElement.addContent(groupElement);
-                    setDocumentation(groupElement, ascc.getDefinition(), ascc.getDefinitionSource());
-                } else {
-                    Element element = new Element("element", XSD_NS);
-
-                    if (asccp.getReusableIndicator() == 1) {
-                        element.setAttribute("ref", asccp.getPropertyTerm());
-                    } else {
-                        element.setAttribute("name", asccp.getPropertyTerm());
-                        element.setAttribute("type", Utility.toCamelCase(asccp.getDen().substring((asccp.getPropertyTerm() + ". ").length())) + "Type");
-                    }
-
-                    element.setAttribute("id", ascc.getGuid());
-                    setCardinalities(element, (CoreComponentRelation) ascc);
-
-                    sequenceElement.addContent(element);
-                    setDocumentation(element, ascc.getDefinition(), ascc.getDefinitionSource());
                 }
             }
         }
@@ -864,10 +876,12 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         }
 
         // for BCCP (Sequence Key == 0)
-        for (CoreComponent coreComponent : coreComponents) {
-            if (coreComponent instanceof BccRecord) {
-                BccRecord bcc = (BccRecord) coreComponent;
-                BccpRecord bccp = importedDataProvider.findBCCP(bcc.getToBccpId());
+        for (SeqKeyRecord seqKey : seqKeys) {
+            if (seqKey.getType().equals(SeqKeyType.bcc)) {
+                BccRecord bcc = importedDataProvider.findBCC(seqKey.getCcId());
+                BccManifestRecord bccManifest = importedDataProvider.findBCCManifest(bcc.getBccId());
+                BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());
+                BccpRecord bccp = importedDataProvider.findBCCP(bccpManifest.getBccpId());
                 DtRecord  bdt = importedDataProvider.findDT(bccp.getBdtId());
 
                 if (bcc.getSeqKey() == 0) {
@@ -908,14 +922,14 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
         rootElement.addContent(complexTypeElement);
     }
 
-    private void setCardinalities(Element element, CoreComponentRelation ascc) {
-        element.setAttribute("minOccurs", Integer.toString(ascc.getCardinalityMin()));
-        switch (ascc.getCardinalityMax()) {
+    private void setCardinalities(Element element, Integer min, Integer max) {
+        element.setAttribute("minOccurs", Integer.toString(min));
+        switch (max) {
             case -1:
                 element.setAttribute("maxOccurs", "unbounded");
                 break;
             default:
-                element.setAttribute("maxOccurs", Integer.toString(ascc.getCardinalityMax()));
+                element.setAttribute("maxOccurs", Integer.toString(max));
                 break;
         }
     }

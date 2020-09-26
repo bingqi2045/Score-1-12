@@ -1,7 +1,7 @@
 package org.oagi.score.populate.helper;
 
-import com.sun.xml.internal.xsom.*;
-import com.sun.xml.internal.xsom.parser.XSOMParser;
+import com.sun.xml.xsom.*;
+import com.sun.xml.xsom.parser.XSOMParser;
 import net.sf.saxon.lib.NamespaceConstant;
 import org.oagi.score.common.ScoreConstants;
 import org.oagi.score.common.util.OAGiNamespaceContext;

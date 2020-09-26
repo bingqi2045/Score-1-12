@@ -25,3 +25,4 @@ target/
 /.nb-gradle/
 
 docker/*.war
+/data/

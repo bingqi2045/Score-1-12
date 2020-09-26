@@ -1,60 +1,46 @@
 package org.oagi.score.export.service;
 
-import org.oagi.score.export.model.CoreComponentRelation;
+
+import org.jooq.types.ULong;
 import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class CoreComponentService {
 
-    public List<CoreComponentRelation> getCoreComponents(
+    public List<SeqKeyRecord> getCoreComponents(
             long accId, CoreComponentProvider coreComponentProvider) {
-        List<BccRecord> bcc_tmp_assoc = coreComponentProvider.getBCCs(accId);
-        List<AsccRecord> ascc_tmp_assoc = coreComponentProvider.getASCCs(accId);
+        List<SeqKeyRecord> seqKeyList = coreComponentProvider.getSeqKeys(accId);
 
-        List<CoreComponentRelation> coreComponents = gatheringBySeqKey(bcc_tmp_assoc, ascc_tmp_assoc);
-        return coreComponents;
+        return sort(seqKeyList);
     }
 
+    private List<SeqKeyRecord> sort(List<SeqKeyRecord> seqKeyList) {
+        Map<ULong, SeqKeyRecord> seqKeyMap = seqKeyList.stream()
+                .collect(Collectors.toMap(
+                        SeqKeyRecord::getSeqKeyId, Function.identity()));
 
-    private List<CoreComponentRelation> gatheringBySeqKey(
-            List<BccRecord> bccList, List<AsccRecord> asccList
-    ) {
-        int size = bccList.size() + asccList.size();
-        List<CoreComponentRelation> tmp_assoc = new ArrayList(size);
-        tmp_assoc.addAll(bccList.stream().map(e -> (CoreComponentRelation) e).collect(Collectors.toList()));
-        tmp_assoc.addAll(asccList.stream().map(e -> (CoreComponentRelation) e).collect(Collectors.toList()));
-        Collections.sort(tmp_assoc, (a, b) -> a.getSeqKey() - b.getSeqKey());
+        SeqKeyRecord head = seqKeyMap.values().stream()
+                .filter(e -> e.getPrevSeqKeyId() == null)
+                .findFirst().orElse(null);
 
-        List<CoreComponentRelation> coreComponents = new ArrayList(size);
-        for (BccRecord basicCoreComponent : bccList) {
-            if (1 == basicCoreComponent.getEntityType()) {
-                coreComponents.add((CoreComponentRelation) basicCoreComponent);
-            }
+        List<SeqKeyRecord> sorted = new ArrayList();
+        SeqKeyRecord current = head;
+        while (current != null) {
+            sorted.add(current);
+            current = seqKeyMap.get(current.getNextSeqKeyId());
         }
 
-        for (CoreComponentRelation coreComponent : tmp_assoc) {
-            if (coreComponent instanceof BccRecord) {
-                BccRecord basicCoreComponent = (BccRecord) coreComponent;
-                if (1 == basicCoreComponent.getEntityType()) {
-                    coreComponents.add((CoreComponentRelation) basicCoreComponent);
-                }
-            } else {
-                AsccRecord associationCoreComponent = (AsccRecord) coreComponent;
-                coreComponents.add((CoreComponentRelation) associationCoreComponent);
-            }
-        }
-
-        return coreComponents;
+        return sorted;
     }
 }

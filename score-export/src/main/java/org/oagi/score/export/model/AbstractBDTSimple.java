@@ -4,6 +4,7 @@ import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BdtPriRestriRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriXpsTypeMapRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtRecord;
 
 import java.util.List;
 import java.util.stream.Collectors;

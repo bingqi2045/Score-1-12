@@ -27,6 +27,14 @@ public class CcRepository {
                 .fetchInto(AgencyIdListRecord.class);
     }
 
+    public List<AgencyIdListManifestRecord> findAllAgencyIdListManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
+                .from(AGENCY_ID_LIST_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(AgencyIdListManifestRecord.class);
+    }
+
     public List<AgencyIdListValueRecord> findAllAgencyIdListValue(ULong moduleSetReleaseId) {
         return dslContext.select(AGENCY_ID_LIST_VALUE.fields())
                 .from(AGENCY_ID_LIST_VALUE)
@@ -35,6 +43,14 @@ public class CcRepository {
                 .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(AgencyIdListValueRecord.class);
+    }
+
+    public List<AgencyIdListValueManifestRecord> findAllAgencyIdListValueManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.fields())
+                .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(AgencyIdListValueManifestRecord.class);
     }
 
     public List<CodeListRecord> findAllCodeList(ULong moduleSetReleaseId) {
@@ -47,6 +63,14 @@ public class CcRepository {
                 .fetchInto(CodeListRecord.class);
     }
 
+    public List<CodeListManifestRecord> findAllCodeListManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(CODE_LIST_MANIFEST.fields())
+                .from(CODE_LIST_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(CODE_LIST_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(CodeListManifestRecord.class);
+    }
+
     public List<CodeListValueRecord> findAllCodeListValue(ULong moduleSetReleaseId) {
         return dslContext.select(CODE_LIST_VALUE.fields())
                 .from(CODE_LIST_VALUE)
@@ -55,6 +79,14 @@ public class CcRepository {
                 .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(CODE_LIST_VALUE_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(CodeListValueRecord.class);
+    }
+
+    public List<CodeListValueManifestRecord> findAllCodeListValueManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                .from(CODE_LIST_VALUE_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(CODE_LIST_VALUE_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(CodeListValueManifestRecord.class);
     }
 
     public List<DtRecord> findAllDt(ULong moduleSetReleaseId) {
@@ -67,6 +99,14 @@ public class CcRepository {
                 .fetchInto(DtRecord.class);
     }
 
+    public List<DtManifestRecord> findAllDtManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(DT_MANIFEST.fields())
+                .from(DT_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(DT_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(DtManifestRecord.class);
+    }
+
     public List<DtScRecord> findAllDtSc(ULong moduleSetReleaseId) {
         return dslContext.select(DT_SC.fields())
                 .from(DT_SC)
@@ -75,6 +115,14 @@ public class CcRepository {
                 .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(DT_SC_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(DtScRecord.class);
+    }
+
+    public List<DtScManifestRecord> findAllDtScManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(DT_SC_MANIFEST.fields())
+                .from(DT_SC_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(DT_SC_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(DtScManifestRecord.class);
     }
 
     public List<BdtPriRestriRecord> findAllBdtPriRestri(ULong moduleSetReleaseId) {
@@ -102,8 +150,8 @@ public class CcRepository {
         return dslContext.select(BDT_SC_PRI_RESTRI.fields())
                 .from(BDT_SC_PRI_RESTRI)
                 .join(DT_SC).on(BDT_SC_PRI_RESTRI.BDT_SC_ID.eq(DT_SC.DT_SC_ID))
-                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_MANIFEST.DT_ID))
-                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(DT_MANIFEST.RELEASE_ID))
+                .join(DT_SC_MANIFEST).on(DT_SC.DT_SC_ID.eq(DT_SC_MANIFEST.DT_SC_ID))
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(DT_SC_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(BdtScPriRestriRecord.class);
     }
@@ -153,6 +201,14 @@ public class CcRepository {
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(XbtRecord.class);
     }
+
+    public List<XbtManifestRecord> findAllXbtManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(XBT_MANIFEST.fields())
+                .from(XBT_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(XBT_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(XbtManifestRecord.class);
+    }
     
     public List<AccRecord> findAllAcc(ULong moduleSetReleaseId) {
         return dslContext.select(ACC.fields())
@@ -162,6 +218,14 @@ public class CcRepository {
                 .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(AccRecord.class);
+    }
+
+    public List<AccManifestRecord> findAllAccManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(ACC_MANIFEST.fields())
+                .from(ACC_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(AccManifestRecord.class);
     }
 
     public List<AsccRecord> findAllAscc(ULong moduleSetReleaseId) {
@@ -174,6 +238,14 @@ public class CcRepository {
                 .fetchInto(AsccRecord.class);
     }
 
+    public List<AsccManifestRecord> findAllAsccManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(ASCC_MANIFEST.fields())
+                .from(ASCC_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(ASCC_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(AsccManifestRecord.class);
+    }
+
     public List<AsccpRecord> findAllAsccp(ULong moduleSetReleaseId) {
         return dslContext.select(ASCCP.fields())
                 .from(ASCCP)
@@ -182,6 +254,14 @@ public class CcRepository {
                 .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(ASCCP_MANIFEST.RELEASE_ID))
                 .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(AsccpRecord.class);
+    }
+
+    public List<AsccpManifestRecord> findAllAsccpManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(ASCCP_MANIFEST.fields())
+                .from(ASCCP_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(ASCCP_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(AsccpManifestRecord.class);
     }
 
     public List<BccRecord> findAllBcc(ULong moduleSetReleaseId) {
@@ -194,6 +274,14 @@ public class CcRepository {
                 .fetchInto(BccRecord.class);
     }
 
+    public List<BccManifestRecord> findAllBccManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(BCC_MANIFEST.fields())
+                .from(BCC_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(BCC_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(BccManifestRecord.class);
+    }
+
     public List<BccpRecord> findAllBccp(ULong moduleSetReleaseId) {
         return dslContext.select(BCCP.fields())
                 .from(BCCP)
@@ -204,16 +292,22 @@ public class CcRepository {
                 .fetchInto(BccpRecord.class);
     }
 
+    public List<BccpManifestRecord> findAllBccpManifest(ULong moduleSetReleaseId) {
+        return dslContext.select(BCCP_MANIFEST.fields())
+                .from(BCCP_MANIFEST)
+                .join(MODULE_SET_RELEASE).on(MODULE_SET_RELEASE.RELEASE_ID.eq(BCCP_MANIFEST.RELEASE_ID))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(BccpManifestRecord.class);
+    }
+
 
     public List<ModuleCCID> findAllModuleAgencyIdListManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 AGENCY_ID_LIST.AGENCY_ID_LIST_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_AGENCY_ID_LIST_MANIFEST).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(AGENCY_ID_LIST_MANIFEST).on(and(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)),
-                        AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .from(AGENCY_ID_LIST)
+                .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
+                .join(MODULE_AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(MODULE_AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -221,12 +315,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleCodeListManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 CODE_LIST.CODE_LIST_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_CODE_LIST_MANIFEST).on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(CODE_LIST_MANIFEST).on(and(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)),
-                        CODE_LIST_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .from(CODE_LIST)
+                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .join(MODULE_CODE_LIST_MANIFEST).on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_CODE_LIST_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -234,12 +326,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleAccManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 ACC.ACC_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_ACC_MANIFEST).on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(ACC_MANIFEST).on(and(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)),
-                        ACC_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .from(ACC)
+                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(MODULE_ACC_MANIFEST).on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(MODULE_ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_ACC_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_ACC_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -247,12 +337,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleAsccpManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 ASCCP.ASCCP_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_ASCCP_MANIFEST).on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(ASCCP_MANIFEST).on(and(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)),
-                        ASCCP_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                .from(ASCCP)
+                .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(MODULE_ASCCP_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(MODULE_ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_ASCCP_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_ASCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -260,12 +348,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleBccpManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 BCCP.BCCP_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_BCCP_MANIFEST).on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(BCCP_MANIFEST).on(and(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID)),
-                        BCCP_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                .from(BCCP)
+                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(MODULE_BCCP_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(MODULE_BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_BCCP_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_BCCP_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -273,12 +359,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleDtManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 DT.DT_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_DT_MANIFEST).on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(DT_MANIFEST).on(and(MODULE_DT_MANIFEST.DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID)),
-                        DT_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .from(DT)
+                .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                .join(MODULE_DT_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(MODULE_DT_MANIFEST.DT_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_DT_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_DT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }
@@ -286,12 +370,10 @@ public class CcRepository {
     public List<ModuleCCID> findAllModuleXbtManifest(ULong moduleSetReleaseId) {
         return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID.as("module_set_assignment_id"),
                 XBT.XBT_ID.as("ccId"))
-                .from(MODULE_SET_RELEASE)
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_SET_ASSIGNMENT.MODULE_SET_ID.eq(MODULE_SET_RELEASE.MODULE_SET_ID))
-                .join(MODULE_XBT_MANIFEST).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
-                .join(XBT_MANIFEST).on(and(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID)),
-                        XBT_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(XBT).on(XBT_MANIFEST.XBT_ID.eq(XBT.XBT_ID))
+                .from(XBT)
+                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
+                .join(MODULE_XBT_MANIFEST).on(XBT_MANIFEST.XBT_MANIFEST_ID.eq(MODULE_XBT_MANIFEST.XBT_MANIFEST_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
     }

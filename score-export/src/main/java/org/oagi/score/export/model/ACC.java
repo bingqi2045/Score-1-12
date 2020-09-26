@@ -4,6 +4,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.common.util.OagisComponentType;
 import org.oagi.score.common.util.Utility;
 import org.oagi.score.provider.ImportedDataProvider;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 
@@ -23,7 +24,7 @@ public abstract class ACC implements Component {
         this.oagisComponentType = acc.getOagisComponentType();
     }
 
-    public static ACC newInstance(AccRecord acc,
+    public static ACC newInstance(AccRecord acc, AccManifestRecord accManifest,
                                   ImportedDataProvider importedDataProvider) {
         switch (acc.getOagisComponentType()) {
             case 0: //Base
@@ -34,9 +35,13 @@ public abstract class ACC implements Component {
             case 6: //OAGIS10Nouns
             case 7: //OAGIS10BODs
                 ACC basedACC = null;
-                if (acc.getBasedAccId() != null) {
-                    AccRecord basedAcc = importedDataProvider.findACC(acc.getBasedAccId());
-                    basedACC = newInstance(basedAcc, importedDataProvider);
+                if (accManifest.getBasedAccManifestId() != null) {
+                    AccManifestRecord basedAccManifest = importedDataProvider.findACCManifest(accManifest.getBasedAccManifestId());
+                    if (basedAccManifest == null) {
+                        throw new IllegalStateException();
+                    }
+                    AccRecord basedAcc = importedDataProvider.findACC(basedAccManifest.getAccId());
+                    basedACC = newInstance(basedAcc, basedAccManifest, importedDataProvider);
                 }
                 return new ACCComplexType(acc, basedACC, importedDataProvider);
             case 4: // UEG

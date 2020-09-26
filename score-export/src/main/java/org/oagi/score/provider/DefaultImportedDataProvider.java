@@ -3,6 +3,7 @@ package org.oagi.score.provider;
 import org.jooq.types.ULong;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.export.repository.CcRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,24 +88,53 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
         findAccMap = findACCList.stream()
                 .collect(Collectors.toMap(AccRecord::getAccId, Function.identity()));
 
+        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(MODULE_SET_RELEASE_ID));
+        findAccManifestMap = findACCManifestList.stream()
+                .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+
         findASCCPList = ccRepository.findAllAsccp(ULong.valueOf(MODULE_SET_RELEASE_ID));
         findAsccpMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getAsccpId, Function.identity()));
         findAsccpByGuidMap = findASCCPList.stream()
                 .collect(Collectors.toMap(AsccpRecord::getGuid, Function.identity()));
 
+        findASCCPManifestList = ccRepository.findAllAsccpManifest(ULong.valueOf(MODULE_SET_RELEASE_ID));
+        findAsccpManifestMap = findASCCPManifestList.stream()
+                .collect(Collectors.toMap(AsccpManifestRecord::getAsccpManifestId, Function.identity()));
+
+        findBCCPManifestList = ccRepository.findAllBccpManifest(ULong.valueOf(MODULE_SET_RELEASE_ID));
+        findBccpManifestMap = findBCCPManifestList.stream()
+                .collect(Collectors.toMap(BccpManifestRecord::getBccpManifestId, Function.identity()));
+        
         findBCCPList = ccRepository.findAllBccp(ULong.valueOf(MODULE_SET_RELEASE_ID));
         findBccpMap = findBCCPList.stream()
                 .collect(Collectors.toMap(BccpRecord::getBccpId, Function.identity()));
 
+        findACCManifestList = ccRepository.findAllAccManifest(ULong.valueOf(MODULE_SET_RELEASE_ID));
+        findAccManifestMap = findACCManifestList.stream()
+                .collect(Collectors.toMap(AccManifestRecord::getAccManifestId, Function.identity()));
+
         List<BccRecord> bccList = ccRepository.findAllBcc(ULong.valueOf(MODULE_SET_RELEASE_ID));
+
         findBCCByToBccpIdMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccRecord::getToBccpId));
         findBccByFromAccIdMap = bccList.stream()
                 .collect(Collectors.groupingBy(BccRecord::getFromAccId));
+        findBccMap = bccList.stream()
+                .collect(Collectors.toMap(BccRecord::getBccId, Function.identity()));
 
-        findAsccByFromAccIdMap = ccRepository.findAllAscc(ULong.valueOf(MODULE_SET_RELEASE_ID)).stream()
+        findBccManifestMap = ccRepository.findAllBccManifest(ULong.valueOf(MODULE_SET_RELEASE_ID)).stream()
+                .collect(Collectors.toMap(BccManifestRecord::getBccId, Function.identity()));
+
+        findAsccManifestMap = ccRepository.findAllAsccManifest(ULong.valueOf(MODULE_SET_RELEASE_ID)).stream()
+                .collect(Collectors.toMap(AsccManifestRecord::getAsccId, Function.identity()));
+
+        List<AsccRecord> asccList = ccRepository.findAllAscc(ULong.valueOf(MODULE_SET_RELEASE_ID));
+        findAsccByFromAccIdMap = asccList.stream()
                 .collect(Collectors.groupingBy(AsccRecord::getFromAccId));
+
+        findAsccMap = asccList.stream()
+                .collect(Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
 
         findModuleCodeListManifestMap = ccRepository.findAllModuleCodeListManifest(ULong.valueOf(MODULE_SET_RELEASE_ID))
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
@@ -145,6 +175,10 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
 
     @Override
     public AgencyIdListRecord findAgencyIdList(ULong agencyIdListId) {
+        AgencyIdListRecord a = findAgencyIdListMap.get(agencyIdListId);
+        if (a == null) {
+            throw new IllegalStateException();
+        }
         return findAgencyIdListMap.get(agencyIdListId);
     }
 
@@ -266,7 +300,11 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
 
     @Override
     public XbtRecord findXbt(ULong xbtId) {
-        return findXbtMap.get(xbtId);
+        XbtRecord xbt = findXbtMap.get(xbtId);
+        if (xbt == null) {
+            throw new IllegalStateException();
+        }
+        return xbt;
     }
 
     private List<AccRecord> findACCList;
@@ -276,11 +314,56 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
         return Collections.unmodifiableList(findACCList);
     }
 
+    @Override
+    public List<AccManifestRecord> findACCManifest() {
+        return Collections.unmodifiableList(findACCManifestList);
+    }
+
     private Map<ULong, AccRecord> findAccMap;
 
     @Override
     public AccRecord findACC(ULong accId) {
         return findAccMap.get(accId);
+    }
+
+    private List<AccManifestRecord> findACCManifestList;
+
+    private Map<ULong, AccManifestRecord> findAccManifestMap;
+
+    @Override
+    public AccManifestRecord findACCManifest(ULong accManifestId) {
+        return findAccManifestMap.get(accManifestId);
+    }
+
+    @Override
+    public List<AsccpManifestRecord> findASCCPManifest() {
+        return Collections.unmodifiableList(findASCCPManifestList);
+    }
+
+    private List<AsccpManifestRecord> findASCCPManifestList;
+
+    private Map<ULong, AsccpManifestRecord> findAsccpManifestMap;
+
+    @Override
+    public AsccpManifestRecord findASCCPManifest(ULong asccpManifestId) {
+        return findAsccpManifestMap.get(asccpManifestId);
+    }
+
+    @Override
+    public List<BccpManifestRecord> findBCCPManifest() {
+        return Collections.unmodifiableList(findBCCPManifestList);
+    }
+
+    private List<BccpManifestRecord> findBCCPManifestList;
+
+    private Map<ULong, BccpManifestRecord> findBccpManifestMap;
+
+    @Override
+    public BccpManifestRecord findBCCPManifest(ULong bccpManifestId) {
+        if (bccpManifestId == null) {
+            return null;
+        }
+        return findBccpManifestMap.get(bccpManifestId);
     }
 
     private List<AsccpRecord> findASCCPList;
@@ -332,6 +415,34 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
         return (findBccByFromAccIdMap.containsKey(fromAccId)) ? findBccByFromAccIdMap.get(fromAccId) : Collections.emptyList();
     }
 
+    private Map<ULong, AsccRecord> findAsccMap;
+
+    @Override
+    public AsccRecord findASCC(ULong asccId) {
+        return findAsccMap.get(asccId);
+    }
+
+    private Map<ULong, BccRecord> findBccMap;
+
+    @Override
+    public BccRecord findBCC(ULong bccId) {
+        return findBccMap.get(bccId);
+    }
+
+    private Map<ULong, AsccManifestRecord> findAsccManifestMap;
+
+    @Override
+    public AsccManifestRecord findASCCManifest(ULong asccId) {
+        return findAsccManifestMap.get(asccId);
+    }
+
+    private Map<ULong, BccManifestRecord> findBccManifestMap;
+
+    @Override
+    public BccManifestRecord findBCCManifest(ULong bccId) {
+        return findBccManifestMap.get(bccId);
+    }
+
     private Map<ULong, List<AsccRecord>> findAsccByFromAccIdMap;
 
     @Override
@@ -373,4 +484,6 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
     public ModuleCCID findModuleXbt(ULong xbtId) {
         return findModuleXbtManifestMap.get(xbtId);
     }
+
+
 }
