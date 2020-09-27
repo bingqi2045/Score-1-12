@@ -2,10 +2,7 @@ package org.oagi.score.repo.component.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Record3;
-import org.jooq.Record4;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
@@ -48,6 +45,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String den;
         private OagisComponentType componentType;
         private String state;
+        private String guid;
         private ULong releaseId;
         private ULong prevAccManifestId;
     }
@@ -59,6 +57,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private ULong roleOfAccManifestId;
         private String propertyTerm;
         private String state;
+        private String guid;
         private ULong releaseId;
         private ULong prevAsccpManifestId;
     }
@@ -71,6 +70,7 @@ public class CoreComponentGraphContext implements GraphContext {
         private String propertyTerm;
         private String representationTerm;
         private String state;
+        private String guid;
         private ULong releaseId;
         private ULong prevBccpManifestId;
     }
@@ -142,7 +142,7 @@ public class CoreComponentGraphContext implements GraphContext {
         accManifestMap =
                 dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                         ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE,
-                        ACC.STATE, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
+                        ACC.STATE, ACC.GUID, ACC_MANIFEST.RELEASE_ID, ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .fetch(record -> new AccManifest(
@@ -152,13 +152,14 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(ACC.DEN),
                                 OagisComponentType.valueOf(record.get(ACC.OAGIS_COMPONENT_TYPE)),
                                 record.get(ACC.STATE),
+                                record.get(ACC.GUID),
                                 record.get(ACC_MANIFEST.RELEASE_ID),
                                 record.get(ACC_MANIFEST.PREV_ACC_MANIFEST_ID)
                         )).stream()
                         .collect(Collectors.toMap(AccManifest::getAccManifestId, Function.identity()));
         asccpManifestMap =
                 dslContext.select(ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
-                        ASCCP.PROPERTY_TERM, ASCCP.STATE,
+                        ASCCP.PROPERTY_TERM, ASCCP.STATE, ASCCP.GUID,
                         ASCCP_MANIFEST.RELEASE_ID, ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID)
                         .from(ASCCP_MANIFEST)
                         .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
@@ -167,13 +168,14 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID),
                                 record.get(ASCCP.PROPERTY_TERM),
                                 record.get(ASCCP.STATE),
+                                record.get(ASCCP.GUID),
                                 record.get(ASCCP_MANIFEST.RELEASE_ID),
                                 record.get(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID)
                         )).stream()
                         .collect(Collectors.toMap(AsccpManifest::getAsccpManifestId, Function.identity()));
         bccpManifestMap =
                 dslContext.select(BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP_MANIFEST.BDT_MANIFEST_ID,
-                        BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE,
+                        BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE, BCCP.GUID,
                         BCCP_MANIFEST.RELEASE_ID, BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID)
                         .from(BCCP_MANIFEST)
                         .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
@@ -183,6 +185,7 @@ public class CoreComponentGraphContext implements GraphContext {
                                 record.get(BCCP.PROPERTY_TERM),
                                 record.get(BCCP.REPRESENTATION_TERM),
                                 record.get(BCCP.STATE),
+                                record.get(BCCP.GUID),
                                 record.get(BCCP_MANIFEST.RELEASE_ID),
                                 record.get(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID)
                         )).stream()
@@ -353,34 +356,35 @@ public class CoreComponentGraphContext implements GraphContext {
     }
 
     public Node toNode(AccManifestRecord record) {
-        Record4<String, String, Integer, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.DEN, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE)
+        Record5<String, String, String, Integer, String> res = dslContext.select(ACC.OBJECT_CLASS_TERM, ACC.DEN,
+                ACC.GUID, ACC.OAGIS_COMPONENT_TYPE, ACC.STATE)
                 .from(ACC)
                 .where(ACC.ACC_ID.eq(record.getAccId()))
                 .fetchOne();
         return toNode(new AccManifest(record.getAccManifestId(), record.getBasedAccManifestId(),
                 res.get(ACC.OBJECT_CLASS_TERM), res.get(ACC.DEN), OagisComponentType.valueOf(res.get(ACC.OAGIS_COMPONENT_TYPE)),
-                res.get(ACC.STATE), record.getReleaseId(), record.getPrevAccManifestId()));
+                res.get(ACC.STATE), res.get(ACC.GUID), record.getReleaseId(), record.getPrevAccManifestId()));
     }
 
     public Node toNode(AsccpManifestRecord record) {
-        Record2<String, String> res = dslContext.select(ASCCP.PROPERTY_TERM, ASCCP.STATE)
+        Record3<String, String, String> res = dslContext.select(ASCCP.PROPERTY_TERM, ASCCP.STATE, ASCCP.GUID)
                 .from(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(record.getAsccpId()))
                 .fetchOne();
         return toNode(new AsccpManifest(record.getAsccpManifestId(), record.getRoleOfAccManifestId(),
-                res.get(ASCCP.PROPERTY_TERM), res.get(ASCCP.STATE),
+                res.get(ASCCP.PROPERTY_TERM), res.get(ASCCP.STATE), res.get(ASCCP.GUID),
                 record.getReleaseId(), record.getPrevAsccpManifestId()));
     }
 
     public Node toNode(BccpManifestRecord record) {
-        Record3<String, String, String> res =
-                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE)
+        Record4<String, String, String, String> res =
+                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE, ASCCP.GUID)
                         .from(BCCP)
                         .where(BCCP.BCCP_ID.eq(record.getBccpId()))
                         .fetchOne();
         return toNode(new BccpManifest(record.getBccpManifestId(), record.getBdtManifestId(),
                 res.get(BCCP.PROPERTY_TERM), res.get(BCCP.REPRESENTATION_TERM), res.get(BCCP.STATE),
-                record.getReleaseId(), record.getPrevBccpManifestId()));
+                res.get(BCCP.GUID), record.getReleaseId(), record.getPrevBccpManifestId()));
     }
 
     public Collection<Node> getNodes() {
@@ -417,6 +421,7 @@ public class CoreComponentGraphContext implements GraphContext {
         node.setBasedManifestId(accManifest.getBasedAccManifestId());
         node.setPrevManifestId(accManifest.getPrevAccManifestId());
         node.put("state", accManifest.getState());
+        node.put("guid", accManifest.getGuid());
         node.put("objectClassTerm", accManifest.getObjectClassTerm());
         node.put("den", accManifest.getDen());
         node.put("componentType", accManifest.getComponentType().name());
@@ -429,6 +434,7 @@ public class CoreComponentGraphContext implements GraphContext {
         node.setLinkedManifestId(asccpManifest.getRoleOfAccManifestId());
         node.setPrevManifestId(asccpManifest.getPrevAsccpManifestId());
         node.put("state", asccpManifest.getState());
+        node.put("guid", asccpManifest.getGuid());
         node.put("propertyTerm", asccpManifest.getPropertyTerm());
         return node;
     }
@@ -439,6 +445,7 @@ public class CoreComponentGraphContext implements GraphContext {
         node.setLinkedManifestId(bccpManifest.getBdtManifestId());
         node.setPrevManifestId(bccpManifest.getPrevBccpManifestId());
         node.put("state", bccpManifest.getState());
+        node.put("guid", bccpManifest.getGuid());
         node.put("propertyTerm", bccpManifest.getPropertyTerm());
         return node;
     }
