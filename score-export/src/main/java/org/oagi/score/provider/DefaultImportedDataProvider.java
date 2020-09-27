@@ -1,6 +1,7 @@
 package org.oagi.score.provider;
 
 import org.jooq.types.ULong;
+import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.export.repository.CcRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
@@ -153,6 +154,8 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
 
         findModuleXbtManifestMap = ccRepository.findAllModuleXbtManifest(ULong.valueOf(MODULE_SET_RELEASE_ID))
                 .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
+
+        findBlobContentList = ccRepository.findAllBlobContent(ULong.valueOf(MODULE_SET_RELEASE_ID));
 
         logger.info("Ready for " + getClass().getSimpleName() + " in " + (System.currentTimeMillis() - s) / 1000d + " seconds");
     }
@@ -485,5 +488,10 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
         return findModuleXbtManifestMap.get(xbtId);
     }
 
+    private List<BlobContent> findBlobContentList;
 
+    @Override
+    public List<BlobContent> findBlobContent() {
+        return findBlobContentList;
+    }
 }

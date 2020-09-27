@@ -240,11 +240,11 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
     }
 
     private void createBlobContents(Map<ULong, SchemaModule> moduleMap) {
-//        for (BlobContent blobContent : blobContentRepository.findAll(new Sort(Sort.Direction.ASC, "blobContentId"))) {
-//
-//            SchemaModule schemaModule = moduleMap.get(blobContent.getModule().getModuleId());
-//            schemaModule.setContent(blobContent.getContent());
-//        }
+        for (BlobContent blobContent : importedDataProvider.findBlobContent()) {
+
+            SchemaModule schemaModule = moduleMap.get(blobContent.getModuleSetAssignmentId());
+            schemaModule.setContent(blobContent.getContent());
+        }
     }
 
     public static void main(String[] args) throws Exception {

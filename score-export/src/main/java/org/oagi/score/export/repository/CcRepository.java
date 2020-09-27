@@ -2,6 +2,7 @@ package org.oagi.score.export.repository;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -376,5 +377,16 @@ public class CcRepository {
                 .join(MODULE_SET_ASSIGNMENT).on(MODULE_XBT_MANIFEST.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID))
                 .where(MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
                 .fetchInto(ModuleCCID.class);
+    }
+
+    public List<BlobContent> findAllBlobContent(ULong moduleSetReleaseId) {
+        return dslContext.select(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID, BLOB_CONTENT.CONTENT)
+                .from(MODULE_SET_RELEASE)
+                .join(BLOB_CONTENT).on(MODULE_SET_RELEASE.RELEASE_ID.eq(BLOB_CONTENT.RELEASE_ID))
+                .join(MODULE_SET_ASSIGNMENT).on(
+                        and(BLOB_CONTENT.MODULE_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_ID)),
+                        and(MODULE_SET_RELEASE.MODULE_SET_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ID)))
+                .where(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID.eq(moduleSetReleaseId))
+                .fetchInto(BlobContent.class);
     }
 }

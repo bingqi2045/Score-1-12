@@ -1,6 +1,7 @@
 package org.oagi.score.provider;
 
 import org.jooq.types.ULong;
+import org.oagi.score.export.model.BlobContent;
 import org.oagi.score.export.model.ModuleCCID;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 
@@ -99,4 +100,6 @@ public interface ImportedDataProvider {
     public ModuleCCID findModuleDt(ULong dtId);
 
     public ModuleCCID findModuleXbt(ULong xbtId);
+
+    public List<BlobContent> findBlobContent();
 }
