@@ -124,7 +124,7 @@ public class CcNodeRepository {
         accNode.setAccess(AccessPrivilege.toAccessPrivilege(
                 sessionService.getAppUser(user), sessionService.getAppUser(accNode.getOwnerUserId()), accNode.getState()));
         accNode.setHasChild(hasChild(accNode));
-        accNode.setHasExtension(hasExtension(accNode));
+        accNode.setHasExtension(hasExtension(user, accNode));
 
         return accNode;
     }
@@ -155,22 +155,23 @@ public class CcNodeRepository {
         return bccCount > 0;
     }
 
-    private boolean hasExtension(CcAccNode ccAccNode) {
+    private boolean hasExtension(AuthenticatedPrincipal user, CcAccNode ccAccNode) {
         ULong accManifestId = ULong.valueOf(ccAccNode.getManifestId());
-        if (ccAccNode.getBasedAccManifestId() != null) {
-            return true;
-        }
-        if (ccAccNode.getManifestId().longValue() == 0L) {
-            return false;
-        }
-
-        return dslContext.selectCount()
+        if (dslContext.selectCount()
                 .from(ASCC_MANIFEST)
                 .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestId),
                         ASCCP.TYPE.eq(CcASCCPType.Extension.name())))
-                .fetchOneInto(long.class) > 0;
+                .fetchOneInto(long.class) > 0) {
+            return true;
+        } else {
+            if (ccAccNode.getBasedAccManifestId() != null) {
+                return hasExtension(user, getAccNodeByAccManifestId(user, ccAccNode.getBasedAccManifestId()));
+            } else {
+                return false;
+            }
+        }
     }
 
     private SelectOnConditionStep<Record15<ULong, String, String, ULong, String, String, ULong, UInteger, UInteger,
