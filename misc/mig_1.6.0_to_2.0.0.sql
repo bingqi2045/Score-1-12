@@ -1053,14 +1053,6 @@ ALTER TABLE `agency_id_list`
     MODIFY COLUMN `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created the agency ID list.',
     MODIFY COLUMN `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It identifies the user who last updated the agency ID list.';
 
--- Add `namespace` property in `agency_id_list`
-ALTER TABLE `agency_id_list`
-    ADD COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user''s component because there is also a namespace assigned at the release level.' AFTER `definition`,
-    ADD CONSTRAINT `agency_id_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
-
-UPDATE `agency_id_list` SET `namespace_id` = (SELECT `namespace_id` FROM `namespace` WHERE `uri` = 'http://www.openapplications.org/oagis/10')
-WHERE `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
-
 -- Making relations between `agency_id_list` and `release` tables.
 ALTER TABLE `agency_id_list`
     ADD COLUMN `is_deprecated` tinyint(1) DEFAULT '0' COMMENT 'Indicates whether the agency id list is deprecated and should not be reused (i.e., no new reference to this record should be allowed).',
@@ -1074,6 +1066,14 @@ ALTER TABLE `agency_id_list`
     ADD CONSTRAINT `agency_id_list_next_agency_id_list_id_fk` FOREIGN KEY (`next_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
 
 UPDATE `agency_id_list` SET `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
+
+-- Add `namespace` property in `agency_id_list`
+ALTER TABLE `agency_id_list`
+    ADD COLUMN `namespace_id` bigint(20) unsigned DEFAULT NULL COMMENT 'Foreign key to the NAMESPACE table. This is the namespace to which the entity belongs. This namespace column is primarily used in the case the component is a user''s component because there is also a namespace assigned at the release level.' AFTER `definition`,
+    ADD CONSTRAINT `agency_id_list_namespace_id_fk` FOREIGN KEY (`namespace_id`) REFERENCES `namespace` (`namespace_id`);
+
+UPDATE `agency_id_list` SET `namespace_id` = (SELECT `namespace_id` FROM `namespace` WHERE `uri` = 'http://www.openapplications.org/oagis/10')
+WHERE `owner_user_id` = (SELECT `app_user_id` FROM `app_user` WHERE `login_id` = 'oagis');
 
 CREATE TABLE `agency_id_list_manifest` (
     `agency_id_list_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
