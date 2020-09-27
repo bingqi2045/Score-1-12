@@ -77,7 +77,7 @@ public abstract class ACC implements Component {
 
     public boolean isGroup() {
         AsccpRecord asccp = importedDataProvider.findASCCPByGuid(getGuid());
-        return (asccp != null) && asccp.getRoleOfAccId().equals(getRawId());
+        return asccp != null;
     }
 
     public OagisComponentType getOagisComponentType() {
