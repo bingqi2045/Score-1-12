@@ -6,8 +6,8 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record4;
-import org.jooq.Row4;
+import org.jooq.Record2;
+import org.jooq.Row2;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
@@ -18,9 +18,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
  * is represented in Blob.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record4<ULong, byte[], ULong, ULong> {
+public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record2<ULong, byte[]> {
 
-    private static final long serialVersionUID = -1252175054;
+    private static final long serialVersionUID = 216398286;
 
     /**
      * Setter for <code>oagi.blob_content.blob_content_id</code>. Primary, internal database key.
@@ -50,34 +50,6 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
         return (byte[]) get(1);
     }
 
-    /**
-     * Setter for <code>oagi.blob_content.release_id</code>. The release to which this file/content belongs/published.
-     */
-    public void setReleaseId(ULong value) {
-        set(2, value);
-    }
-
-    /**
-     * Getter for <code>oagi.blob_content.release_id</code>. The release to which this file/content belongs/published.
-     */
-    public ULong getReleaseId() {
-        return (ULong) get(2);
-    }
-
-    /**
-     * Setter for <code>oagi.blob_content.module_id</code>. Foreign key to the module table indicating the physical file the blob content should be output to when generating/serializing the content.
-     */
-    public void setModuleId(ULong value) {
-        set(3, value);
-    }
-
-    /**
-     * Getter for <code>oagi.blob_content.module_id</code>. Foreign key to the module table indicating the physical file the blob content should be output to when generating/serializing the content.
-     */
-    public ULong getModuleId() {
-        return (ULong) get(3);
-    }
-
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -88,17 +60,17 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     // -------------------------------------------------------------------------
-    // Record4 type implementation
+    // Record2 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, byte[], ULong, ULong> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row2<ULong, byte[]> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 
     @Override
-    public Row4<ULong, byte[], ULong, ULong> valuesRow() {
-        return (Row4) super.valuesRow();
+    public Row2<ULong, byte[]> valuesRow() {
+        return (Row2) super.valuesRow();
     }
 
     @Override
@@ -112,16 +84,6 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public Field<ULong> field3() {
-        return BlobContent.BLOB_CONTENT.RELEASE_ID;
-    }
-
-    @Override
-    public Field<ULong> field4() {
-        return BlobContent.BLOB_CONTENT.MODULE_ID;
-    }
-
-    @Override
     public ULong component1() {
         return getBlobContentId();
     }
@@ -132,16 +94,6 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public ULong component3() {
-        return getReleaseId();
-    }
-
-    @Override
-    public ULong component4() {
-        return getModuleId();
-    }
-
-    @Override
     public ULong value1() {
         return getBlobContentId();
     }
@@ -149,16 +101,6 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     @Override
     public byte[] value2() {
         return getContent();
-    }
-
-    @Override
-    public ULong value3() {
-        return getReleaseId();
-    }
-
-    @Override
-    public ULong value4() {
-        return getModuleId();
     }
 
     @Override
@@ -174,23 +116,9 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     }
 
     @Override
-    public BlobContentRecord value3(ULong value) {
-        setReleaseId(value);
-        return this;
-    }
-
-    @Override
-    public BlobContentRecord value4(ULong value) {
-        setModuleId(value);
-        return this;
-    }
-
-    @Override
-    public BlobContentRecord values(ULong value1, byte[] value2, ULong value3, ULong value4) {
+    public BlobContentRecord values(ULong value1, byte[] value2) {
         value1(value1);
         value2(value2);
-        value3(value3);
-        value4(value4);
         return this;
     }
 
@@ -208,12 +136,10 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     /**
      * Create a detached, initialised BlobContentRecord
      */
-    public BlobContentRecord(ULong blobContentId, byte[] content, ULong releaseId, ULong moduleId) {
+    public BlobContentRecord(ULong blobContentId, byte[] content) {
         super(BlobContent.BLOB_CONTENT);
 
         set(0, blobContentId);
         set(1, content);
-        set(2, releaseId);
-        set(3, moduleId);
     }
 }

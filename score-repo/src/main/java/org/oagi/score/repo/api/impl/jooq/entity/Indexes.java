@@ -24,6 +24,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Comment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDir;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
@@ -69,6 +70,8 @@ public class Indexes {
     public static final Index DT_DT_GUID_IDX = Indexes0.DT_DT_GUID_IDX;
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX;
     public static final Index DT_SC_DT_SC_GUID_IDX = Indexes0.DT_SC_DT_SC_GUID_IDX;
+    public static final Index MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK = Indexes0.MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK;
+    public static final Index MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK = Indexes0.MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK;
     public static final Index MODULE_DIR_MODULE_DIR_PATH_K = Indexes0.MODULE_DIR_MODULE_DIR_PATH_K;
     public static final Index REVISION_REFERENCE = Indexes0.REVISION_REFERENCE;
     public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_ID = Indexes0.SEQ_KEY_SEQ_KEY_FROM_ACC_ID;
@@ -109,6 +112,8 @@ public class Indexes {
         public static Index DT_DT_GUID_IDX = Internal.createIndex("dt_guid_idx", Dt.DT, new OrderField[] { Dt.DT.GUID }, false);
         public static Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("dt_last_update_timestamp_desc_idx", Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
         public static Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex("dt_sc_guid_idx", DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
+        public static Index MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK = Internal.createIndex("mmodule_blob_content_manifest_last_updated_by_fk", ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, new OrderField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.LAST_UPDATED_BY }, false);
+        public static Index MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK = Internal.createIndex("module_blob_content_manifest_blob_content_manifest_id_fk", ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, new OrderField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID }, false);
         public static Index MODULE_DIR_MODULE_DIR_PATH_K = Internal.createIndex("module_dir_path_k", ModuleDir.MODULE_DIR, new OrderField[] { ModuleDir.MODULE_DIR.PATH }, false);
         public static Index REVISION_REFERENCE = Internal.createIndex("reference", Revision.REVISION, new OrderField[] { Revision.REVISION.REFERENCE }, false);
         public static Index SEQ_KEY_SEQ_KEY_FROM_ACC_ID = Internal.createIndex("seq_key_from_acc_id", SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_ID }, false);

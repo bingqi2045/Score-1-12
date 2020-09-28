@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row2;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContent extends TableImpl<BlobContentRecord> {
 
-    private static final long serialVersionUID = 276059045;
+    private static final long serialVersionUID = -1927676049;
 
     /**
      * The reference instance of <code>oagi.blob_content</code>
@@ -57,16 +57,6 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
      * The column <code>oagi.blob_content.content</code>. The Blob content of the schema file.
      */
     public final TableField<BlobContentRecord, byte[]> CONTENT = createField(DSL.name("content"), org.jooq.impl.SQLDataType.BLOB.nullable(false), this, "The Blob content of the schema file.");
-
-    /**
-     * The column <code>oagi.blob_content.release_id</code>. The release to which this file/content belongs/published.
-     */
-    public final TableField<BlobContentRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The release to which this file/content belongs/published.");
-
-    /**
-     * The column <code>oagi.blob_content.module_id</code>. Foreign key to the module table indicating the physical file the blob content should be output to when generating/serializing the content.
-     */
-    public final TableField<BlobContentRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the module table indicating the physical file the blob content should be output to when generating/serializing the content.");
 
     /**
      * Create a <code>oagi.blob_content</code> table reference
@@ -122,19 +112,6 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
     }
 
     @Override
-    public List<ForeignKey<BlobContentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BlobContentRecord, ?>>asList(Keys.BLOB_CONTENT_RELEASE_ID_FK, Keys.BLOB_CONTENT_MODULE_ID_FK);
-    }
-
-    public Release release() {
-        return new Release(this, Keys.BLOB_CONTENT_RELEASE_ID_FK);
-    }
-
-    public Module module() {
-        return new Module(this, Keys.BLOB_CONTENT_MODULE_ID_FK);
-    }
-
-    @Override
     public BlobContent as(String alias) {
         return new BlobContent(DSL.name(alias), this);
     }
@@ -161,11 +138,11 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row2 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<ULong, byte[], ULong, ULong> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row2<ULong, byte[]> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 }

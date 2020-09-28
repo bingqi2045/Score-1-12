@@ -38,6 +38,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
@@ -61,6 +62,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDir;
@@ -267,6 +269,11 @@ It should be noted that the table does not store the fact about primitive restri
     public static final BlobContent BLOB_CONTENT = BlobContent.BLOB_CONTENT;
 
     /**
+     * The table <code>oagi.blob_content_manifest</code>.
+     */
+    public static final BlobContentManifest BLOB_CONTENT_MANIFEST = BlobContentManifest.BLOB_CONTENT_MANIFEST;
+
+    /**
      * This table capture allowed primitives of the CDT?s Content Component.  The information in this table is captured from the Allowed Primitive column in each of the CDT Content Component section/table in CCTS DTC3.
      */
     public static final CdtAwdPri CDT_AWD_PRI = CdtAwdPri.CDT_AWD_PRI;
@@ -384,6 +391,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The table <code>oagi.module_bccp_manifest</code>.
      */
     public static final ModuleBccpManifest MODULE_BCCP_MANIFEST = ModuleBccpManifest.MODULE_BCCP_MANIFEST;
+
+    /**
+     * The table <code>oagi.module_blob_content_manifest</code>.
+     */
+    public static final ModuleBlobContentManifest MODULE_BLOB_CONTENT_MANIFEST = ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST;
 
     /**
      * The table <code>oagi.module_code_list_manifest</code>.

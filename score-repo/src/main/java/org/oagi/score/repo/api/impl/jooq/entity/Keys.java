@@ -44,6 +44,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
@@ -67,6 +68,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDir;
@@ -119,6 +121,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BieUserExtRevisio
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxValueRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriXpsTypeMapRecord;
@@ -142,6 +145,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAccManifest
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAgencyIdListManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleBccpManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleBlobContentManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleCodeListManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDirRecord;
@@ -207,6 +211,7 @@ public class Keys {
     public static final Identity<BizCtxAssignmentRecord, ULong> IDENTITY_BIZ_CTX_ASSIGNMENT = Identities0.IDENTITY_BIZ_CTX_ASSIGNMENT;
     public static final Identity<BizCtxValueRecord, ULong> IDENTITY_BIZ_CTX_VALUE = Identities0.IDENTITY_BIZ_CTX_VALUE;
     public static final Identity<BlobContentRecord, ULong> IDENTITY_BLOB_CONTENT = Identities0.IDENTITY_BLOB_CONTENT;
+    public static final Identity<BlobContentManifestRecord, ULong> IDENTITY_BLOB_CONTENT_MANIFEST = Identities0.IDENTITY_BLOB_CONTENT_MANIFEST;
     public static final Identity<CdtAwdPriRecord, ULong> IDENTITY_CDT_AWD_PRI = Identities0.IDENTITY_CDT_AWD_PRI;
     public static final Identity<CdtAwdPriXpsTypeMapRecord, ULong> IDENTITY_CDT_AWD_PRI_XPS_TYPE_MAP = Identities0.IDENTITY_CDT_AWD_PRI_XPS_TYPE_MAP;
     public static final Identity<CdtPriRecord, ULong> IDENTITY_CDT_PRI = Identities0.IDENTITY_CDT_PRI;
@@ -230,6 +235,7 @@ public class Keys {
     public static final Identity<ModuleAgencyIdListManifestRecord, ULong> IDENTITY_MODULE_AGENCY_ID_LIST_MANIFEST = Identities0.IDENTITY_MODULE_AGENCY_ID_LIST_MANIFEST;
     public static final Identity<ModuleAsccpManifestRecord, ULong> IDENTITY_MODULE_ASCCP_MANIFEST = Identities0.IDENTITY_MODULE_ASCCP_MANIFEST;
     public static final Identity<ModuleBccpManifestRecord, ULong> IDENTITY_MODULE_BCCP_MANIFEST = Identities0.IDENTITY_MODULE_BCCP_MANIFEST;
+    public static final Identity<ModuleBlobContentManifestRecord, ULong> IDENTITY_MODULE_BLOB_CONTENT_MANIFEST = Identities0.IDENTITY_MODULE_BLOB_CONTENT_MANIFEST;
     public static final Identity<ModuleCodeListManifestRecord, ULong> IDENTITY_MODULE_CODE_LIST_MANIFEST = Identities0.IDENTITY_MODULE_CODE_LIST_MANIFEST;
     public static final Identity<ModuleDepRecord, ULong> IDENTITY_MODULE_DEP = Identities0.IDENTITY_MODULE_DEP;
     public static final Identity<ModuleDirRecord, ULong> IDENTITY_MODULE_DIR = Identities0.IDENTITY_MODULE_DIR;
@@ -294,6 +300,7 @@ public class Keys {
     public static final UniqueKey<BizCtxAssignmentRecord> KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK = UniqueKeys0.KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK;
     public static final UniqueKey<BizCtxValueRecord> KEY_BIZ_CTX_VALUE_PRIMARY = UniqueKeys0.KEY_BIZ_CTX_VALUE_PRIMARY;
     public static final UniqueKey<BlobContentRecord> KEY_BLOB_CONTENT_PRIMARY = UniqueKeys0.KEY_BLOB_CONTENT_PRIMARY;
+    public static final UniqueKey<BlobContentManifestRecord> KEY_BLOB_CONTENT_MANIFEST_PRIMARY = UniqueKeys0.KEY_BLOB_CONTENT_MANIFEST_PRIMARY;
     public static final UniqueKey<CdtAwdPriRecord> KEY_CDT_AWD_PRI_PRIMARY = UniqueKeys0.KEY_CDT_AWD_PRI_PRIMARY;
     public static final UniqueKey<CdtAwdPriXpsTypeMapRecord> KEY_CDT_AWD_PRI_XPS_TYPE_MAP_PRIMARY = UniqueKeys0.KEY_CDT_AWD_PRI_XPS_TYPE_MAP_PRIMARY;
     public static final UniqueKey<CdtPriRecord> KEY_CDT_PRI_PRIMARY = UniqueKeys0.KEY_CDT_PRI_PRIMARY;
@@ -321,6 +328,7 @@ public class Keys {
     public static final UniqueKey<ModuleAgencyIdListManifestRecord> KEY_MODULE_AGENCY_ID_LIST_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_AGENCY_ID_LIST_MANIFEST_PRIMARY;
     public static final UniqueKey<ModuleAsccpManifestRecord> KEY_MODULE_ASCCP_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_ASCCP_MANIFEST_PRIMARY;
     public static final UniqueKey<ModuleBccpManifestRecord> KEY_MODULE_BCCP_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_BCCP_MANIFEST_PRIMARY;
+    public static final UniqueKey<ModuleBlobContentManifestRecord> KEY_MODULE_BLOB_CONTENT_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_BLOB_CONTENT_MANIFEST_PRIMARY;
     public static final UniqueKey<ModuleCodeListManifestRecord> KEY_MODULE_CODE_LIST_MANIFEST_PRIMARY = UniqueKeys0.KEY_MODULE_CODE_LIST_MANIFEST_PRIMARY;
     public static final UniqueKey<ModuleDepRecord> KEY_MODULE_DEP_PRIMARY = UniqueKeys0.KEY_MODULE_DEP_PRIMARY;
     public static final UniqueKey<ModuleDirRecord> KEY_MODULE_DIR_PRIMARY = UniqueKeys0.KEY_MODULE_DIR_PRIMARY;
@@ -512,8 +520,10 @@ public class Keys {
     public static final ForeignKey<BizCtxAssignmentRecord, TopLevelAsbiepRecord> BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK = ForeignKeys0.BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK;
     public static final ForeignKey<BizCtxValueRecord, BizCtxRecord> BIZ_CTX_VALUE_BIZ_CTX_ID_FK = ForeignKeys0.BIZ_CTX_VALUE_BIZ_CTX_ID_FK;
     public static final ForeignKey<BizCtxValueRecord, CtxSchemeValueRecord> BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = ForeignKeys0.BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK;
-    public static final ForeignKey<BlobContentRecord, ReleaseRecord> BLOB_CONTENT_RELEASE_ID_FK = ForeignKeys0.BLOB_CONTENT_RELEASE_ID_FK;
-    public static final ForeignKey<BlobContentRecord, ModuleRecord> BLOB_CONTENT_MODULE_ID_FK = ForeignKeys0.BLOB_CONTENT_MODULE_ID_FK;
+    public static final ForeignKey<BlobContentManifestRecord, BlobContentRecord> BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK = ForeignKeys0.BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK;
+    public static final ForeignKey<BlobContentManifestRecord, ReleaseRecord> BLOB_CONTENT_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BLOB_CONTENT_MANIFEST_RELEASE_ID_FK;
+    public static final ForeignKey<BlobContentManifestRecord, BlobContentManifestRecord> BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK = ForeignKeys0.BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK;
+    public static final ForeignKey<BlobContentManifestRecord, BlobContentManifestRecord> BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK = ForeignKeys0.BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK;
     public static final ForeignKey<CdtAwdPriRecord, DtRecord> CDT_AWD_PRI_CDT_ID_FK = ForeignKeys0.CDT_AWD_PRI_CDT_ID_FK;
     public static final ForeignKey<CdtAwdPriRecord, CdtPriRecord> CDT_AWD_PRI_CDT_PRI_ID_FK = ForeignKeys0.CDT_AWD_PRI_CDT_PRI_ID_FK;
     public static final ForeignKey<CdtAwdPriXpsTypeMapRecord, CdtAwdPriRecord> CDT_AWD_PRI_XPS_TYPE_MAP_CDT_AWD_PRI_ID_FK = ForeignKeys0.CDT_AWD_PRI_XPS_TYPE_MAP_CDT_AWD_PRI_ID_FK;
@@ -608,6 +618,11 @@ public class Keys {
     public static final ForeignKey<ModuleBccpManifestRecord, ModuleRecord> MODULE_BCCP_MANIFEST_MODULE_ID_FK = ForeignKeys0.MODULE_BCCP_MANIFEST_MODULE_ID_FK;
     public static final ForeignKey<ModuleBccpManifestRecord, AppUserRecord> MODULE_BCCP_MANIFEST_CREATED_BY_FK = ForeignKeys0.MODULE_BCCP_MANIFEST_CREATED_BY_FK;
     public static final ForeignKey<ModuleBccpManifestRecord, AppUserRecord> MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK = ForeignKeys0.MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<ModuleBlobContentManifestRecord, ModuleSetReleaseRecord> MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK = ForeignKeys0.MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK;
+    public static final ForeignKey<ModuleBlobContentManifestRecord, BlobContentManifestRecord> MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK = ForeignKeys0.MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK;
+    public static final ForeignKey<ModuleBlobContentManifestRecord, ModuleRecord> MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK = ForeignKeys0.MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK;
+    public static final ForeignKey<ModuleBlobContentManifestRecord, AppUserRecord> MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK = ForeignKeys0.MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK;
+    public static final ForeignKey<ModuleBlobContentManifestRecord, AppUserRecord> MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK = ForeignKeys0.MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK;
     public static final ForeignKey<ModuleCodeListManifestRecord, ModuleSetReleaseRecord> MODULE_CODE_LIST_MANIFEST_MODULE_SET_RELEASE_ID_FK = ForeignKeys0.MODULE_CODE_LIST_MANIFEST_MODULE_SET_RELEASE_ID_FK;
     public static final ForeignKey<ModuleCodeListManifestRecord, CodeListManifestRecord> MODULE_CODE_LIST_MANIFEST_CODE_LIST_MANIFEST_ID_FK = ForeignKeys0.MODULE_CODE_LIST_MANIFEST_CODE_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<ModuleCodeListManifestRecord, ModuleRecord> MODULE_CODE_LIST_MANIFEST_MODULE_ID_FK = ForeignKeys0.MODULE_CODE_LIST_MANIFEST_MODULE_ID_FK;
@@ -703,6 +718,7 @@ public class Keys {
         public static Identity<BizCtxAssignmentRecord, ULong> IDENTITY_BIZ_CTX_ASSIGNMENT = Internal.createIdentity(BizCtxAssignment.BIZ_CTX_ASSIGNMENT, BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ASSIGNMENT_ID);
         public static Identity<BizCtxValueRecord, ULong> IDENTITY_BIZ_CTX_VALUE = Internal.createIdentity(BizCtxValue.BIZ_CTX_VALUE, BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID);
         public static Identity<BlobContentRecord, ULong> IDENTITY_BLOB_CONTENT = Internal.createIdentity(BlobContent.BLOB_CONTENT, BlobContent.BLOB_CONTENT.BLOB_CONTENT_ID);
+        public static Identity<BlobContentManifestRecord, ULong> IDENTITY_BLOB_CONTENT_MANIFEST = Internal.createIdentity(BlobContentManifest.BLOB_CONTENT_MANIFEST, BlobContentManifest.BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID);
         public static Identity<CdtAwdPriRecord, ULong> IDENTITY_CDT_AWD_PRI = Internal.createIdentity(CdtAwdPri.CDT_AWD_PRI, CdtAwdPri.CDT_AWD_PRI.CDT_AWD_PRI_ID);
         public static Identity<CdtAwdPriXpsTypeMapRecord, ULong> IDENTITY_CDT_AWD_PRI_XPS_TYPE_MAP = Internal.createIdentity(CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP, CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID);
         public static Identity<CdtPriRecord, ULong> IDENTITY_CDT_PRI = Internal.createIdentity(CdtPri.CDT_PRI, CdtPri.CDT_PRI.CDT_PRI_ID);
@@ -726,6 +742,7 @@ public class Keys {
         public static Identity<ModuleAgencyIdListManifestRecord, ULong> IDENTITY_MODULE_AGENCY_ID_LIST_MANIFEST = Internal.createIdentity(ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST, ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID);
         public static Identity<ModuleAsccpManifestRecord, ULong> IDENTITY_MODULE_ASCCP_MANIFEST = Internal.createIdentity(ModuleAsccpManifest.MODULE_ASCCP_MANIFEST, ModuleAsccpManifest.MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID);
         public static Identity<ModuleBccpManifestRecord, ULong> IDENTITY_MODULE_BCCP_MANIFEST = Internal.createIdentity(ModuleBccpManifest.MODULE_BCCP_MANIFEST, ModuleBccpManifest.MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID);
+        public static Identity<ModuleBlobContentManifestRecord, ULong> IDENTITY_MODULE_BLOB_CONTENT_MANIFEST = Internal.createIdentity(ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.MODULE_BLOB_CONTENT_MANIFEST_ID);
         public static Identity<ModuleCodeListManifestRecord, ULong> IDENTITY_MODULE_CODE_LIST_MANIFEST = Internal.createIdentity(ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST, ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID);
         public static Identity<ModuleDepRecord, ULong> IDENTITY_MODULE_DEP = Internal.createIdentity(ModuleDep.MODULE_DEP, ModuleDep.MODULE_DEP.MODULE_DEP_ID);
         public static Identity<ModuleDirRecord, ULong> IDENTITY_MODULE_DIR = Internal.createIdentity(ModuleDir.MODULE_DIR, ModuleDir.MODULE_DIR.MODULE_DIR_ID);
@@ -788,6 +805,7 @@ public class Keys {
         public static final UniqueKey<BizCtxAssignmentRecord> KEY_BIZ_CTX_ASSIGNMENT_BIZ_CTX_ASSIGNMENT_UK = Internal.createUniqueKey(BizCtxAssignment.BIZ_CTX_ASSIGNMENT, "KEY_biz_ctx_assignment_biz_ctx_assignment_uk", new TableField[] { BizCtxAssignment.BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID }, true);
         public static final UniqueKey<BizCtxValueRecord> KEY_BIZ_CTX_VALUE_PRIMARY = Internal.createUniqueKey(BizCtxValue.BIZ_CTX_VALUE, "KEY_biz_ctx_value_PRIMARY", new TableField[] { BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_VALUE_ID }, true);
         public static final UniqueKey<BlobContentRecord> KEY_BLOB_CONTENT_PRIMARY = Internal.createUniqueKey(BlobContent.BLOB_CONTENT, "KEY_blob_content_PRIMARY", new TableField[] { BlobContent.BLOB_CONTENT.BLOB_CONTENT_ID }, true);
+        public static final UniqueKey<BlobContentManifestRecord> KEY_BLOB_CONTENT_MANIFEST_PRIMARY = Internal.createUniqueKey(BlobContentManifest.BLOB_CONTENT_MANIFEST, "KEY_blob_content_manifest_PRIMARY", new TableField[] { BlobContentManifest.BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID }, true);
         public static final UniqueKey<CdtAwdPriRecord> KEY_CDT_AWD_PRI_PRIMARY = Internal.createUniqueKey(CdtAwdPri.CDT_AWD_PRI, "KEY_cdt_awd_pri_PRIMARY", new TableField[] { CdtAwdPri.CDT_AWD_PRI.CDT_AWD_PRI_ID }, true);
         public static final UniqueKey<CdtAwdPriXpsTypeMapRecord> KEY_CDT_AWD_PRI_XPS_TYPE_MAP_PRIMARY = Internal.createUniqueKey(CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP, "KEY_cdt_awd_pri_xps_type_map_PRIMARY", new TableField[] { CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID }, true);
         public static final UniqueKey<CdtPriRecord> KEY_CDT_PRI_PRIMARY = Internal.createUniqueKey(CdtPri.CDT_PRI, "KEY_cdt_pri_PRIMARY", new TableField[] { CdtPri.CDT_PRI.CDT_PRI_ID }, true);
@@ -815,6 +833,7 @@ public class Keys {
         public static final UniqueKey<ModuleAgencyIdListManifestRecord> KEY_MODULE_AGENCY_ID_LIST_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST, "KEY_module_agency_id_list_manifest_PRIMARY", new TableField[] { ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST.MODULE_AGENCY_ID_LIST_MANIFEST_ID }, true);
         public static final UniqueKey<ModuleAsccpManifestRecord> KEY_MODULE_ASCCP_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleAsccpManifest.MODULE_ASCCP_MANIFEST, "KEY_module_asccp_manifest_PRIMARY", new TableField[] { ModuleAsccpManifest.MODULE_ASCCP_MANIFEST.MODULE_ASCCP_MANIFEST_ID }, true);
         public static final UniqueKey<ModuleBccpManifestRecord> KEY_MODULE_BCCP_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleBccpManifest.MODULE_BCCP_MANIFEST, "KEY_module_bccp_manifest_PRIMARY", new TableField[] { ModuleBccpManifest.MODULE_BCCP_MANIFEST.MODULE_BCCP_MANIFEST_ID }, true);
+        public static final UniqueKey<ModuleBlobContentManifestRecord> KEY_MODULE_BLOB_CONTENT_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "KEY_module_blob_content_manifest_PRIMARY", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.MODULE_BLOB_CONTENT_MANIFEST_ID }, true);
         public static final UniqueKey<ModuleCodeListManifestRecord> KEY_MODULE_CODE_LIST_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST, "KEY_module_code_list_manifest_PRIMARY", new TableField[] { ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_CODE_LIST_MANIFEST_ID }, true);
         public static final UniqueKey<ModuleDepRecord> KEY_MODULE_DEP_PRIMARY = Internal.createUniqueKey(ModuleDep.MODULE_DEP, "KEY_module_dep_PRIMARY", new TableField[] { ModuleDep.MODULE_DEP.MODULE_DEP_ID }, true);
         public static final UniqueKey<ModuleDirRecord> KEY_MODULE_DIR_PRIMARY = Internal.createUniqueKey(ModuleDir.MODULE_DIR, "KEY_module_dir_PRIMARY", new TableField[] { ModuleDir.MODULE_DIR.MODULE_DIR_ID }, true);
@@ -1004,8 +1023,10 @@ public class Keys {
         public static final ForeignKey<BizCtxAssignmentRecord, TopLevelAsbiepRecord> BIZ_CTX_ASSIGNMENT_TOP_LEVEL_ASBIEP_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ASBIEP_PRIMARY, BizCtxAssignment.BIZ_CTX_ASSIGNMENT, "biz_ctx_assignment_top_level_asbiep_id_fk", new TableField[] { BizCtxAssignment.BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID }, true);
         public static final ForeignKey<BizCtxValueRecord, BizCtxRecord> BIZ_CTX_VALUE_BIZ_CTX_ID_FK = Internal.createForeignKey(Keys.KEY_BIZ_CTX_PRIMARY, BizCtxValue.BIZ_CTX_VALUE, "biz_ctx_value_biz_ctx_id_fk", new TableField[] { BizCtxValue.BIZ_CTX_VALUE.BIZ_CTX_ID }, true);
         public static final ForeignKey<BizCtxValueRecord, CtxSchemeValueRecord> BIZ_CTX_VALUE_CTX_SCHEME_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_CTX_SCHEME_VALUE_PRIMARY, BizCtxValue.BIZ_CTX_VALUE, "biz_ctx_value_ctx_scheme_value_id_fk", new TableField[] { BizCtxValue.BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID }, true);
-        public static final ForeignKey<BlobContentRecord, ReleaseRecord> BLOB_CONTENT_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, BlobContent.BLOB_CONTENT, "blob_content_release_id_fk", new TableField[] { BlobContent.BLOB_CONTENT.RELEASE_ID }, true);
-        public static final ForeignKey<BlobContentRecord, ModuleRecord> BLOB_CONTENT_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, BlobContent.BLOB_CONTENT, "blob_content_module_id_fk", new TableField[] { BlobContent.BLOB_CONTENT.MODULE_ID }, true);
+        public static final ForeignKey<BlobContentManifestRecord, BlobContentRecord> BLOB_CONTENT_MANIFEST_BLOB_CONTENT_ID_FK = Internal.createForeignKey(Keys.KEY_BLOB_CONTENT_PRIMARY, BlobContentManifest.BLOB_CONTENT_MANIFEST, "blob_content_manifest_blob_content_id_fk", new TableField[] { BlobContentManifest.BLOB_CONTENT_MANIFEST.BLOB_CONTENT_ID }, true);
+        public static final ForeignKey<BlobContentManifestRecord, ReleaseRecord> BLOB_CONTENT_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, BlobContentManifest.BLOB_CONTENT_MANIFEST, "blob_content_manifest_release_id_fk", new TableField[] { BlobContentManifest.BLOB_CONTENT_MANIFEST.RELEASE_ID }, true);
+        public static final ForeignKey<BlobContentManifestRecord, BlobContentManifestRecord> BLOB_CONTENT_MANIFEST_PREV_BLOB_CONTENT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BLOB_CONTENT_MANIFEST_PRIMARY, BlobContentManifest.BLOB_CONTENT_MANIFEST, "blob_content_manifest_prev_blob_content_manifest_id_fk", new TableField[] { BlobContentManifest.BLOB_CONTENT_MANIFEST.PREV_BLOB_CONTENT_MANIFEST_ID }, true);
+        public static final ForeignKey<BlobContentManifestRecord, BlobContentManifestRecord> BLOB_CONTENT_MANIFEST_NEXT_BLOB_CONTENT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BLOB_CONTENT_MANIFEST_PRIMARY, BlobContentManifest.BLOB_CONTENT_MANIFEST, "blob_content_manifest_next_blob_content_manifest_id_fk", new TableField[] { BlobContentManifest.BLOB_CONTENT_MANIFEST.NEXT_BLOB_CONTENT_MANIFEST_ID }, true);
         public static final ForeignKey<CdtAwdPriRecord, DtRecord> CDT_AWD_PRI_CDT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, CdtAwdPri.CDT_AWD_PRI, "cdt_awd_pri_cdt_id_fk", new TableField[] { CdtAwdPri.CDT_AWD_PRI.CDT_ID }, true);
         public static final ForeignKey<CdtAwdPriRecord, CdtPriRecord> CDT_AWD_PRI_CDT_PRI_ID_FK = Internal.createForeignKey(Keys.KEY_CDT_PRI_PRIMARY, CdtAwdPri.CDT_AWD_PRI, "cdt_awd_pri_cdt_pri_id_fk", new TableField[] { CdtAwdPri.CDT_AWD_PRI.CDT_PRI_ID }, true);
         public static final ForeignKey<CdtAwdPriXpsTypeMapRecord, CdtAwdPriRecord> CDT_AWD_PRI_XPS_TYPE_MAP_CDT_AWD_PRI_ID_FK = Internal.createForeignKey(Keys.KEY_CDT_AWD_PRI_PRIMARY, CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP, "cdt_awd_pri_xps_type_map_cdt_awd_pri_id_fk", new TableField[] { CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_ID }, true);
@@ -1100,6 +1121,11 @@ public class Keys {
         public static final ForeignKey<ModuleBccpManifestRecord, ModuleRecord> MODULE_BCCP_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, ModuleBccpManifest.MODULE_BCCP_MANIFEST, "module_bccp_manifest_module_id_fk", new TableField[] { ModuleBccpManifest.MODULE_BCCP_MANIFEST.MODULE_ID }, true);
         public static final ForeignKey<ModuleBccpManifestRecord, AppUserRecord> MODULE_BCCP_MANIFEST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleBccpManifest.MODULE_BCCP_MANIFEST, "module_bccp_manifest_created_by_fk", new TableField[] { ModuleBccpManifest.MODULE_BCCP_MANIFEST.CREATED_BY }, true);
         public static final ForeignKey<ModuleBccpManifestRecord, AppUserRecord> MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleBccpManifest.MODULE_BCCP_MANIFEST, "module_bccp_manifest_last_updated_by_fk", new TableField[] { ModuleBccpManifest.MODULE_BCCP_MANIFEST.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<ModuleBlobContentManifestRecord, ModuleSetReleaseRecord> MODULE_BLOB_CONTENT_MANIFEST_MODULE_SET_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_SET_RELEASE_PRIMARY, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "module_blob_content_manifest_module_set_release_id_fk", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.MODULE_SET_RELEASE_ID }, true);
+        public static final ForeignKey<ModuleBlobContentManifestRecord, BlobContentManifestRecord> MODULE_BLOB_CONTENT_MANIFEST_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BLOB_CONTENT_MANIFEST_PRIMARY, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "module_blob_content_manifest_acc_manifest_id_fk", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID }, true);
+        public static final ForeignKey<ModuleBlobContentManifestRecord, ModuleRecord> MODULE_BLOB_CONTENT_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "module_blob_content_manifest_module_id_fk", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.MODULE_ID }, true);
+        public static final ForeignKey<ModuleBlobContentManifestRecord, AppUserRecord> MODULE_BLOB_CONTENT_MANIFEST_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "module_blob_content_manifest_created_by_fk", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.CREATED_BY }, true);
+        public static final ForeignKey<ModuleBlobContentManifestRecord, AppUserRecord> MODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, "module_blob_content_manifest_last_updated_by_fk", new TableField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.LAST_UPDATED_BY }, true);
         public static final ForeignKey<ModuleCodeListManifestRecord, ModuleSetReleaseRecord> MODULE_CODE_LIST_MANIFEST_MODULE_SET_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_SET_RELEASE_PRIMARY, ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST, "module_code_list_manifest_module_set_release_id_fk", new TableField[] { ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_SET_RELEASE_ID }, true);
         public static final ForeignKey<ModuleCodeListManifestRecord, CodeListManifestRecord> MODULE_CODE_LIST_MANIFEST_CODE_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST, "module_code_list_manifest_code_list_manifest_id_fk", new TableField[] { ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<ModuleCodeListManifestRecord, ModuleRecord> MODULE_CODE_LIST_MANIFEST_MODULE_ID_FK = Internal.createForeignKey(Keys.KEY_MODULE_PRIMARY, ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST, "module_code_list_manifest_module_id_fk", new TableField[] { ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_ID }, true);

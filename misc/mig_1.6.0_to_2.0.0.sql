@@ -1963,6 +1963,104 @@ ALTER TABLE `xbt_manifest`
     DROP FOREIGN KEY `xbt_manifest_module_id_fk`,
     DROP COLUMN `module_id`;
 
+-- Add `blob_content_manifest` table.
+DROP TABLE IF EXISTS `blob_content_manifest`;
+CREATE TABLE `blob_content_manifest` (
+    `blob_content_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `blob_content_id` bigint(20) unsigned NOT NULL,
+    `release_id` bigint(20) unsigned NOT NULL,
+    `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
+    `prev_blob_content_manifest_id` bigint(20) unsigned DEFAULT NULL,
+    `next_blob_content_manifest_id` bigint(20) unsigned DEFAULT NULL,
+    PRIMARY KEY (`blob_content_manifest_id`),
+    KEY `blob_content_manifest_release_id_fk` (`release_id`),
+    KEY `blob_content_manifest_blob_content_id_fk` (`blob_content_id`),
+    KEY `blob_content_manifest_prev_blob_content_manifest_id_fk` (`prev_blob_content_manifest_id`),
+    KEY `blob_content_manifest_next_blob_content_manifest_id_fk` (`next_blob_content_manifest_id`),
+    CONSTRAINT `blob_content_manifest_blob_content_id_fk` FOREIGN KEY (`blob_content_id`) REFERENCES `blob_content` (`blob_content_id`),
+    CONSTRAINT `blob_content_manifest_next_blob_content_manifest_id_fk` FOREIGN KEY (`next_blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`),
+    CONSTRAINT `blob_content_manifest_prev_blob_content_manifest_id_fk` FOREIGN KEY (`prev_blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`),
+    CONSTRAINT `blob_content_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `blob_content_manifest` (`blob_content_id`, `release_id`, `conflict`)
+SELECT `blob_content_id`, `release_id`, 0
+FROM `blob_content`;
+
+SET @sql = CONCAT('ALTER TABLE `blob_content_manifest` AUTO_INCREMENT = ', (SELECT MAX(blob_content_manifest_id) + 1 FROM blob_content_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+INSERT INTO `blob_content_manifest` (`blob_content_id`, `release_id`, `conflict`)
+SELECT `blob_content_id`, (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'), 0
+FROM `blob_content`;
+
+SET @sql = CONCAT('ALTER TABLE `blob_content_manifest` AUTO_INCREMENT = ', (SELECT MAX(blob_content_manifest_id) + 1 FROM blob_content_manifest));
+
+PREPARE stmt from @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+UPDATE `blob_content_manifest`, (
+    SELECT prev.`blob_content_manifest_id` prev_blob_content_manifest_id, next.`blob_content_manifest_id` next_blob_content_manifest_id
+    FROM `blob_content_manifest` prev
+    JOIN `release` ON prev.`release_id` = `release`.`release_id` AND `release`.`release_num` = '10.6'
+    JOIN `blob_content_manifest` next ON prev.`blob_content_id` = next.`blob_content_id` AND prev.`release_id` != next.`release_id`
+) t
+SET `blob_content_manifest`.`prev_blob_content_manifest_id` = t.`prev_blob_content_manifest_id`
+WHERE `blob_content_manifest`.`blob_content_manifest_id` = t.`next_blob_content_manifest_id`;
+
+UPDATE `blob_content_manifest`, (
+    SELECT prev.`blob_content_manifest_id` prev_blob_content_manifest_id, next.`blob_content_manifest_id` next_blob_content_manifest_id
+    FROM `blob_content_manifest` prev
+    JOIN `release` ON prev.`release_id` = `release`.`release_id` AND `release`.`release_num` = '10.6'
+    JOIN `blob_content_manifest` next ON prev.`blob_content_id` = next.`blob_content_id` AND prev.`release_id` != next.`release_id`
+) t
+SET `blob_content_manifest`.`next_blob_content_manifest_id` = t.`next_blob_content_manifest_id`
+WHERE `blob_content_manifest`.`blob_content_manifest_id` = t.`prev_blob_content_manifest_id`;
+
+ALTER TABLE `blob_content` DROP FOREIGN KEY `blob_content_release_id_fk`, DROP COLUMN `release_id`;
+
+-- Add `module_blob_content_manifest` table.
+DROP TABLE IF EXISTS `module_blob_content_manifest`;
+CREATE TABLE `module_blob_content_manifest` (
+    `module_blob_content_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Primary key.',
+    `module_set_release_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module set release record.',
+    `blob_content_manifest_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the blob content manifest record.',
+    `module_id` bigint(20) unsigned NOT NULL COMMENT 'A foreign key of the module record.',
+    `created_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table. It indicates the user who created this record.',
+    `last_updated_by` bigint(20) unsigned NOT NULL COMMENT 'Foreign key to the APP_USER table referring to the last user who updated the record.',
+    `creation_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was first created.',
+    `last_update_timestamp` datetime(6) NOT NULL COMMENT 'The timestamp when the record was last updated.',
+    PRIMARY KEY (`module_blob_content_manifest_id`),
+    KEY `module_blob_content_manifest_created_by_fk` (`created_by`),
+    KEY `mmodule_blob_content_manifest_last_updated_by_fk` (`last_updated_by`),
+    KEY `module_blob_content_manifest_module_set_release_id_fk` (`module_set_release_id`),
+    KEY `module_blob_content_manifest_blob_content_manifest_id_fk` (`blob_content_manifest_id`),
+    KEY `module_blob_content_manifest_module_id_fk` (`module_id`),
+    CONSTRAINT `module_blob_content_manifest_acc_manifest_id_fk` FOREIGN KEY (`blob_content_manifest_id`) REFERENCES `blob_content_manifest` (`blob_content_manifest_id`),
+    CONSTRAINT `module_blob_content_manifest_created_by_fk` FOREIGN KEY (`created_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_blob_content_manifest_last_updated_by_fk` FOREIGN KEY (`last_updated_by`) REFERENCES `app_user` (`app_user_id`),
+    CONSTRAINT `module_blob_content_manifest_module_id_fk` FOREIGN KEY (`module_id`) REFERENCES `module` (`module_id`),
+    CONSTRAINT `module_blob_content_manifest_module_set_release_id_fk` FOREIGN KEY (`module_set_release_id`) REFERENCES `module_set_release` (`module_set_release_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `module_blob_content_manifest` (
+    `module_set_release_id`, `blob_content_manifest_id`, `module_id`,
+    `created_by`, `last_updated_by`, `creation_timestamp`, `last_update_timestamp`)
+SELECT `module_set_release`.`module_set_release_id`, `blob_content_manifest`.`blob_content_manifest_id`,
+       `blob_content`.`module_id`,
+       (SELECT `app_user`.`app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'),
+       (SELECT `app_user`.`app_user_id` FROM `app_user` WHERE `login_id` = 'oagis'),
+       CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6)
+FROM `module_set_release`
+JOIN `blob_content_manifest` ON `module_set_release`.`release_id` = `blob_content_manifest`.`release_id`
+JOIN `blob_content` ON `blob_content_manifest`.`blob_content_id` = `blob_content`.`blob_content_id`;
+
+ALTER TABLE `blob_content` DROP FOREIGN KEY `blob_content_module_id_fk`, DROP COLUMN `module_id`;
+
 -- Add columns and constraints on `module` table.
 ALTER TABLE `module` CHANGE `module` `name` varchar(100) NOT NULL COMMENT 'The is the filename of the module. The reason to not including the extension is that the extension maybe dependent on the expression. For XML schema, ''.xsd'' maybe added; or for JSON, ''.json'' maybe added as the file extension.';
 ALTER TABLE `module`
