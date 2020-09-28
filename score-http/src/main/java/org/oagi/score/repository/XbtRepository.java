@@ -28,7 +28,7 @@ public class XbtRepository implements SrtRepository<Xbt> {
             Byte, String, String, LocalDateTime, String,
             UInteger, UInteger, String, Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
-                XBT.LAST_UPDATED_BY, MODULE_XBT_MANIFEST.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
+                XBT.LAST_UPDATED_BY, MODULE_SET_ASSIGNMENT.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
                 XBT_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
                 XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_DOC,
@@ -41,6 +41,7 @@ public class XbtRepository implements SrtRepository<Xbt> {
                         MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID),
                         MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
                 ))
+                .join(MODULE_SET_ASSIGNMENT).on(MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
                 .join(REVISION).on(XBT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
     }
 
