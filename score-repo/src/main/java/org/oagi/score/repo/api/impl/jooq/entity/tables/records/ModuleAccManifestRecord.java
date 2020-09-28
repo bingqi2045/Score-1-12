@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 637767146;
+    private static final long serialVersionUID = 1505300490;
 
     /**
      * Setter for <code>oagi.module_acc_manifest.module_acc_manifest_id</code>. Primary key.
@@ -66,16 +66,16 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
     }
 
     /**
-     * Setter for <code>oagi.module_acc_manifest.module_id</code>. A foreign key of the module record.
+     * Setter for <code>oagi.module_acc_manifest.module_set_assignment_id</code>.
      */
-    public void setModuleId(ULong value) {
+    public void setModuleSetAssignmentId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.module_acc_manifest.module_id</code>. A foreign key of the module record.
+     * Getter for <code>oagi.module_acc_manifest.module_set_assignment_id</code>.
      */
-    public ULong getModuleId() {
+    public ULong getModuleSetAssignmentId() {
         return (ULong) get(3);
     }
 
@@ -175,7 +175,7 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
 
     @Override
     public Field<ULong> field4() {
-        return ModuleAccManifest.MODULE_ACC_MANIFEST.MODULE_ID;
+        return ModuleAccManifest.MODULE_ACC_MANIFEST.MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
 
     @Override
     public ULong component4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
 
     @Override
     public ULong value4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
 
     @Override
     public ModuleAccManifestRecord value4(ULong value) {
-        setModuleId(value);
+        setModuleSetAssignmentId(value);
         return this;
     }
 
@@ -353,13 +353,13 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
     /**
      * Create a detached, initialised ModuleAccManifestRecord
      */
-    public ModuleAccManifestRecord(ULong moduleAccManifestId, ULong moduleSetReleaseId, ULong accManifestId, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleAccManifestRecord(ULong moduleAccManifestId, ULong moduleSetReleaseId, ULong accManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleAccManifest.MODULE_ACC_MANIFEST);
 
         set(0, moduleAccManifestId);
         set(1, moduleSetReleaseId);
         set(2, accManifestId);
-        set(3, moduleId);
+        set(3, moduleSetAssignmentId);
         set(4, createdBy);
         set(5, lastUpdatedBy);
         set(6, creationTimestamp);

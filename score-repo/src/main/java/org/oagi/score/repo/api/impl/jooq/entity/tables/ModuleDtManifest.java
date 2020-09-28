@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDtManifestR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
 
-    private static final long serialVersionUID = 805490328;
+    private static final long serialVersionUID = 633475143;
 
     /**
      * The reference instance of <code>oagi.module_dt_manifest</code>
@@ -64,9 +64,9 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
     public final TableField<ModuleDtManifestRecord, ULong> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the dt manifest record.");
 
     /**
-     * The column <code>oagi.module_dt_manifest.module_id</code>. A foreign key of the module record.
+     * The column <code>oagi.module_dt_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module record.");
+    public final TableField<ModuleDtManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_dt_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
@@ -143,7 +143,7 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
 
     @Override
     public List<ForeignKey<ModuleDtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleDtManifestRecord, ?>>asList(Keys.MODULE_DT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_DT_MANIFEST_DT_MANIFEST_ID_FK, Keys.MODULE_DT_MANIFEST_MODULE_ID_FK, Keys.MODULE_DT_MANIFEST_CREATED_BY_FK, Keys.MODULE_DT_MANIFEST_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<ModuleDtManifestRecord, ?>>asList(Keys.MODULE_DT_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_DT_MANIFEST_DT_MANIFEST_ID_FK, Keys.MODULE_DT_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK, Keys.MODULE_DT_MANIFEST_CREATED_BY_FK, Keys.MODULE_DT_MANIFEST_LAST_UPDATED_BY_FK);
     }
 
     public ModuleSetRelease moduleSetRelease() {
@@ -154,8 +154,8 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         return new DtManifest(this, Keys.MODULE_DT_MANIFEST_DT_MANIFEST_ID_FK);
     }
 
-    public Module module() {
-        return new Module(this, Keys.MODULE_DT_MANIFEST_MODULE_ID_FK);
+    public ModuleSetAssignment moduleSetAssignment() {
+        return new ModuleSetAssignment(this, Keys.MODULE_DT_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK);
     }
 
     public AppUser moduleDtManifestCreatedByFk() {

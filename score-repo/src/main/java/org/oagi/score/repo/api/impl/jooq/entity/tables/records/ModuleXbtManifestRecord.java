@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -377401612;
+    private static final long serialVersionUID = -2011040556;
 
     /**
      * Setter for <code>oagi.module_xbt_manifest.module_xbt_manifest_id</code>. Primary key.
@@ -66,16 +66,16 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
     }
 
     /**
-     * Setter for <code>oagi.module_xbt_manifest.module_id</code>. A foreign key of the module record.
+     * Setter for <code>oagi.module_xbt_manifest.module_set_assignment_id</code>.
      */
-    public void setModuleId(ULong value) {
+    public void setModuleSetAssignmentId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.module_xbt_manifest.module_id</code>. A foreign key of the module record.
+     * Getter for <code>oagi.module_xbt_manifest.module_set_assignment_id</code>.
      */
-    public ULong getModuleId() {
+    public ULong getModuleSetAssignmentId() {
         return (ULong) get(3);
     }
 
@@ -175,7 +175,7 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
 
     @Override
     public Field<ULong> field4() {
-        return ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_ID;
+        return ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
 
     @Override
     public ULong component4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
 
     @Override
     public ULong value4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
 
     @Override
     public ModuleXbtManifestRecord value4(ULong value) {
-        setModuleId(value);
+        setModuleSetAssignmentId(value);
         return this;
     }
 
@@ -353,13 +353,13 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
     /**
      * Create a detached, initialised ModuleXbtManifestRecord
      */
-    public ModuleXbtManifestRecord(ULong moduleXbtManifestId, ULong moduleSetReleaseId, ULong xbtManifestId, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleXbtManifestRecord(ULong moduleXbtManifestId, ULong moduleSetReleaseId, ULong xbtManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleXbtManifest.MODULE_XBT_MANIFEST);
 
         set(0, moduleXbtManifestId);
         set(1, moduleSetReleaseId);
         set(2, xbtManifestId);
-        set(3, moduleId);
+        set(3, moduleSetAssignmentId);
         set(4, createdBy);
         set(5, lastUpdatedBy);
         set(6, creationTimestamp);

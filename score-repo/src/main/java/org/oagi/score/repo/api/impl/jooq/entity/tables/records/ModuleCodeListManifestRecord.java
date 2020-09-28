@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleCodeListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCodeListManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1602113288;
+    private static final long serialVersionUID = 678849584;
 
     /**
      * Setter for <code>oagi.module_code_list_manifest.module_code_list_manifest_id</code>. Primary key.
@@ -66,16 +66,16 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
     }
 
     /**
-     * Setter for <code>oagi.module_code_list_manifest.module_id</code>. A foreign key of the module record.
+     * Setter for <code>oagi.module_code_list_manifest.module_set_assignment_id</code>.
      */
-    public void setModuleId(ULong value) {
+    public void setModuleSetAssignmentId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.module_code_list_manifest.module_id</code>. A foreign key of the module record.
+     * Getter for <code>oagi.module_code_list_manifest.module_set_assignment_id</code>.
      */
-    public ULong getModuleId() {
+    public ULong getModuleSetAssignmentId() {
         return (ULong) get(3);
     }
 
@@ -175,7 +175,7 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
 
     @Override
     public Field<ULong> field4() {
-        return ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_ID;
+        return ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
 
     @Override
     public ULong component4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
 
     @Override
     public ULong value4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
 
     @Override
     public ModuleCodeListManifestRecord value4(ULong value) {
-        setModuleId(value);
+        setModuleSetAssignmentId(value);
         return this;
     }
 
@@ -353,13 +353,13 @@ public class ModuleCodeListManifestRecord extends UpdatableRecordImpl<ModuleCode
     /**
      * Create a detached, initialised ModuleCodeListManifestRecord
      */
-    public ModuleCodeListManifestRecord(ULong moduleCodeListManifestId, ULong moduleSetReleaseId, ULong codeListManifestId, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleCodeListManifestRecord(ULong moduleCodeListManifestId, ULong moduleSetReleaseId, ULong codeListManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleCodeListManifest.MODULE_CODE_LIST_MANIFEST);
 
         set(0, moduleCodeListManifestId);
         set(1, moduleSetReleaseId);
         set(2, codeListManifestId);
-        set(3, moduleId);
+        set(3, moduleSetAssignmentId);
         set(4, createdBy);
         set(5, lastUpdatedBy);
         set(6, creationTimestamp);

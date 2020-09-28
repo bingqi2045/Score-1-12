@@ -2398,5 +2398,150 @@ ALTER TABLE `agency_id_list_value`
     ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
     ADD CONSTRAINT `agency_id_list_value_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
 
+-- Replace `module_id` with `module_set_assignment_id` for all module manifest tables.
+ALTER TABLE `module_acc_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_acc_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_acc_manifest`, (
+    SELECT t1.`module_acc_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_acc_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `acc_manifest` t3 on t1.`acc_manifest_id` = t3.`acc_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_acc_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_acc_manifest`.`module_acc_manifest_id` = t.`module_acc_manifest_id`;
+
+ALTER TABLE `module_acc_manifest`
+    DROP FOREIGN KEY `module_acc_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_asccp_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_asccp_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_asccp_manifest`, (
+    SELECT t1.`module_asccp_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_asccp_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `asccp_manifest` t3 on t1.`asccp_manifest_id` = t3.`asccp_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_asccp_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_asccp_manifest`.`module_asccp_manifest_id` = t.`module_asccp_manifest_id`;
+
+ALTER TABLE `module_asccp_manifest`
+    DROP FOREIGN KEY `module_asccp_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_bccp_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_bccp_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_bccp_manifest`, (
+    SELECT t1.`module_bccp_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_bccp_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `bccp_manifest` t3 on t1.`bccp_manifest_id` = t3.`bccp_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_bccp_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_bccp_manifest`.`module_bccp_manifest_id` = t.`module_bccp_manifest_id`;
+
+ALTER TABLE `module_bccp_manifest`
+    DROP FOREIGN KEY `module_bccp_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_dt_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_dt_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_dt_manifest`, (
+    SELECT t1.`module_dt_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_dt_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `dt_manifest` t3 on t1.`dt_manifest_id` = t3.`dt_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_dt_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_dt_manifest`.`module_dt_manifest_id` = t.`module_dt_manifest_id`;
+
+ALTER TABLE `module_dt_manifest`
+    DROP FOREIGN KEY `module_dt_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_code_list_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_code_list_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_code_list_manifest`, (
+    SELECT t1.`module_code_list_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_code_list_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `code_list_manifest` t3 on t1.`code_list_manifest_id` = t3.`code_list_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_code_list_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_code_list_manifest`.`module_code_list_manifest_id` = t.`module_code_list_manifest_id`;
+
+ALTER TABLE `module_code_list_manifest`
+    DROP FOREIGN KEY `module_code_list_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_agency_id_list_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_agency_id_list_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_agency_id_list_manifest`, (
+    SELECT t1.`module_agency_id_list_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_agency_id_list_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `agency_id_list_manifest` t3 on t1.`agency_id_list_manifest_id` = t3.`agency_id_list_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_agency_id_list_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_agency_id_list_manifest`.`module_agency_id_list_manifest_id` = t.`module_agency_id_list_manifest_id`;
+
+ALTER TABLE `module_agency_id_list_manifest`
+    DROP FOREIGN KEY `module_agency_id_list_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_xbt_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_xbt_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_xbt_manifest`, (
+    SELECT t1.`module_xbt_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_xbt_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `xbt_manifest` t3 on t1.`xbt_manifest_id` = t3.`xbt_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_xbt_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_xbt_manifest`.`module_xbt_manifest_id` = t.`module_xbt_manifest_id`;
+
+ALTER TABLE `module_xbt_manifest`
+    DROP FOREIGN KEY `module_xbt_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+--
+ALTER TABLE `module_blob_content_manifest`
+    ADD COLUMN `module_set_assignment_id` bigint(20) unsigned AFTER `module_id`,
+    ADD CONSTRAINT `module_blob_content_manifest_module_set_assignment_id_fk` FOREIGN KEY (`module_set_assignment_id`) REFERENCES `module_set_assignment` (`module_set_assignment_id`);
+
+UPDATE `module_blob_content_manifest`, (
+    SELECT t1.`module_blob_content_manifest_id`, t4.`module_set_assignment_id`
+    FROM `module_blob_content_manifest` t1
+    JOIN `module_set_release` t2 on t1.`module_set_release_id` = t2.`module_set_release_id`
+    JOIN `blob_content_manifest` t3 on t1.`blob_content_manifest_id` = t3.`blob_content_manifest_id` and t2.`release_id` = t3.`release_id`
+    JOIN `module_set_assignment` t4 on t2.`module_set_id` = t4.`module_set_id` and t1.`module_id` = t4.`module_id`
+) t
+SET `module_blob_content_manifest`.`module_set_assignment_id` = t.`module_set_assignment_id`
+WHERE `module_blob_content_manifest`.`module_blob_content_manifest_id` = t.`module_blob_content_manifest_id`;
+
+ALTER TABLE `module_blob_content_manifest`
+    DROP FOREIGN KEY `module_blob_content_manifest_module_id_fk`,
+    DROP COLUMN `module_id`;
+
 
 SET FOREIGN_KEY_CHECKS = 1;

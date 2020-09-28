@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleBccpManifes
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
 
-    private static final long serialVersionUID = -1103440822;
+    private static final long serialVersionUID = -1378770471;
 
     /**
      * The reference instance of <code>oagi.module_bccp_manifest</code>
@@ -64,9 +64,9 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
     public final TableField<ModuleBccpManifestRecord, ULong> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the bccp manifest record.");
 
     /**
-     * The column <code>oagi.module_bccp_manifest.module_id</code>. A foreign key of the module record.
+     * The column <code>oagi.module_bccp_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module record.");
+    public final TableField<ModuleBccpManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_bccp_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
@@ -143,7 +143,7 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
 
     @Override
     public List<ForeignKey<ModuleBccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModuleBccpManifestRecord, ?>>asList(Keys.MODULE_BCCP_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BCCP_MANIFEST_BCCP_MANIFEST_ID_FK, Keys.MODULE_BCCP_MANIFEST_MODULE_ID_FK, Keys.MODULE_BCCP_MANIFEST_CREATED_BY_FK, Keys.MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK);
+        return Arrays.<ForeignKey<ModuleBccpManifestRecord, ?>>asList(Keys.MODULE_BCCP_MANIFEST_MODULE_SET_RELEASE_ID_FK, Keys.MODULE_BCCP_MANIFEST_BCCP_MANIFEST_ID_FK, Keys.MODULE_BCCP_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK, Keys.MODULE_BCCP_MANIFEST_CREATED_BY_FK, Keys.MODULE_BCCP_MANIFEST_LAST_UPDATED_BY_FK);
     }
 
     public ModuleSetRelease moduleSetRelease() {
@@ -154,8 +154,8 @@ public class ModuleBccpManifest extends TableImpl<ModuleBccpManifestRecord> {
         return new BccpManifest(this, Keys.MODULE_BCCP_MANIFEST_BCCP_MANIFEST_ID_FK);
     }
 
-    public Module module() {
-        return new Module(this, Keys.MODULE_BCCP_MANIFEST_MODULE_ID_FK);
+    public ModuleSetAssignment moduleSetAssignment() {
+        return new ModuleSetAssignment(this, Keys.MODULE_BCCP_MANIFEST_MODULE_SET_ASSIGNMENT_ID_FK);
     }
 
     public AppUser moduleBccpManifestCreatedByFk() {

@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -1135469694;
+    private static final long serialVersionUID = -1240457368;
 
     /**
      * Setter for <code>oagi.module_dt_manifest.module_dt_manifest_id</code>. Primary key.
@@ -66,16 +66,16 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
     }
 
     /**
-     * Setter for <code>oagi.module_dt_manifest.module_id</code>. A foreign key of the module record.
+     * Setter for <code>oagi.module_dt_manifest.module_set_assignment_id</code>.
      */
-    public void setModuleId(ULong value) {
+    public void setModuleSetAssignmentId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.module_dt_manifest.module_id</code>. A foreign key of the module record.
+     * Getter for <code>oagi.module_dt_manifest.module_set_assignment_id</code>.
      */
-    public ULong getModuleId() {
+    public ULong getModuleSetAssignmentId() {
         return (ULong) get(3);
     }
 
@@ -175,7 +175,7 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
 
     @Override
     public Field<ULong> field4() {
-        return ModuleDtManifest.MODULE_DT_MANIFEST.MODULE_ID;
+        return ModuleDtManifest.MODULE_DT_MANIFEST.MODULE_SET_ASSIGNMENT_ID;
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
 
     @Override
     public ULong component4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -255,7 +255,7 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
 
     @Override
     public ULong value4() {
-        return getModuleId();
+        return getModuleSetAssignmentId();
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
 
     @Override
     public ModuleDtManifestRecord value4(ULong value) {
-        setModuleId(value);
+        setModuleSetAssignmentId(value);
         return this;
     }
 
@@ -353,13 +353,13 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
     /**
      * Create a detached, initialised ModuleDtManifestRecord
      */
-    public ModuleDtManifestRecord(ULong moduleDtManifestId, ULong moduleSetReleaseId, ULong dtManifestId, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
+    public ModuleDtManifestRecord(ULong moduleDtManifestId, ULong moduleSetReleaseId, ULong dtManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleDtManifest.MODULE_DT_MANIFEST);
 
         set(0, moduleDtManifestId);
         set(1, moduleSetReleaseId);
         set(2, dtManifestId);
-        set(3, moduleId);
+        set(3, moduleSetAssignmentId);
         set(4, createdBy);
         set(5, lastUpdatedBy);
         set(6, creationTimestamp);
