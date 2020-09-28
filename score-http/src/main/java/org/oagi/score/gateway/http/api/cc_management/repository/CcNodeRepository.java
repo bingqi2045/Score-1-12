@@ -121,8 +121,10 @@ public class CcNodeRepository {
         OagisComponentType oagisComponentType =
                 OagisComponentType.valueOf(accNode.getOagisComponentType());
         accNode.setGroup(oagisComponentType.isGroup());
+        boolean isWorkingRelease = accNode.getReleaseNum().equals("Working");
         accNode.setAccess(AccessPrivilege.toAccessPrivilege(
-                sessionService.getAppUser(user), sessionService.getAppUser(accNode.getOwnerUserId()), accNode.getState()));
+                sessionService.getAppUser(user), sessionService.getAppUser(accNode.getOwnerUserId()),
+                accNode.getState(), isWorkingRelease));
         accNode.setHasChild(hasChild(accNode));
         accNode.setHasExtension(hasExtension(user, accNode));
 
@@ -210,7 +212,8 @@ public class CcNodeRepository {
 
         AppUser requester = sessionService.getAppUser(user);
         AppUser owner = sessionService.getAppUser(asccpNode.getOwnerUserId());
-        asccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, asccpNode.getState()));
+        boolean isWorkingRelease = asccpNode.getReleaseNum().equals("Working");
+        asccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, asccpNode.getState(), isWorkingRelease));
         asccpNode.setHasChild(true); // role_of_acc_id must not be null.
 
         return asccpNode;
@@ -269,7 +272,8 @@ public class CcNodeRepository {
 
         AppUser requester = sessionService.getAppUser(user);
         AppUser owner = sessionService.getAppUser(bccpNode.getOwnerUserId());
-        bccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, bccpNode.getState()));
+        boolean isWorkingRelease = bccpNode.getReleaseNum().equals("Working");
+        bccpNode.setAccess(AccessPrivilege.toAccessPrivilege(requester, owner, bccpNode.getState(), isWorkingRelease));
         bccpNode.setHasChild(hasChild(bccpNode));
 
         return bccpNode;

@@ -14,14 +14,24 @@ public enum AccessPrivilege {
     Prohibited,
     Unprepared;
 
-    public static AccessPrivilege toAccessPrivilege(AppUser requester, AppUser owner, CcState ccState) {
+    public static AccessPrivilege toAccessPrivilege(AppUser requester, AppUser owner, CcState ccState, boolean isWorkingRelease) {
         AccessPrivilege accessPrivilege = Prohibited;
         switch (ccState) {
             case Deleted:
-                if (owner.isDeveloper() == requester.isDeveloper()) {
-                    accessPrivilege = CanMove;
+            case Production:
+            case Published:
+                if (isWorkingRelease) {
+                    if (requester.isDeveloper()) {
+                        accessPrivilege = CanMove;
+                    } else {
+                        accessPrivilege = CanView;
+                    }
                 } else {
-                    accessPrivilege = Prohibited;
+                    if (requester.isDeveloper()) {
+                        accessPrivilege = CanView;
+                    } else {
+                        accessPrivilege = CanMove;
+                    }
                 }
                 break;
             case WIP:
@@ -34,20 +44,14 @@ public enum AccessPrivilege {
             case Draft:
             case QA:
             case Candidate:
-            case ReleaseDraft:
                 if (requester.getAppUserId().equals(owner.getAppUserId())) {
                     accessPrivilege = CanMove;
                 } else {
                     accessPrivilege = CanView;
                 }
                 break;
-            case Production:
-            case Published:
-                if (requester.isDeveloper() == owner.isDeveloper()) {
-                    accessPrivilege = CanMove;
-                } else {
-                    accessPrivilege = CanView;
-                }
+            case ReleaseDraft:
+                accessPrivilege = CanView;
                 break;
         }
         return accessPrivilege;

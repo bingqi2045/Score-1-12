@@ -87,7 +87,8 @@ public class ExtensionService {
         BigInteger ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
                 .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(BigInteger.class);
         AppUser owner = sessionService.getAppUser(ownerUserId);
-        AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, owner, eAcc.getState());
+        boolean isWorkingRelease = eAcc.getReleaseNum().equals("Working");
+        AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, owner, eAcc.getState(), isWorkingRelease);
         eAcc.setAccess(accessPrivilege);
         return eAcc;
     }

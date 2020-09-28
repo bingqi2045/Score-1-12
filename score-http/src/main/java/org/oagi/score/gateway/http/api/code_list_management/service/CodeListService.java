@@ -172,11 +172,15 @@ public class CodeListService extends EventHandler {
         List<CodeListForList> result = (offsetStep != null) ?
                 offsetStep.fetchInto(CodeListForList.class) : conditionStep.fetchInto(CodeListForList.class);
 
+        String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId()))).fetchOneInto(String.class);
+        boolean isWorkingRelease = releaseNum.equals("Working");
+
         AppUser requester = sessionService.getAppUser(user);
         result.stream().forEach(e -> {
             e.setAccess(
                     AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(e.getOwnerId()),
-                            CcState.valueOf(e.getState()))
+                            CcState.valueOf(e.getState()), isWorkingRelease)
             );
             e.setOwnerId(null); // hide sensitive information
         });
@@ -233,10 +237,14 @@ public class CodeListService extends EventHandler {
             throw new EmptyResultDataAccessException(1);
         }
 
+        String releaseNum = dslContext.select(RELEASE.RELEASE_NUM).from(RELEASE)
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(codeList.getReleaseId()))).fetchOneInto(String.class);
+        boolean isWorkingRelease = releaseNum.equals("Working");
+
         AppUser requester = sessionService.getAppUser(user);
         codeList.setAccess(
                 AccessPrivilege.toAccessPrivilege(requester, sessionService.getAppUser(codeList.getOwnerId()),
-                        CcState.valueOf(codeList.getState()))
+                        CcState.valueOf(codeList.getState()), isWorkingRelease)
         );
         codeList.setOwnerId(null); // hide sensitive information
 

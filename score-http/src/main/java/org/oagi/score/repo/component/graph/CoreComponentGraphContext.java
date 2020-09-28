@@ -378,7 +378,7 @@ public class CoreComponentGraphContext implements GraphContext {
 
     public Node toNode(BccpManifestRecord record) {
         Record4<String, String, String, String> res =
-                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE, ASCCP.GUID)
+                dslContext.select(BCCP.PROPERTY_TERM, BCCP.REPRESENTATION_TERM, BCCP.STATE, BCCP.GUID)
                         .from(BCCP)
                         .where(BCCP.BCCP_ID.eq(record.getBccpId()))
                         .fetchOne();
