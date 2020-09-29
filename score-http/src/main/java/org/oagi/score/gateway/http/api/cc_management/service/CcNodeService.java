@@ -347,7 +347,8 @@ public class CcNodeService extends EventHandler {
         asccpWriteRepository.updateAsccpNamespace(updateAsccpPropertiesRepositoryRequest);
     }
 
-    private void updateExtensionComponentState(AuthenticatedPrincipal user, BigInteger accManifestId, CcState fromState, CcState toState) {
+    private void updateExtensionComponentState(AuthenticatedPrincipal user, BigInteger accManifestId,
+                                               CcState fromState, CcState toState) {
         LocalDateTime timestamp = LocalDateTime.now();
         AccManifestRecord accManifestRecord = accReadRepository.getAccManifest(accManifestId);
 
@@ -652,9 +653,9 @@ public class CcNodeService extends EventHandler {
         UpdateAccStateRepositoryResponse repositoryResponse =
                 accWriteRepository.updateAccState(repositoryRequest);
 
-//        if (hasExtensionAssociation(user, accManifestId)) {
-//            updateExtensionComponentState(user, accManifestId, fromState, toState);
-//        }
+        if (hasExtensionAssociation(user, accManifestId)) {
+            updateExtensionComponentState(user, accManifestId, fromState, toState);
+        }
 
         fireEvent(new UpdatedAccStateEvent());
 
