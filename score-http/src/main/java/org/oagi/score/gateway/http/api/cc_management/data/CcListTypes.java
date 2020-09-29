@@ -13,7 +13,6 @@ public class CcListTypes {
     private boolean bcc;
     private boolean bdt;
 
-
     public static CcListTypes fromString(String str) {
         if (str != null) {
             str = str.trim();

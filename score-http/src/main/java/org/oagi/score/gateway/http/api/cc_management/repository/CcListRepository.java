@@ -1,12 +1,13 @@
 package org.oagi.score.gateway.http.api.cc_management.repository;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.DTType;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
+import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.component.release.ReleaseRepository;
@@ -16,10 +17,12 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.stripToNull;
 import static org.jooq.impl.DSL.*;
 import static org.oagi.score.data.OagisComponentType.*;
 import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
@@ -33,6 +36,125 @@ public class CcListRepository {
 
     @Autowired
     private ReleaseRepository releaseRepository;
+
+    public PageResponse<CcList> getCcList(CcListRequest request) {
+        Release release = releaseRepository.findById(request.getReleaseId());
+
+        SelectOrderByStep select = null;
+        if (request.getTypes().isAcc()) {
+            select = (select != null) ? select.union(getAccList(request, release)) : getAccList(request, release);
+        }
+        if (request.getTypes().isAsccp()) {
+            select = (select != null) ? select.union(getAsccpList(request, release)) : getAsccpList(request, release);
+        }
+        if (request.getTypes().isBccp()) {
+            select = (select != null) ? select.union(getBccpList(request, release)) : getBccpList(request, release);
+        }
+        if (request.getTypes().isAscc()) {
+            select = (select != null) ? select.union(getAsccList(request, release)) : getAsccList(request, release);
+        }
+        if (request.getTypes().isBcc()) {
+            select = (select != null) ? select.union(getBccList(request, release)) : getBccList(request, release);
+        }
+        if (request.getTypes().isBdt()) {
+            select = (select != null) ? select.union(getBdtList(request, release)) : getBdtList(request, release);
+        }
+
+        if (select == null) {
+            PageResponse response = new PageResponse();
+            response.setList(Collections.emptyList());
+            response.setPage(request.getPageRequest().getPageIndex());
+            response.setSize(request.getPageRequest().getPageSize());
+            response.setLength(0);
+            return response;
+        }
+
+        PageRequest pageRequest = request.getPageRequest();
+        Field field = null;
+        switch (pageRequest.getSortActive()) {
+            case "type":
+                field = field("type");
+                break;
+            case "state":
+                field = field("state");
+                break;
+            case "den":
+                field = field("den");
+                break;
+            case "revision":
+                field = field("revision");
+                break;
+            case "owner":
+                field = field("owner");
+                break;
+            case "module":
+                field = concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME);
+                break;
+            case "lastUpdateTimestamp":
+                field = field("last_update_timestamp");
+                break;
+        }
+
+        SortField sortField = null;
+        if (field != null && pageRequest.getSortDirection() != null) {
+            switch (pageRequest.getSortDirection()) {
+                case "asc":
+                    sortField = field.asc();
+                    break;
+                case "desc":
+                    sortField = field.desc();
+                    break;
+            }
+        }
+
+        int count = dslContext.fetchCount(select);
+
+        SelectWithTiesAfterOffsetStep offsetStep = null;
+        if (sortField != null) {
+            offsetStep = select.orderBy(sortField)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = select
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<CcList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch()).map(row -> {
+            CcList ccList = new CcList();
+            ccList.setType(CcType.valueOf(row.getValue("type", String.class)));
+            ccList.setManifestId(row.getValue("manifest_id", ULong.class).toBigInteger());
+            ccList.setId(row.getValue("id", ULong.class).toBigInteger());
+            ccList.setGuid(row.getValue("guid", String.class));
+            ccList.setDen(row.getValue("den", String.class));
+            ccList.setDefinition(stripToNull(row.getValue("definition", String.class)));
+            ccList.setDefinitionSource(stripToNull(row.getValue("definition_source", String.class)));
+            ccList.setModule(row.getValue("module_path", String.class));
+            ccList.setName(row.getValue("term", String.class));
+            Integer componentType = row.getValue("oagis_component_type", Integer.class);
+            if (componentType != null) {
+                ccList.setOagisComponentType(OagisComponentType.valueOf(componentType));
+            }
+            ccList.setDtType(row.getValue("dt_type", String.class));
+            ccList.setState(CcState.valueOf(row.getValue("state", String.class)));
+            ccList.setDeprecated(row.getValue("is_deprecated", Byte.class) == 1);
+            ccList.setLastUpdateTimestamp(Date.from(row.getValue("last_update_timestamp", LocalDateTime.class)
+                    .atZone(ZoneId.systemDefault()).toInstant()));
+            ccList.setOwner((String) row.getValue("owner"));
+            ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
+            ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
+            ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
+            return ccList;
+        });
+
+        PageResponse<CcList> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(count);
+
+        return response;
+    }
 
     private BigInteger getManifestIdByObjectClassTermAndReleaseId(String objectClassTerm, BigInteger releaseId) {
         return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
@@ -56,12 +178,7 @@ public class CcListRepository {
                 .fetchInto(BigInteger.class);
     }
 
-    public List<CcList> getAccList(CcListRequest request) {
-        if (!request.getTypes().isAcc()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    private SelectOrderByStep getAccList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -93,7 +210,7 @@ public class CcListRepository {
             conditions.addAll(ContainsFilterBuilder.contains(request.getDefinition(), ACC.DEFINITION));
         }
         if (!StringUtils.isEmpty(request.getModule())) {
-            conditions.add(concat(MODULE_DIR.PATH, inline("/"), MODULE.NAME).containsIgnoreCase(request.getModule()));
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (request.getUpdateStartDate() != null) {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
@@ -102,7 +219,6 @@ public class CcListRepository {
             conditions.add(ACC.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
         if (request.getComponentTypes() != null && !request.getComponentTypes().isEmpty()) {
-
             List<OagisComponentType> componentTypes = Arrays.asList(request.getComponentTypes().split(","))
                     .stream()
                     .map(e -> OagisComponentType.valueOf(Integer.parseInt(e)))
@@ -216,18 +332,20 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                ACC_MANIFEST.ACC_MANIFEST_ID,
-                ACC.ACC_ID,
+                inline("ACC").as("type"),
+                ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
+                ACC.ACC_ID.as("id"),
                 ACC.GUID,
                 ACC.DEN,
                 ACC.DEFINITION,
                 ACC.DEFINITION_SOURCE,
-                MODULE.NAME,
-                MODULE_DIR.PATH,
-                ACC.OAGIS_COMPONENT_TYPE,
+                ACC.OBJECT_CLASS_TERM.as("term"),
+                ACC.OAGIS_COMPONENT_TYPE.as("oagis_component_type"),
+                val((String) null).as("dt_type"),
                 ACC.STATE,
                 ACC.IS_DEPRECATED,
                 ACC.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 REVISION.REVISION_NUM,
@@ -252,37 +370,10 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.ACC);
-                    ccList.setManifestId(row.getValue(ACC_MANIFEST.ACC_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(ACC.ACC_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(ACC.GUID));
-                    ccList.setDen(row.getValue(ACC.DEN));
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ACC.DEFINITION_SOURCE)));
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setOagisComponentType(OagisComponentType.valueOf(row.getValue(ACC.OAGIS_COMPONENT_TYPE)));
-                    ccList.setState(CcState.valueOf(row.getValue(ACC.STATE)));
-                    ccList.setDeprecated(row.getValue(ACC.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ACC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 
-    public List<CcList> getAsccList(CcListRequest request) {
-        if (!request.getTypes().isAscc()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    private SelectOrderByStep getAsccList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -315,7 +406,6 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
-
         if (request.getUpdateStartDate() != null) {
             conditions.add(ASCC.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }
@@ -357,19 +447,22 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                ASCC_MANIFEST.ASCC_MANIFEST_ID,
-                ASCC.ASCC_ID,
+                inline("ASCC").as("type"),
+                ASCC_MANIFEST.ASCC_MANIFEST_ID.as("manifest_id"),
+                ASCC.ASCC_ID.as("id"),
                 ASCC.GUID,
                 ASCC.DEN,
                 ASCC.DEFINITION,
                 ASCC.DEFINITION_SOURCE,
+                val((String) null).as("term"),
+                val((Integer) null).as("oagis_component_type"),
+                val((String) null).as("dt_type"),
                 ASCC.STATE,
                 ASCC.IS_DEPRECATED,
                 ASCC.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                MODULE.NAME,
-                MODULE_DIR.PATH,
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
@@ -397,36 +490,10 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.ASCC);
-                    ccList.setManifestId(row.getValue(ASCC_MANIFEST.ASCC_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(ASCC.ASCC_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(ASCC.GUID));
-                    ccList.setDen(row.getValue(ASCC.DEN));
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCC.DEFINITION_SOURCE)));
-                    ccList.setState(CcState.valueOf(row.getValue(ASCC.STATE)));
-                    ccList.setDeprecated(row.getValue(ASCC.IS_DEPRECATED) == 1);
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 
-    public List<CcList> getBccList(CcListRequest request) {
-        if (!request.getTypes().isBcc()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    private SelectOrderByStep getBccList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -500,19 +567,22 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                BCC_MANIFEST.BCC_MANIFEST_ID,
-                BCC.BCC_ID,
+                inline("BCC").as("type"),
+                BCC_MANIFEST.BCC_MANIFEST_ID.as("manifest_id"),
+                BCC.BCC_ID.as("id"),
                 BCC.GUID,
                 BCC.DEN,
                 BCC.DEFINITION,
                 BCC.DEFINITION_SOURCE,
+                val((String) null).as("term"),
+                val((Integer) null).as("oagis_component_type"),
+                val((String) null).as("dt_type"),
                 BCC.STATE,
                 BCC.IS_DEPRECATED,
-                MODULE.NAME,
-                MODULE_DIR.PATH,
                 BCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 REVISION.REVISION_NUM,
                 REVISION.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
@@ -540,36 +610,10 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.BCC);
-                    ccList.setManifestId(row.getValue(BCC_MANIFEST.BCC_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(BCC.BCC_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(BCC.GUID));
-                    ccList.setDen(row.getValue(BCC.DEN));
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCC.DEFINITION_SOURCE)));
-                    ccList.setState(CcState.valueOf(row.getValue(BCC.STATE)));
-                    ccList.setDeprecated(row.getValue(BCC.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCC.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 
-    public List<CcList> getAsccpList(CcListRequest request) {
-        if (!request.getTypes().isAsccp()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    private SelectOrderByStep getAsccpList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -646,18 +690,20 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
-                ASCCP.ASCCP_ID,
+                inline("ASCCP").as("type"),
+                ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
+                ASCCP.ASCCP_ID.as("id"),
                 ASCCP.GUID,
-                ASCCP.PROPERTY_TERM.as("propertyTerm"),
                 ASCCP.DEN,
                 ASCCP.DEFINITION,
                 ASCCP.DEFINITION_SOURCE,
-                MODULE.NAME,
-                MODULE_DIR.PATH,
+                ASCCP.PROPERTY_TERM.as("term"),
+                val((Integer) null).as("oagis_component_type"),
+                val((String) null).as("dt_type"),
                 ASCCP.STATE,
                 ASCCP.IS_DEPRECATED,
                 ASCCP.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 REVISION.REVISION_NUM,
@@ -682,37 +728,10 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.ASCCP);
-                    ccList.setManifestId(row.getValue(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(ASCCP.ASCCP_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(ASCCP.GUID));
-                    ccList.setName((String) row.getValue("propertyTerm"));
-                    ccList.setDen(row.getValue(ASCCP.DEN));
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(ASCCP.DEFINITION_SOURCE)));
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setState(CcState.valueOf(row.getValue(ASCCP.STATE)));
-                    ccList.setDeprecated(row.getValue(ASCCP.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(ASCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 
-    public List<CcList> getBccpList(CcListRequest request) {
-        if (!request.getTypes().isBccp()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    private SelectOrderByStep getBccpList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -774,17 +793,20 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                BCCP_MANIFEST.BCCP_MANIFEST_ID,
-                BCCP.BCCP_ID,
+                inline("ASCCP").as("type"),
+                BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
+                BCCP.BCCP_ID.as("id"),
                 BCCP.GUID,
                 BCCP.DEN,
                 BCCP.DEFINITION,
                 BCCP.DEFINITION_SOURCE,
-                MODULE.NAME,
-                MODULE_DIR.PATH,
+                BCCP.PROPERTY_TERM.as("term"),
+                val((Integer) null).as("oagis_component_type"),
+                val((String) null).as("dt_type"),
                 BCCP.STATE,
                 BCCP.IS_DEPRECATED,
                 BCCP.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 REVISION.REVISION_NUM,
@@ -809,36 +831,10 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.BCCP);
-                    ccList.setManifestId(row.getValue(BCCP_MANIFEST.BCCP_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(BCCP.BCCP_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(BCCP.GUID));
-                    ccList.setDen(row.getValue(BCCP.DEN));
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(BCCP.DEFINITION_SOURCE)));
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setState(CcState.valueOf(row.getValue(BCCP.STATE)));
-                    ccList.setDeprecated(row.getValue(BCCP.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(BCCP.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 
-    public List<CcList> getBdtList(CcListRequest request) {
-        if (!request.getTypes().isBdt()) {
-            return Collections.emptyList();
-        }
-
-        Release release = releaseRepository.findById(request.getReleaseId());
+    public SelectOrderByStep getBdtList(CcListRequest request, Release release) {
         AppUser appUserOwner = APP_USER.as("owner");
         AppUser appUserUpdater = APP_USER.as("updater");
 
@@ -869,8 +865,12 @@ public class CcListRepository {
         if (!StringUtils.isEmpty(request.getModule())) {
             conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
-        if (request.getDtTypes().size() > 0) {
-            conditions.add(DT.TYPE.in(request.getDtTypes()));
+        if (!request.getDtTypes().isEmpty()) {
+            if (request.getDtTypes().size() == 1) {
+                conditions.add(DT.TYPE.eq(request.getDtTypes().get(0)));
+            } else {
+                conditions.add(DT.TYPE.in(request.getDtTypes()));
+            }
         } else {
             conditions.add(DT.TYPE.notEqual(DTType.Core.toString()));
         }
@@ -882,18 +882,20 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                DT_MANIFEST.DT_MANIFEST_ID,
-                DT.DT_ID,
+                inline("BDT").as("type"),
+                DT_MANIFEST.DT_MANIFEST_ID.as("manifest_id"),
+                DT.DT_ID.as("id"),
                 DT.GUID,
                 DT.DEN,
-                DT.TYPE,
                 DT.DEFINITION,
                 DT.DEFINITION_SOURCE,
-                MODULE.NAME,
-                MODULE_DIR.PATH,
+                DT.DATA_TYPE_TERM.as("term"),
+                val((Integer) null).as("oagis_component_type"),
+                DT.TYPE.as("dt_type"),
                 DT.STATE,
                 DT.IS_DEPRECATED,
                 DT.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 REVISION.REVISION_NUM,
@@ -918,31 +920,6 @@ public class CcListRepository {
                 .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
                 .leftJoin(MODULE_DIR)
                 .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
-                .where(conditions)
-                .fetch().map(row -> {
-                    CcList ccList = new CcList();
-                    ccList.setType(CcType.BDT);
-                    ccList.setManifestId(row.getValue(DT_MANIFEST.DT_MANIFEST_ID).toBigInteger());
-                    ccList.setId(row.getValue(DT.DT_ID).toBigInteger());
-                    ccList.setGuid(row.getValue(DT.GUID));
-                    String den = row.getValue(DT.DEN);
-                    ccList.setDtType(row.getValue(DT.TYPE));
-                    if (!StringUtils.isEmpty(den)) {
-                        ccList.setDen(den.replaceAll("_", " ").replaceAll("  ", " "));
-                    }
-                    ccList.setDefinition(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION)));
-                    ccList.setDefinitionSource(org.apache.commons.lang3.StringUtils.stripToNull(row.getValue(DT.DEFINITION_SOURCE)));
-                    if (!StringUtils.isEmpty(row.getValue(MODULE.NAME))) {
-                        ccList.setModule(row.getValue(MODULE_DIR.PATH) + MODULE_SEPARATOR + row.getValue(MODULE.NAME));
-                    }
-                    ccList.setState(CcState.valueOf(row.getValue(DT.STATE)));
-                    ccList.setDeprecated(row.getValue(DT.IS_DEPRECATED) == 1);
-                    ccList.setLastUpdateTimestamp(Date.from(row.getValue(DT.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-                    ccList.setOwner((String) row.getValue("owner"));
-                    ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-                    ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
-                    ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
-                    return ccList;
-                });
+                .where(conditions);
     }
 }
