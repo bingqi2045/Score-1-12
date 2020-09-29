@@ -7,5 +7,6 @@ public class SimpleNamespace {
 
     private long namespaceId;
     private String uri;
+    private boolean standard;
 
 }

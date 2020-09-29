@@ -44,8 +44,8 @@ public class NamespaceService {
 
     public List<SimpleNamespace> getSimpleNamespaces(AuthenticatedPrincipal user) {
         AppUser requester = sessionService.getAppUser(user);
-        return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI).from(NAMESPACE)
-                .where(NAMESPACE.IS_STD_NMSP.eq((byte) (requester.isDeveloper() ? 1 : 0)))
+        return dslContext.select(NAMESPACE.NAMESPACE_ID, NAMESPACE.URI, NAMESPACE.IS_STD_NMSP.as("standard"))
+                .from(NAMESPACE)
                 .fetchInto(SimpleNamespace.class);
     }
 
