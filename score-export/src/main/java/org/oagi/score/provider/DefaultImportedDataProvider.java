@@ -157,6 +157,9 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
 
         findBlobContentList = ccRepository.findAllBlobContent(ULong.valueOf(MODULE_SET_RELEASE_ID));
 
+        findModuleBlobContentManifestMap = ccRepository.findAllModuleBlobContentManifest(ULong.valueOf(MODULE_SET_RELEASE_ID))
+                .stream().collect(Collectors.toMap(ModuleCCID::getCcId, Function.identity()));
+
         logger.info("Ready for " + getClass().getSimpleName() + " in " + (System.currentTimeMillis() - s) / 1000d + " seconds");
     }
 
@@ -168,6 +171,7 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
     private Map<ULong, ModuleCCID> findModuleAsccpManifestMap;
     private Map<ULong, ModuleCCID> findModuleBccpManifestMap;
     private Map<ULong, ModuleCCID> findModuleXbtManifestMap;
+    private Map<ULong, ModuleCCID> findModuleBlobContentManifestMap;
 
     @Override
     public List<AgencyIdListRecord> findAgencyIdList() {
@@ -304,9 +308,6 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
     @Override
     public XbtRecord findXbt(ULong xbtId) {
         XbtRecord xbt = findXbtMap.get(xbtId);
-        if (xbt == null) {
-            throw new IllegalStateException();
-        }
         return xbt;
     }
 
@@ -488,10 +489,15 @@ public class DefaultImportedDataProvider implements ImportedDataProvider, Initia
         return findModuleXbtManifestMap.get(xbtId);
     }
 
-    private List<BlobContent> findBlobContentList;
+    private List<BlobContentRecord> findBlobContentList;
 
     @Override
-    public List<BlobContent> findBlobContent() {
+    public List<BlobContentRecord> findBlobContent() {
         return findBlobContentList;
+    }
+
+    @Override
+    public ModuleCCID findModuleBlobContent(ULong blobContentId) {
+        return findModuleBlobContentManifestMap.get(blobContentId);
     }
 }

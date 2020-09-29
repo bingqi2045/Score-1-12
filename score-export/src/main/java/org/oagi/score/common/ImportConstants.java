@@ -94,7 +94,8 @@ public class ImportConstants {
         }
     }
 
-    public static final String MODEL_FOLDER_PATH = BASE_DATA_PATH + "/Model";
+    public static final String MODEL_FOLDER_PATH = BASE_DATA_PATH + "/OAGIS_10_6_EnterpriseEdition/OAGi-BPI-Platform/org_openapplications_oagis/10_6/Model";
+    //public static final String MODEL_FOLDER_PATH = BASE_DATA_PATH + "/Model";
     public static final String BOD_FILE_PATH_01 = MODEL_FOLDER_PATH + PLATFORM_PATH + "/BODs/";
     public static final String BOD_FILE_PATH_02 = MODEL_FOLDER_PATH + "/BODs/";
     public static final String NOUN_FILE_PATH_01 = MODEL_FOLDER_PATH + "/Nouns/";

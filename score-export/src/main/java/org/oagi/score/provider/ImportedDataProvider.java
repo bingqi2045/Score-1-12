@@ -101,5 +101,7 @@ public interface ImportedDataProvider {
 
     public ModuleCCID findModuleXbt(ULong xbtId);
 
-    public List<BlobContent> findBlobContent();
+    public ModuleCCID findModuleBlobContent(ULong blobContentId);
+
+    public List<BlobContentRecord> findBlobContent();
 }

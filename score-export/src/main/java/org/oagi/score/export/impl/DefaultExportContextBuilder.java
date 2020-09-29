@@ -240,9 +240,9 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
     }
 
     private void createBlobContents(Map<ULong, SchemaModule> moduleMap) {
-        for (BlobContent blobContent : importedDataProvider.findBlobContent()) {
-
-            SchemaModule schemaModule = moduleMap.get(blobContent.getModuleSetAssignmentId());
+        for (BlobContentRecord blobContent : importedDataProvider.findBlobContent()) {
+            ModuleCCID moduleCCID = importedDataProvider.findModuleBlobContent(blobContent.getBlobContentId());
+            SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             schemaModule.setContent(blobContent.getContent());
         }
     }
