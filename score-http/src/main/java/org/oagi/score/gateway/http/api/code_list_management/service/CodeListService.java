@@ -722,4 +722,22 @@ public class CodeListService extends EventHandler {
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .where(conditions).fetchOneInto(Integer.class) > 0;
     }
+
+    @Transactional
+    public void transferOwnership(AuthenticatedPrincipal user, BigInteger manifestId, String targetLoginId) {
+        AppUser targetUser = sessionService.getAppUser(targetLoginId);
+        if (targetUser == null) {
+            throw new IllegalArgumentException("Not found a target user.");
+        }
+
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(manifestId))).fetchOne();
+        if (codeListManifestRecord == null) {
+            throw new IllegalArgumentException("Not found a target CodeList.");
+        }
+        UpdateCodeListOwnerRepositoryRequest request = new UpdateCodeListOwnerRepositoryRequest(user,
+                codeListManifestRecord.getCodeListManifestId().toBigInteger(), targetUser.getAppUserId());
+        codeListWriteRepository.updateCodeListOwner(request);
+        fireEvent(new UpdateCodeListOwnerEvent());
+    }
 }

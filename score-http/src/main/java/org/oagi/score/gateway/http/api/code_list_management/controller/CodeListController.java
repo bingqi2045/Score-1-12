@@ -186,4 +186,15 @@ public class CodeListController {
 
         return service.hasSameNameCodeList(params);
     }
+
+    @RequestMapping(value = "/code_list/{manifestId}/transfer_ownership",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @PathVariable("manifestId") BigInteger manifestId,
+                                            @RequestBody Map<String, String> request) {
+        String targetLoginId = request.get("targetLoginId");
+        service.transferOwnership(user, manifestId, targetLoginId);
+        return ResponseEntity.noContent().build();
+    }
 }

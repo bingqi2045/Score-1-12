@@ -1,7 +1,6 @@
 package org.oagi.score.repo.component.code_list;
 
 import org.jooq.DSLContext;
-import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -728,5 +726,57 @@ public class CodeListWriteRepository {
             codeListValueManifestRecord.update(CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
                     CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID);
         }
+    }
+
+    public UpdateCodeListOwnerRepositoryResponse updateCodeListOwner(UpdateCodeListOwnerRepositoryRequest request) {
+        AppUser user = sessionService.getAppUser(request.getUser());
+        ULong userId = ULong.valueOf(user.getAppUserId());
+        LocalDateTime timestamp = request.getLocalDateTime();
+
+        CodeListManifestRecord codeListManifestRecord = dslContext.selectFrom(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(
+                        ULong.valueOf(request.getCodeListManifestId())
+                ))
+                .fetchOne();
+
+        CodeListRecord codeListRecord = dslContext.selectFrom(CODE_LIST)
+                .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
+                .fetchOne();
+
+        if (!CcState.WIP.equals(CcState.valueOf(codeListRecord.getState()))) {
+            throw new IllegalArgumentException("Only the code list in 'WIP' state can be modified.");
+        }
+
+        if (!codeListRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the code list by the owner.");
+        }
+
+        codeListRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+        codeListRecord.setLastUpdatedBy(userId);
+        codeListRecord.setLastUpdateTimestamp(timestamp);
+        codeListRecord.update(CODE_LIST.OWNER_USER_ID, CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
+
+        for (CodeListValueManifestRecord codeListValueManifest : dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestRecord.getCodeListManifestId()))
+                .fetch()) {
+
+            CodeListValueRecord codeListValueRecord = dslContext.selectFrom(CODE_LIST_VALUE)
+                    .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.eq(codeListValueManifest.getCodeListValueId()))
+                    .fetchOne();
+
+            codeListValueRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
+            codeListValueRecord.update(CODE_LIST_VALUE.OWNER_USER_ID);
+        }
+
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
+                        userId, timestamp);
+
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
+
+        return new UpdateCodeListOwnerRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
 }
