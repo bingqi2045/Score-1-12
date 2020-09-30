@@ -595,9 +595,19 @@ public class AsccpWriteRepository {
                         userId, timestamp);
 
         // update ASCCP MANIFEST's asccp_id and revision_id
+        if (prevAsccpRecord.getRoleOfAccId() != null) {
+            String prevRoleOfAccGuid = dslContext.select(ACC.GUID)
+                    .from(ACC).where(ACC.ACC_ID.eq(prevAsccpRecord.getRoleOfAccId())).fetchOneInto(String.class);
+            AccManifestRecord roleOfAccManifest = dslContext.select(ACC_MANIFEST.fields()).from(ACC)
+                    .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                    .where(and(ACC_MANIFEST.RELEASE_ID.eq(asccpManifestRecord.getReleaseId()),
+                            ACC.GUID.eq(prevRoleOfAccGuid))).fetchOneInto(AccManifestRecord.class);
+            asccpManifestRecord.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
+        }
         asccpManifestRecord.setAsccpId(asccpRecord.getPrevAsccpId());
         asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID,
+                ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID);
 
         // update ASCCs which using current ASCCP
         dslContext.update(ASCC)

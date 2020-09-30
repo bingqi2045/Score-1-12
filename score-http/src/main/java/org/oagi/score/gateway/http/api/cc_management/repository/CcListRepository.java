@@ -793,7 +793,7 @@ public class CcListRepository {
         }
 
         return dslContext.select(
-                inline("ASCCP").as("type"),
+                inline("BCCP").as("type"),
                 BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
                 BCCP.BCCP_ID.as("id"),
                 BCCP.GUID,

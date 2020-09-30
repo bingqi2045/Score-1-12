@@ -512,9 +512,18 @@ public class BccpWriteRepository {
                         userId, timestamp);
 
         // update BCCP MANIFEST's bccp_id and revision_id
+        if (prevBccpRecord.getBdtId() != null) {
+            String prevBdtGuid = dslContext.select(DT.GUID)
+                    .from(DT).where(DT.DT_ID.eq(prevBccpRecord.getBdtId())).fetchOneInto(String.class);
+            DtManifestRecord bdtManifest = dslContext.select(DT_MANIFEST.fields()).from(DT)
+                    .join(DT_MANIFEST).on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
+                    .where(and(DT_MANIFEST.RELEASE_ID.eq(bccpManifestRecord.getReleaseId()),
+                            DT.GUID.eq(prevBdtGuid))).fetchOneInto(DtManifestRecord.class);
+            bccpManifestRecord.setBdtManifestId(bdtManifest.getDtManifestId());
+        }
         bccpManifestRecord.setBccpId(bccpRecord.getPrevBccpId());
         bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID);
+        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID, BCCP_MANIFEST.BDT_MANIFEST_ID);
 
         // update BCCs which using current BCCP
         dslContext.update(BCC)

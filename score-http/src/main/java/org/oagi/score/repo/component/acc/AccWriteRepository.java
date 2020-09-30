@@ -21,6 +21,7 @@ import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
@@ -1118,9 +1119,18 @@ public class AccWriteRepository {
                         userId, timestamp);
 
         // update ACC MANIFEST's acc_id and revision_id
+        if (prevAccRecord.getBasedAccId() != null) {
+            String prevBasedAccGuid = dslContext.select(ACC.GUID)
+                    .from(ACC).where(ACC.ACC_ID.eq(prevAccRecord.getBasedAccId())).fetchOneInto(String.class);
+            AccManifestRecord basedAccManifest = dslContext.select(ACC_MANIFEST.fields()).from(ACC)
+                    .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                    .where(and(ACC_MANIFEST.RELEASE_ID.eq(accManifestRecord.getReleaseId()),
+                            ACC.GUID.eq(prevBasedAccGuid))).fetchOneInto(AccManifestRecord.class);
+            accManifestRecord.setBasedAccManifestId(basedAccManifest.getAccManifestId());
+        }
         accManifestRecord.setAccId(accRecord.getPrevAccId());
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID);
+        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
 
         discardRevisionAssociations(accManifestRecord, accRecord);
 
