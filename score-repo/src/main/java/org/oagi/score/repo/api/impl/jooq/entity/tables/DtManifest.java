@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtManifest extends TableImpl<DtManifestRecord> {
 
-    private static final long serialVersionUID = 545372835;
+    private static final long serialVersionUID = 1608851530;
 
     /**
      * The reference instance of <code>oagi.dt_manifest</code>
@@ -71,6 +71,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
      * The column <code>oagi.dt_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
      */
     public final TableField<DtManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+
+    /**
+     * The column <code>oagi.dt_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     */
+    public final TableField<DtManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt_manifest.prev_dt_manifest_id</code>.
@@ -137,7 +142,7 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_REVISION_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_REVISION_ID_FK, Keys.DT_REPLACED_MANIFEST_BY_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -150,6 +155,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     public Revision revision() {
         return new Revision(this, Keys.DT_MANIFEST_REVISION_ID_FK);
+    }
+
+    public DtManifest dtReplacedManifestByFk() {
+        return new DtManifest(this, Keys.DT_REPLACED_MANIFEST_BY_FK);
     }
 
     public DtManifest dtManifestPrevDtManifestIdFk() {
@@ -187,11 +196,11 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

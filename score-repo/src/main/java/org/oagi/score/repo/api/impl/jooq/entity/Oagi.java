@@ -50,6 +50,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Client;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -83,6 +84,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
@@ -96,7 +98,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 1041851960;
+    private static final long serialVersionUID = -1032525973;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -316,6 +318,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final CdtScAwdPriXpsTypeMap CDT_SC_AWD_PRI_XPS_TYPE_MAP = CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP;
 
     /**
+     * This table captures a client organization. It is used, for example, to indicate the customer, for which the BIE was generated.
+     */
+    public final Client CLIENT = Client.CLIENT;
+
+    /**
      * This table stores information about a code list. When a code list is derived from another code list, the whole set of code values belonging to the based code list will be copied.
      */
     public final CodeList CODE_LIST = CodeList.CODE_LIST;
@@ -481,6 +488,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final SeqKey SEQ_KEY = SeqKey.SEQ_KEY;
 
     /**
+     * This table indexes the ABIE which is a top-level ABIE. This table and the owner_top_level_abie_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.
+     */
+    public final TopLevelAbie TOP_LEVEL_ABIE = TopLevelAbie.TOP_LEVEL_ABIE;
+
+    /**
      * This table indexes the ASBIEP which is a top-level ASBIEP. This table and the owner_top_level_asbiep_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.
      */
     public final TopLevelAsbiep TOP_LEVEL_ASBIEP = TopLevelAsbiep.TOP_LEVEL_ASBIEP;
@@ -561,6 +573,7 @@ If we use a separate table for each expression, then we need binding all the way
             CdtPri.CDT_PRI,
             CdtScAwdPri.CDT_SC_AWD_PRI,
             CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP,
+            Client.CLIENT,
             CodeList.CODE_LIST,
             CodeListManifest.CODE_LIST_MANIFEST,
             CodeListValue.CODE_LIST_VALUE,
@@ -594,6 +607,7 @@ If we use a separate table for each expression, then we need binding all the way
             Release.RELEASE,
             Revision.REVISION,
             SeqKey.SEQ_KEY,
+            TopLevelAbie.TOP_LEVEL_ABIE,
             TopLevelAsbiep.TOP_LEVEL_ASBIEP,
             UsageRule.USAGE_RULE,
             UsageRuleExpression.USAGE_RULE_EXPRESSION,

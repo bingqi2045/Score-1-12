@@ -44,6 +44,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Client;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -77,6 +78,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
@@ -303,6 +305,11 @@ If we use a separate table for each expression, then we need binding all the way
     public static final CdtScAwdPriXpsTypeMap CDT_SC_AWD_PRI_XPS_TYPE_MAP = CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP;
 
     /**
+     * This table captures a client organization. It is used, for example, to indicate the customer, for which the BIE was generated.
+     */
+    public static final Client CLIENT = Client.CLIENT;
+
+    /**
      * This table stores information about a code list. When a code list is derived from another code list, the whole set of code values belonging to the based code list will be copied.
      */
     public static final CodeList CODE_LIST = CodeList.CODE_LIST;
@@ -466,6 +473,11 @@ If we use a separate table for each expression, then we need binding all the way
      * The table <code>oagi.seq_key</code>.
      */
     public static final SeqKey SEQ_KEY = SeqKey.SEQ_KEY;
+
+    /**
+     * This table indexes the ABIE which is a top-level ABIE. This table and the owner_top_level_abie_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.
+     */
+    public static final TopLevelAbie TOP_LEVEL_ABIE = TopLevelAbie.TOP_LEVEL_ABIE;
 
     /**
      * This table indexes the ASBIEP which is a top-level ASBIEP. This table and the owner_top_level_asbiep_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions.

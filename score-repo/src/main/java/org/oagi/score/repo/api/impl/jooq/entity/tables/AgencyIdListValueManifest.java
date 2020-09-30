@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValue
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManifestRecord> {
 
-    private static final long serialVersionUID = -695372703;
+    private static final long serialVersionUID = -1893883620;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_value_manifest</code>
@@ -71,6 +71,11 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
      * The column <code>oagi.agency_id_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
     public final TableField<AgencyIdListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+
+    /**
+     * The column <code>oagi.agency_id_list_value_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     */
+    public final TableField<AgencyIdListValueManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.prev_agency_id_list_value_manifest_id</code>.
@@ -137,7 +142,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     @Override
     public List<ForeignKey<AgencyIdListValueManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListValueManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
+        return Arrays.<ForeignKey<AgencyIdListValueManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACED_MANIFEST_BY_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK);
     }
 
     public Release release() {
@@ -150,6 +155,10 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     public AgencyIdListManifest agencyIdListManifest() {
         return new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK);
+    }
+
+    public AgencyIdListValueManifest agencyIdListValueReplacedManifestByFk() {
+        return new AgencyIdListValueManifest(this, Keys.AGENCY_ID_LIST_VALUE_REPLACED_MANIFEST_BY_FK);
     }
 
     public AgencyIdListValueManifest agencyIdListValueManifestPrevAgencyIdListValueManifFk() {
@@ -187,11 +196,11 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<ULong, ULong, ULong, ULong, Byte, ULong, ULong> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

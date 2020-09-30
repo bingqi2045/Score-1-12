@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeList extends TableImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 2028511267;
+    private static final long serialVersionUID = 644290721;
 
     /**
      * The reference instance of <code>oagi.code_list</code>
@@ -82,7 +82,7 @@ public class CodeList extends TableImpl<CodeListRecord> {
     /**
      * The column <code>oagi.code_list.version_id</code>. Code list version number.
      */
-    public final TableField<CodeListRecord, String> VERSION_ID = createField(DSL.name("version_id"), org.jooq.impl.SQLDataType.VARCHAR(10).nullable(false), this, "Code list version number.");
+    public final TableField<CodeListRecord, String> VERSION_ID = createField(DSL.name("version_id"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "Code list version number.");
 
     /**
      * The column <code>oagi.code_list.definition</code>. Description of the code list.

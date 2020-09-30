@@ -50,6 +50,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Client;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
@@ -83,6 +84,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
@@ -128,6 +130,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriXpsTypeM
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtPriRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriXpsTypeMapRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ClientRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueManifestRecord;
@@ -161,6 +164,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppScopeRec
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.RevisionRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleExpressionRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleRecord;
@@ -217,6 +221,7 @@ public class Keys {
     public static final Identity<CdtPriRecord, ULong> IDENTITY_CDT_PRI = Identities0.IDENTITY_CDT_PRI;
     public static final Identity<CdtScAwdPriRecord, ULong> IDENTITY_CDT_SC_AWD_PRI = Identities0.IDENTITY_CDT_SC_AWD_PRI;
     public static final Identity<CdtScAwdPriXpsTypeMapRecord, ULong> IDENTITY_CDT_SC_AWD_PRI_XPS_TYPE_MAP = Identities0.IDENTITY_CDT_SC_AWD_PRI_XPS_TYPE_MAP;
+    public static final Identity<ClientRecord, ULong> IDENTITY_CLIENT = Identities0.IDENTITY_CLIENT;
     public static final Identity<CodeListRecord, ULong> IDENTITY_CODE_LIST = Identities0.IDENTITY_CODE_LIST;
     public static final Identity<CodeListManifestRecord, ULong> IDENTITY_CODE_LIST_MANIFEST = Identities0.IDENTITY_CODE_LIST_MANIFEST;
     public static final Identity<CodeListValueRecord, ULong> IDENTITY_CODE_LIST_VALUE = Identities0.IDENTITY_CODE_LIST_VALUE;
@@ -250,6 +255,7 @@ public class Keys {
     public static final Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Identities0.IDENTITY_RELEASE;
     public static final Identity<RevisionRecord, ULong> IDENTITY_REVISION = Identities0.IDENTITY_REVISION;
     public static final Identity<SeqKeyRecord, ULong> IDENTITY_SEQ_KEY = Identities0.IDENTITY_SEQ_KEY;
+    public static final Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Identities0.IDENTITY_TOP_LEVEL_ABIE;
     public static final Identity<TopLevelAsbiepRecord, ULong> IDENTITY_TOP_LEVEL_ASBIEP = Identities0.IDENTITY_TOP_LEVEL_ASBIEP;
     public static final Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Identities0.IDENTITY_USAGE_RULE;
     public static final Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Identities0.IDENTITY_USAGE_RULE_EXPRESSION;
@@ -307,6 +313,7 @@ public class Keys {
     public static final UniqueKey<CdtPriRecord> KEY_CDT_PRI_CDT_PRI_UK1 = UniqueKeys0.KEY_CDT_PRI_CDT_PRI_UK1;
     public static final UniqueKey<CdtScAwdPriRecord> KEY_CDT_SC_AWD_PRI_PRIMARY = UniqueKeys0.KEY_CDT_SC_AWD_PRI_PRIMARY;
     public static final UniqueKey<CdtScAwdPriXpsTypeMapRecord> KEY_CDT_SC_AWD_PRI_XPS_TYPE_MAP_PRIMARY = UniqueKeys0.KEY_CDT_SC_AWD_PRI_XPS_TYPE_MAP_PRIMARY;
+    public static final UniqueKey<ClientRecord> KEY_CLIENT_PRIMARY = UniqueKeys0.KEY_CLIENT_PRIMARY;
     public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_PRIMARY = UniqueKeys0.KEY_CODE_LIST_PRIMARY;
     public static final UniqueKey<CodeListManifestRecord> KEY_CODE_LIST_MANIFEST_PRIMARY = UniqueKeys0.KEY_CODE_LIST_MANIFEST_PRIMARY;
     public static final UniqueKey<CodeListValueRecord> KEY_CODE_LIST_VALUE_PRIMARY = UniqueKeys0.KEY_CODE_LIST_VALUE_PRIMARY;
@@ -344,6 +351,7 @@ public class Keys {
     public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = UniqueKeys0.KEY_RELEASE_PRIMARY;
     public static final UniqueKey<RevisionRecord> KEY_REVISION_PRIMARY = UniqueKeys0.KEY_REVISION_PRIMARY;
     public static final UniqueKey<SeqKeyRecord> KEY_SEQ_KEY_PRIMARY = UniqueKeys0.KEY_SEQ_KEY_PRIMARY;
+    public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = UniqueKeys0.KEY_TOP_LEVEL_ABIE_PRIMARY;
     public static final UniqueKey<TopLevelAsbiepRecord> KEY_TOP_LEVEL_ASBIEP_PRIMARY = UniqueKeys0.KEY_TOP_LEVEL_ASBIEP_PRIMARY;
     public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_PRIMARY;
     public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = UniqueKeys0.KEY_USAGE_RULE_EXPRESSION_PRIMARY;
@@ -371,6 +379,7 @@ public class Keys {
     public static final ForeignKey<AccManifestRecord, AccRecord> ACC_MANIFEST_ACC_ID_FK = ForeignKeys0.ACC_MANIFEST_ACC_ID_FK;
     public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK = ForeignKeys0.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AccManifestRecord, RevisionRecord> ACC_MANIFEST_REVISION_ID_FK = ForeignKeys0.ACC_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_REPLACED_MANIFEST_BY_FK = ForeignKeys0.ACC_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK = ForeignKeys0.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK = ForeignKeys0.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK;
@@ -386,6 +395,7 @@ public class Keys {
     public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListRecord> AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK;
     public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListManifestRecord, RevisionRecord> AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_REPLACED_MANIFEST_BY_FK = ForeignKeys0.AGENCY_ID_LIST_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK;
@@ -398,6 +408,7 @@ public class Keys {
     public static final ForeignKey<AgencyIdListValueManifestRecord, ReleaseRecord> AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK;
     public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK;
+    public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_REPLACED_MANIFEST_BY_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK;
     public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK = ForeignKeys0.AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK;
     public static final ForeignKey<AppGroupUserRecord, AppGroupRecord> APP_GROUP_USER_FK_1 = ForeignKeys0.APP_GROUP_USER_FK_1;
@@ -430,6 +441,7 @@ public class Keys {
     public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = ForeignKeys0.ASCC_MANIFEST_ASCC_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK;
+    public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_REPLACED_MANIFEST_BY_FK = ForeignKeys0.ASCC_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = ForeignKeys0.ASCCP_ROLE_OF_ACC_ID_FK;
@@ -444,6 +456,7 @@ public class Keys {
     public static final ForeignKey<AsccpManifestRecord, AsccpRecord> ASCCP_MANIFEST_ASCCP_ID_FK = ForeignKeys0.ASCCP_MANIFEST_ASCCP_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, AccManifestRecord> ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK = ForeignKeys0.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, RevisionRecord> ASCCP_MANIFEST_REVISION_ID_FK = ForeignKeys0.ASCCP_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_REPLACED_MANIFEST_BY_FK = ForeignKeys0.ASCCP_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK = ForeignKeys0.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK;
     public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK = ForeignKeys0.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK;
     public static final ForeignKey<BbieRecord, BccManifestRecord> BBIE_BASED_BCC_MANIFEST_ID_FK = ForeignKeys0.BBIE_BASED_BCC_MANIFEST_ID_FK;
@@ -480,6 +493,7 @@ public class Keys {
     public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = ForeignKeys0.BCC_MANIFEST_BCC_ID_FK;
     public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK;
+    public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_REPLACED_MANIFEST_BY_FK = ForeignKeys0.BCC_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK;
     public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = ForeignKeys0.BCCP_BDT_ID_FK;
@@ -494,6 +508,7 @@ public class Keys {
     public static final ForeignKey<BccpManifestRecord, BccpRecord> BCCP_MANIFEST_BCCP_ID_FK = ForeignKeys0.BCCP_MANIFEST_BCCP_ID_FK;
     public static final ForeignKey<BccpManifestRecord, DtManifestRecord> BCCP_MANIFEST_BDT_MANIFEST_ID_FK = ForeignKeys0.BCCP_MANIFEST_BDT_MANIFEST_ID_FK;
     public static final ForeignKey<BccpManifestRecord, RevisionRecord> BCCP_MANIFEST_REVISION_ID_FK = ForeignKeys0.BCCP_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_REPLACED_MANIFEST_BY_FK = ForeignKeys0.BCCP_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK = ForeignKeys0.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK;
     public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK = ForeignKeys0.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK;
     public static final ForeignKey<BdtPriRestriRecord, DtRecord> BDT_PRI_RESTRI_BDT_ID_FK = ForeignKeys0.BDT_PRI_RESTRI_BDT_ID_FK;
@@ -545,6 +560,7 @@ public class Keys {
     public static final ForeignKey<CodeListManifestRecord, CodeListRecord> CODE_LIST_MANIFEST_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_MANIFEST_CODE_LIST_ID_FK;
     public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<CodeListManifestRecord, RevisionRecord> CODE_LIST_MANIFEST_REVISION_ID_FK = ForeignKeys0.CODE_LIST_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_REPLACED_MANIFEST_BY_FK = ForeignKeys0.CODE_LIST_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK;
     public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_CODE_LIST_ID_FK;
@@ -557,6 +573,7 @@ public class Keys {
     public static final ForeignKey<CodeListValueManifestRecord, ReleaseRecord> CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK = ForeignKeys0.CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<CodeListValueManifestRecord, CodeListValueRecord> CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK = ForeignKeys0.CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK;
     public static final ForeignKey<CodeListValueManifestRecord, CodeListManifestRecord> CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK;
+    public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_REPLACED_MANIFEST_BY_FK = ForeignKeys0.CODE_LIST_VALUE_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK;
     public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK = ForeignKeys0.CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK;
     public static final ForeignKey<CommentRecord, CommentRecord> COMMENT_PREV_COMMENT_ID_FK = ForeignKeys0.COMMENT_PREV_COMMENT_ID_FK;
@@ -580,6 +597,7 @@ public class Keys {
     public static final ForeignKey<DtManifestRecord, ReleaseRecord> DT_MANIFEST_RELEASE_ID_FK = ForeignKeys0.DT_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<DtManifestRecord, DtRecord> DT_MANIFEST_DT_ID_FK = ForeignKeys0.DT_MANIFEST_DT_ID_FK;
     public static final ForeignKey<DtManifestRecord, RevisionRecord> DT_MANIFEST_REVISION_ID_FK = ForeignKeys0.DT_MANIFEST_REVISION_ID_FK;
+    public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_REPLACED_MANIFEST_BY_FK = ForeignKeys0.DT_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_MANIFEST_PREV_DT_MANIFEST_ID_FK = ForeignKeys0.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK;
     public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK = ForeignKeys0.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK;
     public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = ForeignKeys0.DT_SC_OWNER_DT_ID_FK;
@@ -590,6 +608,7 @@ public class Keys {
     public static final ForeignKey<DtScManifestRecord, DtManifestRecord> DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK = ForeignKeys0.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK;
     public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_PREV_DT_SC_MANIFEST_ID_FK = ForeignKeys0.DT_SC_PREV_DT_SC_MANIFEST_ID_FK;
     public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_NEXT_DT_SC_MANIFEST_ID_FK = ForeignKeys0.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK;
+    public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_REPLACED_MANIFEST_BY_FK = ForeignKeys0.DT_SC_REPLACED_MANIFEST_BY_FK;
     public static final ForeignKey<DtUsageRuleRecord, UsageRuleRecord> DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = ForeignKeys0.DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK;
     public static final ForeignKey<DtUsageRuleRecord, DtRecord> DT_USAGE_RULE_TARGET_DT_ID_FK = ForeignKeys0.DT_USAGE_RULE_TARGET_DT_ID_FK;
     public static final ForeignKey<DtUsageRuleRecord, DtScRecord> DT_USAGE_RULE_TARGET_DT_SC_ID_FK = ForeignKeys0.DT_USAGE_RULE_TARGET_DT_SC_ID_FK;
@@ -666,6 +685,10 @@ public class Keys {
     public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = ForeignKeys0.SEQ_KEY_FROM_ACC_ID_FK;
     public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_PREV_SEQ_KEY_ID_FK;
     public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_NEXT_SEQ_KEY_ID_FK;
+    public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_ABIE_ID_FK;
+    public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_OWNER_USER_ID_FK;
+    public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = ForeignKeys0.TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK;
+    public static final ForeignKey<TopLevelAbieRecord, ReleaseRecord> TOP_LEVEL_ABIE_RELEASE_ID_FK = ForeignKeys0.TOP_LEVEL_ABIE_RELEASE_ID_FK;
     public static final ForeignKey<TopLevelAsbiepRecord, AsbiepRecord> TOP_LEVEL_ASBIEP_ASBIEP_ID_FK = ForeignKeys0.TOP_LEVEL_ASBIEP_ASBIEP_ID_FK;
     public static final ForeignKey<TopLevelAsbiepRecord, AppUserRecord> TOP_LEVEL_ASBIEP_OWNER_USER_ID_FK = ForeignKeys0.TOP_LEVEL_ASBIEP_OWNER_USER_ID_FK;
     public static final ForeignKey<TopLevelAsbiepRecord, AppUserRecord> TOP_LEVEL_ASBIEP_LAST_UPDATED_BY_FK = ForeignKeys0.TOP_LEVEL_ASBIEP_LAST_UPDATED_BY_FK;
@@ -724,6 +747,7 @@ public class Keys {
         public static Identity<CdtPriRecord, ULong> IDENTITY_CDT_PRI = Internal.createIdentity(CdtPri.CDT_PRI, CdtPri.CDT_PRI.CDT_PRI_ID);
         public static Identity<CdtScAwdPriRecord, ULong> IDENTITY_CDT_SC_AWD_PRI = Internal.createIdentity(CdtScAwdPri.CDT_SC_AWD_PRI, CdtScAwdPri.CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID);
         public static Identity<CdtScAwdPriXpsTypeMapRecord, ULong> IDENTITY_CDT_SC_AWD_PRI_XPS_TYPE_MAP = Internal.createIdentity(CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP, CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID);
+        public static Identity<ClientRecord, ULong> IDENTITY_CLIENT = Internal.createIdentity(Client.CLIENT, Client.CLIENT.CLIENT_ID);
         public static Identity<CodeListRecord, ULong> IDENTITY_CODE_LIST = Internal.createIdentity(CodeList.CODE_LIST, CodeList.CODE_LIST.CODE_LIST_ID);
         public static Identity<CodeListManifestRecord, ULong> IDENTITY_CODE_LIST_MANIFEST = Internal.createIdentity(CodeListManifest.CODE_LIST_MANIFEST, CodeListManifest.CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID);
         public static Identity<CodeListValueRecord, ULong> IDENTITY_CODE_LIST_VALUE = Internal.createIdentity(CodeListValue.CODE_LIST_VALUE, CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID);
@@ -757,6 +781,7 @@ public class Keys {
         public static Identity<ReleaseRecord, ULong> IDENTITY_RELEASE = Internal.createIdentity(Release.RELEASE, Release.RELEASE.RELEASE_ID);
         public static Identity<RevisionRecord, ULong> IDENTITY_REVISION = Internal.createIdentity(Revision.REVISION, Revision.REVISION.REVISION_ID);
         public static Identity<SeqKeyRecord, ULong> IDENTITY_SEQ_KEY = Internal.createIdentity(SeqKey.SEQ_KEY, SeqKey.SEQ_KEY.SEQ_KEY_ID);
+        public static Identity<TopLevelAbieRecord, ULong> IDENTITY_TOP_LEVEL_ABIE = Internal.createIdentity(TopLevelAbie.TOP_LEVEL_ABIE, TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID);
         public static Identity<TopLevelAsbiepRecord, ULong> IDENTITY_TOP_LEVEL_ASBIEP = Internal.createIdentity(TopLevelAsbiep.TOP_LEVEL_ASBIEP, TopLevelAsbiep.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID);
         public static Identity<UsageRuleRecord, ULong> IDENTITY_USAGE_RULE = Internal.createIdentity(UsageRule.USAGE_RULE, UsageRule.USAGE_RULE.USAGE_RULE_ID);
         public static Identity<UsageRuleExpressionRecord, ULong> IDENTITY_USAGE_RULE_EXPRESSION = Internal.createIdentity(UsageRuleExpression.USAGE_RULE_EXPRESSION, UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID);
@@ -812,6 +837,7 @@ public class Keys {
         public static final UniqueKey<CdtPriRecord> KEY_CDT_PRI_CDT_PRI_UK1 = Internal.createUniqueKey(CdtPri.CDT_PRI, "KEY_cdt_pri_cdt_pri_uk1", new TableField[] { CdtPri.CDT_PRI.NAME }, true);
         public static final UniqueKey<CdtScAwdPriRecord> KEY_CDT_SC_AWD_PRI_PRIMARY = Internal.createUniqueKey(CdtScAwdPri.CDT_SC_AWD_PRI, "KEY_cdt_sc_awd_pri_PRIMARY", new TableField[] { CdtScAwdPri.CDT_SC_AWD_PRI.CDT_SC_AWD_PRI_ID }, true);
         public static final UniqueKey<CdtScAwdPriXpsTypeMapRecord> KEY_CDT_SC_AWD_PRI_XPS_TYPE_MAP_PRIMARY = Internal.createUniqueKey(CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP, "KEY_cdt_sc_awd_pri_xps_type_map_PRIMARY", new TableField[] { CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP.CDT_SC_AWD_PRI_XPS_TYPE_MAP_ID }, true);
+        public static final UniqueKey<ClientRecord> KEY_CLIENT_PRIMARY = Internal.createUniqueKey(Client.CLIENT, "KEY_client_PRIMARY", new TableField[] { Client.CLIENT.CLIENT_ID }, true);
         public static final UniqueKey<CodeListRecord> KEY_CODE_LIST_PRIMARY = Internal.createUniqueKey(CodeList.CODE_LIST, "KEY_code_list_PRIMARY", new TableField[] { CodeList.CODE_LIST.CODE_LIST_ID }, true);
         public static final UniqueKey<CodeListManifestRecord> KEY_CODE_LIST_MANIFEST_PRIMARY = Internal.createUniqueKey(CodeListManifest.CODE_LIST_MANIFEST, "KEY_code_list_manifest_PRIMARY", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID }, true);
         public static final UniqueKey<CodeListValueRecord> KEY_CODE_LIST_VALUE_PRIMARY = Internal.createUniqueKey(CodeListValue.CODE_LIST_VALUE, "KEY_code_list_value_PRIMARY", new TableField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_VALUE_ID }, true);
@@ -849,6 +875,7 @@ public class Keys {
         public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = Internal.createUniqueKey(Release.RELEASE, "KEY_release_PRIMARY", new TableField[] { Release.RELEASE.RELEASE_ID }, true);
         public static final UniqueKey<RevisionRecord> KEY_REVISION_PRIMARY = Internal.createUniqueKey(Revision.REVISION, "KEY_revision_PRIMARY", new TableField[] { Revision.REVISION.REVISION_ID }, true);
         public static final UniqueKey<SeqKeyRecord> KEY_SEQ_KEY_PRIMARY = Internal.createUniqueKey(SeqKey.SEQ_KEY, "KEY_seq_key_PRIMARY", new TableField[] { SeqKey.SEQ_KEY.SEQ_KEY_ID }, true);
+        public static final UniqueKey<TopLevelAbieRecord> KEY_TOP_LEVEL_ABIE_PRIMARY = Internal.createUniqueKey(TopLevelAbie.TOP_LEVEL_ABIE, "KEY_top_level_abie_PRIMARY", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.TOP_LEVEL_ABIE_ID }, true);
         public static final UniqueKey<TopLevelAsbiepRecord> KEY_TOP_LEVEL_ASBIEP_PRIMARY = Internal.createUniqueKey(TopLevelAsbiep.TOP_LEVEL_ASBIEP, "KEY_top_level_asbiep_PRIMARY", new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID }, true);
         public static final UniqueKey<UsageRuleRecord> KEY_USAGE_RULE_PRIMARY = Internal.createUniqueKey(UsageRule.USAGE_RULE, "KEY_usage_rule_PRIMARY", new TableField[] { UsageRule.USAGE_RULE.USAGE_RULE_ID }, true);
         public static final UniqueKey<UsageRuleExpressionRecord> KEY_USAGE_RULE_EXPRESSION_PRIMARY = Internal.createUniqueKey(UsageRuleExpression.USAGE_RULE_EXPRESSION, "KEY_usage_rule_expression_PRIMARY", new TableField[] { UsageRuleExpression.USAGE_RULE_EXPRESSION.USAGE_RULE_EXPRESSION_ID }, true);
@@ -874,6 +901,7 @@ public class Keys {
         public static final ForeignKey<AccManifestRecord, AccRecord> ACC_MANIFEST_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_acc_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.ACC_ID }, true);
         public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_based_acc_manifest_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.BASED_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AccManifestRecord, RevisionRecord> ACC_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_revision_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_replaced_manifest_by_fk", new TableField[] { AccManifest.ACC_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_prev_acc_manifest_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.PREV_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AccManifestRecord, AccManifestRecord> ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AccManifest.ACC_MANIFEST, "acc_manifest_next_acc_manifest_id_fk", new TableField[] { AccManifest.ACC_MANIFEST.NEXT_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_AGENCY_ID_LIST_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, AgencyIdList.AGENCY_ID_LIST, "agency_id_list_agency_id_list_value_id_fk", new TableField[] { AgencyIdList.AGENCY_ID_LIST.AGENCY_ID_LIST_VALUE_ID }, true);
@@ -889,6 +917,7 @@ public class Keys {
         public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListRecord> AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_manifest_agency_id_list_id_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID }, true);
         public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_manifest_based_agency_id_list_manifest_id_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListManifestRecord, RevisionRecord> AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_manifest_revision_id_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_replaced_manifest_by_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_manifest_prev_agency_id_list_manifest_id_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY, AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST, "agency_id_list_manifest_next_agency_id_list_manifest_id_fk", new TableField[] { AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListValueRecord, AgencyIdListRecord> AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_PRIMARY, AgencyIdListValue.AGENCY_ID_LIST_VALUE, "agency_id_list_value_owner_list_id_fk", new TableField[] { AgencyIdListValue.AGENCY_ID_LIST_VALUE.OWNER_LIST_ID }, true);
@@ -901,6 +930,7 @@ public class Keys {
         public static final ForeignKey<AgencyIdListValueManifestRecord, ReleaseRecord> AGENCY_ID_LIST_VALUE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_manifest_release_id_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueRecord> AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_manifest_agency_id_list_value_id_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID }, true);
         public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_AGENCY_ID_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_MANIFEST_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_manifest_agency_id_list_manifest_id_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID }, true);
+        public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_MANIFEST_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_replaced_manifest_by_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_PREV_AGENCY_ID_LIST_VALUE_MANIF_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_MANIFEST_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_manifest_prev_agency_id_list_value_manif_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID }, true);
         public static final ForeignKey<AgencyIdListValueManifestRecord, AgencyIdListValueManifestRecord> AGENCY_ID_LIST_VALUE_MANIFEST_NEXT_AGENCY_ID_LIST_VALUE_MANIF_FK = Internal.createForeignKey(Keys.KEY_AGENCY_ID_LIST_VALUE_MANIFEST_PRIMARY, AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST, "agency_id_list_value_manifest_next_agency_id_list_value_manif_fk", new TableField[] { AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID }, true);
         public static final ForeignKey<AppGroupUserRecord, AppGroupRecord> APP_GROUP_USER_FK_1 = Internal.createForeignKey(Keys.KEY_APP_GROUP_PRIMARY, AppGroupUser.APP_GROUP_USER, "app_group_user_fk_1", new TableField[] { AppGroupUser.APP_GROUP_USER.APP_GROUP_ID }, true);
@@ -933,6 +963,7 @@ public class Keys {
         public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_ascc_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.ASCC_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_from_acc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_to_asccp_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID }, true);
+        public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_replaced_manifest_by_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_prev_ascc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_next_ascc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccpRecord, AccRecord> ASCCP_ROLE_OF_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Asccp.ASCCP, "asccp_role_of_acc_id_fk", new TableField[] { Asccp.ASCCP.ROLE_OF_ACC_ID }, true);
@@ -947,6 +978,7 @@ public class Keys {
         public static final ForeignKey<AsccpManifestRecord, AsccpRecord> ASCCP_MANIFEST_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_asccp_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.ASCCP_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, AccManifestRecord> ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_role_of_acc_manifest_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, RevisionRecord> ASCCP_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_revision_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_replaced_manifest_by_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_prev_asccp_manifest_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID }, true);
         public static final ForeignKey<AsccpManifestRecord, AsccpManifestRecord> ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccpManifest.ASCCP_MANIFEST, "asccp_manifest_next_asccp_manifest_id_fk", new TableField[] { AsccpManifest.ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID }, true);
         public static final ForeignKey<BbieRecord, BccManifestRecord> BBIE_BASED_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, Bbie.BBIE, "bbie_based_bcc_manifest_id_fk", new TableField[] { Bbie.BBIE.BASED_BCC_MANIFEST_ID }, true);
@@ -983,6 +1015,7 @@ public class Keys {
         public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_bcc_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.BCC_ID }, true);
         public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_from_acc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_to_bccp_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.TO_BCCP_MANIFEST_ID }, true);
+        public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_replaced_manifest_by_fk", new TableField[] { BccManifest.BCC_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_prev_bcc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.PREV_BCC_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_next_bcc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.NEXT_BCC_MANIFEST_ID }, true);
         public static final ForeignKey<BccpRecord, DtRecord> BCCP_BDT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, Bccp.BCCP, "bccp_bdt_id_fk", new TableField[] { Bccp.BCCP.BDT_ID }, true);
@@ -997,6 +1030,7 @@ public class Keys {
         public static final ForeignKey<BccpManifestRecord, BccpRecord> BCCP_MANIFEST_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_bccp_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.BCCP_ID }, true);
         public static final ForeignKey<BccpManifestRecord, DtManifestRecord> BCCP_MANIFEST_BDT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_MANIFEST_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_bdt_manifest_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.BDT_MANIFEST_ID }, true);
         public static final ForeignKey<BccpManifestRecord, RevisionRecord> BCCP_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_revision_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_replaced_manifest_by_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_prev_bccp_manifest_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID }, true);
         public static final ForeignKey<BccpManifestRecord, BccpManifestRecord> BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccpManifest.BCCP_MANIFEST, "bccp_manifest_next_bccp_manifest_id_fk", new TableField[] { BccpManifest.BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID }, true);
         public static final ForeignKey<BdtPriRestriRecord, DtRecord> BDT_PRI_RESTRI_BDT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, BdtPriRestri.BDT_PRI_RESTRI, "bdt_pri_restri_bdt_id_fk", new TableField[] { BdtPriRestri.BDT_PRI_RESTRI.BDT_ID }, true);
@@ -1048,6 +1082,7 @@ public class Keys {
         public static final ForeignKey<CodeListManifestRecord, CodeListRecord> CODE_LIST_MANIFEST_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_manifest_code_list_id_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.CODE_LIST_ID }, true);
         public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_manifest_based_code_list_manifest_id_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<CodeListManifestRecord, RevisionRecord> CODE_LIST_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_manifest_revision_id_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_replaced_manifest_by_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_manifest_prev_code_list_manifest_id_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<CodeListManifestRecord, CodeListManifestRecord> CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, CodeListManifest.CODE_LIST_MANIFEST, "code_list_manifest_next_code_list_manifest_id_fk", new TableField[] { CodeListManifest.CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID }, true);
         public static final ForeignKey<CodeListValueRecord, CodeListRecord> CODE_LIST_VALUE_CODE_LIST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_PRIMARY, CodeListValue.CODE_LIST_VALUE, "code_list_value_code_list_id_fk", new TableField[] { CodeListValue.CODE_LIST_VALUE.CODE_LIST_ID }, true);
@@ -1060,6 +1095,7 @@ public class Keys {
         public static final ForeignKey<CodeListValueManifestRecord, ReleaseRecord> CODE_LIST_VALUE_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_manifest_release_id_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<CodeListValueManifestRecord, CodeListValueRecord> CODE_LIST_VALUE_MANIFEST_CODE_LIST_VALUE_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_VALUE_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_manifest_code_list_value_id_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID }, true);
         public static final ForeignKey<CodeListValueManifestRecord, CodeListManifestRecord> CODE_LIST_VALUE_MANIFEST_CODE_LIST_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_MANIFEST_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_manifest_code_list_manifest_id_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID }, true);
+        public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_VALUE_MANIFEST_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_replaced_manifest_by_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_MANIFEST_PREV_CODE_LIST_VALUE_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_VALUE_MANIFEST_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_manifest_prev_code_list_value_manifest_id_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID }, true);
         public static final ForeignKey<CodeListValueManifestRecord, CodeListValueManifestRecord> CODE_LIST_VALUE_MANIFEST_NEXT_CODE_LIST_VALUE_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_CODE_LIST_VALUE_MANIFEST_PRIMARY, CodeListValueManifest.CODE_LIST_VALUE_MANIFEST, "code_list_value_manifest_next_code_list_value_manifest_id_fk", new TableField[] { CodeListValueManifest.CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID }, true);
         public static final ForeignKey<CommentRecord, CommentRecord> COMMENT_PREV_COMMENT_ID_FK = Internal.createForeignKey(Keys.KEY_COMMENT_PRIMARY, Comment.COMMENT, "comment_prev_comment_id_fk", new TableField[] { Comment.COMMENT.PREV_COMMENT_ID }, true);
@@ -1083,6 +1119,7 @@ public class Keys {
         public static final ForeignKey<DtManifestRecord, ReleaseRecord> DT_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_release_id_fk", new TableField[] { DtManifest.DT_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<DtManifestRecord, DtRecord> DT_MANIFEST_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_dt_id_fk", new TableField[] { DtManifest.DT_MANIFEST.DT_ID }, true);
         public static final ForeignKey<DtManifestRecord, RevisionRecord> DT_MANIFEST_REVISION_ID_FK = Internal.createForeignKey(Keys.KEY_REVISION_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_revision_id_fk", new TableField[] { DtManifest.DT_MANIFEST.REVISION_ID }, true);
+        public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_DT_MANIFEST_PRIMARY, DtManifest.DT_MANIFEST, "dt_replaced_manifest_by_fk", new TableField[] { DtManifest.DT_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_MANIFEST_PREV_DT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_MANIFEST_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_prev_dt_manifest_id_fk", new TableField[] { DtManifest.DT_MANIFEST.PREV_DT_MANIFEST_ID }, true);
         public static final ForeignKey<DtManifestRecord, DtManifestRecord> DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_MANIFEST_PRIMARY, DtManifest.DT_MANIFEST, "dt_manifest_next_dt_manifest_id_fk", new TableField[] { DtManifest.DT_MANIFEST.NEXT_DT_MANIFEST_ID }, true);
         public static final ForeignKey<DtScRecord, DtRecord> DT_SC_OWNER_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, DtSc.DT_SC, "dt_sc_owner_dt_id_fk", new TableField[] { DtSc.DT_SC.OWNER_DT_ID }, true);
@@ -1093,6 +1130,7 @@ public class Keys {
         public static final ForeignKey<DtScManifestRecord, DtManifestRecord> DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_MANIFEST_PRIMARY, DtScManifest.DT_SC_MANIFEST, "dt_sc_manifest_owner_dt_manifest_id_fk", new TableField[] { DtScManifest.DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID }, true);
         public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_PREV_DT_SC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_SC_MANIFEST_PRIMARY, DtScManifest.DT_SC_MANIFEST, "dt_sc_prev_dt_sc_manifest_id_fk", new TableField[] { DtScManifest.DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID }, true);
         public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_NEXT_DT_SC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_DT_SC_MANIFEST_PRIMARY, DtScManifest.DT_SC_MANIFEST, "dt_sc_next_dt_sc_manifest_id_fk", new TableField[] { DtScManifest.DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID }, true);
+        public static final ForeignKey<DtScManifestRecord, DtScManifestRecord> DT_SC_REPLACED_MANIFEST_BY_FK = Internal.createForeignKey(Keys.KEY_DT_SC_MANIFEST_PRIMARY, DtScManifest.DT_SC_MANIFEST, "dt_sc_replaced_manifest_by_fk", new TableField[] { DtScManifest.DT_SC_MANIFEST.REPLACED_MANIFEST_BY }, true);
         public static final ForeignKey<DtUsageRuleRecord, UsageRuleRecord> DT_USAGE_RULE_ASSIGNED_USAGE_RULE_ID_FK = Internal.createForeignKey(Keys.KEY_USAGE_RULE_PRIMARY, DtUsageRule.DT_USAGE_RULE, "dt_usage_rule_assigned_usage_rule_id_fk", new TableField[] { DtUsageRule.DT_USAGE_RULE.ASSIGNED_USAGE_RULE_ID }, true);
         public static final ForeignKey<DtUsageRuleRecord, DtRecord> DT_USAGE_RULE_TARGET_DT_ID_FK = Internal.createForeignKey(Keys.KEY_DT_PRIMARY, DtUsageRule.DT_USAGE_RULE, "dt_usage_rule_target_dt_id_fk", new TableField[] { DtUsageRule.DT_USAGE_RULE.TARGET_DT_ID }, true);
         public static final ForeignKey<DtUsageRuleRecord, DtScRecord> DT_USAGE_RULE_TARGET_DT_SC_ID_FK = Internal.createForeignKey(Keys.KEY_DT_SC_PRIMARY, DtUsageRule.DT_USAGE_RULE, "dt_usage_rule_target_dt_sc_id_fk", new TableField[] { DtUsageRule.DT_USAGE_RULE.TARGET_DT_SC_ID }, true);
@@ -1169,6 +1207,10 @@ public class Keys {
         public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, SeqKey.SEQ_KEY, "seq_key_from_acc_id_fk", new TableField[] { SeqKey.SEQ_KEY.FROM_ACC_ID }, true);
         public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_prev_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.PREV_SEQ_KEY_ID }, true);
         public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_next_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.NEXT_SEQ_KEY_ID }, true);
+        public static final ForeignKey<TopLevelAbieRecord, AbieRecord> TOP_LEVEL_ABIE_ABIE_ID_FK = Internal.createForeignKey(Keys.KEY_ABIE_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_abie_id_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.ABIE_ID }, true);
+        public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_owner_user_id_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.OWNER_USER_ID }, true);
+        public static final ForeignKey<TopLevelAbieRecord, AppUserRecord> TOP_LEVEL_ABIE_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_last_updated_by_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.LAST_UPDATED_BY }, true);
+        public static final ForeignKey<TopLevelAbieRecord, ReleaseRecord> TOP_LEVEL_ABIE_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, TopLevelAbie.TOP_LEVEL_ABIE, "top_level_abie_release_id_fk", new TableField[] { TopLevelAbie.TOP_LEVEL_ABIE.RELEASE_ID }, true);
         public static final ForeignKey<TopLevelAsbiepRecord, AsbiepRecord> TOP_LEVEL_ASBIEP_ASBIEP_ID_FK = Internal.createForeignKey(Keys.KEY_ASBIEP_PRIMARY, TopLevelAsbiep.TOP_LEVEL_ASBIEP, "top_level_asbiep_asbiep_id_fk", new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.ASBIEP_ID }, true);
         public static final ForeignKey<TopLevelAsbiepRecord, AppUserRecord> TOP_LEVEL_ASBIEP_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAsbiep.TOP_LEVEL_ASBIEP, "top_level_asbiep_owner_user_id_fk", new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.OWNER_USER_ID }, true);
         public static final ForeignKey<TopLevelAsbiepRecord, AppUserRecord> TOP_LEVEL_ASBIEP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, TopLevelAsbiep.TOP_LEVEL_ASBIEP, "top_level_asbiep_last_updated_by_fk", new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.LAST_UPDATED_BY }, true);

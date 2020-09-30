@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListManif
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> {
 
-    private static final long serialVersionUID = -1122797438;
+    private static final long serialVersionUID = 685770001;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_manifest</code>
@@ -76,6 +76,11 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
      * The column <code>oagi.agency_id_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
      */
     public final TableField<AgencyIdListManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+
+    /**
+     * The column <code>oagi.agency_id_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     */
+    public final TableField<AgencyIdListManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_manifest.prev_agency_id_list_manifest_id</code>.
@@ -142,7 +147,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
 
     @Override
     public List<ForeignKey<AgencyIdListManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK, Keys.AGENCY_ID_LIST_REPLACED_MANIFEST_BY_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -159,6 +164,10 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
 
     public Revision revision() {
         return new Revision(this, Keys.AGENCY_ID_LIST_MANIFEST_REVISION_ID_FK);
+    }
+
+    public AgencyIdListManifest agencyIdListReplacedManifestByFk() {
+        return new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_REPLACED_MANIFEST_BY_FK);
     }
 
     public AgencyIdListManifest agencyIdListManifestPrevAgencyIdListManifestIdFk() {
@@ -196,11 +205,11 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

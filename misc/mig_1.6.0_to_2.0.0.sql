@@ -2589,5 +2589,7 @@ ALTER TABLE `module_blob_content_manifest`
     DROP FOREIGN KEY `module_blob_content_manifest_module_id_fk`,
     DROP COLUMN `module_id`;
 
+-- Extending size of code_list.version column.
+ALTER TABLE `code_list` MODIFY COLUMN `version_id` varchar(100) NOT NULL COMMENT 'Code list version number.';
 
 SET FOREIGN_KEY_CHECKS = 1;

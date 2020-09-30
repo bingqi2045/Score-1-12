@@ -501,7 +501,11 @@ public class CodeListWriteRepository {
             throw new IllegalArgumentException("Only the core component in 'Deleted' state can be deleted.");
         }
 
-        if (!codeListRecord.getOwnerUserId().equals(userId)) {
+        CcState prevState = CcState.valueOf(codeListRecord.getState());
+        // Change owner of CC when it restored.
+        if (prevState == CcState.Deleted) {
+            codeListRecord.setOwnerUserId(userId);
+        } else if (!codeListRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
@@ -510,7 +514,7 @@ public class CodeListWriteRepository {
         codeListRecord.setLastUpdatedBy(userId);
         codeListRecord.setLastUpdateTimestamp(timestamp);
         codeListRecord.update(CODE_LIST.STATE,
-                CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
+                CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP, CODE_LIST.OWNER_USER_ID);
 
         // creates new revision for deleted record.
         RevisionRecord revisionRecord =
