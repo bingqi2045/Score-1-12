@@ -264,6 +264,9 @@ public class CcNodeService extends EventHandler {
         createAsccpRepositoryRequest.setInitialType(CcASCCPType.Extension);
         createAsccpRepositoryRequest.setDefinition(extensionAsccpDefintion);
         createAsccpRepositoryRequest.setDefinitionSource(extensionAsccpDefintionSource);
+        if (accRecord.getNamespaceId() != null) {
+            createAsccpRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
+        }
         createAsccpRepositoryRequest.setReusable(false);
 
         CreateAsccpRepositoryResponse createAsccpRepositoryResponse
@@ -414,12 +417,13 @@ public class CcNodeService extends EventHandler {
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
             CcAccNode ccAccNode = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(getAccNodeDetail(user, ccAccNode));
-            if(hasExtensionAssociation(user, ccAccNode.getManifestId())) {
-                updateExtensionComponentProperties(user, detail);
-            }
-            if(isUserExtensionGroup(user, ccAccNode.getManifestId())) {
-                updateUserExtensionNamespace(user, detail);
-            }
+            // Do not sync data b/w ACC and Extension components #916
+//            if(hasExtensionAssociation(user, ccAccNode.getManifestId())) {
+//                updateExtensionComponentProperties(user, detail);
+//            }
+//            if(isUserExtensionGroup(user, ccAccNode.getManifestId())) {
+//                updateUserExtensionNamespace(user, detail);
+//            }
         }
         return updatedAccNodeDetails;
     }
@@ -653,9 +657,10 @@ public class CcNodeService extends EventHandler {
         UpdateAccStateRepositoryResponse repositoryResponse =
                 accWriteRepository.updateAccState(repositoryRequest);
 
-        if (hasExtensionAssociation(user, accManifestId)) {
-            updateExtensionComponentState(user, accManifestId, fromState, toState);
-        }
+        // Do not sync data b/w ACC and Extension components #916
+//        if (hasExtensionAssociation(user, accManifestId)) {
+//            updateExtensionComponentState(user, accManifestId, fromState, toState);
+//        }
 
         fireEvent(new UpdatedAccStateEvent());
 
