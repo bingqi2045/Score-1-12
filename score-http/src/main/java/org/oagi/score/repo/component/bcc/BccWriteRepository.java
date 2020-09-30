@@ -216,6 +216,13 @@ public class BccWriteRepository {
                 seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
             } else if (request.getEntityType() == Attribute) {
                 seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST_OF_ATTR);
+                // Issue #919
+                if (request.getCardinalityMin() < 0 || request.getCardinalityMin() > 1) {
+                    request.setCardinalityMin(0);
+                }
+                if (request.getCardinalityMax() < 0 || request.getCardinalityMax() > 1) {
+                    request.setCardinalityMax(1);
+                }
             }
         }
         bccRecord.setIsDeprecated((byte) (request.isDeprecated() ? 1 : 0));
