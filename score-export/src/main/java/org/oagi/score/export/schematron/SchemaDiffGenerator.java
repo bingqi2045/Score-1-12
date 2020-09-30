@@ -26,9 +26,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class SchemaDiffGenerator {
@@ -267,11 +265,12 @@ public class SchemaDiffGenerator {
                     }
                 }
 
-                if (!issues.isEmpty()) {
+                HashSet<String> issueSet = new HashSet<>(issues);
+                if (!issueSet.isEmpty()) {
                     String moduleName = Utility.extractModuleName(htmlFile.getCanonicalPath()).replace(".html", ".xsd");
                     outWriter.println("[" + moduleName + "]");
 
-                    for (String issue : issues) {
+                    for (String issue : issueSet) {
                         outWriter.println(issue);
                     }
 

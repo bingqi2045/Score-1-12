@@ -580,7 +580,7 @@ public class CodeListWriteRepository {
 
         CodeListRecord nextCodeListRecord = prevCodeListRecord.copy();
         nextCodeListRecord.setState(CcState.WIP.name());
-        nextCodeListRecord.setVersionId(nextCodeListRecord.getVersionId() + "_New");
+        nextCodeListRecord.setVersionId(nextCodeListRecord.getVersionId());
         nextCodeListRecord.setCreatedBy(userId);
         nextCodeListRecord.setLastUpdatedBy(userId);
         nextCodeListRecord.setOwnerUserId(userId);

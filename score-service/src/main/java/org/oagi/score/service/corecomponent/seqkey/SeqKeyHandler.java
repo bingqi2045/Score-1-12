@@ -111,10 +111,14 @@ public class SeqKeyHandler {
                     brokeLinks();
 
                     this.current.setPrevSeqKey(null);
-                    this.current.setNextSeqKey(this.head);
+                    if (!this.head.equals(this.current)) {
+                        this.current.setNextSeqKey(this.head);
+                    }
                     update(this.current);
 
-                    this.head.setPrevSeqKey(this.current);
+                    if (!this.head.equals(this.current)) {
+                        this.head.setPrevSeqKey(this.current);
+                    }
                     update(this.head);
 
                     this.head = this.current;
@@ -143,11 +147,15 @@ public class SeqKeyHandler {
                 if (this.tail != null) {
                     brokeLinks();
 
-                    this.current.setPrevSeqKey(this.tail);
+                    if (!this.tail.equals(this.current)) {
+                        this.current.setPrevSeqKey(this.tail);
+                    }
                     this.current.setNextSeqKey(null);
                     update(this.current);
 
-                    this.tail.setNextSeqKey(this.current);
+                    if (!this.tail.equals(this.current)) {
+                        this.tail.setNextSeqKey(this.current);
+                    }
                     update(this.tail);
 
                     this.tail = this.current;
