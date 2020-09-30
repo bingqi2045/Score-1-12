@@ -5,11 +5,13 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,11 +42,9 @@ public class AgencyIdListReadRepository {
         SelectOnConditionStep step = dslContext.select(
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
-                BDT_PRI_RESTRI.IS_DEFAULT,
                 AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.NAME.as("agency_id_list_name"))
-                .from(BDT_PRI_RESTRI)
-                .join(AGENCY_ID_LIST).on(BDT_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .from(AGENCY_ID_LIST)
                 .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID));
 
         return result.stream().map(e ->
@@ -62,8 +62,12 @@ public class AgencyIdListReadRepository {
     private List<AvailableAgencyIdList> availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
             BigInteger agencyIdListManifestId, BigInteger releaseId, SelectOnConditionStep step) {
         if (agencyIdListManifestId == null) {
-            return step.where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
-                    .fetchInto(AvailableAgencyIdList.class);
+            return step.where(and(
+                    AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                    AGENCY_ID_LIST.STATE.in(
+                            Arrays.asList(CcState.Published, CcState.Production)
+                                    .stream().map(e -> e.toString()).collect(Collectors.toList()))
+            )).fetchInto(AvailableAgencyIdList.class);
         }
 
         List<AvailableAgencyIdList> availableAgencyIdLists = step
@@ -102,11 +106,9 @@ public class AgencyIdListReadRepository {
         SelectOnConditionStep step = dslContext.select(
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
-                BDT_SC_PRI_RESTRI.IS_DEFAULT,
                 AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST.NAME.as("code_list_name"))
-                .from(BDT_SC_PRI_RESTRI)
-                .join(AGENCY_ID_LIST).on(BDT_SC_PRI_RESTRI.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                .from(AGENCY_ID_LIST)
                 .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID));
 
         return result.stream().map(e ->

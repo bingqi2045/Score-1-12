@@ -5,12 +5,14 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,11 +49,9 @@ public class CodeListReadRepository {
         SelectOnConditionStep step = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
-                BDT_PRI_RESTRI.IS_DEFAULT,
                 CODE_LIST.CODE_LIST_ID,
                 CODE_LIST.NAME.as("code_list_name"))
-                .from(BDT_PRI_RESTRI)
-                .join(CODE_LIST).on(BDT_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .from(CODE_LIST)
                 .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID));
 
         return result.stream().map(e ->
@@ -69,8 +69,12 @@ public class CodeListReadRepository {
     private List<AvailableCodeList> availableCodeListByCodeListManifestIdOrReleaseId(
             BigInteger codeListManifestId, BigInteger releaseId, SelectOnConditionStep step) {
         if (codeListManifestId == null) {
-            return step.where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
-                    .fetchInto(AvailableCodeList.class);
+            return step.where(and(
+                    CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                    CODE_LIST.STATE.in(
+                            Arrays.asList(CcState.Published, CcState.Production)
+                                    .stream().map(e -> e.toString()).collect(Collectors.toList()))
+            )).fetchInto(AvailableCodeList.class);
         }
 
         List<AvailableCodeList> availableCodeLists = step
@@ -109,11 +113,9 @@ public class CodeListReadRepository {
         SelectOnConditionStep step = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
-                BDT_SC_PRI_RESTRI.IS_DEFAULT,
                 CODE_LIST.CODE_LIST_ID,
                 CODE_LIST.NAME.as("code_list_name"))
-                .from(BDT_SC_PRI_RESTRI)
-                .join(CODE_LIST).on(BDT_SC_PRI_RESTRI.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                .from(CODE_LIST)
                 .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID));
 
         return result.stream().map(e ->
