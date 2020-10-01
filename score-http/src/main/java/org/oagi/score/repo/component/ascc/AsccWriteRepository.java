@@ -234,7 +234,7 @@ public class AsccWriteRepository {
         // update ascc record.
         asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + dslContext.select(ASCCP.DEN)
                 .from(ASCCP)
-                .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
                 .fetchOneInto(String.class)
         );
