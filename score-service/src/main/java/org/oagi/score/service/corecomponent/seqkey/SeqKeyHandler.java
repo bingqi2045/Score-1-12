@@ -107,18 +107,16 @@ public class SeqKeyHandler {
     public void moveTo(MoveTo to) {
         switch (to) {
             case FIRST:
+                if (this.head.equals(this.current)) {
+                    break;
+                }
                 if (this.head != null) {
                     brokeLinks();
 
                     this.current.setPrevSeqKey(null);
-                    if (!this.head.equals(this.current)) {
-                        this.current.setNextSeqKey(this.head);
-                    }
+                    this.current.setNextSeqKey(this.head);
                     update(this.current);
-
-                    if (!this.head.equals(this.current)) {
-                        this.head.setPrevSeqKey(this.current);
-                    }
+                    this.head.setPrevSeqKey(this.current);
                     update(this.head);
 
                     this.head = this.current;
@@ -144,18 +142,16 @@ public class SeqKeyHandler {
                 break;
 
             case LAST:
+                if (this.tail.equals(this.current)) {
+                    break;
+                }
                 if (this.tail != null) {
                     brokeLinks();
 
-                    if (!this.tail.equals(this.current)) {
-                        this.current.setPrevSeqKey(this.tail);
-                    }
+                    this.current.setPrevSeqKey(this.tail);
                     this.current.setNextSeqKey(null);
                     update(this.current);
-
-                    if (!this.tail.equals(this.current)) {
-                        this.tail.setNextSeqKey(this.current);
-                    }
+                    this.tail.setNextSeqKey(this.current);
                     update(this.tail);
 
                     this.tail = this.current;
