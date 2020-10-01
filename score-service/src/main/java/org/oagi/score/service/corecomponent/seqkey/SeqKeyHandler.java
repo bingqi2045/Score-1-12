@@ -107,10 +107,10 @@ public class SeqKeyHandler {
     public void moveTo(MoveTo to) {
         switch (to) {
             case FIRST:
-                if (this.head.equals(this.current)) {
-                    break;
-                }
                 if (this.head != null) {
+                    if (this.head.equals(this.current)) {
+                        break;
+                    }
                     brokeLinks();
 
                     this.current.setPrevSeqKey(null);
@@ -142,10 +142,10 @@ public class SeqKeyHandler {
                 break;
 
             case LAST:
-                if (this.tail.equals(this.current)) {
-                    break;
-                }
                 if (this.tail != null) {
+                    if (this.tail.equals(this.current)) {
+                        break;
+                    }
                     brokeLinks();
 
                     this.current.setPrevSeqKey(this.tail);
