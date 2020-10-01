@@ -19,7 +19,6 @@ public enum AccessPrivilege {
         switch (ccState) {
             case Deleted:
             case Production:
-            case Published:
                 if (isWorkingRelease) {
                     if (requester.isDeveloper()) {
                         accessPrivilege = CanMove;
@@ -32,6 +31,17 @@ public enum AccessPrivilege {
                     } else {
                         accessPrivilege = CanMove;
                     }
+                }
+                break;
+            case Published:
+                if (isWorkingRelease) {
+                    if (requester.isDeveloper()) {
+                        accessPrivilege = CanMove;
+                    } else {
+                        accessPrivilege = CanView;
+                    }
+                } else {
+                    accessPrivilege = CanView;
                 }
                 break;
             case WIP:

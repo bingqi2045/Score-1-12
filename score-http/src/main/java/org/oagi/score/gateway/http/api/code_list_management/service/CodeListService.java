@@ -49,9 +49,6 @@ public class CodeListService extends EventHandler {
     @Autowired
     private CodeListWriteRepository codeListWriteRepository;
 
-    @Autowired
-    private RevisionRepository revisionRepository;
-
     private SelectOnConditionStep<Record17<
             ULong, String, String, ULong, String,
             String, ULong, String, String, LocalDateTime,

@@ -500,6 +500,13 @@ public class CodeListWriteRepository {
             throw new IllegalArgumentException("Only the core component in 'Deleted' state can be deleted.");
         }
 
+        AppUserRecord owner = dslContext.selectFrom(APP_USER)
+                .where(APP_USER.APP_USER_ID.eq(codeListRecord.getOwnerUserId())).fetchOneInto(AppUserRecord.class);
+        if (!owner.getIsDeveloper().equals(user.isDeveloper() ? (byte)1 : 0)) {
+            String role = user.isDeveloper() ? "'End'" : "'Developer";
+            throw new IllegalArgumentException("Only '" + role + " user' can restore the code list.");
+        }
+
         CcState prevState = CcState.valueOf(codeListRecord.getState());
         // Change owner of CC when it restored.
         if (prevState == CcState.Deleted) {
