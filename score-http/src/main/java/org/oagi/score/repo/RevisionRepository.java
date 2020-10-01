@@ -63,7 +63,7 @@ public class RevisionRepository {
                 REVISION.REVISION_ACTION,
                 REVISION.PREV_REVISION_ID,
                 REVISION.CREATION_TIMESTAMP.as("timestamp"),
-                APP_USER.NAME.as("loginId")
+                APP_USER.LOGIN_ID.as("loginId")
         )
                 .from(REVISION)
                 .join(APP_USER)
