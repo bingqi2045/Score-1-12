@@ -457,7 +457,7 @@ public class CcListRepository {
                 val((String) null).as("term"),
                 val((Integer) null).as("oagis_component_type"),
                 val((String) null).as("dt_type"),
-                ASCC.STATE,
+                ACC.STATE,
                 ASCC.IS_DEPRECATED,
                 ASCC.LAST_UPDATE_TIMESTAMP,
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
@@ -474,12 +474,13 @@ public class CcListRepository {
                         ASCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
                 ))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .join(REVISION)
                 .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
-                .on(ASCC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
+                .on(ACC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(ASCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ACC_MANIFEST)
@@ -577,7 +578,7 @@ public class CcListRepository {
                 val((String) null).as("term"),
                 val((Integer) null).as("oagis_component_type"),
                 val((String) null).as("dt_type"),
-                BCC.STATE,
+                ACC.STATE,
                 BCC.IS_DEPRECATED,
                 BCC.LAST_UPDATE_TIMESTAMP,
                 appUserOwner.LOGIN_ID.as("owner"),
@@ -594,12 +595,13 @@ public class CcListRepository {
                         BCC_MANIFEST.RELEASE_ID.eq(ACC_MANIFEST.RELEASE_ID),
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
                 ))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                 .join(REVISION)
                 .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .join(RELEASE)
                 .on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
-                .on(BCC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
+                .on(ACC.OWNER_USER_ID.eq(appUserOwner.APP_USER_ID))
                 .join(appUserUpdater)
                 .on(BCC.LAST_UPDATED_BY.eq(appUserUpdater.APP_USER_ID))
                 .leftJoin(MODULE_ACC_MANIFEST)
