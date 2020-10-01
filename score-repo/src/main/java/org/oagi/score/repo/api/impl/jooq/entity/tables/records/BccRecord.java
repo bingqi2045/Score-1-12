@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = 347323690;
+    private static final long serialVersionUID = 276739828;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -320,16 +320,16 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.bcc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.bcc.replacement_bcc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementBccId(ULong value) {
         set(19, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.bcc.replacement_bcc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementBccId() {
         return (ULong) get(19);
     }
 
@@ -430,7 +430,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, ULong seqKeyId, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, ULong seqKeyId, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
         set(0, bccId);
@@ -452,7 +452,7 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
         set(16, lastUpdateTimestamp);
         set(17, state);
         set(18, isDeprecated);
-        set(19, replacedBy);
+        set(19, replacementBccId);
         set(20, isNillable);
         set(21, defaultValue);
         set(22, fixedValue);

@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1364647819;
+    private static final long serialVersionUID = -1548135816;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.
@@ -249,16 +249,16 @@ public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> 
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.agency_id_list.replacement_agency_id_list_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementAgencyIdListId(ULong value) {
         set(16, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.agency_id_list.replacement_agency_id_list_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementAgencyIdListId() {
         return (ULong) get(16);
     }
 
@@ -413,7 +413,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public Field<ULong> field17() {
-        return AgencyIdList.AGENCY_ID_LIST.REPLACED_BY;
+        return AgencyIdList.AGENCY_ID_LIST.REPLACEMENT_AGENCY_ID_LIST_ID;
     }
 
     @Override
@@ -513,7 +513,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong component17() {
-        return getReplacedBy();
+        return getReplacementAgencyIdListId();
     }
 
     @Override
@@ -613,7 +613,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong value17() {
-        return getReplacedBy();
+        return getReplacementAgencyIdListId();
     }
 
     @Override
@@ -729,7 +729,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public AgencyIdListRecord value17(ULong value) {
-        setReplacedBy(value);
+        setReplacementAgencyIdListId(value);
         return this;
     }
 
@@ -790,7 +790,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised AgencyIdListRecord
      */
-    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong basedAgencyIdListId, String definition, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, ULong ownerUserId, ULong prevAgencyIdListId, ULong nextAgencyIdListId) {
+    public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong basedAgencyIdListId, String definition, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAgencyIdListId, ULong ownerUserId, ULong prevAgencyIdListId, ULong nextAgencyIdListId) {
         super(AgencyIdList.AGENCY_ID_LIST);
 
         set(0, agencyIdListId);
@@ -809,7 +809,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(13, lastUpdateTimestamp);
         set(14, state);
         set(15, isDeprecated);
-        set(16, replacedBy);
+        set(16, replacementAgencyIdListId);
         set(17, ownerUserId);
         set(18, prevAgencyIdListId);
         set(19, nextAgencyIdListId);

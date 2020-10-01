@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, Byte, ULong> {
 
-    private static final long serialVersionUID = -563397586;
+    private static final long serialVersionUID = -1646521610;
 
     /**
      * Setter for <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.
@@ -134,16 +134,16 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.dt_sc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementDtScManifestId(ULong value) {
         set(8, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_sc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementDtScManifestId() {
         return (ULong) get(8);
     }
 
@@ -212,7 +212,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public Field<ULong> field9() {
-        return DtScManifest.DT_SC_MANIFEST.REPLACED_MANIFEST_BY;
+        return DtScManifest.DT_SC_MANIFEST.REPLACEMENT_DT_SC_MANIFEST_ID;
     }
 
     @Override
@@ -257,7 +257,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public ULong component9() {
-        return getReplacedManifestBy();
+        return getReplacementDtScManifestId();
     }
 
     @Override
@@ -302,7 +302,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public ULong value9() {
-        return getReplacedManifestBy();
+        return getReplacementDtScManifestId();
     }
 
     @Override
@@ -355,7 +355,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public DtScManifestRecord value9(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementDtScManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     /**
      * Create a detached, initialised DtScManifestRecord
      */
-    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong prevDtScManifestId, ULong nextDtScManifestId, Byte revisionId, ULong replacedManifestBy) {
+    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong prevDtScManifestId, ULong nextDtScManifestId, Byte revisionId, ULong replacementDtScManifestId) {
         super(DtScManifest.DT_SC_MANIFEST);
 
         set(0, dtScManifestId);
@@ -398,6 +398,6 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
         set(5, prevDtScManifestId);
         set(6, nextDtScManifestId);
         set(7, revisionId);
-        set(8, replacedManifestBy);
+        set(8, replacementDtScManifestId);
     }
 }

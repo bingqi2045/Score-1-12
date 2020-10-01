@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = -1838187493;
+    private static final long serialVersionUID = -1788816793;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -88,9 +88,9 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     public final TableField<DtScManifestRecord, Byte> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.dt_sc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<DtScManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
+    public final TableField<DtScManifestRecord, ULong> REPLACEMENT_DT_SC_MANIFEST_ID = createField(DSL.name("replacement_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * Create a <code>oagi.dt_sc_manifest</code> table reference
@@ -147,7 +147,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
     @Override
     public List<ForeignKey<DtScManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_REPLACED_MANIFEST_BY_FK);
+        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -170,8 +170,8 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return new DtScManifest(this, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
     }
 
-    public DtScManifest dtScReplacedManifestByFk() {
-        return new DtScManifest(this, Keys.DT_SC_REPLACED_MANIFEST_BY_FK);
+    public DtScManifest dtScReplacementDtScManifestIdFk() {
+        return new DtScManifest(this, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
     }
 
     @Override

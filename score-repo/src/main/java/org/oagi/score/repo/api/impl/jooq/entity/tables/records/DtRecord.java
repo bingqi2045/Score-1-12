@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = -444433679;
+    private static final long serialVersionUID = -2113736663;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -346,16 +346,16 @@ The value of this column in the latest history record should be the same as that
     }
 
     /**
-     * Setter for <code>oagi.dt.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.dt.replacement_dt_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementDtId(ULong value) {
         set(22, value);
     }
 
     /**
-     * Getter for <code>oagi.dt.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.dt.replacement_dt_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementDtId() {
         return (ULong) get(22);
     }
 
@@ -410,7 +410,7 @@ The value of this column in the latest history record should be the same as that
     /**
      * Create a detached, initialised DtRecord
      */
-    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacedBy, ULong prevDtId, ULong nextDtId) {
+    public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
         set(0, dtId);
@@ -435,7 +435,7 @@ The value of this column in the latest history record should be the same as that
         set(19, creationTimestamp);
         set(20, lastUpdateTimestamp);
         set(21, isDeprecated);
-        set(22, replacedBy);
+        set(22, replacementDtId);
         set(23, prevDtId);
         set(24, nextDtId);
     }

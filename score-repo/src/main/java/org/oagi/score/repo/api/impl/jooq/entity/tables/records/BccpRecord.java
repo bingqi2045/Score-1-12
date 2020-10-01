@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
 
-    private static final long serialVersionUID = -701023939;
+    private static final long serialVersionUID = 460175434;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.
@@ -165,16 +165,16 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.bccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.bccp.replacement_bccp_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementBccpId(ULong value) {
         set(10, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.bccp.replacement_bccp_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementBccpId() {
         return (ULong) get(10);
     }
 
@@ -431,7 +431,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public Field<ULong> field11() {
-        return Bccp.BCCP.REPLACED_BY;
+        return Bccp.BCCP.REPLACEMENT_BCCP_ID;
     }
 
     @Override
@@ -541,7 +541,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong component11() {
-        return getReplacedBy();
+        return getReplacementBccpId();
     }
 
     @Override
@@ -651,7 +651,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong value11() {
-        return getReplacedBy();
+        return getReplacementBccpId();
     }
 
     @Override
@@ -771,7 +771,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public BccpRecord value11(ULong value) {
-        setReplacedBy(value);
+        setReplacementBccpId(value);
         return this;
     }
 
@@ -882,7 +882,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised BccpRecord
      */
-    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
+    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacementBccpId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
         super(Bccp.BCCP);
 
         set(0, bccpId);
@@ -895,7 +895,7 @@ State change can't be undone. But the history record can still keep the records 
         set(7, definitionSource);
         set(8, namespaceId);
         set(9, isDeprecated);
-        set(10, replacedBy);
+        set(10, replacementBccpId);
         set(11, createdBy);
         set(12, ownerUserId);
         set(13, lastUpdatedBy);

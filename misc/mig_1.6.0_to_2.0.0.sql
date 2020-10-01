@@ -2352,97 +2352,97 @@ UPDATE `asccp`, (
 ) t SET `asccp`.`type` = 'BOD'
 WHERE `asccp`.`role_of_acc_id` = t.`acc_id`;
 
--- Add `replaced_by` for all components
+-- Add `replacement_id` for all components
 ALTER TABLE `acc`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `acc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `acc` (`acc_id`);
+    ADD COLUMN `replacement_acc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `acc_replacement_acc_id_fk` FOREIGN KEY (`replacement_acc_id`) REFERENCES `acc` (`acc_id`);
 
 ALTER TABLE `ascc`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `ascc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `ascc` (`ascc_id`);
+    ADD COLUMN `replacement_ascc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `ascc_replacement_ascc_id_fk` FOREIGN KEY (`replacement_ascc_id`) REFERENCES `ascc` (`ascc_id`);
 
 ALTER TABLE `bcc`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `bcc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `bcc` (`bcc_id`);
+    ADD COLUMN `replacement_bcc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `bcc_replacement_bcc_id_fk` FOREIGN KEY (`replacement_bcc_id`) REFERENCES `bcc` (`bcc_id`);
 
 ALTER TABLE `asccp`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `asccp_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `asccp` (`asccp_id`);
+    ADD COLUMN `replacement_asccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `asccp_replacement_asccp_id_fk` FOREIGN KEY (`replacement_asccp_id`) REFERENCES `asccp` (`asccp_id`);
 
 ALTER TABLE `bccp`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `bccp_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `bccp` (`bccp_id`);
+    ADD COLUMN `replacement_bccp_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `bccp_replacement_bccp_id_fk` FOREIGN KEY (`replacement_bccp_id`) REFERENCES `bccp` (`bccp_id`);
 
 ALTER TABLE `dt`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `dt_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `dt` (`dt_id`);
+    ADD COLUMN `replacement_dt_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `dt_replacement_dt_id_fk` FOREIGN KEY (`replacement_dt_id`) REFERENCES `dt` (`dt_id`);
 
 ALTER TABLE `dt_sc`
     ADD COLUMN `is_deprecated` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).',
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `dt_sc_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `dt_sc` (`dt_sc_id`);
+    ADD COLUMN `replacement_dt_sc_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `dt_sc_replacement_dt_sc_id_fk` FOREIGN KEY (`replacement_dt_sc_id`) REFERENCES `dt_sc` (`dt_sc_id`);
 
 ALTER TABLE `code_list`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `code_list_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `code_list` (`code_list_id`);
+    ADD COLUMN `replacement_code_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `code_list_replacement_code_list_id_fk` FOREIGN KEY (`replacement_code_list_id`) REFERENCES `code_list` (`code_list_id`);
 
 ALTER TABLE `code_list_value`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `code_list_value_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `code_list_value` (`code_list_value_id`);
+    ADD COLUMN `replacement_code_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `code_list_value_replacement_code_list_value_id_fk` FOREIGN KEY (`replacement_code_list_value_id`) REFERENCES `code_list_value` (`code_list_value_id`);
 
 ALTER TABLE `agency_id_list`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `agency_id_list_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `agency_id_list` (`agency_id_list_id`);
+    ADD COLUMN `replacement_agency_id_list_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `agency_id_list_replacement_agency_id_list_id_fk` FOREIGN KEY (`replacement_agency_id_list_id`) REFERENCES `agency_id_list` (`agency_id_list_id`);
 
 ALTER TABLE `agency_id_list_value`
-    ADD COLUMN `replaced_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
-    ADD CONSTRAINT `agency_id_list_value_replaced_by_fk` FOREIGN KEY (`replaced_by`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
+    ADD COLUMN `replacement_agency_id_list_value_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement if the record is deprecated.' AFTER `is_deprecated`,
+    ADD CONSTRAINT `agency_id_list_value_replacement_agency_id_list_value_id_fk` FOREIGN KEY (`replacement_agency_id_list_value_id`) REFERENCES `agency_id_list_value` (`agency_id_list_value_id`);
 
--- Add `replaced_by` for all components
+-- Add `replacement_id` for all components
 ALTER TABLE `acc_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `acc_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `acc_manifest` (`acc_manifest_id`);
+    ADD COLUMN `replacement_acc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `acc_replacement_acc_manifest_id_fk` FOREIGN KEY (`replacement_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`);
 
 ALTER TABLE `ascc_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
-    ADD CONSTRAINT `ascc_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
+    ADD COLUMN `replacement_ascc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
+    ADD CONSTRAINT `ascc_replacement_ascc_manifest_id_fk` FOREIGN KEY (`replacement_ascc_manifest_id`) REFERENCES `ascc_manifest` (`ascc_manifest_id`);
 
 ALTER TABLE `bcc_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
-    ADD CONSTRAINT `bcc_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
+    ADD COLUMN `replacement_bcc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
+    ADD CONSTRAINT `bcc_replacement_bcc_manifest_id_fk` FOREIGN KEY (`replacement_bcc_manifest_id`) REFERENCES `bcc_manifest` (`bcc_manifest_id`);
 
 ALTER TABLE `asccp_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `asccp_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
+    ADD COLUMN `replacement_asccp_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `asccp_replacement_asccp_manifest_id_fk` FOREIGN KEY (`replacement_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`);
 
 ALTER TABLE `bccp_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `bccp_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
+    ADD COLUMN `replacement_bccp_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `bccp_replacement_bccp_manifest_id_fk` FOREIGN KEY (`replacement_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`);
 
 ALTER TABLE `dt_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `dt_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `dt_manifest` (`dt_manifest_id`);
+    ADD COLUMN `replacement_dt_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `dt_replacement_dt_manifest_id_fk` FOREIGN KEY (`replacement_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
 
 ALTER TABLE `dt_sc_manifest`
     ADD COLUMN `revision_id` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).',
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `dt_sc_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
+    ADD COLUMN `replacement_dt_sc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `dt_sc_replacement_dt_sc_manifest_id_fk` FOREIGN KEY (`replacement_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
 
 ALTER TABLE `code_list_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `code_list_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
+    ADD COLUMN `replacement_code_list_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `code_list_replacement_code_list_manifest_id_fk` FOREIGN KEY (`replacement_code_list_manifest_id`) REFERENCES `code_list_manifest` (`code_list_manifest_id`);
 
 ALTER TABLE `code_list_value_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
-    ADD CONSTRAINT `code_list_value_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
+    ADD COLUMN `replacement_code_list_value_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
+    ADD CONSTRAINT `code_list_value_replacement_code_list_value_manifest_id_fk` FOREIGN KEY (`replacement_code_list_value_manifest_id`) REFERENCES `code_list_value_manifest` (`code_list_value_manifest_id`);
 
 ALTER TABLE `agency_id_list_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
-    ADD CONSTRAINT `agency_id_list_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
+    ADD COLUMN `replacement_agency_id_list_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `revision_id`,
+    ADD CONSTRAINT `agency_id_list_replacement_agency_id_list_manifest_id_fk` FOREIGN KEY (`replacement_agency_id_list_manifest_id`) REFERENCES `agency_id_list_manifest` (`agency_id_list_manifest_id`);
 
 ALTER TABLE `agency_id_list_value_manifest`
-    ADD COLUMN `replaced_manifest_by` bigint(20) unsigned DEFAULT NULL COMMENT 'This alternative refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
-    ADD CONSTRAINT `agency_id_list_value_replaced_manifest_by_fk` FOREIGN KEY (`replaced_manifest_by`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
+    ADD COLUMN `replacement_agency_id_list_value_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
+    ADD CONSTRAINT `agency_id_list_value_replacement_agency_id_list_manif_fk` FOREIGN KEY (`replacement_agency_id_list_value_manifest_id`) REFERENCES `agency_id_list_value_manifest` (`agency_id_list_value_manifest_id`);
 
 -- Replace `module_id` with `module_set_assignment_id` for all module manifest tables.
 ALTER TABLE `module_acc_manifest`

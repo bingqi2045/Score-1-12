@@ -43,7 +43,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 617873920;
+    private static final long serialVersionUID = 1843792839;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -151,9 +151,9 @@ State change can't be undone. But the history record can still keep the records 
     public final TableField<AccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
 
     /**
-     * The column <code>oagi.acc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.acc.replacement_acc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<AccRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<AccRecord, ULong> REPLACEMENT_ACC_ID = createField(DSL.name("replacement_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.acc.is_abstract</code>. This is the XML Schema abstract flag. Default is false. If it is true, the abstract flag will be set to true when generating a corresponding xsd:complexType. So although this flag may not apply to some ACCs such as those that are xsd:group. It is still have a false value.
@@ -230,7 +230,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_REPLACED_BY_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
+        return Arrays.<ForeignKey<AccRecord, ?>>asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_REPLACEMENT_ACC_ID_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
     }
 
     public Acc accBasedAccIdFk() {
@@ -253,8 +253,8 @@ State change can't be undone. But the history record can still keep the records 
         return new AppUser(this, Keys.ACC_LAST_UPDATED_BY_FK);
     }
 
-    public Acc accReplacedByFk() {
-        return new Acc(this, Keys.ACC_REPLACED_BY_FK);
+    public Acc accReplacementAccIdFk() {
+        return new Acc(this, Keys.ACC_REPLACEMENT_ACC_ID_FK);
     }
 
     public Acc accPrevAccIdFk() {

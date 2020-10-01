@@ -29,7 +29,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record22<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 1926932440;
+    private static final long serialVersionUID = 1730735811;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -288,16 +288,16 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.acc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.acc.replacement_acc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementAccId(ULong value) {
         set(18, value);
     }
 
     /**
-     * Getter for <code>oagi.acc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.acc.replacement_acc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementAccId() {
         return (ULong) get(18);
     }
 
@@ -458,7 +458,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public Field<ULong> field19() {
-        return Acc.ACC.REPLACED_BY;
+        return Acc.ACC.REPLACEMENT_ACC_ID;
     }
 
     @Override
@@ -568,7 +568,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong component19() {
-        return getReplacedBy();
+        return getReplacementAccId();
     }
 
     @Override
@@ -678,7 +678,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong value19() {
-        return getReplacedBy();
+        return getReplacementAccId();
     }
 
     @Override
@@ -806,7 +806,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public AccRecord value19(ULong value) {
-        setReplacedBy(value);
+        setReplacementAccId(value);
         return this;
     }
 
@@ -869,7 +869,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacedBy, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
+    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAccId, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
         super(Acc.ACC);
 
         set(0, accId);
@@ -890,7 +890,7 @@ State change can't be undone. But the history record can still keep the records 
         set(15, lastUpdateTimestamp);
         set(16, state);
         set(17, isDeprecated);
-        set(18, replacedBy);
+        set(18, replacementAccId);
         set(19, isAbstract);
         set(20, prevAccId);
         set(21, nextAccId);

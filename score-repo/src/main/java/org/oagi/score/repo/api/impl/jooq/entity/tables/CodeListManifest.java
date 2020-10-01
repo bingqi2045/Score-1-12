@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
-    private static final long serialVersionUID = -212110656;
+    private static final long serialVersionUID = 935674056;
 
     /**
      * The reference instance of <code>oagi.code_list_manifest</code>
@@ -78,9 +78,9 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
     public final TableField<CodeListManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
 
     /**
-     * The column <code>oagi.code_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<CodeListManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
+    public final TableField<CodeListManifestRecord, ULong> REPLACEMENT_CODE_LIST_MANIFEST_ID = createField(DSL.name("replacement_code_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list_manifest.prev_code_list_manifest_id</code>.
@@ -147,7 +147,7 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
     @Override
     public List<ForeignKey<CodeListManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListManifestRecord, ?>>asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_REVISION_ID_FK, Keys.CODE_LIST_REPLACED_MANIFEST_BY_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<CodeListManifestRecord, ?>>asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_REVISION_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -166,8 +166,8 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
         return new Revision(this, Keys.CODE_LIST_MANIFEST_REVISION_ID_FK);
     }
 
-    public CodeListManifest codeListReplacedManifestByFk() {
-        return new CodeListManifest(this, Keys.CODE_LIST_REPLACED_MANIFEST_BY_FK);
+    public CodeListManifest codeListReplacementCodeListManifestIdFk() {
+        return new CodeListManifest(this, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK);
     }
 
     public CodeListManifest codeListManifestPrevCodeListManifestIdFk() {

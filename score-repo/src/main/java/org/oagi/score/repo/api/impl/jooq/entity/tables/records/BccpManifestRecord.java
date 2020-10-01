@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1124005106;
+    private static final long serialVersionUID = -2028639697;
 
     /**
      * Setter for <code>oagi.bccp_manifest.bccp_manifest_id</code>.
@@ -106,16 +106,16 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.bccp_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementBccpManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementBccpManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public Field<ULong> field7() {
-        return BccpManifest.BCCP_MANIFEST.REPLACED_MANIFEST_BY;
+        return BccpManifest.BCCP_MANIFEST.REPLACEMENT_BCCP_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementBccpManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementBccpManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public BccpManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementBccpManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
     /**
      * Create a detached, initialised BccpManifestRecord
      */
-    public BccpManifestRecord(ULong bccpManifestId, ULong releaseId, ULong bccpId, ULong bdtManifestId, Byte conflict, ULong revisionId, ULong replacedManifestBy, ULong prevBccpManifestId, ULong nextBccpManifestId) {
+    public BccpManifestRecord(ULong bccpManifestId, ULong releaseId, ULong bccpId, ULong bdtManifestId, Byte conflict, ULong revisionId, ULong replacementBccpManifestId, ULong prevBccpManifestId, ULong nextBccpManifestId) {
         super(BccpManifest.BCCP_MANIFEST);
 
         set(0, bccpManifestId);
@@ -396,7 +396,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
         set(3, bdtManifestId);
         set(4, conflict);
         set(5, revisionId);
-        set(6, replacedManifestBy);
+        set(6, replacementBccpManifestId);
         set(7, prevBccpManifestId);
         set(8, nextBccpManifestId);
     }

@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifest extends TableImpl<BccManifestRecord> {
 
-    private static final long serialVersionUID = 1498697273;
+    private static final long serialVersionUID = -331981750;
 
     /**
      * The reference instance of <code>oagi.bcc_manifest</code>
@@ -78,9 +78,9 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     public final TableField<BccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.bcc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * The column <code>oagi.bcc_manifest.replacement_bcc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<BccManifestRecord, ULong> REPLACED_MANIFEST_BY = createField(DSL.name("replaced_manifest_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement manifest if the record is deprecated.");
+    public final TableField<BccManifestRecord, ULong> REPLACEMENT_BCC_MANIFEST_ID = createField(DSL.name("replacement_bcc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.bcc_manifest.prev_bcc_manifest_id</code>.
@@ -147,7 +147,7 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     @Override
     public List<ForeignKey<BccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACED_MANIFEST_BY_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -166,8 +166,8 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
         return new BccpManifest(this, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK);
     }
 
-    public BccManifest bccReplacedManifestByFk() {
-        return new BccManifest(this, Keys.BCC_REPLACED_MANIFEST_BY_FK);
+    public BccManifest bccReplacementBccManifestIdFk() {
+        return new BccManifest(this, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK);
     }
 
     public BccManifest bccManifestPrevBccManifestIdFk() {

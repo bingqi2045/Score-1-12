@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdListManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -948261583;
+    private static final long serialVersionUID = -1320596026;
 
     /**
      * Setter for <code>oagi.agency_id_list_manifest.agency_id_list_manifest_id</code>.
@@ -106,16 +106,16 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.agency_id_list_manifest.replacement_agency_id_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementAgencyIdListManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.agency_id_list_manifest.replacement_agency_id_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementAgencyIdListManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public Field<ULong> field7() {
-        return AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.REPLACED_MANIFEST_BY;
+        return AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementAgencyIdListManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementAgencyIdListManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public AgencyIdListManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementAgencyIdListManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
     /**
      * Create a detached, initialised AgencyIdListManifestRecord
      */
-    public AgencyIdListManifestRecord(ULong agencyIdListManifestId, ULong releaseId, ULong agencyIdListId, ULong basedAgencyIdListManifestId, Byte conflict, ULong revisionId, ULong replacedManifestBy, ULong prevAgencyIdListManifestId, ULong nextAgencyIdListManifestId) {
+    public AgencyIdListManifestRecord(ULong agencyIdListManifestId, ULong releaseId, ULong agencyIdListId, ULong basedAgencyIdListManifestId, Byte conflict, ULong revisionId, ULong replacementAgencyIdListManifestId, ULong prevAgencyIdListManifestId, ULong nextAgencyIdListManifestId) {
         super(AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST);
 
         set(0, agencyIdListManifestId);
@@ -396,7 +396,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
         set(3, basedAgencyIdListManifestId);
         set(4, conflict);
         set(5, revisionId);
-        set(6, replacedManifestBy);
+        set(6, replacementAgencyIdListManifestId);
         set(7, prevAgencyIdListManifestId);
         set(8, nextAgencyIdListManifestId);
     }

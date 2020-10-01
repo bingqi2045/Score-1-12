@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -738490634;
+    private static final long serialVersionUID = 534562714;
 
     /**
      * Setter for <code>oagi.code_list_manifest.code_list_manifest_id</code>.
@@ -106,16 +106,16 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementCodeListManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.code_list_manifest.replacement_code_list_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementCodeListManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public Field<ULong> field7() {
-        return CodeListManifest.CODE_LIST_MANIFEST.REPLACED_MANIFEST_BY;
+        return CodeListManifest.CODE_LIST_MANIFEST.REPLACEMENT_CODE_LIST_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementCodeListManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementCodeListManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public CodeListManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementCodeListManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
     /**
      * Create a detached, initialised CodeListManifestRecord
      */
-    public CodeListManifestRecord(ULong codeListManifestId, ULong releaseId, ULong codeListId, ULong basedCodeListManifestId, Byte conflict, ULong revisionId, ULong replacedManifestBy, ULong prevCodeListManifestId, ULong nextCodeListManifestId) {
+    public CodeListManifestRecord(ULong codeListManifestId, ULong releaseId, ULong codeListId, ULong basedCodeListManifestId, Byte conflict, ULong revisionId, ULong replacementCodeListManifestId, ULong prevCodeListManifestId, ULong nextCodeListManifestId) {
         super(CodeListManifest.CODE_LIST_MANIFEST);
 
         set(0, codeListManifestId);
@@ -396,7 +396,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
         set(3, basedCodeListManifestId);
         set(4, conflict);
         set(5, revisionId);
-        set(6, replacedManifestBy);
+        set(6, replacementCodeListManifestId);
         set(7, prevCodeListManifestId);
         set(8, nextCodeListManifestId);
     }

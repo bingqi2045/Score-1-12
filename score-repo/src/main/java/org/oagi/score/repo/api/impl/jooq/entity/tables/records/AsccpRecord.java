@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = -1294752103;
+    private static final long serialVersionUID = -1050227986;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.
@@ -286,16 +286,16 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     /**
-     * Setter for <code>oagi.asccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.asccp.replacement_asccp_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementAsccpId(ULong value) {
         set(17, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.asccp.replacement_asccp_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementAsccpId() {
         return (ULong) get(17);
     }
 
@@ -451,7 +451,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public Field<ULong> field18() {
-        return Asccp.ASCCP.REPLACED_BY;
+        return Asccp.ASCCP.REPLACEMENT_ASCCP_ID;
     }
 
     @Override
@@ -556,7 +556,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong component18() {
-        return getReplacedBy();
+        return getReplacementAsccpId();
     }
 
     @Override
@@ -661,7 +661,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong value18() {
-        return getReplacedBy();
+        return getReplacementAsccpId();
     }
 
     @Override
@@ -783,7 +783,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public AsccpRecord value18(ULong value) {
-        setReplacedBy(value);
+        setReplacementAsccpId(value);
         return this;
     }
 
@@ -845,7 +845,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacedBy, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
         super(Asccp.ASCCP);
 
         set(0, asccpId);
@@ -865,7 +865,7 @@ State change can't be undone. But the history record can still keep the records 
         set(14, namespaceId);
         set(15, reusableIndicator);
         set(16, isDeprecated);
-        set(17, replacedBy);
+        set(17, replacementAsccpId);
         set(18, isNillable);
         set(19, prevAsccpId);
         set(20, nextAsccpId);

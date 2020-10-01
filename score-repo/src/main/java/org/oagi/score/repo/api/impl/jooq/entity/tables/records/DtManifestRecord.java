@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> implements Record8<ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1950903557;
+    private static final long serialVersionUID = 1512905650;
 
     /**
      * Setter for <code>oagi.dt_manifest.dt_manifest_id</code>.
@@ -92,16 +92,16 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
     }
 
     /**
-     * Setter for <code>oagi.dt_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.dt_manifest.replacement_dt_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementDtManifestId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.dt_manifest.replacement_dt_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementDtManifestId() {
         return (ULong) get(5);
     }
 
@@ -183,7 +183,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
 
     @Override
     public Field<ULong> field6() {
-        return DtManifest.DT_MANIFEST.REPLACED_MANIFEST_BY;
+        return DtManifest.DT_MANIFEST.REPLACEMENT_DT_MANIFEST_ID;
     }
 
     @Override
@@ -223,7 +223,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
 
     @Override
     public ULong component6() {
-        return getReplacedManifestBy();
+        return getReplacementDtManifestId();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
 
     @Override
     public ULong value6() {
-        return getReplacedManifestBy();
+        return getReplacementDtManifestId();
     }
 
     @Override
@@ -308,7 +308,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
 
     @Override
     public DtManifestRecord value6(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementDtManifestId(value);
         return this;
     }
 
@@ -351,7 +351,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
     /**
      * Create a detached, initialised DtManifestRecord
      */
-    public DtManifestRecord(ULong dtManifestId, ULong releaseId, ULong dtId, Byte conflict, ULong revisionId, ULong replacedManifestBy, ULong prevDtManifestId, ULong nextDtManifestId) {
+    public DtManifestRecord(ULong dtManifestId, ULong releaseId, ULong dtId, Byte conflict, ULong revisionId, ULong replacementDtManifestId, ULong prevDtManifestId, ULong nextDtManifestId) {
         super(DtManifest.DT_MANIFEST);
 
         set(0, dtManifestId);
@@ -359,7 +359,7 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
         set(2, dtId);
         set(3, conflict);
         set(4, revisionId);
-        set(5, replacedManifestBy);
+        set(5, replacementDtManifestId);
         set(6, prevDtManifestId);
         set(7, nextDtManifestId);
     }

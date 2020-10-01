@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = -723373905;
+    private static final long serialVersionUID = -1579083749;
 
     /**
      * Setter for <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.
@@ -207,16 +207,16 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementDtScId(ULong value) {
         set(13, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementDtScId() {
         return (ULong) get(13);
     }
 
@@ -310,7 +310,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public Field<ULong> field14() {
-        return DtSc.DT_SC.REPLACED_BY;
+        return DtSc.DT_SC.REPLACEMENT_DT_SC_ID;
     }
 
     @Override
@@ -380,7 +380,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public ULong component14() {
-        return getReplacedBy();
+        return getReplacementDtScId();
     }
 
     @Override
@@ -450,7 +450,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public ULong value14() {
-        return getReplacedBy();
+        return getReplacementDtScId();
     }
 
     @Override
@@ -533,7 +533,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
 
     @Override
     public DtScRecord value14(ULong value) {
-        setReplacedBy(value);
+        setReplacementDtScId(value);
         return this;
     }
 
@@ -570,7 +570,7 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     /**
      * Create a detached, initialised DtScRecord
      */
-    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacedBy) {
+    public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId) {
         super(DtSc.DT_SC);
 
         set(0, dtScId);
@@ -586,6 +586,6 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
         set(10, defaultValue);
         set(11, fixedValue);
         set(12, isDeprecated);
-        set(13, replacedBy);
+        set(13, replacementDtScId);
     }
 }

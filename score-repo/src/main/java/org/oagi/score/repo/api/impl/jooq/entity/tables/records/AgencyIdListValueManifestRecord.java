@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyIdListValueManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1868393146;
+    private static final long serialVersionUID = -857731888;
 
     /**
      * Setter for <code>oagi.agency_id_list_value_manifest.agency_id_list_value_manifest_id</code>.
@@ -92,16 +92,16 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_value_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.agency_id_list_value_manifest.replacement_agency_id_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementAgencyIdListValueManifestId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_value_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.agency_id_list_value_manifest.replacement_agency_id_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementAgencyIdListValueManifestId() {
         return (ULong) get(5);
     }
 
@@ -183,7 +183,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     @Override
     public Field<ULong> field6() {
-        return AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.REPLACED_MANIFEST_BY;
+        return AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST.REPLACEMENT_AGENCY_ID_LIST_VALUE_MANIFEST_ID;
     }
 
     @Override
@@ -223,7 +223,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     @Override
     public ULong component6() {
-        return getReplacedManifestBy();
+        return getReplacementAgencyIdListValueManifestId();
     }
 
     @Override
@@ -263,7 +263,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     @Override
     public ULong value6() {
-        return getReplacedManifestBy();
+        return getReplacementAgencyIdListValueManifestId();
     }
 
     @Override
@@ -308,7 +308,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
 
     @Override
     public AgencyIdListValueManifestRecord value6(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementAgencyIdListValueManifestId(value);
         return this;
     }
 
@@ -351,7 +351,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
     /**
      * Create a detached, initialised AgencyIdListValueManifestRecord
      */
-    public AgencyIdListValueManifestRecord(ULong agencyIdListValueManifestId, ULong releaseId, ULong agencyIdListValueId, ULong agencyIdListManifestId, Byte conflict, ULong replacedManifestBy, ULong prevAgencyIdListValueManifestId, ULong nextAgencyIdListValueManifestId) {
+    public AgencyIdListValueManifestRecord(ULong agencyIdListValueManifestId, ULong releaseId, ULong agencyIdListValueId, ULong agencyIdListManifestId, Byte conflict, ULong replacementAgencyIdListValueManifestId, ULong prevAgencyIdListValueManifestId, ULong nextAgencyIdListValueManifestId) {
         super(AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST);
 
         set(0, agencyIdListValueManifestId);
@@ -359,7 +359,7 @@ public class AgencyIdListValueManifestRecord extends UpdatableRecordImpl<AgencyI
         set(2, agencyIdListValueId);
         set(3, agencyIdListManifestId);
         set(4, conflict);
-        set(5, replacedManifestBy);
+        set(5, replacementAgencyIdListValueManifestId);
         set(6, prevAgencyIdListValueManifestId);
         set(7, nextAgencyIdListValueManifestId);
     }

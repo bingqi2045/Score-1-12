@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> implements Record9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -172491405;
+    private static final long serialVersionUID = 1260902328;
 
     /**
      * Setter for <code>oagi.bcc_manifest.bcc_manifest_id</code>.
@@ -106,16 +106,16 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
     }
 
     /**
-     * Setter for <code>oagi.bcc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.bcc_manifest.replacement_bcc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementBccManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.bcc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.bcc_manifest.replacement_bcc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementBccManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
 
     @Override
     public Field<ULong> field7() {
-        return BccManifest.BCC_MANIFEST.REPLACED_MANIFEST_BY;
+        return BccManifest.BCC_MANIFEST.REPLACEMENT_BCC_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementBccManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementBccManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
 
     @Override
     public BccManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementBccManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
     /**
      * Create a detached, initialised BccManifestRecord
      */
-    public BccManifestRecord(ULong bccManifestId, ULong releaseId, ULong bccId, ULong fromAccManifestId, ULong toBccpManifestId, Byte conflict, ULong replacedManifestBy, ULong prevBccManifestId, ULong nextBccManifestId) {
+    public BccManifestRecord(ULong bccManifestId, ULong releaseId, ULong bccId, ULong fromAccManifestId, ULong toBccpManifestId, Byte conflict, ULong replacementBccManifestId, ULong prevBccManifestId, ULong nextBccManifestId) {
         super(BccManifest.BCC_MANIFEST);
 
         set(0, bccManifestId);
@@ -396,7 +396,7 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
         set(3, fromAccManifestId);
         set(4, toBccpManifestId);
         set(5, conflict);
-        set(6, replacedManifestBy);
+        set(6, replacementBccManifestId);
         set(7, prevBccManifestId);
         set(8, nextBccManifestId);
     }

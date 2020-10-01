@@ -27,7 +27,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record19<ULong, String, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = -1481974973;
+    private static final long serialVersionUID = 1008867120;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.
@@ -184,16 +184,16 @@ public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord
     }
 
     /**
-     * Setter for <code>oagi.code_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.code_list_value.replacement_code_list_value_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementCodeListValueId(ULong value) {
         set(11, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.code_list_value.replacement_code_list_value_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementCodeListValueId() {
         return (ULong) get(11);
     }
 
@@ -379,7 +379,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public Field<ULong> field12() {
-        return CodeListValue.CODE_LIST_VALUE.REPLACED_BY;
+        return CodeListValue.CODE_LIST_VALUE.REPLACEMENT_CODE_LIST_VALUE_ID;
     }
 
     @Override
@@ -474,7 +474,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong component12() {
-        return getReplacedBy();
+        return getReplacementCodeListValueId();
     }
 
     @Override
@@ -569,7 +569,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public ULong value12() {
-        return getReplacedBy();
+        return getReplacementCodeListValueId();
     }
 
     @Override
@@ -675,7 +675,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public CodeListValueRecord value12(ULong value) {
-        setReplacedBy(value);
+        setReplacementCodeListValueId(value);
         return this;
     }
 
@@ -759,7 +759,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised CodeListValueRecord
      */
-    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
+    public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
         set(0, codeListValueId);
@@ -773,7 +773,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(8, lockedIndicator);
         set(9, extensionIndicator);
         set(10, isDeprecated);
-        set(11, replacedBy);
+        set(11, replacementCodeListValueId);
         set(12, createdBy);
         set(13, ownerUserId);
         set(14, lastUpdatedBy);

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> implements Record9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1656442179;
+    private static final long serialVersionUID = 740778774;
 
     /**
      * Setter for <code>oagi.ascc_manifest.ascc_manifest_id</code>.
@@ -106,16 +106,16 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.ascc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.ascc_manifest.replacement_ascc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementAsccManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.ascc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.ascc_manifest.replacement_ascc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementAsccManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
 
     @Override
     public Field<ULong> field7() {
-        return AsccManifest.ASCC_MANIFEST.REPLACED_MANIFEST_BY;
+        return AsccManifest.ASCC_MANIFEST.REPLACEMENT_ASCC_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementAsccManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementAsccManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
 
     @Override
     public AsccManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementAsccManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
     /**
      * Create a detached, initialised AsccManifestRecord
      */
-    public AsccManifestRecord(ULong asccManifestId, ULong releaseId, ULong asccId, ULong fromAccManifestId, ULong toAsccpManifestId, Byte conflict, ULong replacedManifestBy, ULong prevAsccManifestId, ULong nextAsccManifestId) {
+    public AsccManifestRecord(ULong asccManifestId, ULong releaseId, ULong asccId, ULong fromAccManifestId, ULong toAsccpManifestId, Byte conflict, ULong replacementAsccManifestId, ULong prevAsccManifestId, ULong nextAsccManifestId) {
         super(AsccManifest.ASCC_MANIFEST);
 
         set(0, asccManifestId);
@@ -396,7 +396,7 @@ public class AsccManifestRecord extends UpdatableRecordImpl<AsccManifestRecord> 
         set(3, fromAccManifestId);
         set(4, toAsccpManifestId);
         set(5, conflict);
-        set(6, replacedManifestBy);
+        set(6, replacementAsccManifestId);
         set(7, prevAsccManifestId);
         set(8, nextAsccManifestId);
     }

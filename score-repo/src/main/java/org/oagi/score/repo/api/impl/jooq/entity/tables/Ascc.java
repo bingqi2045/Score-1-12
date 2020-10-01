@@ -36,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = -1093957087;
+    private static final long serialVersionUID = -1563982552;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
@@ -112,9 +112,9 @@ public class Ascc extends TableImpl<AsccRecord> {
     public final TableField<AsccRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.ascc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.ascc.replacement_ascc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<AsccRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<AsccRecord, ULong> REPLACEMENT_ASCC_ID = createField(DSL.name("replacement_ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.ascc.created_by</code>. A foreign key to the APP_USER table referring to the user who creates the entity.
@@ -228,7 +228,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AsccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_SEQ_KEY_ID_FK, Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACED_BY_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
+        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_SEQ_KEY_ID_FK, Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
     }
 
     public SeqKey seqKey() {
@@ -243,8 +243,8 @@ State change can't be undone. But the history record can still keep the records 
         return new Asccp(this, Keys.ASCC_TO_ASCCP_ID_FK);
     }
 
-    public Ascc asccReplacedByFk() {
-        return new Ascc(this, Keys.ASCC_REPLACED_BY_FK);
+    public Ascc asccReplacementAsccIdFk() {
+        return new Ascc(this, Keys.ASCC_REPLACEMENT_ASCC_ID_FK);
     }
 
     public AppUser asccCreatedByFk() {

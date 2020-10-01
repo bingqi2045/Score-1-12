@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 424551573;
+    private static final long serialVersionUID = -127075507;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.
@@ -219,16 +219,16 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     }
 
     /**
-     * Setter for <code>oagi.code_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Setter for <code>oagi.code_list.replacement_code_list_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public void setReplacedBy(ULong value) {
+    public void setReplacementCodeListId(ULong value) {
         set(14, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * Getter for <code>oagi.code_list.replacement_code_list_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public ULong getReplacedBy() {
+    public ULong getReplacementCodeListId() {
         return (ULong) get(14);
     }
 
@@ -371,7 +371,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     /**
      * Create a detached, initialised CodeListRecord
      */
-    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacedBy, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
+    public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacementCodeListId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
         super(CodeList.CODE_LIST);
 
         set(0, codeListId);
@@ -388,7 +388,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
         set(11, basedCodeListId);
         set(12, extensibleIndicator);
         set(13, isDeprecated);
-        set(14, replacedBy);
+        set(14, replacementCodeListId);
         set(15, createdBy);
         set(16, ownerUserId);
         set(17, lastUpdatedBy);

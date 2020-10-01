@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValue
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
 
-    private static final long serialVersionUID = 254877994;
+    private static final long serialVersionUID = -844482746;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_value</code>
@@ -84,9 +84,9 @@ public class AgencyIdListValue extends TableImpl<AgencyIdListValueRecord> {
     public final TableField<AgencyIdListValueRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
 
     /**
-     * The column <code>oagi.agency_id_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.agency_id_list_value.replacement_agency_id_list_value_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<AgencyIdListValueRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<AgencyIdListValueRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("replacement_agency_id_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
@@ -180,15 +180,15 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<AgencyIdListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListValueRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListValueRecord, ?>>asList(Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_CREATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_OWNER_USER_ID_FK, Keys.AGENCY_ID_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.AGENCY_ID_LIST_VALUE_PREV_AGENCY_ID_LIST_VALUE_ID_FK, Keys.AGENCY_ID_LIST_VALUE_NEXT_AGENCY_ID_LIST_VALUE_ID_FK);
     }
 
     public AgencyIdList agencyIdList() {
         return new AgencyIdList(this, Keys.AGENCY_ID_LIST_VALUE_OWNER_LIST_ID_FK);
     }
 
-    public AgencyIdListValue agencyIdListValueReplacedByFk() {
-        return new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_REPLACED_BY_FK);
+    public AgencyIdListValue agencyIdListValueReplacementAgencyIdListValueIdFk() {
+        return new AgencyIdListValue(this, Keys.AGENCY_ID_LIST_VALUE_REPLACEMENT_AGENCY_ID_LIST_VALUE_ID_FK);
     }
 
     public AppUser agencyIdListValueCreatedByFk() {

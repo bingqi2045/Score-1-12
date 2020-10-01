@@ -37,7 +37,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = -1179221670;
+    private static final long serialVersionUID = 521075734;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>
@@ -118,9 +118,9 @@ public class DtSc extends TableImpl<DtScRecord> {
     public final TableField<DtScRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.dt_sc.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<DtScRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<DtScRecord, ULong> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * Create a <code>oagi.dt_sc</code> table reference
@@ -182,7 +182,7 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     @Override
     public List<ForeignKey<DtScRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK, Keys.DT_SC_REPLACED_BY_FK);
+        return Arrays.<ForeignKey<DtScRecord, ?>>asList(Keys.DT_SC_OWNER_DT_ID_FK, Keys.DT_SC_BASED_DT_SC_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK);
     }
 
     public Dt dt() {
@@ -193,8 +193,8 @@ public class DtSc extends TableImpl<DtScRecord> {
         return new DtSc(this, Keys.DT_SC_BASED_DT_SC_ID_FK);
     }
 
-    public DtSc dtScReplacedByFk() {
-        return new DtSc(this, Keys.DT_SC_REPLACED_BY_FK);
+    public DtSc dtScReplacementDtScIdFk() {
+        return new DtSc(this, Keys.DT_SC_REPLACEMENT_DT_SC_ID_FK);
     }
 
     @Override

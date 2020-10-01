@@ -39,7 +39,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueReco
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValue extends TableImpl<CodeListValueRecord> {
 
-    private static final long serialVersionUID = -997722779;
+    private static final long serialVersionUID = -1402070858;
 
     /**
      * The reference instance of <code>oagi.code_list_value</code>
@@ -110,9 +110,9 @@ public class CodeListValue extends TableImpl<CodeListValueRecord> {
     public final TableField<CodeListValueRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the code list value is deprecated and should not be reused (i.e., no new reference to this record should be allowed).");
 
     /**
-     * The column <code>oagi.code_list_value.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.code_list_value.replacement_code_list_value_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<CodeListValueRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<CodeListValueRecord, ULong> REPLACEMENT_CODE_LIST_VALUE_ID = createField(DSL.name("replacement_code_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list_value.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the code list.
@@ -206,15 +206,15 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 
     @Override
     public List<ForeignKey<CodeListValueRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_REPLACED_BY_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
+        return Arrays.<ForeignKey<CodeListValueRecord, ?>>asList(Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_CREATED_BY_FK, Keys.CODE_LIST_VALUE_OWNER_USER_ID_FK, Keys.CODE_LIST_VALUE_LAST_UPDATED_BY_FK, Keys.CODE_LIST_VALUE_PREV_CODE_LIST_VALUE_ID_FK, Keys.CODE_LIST_VALUE_NEXT_CODE_LIST_VALUE_ID_FK);
     }
 
     public CodeList codeList() {
         return new CodeList(this, Keys.CODE_LIST_VALUE_CODE_LIST_ID_FK);
     }
 
-    public CodeListValue codeListValueReplacedByFk() {
-        return new CodeListValue(this, Keys.CODE_LIST_VALUE_REPLACED_BY_FK);
+    public CodeListValue codeListValueReplacementCodeListValueIdFk() {
+        return new CodeListValue(this, Keys.CODE_LIST_VALUE_REPLACEMENT_CODE_LIST_VALUE_ID_FK);
     }
 
     public AppUser codeListValueCreatedByFk() {

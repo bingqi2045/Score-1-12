@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = 1914724474;
+    private static final long serialVersionUID = -73662101;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -169,9 +169,9 @@ The value of this column in the latest history record should be the same as that
     public final TableField<DtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
-     * The column <code>oagi.dt.replaced_by</code>. This alternative refers to a replacement if the record is deprecated.
+     * The column <code>oagi.dt.replacement_dt_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<DtRecord, ULong> REPLACED_BY = createField(DSL.name("replaced_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This alternative refers to a replacement if the record is deprecated.");
+    public final TableField<DtRecord, ULong> REPLACEMENT_DT_ID = createField(DSL.name("replacement_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt.prev_dt_id</code>. A self-foreign key to indicate the previous history record.
@@ -243,7 +243,7 @@ The value of this column in the latest history record should be the same as that
 
     @Override
     public List<ForeignKey<DtRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_NAMESPACE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_REPLACED_BY_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
+        return Arrays.<ForeignKey<DtRecord, ?>>asList(Keys.DT_PREVIOUS_VERSION_DT_ID_FK, Keys.DT_BASED_DT_ID_FK, Keys.DT_NAMESPACE_ID_FK, Keys.DT_CREATED_BY_FK, Keys.DT_LAST_UPDATED_BY_FK, Keys.DT_OWNER_USER_ID_FK, Keys.DT_REPLACEMENT_DT_ID_FK, Keys.DT_PREV_DT_ID_FK, Keys.DT_NEXT_DT_ID_FK);
     }
 
     public Dt dtPreviousVersionDtIdFk() {
@@ -270,8 +270,8 @@ The value of this column in the latest history record should be the same as that
         return new AppUser(this, Keys.DT_OWNER_USER_ID_FK);
     }
 
-    public Dt dtReplacedByFk() {
-        return new Dt(this, Keys.DT_REPLACED_BY_FK);
+    public Dt dtReplacementDtIdFk() {
+        return new Dt(this, Keys.DT_REPLACEMENT_DT_ID_FK);
     }
 
     public Dt dtPrevDtIdFk() {

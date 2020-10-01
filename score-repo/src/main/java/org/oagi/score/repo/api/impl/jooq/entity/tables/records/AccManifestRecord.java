@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 669942396;
+    private static final long serialVersionUID = -488692021;
 
     /**
      * Setter for <code>oagi.acc_manifest.acc_manifest_id</code>.
@@ -106,16 +106,16 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
     }
 
     /**
-     * Setter for <code>oagi.acc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Setter for <code>oagi.acc_manifest.replacement_acc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public void setReplacedManifestBy(ULong value) {
+    public void setReplacementAccManifestId(ULong value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>oagi.acc_manifest.replaced_manifest_by</code>. This alternative refers to a replacement manifest if the record is deprecated.
+     * Getter for <code>oagi.acc_manifest.replacement_acc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public ULong getReplacedManifestBy() {
+    public ULong getReplacementAccManifestId() {
         return (ULong) get(6);
     }
 
@@ -202,7 +202,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public Field<ULong> field7() {
-        return AccManifest.ACC_MANIFEST.REPLACED_MANIFEST_BY;
+        return AccManifest.ACC_MANIFEST.REPLACEMENT_ACC_MANIFEST_ID;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public ULong component7() {
-        return getReplacedManifestBy();
+        return getReplacementAccManifestId();
     }
 
     @Override
@@ -292,7 +292,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public ULong value7() {
-        return getReplacedManifestBy();
+        return getReplacementAccManifestId();
     }
 
     @Override
@@ -343,7 +343,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public AccManifestRecord value7(ULong value) {
-        setReplacedManifestBy(value);
+        setReplacementAccManifestId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
     /**
      * Create a detached, initialised AccManifestRecord
      */
-    public AccManifestRecord(ULong accManifestId, ULong releaseId, ULong accId, ULong basedAccManifestId, Byte conflict, ULong revisionId, ULong replacedManifestBy, ULong prevAccManifestId, ULong nextAccManifestId) {
+    public AccManifestRecord(ULong accManifestId, ULong releaseId, ULong accId, ULong basedAccManifestId, Byte conflict, ULong revisionId, ULong replacementAccManifestId, ULong prevAccManifestId, ULong nextAccManifestId) {
         super(AccManifest.ACC_MANIFEST);
 
         set(0, accManifestId);
@@ -396,7 +396,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
         set(3, basedAccManifestId);
         set(4, conflict);
         set(5, revisionId);
-        set(6, replacedManifestBy);
+        set(6, replacementAccManifestId);
         set(7, prevAccManifestId);
         set(8, nextAccManifestId);
     }
