@@ -13,6 +13,8 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.component.ascc.AsccWriteRepository;
+import org.oagi.score.repo.component.ascc.UpdateAsccPropertiesRepositoryRequest;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -37,6 +39,9 @@ public class AsccpWriteRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private AsccWriteRepository asccWriteRepository;
 
     @Autowired
     private RevisionRepository revisionRepository;
@@ -230,7 +235,9 @@ public class AsccpWriteRepository {
         // update asccp record.
         UpdateSetFirstStep<AsccpRecord> firstStep = dslContext.update(ASCCP);
         UpdateSetMoreStep<AsccpRecord> moreStep = null;
+        boolean propertyTermChanged = false;
         if (compare(asccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
+            propertyTermChanged = true;
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.PROPERTY_TERM, request.getPropertyTerm())
                     .set(ASCCP.DEN, request.getPropertyTerm() + ". " + objectClassTerm(asccpRecord.getRoleOfAccId()));
@@ -272,17 +279,30 @@ public class AsccpWriteRepository {
             asccpRecord = dslContext.selectFrom(ASCCP)
                     .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                     .fetchOne();
+
+            // creates new revision for updated record.
+            RevisionRecord revisionRecord =
+                    revisionRepository.insertAsccpRevision(
+                            asccpRecord, asccpManifestRecord.getRevisionId(),
+                            RevisionAction.Modified,
+                            userId, timestamp);
+
+            asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+            asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
         }
 
-        // creates new revision for updated record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
-                        userId, timestamp);
+        if (propertyTermChanged) {
+            for (ULong asccManifestId : dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                    .from(ASCC_MANIFEST)
+                    .where(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(asccpManifestRecord.getAsccpManifestId()))
+                    .fetchInto(ULong.class)) {
 
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+                UpdateAsccPropertiesRepositoryRequest updateAsccPropertiesRepositoryRequest =
+                        new UpdateAsccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
+                                asccManifestId.toBigInteger());
+                asccWriteRepository.updateAsccProperties(updateAsccPropertiesRepositoryRequest);
+            }
+        }
 
         return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }

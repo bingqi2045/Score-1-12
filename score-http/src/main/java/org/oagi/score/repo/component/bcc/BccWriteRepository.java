@@ -1,6 +1,8 @@
 package org.oagi.score.repo.component.bcc;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
@@ -19,12 +21,14 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.data.BCCEntityType.Attribute;
 import static org.oagi.score.data.BCCEntityType.Element;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
@@ -202,16 +206,30 @@ public class BccWriteRepository {
         }
 
         // update bcc record.
-        bccRecord.setDen(accRecord.getObjectClassTerm() + ". " + dslContext.select(BCCP.DEN)
+        UpdateSetFirstStep<BccRecord> firstStep = dslContext.update(BCC);
+        UpdateSetMoreStep<BccRecord> moreStep = null;
+
+        String den = accRecord.getObjectClassTerm() + ". " + dslContext.select(BCCP.DEN)
                 .from(BCCP)
                 .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccManifestRecord.getToBccpManifestId()))
-                .fetchOneInto(String.class)
-        );
-        bccRecord.setDefinition(request.getDefinition());
-        bccRecord.setDefinitionSource(request.getDefinitionSource());
+                .fetchOneInto(String.class);
+        if (compare(bccRecord.getDen(), den) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.DEN, den);
+        }
+        if (compare(bccRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.DEFINITION, request.getDefinition());
+        }
+        if (compare(bccRecord.getDefinition(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
         if (request.getEntityType().getValue() != bccRecord.getEntityType()) {
-            bccRecord.setEntityType(request.getEntityType().getValue());
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.ENTITY_TYPE, request.getEntityType().getValue());
+
             if (request.getEntityType() == Element) {
                 seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
             } else if (request.getEntityType() == Attribute) {
@@ -225,26 +243,47 @@ public class BccWriteRepository {
                 }
             }
         }
-        bccRecord.setIsDeprecated((byte) (request.isDeprecated() ? 1 : 0));
-        bccRecord.setIsNillable((byte) (request.isNillable() ? 1 : 0));
-        bccRecord.setCardinalityMin(request.getCardinalityMin());
-        bccRecord.setCardinalityMax(request.getCardinalityMax());
-        bccRecord.setDefaultValue(request.getDefaultValue());
-        bccRecord.setFixedValue(request.getFixedValue());
-        bccRecord.setLastUpdatedBy(userId);
-        bccRecord.setLastUpdateTimestamp(timestamp);
-        bccRecord.update(BCC.DEN,
-                BCC.DEFINITION, BCC.DEFINITION_SOURCE,
-                BCC.CARDINALITY_MIN, BCC.CARDINALITY_MAX,
-                BCC.ENTITY_TYPE, BCC.IS_DEPRECATED, BCC.IS_NILLABLE,
-                BCC.DEFAULT_VALUE, BCC.FIXED_VALUE,
-                BCC.LAST_UPDATED_BY, BCC.LAST_UPDATE_TIMESTAMP);
+        if ((bccRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if ((bccRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
+        }
+        if (request.getCardinalityMin() != null && bccRecord.getCardinalityMin() != request.getCardinalityMin()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.CARDINALITY_MIN, request.getCardinalityMin());
+        }
+        if (request.getCardinalityMax() != null && bccRecord.getCardinalityMax() != request.getCardinalityMax()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.CARDINALITY_MAX, request.getCardinalityMax());
+        }
+        if (compare(bccRecord.getDefaultValue(), request.getDefaultValue()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.DEFAULT_VALUE, request.getDefaultValue());
+        }
+        if (compare(bccRecord.getFixedValue(), request.getFixedValue()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(BCC.FIXED_VALUE, request.getFixedValue());
+        }
 
-        upsertRevisionIntoAccAndAssociations(
-                accRecord, accManifestRecord,
-                accManifestRecord.getReleaseId(),
-                userId, timestamp
-        );
+        if (moreStep != null) {
+            moreStep.set(BCC.LAST_UPDATED_BY, userId)
+                    .set(BCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(BCC.BCC_ID.eq(bccRecord.getBccId()))
+                    .execute();
+
+            bccRecord = dslContext.selectFrom(BCC)
+                    .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
+                    .fetchOne();
+
+            upsertRevisionIntoAccAndAssociations(
+                    accRecord, accManifestRecord,
+                    accManifestRecord.getReleaseId(),
+                    userId, timestamp
+            );
+        }
 
         return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }

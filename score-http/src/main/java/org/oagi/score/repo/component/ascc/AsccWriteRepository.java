@@ -1,6 +1,8 @@
 package org.oagi.score.repo.component.ascc;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.RevisionAction;
@@ -10,6 +12,7 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
+import static org.apache.commons.lang3.StringUtils.compare;
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ASCCP_MANIFEST;
@@ -232,30 +236,55 @@ public class AsccWriteRepository {
         }
 
         // update ascc record.
-        asccRecord.setDen(accRecord.getObjectClassTerm() + ". " + dslContext.select(ASCCP.DEN)
+        UpdateSetFirstStep<AsccRecord> firstStep = dslContext.update(ASCC);
+        UpdateSetMoreStep<AsccRecord> moreStep = null;
+
+        String den = accRecord.getObjectClassTerm() + ". " + dslContext.select(ASCCP.DEN)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(asccManifestRecord.getToAsccpManifestId()))
-                .fetchOneInto(String.class)
-        );
-        asccRecord.setDefinition(request.getDefinition());
-        asccRecord.setDefinitionSource(request.getDefinitionSource());
-        asccRecord.setIsDeprecated((byte) ((request.isDeprecated()) ? 1 : 0));
-        asccRecord.setCardinalityMin(request.getCardinalityMin());
-        asccRecord.setCardinalityMax(request.getCardinalityMax());
-        asccRecord.setLastUpdatedBy(userId);
-        asccRecord.setLastUpdateTimestamp(timestamp);
-        asccRecord.update(ASCC.DEN,
-                ASCC.DEFINITION, ASCC.DEFINITION_SOURCE,
-                ASCC.CARDINALITY_MIN, ASCC.CARDINALITY_MAX,
-                ASCC.IS_DEPRECATED,
-                ASCC.LAST_UPDATED_BY, ASCC.LAST_UPDATE_TIMESTAMP);
+                .fetchOneInto(String.class);
+        if (compare(asccRecord.getDen(), den) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.DEN, den);
+        }
+        if (compare(asccRecord.getDefinition(), request.getDefinition()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.DEFINITION, request.getDefinition());
+        }
+        if (compare(asccRecord.getDefinition(), request.getDefinitionSource()) != 0) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.DEFINITION_SOURCE, request.getDefinitionSource());
+        }
+        if ((asccRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
+        }
+        if (request.getCardinalityMin() != null && asccRecord.getCardinalityMin() != request.getCardinalityMin()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.CARDINALITY_MIN, request.getCardinalityMin());
+        }
+        if (request.getCardinalityMax() != null && asccRecord.getCardinalityMax() != request.getCardinalityMax()) {
+            moreStep = ((moreStep != null) ? moreStep : firstStep)
+                    .set(ASCC.CARDINALITY_MAX, request.getCardinalityMax());
+        }
 
-        upsertRevisionIntoAccAndAssociations(
-                accRecord, accManifestRecord,
-                accManifestRecord.getReleaseId(),
-                userId, timestamp
-        );
+        if (moreStep != null) {
+            moreStep.set(ASCC.LAST_UPDATED_BY, userId)
+                    .set(ASCC.LAST_UPDATE_TIMESTAMP, timestamp)
+                    .where(ASCC.ASCC_ID.eq(asccRecord.getAsccId()))
+                    .execute();
+
+            asccRecord = dslContext.selectFrom(ASCC)
+                    .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
+                    .fetchOne();
+
+            upsertRevisionIntoAccAndAssociations(
+                    accRecord, accManifestRecord,
+                    accManifestRecord.getReleaseId(),
+                    userId, timestamp
+            );
+        }
 
         return new UpdateAsccPropertiesRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
     }

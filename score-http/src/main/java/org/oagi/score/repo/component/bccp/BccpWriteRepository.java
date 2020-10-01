@@ -14,6 +14,8 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.repo.component.bcc.BccWriteRepository;
+import org.oagi.score.repo.component.bcc.UpdateBccPropertiesRepositoryRequest;
 import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -38,6 +40,9 @@ public class BccpWriteRepository {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private BccWriteRepository bccWriteRepository;
 
     @Autowired
     private RevisionRepository revisionRepository;
@@ -223,7 +228,9 @@ public class BccpWriteRepository {
         // update bccp record.
         UpdateSetFirstStep<BccpRecord> firstStep = dslContext.update(BCCP);
         UpdateSetMoreStep<BccpRecord> moreStep = null;
+        boolean propertyTermChanged = false;
         if (compare(bccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
+            propertyTermChanged = true;
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCCP.PROPERTY_TERM, request.getPropertyTerm())
                     .set(BCCP.DEN, request.getPropertyTerm() + ". " + bccpRecord.getRepresentationTerm());
@@ -287,6 +294,19 @@ public class BccpWriteRepository {
 
         bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
+
+        if (propertyTermChanged) {
+            for (ULong bccManifestId : dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
+                    .from(BCC_MANIFEST)
+                    .where(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(bccpManifestRecord.getBccpManifestId()))
+                    .fetchInto(ULong.class)) {
+
+                UpdateBccPropertiesRepositoryRequest updateBccPropertiesRepositoryRequest =
+                        new UpdateBccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
+                                bccManifestId.toBigInteger());
+                bccWriteRepository.updateBccProperties(updateBccPropertiesRepositoryRequest);
+            }
+        }
 
         return new UpdateBccpPropertiesRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
