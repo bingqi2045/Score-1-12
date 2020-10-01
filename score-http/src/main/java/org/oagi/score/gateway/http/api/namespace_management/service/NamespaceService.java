@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.NAMESPACE;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -203,6 +202,26 @@ public class NamespaceService {
 
         if (!namespaceRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("Access is denied");
+        }
+
+        Integer referenced = 0;
+        referenced += dslContext.selectCount().from(ACC).where(ACC.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(ASCCP).where(ASCCP.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(BCCP).where(BCCP.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(CODE_LIST).where(CODE_LIST.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(RELEASE).where(RELEASE.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(AGENCY_ID_LIST).where(AGENCY_ID_LIST.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+        referenced += dslContext.selectCount().from(DT).where(DT.NAMESPACE_ID.eq(namespaceRecord.getNamespaceId()))
+                .fetchOptionalInto(Integer.class).orElse(0);
+
+        if (referenced > 0) {
+            throw new IllegalArgumentException("The namespace in use can not be discard.");
         }
 
         namespaceRecord.delete();
