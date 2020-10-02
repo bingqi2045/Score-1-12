@@ -8,6 +8,7 @@ public class RepositoryRequest {
 
     private final AuthenticatedPrincipal user;
     private final LocalDateTime localDateTime;
+    private boolean propagation;
 
     public RepositoryRequest(AuthenticatedPrincipal user) {
         this(user, LocalDateTime.now());
@@ -25,5 +26,13 @@ public class RepositoryRequest {
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
+    }
+
+    public boolean isPropagation() {
+        return propagation;
+    }
+
+    public void setPropagation(boolean propagation) {
+        this.propagation = propagation;
     }
 }

@@ -201,7 +201,7 @@ public class BccWriteRepository {
             throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
-        if (!accRecord.getOwnerUserId().equals(userId)) {
+        if (!request.isPropagation() && !accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 

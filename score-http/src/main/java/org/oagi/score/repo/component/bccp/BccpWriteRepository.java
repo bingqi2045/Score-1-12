@@ -304,6 +304,7 @@ public class BccpWriteRepository {
                 UpdateBccPropertiesRepositoryRequest updateBccPropertiesRepositoryRequest =
                         new UpdateBccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
                                 bccManifestId.toBigInteger());
+                updateBccPropertiesRepositoryRequest.setPropagation(true);
                 bccWriteRepository.updateBccProperties(updateBccPropertiesRepositoryRequest);
             }
         }

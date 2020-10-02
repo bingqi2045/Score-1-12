@@ -300,6 +300,7 @@ public class AsccpWriteRepository {
                 UpdateAsccPropertiesRepositoryRequest updateAsccPropertiesRepositoryRequest =
                         new UpdateAsccPropertiesRepositoryRequest(request.getUser(), request.getLocalDateTime(),
                                 asccManifestId.toBigInteger());
+                updateAsccPropertiesRepositoryRequest.setPropagation(true);
                 asccWriteRepository.updateAsccProperties(updateAsccPropertiesRepositoryRequest);
             }
         }
