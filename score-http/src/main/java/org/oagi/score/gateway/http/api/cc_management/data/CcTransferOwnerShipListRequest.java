@@ -6,9 +6,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Data
-public class CcUpdateStateListRequest {
-    private String action;
-    private String toState;
+public class CcTransferOwnerShipListRequest {
+    private String targetLoginId;
     private List<BigInteger> accManifestIds;
     private List<BigInteger> bccpManifestIds;
     private List<BigInteger> asccpManifestIds;

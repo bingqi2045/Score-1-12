@@ -263,5 +263,31 @@ public class CcListService {
             ccNodeService.updateBccpState(user, e, CcState.WIP);
         });
     }
+
+    @Transactional
+    public void updateStateCcs(AuthenticatedPrincipal user, CcUpdateStateListRequest request) {
+        request.getAccManifestIds().forEach(e -> {
+            ccNodeService.updateAccState(user, e, CcState.valueOf(request.getToState()));
+        });
+        request.getAsccpManifestIds().forEach(e -> {
+            ccNodeService.updateAsccpState(user, e, CcState.valueOf(request.getToState()));
+        });
+        request.getBccpManifestIds().forEach(e -> {
+            ccNodeService.updateBccpState(user, e, CcState.valueOf(request.getToState()));
+        });
+    }
+
+    @Transactional
+    public void transferOwnershipList(AuthenticatedPrincipal user, CcTransferOwnerShipListRequest request) {
+        request.getAccManifestIds().forEach(e -> {
+            transferOwnership(user, "ACC", e, request.getTargetLoginId());
+        });
+        request.getAsccpManifestIds().forEach(e -> {
+            transferOwnership(user, "ASCCP", e, request.getTargetLoginId());
+        });
+        request.getBccpManifestIds().forEach(e -> {
+            transferOwnership(user, "BCCP", e, request.getTargetLoginId());
+        });
+    }
 }
 

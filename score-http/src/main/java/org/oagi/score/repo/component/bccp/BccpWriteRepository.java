@@ -397,6 +397,8 @@ public class BccpWriteRepository {
             bccpRecord.setOwnerUserId(userId);
         } else if (prevState != CcState.Deleted && !bccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        } else if (bccpRecord.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + bccpRecord.getDen() + "' dose not have NamespaceId.");
         }
 
         // update bccp state.

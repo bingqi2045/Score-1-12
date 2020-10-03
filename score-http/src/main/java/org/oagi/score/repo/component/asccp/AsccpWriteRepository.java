@@ -440,6 +440,8 @@ public class AsccpWriteRepository {
             asccpRecord.setOwnerUserId(userId);
         } else if (prevState != CcState.Deleted && !asccpRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        } else if (asccpRecord.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + asccpRecord.getDen() + "' dose not have NamespaceId.");
         }
 
         // update asccp state.

@@ -114,17 +114,28 @@ public class CcListController {
         return ResponseEntity.noContent().build();
     }
 
-    @RequestMapping(value = "/core_component/state/{type}",
+    @RequestMapping(value = "/core_component/transfer_ownership/multiple",
+            method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity transferOwnership(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                            @RequestBody CcTransferOwnerShipListRequest request) {
+        service.transferOwnershipList(user, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/core_component/state/multiple",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateCcState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @PathVariable("type") String type,
-                                            @RequestBody CcUpdateStateListRequest ccUpdateStateListRequest) {
-        if (type.toUpperCase().equals(CcState.Deleted.name().toUpperCase())) {
-            service.deleteCcs(user, ccUpdateStateListRequest);
+                                            @RequestBody CcUpdateStateListRequest request) {
+        if (request.getAction().equals("Restore")) {
+            service.restoreCcs(user, request);
+        } else if (request.getAction().equals("Delete")) {
+            service.deleteCcs(user, request);
         } else {
-            service.restoreCcs(user, ccUpdateStateListRequest);
+            service.updateStateCcs(user, request);
         }
+
         return ResponseEntity.noContent().build();
     }
 

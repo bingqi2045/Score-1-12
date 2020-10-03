@@ -702,6 +702,8 @@ public class AccWriteRepository {
             accRecord.setOwnerUserId(userId);
         } else if (prevState != CcState.Deleted && !accRecord.getOwnerUserId().equals(userId)) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        } else if (accRecord.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + accRecord.getDen() + "' dose not have NamespaceId.");
         }
 
         // update acc state.
