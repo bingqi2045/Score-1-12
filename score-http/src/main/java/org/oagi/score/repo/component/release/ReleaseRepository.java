@@ -7,6 +7,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -34,6 +36,10 @@ import static org.oagi.score.gateway.http.api.release_management.data.ReleaseSta
 
 @Repository
 public class ReleaseRepository implements SrtRepository<Release> {
+    private Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap<>();
+    private Map<ULong, ULong> prevNextAsccpManifestIdMap = new HashMap<>();
+    private Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap<>();
+    private Map<ULong, ULong> prevNextBdtManifestIdMap = new HashMap<>();
 
     @Autowired
     private DSLContext dslContext;
@@ -184,6 +190,13 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .execute();
     }
 
+    public void clear() {
+        prevNextAccManifestIdMap.clear();
+        prevNextAsccpManifestIdMap.clear();
+        prevNextBccpManifestIdMap.clear();
+        prevNextBdtManifestIdMap.clear();
+    }
+
     public void copyWorkingManifestsTo(BigInteger releaseId) {
         copyWorkingManifestsTo(
                 releaseId, Arrays.asList(CcState.Published),
@@ -216,21 +229,21 @@ public class ReleaseRepository implements SrtRepository<Release> {
             // copying manifests from 'Working' release
             List<AccManifestRecord> accManifestRecords = getAccManifestRecordsInWorking(
                     states, accManifestIds);
-            Map<ULong, ULong> prevNextAccManifestIdMap = copyAccManifests(
-                    releaseRecord, accManifestRecords);
+            prevNextAccManifestIdMap.putAll(copyAccManifests(
+                    releaseRecord, accManifestRecords));
 
             List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking(
                     states, asccpManifestIds);
-            Map<ULong, ULong> prevNextAsccpManifestIdMap = copyAsccpManifests(
-                    releaseRecord, asccpManifestRecords, prevNextAccManifestIdMap);
+            prevNextAsccpManifestIdMap.putAll(copyAsccpManifests(
+                    releaseRecord, asccpManifestRecords, prevNextAccManifestIdMap));
 
             List<DtManifestRecord> bdtManifestRecords = getBdtManifestRecordsInWorking(states, bdtManifestIds);
-            Map<ULong, ULong> prevNextBdtManifestIdMap =  copyBdtManifests(releaseRecord, bdtManifestRecords);
+            prevNextBdtManifestIdMap.putAll(copyBdtManifests(releaseRecord, bdtManifestRecords));
 
             List<BccpManifestRecord> bccpManifestRecords = getBccpManifestRecordsInWorking(
                     states, bccpManifestIds);
-            Map<ULong, ULong> prevNextBccpManifestIdMap = copyBccpManifests(
-                    releaseRecord, bccpManifestRecords, prevNextBdtManifestIdMap);
+            prevNextBccpManifestIdMap.putAll(copyBccpManifests(
+                    releaseRecord, bccpManifestRecords, prevNextBdtManifestIdMap));
 
             List<AsccManifestRecord> asccManifestRecords = getAsccManifestRecordsInWorking(
                     states, accManifestIds);

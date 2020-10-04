@@ -438,7 +438,8 @@ public class AsccpWriteRepository {
         // Change owner of CC when it restored.
         if (prevState == CcState.Deleted && nextState == CcState.WIP) {
             asccpRecord.setOwnerUserId(userId);
-        } else if (prevState != CcState.Deleted && !asccpRecord.getOwnerUserId().equals(userId)) {
+        } else if (prevState != CcState.Deleted && !asccpRecord.getOwnerUserId().equals(userId)
+                && !prevState.canForceMove(request.getToState())) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         } else if (asccpRecord.getNamespaceId() == null) {
             throw new IllegalArgumentException("'" + asccpRecord.getDen() + "' dose not have NamespaceId.");

@@ -38,4 +38,15 @@ public enum CcState {
         }
     }
 
+    public boolean canForceMove(CcState to) {
+        switch (this) {
+            case Candidate:
+                return (to == ReleaseDraft);
+            case ReleaseDraft:
+                return (to == Published || to == Candidate);
+            default:
+                return false;
+        }
+    }
+
 }

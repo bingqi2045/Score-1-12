@@ -395,7 +395,8 @@ public class BccpWriteRepository {
         // Change owner of CC when it restored.
         if (prevState == CcState.Deleted && nextState == CcState.WIP) {
             bccpRecord.setOwnerUserId(userId);
-        } else if (prevState != CcState.Deleted && !bccpRecord.getOwnerUserId().equals(userId)) {
+        } else if (prevState != CcState.Deleted && !bccpRecord.getOwnerUserId().equals(userId)
+                && !prevState.canForceMove(request.getToState())) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         } else if (bccpRecord.getNamespaceId() == null) {
             throw new IllegalArgumentException("'" + bccpRecord.getDen() + "' dose not have NamespaceId.");
