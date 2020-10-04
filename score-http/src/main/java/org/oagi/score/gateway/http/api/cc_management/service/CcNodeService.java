@@ -125,28 +125,7 @@ public class CcNodeService extends EventHandler {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
-        AsccManifestRecord asccManifestRecord = asccReadRepository.getAsccManifestById(asccManifestId);
-        AsccpRecord asccpRecord
-                = asccpReadRepository.getAsccpByManifestId(asccManifestRecord.getToAsccpManifestId().toBigInteger());
-
         asccWriteRepository.deleteAscc(request);
-
-        if (asccpRecord.getType().equals(CcASCCPType.Extension.name())
-            && asccpRecord.getPropertyTerm().equals("Extension")) {
-            AsccpManifestRecord asccpManifestRecord
-                    = asccpReadRepository.getAsccpManifestById(asccManifestRecord.getToAsccpManifestId().toBigInteger());
-
-            BigInteger asccpManifestId = asccpManifestRecord.getAsccpManifestId().toBigInteger();
-            BigInteger accManifestId = asccpManifestRecord.getRoleOfAccManifestId().toBigInteger();
-
-            DeleteAsccpRepositoryRequest deleteAsccpRepositoryRequest
-                    = new DeleteAsccpRepositoryRequest(user, asccpManifestId);
-            asccpWriteRepository.removeAsccp(deleteAsccpRepositoryRequest);
-
-            DeleteAccRepositoryRequest deleteAccRepositoryRequest
-                    = new DeleteAccRepositoryRequest(user, accManifestId);
-            accWriteRepository.removeAcc(deleteAccRepositoryRequest);
-        }
 
         fireEvent(new DeletedAsccEvent());
     }
