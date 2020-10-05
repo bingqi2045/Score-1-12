@@ -704,7 +704,7 @@ public class AccWriteRepository {
                 && !prevState.canForceMove(request.getToState())) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         } else if (accRecord.getNamespaceId() == null) {
-            throw new IllegalArgumentException("'" + accRecord.getDen() + "' dose not have NamespaceId.");
+            throw new IllegalArgumentException("'" + accRecord.getDen() + "' namespace required.");
         }
 
         // update acc state.
