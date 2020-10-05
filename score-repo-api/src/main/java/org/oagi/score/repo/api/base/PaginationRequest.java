@@ -55,8 +55,10 @@ public class PaginationRequest<T> extends Request {
     }
 
     public final int getPageOffset() {
-        int offset = this.getPageIndex() * this.getPageSize();
-        return (offset < 0) ? -1 : offset;
+        if (this.getPageIndex() == -1 && this.getPageSize() == -1) {
+            return -1;
+        }
+        return this.getPageIndex() * this.getPageSize();
     }
 
     public final boolean isPagination() {

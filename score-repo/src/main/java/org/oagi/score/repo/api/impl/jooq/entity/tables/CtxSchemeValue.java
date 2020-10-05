@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRec
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
-    private static final long serialVersionUID = 2008878357;
+    private static final long serialVersionUID = -205180662;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme_value</code>
@@ -61,7 +61,7 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
     /**
      * The column <code>oagi.ctx_scheme_value.value</code>. A short value for the scheme value similar to the code list value.
      */
-    public final TableField<CtxSchemeValueRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "A short value for the scheme value similar to the code list value.");
+    public final TableField<CtxSchemeValueRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "A short value for the scheme value similar to the code list value.");
 
     /**
      * The column <code>oagi.ctx_scheme_value.meaning</code>. The description, explanatiion of the scheme value.
