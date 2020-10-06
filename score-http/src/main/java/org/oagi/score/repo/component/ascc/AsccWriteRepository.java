@@ -12,7 +12,6 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.slf4j.Logger;
@@ -50,15 +49,16 @@ public class AsccWriteRepository {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toAsccpManifestId) {
+    private boolean accAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, String propertyTerm) {
         while(fromAccManifestRecord != null) {
             if(dslContext.selectCount()
                     .from(ASCC_MANIFEST)
-                    .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                    .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
+                    .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                     .where(and(
                             ASCC_MANIFEST.RELEASE_ID.eq(fromAccManifestRecord.getReleaseId()),
                             ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()),
-                            ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(toAsccpManifestId))
+                            ASCCP.PROPERTY_TERM.eq(propertyTerm)
                     ))
                     .fetchOneInto(Integer.class) > 0) {
                 return true;
@@ -91,24 +91,15 @@ public class AsccWriteRepository {
                 ))
                 .fetchOne();
 
+        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
+                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
+
         if (asccpManifestRecord == null) {
             throw new IllegalArgumentException("Target ASCCP does not exist.");
         }
 
-        if (dslContext.selectCount()
-                .from(ASCC_MANIFEST)
-                .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                .where(and(
-                        ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))
-                ))
-                .fetchOneInto(Integer.class) > 0) {
+        if (accAlreadyContainAssociation(accManifestRecord, asccpRecord.getPropertyTerm())) {
             throw new IllegalArgumentException("Target ASCCP has already included.");
-        }
-
-        if (basedAccAlreadyContainAssociation(accManifestRecord, request.getAsccpManifestId())) {
-            throw new IllegalArgumentException("Target ASCCP has already included on based ACC.");
         }
 
         if (dslContext.selectCount()
@@ -122,17 +113,8 @@ public class AsccWriteRepository {
             throw new IllegalArgumentException("Target ASCCP is not reusable.");
         }
 
-
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-        // UEG ascc must be created with Production, Not in Published.
-//        CcState accState = CcState.valueOf(accRecord.getState());
-//        if (accState != request.getInitialState()) {
-//            throw new IllegalArgumentException("The initial state of ASCC must be '" + accState + "'.");
-//        }
-
-        AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
-                .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
 
         if (asccpRecord.getType().equals(CcASCCPType.Extension.name())) {
             if (dslContext.selectCount()

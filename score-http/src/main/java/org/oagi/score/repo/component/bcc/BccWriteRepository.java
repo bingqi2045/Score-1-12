@@ -28,7 +28,6 @@ import static org.oagi.score.data.BCCEntityType.Element;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
-import static org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.ASCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
@@ -49,15 +48,16 @@ public class BccWriteRepository {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    private boolean basedAccAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, BigInteger toBccpManifestId) {
+    private boolean accAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, String propertyTerm) {
         while(fromAccManifestRecord != null) {
             if(dslContext.selectCount()
                     .from(BCC_MANIFEST)
-                    .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                    .join(BCCP_MANIFEST).on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.BCCP_MANIFEST_ID))
+                    .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                     .where(and(
                             BCC_MANIFEST.RELEASE_ID.eq(fromAccManifestRecord.getReleaseId()),
                             BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestRecord.getAccManifestId()),
-                            BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(toBccpManifestId))
+                            BCCP.PROPERTY_TERM.eq(propertyTerm)
                     ))
                     .fetchOneInto(Integer.class) > 0) {
                 return true;
@@ -84,24 +84,15 @@ public class BccWriteRepository {
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId())))
                 .fetchOne();
 
+        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
+                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
+
         if (bccpManifestRecord == null) {
             throw new IllegalArgumentException("Target BCCP does not exist.");
         }
 
-        if (dslContext.selectCount()
-                .from(BCC_MANIFEST)
-                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(and(
-                        BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())),
-                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId())),
-                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))
-                ))
-                .fetchOneInto(Integer.class) > 0) {
+        if(accAlreadyContainAssociation(accManifestRecord, bccpRecord.getPropertyTerm())) {
             throw new IllegalArgumentException("Target BCCP has already included.");
-        }
-
-        if(basedAccAlreadyContainAssociation(accManifestRecord, request.getBccpManifestId())) {
-            throw new IllegalArgumentException("Target BCCP has already included on based ACC.");
         }
 
         AccRecord accRecord = dslContext.selectFrom(ACC)
@@ -110,9 +101,6 @@ public class BccWriteRepository {
         if (accState != request.getInitialState()) {
             throw new IllegalArgumentException("The initial state of BCC must be '" + accState + "'.");
         }
-
-        BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
-                .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
 
         BccRecord bcc = new BccRecord();
         bcc.setGuid(SrtGuid.randomGuid());

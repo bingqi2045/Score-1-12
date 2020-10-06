@@ -84,7 +84,7 @@ public class ReleaseService implements InitializingBean {
         return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
                 .from(RELEASE)
                 .where(conditions)
-                .orderBy(RELEASE.RELEASE_NUM)
+                .orderBy(RELEASE.RELEASE_NUM.desc())
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).toBigInteger());
@@ -363,10 +363,12 @@ public class ReleaseService implements InitializingBean {
                     request.getAssignedBccpComponentManifestIds(),
                     request.getAssignedCodeListComponentManifestIds());
 
+
+            onReleaseCreateRequestEventReceived(releaseCreateRequestEvent);
             /*
              * Message Publishing
              */
-            redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
+            // redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
         }
 
         return response;

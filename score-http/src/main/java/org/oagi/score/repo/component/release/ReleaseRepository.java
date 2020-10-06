@@ -232,6 +232,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             prevNextAccManifestIdMap.putAll(copyAccManifests(
                     releaseRecord, accManifestRecords));
 
+            updateBasedAccManifests(accManifestRecords, prevNextAccManifestIdMap);
+
             List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking(
                     states, asccpManifestIds);
             prevNextAsccpManifestIdMap.putAll(copyAsccpManifests(
@@ -450,17 +452,20 @@ public class ReleaseRepository implements SrtRepository<Release> {
             prevNextAccManifestIdMap.put(prevAccManifestId, e.getAccManifestId());
         });
 
-        accManifestRecords.stream().filter(e -> e.getBasedAccManifestId() != null)
-                .forEach(e -> {
-                    if (prevNextAccManifestIdMap.containsKey(e.getBasedAccManifestId())) {
-                        e.setBasedAccManifestId(
-                                prevNextAccManifestIdMap.get(e.getBasedAccManifestId())
-                        );
-                        e.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
-                    }
-                });
-
         return prevNextAccManifestIdMap;
+    }
+
+    private void updateBasedAccManifests(List<AccManifestRecord> accManifestRecords,
+                                    Map<ULong, ULong> prevNextAccManifestIdMap) {
+        accManifestRecords.stream().filter(e -> e.getBasedAccManifestId() != null)
+            .forEach(e -> {
+                if (prevNextAccManifestIdMap.containsKey(e.getBasedAccManifestId())) {
+                    e.setBasedAccManifestId(
+                            prevNextAccManifestIdMap.get(e.getBasedAccManifestId())
+                    );
+                    e.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
+                }
+            });
     }
 
     private Map<ULong, ULong> copyAsccpManifests(ReleaseRecord releaseRecord,
