@@ -363,12 +363,10 @@ public class ReleaseService implements InitializingBean {
                     request.getAssignedBccpComponentManifestIds(),
                     request.getAssignedCodeListComponentManifestIds());
 
-
-            onReleaseCreateRequestEventReceived(releaseCreateRequestEvent);
             /*
              * Message Publishing
              */
-            // redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
+            redisTemplate.convertAndSend(RELEASE_CREATE_REQUEST_EVENT, releaseCreateRequestEvent);
         }
 
         return response;
@@ -399,6 +397,7 @@ public class ReleaseService implements InitializingBean {
                     Collections.emptyList(),
                     Collections.emptyList()
             );
+            repository.updateBaseAccManifests(releaseCreateRequestEvent.getReleaseId());
             repository.updateState(releaseCreateRequestEvent.getUserId(),
                     releaseCreateRequestEvent.getReleaseId(), ReleaseState.Draft);
         } finally {

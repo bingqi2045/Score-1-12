@@ -232,8 +232,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
             prevNextAccManifestIdMap.putAll(copyAccManifests(
                     releaseRecord, accManifestRecords));
 
-            updateBasedAccManifests(accManifestRecords, prevNextAccManifestIdMap);
-
             List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking(
                     states, asccpManifestIds);
             prevNextAsccpManifestIdMap.putAll(copyAsccpManifests(
@@ -271,6 +269,19 @@ public class ReleaseRepository implements SrtRepository<Release> {
             releaseRecord.setReleaseNote(e.getMessage());
             releaseRecord.update(RELEASE.RELEASE_NOTE);
         }
+    }
+
+    public void updateBaseAccManifests(BigInteger releaseId) {
+        List<AccManifestRecord> accManifestRecords = getInsertedAccManifestRecords(releaseId);
+        updateBasedAccManifests(accManifestRecords, prevNextAccManifestIdMap);
+    }
+
+    private List<AccManifestRecord> getInsertedAccManifestRecords(BigInteger releaseId) {
+        return dslContext.select(ACC_MANIFEST.fields())
+                .from(ACC_MANIFEST)
+                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .fetchInto(AccManifestRecord.class);
     }
 
     private List<AccManifestRecord> getAccManifestRecordsInWorking(List<CcState> states,
