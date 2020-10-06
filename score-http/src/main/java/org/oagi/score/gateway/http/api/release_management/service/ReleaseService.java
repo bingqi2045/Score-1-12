@@ -395,6 +395,7 @@ public class ReleaseService implements InitializingBean {
                     releaseCreateRequestEvent.getCodeListManifestIds(),
                     Collections.emptyList(),
                     Collections.emptyList(),
+                    Collections.emptyList(),
                     Collections.emptyList()
             );
             repository.updateBaseAccManifests(releaseCreateRequestEvent.getReleaseId());

@@ -5,6 +5,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record8;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
+import org.oagi.score.data.AgencyIdList;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
@@ -206,6 +207,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 Collections.emptyList(),
                 Collections.emptyList(),
                 Collections.emptyList(),
+                Collections.emptyList(),
                 Collections.emptyList()
         );
     }
@@ -219,7 +221,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
             List<BigInteger> codeListManifestIds,
             List<BigInteger> bdtManifestIds,
             List<BigInteger> bdtScManifestIds,
-            List<BigInteger> xbtManifestIds) {
+            List<BigInteger> xbtManifestIds,
+            List<BigInteger> agencyIdListManifestIds) {
 
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
@@ -264,6 +267,9 @@ public class ReleaseRepository implements SrtRepository<Release> {
             List<CodeListManifestRecord> codeListManifestRecords = getCodeListManifestRecordsInWorking(
                     states, codeListManifestIds);
             copyCodeListManifests(releaseRecord, codeListManifestRecords);
+
+            List<AgencyIdListManifestRecord> agencyIdListManifestRecords = getAgencyIdListManifestRecordsInWorking(states, agencyIdListManifestIds);
+            copyAgencyIdListManifests(releaseRecord, agencyIdListManifestRecords);
 
         } catch (Exception e) {
             releaseRecord.setReleaseNote(e.getMessage());
@@ -446,6 +452,26 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 .fetchInto(CodeListManifestRecord.class);
     }
 
+    private List<AgencyIdListManifestRecord> getAgencyIdListManifestRecordsInWorking(List<CcState> states,
+                                                                   List<BigInteger> agencyIdListManifestIds) {
+        List<Condition> conditions = new ArrayList();
+        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
+
+        if (agencyIdListManifestIds != null && agencyIdListManifestIds.size() > 0) {
+            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds));
+        }
+
+        if (states.indexOf(CcState.Published) > -1) {
+            return dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
+                    .from(AGENCY_ID_LIST_MANIFEST)
+                    .join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                    .where(conditions)
+                    .fetchInto(AgencyIdListManifestRecord.class);
+        }
+
+        return Collections.emptyList();
+    }
+
     private Map<ULong, ULong> copyAccManifests(ReleaseRecord releaseRecord,
                                                List<AccManifestRecord> accManifestRecords) {
         Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap();
@@ -603,10 +629,53 @@ public class ReleaseRepository implements SrtRepository<Release> {
                             .fetchOne().getCodeListManifestId()
             );
 
+            List<CodeListValueManifestRecord> codeListValueManifestRecords = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
+                    .from(CODE_LIST_VALUE_MANIFEST)
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(prevCodeListManifestId))
+                    .fetchInto(CodeListValueManifestRecord.class);
+
+            codeListValueManifestRecords.forEach(v -> {
+                v.setCodeListValueManifestId(null);
+                v.setCodeListManifestId(e.getCodeListManifestId());
+                v.setReleaseId(releaseRecord.getReleaseId());
+                v.insert();
+            });
             prevNextCodeListManifestIdMap.put(prevCodeListManifestId, e.getCodeListManifestId());
         });
 
         return prevNextCodeListManifestIdMap;
+    }
+
+    private Map<ULong, ULong> copyAgencyIdListManifests(ReleaseRecord releaseRecord,
+                                                    List<AgencyIdListManifestRecord> agencyIdListManifestRecords) {
+        Map<ULong, ULong> prevNextAgencyIdListManifestIdMap = new HashMap();
+        agencyIdListManifestRecords.forEach(e -> {
+            ULong prevAgencyIdListManifestId = e.getAgencyIdListManifestId();
+
+            e.setAgencyIdListManifestId(null);
+            e.setReleaseId(releaseRecord.getReleaseId());
+            e.setAgencyIdListManifestId(
+                    dslContext.insertInto(AGENCY_ID_LIST_MANIFEST)
+                            .set(e).returning(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                            .fetchOne().getAgencyIdListManifestId()
+            );
+
+            List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords =
+                    dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.fields())
+                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(prevAgencyIdListManifestId))
+                    .fetchInto(AgencyIdListValueManifestRecord.class);
+
+            agencyIdListValueManifestRecords.forEach(v -> {
+                v.setAgencyIdListValueManifestId(null);
+                v.setAgencyIdListManifestId(e.getAgencyIdListManifestId());
+                v.setReleaseId(releaseRecord.getReleaseId());
+                v.insert();
+            });
+            prevNextAgencyIdListManifestIdMap.put(prevAgencyIdListManifestId, e.getAgencyIdListManifestId());
+        });
+
+        return prevNextAgencyIdListManifestIdMap;
     }
 
     private Map<ULong, ULong> copyAsccManifests(ReleaseRecord releaseRecord,
