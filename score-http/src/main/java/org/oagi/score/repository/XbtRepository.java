@@ -1,9 +1,8 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record19;
+import org.jooq.Record16;
 import org.jooq.SelectOnConditionStep;
-import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.Xbt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,27 +21,15 @@ public class XbtRepository implements SrtRepository<Xbt> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record19<
-            ULong, ULong, ULong, ULong, String,
-            ULong, ULong, ULong, String, LocalDateTime,
-            Byte, String, String, LocalDateTime, String,
-            UInteger, UInteger, String, Integer>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record16<ULong, ULong, ULong, String, ULong, ULong, ULong, String, LocalDateTime,
+            Byte, String, String, LocalDateTime, String, String, Integer>> getSelectJoinStep() {
         return dslContext.select(XBT.XBT_ID, XBT.CREATED_BY,
-                XBT.LAST_UPDATED_BY, MODULE_SET_ASSIGNMENT.MODULE_ID, XBT.NAME, XBT.OWNER_USER_ID,
+                XBT.LAST_UPDATED_BY, XBT.NAME, XBT.OWNER_USER_ID,
                 XBT_MANIFEST.RELEASE_ID, XBT.SUBTYPE_OF_XBT_ID, XBT.BUILTIN_TYPE,
                 XBT.CREATION_TIMESTAMP, XBT.IS_DEPRECATED, XBT.JBT_DRAFT05_MAP, XBT.OPENAPI30_MAP,
-                XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_DOC,
-                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM, XBT.SCHEMA_DEFINITION,
-                XBT.STATE)
+                XBT.LAST_UPDATE_TIMESTAMP, XBT.REVISION_DOC, XBT.SCHEMA_DEFINITION, XBT.STATE)
                 .from(XBT)
-                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID))
-                .join(MODULE_SET_RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(MODULE_SET_RELEASE.RELEASE_ID))
-                .join(MODULE_XBT_MANIFEST).on(and(
-                        MODULE_XBT_MANIFEST.XBT_MANIFEST_ID.eq(XBT_MANIFEST.XBT_MANIFEST_ID),
-                        MODULE_XBT_MANIFEST.MODULE_SET_RELEASE_ID.eq(MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID)
-                ))
-                .join(MODULE_SET_ASSIGNMENT).on(MODULE_XBT_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
-                .join(REVISION).on(XBT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
+                .join(XBT_MANIFEST).on(XBT.XBT_ID.eq(XBT_MANIFEST.XBT_ID));
     }
 
     @Override

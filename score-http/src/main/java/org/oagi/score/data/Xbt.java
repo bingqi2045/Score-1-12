@@ -15,17 +15,13 @@ public class Xbt {
     private String openapi30Map;
     private BigInteger subtypeOfXbtId = BigInteger.ZERO;
     private String schemaDefinition;
-    private BigInteger moduleId = BigInteger.ZERO;
     private BigInteger releaseId = BigInteger.ZERO;
-    private String revisionDoc;
     private Integer state;
     private BigInteger createdBy = BigInteger.ZERO;
     private BigInteger ownerUserId = BigInteger.ZERO;
     private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
     private Date lastUpdateTimestamp;
-    private BigInteger revisionId = BigInteger.ZERO;
-    private BigInteger currentXbtId = BigInteger.ZERO;
     private Boolean deprecated;
 
 }
