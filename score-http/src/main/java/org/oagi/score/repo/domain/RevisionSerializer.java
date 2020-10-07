@@ -324,7 +324,7 @@ public class RevisionSerializer {
         if (properties.has("bdtId")) {
             BigInteger bdtId = properties.get("bdtId").getAsJsonObject().get("value").getAsBigInteger();
             properties.addProperty("bdtDataTypeTerm",
-                    resolver.getAccObjectClassTerm(ULong.valueOf(bdtId))
+                    resolver.getDtDen(ULong.valueOf(bdtId))
             );
         }
         if (properties.has("namespaceId")) {

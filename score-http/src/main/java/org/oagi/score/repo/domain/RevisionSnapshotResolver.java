@@ -87,11 +87,11 @@ public class RevisionSnapshotResolver {
                 .fetchOneInto(String.class);
     }
 
-    public String getDtDataTypeTerm(ULong bdtId) {
+    public String getDtDen(ULong bdtId) {
         if (bdtId == null || bdtId.longValue() <= 0L) {
             return "";
         }
-        return dslContext.select(DT.DATA_TYPE_TERM)
+        return dslContext.select(DT.DEN)
                 .from(DT)
                 .where(DT.DT_ID.eq(bdtId)).fetchOneInto(String.class);
     }
