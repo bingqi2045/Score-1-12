@@ -636,11 +636,6 @@ public class CcNodeService extends EventHandler {
         UpdateAccStateRepositoryResponse repositoryResponse =
                 accWriteRepository.updateAccState(repositoryRequest);
 
-        // Do not sync data b/w ACC and Extension components #916
-//        if (hasExtensionAssociation(user, accManifestId)) {
-//            updateExtensionComponentState(user, accManifestId, fromState, toState);
-//        }
-
         fireEvent(new UpdatedAccStateEvent());
 
         return repositoryResponse.getAccManifestId();

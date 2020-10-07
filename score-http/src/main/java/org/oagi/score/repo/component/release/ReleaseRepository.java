@@ -5,10 +5,8 @@ import org.jooq.DSLContext;
 import org.jooq.Record8;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AgencyIdList;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
@@ -28,8 +26,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.or;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
@@ -198,23 +195,8 @@ public class ReleaseRepository implements SrtRepository<Release> {
         prevNextBdtManifestIdMap.clear();
     }
 
-    public void copyWorkingManifestsTo(BigInteger releaseId) {
-        copyWorkingManifestsTo(
-                releaseId, Arrays.asList(CcState.Published),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()
-        );
-    }
-
     public void copyWorkingManifestsTo(
             BigInteger releaseId,
-            List<CcState> states,
             List<BigInteger> accManifestIds,
             List<BigInteger> asccpManifestIds,
             List<BigInteger> bccpManifestIds,
@@ -227,49 +209,61 @@ public class ReleaseRepository implements SrtRepository<Release> {
         ReleaseRecord releaseRecord = dslContext.selectFrom(RELEASE)
                 .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .fetchOne();
+        ReleaseRecord workingReleaseRecord = dslContext.selectFrom(RELEASE)
+                .where(RELEASE.RELEASE_NUM.eq("Working"))
+                .fetchOne();
+
+        if (workingReleaseRecord == null) {
+            throw new IllegalStateException("Can not find 'Working' release");
+        }
 
         try {
             // copying manifests from 'Working' release
-            List<AccManifestRecord> accManifestRecords = getAccManifestRecordsInWorking(
-                    states, accManifestIds);
-            prevNextAccManifestIdMap.putAll(copyAccManifests(
-                    releaseRecord, accManifestRecords));
+            copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
+            updateAccBasedAccManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<AsccpManifestRecord> asccpManifestRecords = getAsccpManifestRecordsInWorking(
-                    states, asccpManifestIds);
-            prevNextAsccpManifestIdMap.putAll(copyAsccpManifests(
-                    releaseRecord, asccpManifestRecords, prevNextAccManifestIdMap));
+            copyDtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
 
-            List<DtManifestRecord> bdtManifestRecords = getBdtManifestRecordsInWorking(states, bdtManifestIds);
-            prevNextBdtManifestIdMap.putAll(copyBdtManifests(releaseRecord, bdtManifestRecords));
+            copyAsccpManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), asccpManifestIds);
+            updateAsccpRoleOfAccManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<BccpManifestRecord> bccpManifestRecords = getBccpManifestRecordsInWorking(
-                    states, bccpManifestIds);
-            prevNextBccpManifestIdMap.putAll(copyBccpManifests(
-                    releaseRecord, bccpManifestRecords, prevNextBdtManifestIdMap));
+            copyBccpManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), bccpManifestIds);
+            updateBccpDtManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<AsccManifestRecord> asccManifestRecords = getAsccManifestRecordsInWorking(
-                    states, accManifestIds);
-            copyAsccManifests(releaseRecord, asccManifestRecords,
-                    prevNextAccManifestIdMap, prevNextAsccpManifestIdMap);
+            copyAsccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
+            updateAsccRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<BccManifestRecord> bccManifestRecords = getBccManifestRecordsInWorking(
-                    states, accManifestIds);
-            copyBccManifests(releaseRecord, bccManifestRecords,
-                    prevNextAccManifestIdMap, prevNextBccpManifestIdMap);
+            copyBccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
+            updateBccRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<DtScManifestRecord> bdtScManifestRecords = getBdtScManifestRecordsInWorking(states, bdtScManifestIds);
-            copyBdtScManifests(releaseRecord, bdtScManifestRecords, prevNextBdtManifestIdMap);
+            copyDtScManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), bdtScManifestIds);
+            updateBdtScRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<XbtManifestRecord> XbtManifestRecords = getXbtManifestRecordsInWorking(states, xbtManifestIds);
-            copyXbtManifests(releaseRecord, XbtManifestRecords);
+            copyXbtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), xbtManifestIds);
 
-            List<CodeListManifestRecord> codeListManifestRecords = getCodeListManifestRecordsInWorking(
-                    states, codeListManifestIds);
-            copyCodeListManifests(releaseRecord, codeListManifestRecords);
+            copyCodeListManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListManifestIds);
+            updateCodeListRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
-            List<AgencyIdListManifestRecord> agencyIdListManifestRecords = getAgencyIdListManifestRecordsInWorking(states, agencyIdListManifestIds);
-            copyAgencyIdListManifests(releaseRecord, agencyIdListManifestRecords);
+            copyCodeListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), codeListManifestIds);
+            updateCodeListValueRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
+
+            copyAgencyIdListManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListManifestIds);
+            updateAgencyIdListRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
+
+            copyAgencyIdListValueManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
+                    workingReleaseRecord.getReleaseId().toBigInteger(), agencyIdListManifestIds);
+            updateAgencyIdListValueRelationManifestIds(releaseRecord.getReleaseId().toBigInteger());
 
         } catch (Exception e) {
             releaseRecord.setReleaseNote(e.getMessage());
@@ -277,473 +271,392 @@ public class ReleaseRepository implements SrtRepository<Release> {
         }
     }
 
-    public void updateBaseAccManifests(BigInteger releaseId) {
-        List<AccManifestRecord> accManifestRecords = getInsertedAccManifestRecords(releaseId);
-        updateBasedAccManifests(accManifestRecords, prevNextAccManifestIdMap);
+    private void copyAccManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                   List<BigInteger> accManifestIds) {
+        dslContext.insertInto(ACC_MANIFEST,
+                ACC_MANIFEST.RELEASE_ID,
+                ACC_MANIFEST.ACC_ID,
+                ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
+                ACC_MANIFEST.CONFLICT,
+                ACC_MANIFEST.REVISION_ID,
+                ACC_MANIFEST.PREV_ACC_MANIFEST_ID,
+                ACC_MANIFEST.NEXT_ACC_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.ACC_ID,
+                        ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
+                        ACC_MANIFEST.CONFLICT,
+                        ACC_MANIFEST.REVISION_ID,
+                        ACC_MANIFEST.PREV_ACC_MANIFEST_ID,
+                        ACC_MANIFEST.ACC_MANIFEST_ID)
+                        .from(ACC_MANIFEST)
+                        .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                        .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(ACC.STATE.eq(CcState.Published.name()), // WIP
+                                        ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
-    private List<AccManifestRecord> getInsertedAccManifestRecords(BigInteger releaseId) {
-        return dslContext.select(ACC_MANIFEST.fields())
-                .from(ACC_MANIFEST)
-                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)))
-                .fetchInto(AccManifestRecord.class);
+    private void copyDtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                   List<BigInteger> dtManifestIds) {
+        dslContext.insertInto(DT_MANIFEST,
+                DT_MANIFEST.RELEASE_ID,
+                DT_MANIFEST.DT_ID,
+                DT_MANIFEST.CONFLICT,
+                DT_MANIFEST.REVISION_ID,
+                DT_MANIFEST.PREV_DT_MANIFEST_ID,
+                DT_MANIFEST.NEXT_DT_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        DT_MANIFEST.DT_ID,
+                        DT_MANIFEST.CONFLICT,
+                        DT_MANIFEST.REVISION_ID,
+                        DT_MANIFEST.PREV_DT_MANIFEST_ID,
+                        DT_MANIFEST.DT_MANIFEST_ID)
+                        .from(DT_MANIFEST)
+                        .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                        .where(and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(DT.STATE.eq(CcState.Published.name()),
+                                        DT_MANIFEST.DT_MANIFEST_ID.in(dtManifestIds)))))).execute();
     }
 
-    private List<AccManifestRecord> getAccManifestRecordsInWorking(List<CcState> states,
-                                                                   List<BigInteger> accManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (accManifestIds != null && accManifestIds.size() > 0) {
-            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
-        }
-
-        return dslContext.select(ACC_MANIFEST.fields())
-                .from(ACC_MANIFEST)
-                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .where(conditions)
-                .fetchInto(AccManifestRecord.class);
+    private void copyAsccpManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                   List<BigInteger> asccpManifestIds) {
+        dslContext.insertInto(ASCCP_MANIFEST,
+                ASCCP_MANIFEST.RELEASE_ID,
+                ASCCP_MANIFEST.ASCCP_ID,
+                ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
+                ASCCP_MANIFEST.CONFLICT,
+                ASCCP_MANIFEST.REVISION_ID,
+                ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID,
+                ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        ASCCP_MANIFEST.ASCCP_ID,
+                        ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
+                        ASCCP_MANIFEST.CONFLICT,
+                        ASCCP_MANIFEST.REVISION_ID,
+                        ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID,
+                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                        .from(ASCCP_MANIFEST)
+                        .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
+                        .where(and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(ASCCP.STATE.eq(CcState.Published.name()),
+                                        ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)))))).execute();
     }
 
-    private List<AsccManifestRecord> getAsccManifestRecordsInWorking(List<CcState> states,
-                                                                     List<BigInteger> accManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (accManifestIds != null && accManifestIds.size() > 0) {
-            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
-        }
-
-        return dslContext.select(ASCC_MANIFEST.fields())
-                .from(ASCC_MANIFEST)
-                .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(RELEASE).on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(conditions)
-                .fetchInto(AsccManifestRecord.class);
+    private void copyBccpManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                     List<BigInteger> bccpManifestIds) {
+        dslContext.insertInto(BCCP_MANIFEST,
+                BCCP_MANIFEST.RELEASE_ID,
+                BCCP_MANIFEST.BCCP_ID,
+                BCCP_MANIFEST.BDT_MANIFEST_ID,
+                BCCP_MANIFEST.CONFLICT,
+                BCCP_MANIFEST.REVISION_ID,
+                BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID,
+                BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        BCCP_MANIFEST.BCCP_ID,
+                        BCCP_MANIFEST.BDT_MANIFEST_ID,
+                        BCCP_MANIFEST.CONFLICT,
+                        BCCP_MANIFEST.REVISION_ID,
+                        BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID,
+                        BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                        .from(BCCP_MANIFEST)
+                        .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
+                        .where(and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(BCCP.STATE.eq(CcState.Published.name()),
+                                        BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds)))))).execute();
     }
 
-    private List<BccManifestRecord> getBccManifestRecordsInWorking(List<CcState> states,
-                                                                   List<BigInteger> accManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(ACC.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (accManifestIds != null && accManifestIds.size() > 0) {
-            conditions.add(ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds));
-        }
-
-        return dslContext.select(BCC_MANIFEST.fields())
-                .from(BCC_MANIFEST)
-                .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(conditions)
-                .fetchInto(BccManifestRecord.class);
+    private void copyAsccManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                   List<BigInteger> accManifestIds) {
+        dslContext.insertInto(ASCC_MANIFEST,
+                ASCC_MANIFEST.RELEASE_ID,
+                ASCC_MANIFEST.ASCC_ID,
+                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
+                ASCC_MANIFEST.CONFLICT,
+                ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID,
+                ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        ASCC_MANIFEST.ASCC_ID,
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                        ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
+                        ASCC_MANIFEST.CONFLICT,
+                        ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID,
+                        ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                        .from(ASCC_MANIFEST)
+                        .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                        .where(and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(ASCC.STATE.eq(CcState.Published.name()),
+                                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
-    private List<AsccpManifestRecord> getAsccpManifestRecordsInWorking(List<CcState> states,
-                                                                       List<BigInteger> asccpManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(ASCCP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (asccpManifestIds != null && asccpManifestIds.size() > 0) {
-            conditions.add(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds));
-        }
-
-        return dslContext.select(ASCCP_MANIFEST.fields())
-                .from(ASCCP_MANIFEST)
-                .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
-                .where(conditions)
-                .fetchInto(AsccpManifestRecord.class);
+    private void copyBccManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                    List<BigInteger> accManifestIds) {
+        dslContext.insertInto(BCC_MANIFEST,
+                BCC_MANIFEST.RELEASE_ID,
+                BCC_MANIFEST.BCC_ID,
+                BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
+                BCC_MANIFEST.CONFLICT,
+                BCC_MANIFEST.PREV_BCC_MANIFEST_ID,
+                BCC_MANIFEST.NEXT_BCC_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        BCC_MANIFEST.BCC_ID,
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                        BCC_MANIFEST.TO_BCCP_MANIFEST_ID,
+                        BCC_MANIFEST.CONFLICT,
+                        BCC_MANIFEST.PREV_BCC_MANIFEST_ID,
+                        BCC_MANIFEST.BCC_MANIFEST_ID)
+                        .from(BCC_MANIFEST)
+                        .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                        .where(and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(BCC.STATE.eq(CcState.Published.name()),
+                                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
-    private List<BccpManifestRecord> getBccpManifestRecordsInWorking(List<CcState> states,
-                                                                     List<BigInteger> bccpManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(BCCP.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (bccpManifestIds != null && bccpManifestIds.size() > 0) {
-            conditions.add(BCCP_MANIFEST.BCCP_MANIFEST_ID.in(bccpManifestIds));
-        }
-
-        return dslContext.select(BCCP_MANIFEST.fields())
-                .from(BCCP_MANIFEST)
-                .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
-                .where(conditions)
-                .fetchInto(BccpManifestRecord.class);
+    private void copyDtScManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                   List<BigInteger> dtScManifestIds) {
+        dslContext.insertInto(DT_SC_MANIFEST,
+                DT_SC_MANIFEST.RELEASE_ID,
+                DT_SC_MANIFEST.DT_SC_ID,
+                DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
+                DT_SC_MANIFEST.CONFLICT,
+                DT_SC_MANIFEST.REVISION_ID,
+                DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
+                DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        DT_SC_MANIFEST.DT_SC_ID,
+                        DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
+                        DT_SC_MANIFEST.CONFLICT,
+                        DT_SC_MANIFEST.REVISION_ID,
+                        DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
+                        DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
+                        .from(DT_SC_MANIFEST)
+                        .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)))).execute();
     }
 
-    private List<DtManifestRecord> getBdtManifestRecordsInWorking(List<CcState> states,
-                                                                  List<BigInteger> bdtManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(DT.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-
-        if (bdtManifestIds != null && bdtManifestIds.size() > 0) {
-            conditions.add(DT_MANIFEST.DT_MANIFEST_ID.in(bdtManifestIds));
-        }
-
-        return dslContext.select(DT_MANIFEST.fields())
-                .from(DT_MANIFEST)
-                .join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-                .where(conditions)
-                .fetchInto(DtManifestRecord.class);
+    private void copyXbtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                    List<BigInteger> xbtManifestIds) {
+        dslContext.insertInto(XBT_MANIFEST,
+                XBT_MANIFEST.RELEASE_ID,
+                XBT_MANIFEST.XBT_ID,
+                XBT_MANIFEST.CONFLICT,
+                XBT_MANIFEST.PREV_XBT_MANIFEST_ID,
+                XBT_MANIFEST.NEXT_XBT_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        XBT_MANIFEST.XBT_ID,
+                        XBT_MANIFEST.CONFLICT,
+                        XBT_MANIFEST.PREV_XBT_MANIFEST_ID,
+                        XBT_MANIFEST.XBT_MANIFEST_ID)
+                        .from(XBT_MANIFEST)
+                        .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId))))
+                        .execute();
     }
 
-    private List<DtScManifestRecord> getBdtScManifestRecordsInWorking(List<CcState> states,
-                                                                      List<BigInteger> bdtScManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-
-        if (bdtScManifestIds != null && bdtScManifestIds.size() > 0) {
-            conditions.add(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.in(bdtScManifestIds));
-        }
-
-        if (states.indexOf(CcState.Published) > -1) {
-            return dslContext.select(DT_SC_MANIFEST.fields())
-                    .from(DT_SC_MANIFEST)
-                    .join(RELEASE).on(DT_SC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                    .where(conditions)
-                    .fetchInto(DtScManifestRecord.class);
-        }
-
-        return Collections.emptyList();
+    private void copyCodeListManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                    List<BigInteger> codeListManifestIds) {
+        dslContext.insertInto(CODE_LIST_MANIFEST,
+                CODE_LIST_MANIFEST.RELEASE_ID,
+                CODE_LIST_MANIFEST.CODE_LIST_ID,
+                CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                CODE_LIST_MANIFEST.CONFLICT,
+                CODE_LIST_MANIFEST.REVISION_ID,
+                CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
+                CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        CODE_LIST_MANIFEST.CODE_LIST_ID,
+                        CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_MANIFEST.CONFLICT,
+                        CODE_LIST_MANIFEST.REVISION_ID,
+                        CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                        .from(CODE_LIST_MANIFEST)
+                        .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                        .where(and(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(CODE_LIST.STATE.eq(CcState.Published.name()),
+                                        CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds)))))).execute();
     }
 
-    private List<XbtManifestRecord> getXbtManifestRecordsInWorking(List<CcState> states,
-                                                                   List<BigInteger> xbtManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-
-        if (xbtManifestIds != null && xbtManifestIds.size() > 0) {
-            conditions.add(XBT_MANIFEST.XBT_MANIFEST_ID.in(xbtManifestIds));
-        }
-
-        if (states.indexOf(CcState.Published) > -1) {
-            return dslContext.select(XBT_MANIFEST.fields())
-                    .from(XBT_MANIFEST)
-                    .join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                    .where(conditions)
-                    .fetchInto(XbtManifestRecord.class);
-        }
-
-        return Collections.emptyList();
+    private void copyCodeListValueManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                        List<BigInteger> codeListManifestIds) {
+        dslContext.insertInto(CODE_LIST_VALUE_MANIFEST,
+                CODE_LIST_VALUE_MANIFEST.RELEASE_ID,
+                CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
+                CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID,
+                CODE_LIST_VALUE_MANIFEST.CONFLICT,
+                CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID,
+                CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
+                        CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID,
+                        CODE_LIST_VALUE_MANIFEST.CONFLICT,
+                        CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID,
+                        CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID)
+                        .from(CODE_LIST_VALUE_MANIFEST)
+                        .join(CODE_LIST_MANIFEST).on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
+                        .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
+                        .where(and(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(CODE_LIST.STATE.eq(CcState.Published.name()),
+                                        CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds)))))).execute();
     }
 
-    private List<CodeListManifestRecord> getCodeListManifestRecordsInWorking(List<CcState> states,
-                                                                     List<BigInteger> codeListManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-        conditions.add(CODE_LIST.STATE.in(states.stream().map(e -> e.name()).collect(Collectors.toList())));
-        if (codeListManifestIds != null && codeListManifestIds.size() > 0) {
-            conditions.add(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds));
-        }
-
-        return dslContext.select(CODE_LIST_MANIFEST.fields())
-                .from(CODE_LIST_MANIFEST)
-                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
-                .where(conditions)
-                .fetchInto(CodeListManifestRecord.class);
+    private void copyAgencyIdListManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                        List<BigInteger> agencyIdListManifestIds) {
+        dslContext.insertInto(AGENCY_ID_LIST_MANIFEST,
+                AGENCY_ID_LIST_MANIFEST.RELEASE_ID,
+                AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST_MANIFEST.CONFLICT,
+                AGENCY_ID_LIST_MANIFEST.REVISION_ID,
+                AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
+                        AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
+                        AGENCY_ID_LIST_MANIFEST.CONFLICT,
+                        AGENCY_ID_LIST_MANIFEST.REVISION_ID,
+                        AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
+                        AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                        .from(AGENCY_ID_LIST_MANIFEST)
+                        .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                        .where(and(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(AGENCY_ID_LIST.STATE.eq(CcState.Published.name()),
+                                        AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds)))))).execute();
     }
 
-    private List<AgencyIdListManifestRecord> getAgencyIdListManifestRecordsInWorking(List<CcState> states,
-                                                                   List<BigInteger> agencyIdListManifestIds) {
-        List<Condition> conditions = new ArrayList();
-        conditions.add(RELEASE.RELEASE_NUM.eq("Working"));
-
-        if (agencyIdListManifestIds != null && agencyIdListManifestIds.size() > 0) {
-            conditions.add(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds));
-        }
-
-        if (states.indexOf(CcState.Published) > -1) {
-            return dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
-                    .from(AGENCY_ID_LIST_MANIFEST)
-                    .join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                    .where(conditions)
-                    .fetchInto(AgencyIdListManifestRecord.class);
-        }
-
-        return Collections.emptyList();
+    private void copyAgencyIdListValueManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
+                                                             List<BigInteger> agencyIdListManifestIds) {
+        dslContext.insertInto(AGENCY_ID_LIST_VALUE_MANIFEST,
+                AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID,
+                AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID,
+                AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST_VALUE_MANIFEST.CONFLICT,
+                AGENCY_ID_LIST_VALUE_MANIFEST.PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID,
+                AGENCY_ID_LIST_VALUE_MANIFEST.NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                .select(dslContext.select(
+                        inline(ULong.valueOf(releaseId)),
+                        AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID,
+                        AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
+                        AGENCY_ID_LIST_VALUE_MANIFEST.CONFLICT,
+                        AGENCY_ID_LIST_VALUE_MANIFEST.PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID,
+                        AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                        .from(AGENCY_ID_LIST_VALUE_MANIFEST)
+                        .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
+                        .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
+                        .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
+                                (or(AGENCY_ID_LIST.STATE.eq(CcState.Published.name()),
+                                        AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds)))))).execute();
+    }
+    
+    private void updateAccBasedAccManifestIds(BigInteger releaseId) {
+        dslContext.update(ACC_MANIFEST.join(ACC_MANIFEST.as("based"))
+                .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("based").NEXT_ACC_MANIFEST_ID)))
+                .set(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.as("based").ACC_MANIFEST_ID)
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.as("based").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyAccManifests(ReleaseRecord releaseRecord,
-                                               List<AccManifestRecord> accManifestRecords) {
-        Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap();
-        accManifestRecords.forEach(e -> {
-            ULong prevAccManifestId = e.getAccManifestId();
-
-            e.setAccManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setAccManifestId(
-                    dslContext.insertInto(ACC_MANIFEST)
-                            .set(e).returning(ACC_MANIFEST.ACC_MANIFEST_ID)
-                            .fetchOne().getAccManifestId()
-            );
-
-            prevNextAccManifestIdMap.put(prevAccManifestId, e.getAccManifestId());
-        });
-
-        return prevNextAccManifestIdMap;
+    private void updateAsccpRoleOfAccManifestIds(BigInteger releaseId) {
+        dslContext.update(ASCCP_MANIFEST.join(ACC_MANIFEST)
+                .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID)))
+                .set(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
+                .where(and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private void updateBasedAccManifests(List<AccManifestRecord> accManifestRecords,
-                                    Map<ULong, ULong> prevNextAccManifestIdMap) {
-        accManifestRecords.stream().filter(e -> e.getBasedAccManifestId() != null)
-            .forEach(e -> {
-                if (prevNextAccManifestIdMap.containsKey(e.getBasedAccManifestId())) {
-                    e.setBasedAccManifestId(
-                            prevNextAccManifestIdMap.get(e.getBasedAccManifestId())
-                    );
-                    e.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
-                }
-            });
+    private void updateBccpDtManifestIds(BigInteger releaseId) {
+        dslContext.update(BCCP_MANIFEST.join(DT_MANIFEST)
+                .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.NEXT_DT_MANIFEST_ID)))
+                .set(BCCP_MANIFEST.BDT_MANIFEST_ID, DT_MANIFEST.DT_MANIFEST_ID)
+                .where(and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyAsccpManifests(ReleaseRecord releaseRecord,
-                                                 List<AsccpManifestRecord> asccpManifestRecords,
-                                                 Map<ULong, ULong> prevNextAccManifestIdMap) {
-        Map<ULong, ULong> prevNextAsccpManifestIdMap = new HashMap();
-        asccpManifestRecords.forEach(e -> {
-            ULong prevAsccpManifestId = e.getAsccpManifestId();
-
-            e.setAsccpManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            if (prevNextAccManifestIdMap.containsKey(e.getRoleOfAccManifestId())) {
-                e.setRoleOfAccManifestId(
-                        prevNextAccManifestIdMap.get(e.getRoleOfAccManifestId())
-                );
-            }
-            e.setAsccpManifestId(
-                    dslContext.insertInto(ASCCP_MANIFEST)
-                            .set(e).returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
-                            .fetchOne().getAsccpManifestId()
-            );
-
-            prevNextAsccpManifestIdMap.put(prevAsccpManifestId, e.getAsccpManifestId());
-        });
-
-        return prevNextAsccpManifestIdMap;
+    private void updateAsccRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(ASCC_MANIFEST
+                .join(ACC_MANIFEST)
+                .on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID))
+                .join(ASCCP_MANIFEST)
+                .on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID)))
+                .set(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
+                .set(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                .where(and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyBccpManifests(ReleaseRecord releaseRecord,
-                                                List<BccpManifestRecord> bccpManifestRecords,
-                                                Map<ULong, ULong> prevNextBdtManifestIdMap) {
-        Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap();
-        bccpManifestRecords.forEach(e -> {
-            ULong prevBccpManifestId = e.getBccpManifestId();
-
-            e.setBccpManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setBdtManifestId(prevNextBdtManifestIdMap.get(e.getBdtManifestId()));
-            e.setBccpManifestId(
-                    dslContext.insertInto(BCCP_MANIFEST)
-                            .set(e).returning(BCCP_MANIFEST.BCCP_MANIFEST_ID)
-                            .fetchOne().getBccpManifestId()
-            );
-
-            prevNextBccpManifestIdMap.put(prevBccpManifestId, e.getBccpManifestId());
-        });
-
-        return prevNextBccpManifestIdMap;
+    private void updateBccRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(BCC_MANIFEST.join(ACC_MANIFEST)
+                .on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID))
+                .join(BCCP_MANIFEST)
+                .on(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID)))
+                .set(BCC_MANIFEST.FROM_ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
+                .set(BCC_MANIFEST.TO_BCCP_MANIFEST_ID, BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                .where(and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyBdtManifests(ReleaseRecord releaseRecord,
-                                                    List<DtManifestRecord> bdtManifestRecords) {
-        Map<ULong, ULong> prevNextbdtManifestIdMap = new HashMap();
-        bdtManifestRecords.forEach(e -> {
-            ULong prevBdtManifestId = e.getDtManifestId();
-
-            e.setDtManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setDtManifestId(
-                    dslContext.insertInto(DT_MANIFEST)
-                            .set(e).returning(DT_MANIFEST.DT_MANIFEST_ID)
-                            .fetchOne().getDtManifestId()
-            );
-
-            prevNextbdtManifestIdMap.put(prevBdtManifestId, e.getDtManifestId());
-        });
-
-        return prevNextbdtManifestIdMap;
+    private void updateBdtScRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(DT_SC_MANIFEST.join(DT_MANIFEST)
+                .on(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(DT_MANIFEST.NEXT_DT_MANIFEST_ID)))
+                .set(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID, DT_MANIFEST.DT_MANIFEST_ID)
+                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyBdtScManifests(ReleaseRecord releaseRecord,
-                                                 List<DtScManifestRecord> bdtScManifestRecords,
-                                                 Map<ULong, ULong> prevNextBdtManifestIdMap) {
-        Map<ULong, ULong> prevNextbdtScManifestIdMap = new HashMap();
-        bdtScManifestRecords.forEach(e -> {
-            ULong prevBdtScManifestId = e.getDtScManifestId();
-
-            e.setDtScManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setOwnerDtManifestId(prevNextBdtManifestIdMap.get(e.getOwnerDtManifestId()));
-            e.setDtScManifestId(
-                    dslContext.insertInto(DT_SC_MANIFEST)
-                            .set(e).returning(DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
-                            .fetchOne().getDtScManifestId()
-            );
-
-            prevNextbdtScManifestIdMap.put(prevBdtScManifestId, e.getDtScManifestId());
-        });
-
-        return prevNextbdtScManifestIdMap;
+    private void updateCodeListRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(CODE_LIST_MANIFEST.join(CODE_LIST_MANIFEST.as("based"))
+                .on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").NEXT_CODE_LIST_MANIFEST_ID)))
+                .set(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID)
+                .where(and(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        CODE_LIST_MANIFEST.as("based").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyXbtManifests(ReleaseRecord releaseRecord,
-                                                 List<XbtManifestRecord> xbtManifestRecords) {
-        Map<ULong, ULong> prevNextXbtManifestIdMap = new HashMap();
-        xbtManifestRecords.forEach(e -> {
-            ULong prevXbtManifestId = e.getXbtManifestId();
-
-            e.setXbtManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setXbtManifestId(
-                    dslContext.insertInto(XBT_MANIFEST)
-                            .set(e).returning(XBT_MANIFEST.XBT_MANIFEST_ID)
-                            .fetchOne().getXbtManifestId()
-            );
-
-            prevNextXbtManifestIdMap.put(prevXbtManifestId, e.getXbtManifestId());
-        });
-
-        return prevNextXbtManifestIdMap;
+    private void updateCodeListValueRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(CODE_LIST_VALUE_MANIFEST.join(CODE_LIST_MANIFEST)
+                .on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID)))
+                .set(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                .where(and(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyCodeListManifests(ReleaseRecord releaseRecord,
-                                                List<CodeListManifestRecord> codeListManifestRecords) {
-        Map<ULong, ULong> prevNextCodeListManifestIdMap = new HashMap();
-        codeListManifestRecords.forEach(e -> {
-            ULong prevCodeListManifestId = e.getCodeListManifestId();
-
-            e.setCodeListManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setCodeListManifestId(
-                    dslContext.insertInto(CODE_LIST_MANIFEST)
-                            .set(e).returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
-                            .fetchOne().getCodeListManifestId()
-            );
-
-            List<CodeListValueManifestRecord> codeListValueManifestRecords = dslContext.select(CODE_LIST_VALUE_MANIFEST.fields())
-                    .from(CODE_LIST_VALUE_MANIFEST)
-                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(prevCodeListManifestId))
-                    .fetchInto(CodeListValueManifestRecord.class);
-
-            codeListValueManifestRecords.forEach(v -> {
-                v.setCodeListValueManifestId(null);
-                v.setCodeListManifestId(e.getCodeListManifestId());
-                v.setReleaseId(releaseRecord.getReleaseId());
-                v.insert();
-            });
-            prevNextCodeListManifestIdMap.put(prevCodeListManifestId, e.getCodeListManifestId());
-        });
-
-        return prevNextCodeListManifestIdMap;
+    private void updateAgencyIdListRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(AGENCY_ID_LIST_MANIFEST.join(AGENCY_ID_LIST_MANIFEST.as("based"))
+                .on(AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.as("based").NEXT_AGENCY_ID_LIST_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.as("based").AGENCY_ID_LIST_MANIFEST_ID)
+                .where(and(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        AGENCY_ID_LIST_MANIFEST.as("based").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
 
-    private Map<ULong, ULong> copyAgencyIdListManifests(ReleaseRecord releaseRecord,
-                                                    List<AgencyIdListManifestRecord> agencyIdListManifestRecords) {
-        Map<ULong, ULong> prevNextAgencyIdListManifestIdMap = new HashMap();
-        agencyIdListManifestRecords.forEach(e -> {
-            ULong prevAgencyIdListManifestId = e.getAgencyIdListManifestId();
-
-            e.setAgencyIdListManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            e.setAgencyIdListManifestId(
-                    dslContext.insertInto(AGENCY_ID_LIST_MANIFEST)
-                            .set(e).returning(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
-                            .fetchOne().getAgencyIdListManifestId()
-            );
-
-            List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords =
-                    dslContext.select(AGENCY_ID_LIST_VALUE_MANIFEST.fields())
-                    .from(AGENCY_ID_LIST_VALUE_MANIFEST)
-                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(prevAgencyIdListManifestId))
-                    .fetchInto(AgencyIdListValueManifestRecord.class);
-
-            agencyIdListValueManifestRecords.forEach(v -> {
-                v.setAgencyIdListValueManifestId(null);
-                v.setAgencyIdListManifestId(e.getAgencyIdListManifestId());
-                v.setReleaseId(releaseRecord.getReleaseId());
-                v.insert();
-            });
-            prevNextAgencyIdListManifestIdMap.put(prevAgencyIdListManifestId, e.getAgencyIdListManifestId());
-        });
-
-        return prevNextAgencyIdListManifestIdMap;
+    private void updateAgencyIdListValueRelationManifestIds(BigInteger releaseId) {
+        dslContext.update(AGENCY_ID_LIST_VALUE_MANIFEST.join(AGENCY_ID_LIST_MANIFEST)
+                .on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
+                .execute();
     }
-
-    private Map<ULong, ULong> copyAsccManifests(ReleaseRecord releaseRecord,
-                                                List<AsccManifestRecord> asccManifestRecords,
-                                                Map<ULong, ULong> prevNextAccManifestIdMap,
-                                                Map<ULong, ULong> prevNextAsccpManifestIdMap) {
-
-        Map<ULong, ULong> prevNextAsccManifestIdMap = new HashMap();
-        asccManifestRecords.forEach(e -> {
-            ULong prevAsccManifestId = e.getAsccManifestId();
-
-            e.setAsccManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            if (prevNextAccManifestIdMap.containsKey(e.getFromAccManifestId())) {
-                e.setFromAccManifestId(
-                        prevNextAccManifestIdMap.get(e.getFromAccManifestId())
-                );
-            }
-            if (prevNextAsccpManifestIdMap.containsKey(e.getToAsccpManifestId())) {
-                e.setToAsccpManifestId(
-                        prevNextAsccpManifestIdMap.get(e.getToAsccpManifestId())
-                );
-            }
-            e.setAsccManifestId(
-                    dslContext.insertInto(ASCC_MANIFEST)
-                            .set(e).returning(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                            .fetchOne().getAsccManifestId()
-            );
-
-            prevNextAsccManifestIdMap.put(prevAsccManifestId, e.getAsccManifestId());
-        });
-
-        return prevNextAsccManifestIdMap;
-    }
-
-    private Map<ULong, ULong> copyBccManifests(ReleaseRecord releaseRecord,
-                                               List<BccManifestRecord> bccManifestRecords,
-                                               Map<ULong, ULong> prevNextAccManifestIdMap,
-                                               Map<ULong, ULong> prevNextBccpManifestIdMap) {
-
-        Map<ULong, ULong> prevNextBccManifestIdMap = new HashMap();
-        bccManifestRecords.forEach(e -> {
-            ULong prevBccManifestId = e.getBccManifestId();
-
-            e.setBccManifestId(null);
-            e.setReleaseId(releaseRecord.getReleaseId());
-            if (prevNextAccManifestIdMap.containsKey(e.getFromAccManifestId())) {
-                e.setFromAccManifestId(
-                        prevNextAccManifestIdMap.get(e.getFromAccManifestId())
-                );
-            }
-            if (prevNextBccpManifestIdMap.containsKey(e.getToBccpManifestId())) {
-                e.setToBccpManifestId(
-                        prevNextBccpManifestIdMap.get(e.getToBccpManifestId())
-                );
-            }
-            e.setBccManifestId(
-                    dslContext.insertInto(BCC_MANIFEST)
-                            .set(e).returning(BCC_MANIFEST.BCC_MANIFEST_ID)
-                            .fetchOne().getBccManifestId()
-            );
-
-            prevNextBccManifestIdMap.put(prevBccManifestId, e.getBccManifestId());
-        });
-
-        return prevNextBccManifestIdMap;
-    }
-
+    
     public void unassignManifests(
             BigInteger releaseId,
             List<BigInteger> accManifestIds,
