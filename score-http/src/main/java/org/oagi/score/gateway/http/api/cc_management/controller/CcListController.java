@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 public class CcListController {
@@ -127,7 +126,7 @@ public class CcListController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateCcState(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                            @RequestBody CcUpdateStateListRequest request) {
+                                        @RequestBody CcUpdateStateListRequest request) {
         if (request.getAction().equals("Restore")) {
             service.restoreCcs(user, request);
         } else if (request.getAction().equals("Delete")) {

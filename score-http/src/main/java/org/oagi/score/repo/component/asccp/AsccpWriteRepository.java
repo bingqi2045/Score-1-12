@@ -13,6 +13,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
 import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
 import org.oagi.score.repo.component.ascc.UpdateAsccPropertiesRepositoryRequest;
 import org.oagi.score.repo.domain.RevisionSerializer;
@@ -236,7 +237,8 @@ public class AsccpWriteRepository {
         UpdateSetFirstStep<AsccpRecord> firstStep = dslContext.update(ASCCP);
         UpdateSetMoreStep<AsccpRecord> moreStep = null;
         boolean propertyTermChanged = false;
-        if (compare(asccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
+        if (!StringUtils.isEmpty(request.getPropertyTerm()) &&
+            compare(asccpRecord.getPropertyTerm(), request.getPropertyTerm()) != 0) {
             propertyTermChanged = true;
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.PROPERTY_TERM, request.getPropertyTerm())
@@ -358,7 +360,7 @@ public class AsccpWriteRepository {
         return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
 
-    public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpBdt(UpdateAsccpRoleOfAccRepositoryRequest request) {
+    public UpdateAsccpRoleOfAccRepositoryResponse updateRoleOfAcc(UpdateAsccpRoleOfAccRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -424,15 +426,20 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
+        UpdateAsccpStateRepositoryResponse response =
+                new UpdateAsccpStateRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+
         CcState prevState = CcState.valueOf(asccpRecord.getState());
         CcState nextState = request.getToState();
 
         if (prevState != request.getFromState()) {
-            throw new IllegalArgumentException("Target core component is not in '" + request.getFromState() + "' state.");
+            response.setFailureWithMessage("Target core component is not in '" + request.getFromState() + "' state.");
+            return response;
         }
 
         if (!prevState.canMove(nextState)) {
-            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
+            response.setFailureWithMessage("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
+            return response;
         }
 
         // Change owner of CC when it restored.
@@ -440,9 +447,11 @@ public class AsccpWriteRepository {
             asccpRecord.setOwnerUserId(userId);
         } else if (prevState != CcState.Deleted && !asccpRecord.getOwnerUserId().equals(userId)
                 && !prevState.canForceMove(request.getToState())) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
+            return response;
         } else if (asccpRecord.getNamespaceId() == null) {
-            throw new IllegalArgumentException("'" + asccpRecord.getDen() + "' dose not have NamespaceId.");
+            response.setFailureWithMessage("'" + asccpRecord.getDen() + "' dose not have NamespaceId.");
+            return response;
         }
 
         // update asccp state.
@@ -464,7 +473,8 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
 
-        return new UpdateAsccpStateRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        response.setSucceed(true);
+        return response;
     }
 
     public DeleteAsccpRepositoryResponse deleteAsccp(DeleteAsccpRepositoryRequest request) {
@@ -482,12 +492,17 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
+        DeleteAsccpRepositoryResponse response =
+                new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+
         if (!CcState.WIP.equals(CcState.valueOf(asccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+            response.setFailureWithMessage("Only the core component in 'WIP' state can be deleted.");
+            return response;
         }
 
         if (!asccpRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
+            return response;
         }
 
         // update asccp state.
@@ -507,7 +522,8 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
 
-        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        response.setSucceed(true);
+        return response;
     }
 
     public DeleteAsccpRepositoryResponse removeAsccp(DeleteAsccpRepositoryRequest request) {
@@ -525,12 +541,17 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
+        DeleteAsccpRepositoryResponse response =
+                new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+
         if (!CcState.WIP.equals(CcState.valueOf(asccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
+            response.setFailureWithMessage("Only the core component in 'WIP' state can be deleted.");
+            return response;
         }
 
         if (!asccpRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
+            return response;
         }
 
         if (dslContext.selectCount()
@@ -547,7 +568,8 @@ public class AsccpWriteRepository {
             asccpRecord.delete();
         }
 
-        return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        response.setSucceed(true);
+        return response;
     }
 
     public UpdateAsccpOwnerRepositoryResponse updateAsccpOwner(UpdateAsccpOwnerRepositoryRequest request) {
@@ -565,12 +587,17 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                 .fetchOne();
 
+        UpdateAsccpOwnerRepositoryResponse response =
+                new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+
         if (!CcState.WIP.equals(CcState.valueOf(asccpRecord.getState()))) {
-            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
+            response.setFailureWithMessage("Only the core component in 'WIP' state can be modified.");
+            return response;
         }
 
         if (!asccpRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
+            return response;
         }
 
         asccpRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
@@ -587,7 +614,8 @@ public class AsccpWriteRepository {
         asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
 
-        return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
+        response.setSucceed(true);
+        return response;
     }
 
     public CancelRevisionAsccpRepositoryResponse cancelRevisionAsccp(CancelRevisionAsccpRepositoryRequest request) {

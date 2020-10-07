@@ -28,6 +28,15 @@ public class AccReadRepository {
                 .fetchOptionalInto(AccRecord.class).orElse(null);
     }
 
+    public AccManifestRecord getAccManifestByObjectClassTermAndReleaseId(String objectClassTerm, BigInteger releaseId) {
+        return dslContext.select(ACC_MANIFEST.fields())
+                .from(ACC_MANIFEST)
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        ACC.OBJECT_CLASS_TERM.eq(objectClassTerm)))
+                .fetchOptionalInto(AccManifestRecord.class).orElse(null);
+    }
+
     public AccManifestRecord getAllExtensionAccManifest(BigInteger releaseId) {
         return dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST)
