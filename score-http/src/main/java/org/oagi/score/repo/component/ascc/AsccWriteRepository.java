@@ -5,12 +5,12 @@ import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.data.RevisionAction;
+import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
@@ -43,14 +43,14 @@ public class AsccWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private RevisionRepository revisionRepository;
+    private LogRepository logRepository;
 
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
     private boolean accAlreadyContainAssociation(AccManifestRecord fromAccManifestRecord, String propertyTerm) {
-        while(fromAccManifestRecord != null) {
-            if(dslContext.selectCount()
+        while (fromAccManifestRecord != null) {
+            if (dslContext.selectCount()
                     .from(ASCC_MANIFEST)
                     .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
                     .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
@@ -161,7 +161,7 @@ public class AsccWriteRepository {
                         .returning(ASCC_MANIFEST.ASCC_MANIFEST_ID).fetchOne().getAsccManifestId()
         );
 
-        upsertRevisionIntoAccAndAssociations(
+        upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
                 ULong.valueOf(request.getReleaseId()),
                 userId, timestamp
@@ -170,19 +170,19 @@ public class AsccWriteRepository {
         return new CreateAsccRepositoryResponse(asccManifest.getAsccManifestId().toBigInteger());
     }
 
-    private void upsertRevisionIntoAccAndAssociations(AccRecord accRecord,
-                                                      AccManifestRecord accManifestRecord,
-                                                      ULong releaseId,
-                                                      ULong userId, LocalDateTime timestamp) {
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAccRevision(
+    private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
+                                                 AccManifestRecord accManifestRecord,
+                                                 ULong releaseId,
+                                                 ULong userId, LocalDateTime timestamp) {
+        LogRecord logRecord =
+                logRepository.insertAccLog(
                         accRecord,
-                        accManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
+                        accManifestRecord.getLogId(),
+                        LogAction.Modified,
                         userId, timestamp);
 
-        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+        accManifestRecord.setLogId(logRecord.getLogId());
+        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
     }
 
     public UpdateAsccPropertiesRepositoryResponse updateAsccProperties(UpdateAsccPropertiesRepositoryRequest request) {
@@ -260,7 +260,7 @@ public class AsccWriteRepository {
                     .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId()))
                     .fetchOne();
 
-            upsertRevisionIntoAccAndAssociations(
+            upsertLogIntoAccAndAssociations(
                     accRecord, accManifestRecord,
                     accManifestRecord.getReleaseId(),
                     userId, timestamp
@@ -306,7 +306,7 @@ public class AsccWriteRepository {
         asccRecord.delete();
         seqKeyHandler(request.getUser(), asccRecord).deleteCurrent();
 
-        upsertRevisionIntoAccAndAssociations(
+        upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
                 accManifestRecord.getReleaseId(),
                 userId, timestamp

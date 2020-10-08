@@ -6,11 +6,11 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
-import org.oagi.score.data.RevisionAction;
+import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
-import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
@@ -42,7 +42,7 @@ public class BccWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private RevisionRepository revisionRepository;
+    private LogRepository logRepository;
 
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
@@ -137,7 +137,7 @@ public class BccWriteRepository {
                         .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId()
         );
 
-        upsertRevisionIntoAccAndAssociations(
+        upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
                 ULong.valueOf(request.getReleaseId()),
                 userId, timestamp
@@ -146,19 +146,19 @@ public class BccWriteRepository {
         return new CreateBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
 
-    private void upsertRevisionIntoAccAndAssociations(AccRecord accRecord,
-                                                      AccManifestRecord accManifestRecord,
-                                                      ULong releaseId,
-                                                      ULong userId, LocalDateTime timestamp) {
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAccRevision(
+    private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
+                                                 AccManifestRecord accManifestRecord,
+                                                 ULong releaseId,
+                                                 ULong userId, LocalDateTime timestamp) {
+        LogRecord logRecord =
+                logRepository.insertAccLog(
                         accRecord,
-                        accManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
+                        accManifestRecord.getLogId(),
+                        LogAction.Modified,
                         userId, timestamp);
 
-        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
+        accManifestRecord.setLogId(logRecord.getLogId());
+        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
     }
 
     public UpdateBccPropertiesRepositoryResponse updateBccProperties(UpdateBccPropertiesRepositoryRequest request) {
@@ -265,7 +265,7 @@ public class BccWriteRepository {
                     .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId()))
                     .fetchOne();
 
-            upsertRevisionIntoAccAndAssociations(
+            upsertLogIntoAccAndAssociations(
                     accRecord, accManifestRecord,
                     accManifestRecord.getReleaseId(),
                     userId, timestamp
@@ -335,7 +335,7 @@ public class BccWriteRepository {
         bccRecord.delete();
         seqKeyHandler(request.getUser(), bccRecord).deleteCurrent();
 
-        upsertRevisionIntoAccAndAssociations(
+        upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
                 accManifestRecord.getReleaseId(),
                 userId, timestamp
