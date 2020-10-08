@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.bie_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.Record2;
+import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.AppUser;
@@ -24,6 +25,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventListenerContainer;
+import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.abie.AbieNode;
 import org.oagi.score.repo.component.abie.AbieReadRepository;
 import org.oagi.score.repo.component.abie.AbieWriteRepository;
@@ -271,8 +273,47 @@ public class BieEditService implements InitializingBean {
                         .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
         );
 
+        this.updateTopLevelAsbiepLastUpdated(user, request.getTopLevelAsbiepId());
+        this.updateEnabledVersionIdWithVersionFieldValue(user, request.getTopLevelAsbiepId());
         return response;
     }
+
+    @Transactional
+    public void updateEnabledVersionIdWithVersionFieldValue(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+        // Issue #844
+        ULong enabledVersionIdBbieId = dslContext.select(BBIE.BBIE_ID)
+                .from(TOP_LEVEL_ASBIEP)
+                .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
+                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
+                .join(BBIE).on(ABIE.ABIE_ID.eq(BBIE.FROM_ABIE_ID))
+                .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
+                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(and(
+                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
+                        BBIE.IS_USED.eq((byte) 1),
+                        BCC.DEN.eq("Business Object Document. Version Identifier. Text")
+                ))
+                .fetchOptionalInto(ULong.class).orElse(null);
+
+        if (enabledVersionIdBbieId != null) {
+            UpdateSetMoreStep step = dslContext.update(BBIE)
+                    .setNull(BBIE.DEFAULT_VALUE);
+
+            String version = dslContext.select(TOP_LEVEL_ASBIEP.VERSION)
+                    .from(TOP_LEVEL_ASBIEP)
+                    .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
+                    .fetchOneInto(String.class);
+
+            if (StringUtils.isEmpty(version)) {
+                step = step.setNull(BBIE.FIXED_VALUE);
+            } else {
+                step = step.set(BBIE.FIXED_VALUE, version);
+            }
+
+            step.where(BBIE.BBIE_ID.eq(enabledVersionIdBbieId)).execute();
+        }
+    }
+
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
@@ -357,7 +398,7 @@ public class BieEditService implements InitializingBean {
     }
 
     @Transactional
-    public void updateTopLevelAbieLastUpdated(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+    public void updateTopLevelAsbiepLastUpdated(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
         topLevelAsbiepRepository.updateTopLevelAbieLastUpdated(sessionService.userId(user), topLevelAsbiepId);
     }
 

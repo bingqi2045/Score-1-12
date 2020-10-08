@@ -5,7 +5,7 @@ import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.LogAction;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -34,7 +34,7 @@ public class RepositoryInitializer implements InitializingBean {
 
     @Autowired
     private LogRepository logRepository;
-    
+
     @Autowired
     private LogSerializer serializer;
 
@@ -68,7 +68,7 @@ public class RepositoryInitializer implements InitializingBean {
         codeListValueRecords.stream()
                 .filter(e -> e.getPrevCodeListValueId() == null)
                 .forEach(e -> {
-                    e.setGuid(SrtGuid.randomGuid());
+                    e.setGuid(ScoreGuid.randomGuid());
                     e.update(CODE_LIST_VALUE.GUID);
                 });
 
@@ -96,7 +96,7 @@ public class RepositoryInitializer implements InitializingBean {
         agencyIdListValueRecords.stream()
                 .filter(e -> e.getPrevAgencyIdListValueId() == null)
                 .forEach(e -> {
-                    e.setGuid(SrtGuid.randomGuid());
+                    e.setGuid(ScoreGuid.randomGuid());
                     e.update(AGENCY_ID_LIST_VALUE.GUID);
                 });
 

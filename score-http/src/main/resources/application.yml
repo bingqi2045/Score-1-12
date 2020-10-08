@@ -31,5 +31,5 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.websocket: DEBUG
     org.springframework.messaging: DEBUG
-    org.jooq: INFO
+    org.jooq: DEBUG
     org.oagi.score: DEBUG

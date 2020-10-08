@@ -9,7 +9,7 @@ import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -129,7 +129,7 @@ public class AsccWriteRepository {
         }
 
         AsccRecord ascc = new AsccRecord();
-        ascc.setGuid(SrtGuid.randomGuid());
+        ascc.setGuid(ScoreGuid.randomGuid());
         ascc.setDen(accRecord.getObjectClassTerm() + ". " + asccpRecord.getDen());
         ascc.setCardinalityMin(request.getCardinalityMin());
         ascc.setCardinalityMax(request.getCardinalityMax());

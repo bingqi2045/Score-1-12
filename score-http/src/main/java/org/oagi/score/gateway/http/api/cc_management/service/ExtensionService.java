@@ -19,7 +19,7 @@ import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository
 import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
 import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
@@ -202,7 +202,7 @@ public class ExtensionService {
                 Tables.ACC.CREATION_TIMESTAMP,
                 Tables.ACC.LAST_UPDATE_TIMESTAMP,
                 Tables.ACC.STATE).values(
-                SrtGuid.randomGuid(),
+                ScoreGuid.randomGuid(),
                 objectClassTerm,
                 objectClassTerm + ". Details",
                 "A system created component containing user extension to the " + eAcc.getObjectClassTerm() + ".",
@@ -245,7 +245,7 @@ public class ExtensionService {
                 Tables.ASCCP.CREATION_TIMESTAMP,
                 Tables.ASCCP.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCCP.STATE).values(
-                SrtGuid.randomGuid(),
+                ScoreGuid.randomGuid(),
                 ueAcc.getObjectClassTerm(),
                 ueAcc.getAccId(),
                 ueAcc.getObjectClassTerm() + ". " + ueAcc.getObjectClassTerm(),
@@ -294,7 +294,7 @@ public class ExtensionService {
                 Tables.ASCC.CREATION_TIMESTAMP,
                 Tables.ASCC.LAST_UPDATE_TIMESTAMP,
                 Tables.ASCC.STATE).values(
-                SrtGuid.randomGuid(),
+                ScoreGuid.randomGuid(),
                 0,
                 1,
                 1,

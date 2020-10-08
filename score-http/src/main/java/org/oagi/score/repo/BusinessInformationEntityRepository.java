@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -196,7 +196,7 @@ public class BusinessInformationEntityRepository {
 
     private ULong insertAbie(InsertAbieArguments arguments) {
         return dslContext.insertInto(ABIE)
-                .set(ABIE.GUID, SrtGuid.randomGuid())
+                .set(ABIE.GUID, ScoreGuid.randomGuid())
                 .set(ABIE.BASED_ACC_MANIFEST_ID, arguments.getAccManifestId())
                 .set(ABIE.PATH, arguments.getPath())
                 .set(ABIE.HASH_PATH, sha256(arguments.getPath()))
@@ -353,7 +353,7 @@ public class BusinessInformationEntityRepository {
 
     private ULong insertAsbiep(InsertAsbiepArguments arguments) {
         return dslContext.insertInto(ASBIEP)
-                .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, arguments.getAsccpManifestId())
                 .set(ASBIEP.PATH, arguments.getPath())
                 .set(ASBIEP.HASH_PATH, sha256(arguments.getPath()))

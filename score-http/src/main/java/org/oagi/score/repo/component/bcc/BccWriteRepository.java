@@ -9,7 +9,7 @@ import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -102,7 +102,7 @@ public class BccWriteRepository {
         }
 
         BccRecord bcc = new BccRecord();
-        bcc.setGuid(SrtGuid.randomGuid());
+        bcc.setGuid(ScoreGuid.randomGuid());
         bcc.setDen(accRecord.getObjectClassTerm() + ". " + bccpRecord.getDen());
         bcc.setCardinalityMin(0);
         bcc.setCardinalityMax(-1);
@@ -147,9 +147,9 @@ public class BccWriteRepository {
     }
 
     private void upsertLogIntoAccAndAssociations(AccRecord accRecord,
-                                                      AccManifestRecord accManifestRecord,
-                                                      ULong releaseId,
-                                                      ULong userId, LocalDateTime timestamp) {
+                                                 AccManifestRecord accManifestRecord,
+                                                 ULong releaseId,
+                                                 ULong userId, LocalDateTime timestamp) {
         LogRecord logRecord =
                 logRepository.insertAccLog(
                         accRecord,

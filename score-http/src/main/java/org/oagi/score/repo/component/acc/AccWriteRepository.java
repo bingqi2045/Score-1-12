@@ -15,7 +15,7 @@ import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
@@ -79,7 +79,7 @@ public class AccWriteRepository {
         }
 
         AccRecord acc = new AccRecord();
-        acc.setGuid(SrtGuid.randomGuid());
+        acc.setGuid(ScoreGuid.randomGuid());
         acc.setObjectClassTerm(request.getInitialObjectClassTerm());
         acc.setDen(acc.getObjectClassTerm() + ". Details");
         acc.setOagisComponentType(request.getInitialComponentType().getValue());

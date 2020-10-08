@@ -4,11 +4,12 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
+import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.TopLevelAsbiep;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCopyRequest;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.BieCopyRequestEvent;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.redis.event.EventListenerContainer;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
+import static org.jooq.impl.DSL.and;
 import static org.oagi.score.data.BieState.Initiating;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -80,8 +82,20 @@ public class BieCopyService implements InitializingBean {
     @Transactional
     public void copyBie(AuthenticatedPrincipal user, BieCopyRequest request) {
         BigInteger sourceTopLevelAsbiepId = request.getTopLevelAsbiepId();
+        if (sourceTopLevelAsbiepId == null) {
+            throw new IllegalArgumentException("`topLevelAsbiepId` parameter must not be null.");
+        }
+
         List<BigInteger> bizCtxIds = request.getBizCtxIds();
+        if (bizCtxIds == null || bizCtxIds.isEmpty()) {
+            throw new IllegalArgumentException("`bizCtxIds` parameter must not be null.");
+        }
+
         BigInteger userId = sessionService.userId(user);
+        if (userId == null) {
+            throw new IllegalArgumentException("`userId` parameter must not be null.");
+        }
+
         long millis = System.currentTimeMillis();
 
         TopLevelAsbiep sourceTopLevelAsbiep = topLevelAsbiepRepository.findById(sourceTopLevelAsbiepId);
@@ -363,9 +377,8 @@ public class BieCopyService implements InitializingBean {
         private TopLevelAsbiep copiedTopLevelAsbiep;
         private List<BigInteger> bizCtxIds;
         private BigInteger userId;
-
+        private boolean isDeveloper;
         private Timestamp timestamp;
-
 
         private List<BieCopyAbie> abieList;
 
@@ -394,6 +407,7 @@ public class BieCopyService implements InitializingBean {
 
             bizCtxIds = bieCopyRequestEvent.getBizCtxIds();
             userId = bieCopyRequestEvent.getUserId();
+            isDeveloper = sessionService.isDeveloper(userId);
 
             abieList = getAbieByOwnerTopLevelAsbiepId(sourceTopLevelAsbiepId);
 
@@ -471,12 +485,44 @@ public class BieCopyService implements InitializingBean {
                 fireChangeEvent("bbie_sc", previousBbieScId, nextBbieScId);
             }
 
+            // Issue #869
+            if (isDeveloper) {
+                removeBIEofEUEG();
+            }
+
             repository.updateState(copiedTopLevelAsbiep.getTopLevelAsbiepId(), BieState.WIP);
 
             logger.debug("End copying from " + sourceTopLevelAsbiep.getTopLevelAsbiepId() +
                     " to " + copiedTopLevelAsbiep.getTopLevelAsbiepId());
         }
 
+        private void removeBIEofEUEG() {
+            dslContext.deleteFrom(ASBIE)
+                    .where(ASBIE.ASBIE_ID.in(dslContext.select(ASBIE.ASBIE_ID)
+                            .from(ASBIE)
+                            .join(ASCC_MANIFEST).on(ASBIE.BASED_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.ASCC_MANIFEST_ID))
+                            .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                            .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                            .where(and(
+                                    ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(copiedTopLevelAsbiep.getTopLevelAsbiepId())),
+                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
+                            ))
+                            .fetchInto(ULong.class)))
+                    .execute();
+
+            dslContext.deleteFrom(BBIE)
+                    .where(BBIE.BBIE_ID.in(dslContext.select(BBIE.BBIE_ID)
+                            .from(BBIE)
+                            .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
+                            .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                            .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
+                            .where(and(
+                                    BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(copiedTopLevelAsbiep.getTopLevelAsbiepId())),
+                                    ACC.OAGIS_COMPONENT_TYPE.eq(OagisComponentType.UserExtensionGroup.getValue())
+                            ))
+                            .fetchInto(ULong.class)))
+                    .execute();
+        }
 
         private void fireChangeEvent(String type, BigInteger previousVal, BigInteger nextVal) {
             switch (type) {
@@ -523,7 +569,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertAbie(BieCopyAbie abie) {
 
             return dslContext.insertInto(ABIE)
-                    .set(ABIE.GUID, SrtGuid.randomGuid())
+                    .set(ABIE.GUID, ScoreGuid.randomGuid())
                     .set(ABIE.PATH, abie.getPath())
                     .set(ABIE.HASH_PATH, abie.getHashPath())
                     .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
@@ -541,7 +587,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertAsbiep(BieCopyAsbiep asbiep) {
 
             return dslContext.insertInto(ASBIEP)
-                    .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                    .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                     .set(ASBIEP.PATH, asbiep.getPath())
                     .set(ASBIEP.HASH_PATH, asbiep.getHashPath())
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
@@ -560,7 +606,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertBbiep(BieCopyBbiep bbiep) {
 
             return dslContext.insertInto(BBIEP)
-                    .set(BBIEP.GUID, SrtGuid.randomGuid())
+                    .set(BBIEP.GUID, ScoreGuid.randomGuid())
                     .set(BBIEP.PATH, bbiep.getPath())
                     .set(BBIEP.HASH_PATH, bbiep.getHashPath())
                     .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(bbiep.getBasedBccpManifestId()))
@@ -578,7 +624,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertAsbie(BieCopyAsbie asbie) {
 
             return dslContext.insertInto(ASBIE)
-                    .set(ASBIE.GUID, SrtGuid.randomGuid())
+                    .set(ASBIE.GUID, ScoreGuid.randomGuid())
                     .set(ASBIE.PATH, asbie.getPath())
                     .set(ASBIE.HASH_PATH, asbie.getHashPath())
                     .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(asbie.getFromAbieId()))
@@ -602,7 +648,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertBbie(BieCopyBbie bbie) {
 
             return dslContext.insertInto(BBIE)
-                    .set(BBIE.GUID, SrtGuid.randomGuid())
+                    .set(BBIE.GUID, ScoreGuid.randomGuid())
                     .set(BBIE.PATH, bbie.getPath())
                     .set(BBIE.HASH_PATH, bbie.getHashPath())
                     .set(BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
@@ -633,7 +679,7 @@ public class BieCopyService implements InitializingBean {
         private BigInteger insertBbieSc(BieCopyBbieSc bbieSc) {
 
             return dslContext.insertInto(BBIE_SC)
-                    .set(BBIE_SC.GUID, SrtGuid.randomGuid())
+                    .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                     .set(BBIE_SC.PATH, bbieSc.getPath())
                     .set(BBIE_SC.HASH_PATH, bbieSc.getHashPath())
                     .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))

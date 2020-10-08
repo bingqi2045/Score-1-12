@@ -7,7 +7,7 @@ import org.oagi.score.data.LogAction;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -41,8 +41,8 @@ public class CodeListWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         CodeListRecord codeList = new CodeListRecord();
-        codeList.setGuid(SrtGuid.randomGuid());
-        codeList.setListId(SrtGuid.randomGuid());
+        codeList.setGuid(ScoreGuid.randomGuid());
+        codeList.setListId(ScoreGuid.randomGuid());
         codeList.setState(CcState.WIP.name());
         codeList.setCreatedBy(userId);
         codeList.setLastUpdatedBy(userId);
@@ -79,9 +79,9 @@ public class CodeListWriteRepository {
 
             basedCodeListValueManifestList =
                     dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
-                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID
-                            .eq(basedCodeListManifestRecord.getCodeListManifestId()))
-                    .fetch();
+                            .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID
+                                    .eq(basedCodeListManifestRecord.getCodeListManifestId()))
+                            .fetch();
         } else {
             codeList.setName(request.getInitialName());
             String initialAgencyIdValueName;
@@ -137,7 +137,7 @@ public class CodeListWriteRepository {
 
                 CodeListValueRecord codeListValueRecord = basedCodeListValue.copy();
                 codeListValueRecord.setCodeListId(codeList.getCodeListId());
-                codeListValueRecord.setGuid(SrtGuid.randomGuid());
+                codeListValueRecord.setGuid(ScoreGuid.randomGuid());
                 codeListValueRecord.setCreatedBy(userId);
                 codeListValueRecord.setLastUpdatedBy(userId);
                 codeListValueRecord.setOwnerUserId(userId);
@@ -336,7 +336,7 @@ public class CodeListWriteRepository {
             CodeListValueRecord codeListValueRecord = new CodeListValueRecord();
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
-            codeListValueRecord.setGuid(SrtGuid.randomGuid());
+            codeListValueRecord.setGuid(ScoreGuid.randomGuid());
             codeListValueRecord.setName(codeListValue.getName());
             codeListValueRecord.setValue(codeListValue.getValue());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());

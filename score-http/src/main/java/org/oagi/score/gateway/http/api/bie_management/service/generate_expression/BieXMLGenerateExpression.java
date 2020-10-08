@@ -10,7 +10,7 @@ import org.jdom2.output.XMLOutputter;
 import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.bie_management.data.expression.GenerateExpressionOption;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     @Override
     public File asFile(String filename) throws IOException {
-        File tempFile = File.createTempFile(SrtGuid.randomGuid(), null);
+        File tempFile = File.createTempFile(ScoreGuid.randomGuid(), null);
         tempFile = new File(tempFile.getParentFile(), filename + ".xsd");
 
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat().setIndent("\t"));
@@ -628,7 +628,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         Element extNode = newElement("extension");
 
         if (option.isBieGuid()) {
-            complexType.setAttribute("id", SrtGuid.randomGuid());
+            complexType.setAttribute("id", ScoreGuid.randomGuid());
         }
 
         setDefinition(complexType, bbie.getDefinition());
@@ -692,7 +692,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         Element extNode = newElement("extension");
 
         if (option.isBieGuid()) {
-            complexType.setAttribute("id", SrtGuid.randomGuid());
+            complexType.setAttribute("id", ScoreGuid.randomGuid());
         }
 
         DT bdt = generationContext.queryAssocBDT(bbie);
@@ -866,7 +866,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         Element xbtNode = newElement("simpleType");
         xbtNode.setAttribute("name", name);
         if (option.isBieGuid()) {
-            xbtNode.setAttribute("id", SrtGuid.randomGuid());
+            xbtNode.setAttribute("id", ScoreGuid.randomGuid());
         }
 
         try {
@@ -910,7 +910,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 AgencyIdList agencyIdList = generationContext.getAgencyIdList(bbie);
                 if (agencyIdList != null) {
                     if (option.isBieGuid()) {
-                        eNode.setAttribute("id", SrtGuid.randomGuid());
+                        eNode.setAttribute("id", ScoreGuid.randomGuid());
                     }
 
                     AgencyIdListValue agencyIdListValue =
@@ -940,7 +940,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 }
             } else {
                 if (option.isBieGuid()) {
-                    eNode.setAttribute("id", SrtGuid.randomGuid());
+                    eNode.setAttribute("id", ScoreGuid.randomGuid());
                 }
                 generateCodeList(codeList, bdt);
 
@@ -960,7 +960,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                     eNode = createAttributeNodeForBBIE(bbie, parent);
 
                     if (option.isBieGuid()) {
-                        eNode.setAttribute("id", SrtGuid.randomGuid());
+                        eNode.setAttribute("id", ScoreGuid.randomGuid());
                     }
 
                     AgencyIdListValue agencyIdListValue =
@@ -992,7 +992,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 eNode = createAttributeNodeForBBIE(bbie, parent);
 
                 if (option.isBieGuid()) {
-                    eNode.setAttribute("id", SrtGuid.randomGuid());
+                    eNode.setAttribute("id", ScoreGuid.randomGuid());
                 }
                 generateCodeList(codeList, bdt);
 
@@ -1208,7 +1208,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                         aNode = setBBIESCType2(bbieSc, aNode);
                 } else {
                     if (option.isBieGuid()) {
-                        aNode.setAttribute("id", SrtGuid.randomGuid());
+                        aNode.setAttribute("id", ScoreGuid.randomGuid());
                     }
 
                     AgencyIdListValue agencyIdListValue =
@@ -1222,7 +1222,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
                 }
             } else {
                 if (option.isBieGuid()) {
-                    aNode.setAttribute("id", SrtGuid.randomGuid());
+                    aNode.setAttribute("id", ScoreGuid.randomGuid());
                 }
 
                 DTSC dtSc = generationContext.findDtSc(bbieSc.getBasedDtScManifestId());

@@ -10,7 +10,7 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
@@ -69,7 +69,7 @@ public class AsccpWriteRepository {
                 .fetchOneInto(String.class);
 
         AsccpRecord asccp = new AsccpRecord();
-        asccp.setGuid(SrtGuid.randomGuid());
+        asccp.setGuid(ScoreGuid.randomGuid());
         asccp.setPropertyTerm(objectClassTerm);
         asccp.setRoleOfAccId(roleOfAccManifest.getAccId());
         asccp.setDen(asccp.getPropertyTerm() + ". " + objectClassTerm(asccp.getRoleOfAccId()));

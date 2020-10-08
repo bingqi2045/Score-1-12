@@ -10,7 +10,7 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.info.data.SummaryBie;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -510,7 +510,7 @@ public class BieRepository {
         LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(ASBIEP)
-                .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                 .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asccpManifestId))
                 .set(ASBIEP.ROLE_OF_ABIE_ID, ULong.valueOf(abieId))
                 .set(ASBIEP.CREATED_BY, ULong.valueOf(userId))
@@ -544,7 +544,7 @@ public class BieRepository {
                 .fetchOne().getValue(ASCCP.IS_NILLABLE);
 
         return dslContext.insertInto(ASBIE)
-                .set(ASBIE.GUID, SrtGuid.randomGuid())
+                .set(ASBIE.GUID, ScoreGuid.randomGuid())
                 .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(ASBIE.TO_ASBIEP_ID, ULong.valueOf(toAsbiepId))
                 .set(ASBIE.BASED_ASCC_MANIFEST_ID, ULong.valueOf(basedAsccManifestId))
@@ -567,7 +567,7 @@ public class BieRepository {
         LocalDateTime timestamp = LocalDateTime.now();
 
         return dslContext.insertInto(BBIEP)
-                .set(BBIEP.GUID, SrtGuid.randomGuid())
+                .set(BBIEP.GUID, ScoreGuid.randomGuid())
                 .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(basedBccpManifestId))
                 .set(BBIEP.CREATED_BY, ULong.valueOf(userId))
                 .set(BBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
@@ -605,7 +605,7 @@ public class BieRepository {
                 .fetchOneInto(BccpRecord.class);
 
         return dslContext.insertInto(BBIE)
-                .set(BBIE.GUID, SrtGuid.randomGuid())
+                .set(BBIE.GUID, ScoreGuid.randomGuid())
                 .set(BBIE.FROM_ABIE_ID, ULong.valueOf(fromAbieId))
                 .set(BBIE.TO_BBIEP_ID, ULong.valueOf(toBbiepId))
                 .set(BBIE.BASED_BCC_MANIFEST_ID, ULong.valueOf(basedBccManifestId))
@@ -670,7 +670,7 @@ public class BieRepository {
                 .fetchOneInto(DtScRecord.class);
 
         return dslContext.insertInto(BBIE_SC)
-                .set(BBIE_SC.GUID, SrtGuid.randomGuid())
+                .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                 .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieId))
                 .set(BBIE_SC.BASED_DT_SC_MANIFEST_ID, ULong.valueOf(dtScManifestId))
                 .set(BBIE_SC.DT_SC_PRI_RESTRI_ID, ULong.valueOf(getDefaultDtScPriRestriIdByDtScId(dtScRecord.getDtScId().toBigInteger())))

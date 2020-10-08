@@ -6,7 +6,7 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
 import org.oagi.score.repo.component.bdt_sc_pri_restri.BdtScPriRestriReadRepository;
 import org.oagi.score.repo.component.dt_sc.DtScReadRepository;
@@ -56,7 +56,7 @@ public class BbieScWriteRepository {
 
         if (bbieScRecord == null) {
             bbieScRecord = new BbieScRecord();
-            bbieScRecord.setGuid(SrtGuid.randomGuid());
+            bbieScRecord.setGuid(ScoreGuid.randomGuid());
             bbieScRecord.setBasedDtScManifestId(ULong.valueOf(bbieSc.getBasedDtScManifestId()));
             bbieScRecord.setPath(bbieSc.getPath());
             bbieScRecord.setHashPath(hashPath);

@@ -9,6 +9,7 @@ import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,11 +36,12 @@ public class AccountListService {
 
     public PageResponse<AppUser> getAccounts(org.springframework.security.core.userdetails.User requester,
                                              AccountListRequest request) {
-        SelectOnConditionStep<Record6<ULong, String, String, Byte, String, ULong>> step = dslContext.select(
+        SelectOnConditionStep step = dslContext.select(
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
                 APP_USER.NAME,
                 APP_USER.IS_DEVELOPER.as("developer"),
+                APP_USER.IS_ENABLED.as("enabled"),
                 APP_USER.ORGANIZATION,
                 APP_OAUTH2_USER.APP_OAUTH2_USER_ID
         ).from(APP_USER)
@@ -54,6 +56,9 @@ public class AccountListService {
         }
         if (!StringUtils.isEmpty(request.getOrganization())) {
             conditions.add(APP_USER.ORGANIZATION.containsIgnoreCase(request.getOrganization().trim()));
+        }
+        if (request.getEnabled() != null) {
+            conditions.add(APP_USER.IS_ENABLED.eq((byte) (request.getEnabled() ? 1 : 0)));
         }
         if (!StringUtils.isEmpty(request.getRole())) {
             switch (request.getRole()) {
@@ -85,23 +90,30 @@ public class AccountListService {
                 } else if ("desc".equals(sortDirection)) {
                     sortField = APP_USER.LOGIN_ID.desc();
                 }
-
                 break;
+
             case "name":
                 if ("asc".equals(sortDirection)) {
                     sortField = APP_USER.NAME.asc();
                 } else if ("desc".equals(sortDirection)) {
                     sortField = APP_USER.NAME.desc();
                 }
-
                 break;
+
             case "organization":
                 if ("asc".equals(sortDirection)) {
                     sortField = APP_USER.ORGANIZATION.asc();
                 } else if ("desc".equals(sortDirection)) {
                     sortField = APP_USER.ORGANIZATION.desc();
                 }
+                break;
 
+            case "status":
+                if ("asc".equals(sortDirection)) {
+                    sortField = APP_USER.IS_ENABLED.desc(); // 1 (Enable) to 0 (Disable)
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = APP_USER.IS_ENABLED.asc(); // 0 (Disable) to 1 (Enable)
+                }
                 break;
         }
 
@@ -133,18 +145,33 @@ public class AccountListService {
         return response;
     }
 
-    public AppUser getAccount(long appUserId) {
-        return dslContext.select(
+    public AppUser getAccountById(long appUserId) {
+        return getAccount(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)));
+    }
+
+    public AppUser getAccountByUsername(String username) {
+        return getAccount(APP_USER.LOGIN_ID.eq(username));
+    }
+
+    private AppUser getAccount(Condition condition) {
+        AppUser appUser = dslContext.select(
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
                 APP_USER.NAME,
                 APP_USER.IS_DEVELOPER.as("developer"),
+                APP_USER.IS_ENABLED.as("enabled"),
                 APP_USER.ORGANIZATION,
                 APP_OAUTH2_USER.APP_OAUTH2_USER_ID)
                 .from(APP_USER)
                 .leftJoin(APP_OAUTH2_USER)
-                .on(APP_USER.APP_USER_ID.eq(APP_OAUTH2_USER.APP_USER_ID)).where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId)))
-                .fetchOneInto(AppUser.class);
+                .on(APP_USER.APP_USER_ID.eq(APP_OAUTH2_USER.APP_USER_ID))
+                .where(condition)
+                .fetchOptionalInto(AppUser.class).orElse(null);
+        if (appUser == null) {
+            throw new AuthenticationCredentialsNotFoundException("An authentication information was not found.");
+        }
+        return appUser;
+
     }
 
     public List<String> getAccountLoginIds() {
@@ -165,6 +192,7 @@ public class AccountListService {
         record.setName(account.getName());
         record.setOrganization(account.getOrganization());
         record.setIsDeveloper((byte) (account.isDeveloper() ? 1 : 0));
+        record.setIsEnabled((byte) 1);
 
         ULong appUserId = dslContext.insertInto(APP_USER)
                 .set(record)

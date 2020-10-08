@@ -87,7 +87,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/messages/**");
+        web.ignoring().antMatchers("/favicon.ico", "/resources/**", "/error", "/messages/**");
     }
 
     @Override
@@ -98,6 +98,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .headers()
+                .defaultsDisabled()
+                .contentTypeOptions()
+                .and()
+                .frameOptions()
+                .deny()
+                .and()
                 .authorizeRequests()
                 .antMatchers("/info/**").permitAll()
                 .antMatchers("/messages/**").permitAll()

@@ -11,7 +11,7 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccWriteRepository;
@@ -63,7 +63,7 @@ public class BccpWriteRepository {
                 .fetchOne();
 
         BccpRecord bccp = new BccpRecord();
-        bccp.setGuid(SrtGuid.randomGuid());
+        bccp.setGuid(ScoreGuid.randomGuid());
         bccp.setPropertyTerm(request.getInitialPropertyTerm());
         bccp.setRepresentationTerm(bdt.getDataTypeTerm());
         bccp.setDen(bccp.getPropertyTerm() + ". " + bccp.getRepresentationTerm());

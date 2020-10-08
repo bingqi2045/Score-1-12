@@ -9,7 +9,7 @@ import org.oagi.score.gateway.http.api.context_management.data.BusinessContextLi
 import org.oagi.score.gateway.http.api.context_management.data.BusinessContextValue;
 import org.oagi.score.gateway.http.api.context_management.data.SimpleContextSchemeValue;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.BusinessContextRepository;
 import org.oagi.score.repo.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +93,7 @@ public class BusinessContextService {
         LocalDateTime timestamp = LocalDateTime.now();
 
         ULong businessContextId = repository.insertBusinessContext()
-                .setGuid(StringUtils.isEmpty(bizCtx.getGuid()) ? SrtGuid.randomGuid() : bizCtx.getGuid())
+                .setGuid(StringUtils.isEmpty(bizCtx.getGuid()) ? ScoreGuid.randomGuid() : bizCtx.getGuid())
                 .setName(bizCtx.getName())
                 .setUserId(userId)
                 .setTimestamp(timestamp)
