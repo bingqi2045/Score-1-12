@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class Log {
     private BigInteger logId;
-    private String commit;
+    private String hash;
     private int revisionNum;
     private int revisionTrackingNum;
     private LogAction logAction;

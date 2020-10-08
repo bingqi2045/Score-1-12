@@ -59,6 +59,7 @@ public class LogRepository {
 
         List<Log> list = dslContext.select(
                 LOG.LOG_ID,
+                LOG.HASH,
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
                 LOG.LOG_ACTION,
