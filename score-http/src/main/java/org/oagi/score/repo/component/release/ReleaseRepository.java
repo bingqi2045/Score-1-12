@@ -1105,201 +1105,173 @@ public class ReleaseRepository implements SrtRepository<Release> {
     }
 
     public void cleanUp(BigInteger releaseId) {
-        ULong workingReleaseId = dslContext.select(RELEASE.RELEASE_ID)
-                .from(RELEASE)
-                .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchOneInto(ULong.class);
-        ULong currentReleaseId = ULong.valueOf(releaseId);
 
         // ACCs
-        dslContext.selectFrom(ACC_MANIFEST)
-                .fetchStream().collect(groupingBy(AccManifestRecord::getAccId))
-                .values().forEach(accManifestRecords -> {
-
-            AccManifestRecord workingRecord = null;
-            AccManifestRecord currentRecord = null;
-            for (AccManifestRecord accManifestRecord : accManifestRecords) {
-                if (workingReleaseId.equals(accManifestRecord.getReleaseId())) {
-                    workingRecord = accManifestRecord;
-                } else if (currentReleaseId.equals(accManifestRecord.getReleaseId())) {
-                    currentRecord = accManifestRecord;
-                }
-                accManifestRecord.setConflict((byte) 0);
-            }
-
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(ACC_MANIFEST).set(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID, currentRecord.getAccManifestId())
-                    .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(workingRecord.getPrevAccManifestId())).execute();
-            currentRecord.setPrevAccManifestId(workingRecord.getPrevAccManifestId());
-            currentRecord.setNextAccManifestId(workingRecord.getAccManifestId());
-            currentRecord.update(ACC_MANIFEST.CONFLICT,
-                    ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
-
-            workingRecord.setPrevAccManifestId(currentRecord.getAccManifestId());
-            workingRecord.update(ACC_MANIFEST.CONFLICT,
-                    ACC_MANIFEST.PREV_ACC_MANIFEST_ID);
-        });
+        dslContext.update(ACC_MANIFEST
+                .join(ACC_MANIFEST.as("prev"))
+                .on(ACC_MANIFEST.PREV_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("prev").ACC_MANIFEST_ID)))
+                .set(ACC_MANIFEST.as("prev").NEXT_ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(ACC_MANIFEST
+                .join(ACC_MANIFEST.as("next"))
+                .on(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("next").ACC_MANIFEST_ID)))
+                .set(ACC_MANIFEST.as("next").PREV_ACC_MANIFEST_ID, ACC_MANIFEST.ACC_MANIFEST_ID)
+                .where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
         // ASCCs
-        dslContext.selectFrom(ASCC_MANIFEST)
-                .fetchStream().collect(groupingBy(AsccManifestRecord::getAsccId))
-                .values().forEach(asccManifestRecords -> {
-
-            AsccManifestRecord workingRecord = null;
-            AsccManifestRecord currentRecord = null;
-            for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
-                if (workingReleaseId.equals(asccManifestRecord.getReleaseId())) {
-                    workingRecord = asccManifestRecord;
-                } else if (currentReleaseId.equals(asccManifestRecord.getReleaseId())) {
-                    currentRecord = asccManifestRecord;
-                }
-
-                asccManifestRecord.setConflict((byte) 0);
-            }
-
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(ASCC_MANIFEST).set(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID, currentRecord.getAsccManifestId())
-                    .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(workingRecord.getPrevAsccManifestId())).execute();
-            currentRecord.setPrevAsccManifestId(workingRecord.getPrevAsccManifestId());
-            currentRecord.setNextAsccManifestId(workingRecord.getAsccManifestId());
-            currentRecord.update(ASCC_MANIFEST.CONFLICT,
-                    ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID);
-
-            workingRecord.setPrevAsccManifestId(currentRecord.getAsccManifestId());
-            workingRecord.update(ASCC_MANIFEST.CONFLICT,
-                    ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID);
-        });
+        dslContext.update(ASCC_MANIFEST
+                .join(ASCC_MANIFEST.as("prev"))
+                .on(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("prev").ASCC_MANIFEST_ID)))
+                .set(ASCC_MANIFEST.as("prev").NEXT_ASCC_MANIFEST_ID, ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(ASCC_MANIFEST
+                .join(ASCC_MANIFEST.as("next"))
+                .on(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("next").ASCC_MANIFEST_ID)))
+                .set(ASCC_MANIFEST.as("next").PREV_ASCC_MANIFEST_ID, ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
         // BCCs
-        dslContext.selectFrom(BCC_MANIFEST)
-                .fetchStream().collect(groupingBy(BccManifestRecord::getBccId))
-                .values().forEach(bccManifestRecords -> {
-
-            BccManifestRecord workingRecord = null;
-            BccManifestRecord currentRecord = null;
-            for (BccManifestRecord bccManifestRecord : bccManifestRecords) {
-                if (workingReleaseId.equals(bccManifestRecord.getReleaseId())) {
-                    workingRecord = bccManifestRecord;
-                } else if (currentReleaseId.equals(bccManifestRecord.getReleaseId())) {
-                    currentRecord = bccManifestRecord;
-                }
-
-                bccManifestRecord.setConflict((byte) 0);
-            }
-
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(BCC_MANIFEST).set(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID, currentRecord.getBccManifestId())
-                    .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(workingRecord.getPrevBccManifestId())).execute();
-            currentRecord.setPrevBccManifestId(workingRecord.getPrevBccManifestId());
-            currentRecord.setNextBccManifestId(workingRecord.getBccManifestId());
-            currentRecord.update(BCC_MANIFEST.CONFLICT,
-                    BCC_MANIFEST.PREV_BCC_MANIFEST_ID, BCC_MANIFEST.NEXT_BCC_MANIFEST_ID);
-
-            workingRecord.setPrevBccManifestId(currentRecord.getBccManifestId());
-            workingRecord.update(BCC_MANIFEST.CONFLICT,
-                    BCC_MANIFEST.PREV_BCC_MANIFEST_ID);
-        });
+        dslContext.update(BCC_MANIFEST
+                .join(BCC_MANIFEST.as("prev"))
+                .on(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("prev").BCC_MANIFEST_ID)))
+                .set(BCC_MANIFEST.as("prev").NEXT_BCC_MANIFEST_ID, BCC_MANIFEST.BCC_MANIFEST_ID)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(BCC_MANIFEST
+                .join(BCC_MANIFEST.as("next"))
+                .on(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("next").BCC_MANIFEST_ID)))
+                .set(BCC_MANIFEST.as("next").PREV_BCC_MANIFEST_ID, BCC_MANIFEST.BCC_MANIFEST_ID)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
         // ASCCPs
-        dslContext.selectFrom(ASCCP_MANIFEST)
-                .fetchStream().collect(groupingBy(AsccpManifestRecord::getAsccpId))
-                .values().forEach(asccpManifestRecords -> {
-
-            AsccpManifestRecord workingRecord = null;
-            AsccpManifestRecord currentRecord = null;
-            for (AsccpManifestRecord asccpManifestRecord : asccpManifestRecords) {
-                if (workingReleaseId.equals(asccpManifestRecord.getReleaseId())) {
-                    workingRecord = asccpManifestRecord;
-                } else if (currentReleaseId.equals(asccpManifestRecord.getReleaseId())) {
-                    currentRecord = asccpManifestRecord;
-                }
-                asccpManifestRecord.setConflict((byte) 0);
-            }
-
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(ASCCP_MANIFEST).set(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID, currentRecord.getAsccpManifestId())
-                    .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(workingRecord.getPrevAsccpManifestId())).execute();
-            currentRecord.setPrevAsccpManifestId(workingRecord.getPrevAsccpManifestId());
-            currentRecord.setNextAsccpManifestId(workingRecord.getAsccpManifestId());
-            currentRecord.update(ASCCP_MANIFEST.CONFLICT,
-                    ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
-
-            workingRecord.setPrevAsccpManifestId(currentRecord.getAsccpManifestId());
-            workingRecord.update(ASCCP_MANIFEST.CONFLICT,
-                    ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID);
-        });
+        dslContext.update(ASCCP_MANIFEST
+                .join(ASCCP_MANIFEST.as("prev"))
+                .on(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("prev").ASCCP_MANIFEST_ID)))
+                .set(ASCCP_MANIFEST.as("prev").NEXT_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                .where(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(ASCCP_MANIFEST
+                .join(ASCCP_MANIFEST.as("next"))
+                .on(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.as("next").ASCCP_MANIFEST_ID)))
+                .set(ASCCP_MANIFEST.as("next").PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
+                .where(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
         // BCCPs
-        dslContext.selectFrom(BCCP_MANIFEST)
-                .fetchStream().collect(groupingBy(BccpManifestRecord::getBccpId))
-                .values().forEach(bccpManifestRecords -> {
-
-            BccpManifestRecord workingRecord = null;
-            BccpManifestRecord currentRecord = null;
-            for (BccpManifestRecord bccpManifestRecord : bccpManifestRecords) {
-                if (workingReleaseId.equals(bccpManifestRecord.getReleaseId())) {
-                    workingRecord = bccpManifestRecord;
-                } else if (currentReleaseId.equals(bccpManifestRecord.getReleaseId())) {
-                    currentRecord = bccpManifestRecord;
-                }
-
-                bccpManifestRecord.setConflict((byte) 0);
-            }
-
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(BCCP_MANIFEST).set(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID, currentRecord.getBccpManifestId())
-                    .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(workingRecord.getPrevBccpManifestId())).execute();
-            currentRecord.setPrevBccpManifestId(workingRecord.getPrevBccpManifestId());
-            currentRecord.setNextBccpManifestId(workingRecord.getBccpManifestId());
-            currentRecord.update(BCCP_MANIFEST.CONFLICT,
-                    BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
-
-            workingRecord.setPrevBccpManifestId(currentRecord.getBccpManifestId());
-            workingRecord.update(BCCP_MANIFEST.CONFLICT,
-                    BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID);
-        });
+        dslContext.update(BCCP_MANIFEST
+                .join(BCCP_MANIFEST.as("prev"))
+                .on(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.as("prev").BCCP_MANIFEST_ID)))
+                .set(BCCP_MANIFEST.as("prev").NEXT_BCCP_MANIFEST_ID, BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                .where(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(BCCP_MANIFEST
+                .join(BCCP_MANIFEST.as("next"))
+                .on(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID.eq(BCCP_MANIFEST.as("next").BCCP_MANIFEST_ID)))
+                .set(BCCP_MANIFEST.as("next").PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.BCCP_MANIFEST_ID)
+                .where(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
         // CODE_LISTs
-        dslContext.selectFrom(CODE_LIST_MANIFEST)
-                .fetchStream().collect(groupingBy(CodeListManifestRecord::getCodeListId))
-                .values().forEach(codeListManifestRecords -> {
+        dslContext.update(CODE_LIST_MANIFEST
+                .join(CODE_LIST_MANIFEST.as("prev"))
+                .on(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("prev").CODE_LIST_MANIFEST_ID)))
+                .set(CODE_LIST_MANIFEST.as("prev").NEXT_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(CODE_LIST_MANIFEST
+                .join(CODE_LIST_MANIFEST.as("next"))
+                .on(CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("next").CODE_LIST_MANIFEST_ID)))
+                .set(CODE_LIST_MANIFEST.as("next").PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
-            CodeListManifestRecord workingRecord = null;
-            CodeListManifestRecord currentRecord = null;
-            for (CodeListManifestRecord codeListManifestRecord : codeListManifestRecords) {
-                if (workingReleaseId.equals(codeListManifestRecord.getReleaseId())) {
-                    workingRecord = codeListManifestRecord;
-                } else if (currentReleaseId.equals(codeListManifestRecord.getReleaseId())) {
-                    currentRecord = codeListManifestRecord;
-                }
-                codeListManifestRecord.setConflict((byte) 0);
-            }
+        // CODE_LIST_VALUEs
+        dslContext.update(CODE_LIST_VALUE_MANIFEST
+                .join(CODE_LIST_VALUE_MANIFEST.as("prev"))
+                .on(CODE_LIST_VALUE_MANIFEST.PREV_CODE_LIST_VALUE_MANIFEST_ID.eq(CODE_LIST_VALUE_MANIFEST.as("prev").CODE_LIST_VALUE_MANIFEST_ID)))
+                .set(CODE_LIST_VALUE_MANIFEST.as("prev").NEXT_CODE_LIST_VALUE_MANIFEST_ID, CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID)
+                .where(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(CODE_LIST_VALUE_MANIFEST
+                .join(CODE_LIST_VALUE_MANIFEST.as("next"))
+                .on(CODE_LIST_VALUE_MANIFEST.NEXT_CODE_LIST_VALUE_MANIFEST_ID.eq(CODE_LIST_VALUE_MANIFEST.as("next").CODE_LIST_VALUE_MANIFEST_ID)))
+                .set(CODE_LIST_VALUE_MANIFEST.as("next").PREV_CODE_LIST_VALUE_MANIFEST_ID, CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_MANIFEST_ID)
+                .where(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
-            if (currentRecord == null) {
-                return;
-            }
-            dslContext.update(CODE_LIST_MANIFEST).set(CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID, currentRecord.getCodeListManifestId())
-                    .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(workingRecord.getPrevCodeListManifestId())).execute();
-            currentRecord.setPrevCodeListManifestId(workingRecord.getPrevCodeListManifestId());
-            currentRecord.setNextCodeListManifestId(workingRecord.getCodeListManifestId());
-            currentRecord.update(CODE_LIST_MANIFEST.CONFLICT,
-                    CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID);
+        // DTs
+        dslContext.update(DT_MANIFEST
+                .join(DT_MANIFEST.as("prev"))
+                .on(DT_MANIFEST.PREV_DT_MANIFEST_ID.eq(DT_MANIFEST.as("prev").DT_MANIFEST_ID)))
+                .set(DT_MANIFEST.as("prev").NEXT_DT_MANIFEST_ID, DT_MANIFEST.DT_MANIFEST_ID)
+                .where(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(DT_MANIFEST
+                .join(DT_MANIFEST.as("next"))
+                .on(DT_MANIFEST.NEXT_DT_MANIFEST_ID.eq(DT_MANIFEST.as("next").DT_MANIFEST_ID)))
+                .set(DT_MANIFEST.as("next").PREV_DT_MANIFEST_ID, DT_MANIFEST.DT_MANIFEST_ID)
+                .where(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        
+        //DTSCs
+        dslContext.update(DT_SC_MANIFEST
+                .join(DT_SC_MANIFEST.as("prev"))
+                .on(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.eq(DT_SC_MANIFEST.as("prev").DT_SC_MANIFEST_ID)))
+                .set(DT_SC_MANIFEST.as("prev").NEXT_DT_SC_MANIFEST_ID, DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
+                .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(DT_SC_MANIFEST
+                .join(DT_SC_MANIFEST.as("next"))
+                .on(DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID.eq(DT_SC_MANIFEST.as("next").DT_SC_MANIFEST_ID)))
+                .set(DT_SC_MANIFEST.as("next").PREV_DT_SC_MANIFEST_ID, DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
+                .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
-            workingRecord.setPrevCodeListManifestId(currentRecord.getCodeListManifestId());
-            workingRecord.update(CODE_LIST_MANIFEST.CONFLICT,
-                    CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID);
-        });
+        //XBTs
+        dslContext.update(XBT_MANIFEST
+                .join(XBT_MANIFEST.as("prev"))
+                .on(XBT_MANIFEST.PREV_XBT_MANIFEST_ID.eq(XBT_MANIFEST.as("prev").XBT_MANIFEST_ID)))
+                .set(XBT_MANIFEST.as("prev").NEXT_XBT_MANIFEST_ID, XBT_MANIFEST.XBT_MANIFEST_ID)
+                .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(XBT_MANIFEST
+                .join(XBT_MANIFEST.as("next"))
+                .on(XBT_MANIFEST.NEXT_XBT_MANIFEST_ID.eq(XBT_MANIFEST.as("next").XBT_MANIFEST_ID)))
+                .set(XBT_MANIFEST.as("next").PREV_XBT_MANIFEST_ID, XBT_MANIFEST.XBT_MANIFEST_ID)
+                .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
+        // AGENCY_ID_LIST
+        dslContext.update(AGENCY_ID_LIST_MANIFEST
+                .join(AGENCY_ID_LIST_MANIFEST.as("prev"))
+                .on(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.as("prev").AGENCY_ID_LIST_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_MANIFEST.as("prev").NEXT_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                .where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(AGENCY_ID_LIST_MANIFEST
+                .join(AGENCY_ID_LIST_MANIFEST.as("next"))
+                .on(AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.as("next").AGENCY_ID_LIST_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_MANIFEST.as("next").PREV_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                .where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
 
+        // AGENCY_ID_LIST_VALUE
+        dslContext.update(AGENCY_ID_LIST_VALUE_MANIFEST
+                .join(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev"))
+                .on(AGENCY_ID_LIST_VALUE_MANIFEST.PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev").AGENCY_ID_LIST_VALUE_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_VALUE_MANIFEST.as("prev").NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID, AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                .where(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
+        dslContext.update(AGENCY_ID_LIST_VALUE_MANIFEST
+                .join(AGENCY_ID_LIST_VALUE_MANIFEST.as("next"))
+                .on(AGENCY_ID_LIST_VALUE_MANIFEST.NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID.eq(AGENCY_ID_LIST_VALUE_MANIFEST.as("next").AGENCY_ID_LIST_VALUE_MANIFEST_ID)))
+                .set(AGENCY_ID_LIST_VALUE_MANIFEST.as("next").PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID, AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_MANIFEST_ID)
+                .where(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
+                .execute();
     }
 }
