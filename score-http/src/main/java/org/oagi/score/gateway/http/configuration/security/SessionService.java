@@ -34,7 +34,7 @@ public class SessionService {
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
 
-    public boolean isDeveloper(long userId) {
+    public boolean isDeveloper(BigInteger userId) {
         Record record = dslContext.select(APP_USER.IS_DEVELOPER)
                 .from(APP_USER)
                 .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)))
