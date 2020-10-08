@@ -2425,8 +2425,7 @@ ALTER TABLE `dt_manifest`
     ADD CONSTRAINT `dt_replacement_dt_manifest_id_fk` FOREIGN KEY (`replacement_dt_manifest_id`) REFERENCES `dt_manifest` (`dt_manifest_id`);
 
 ALTER TABLE `dt_sc_manifest`
-    ADD COLUMN `log_id` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).',
-    ADD COLUMN `replacement_dt_sc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `log_id`,
+    ADD COLUMN `replacement_dt_sc_manifest_id` bigint(20) unsigned DEFAULT NULL COMMENT 'This refers to a replacement manifest if the record is deprecated.' AFTER `conflict`,
     ADD CONSTRAINT `dt_sc_replacement_dt_sc_manifest_id_fk` FOREIGN KEY (`replacement_dt_sc_manifest_id`) REFERENCES `dt_sc_manifest` (`dt_sc_manifest_id`);
 
 ALTER TABLE `code_list_manifest`

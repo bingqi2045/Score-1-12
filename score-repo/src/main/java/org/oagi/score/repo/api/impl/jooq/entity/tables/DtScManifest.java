@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = -1908027548;
+    private static final long serialVersionUID = 364136160;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -73,6 +73,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     public final TableField<DtScManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
+     * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
+     */
+    public final TableField<DtScManifestRecord, ULong> REPLACEMENT_DT_SC_MANIFEST_ID = createField(DSL.name("replacement_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+
+    /**
      * The column <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
      */
     public final TableField<DtScManifestRecord, ULong> PREV_DT_SC_MANIFEST_ID = createField(DSL.name("prev_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
@@ -81,11 +86,6 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
      * The column <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
      */
     public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
-
-    /**
-     * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
-     */
-    public final TableField<DtScManifestRecord, ULong> REPLACEMENT_DT_SC_MANIFEST_ID = createField(DSL.name("replacement_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * Create a <code>oagi.dt_sc_manifest</code> table reference
@@ -142,7 +142,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
     @Override
     public List<ForeignKey<DtScManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtScManifestRecord, ?>>asList(Keys.DT_SC_MANIFEST_RELEASE_ID_FK, Keys.DT_SC_MANIFEST_DT_SC_ID_FK, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -157,16 +157,16 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         return new DtManifest(this, Keys.DT_SC_MANIFEST_OWNER_DT_MANIFEST_ID_FK);
     }
 
+    public DtScManifest dtScReplacementDtScManifestIdFk() {
+        return new DtScManifest(this, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
+    }
+
     public DtScManifest dtScPrevDtScManifestIdFk() {
         return new DtScManifest(this, Keys.DT_SC_PREV_DT_SC_MANIFEST_ID_FK);
     }
 
     public DtScManifest dtScNextDtScManifestIdFk() {
         return new DtScManifest(this, Keys.DT_SC_NEXT_DT_SC_MANIFEST_ID_FK);
-    }
-
-    public DtScManifest dtScReplacementDtScManifestIdFk() {
-        return new DtScManifest(this, Keys.DT_SC_REPLACEMENT_DT_SC_MANIFEST_ID_FK);
     }
 
     @Override

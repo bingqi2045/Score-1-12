@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1146279607;
+    private static final long serialVersionUID = 377442767;
 
     /**
      * Setter for <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.
@@ -92,44 +92,44 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
-     */
-    public void setPrevDtScManifestId(ULong value) {
-        set(5, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
-     */
-    public ULong getPrevDtScManifestId() {
-        return (ULong) get(5);
-    }
-
-    /**
-     * Setter for <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
-     */
-    public void setNextDtScManifestId(ULong value) {
-        set(6, value);
-    }
-
-    /**
-     * Getter for <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
-     */
-    public ULong getNextDtScManifestId() {
-        return (ULong) get(6);
-    }
-
-    /**
      * Setter for <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
     public void setReplacementDtScManifestId(ULong value) {
-        set(7, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
     public ULong getReplacementDtScManifestId() {
+        return (ULong) get(5);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
+     */
+    public void setPrevDtScManifestId(ULong value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
+     */
+    public ULong getPrevDtScManifestId() {
+        return (ULong) get(6);
+    }
+
+    /**
+     * Setter for <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
+     */
+    public void setNextDtScManifestId(ULong value) {
+        set(7, value);
+    }
+
+    /**
+     * Getter for <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
+     */
+    public ULong getNextDtScManifestId() {
         return (ULong) get(7);
     }
 
@@ -183,17 +183,17 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public Field<ULong> field6() {
-        return DtScManifest.DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID;
+        return DtScManifest.DT_SC_MANIFEST.REPLACEMENT_DT_SC_MANIFEST_ID;
     }
 
     @Override
     public Field<ULong> field7() {
-        return DtScManifest.DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID;
+        return DtScManifest.DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID;
     }
 
     @Override
     public Field<ULong> field8() {
-        return DtScManifest.DT_SC_MANIFEST.REPLACEMENT_DT_SC_MANIFEST_ID;
+        return DtScManifest.DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID;
     }
 
     @Override
@@ -223,17 +223,17 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public ULong component6() {
-        return getPrevDtScManifestId();
+        return getReplacementDtScManifestId();
     }
 
     @Override
     public ULong component7() {
-        return getNextDtScManifestId();
+        return getPrevDtScManifestId();
     }
 
     @Override
     public ULong component8() {
-        return getReplacementDtScManifestId();
+        return getNextDtScManifestId();
     }
 
     @Override
@@ -263,17 +263,17 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public ULong value6() {
-        return getPrevDtScManifestId();
+        return getReplacementDtScManifestId();
     }
 
     @Override
     public ULong value7() {
-        return getNextDtScManifestId();
+        return getPrevDtScManifestId();
     }
 
     @Override
     public ULong value8() {
-        return getReplacementDtScManifestId();
+        return getNextDtScManifestId();
     }
 
     @Override
@@ -308,19 +308,19 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public DtScManifestRecord value6(ULong value) {
-        setPrevDtScManifestId(value);
+        setReplacementDtScManifestId(value);
         return this;
     }
 
     @Override
     public DtScManifestRecord value7(ULong value) {
-        setNextDtScManifestId(value);
+        setPrevDtScManifestId(value);
         return this;
     }
 
     @Override
     public DtScManifestRecord value8(ULong value) {
-        setReplacementDtScManifestId(value);
+        setNextDtScManifestId(value);
         return this;
     }
 
@@ -351,7 +351,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     /**
      * Create a detached, initialised DtScManifestRecord
      */
-    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong prevDtScManifestId, ULong nextDtScManifestId, ULong replacementDtScManifestId) {
+    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong replacementDtScManifestId, ULong prevDtScManifestId, ULong nextDtScManifestId) {
         super(DtScManifest.DT_SC_MANIFEST);
 
         set(0, dtScManifestId);
@@ -359,8 +359,8 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
         set(2, dtScId);
         set(3, ownerDtManifestId);
         set(4, conflict);
-        set(5, prevDtScManifestId);
-        set(6, nextDtScManifestId);
-        set(7, replacementDtScManifestId);
+        set(5, replacementDtScManifestId);
+        set(6, prevDtScManifestId);
+        set(7, nextDtScManifestId);
     }
 }
