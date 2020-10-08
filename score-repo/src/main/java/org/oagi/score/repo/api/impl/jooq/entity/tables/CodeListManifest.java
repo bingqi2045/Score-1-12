@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
-    private static final long serialVersionUID = 264529492;
+    private static final long serialVersionUID = -483946112;
 
     /**
      * The reference instance of <code>oagi.code_list_manifest</code>
@@ -147,7 +147,7 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
     @Override
     public List<ForeignKey<CodeListManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<CodeListManifestRecord, ?>>asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<CodeListManifestRecord, ?>>asList(Keys.CODE_LIST_MANIFEST_RELEASE_ID_FK, Keys.CODE_LIST_MANIFEST_CODE_LIST_ID_FK, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_LOG_ID_FK, Keys.CODE_LIST_REPLACEMENT_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_PREV_CODE_LIST_MANIFEST_ID_FK, Keys.CODE_LIST_MANIFEST_NEXT_CODE_LIST_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,6 +160,10 @@ public class CodeListManifest extends TableImpl<CodeListManifestRecord> {
 
     public CodeListManifest codeListManifestBasedCodeListManifestIdFk() {
         return new CodeListManifest(this, Keys.CODE_LIST_MANIFEST_BASED_CODE_LIST_MANIFEST_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.CODE_LIST_MANIFEST_LOG_ID_FK);
     }
 
     public CodeListManifest codeListReplacementCodeListManifestIdFk() {

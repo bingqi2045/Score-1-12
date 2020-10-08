@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
-    private static final long serialVersionUID = -29583869;
+    private static final long serialVersionUID = 1897420157;
 
     /**
      * The reference instance of <code>oagi.bccp_manifest</code>
@@ -147,7 +147,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     @Override
     public List<ForeignKey<BccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_LOG_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,6 +160,10 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     public DtManifest dtManifest() {
         return new DtManifest(this, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.BCCP_MANIFEST_LOG_ID_FK);
     }
 
     public BccpManifest bccpReplacementBccpManifestIdFk() {

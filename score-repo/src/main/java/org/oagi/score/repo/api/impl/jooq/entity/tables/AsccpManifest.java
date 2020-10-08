@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestReco
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
-    private static final long serialVersionUID = -1997328174;
+    private static final long serialVersionUID = 1452101564;
 
     /**
      * The reference instance of <code>oagi.asccp_manifest</code>
@@ -147,7 +147,7 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     @Override
     public List<ForeignKey<AsccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpManifestRecord, ?>>asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AsccpManifestRecord, ?>>asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_LOG_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,6 +160,10 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     public AccManifest accManifest() {
         return new AccManifest(this, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.ASCCP_MANIFEST_LOG_ID_FK);
     }
 
     public AsccpManifest asccpReplacementAsccpManifestIdFk() {

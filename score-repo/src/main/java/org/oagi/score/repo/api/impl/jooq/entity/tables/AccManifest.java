@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifest extends TableImpl<AccManifestRecord> {
 
-    private static final long serialVersionUID = -243920697;
+    private static final long serialVersionUID = 1908045821;
 
     /**
      * The reference instance of <code>oagi.acc_manifest</code>
@@ -147,7 +147,7 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     @Override
     public List<ForeignKey<AccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccManifestRecord, ?>>asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AccManifestRecord, ?>>asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_LOG_ID_FK, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,6 +160,10 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     public AccManifest accManifestBasedAccManifestIdFk() {
         return new AccManifest(this, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.ACC_MANIFEST_LOG_ID_FK);
     }
 
     public AccManifest accReplacementAccManifestIdFk() {

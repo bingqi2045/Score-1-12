@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
-    private static final long serialVersionUID = -238238935;
+    private static final long serialVersionUID = 553577891;
 
     /**
      * The reference instance of <code>oagi.xbt_manifest</code>
@@ -137,7 +137,7 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     @Override
     public List<ForeignKey<XbtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_LOG_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -146,6 +146,10 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     public Xbt xbt() {
         return new Xbt(this, Keys.XBT_MANIFEST_XBT_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.XBT_MANIFEST_LOG_ID_FK);
     }
 
     public XbtManifest xbtManifestPrevXbtManifestIdFk() {

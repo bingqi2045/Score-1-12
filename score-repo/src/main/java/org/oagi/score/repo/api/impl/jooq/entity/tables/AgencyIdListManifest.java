@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListManif
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> {
 
-    private static final long serialVersionUID = -731771956;
+    private static final long serialVersionUID = 1220957638;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_manifest</code>
@@ -147,7 +147,7 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
 
     @Override
     public List<ForeignKey<AgencyIdListManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AgencyIdListManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AgencyIdListManifestRecord, ?>>asList(Keys.AGENCY_ID_LIST_MANIFEST_RELEASE_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_AGENCY_ID_LIST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_LOG_ID_FK, Keys.AGENCY_ID_LIST_REPLACEMENT_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_PREV_AGENCY_ID_LIST_MANIFEST_ID_FK, Keys.AGENCY_ID_LIST_MANIFEST_NEXT_AGENCY_ID_LIST_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,6 +160,10 @@ public class AgencyIdListManifest extends TableImpl<AgencyIdListManifestRecord> 
 
     public AgencyIdListManifest agencyIdListManifestBasedAgencyIdListManifestIdFk() {
         return new AgencyIdListManifest(this, Keys.AGENCY_ID_LIST_MANIFEST_BASED_AGENCY_ID_LIST_MANIFEST_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.AGENCY_ID_LIST_MANIFEST_LOG_ID_FK);
     }
 
     public AgencyIdListManifest agencyIdListReplacementAgencyIdListManifestIdFk() {

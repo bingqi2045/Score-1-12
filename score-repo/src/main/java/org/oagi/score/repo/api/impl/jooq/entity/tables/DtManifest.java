@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtManifestRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtManifest extends TableImpl<DtManifestRecord> {
 
-    private static final long serialVersionUID = -449747287;
+    private static final long serialVersionUID = 764029423;
 
     /**
      * The reference instance of <code>oagi.dt_manifest</code>
@@ -142,7 +142,7 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     @Override
     public List<ForeignKey<DtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<DtManifestRecord, ?>>asList(Keys.DT_MANIFEST_RELEASE_ID_FK, Keys.DT_MANIFEST_DT_ID_FK, Keys.DT_MANIFEST_LOG_ID_FK, Keys.DT_REPLACEMENT_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_PREV_DT_MANIFEST_ID_FK, Keys.DT_MANIFEST_NEXT_DT_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -151,6 +151,10 @@ public class DtManifest extends TableImpl<DtManifestRecord> {
 
     public Dt dt() {
         return new Dt(this, Keys.DT_MANIFEST_DT_ID_FK);
+    }
+
+    public Log log() {
+        return new Log(this, Keys.DT_MANIFEST_LOG_ID_FK);
     }
 
     public DtManifest dtReplacementDtManifestIdFk() {

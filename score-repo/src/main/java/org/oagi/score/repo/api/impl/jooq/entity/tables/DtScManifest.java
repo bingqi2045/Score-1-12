@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = -172748240;
+    private static final long serialVersionUID = -1908027548;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -81,11 +81,6 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
      * The column <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
      */
     public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
-
-    /**
-     * The column <code>oagi.dt_sc_manifest.log_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
-     */
-    public final TableField<DtScManifestRecord, Byte> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
      * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
@@ -201,11 +196,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, Byte, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }
