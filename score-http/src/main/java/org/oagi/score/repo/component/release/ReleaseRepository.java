@@ -424,7 +424,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 DT_SC_MANIFEST.DT_SC_ID,
                 DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
                 DT_SC_MANIFEST.CONFLICT,
-                DT_SC_MANIFEST.LOG_ID,
                 DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                 DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
                 .select(dslContext.select(
@@ -432,7 +431,6 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         DT_SC_MANIFEST.DT_SC_ID,
                         DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
                         DT_SC_MANIFEST.CONFLICT,
-                        DT_SC_MANIFEST.LOG_ID,
                         DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                         DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
                         .from(DT_SC_MANIFEST)
@@ -445,12 +443,14 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 XBT_MANIFEST.RELEASE_ID,
                 XBT_MANIFEST.XBT_ID,
                 XBT_MANIFEST.CONFLICT,
+                XBT_MANIFEST.LOG_ID,
                 XBT_MANIFEST.PREV_XBT_MANIFEST_ID,
                 XBT_MANIFEST.NEXT_XBT_MANIFEST_ID)
                 .select(dslContext.select(
                         inline(ULong.valueOf(releaseId)),
                         XBT_MANIFEST.XBT_ID,
                         XBT_MANIFEST.CONFLICT,
+                        XBT_MANIFEST.LOG_ID,
                         XBT_MANIFEST.PREV_XBT_MANIFEST_ID,
                         XBT_MANIFEST.XBT_MANIFEST_ID)
                         .from(XBT_MANIFEST)
