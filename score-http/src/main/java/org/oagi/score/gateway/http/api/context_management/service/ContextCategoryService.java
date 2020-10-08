@@ -9,7 +9,7 @@ import org.oagi.score.gateway.http.api.context_management.data.ContextCategoryLi
 import org.oagi.score.gateway.http.api.context_management.data.ContextScheme;
 import org.oagi.score.gateway.http.api.context_management.data.SimpleContextCategory;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.ContextCategoryRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryRequest;
@@ -150,7 +150,7 @@ public class ContextCategoryService {
         LocalDateTime timestamp = LocalDateTime.now();
 
         repository.insertContextCategory()
-                .setGuid(StringUtils.isEmpty(contextCategory.getGuid()) ? SrtGuid.randomGuid() : contextCategory.getGuid())
+                .setGuid(StringUtils.isEmpty(contextCategory.getGuid()) ? ScoreGuid.randomGuid() : contextCategory.getGuid())
                 .setName(contextCategory.getName())
                 .setDescription(contextCategory.getDescription())
                 .setUserId(userId)

@@ -12,7 +12,7 @@ import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.CreateBieFro
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.BieCreateFromExistingBieRequestEvent;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
 import org.oagi.score.redis.event.EventListenerContainer;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
@@ -582,7 +582,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertAbie(BieCreateFromExistingBieAbie abie) {
 
             return dslContext.insertInto(ABIE)
-                    .set(ABIE.GUID, SrtGuid.randomGuid())
+                    .set(ABIE.GUID, ScoreGuid.randomGuid())
                     .set(ABIE.PATH, getPath(abie.getPath()))
                     .set(ABIE.HASH_PATH, getHashPath(abie.getPath()))
                     .set(ABIE.BASED_ACC_MANIFEST_ID, ULong.valueOf(abie.getBasedAccManifestId()))
@@ -598,7 +598,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertAsbiep(BieCreateFromExistingBieAsbiep asbiep) {
 
             return dslContext.insertInto(ASBIEP)
-                    .set(ASBIEP.GUID, SrtGuid.randomGuid())
+                    .set(ASBIEP.GUID, ScoreGuid.randomGuid())
                     .set(ASBIEP.PATH, getPath(asbiep.getPath()))
                     .set(ASBIEP.HASH_PATH, getHashPath(asbiep.getPath()))
                     .set(ASBIEP.BASED_ASCCP_MANIFEST_ID, ULong.valueOf(asbiep.getBasedAsccpManifestId()))
@@ -617,7 +617,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertBbiep(BieCreateFromExistingBieBbiep bbiep) {
 
             return dslContext.insertInto(BBIEP)
-                    .set(BBIEP.GUID, SrtGuid.randomGuid())
+                    .set(BBIEP.GUID, ScoreGuid.randomGuid())
                     .set(BBIEP.PATH, getPath(bbiep.getPath()))
                     .set(BBIEP.HASH_PATH, getHashPath(bbiep.getPath()))
                     .set(BBIEP.BASED_BCCP_MANIFEST_ID, ULong.valueOf(bbiep.getBasedBccpManifestId()))
@@ -635,7 +635,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertAsbie(BieCreateFromExistingBieAsbie asbie) {
 
             return dslContext.insertInto(ASBIE)
-                    .set(ASBIE.GUID, SrtGuid.randomGuid())
+                    .set(ASBIE.GUID, ScoreGuid.randomGuid())
                     .set(ASBIE.PATH, getPath(asbie.getPath()))
                     .set(ASBIE.HASH_PATH, getHashPath(asbie.getPath()))
                     .set(ASBIE.FROM_ABIE_ID, ULong.valueOf(asbie.getFromAbieId()))
@@ -659,7 +659,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertBbie(BieCreateFromExistingBieBbie bbie) {
 
             return dslContext.insertInto(BBIE)
-                    .set(BBIE.GUID, SrtGuid.randomGuid())
+                    .set(BBIE.GUID, ScoreGuid.randomGuid())
                     .set(BBIE.PATH, getPath(bbie.getPath()))
                     .set(BBIE.HASH_PATH, getHashPath(bbie.getPath()))
                     .set(BBIE.FROM_ABIE_ID, ULong.valueOf(bbie.getFromAbieId()))
@@ -690,7 +690,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private BigInteger insertBbieSc(BieCreateFromExistingBieBbieSc bbieSc) {
 
             return dslContext.insertInto(BBIE_SC)
-                    .set(BBIE_SC.GUID, SrtGuid.randomGuid())
+                    .set(BBIE_SC.GUID, ScoreGuid.randomGuid())
                     .set(BBIE_SC.PATH, getPath(bbieSc.getPath()))
                     .set(BBIE_SC.HASH_PATH, getHashPath(bbieSc.getPath()))
                     .set(BBIE_SC.BBIE_ID, ULong.valueOf(bbieSc.getBbieId()))

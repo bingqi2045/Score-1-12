@@ -2593,4 +2593,8 @@ ALTER TABLE `module_blob_content_manifest`
 ALTER TABLE `code_list` MODIFY COLUMN `version_id` varchar(100) NOT NULL COMMENT 'Code list version number.';
 ALTER TABLE `ctx_scheme_value` MODIFY COLUMN `value` varchar(100) NOT NULL DEFAULT '' COMMENT 'A short value for the scheme value similar to the code list value.';
 
+-- Add `is_enabled` column.
+ALTER TABLE `app_user` ADD COLUMN `is_enabled` tinyint(1) DEFAULT '1';
+
+
 SET FOREIGN_KEY_CHECKS = 1;

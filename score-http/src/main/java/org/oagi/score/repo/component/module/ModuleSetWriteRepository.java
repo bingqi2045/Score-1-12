@@ -8,7 +8,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -40,7 +40,7 @@ public class ModuleSetWriteRepository {
         }
 
         ModuleSetRecord moduleSetRecord = new ModuleSetRecord();
-        moduleSetRecord.setGuid(SrtGuid.randomGuid());
+        moduleSetRecord.setGuid(ScoreGuid.randomGuid());
         moduleSetRecord.setName(request.getName());
         moduleSetRecord.setDescription(request.getDescription());
         moduleSetRecord.setCreatedBy(userId);

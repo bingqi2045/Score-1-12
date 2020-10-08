@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,7 +43,7 @@ public class AsbiepWriteRepository {
 
         if (asbiepRecord == null) {
             asbiepRecord = new AsbiepRecord();
-            asbiepRecord.setGuid(SrtGuid.randomGuid());
+            asbiepRecord.setGuid(ScoreGuid.randomGuid());
             asbiepRecord.setBasedAsccpManifestId(ULong.valueOf(asbiep.getBasedAsccpManifestId()));
             asbiepRecord.setPath(asbiep.getPath());
             asbiepRecord.setHashPath(hashPath);

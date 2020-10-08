@@ -8,15 +8,15 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.data.LogAction;
+import org.oagi.score.data.RevisionAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
-import org.oagi.score.repo.LogRepository;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccWriteRepository;
 import org.oagi.score.repo.component.bcc.UpdateBccPropertiesRepositoryRequest;
-import org.oagi.score.repo.domain.LogSerializer;
+import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -45,10 +45,10 @@ public class BccpWriteRepository {
     private BccWriteRepository bccWriteRepository;
 
     @Autowired
-    private LogRepository logRepository;
+    private RevisionRepository revisionRepository;
 
     @Autowired
-    private LogSerializer serializer;
+    private RevisionSerializer serializer;
 
     public CreateBccpRepositoryResponse createBccp(CreateBccpRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));
@@ -63,7 +63,7 @@ public class BccpWriteRepository {
                 .fetchOne();
 
         BccpRecord bccp = new BccpRecord();
-        bccp.setGuid(SrtGuid.randomGuid());
+        bccp.setGuid(ScoreGuid.randomGuid());
         bccp.setPropertyTerm(request.getInitialPropertyTerm());
         bccp.setRepresentationTerm(bdt.getDataTypeTerm());
         bccp.setDen(bccp.getPropertyTerm() + ". " + bccp.getRepresentationTerm());
@@ -89,12 +89,12 @@ public class BccpWriteRepository {
         bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
         bccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
 
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
                         bccp,
-                        LogAction.Added,
+                        RevisionAction.Added,
                         userId, timestamp);
-        bccpManifest.setLogId(logRecord.getLogId());
+        bccpManifest.setRevisionId(revisionRecord.getRevisionId());
 
         bccpManifest.setBccpManifestId(
                 dslContext.insertInto(BCCP_MANIFEST)
@@ -173,17 +173,17 @@ public class BccpWriteRepository {
         prevBccpRecord.setNextBccpId(nextBccpRecord.getBccpId());
         prevBccpRecord.update(BCCP.NEXT_BCCP_ID);
 
-        // creates new log for revised record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        nextBccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Revised,
+        // creates new revision for revised record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        nextBccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Revised,
                         userId, timestamp);
 
         ULong responseBccpManifestId;
         bccpManifestRecord.setBccpId(nextBccpRecord.getBccpId());
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID);
 
         responseBccpManifestId = bccpManifestRecord.getBccpManifestId();
 
@@ -285,15 +285,15 @@ public class BccpWriteRepository {
                     .fetchOne();
         }
 
-        // creates new log for updated record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Modified,
+        // creates new revision for updated record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
 
         if (propertyTermChanged) {
             for (ULong bccManifestId : dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID)
@@ -352,16 +352,16 @@ public class BccpWriteRepository {
                 BCCP.REPRESENTATION_TERM, BCCP.DEN,
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
 
-        // creates new log for updated record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Modified,
+        // creates new revision for updated record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
         bccpManifestRecord.setBdtManifestId(bdtManifestId);
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.REVISION_ID);
 
         return new UpdateBccpBdtRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
@@ -409,17 +409,17 @@ public class BccpWriteRepository {
         bccpRecord.update(BCCP.STATE,
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP, BCCP.OWNER_USER_ID);
 
-        // creates new log for updated record.
-        LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
-                ? LogAction.Restored : LogAction.Modified;
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpRecord, bccpManifestRecord.getLogId(),
-                        logAction,
+        // creates new revision for updated record.
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
+                ? RevisionAction.Restored : RevisionAction.Modified;
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        revisionAction,
                         userId, timestamp);
 
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
 
         return new UpdateBccpStateRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
@@ -454,15 +454,15 @@ public class BccpWriteRepository {
         bccpRecord.update(BCCP.STATE,
                 BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
 
-        // creates new log for deleted record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Deleted,
+        // creates new revision for deleted record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Deleted,
                         userId, timestamp);
 
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
 
         return new DeleteBccpRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
@@ -495,14 +495,14 @@ public class BccpWriteRepository {
         bccpRecord.setLastUpdateTimestamp(timestamp);
         bccpRecord.update(BCCP.OWNER_USER_ID, BCCP.LAST_UPDATED_BY, BCCP.LAST_UPDATE_TIMESTAMP);
 
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        bccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
 
         return new UpdateBccpOwnerRepositoryResponse(bccpManifestRecord.getBccpManifestId().toBigInteger());
     }
@@ -522,20 +522,20 @@ public class BccpWriteRepository {
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
 
         if (bccpRecord.getPrevBccpId() == null) {
-            throw new IllegalArgumentException("Not found previous log");
+            throw new IllegalArgumentException("Not found previous revision");
         }
 
         BccpRecord prevBccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpRecord.getPrevBccpId())).fetchOne();
 
-        // creates new log for canceled record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        prevBccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Canceled,
+        // creates new revision for canceled record.
+        RevisionRecord revisionRecord =
+                revisionRepository.insertBccpRevision(
+                        prevBccpRecord, bccpManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
                         userId, timestamp);
 
-        // update BCCP MANIFEST's bccp_id and log_id
+        // update BCCP MANIFEST's bccp_id and revision_id
         if (prevBccpRecord.getBdtId() != null) {
             String prevBdtGuid = dslContext.select(DT.GUID)
                     .from(DT).where(DT.DT_ID.eq(prevBccpRecord.getBdtId())).fetchOneInto(String.class);
@@ -546,8 +546,8 @@ public class BccpWriteRepository {
             bccpManifestRecord.setBdtManifestId(bdtManifest.getDtManifestId());
         }
         bccpManifestRecord.setBccpId(bccpRecord.getPrevBccpId());
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.LOG_ID, BCCP_MANIFEST.BDT_MANIFEST_ID);
+        bccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.REVISION_ID, BCCP_MANIFEST.BDT_MANIFEST_ID);
 
         // update BCCs which using current BCCP
         dslContext.update(BCC)
@@ -565,7 +565,7 @@ public class BccpWriteRepository {
         return new CancelRevisionBccpRepositoryResponse(request.getBccpManifestId());
     }
 
-    public CancelRevisionBccpRepositoryResponse resetLogBccp(CancelRevisionBccpRepositoryRequest request) {
+    public CancelRevisionBccpRepositoryResponse resetRevisionBccp(CancelRevisionBccpRepositoryRequest request) {
         BccpManifestRecord bccpManifestRecord = dslContext.selectFrom(BCCP_MANIFEST)
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(request.getBccpManifestId()))).fetchOne();
 
@@ -576,30 +576,30 @@ public class BccpWriteRepository {
         BccpRecord bccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId())).fetchOne();
 
-        LogRecord cursorLog = dslContext.selectFrom(LOG)
-                .where(LOG.LOG_ID.eq(bccpManifestRecord.getLogId())).fetchOne();
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(bccpManifestRecord.getRevisionId())).fetchOne();
 
-        UInteger logNum = cursorLog.getRevisionNum();
+        UInteger revisionNum = cursorRevision.getRevisionNum();
 
-        if (cursorLog.getPrevLogId() == null) {
+        if (cursorRevision.getPrevRevisionId() == null) {
             throw new IllegalArgumentException("There is no change to be reset.");
         }
 
-        List<ULong> deleteLogTargets = new ArrayList<>();
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
 
-        while (cursorLog.getPrevLogId() != null) {
-            if (!cursorLog.getRevisionNum().equals(logNum)) {
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
                 throw new IllegalArgumentException("Can not found reset point");
             }
-            if (cursorLog.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
                 break;
             }
-            deleteLogTargets.add(cursorLog.getLogId());
-            cursorLog = dslContext.selectFrom(LOG)
-                    .where(LOG.LOG_ID.eq(cursorLog.getPrevLogId())).fetchOne();
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
         }
 
-        JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
+        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
 
         ULong bdtId = serializer.getSnapshotId(snapshot.get("bdtId"));
         DtManifestRecord bdtManifestRecord = dslContext.selectFrom(DT_MANIFEST).where(and(
@@ -612,8 +612,8 @@ public class BccpWriteRepository {
         }
 
         bccpManifestRecord.setBdtManifestId(bdtManifestRecord.getDtManifestId());
-        bccpManifestRecord.setLogId(cursorLog.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.LOG_ID);
+        bccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        bccpManifestRecord.update(BCCP_MANIFEST.BDT_MANIFEST_ID, BCCP_MANIFEST.REVISION_ID);
 
         bccpRecord.setBdtId(bdtManifestRecord.getDtId());
         bccpRecord.setPropertyTerm(serializer.getSnapshotString(snapshot.get("propertyTerm")));
@@ -628,14 +628,14 @@ public class BccpWriteRepository {
         bccpRecord.setFixedValue(serializer.getSnapshotString(snapshot.get("fixedValue")));
         bccpRecord.update();
 
-        cursorLog.setNextLogId(null);
-        cursorLog.update(LOG.NEXT_LOG_ID);
-        dslContext.update(LOG)
-                .setNull(LOG.PREV_LOG_ID)
-                .setNull(LOG.NEXT_LOG_ID)
-                .where(LOG.LOG_ID.in(deleteLogTargets))
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
                 .execute();
-        dslContext.deleteFrom(LOG).where(LOG.LOG_ID.in(deleteLogTargets)).execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
         return new CancelRevisionBccpRepositoryResponse(request.getBccpManifestId());
     }

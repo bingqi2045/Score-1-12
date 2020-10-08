@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,7 +70,7 @@ public class BieCreateControllerTest {
 
             testBizCtxId = dslContext.insertInto(BIZ_CTX)
                     .set(BIZ_CTX.NAME, "Test Business Context")
-                    .set(BIZ_CTX.GUID, SrtGuid.randomGuid())
+                    .set(BIZ_CTX.GUID, ScoreGuid.randomGuid())
                     .set(BIZ_CTX.CREATED_BY, userId)
                     .set(BIZ_CTX.LAST_UPDATED_BY, userId)
                     .set(BIZ_CTX.CREATION_TIMESTAMP, timestamp)

@@ -3,12 +3,12 @@ package org.oagi.score.repo.component.code_list;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.data.LogAction;
+import org.oagi.score.data.RevisionAction;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
-import org.oagi.score.repo.LogRepository;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.RevisionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ public class CodeListWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private LogRepository logRepository;
+    private RevisionRepository revisionRepository;
 
     public CreateCodeListRepositoryResponse createCodeList(CreateCodeListRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
@@ -41,8 +41,8 @@ public class CodeListWriteRepository {
         LocalDateTime timestamp = request.getLocalDateTime();
 
         CodeListRecord codeList = new CodeListRecord();
-        codeList.setGuid(SrtGuid.randomGuid());
-        codeList.setListId(SrtGuid.randomGuid());
+        codeList.setGuid(ScoreGuid.randomGuid());
+        codeList.setListId(ScoreGuid.randomGuid());
         codeList.setState(CcState.WIP.name());
         codeList.setCreatedBy(userId);
         codeList.setLastUpdatedBy(userId);
@@ -113,12 +113,12 @@ public class CodeListWriteRepository {
         codeListManifest.setCodeListId(codeList.getCodeListId());
         codeListManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
 
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
                         codeList,
-                        LogAction.Added,
+                        RevisionAction.Added,
                         userId, timestamp);
-        codeListManifest.setLogId(logRecord.getLogId());
+        codeListManifest.setRevisionId(revisionRecord.getRevisionId());
         if (basedCodeListManifestRecord != null) {
             codeListManifest.setBasedCodeListManifestId(basedCodeListManifestRecord.getCodeListManifestId());
         }
@@ -137,7 +137,7 @@ public class CodeListWriteRepository {
 
                 CodeListValueRecord codeListValueRecord = basedCodeListValue.copy();
                 codeListValueRecord.setCodeListId(codeList.getCodeListId());
-                codeListValueRecord.setGuid(SrtGuid.randomGuid());
+                codeListValueRecord.setGuid(ScoreGuid.randomGuid());
                 codeListValueRecord.setCreatedBy(userId);
                 codeListValueRecord.setLastUpdatedBy(userId);
                 codeListValueRecord.setOwnerUserId(userId);
@@ -210,14 +210,14 @@ public class CodeListWriteRepository {
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new UpdateCodeListPropertiesRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
@@ -256,16 +256,16 @@ public class CodeListWriteRepository {
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == request.getState())
-                ? LogAction.Restored : LogAction.Modified;
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListRecord, codeListManifestRecord.getLogId(),
-                        logAction,
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == request.getState())
+                ? RevisionAction.Restored : RevisionAction.Modified;
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        revisionAction,
                         userId, timestamp);
 
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new UpdateCodeListStateRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
@@ -336,7 +336,7 @@ public class CodeListWriteRepository {
             CodeListValueRecord codeListValueRecord = new CodeListValueRecord();
 
             codeListValueRecord.setCodeListId(codeListRecord.getCodeListId());
-            codeListValueRecord.setGuid(SrtGuid.randomGuid());
+            codeListValueRecord.setGuid(ScoreGuid.randomGuid());
             codeListValueRecord.setName(codeListValue.getName());
             codeListValueRecord.setValue(codeListValue.getValue());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
@@ -469,14 +469,14 @@ public class CodeListWriteRepository {
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for deleted record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Deleted,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Deleted,
                         userId, timestamp);
 
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new DeleteCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
@@ -523,14 +523,14 @@ public class CodeListWriteRepository {
                 CODE_LIST.LAST_UPDATED_BY, CODE_LIST.LAST_UPDATE_TIMESTAMP, CODE_LIST.OWNER_USER_ID);
 
         // creates new revision for deleted record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Restored,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Restored,
                         userId, timestamp);
 
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new RestoreCodeListRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }
@@ -606,16 +606,16 @@ public class CodeListWriteRepository {
         createNewCodeListValueForRevisedRecord(user, codeListManifestRecord, nextCodeListRecord, targetReleaseId, timestamp);
 
         // creates new revision for revised record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        nextCodeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Revised,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        nextCodeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Revised,
                         userId, timestamp);
 
         ULong responseCodeListManifestId;
         codeListManifestRecord.setCodeListId(nextCodeListRecord.getCodeListId());
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.REVISION_ID);
 
         responseCodeListManifestId = codeListManifestRecord.getCodeListManifestId();
 
@@ -644,18 +644,18 @@ public class CodeListWriteRepository {
                 .where(CODE_LIST.CODE_LIST_ID.eq(codeListRecord.getPrevCodeListId())).fetchOne();
 
         // creates new revision for canceled record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        prevCodeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Canceled,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        prevCodeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
                         userId, timestamp);
 
         // update CODE LIST MANIFEST's codeList_id and revision_id
         codeListManifestRecord.setCodeListId(codeListRecord.getPrevCodeListId());
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.REVISION_ID);
 
-        discardLogCodeListValues(codeListManifestRecord, codeListRecord);
+        discardRevisionCodeListValues(codeListManifestRecord, codeListRecord);
 
         // unlink prev CODE_LIST
         prevCodeListRecord.setNextCodeListId(null);
@@ -667,7 +667,7 @@ public class CodeListWriteRepository {
         return new CancelRevisionCodeListRepositoryResponse(request.getCodeListManifestId());
     }
 
-    private void discardLogCodeListValues(CodeListManifestRecord codeListManifestRecord, CodeListRecord codeListRecord) {
+    private void discardRevisionCodeListValues(CodeListManifestRecord codeListManifestRecord, CodeListRecord codeListRecord) {
         List<CodeListValueManifestRecord> codeListValueManifests = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
                 .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestRecord.getCodeListManifestId()))
                 .fetch();
@@ -776,14 +776,14 @@ public class CodeListWriteRepository {
             codeListValueRecord.update(CODE_LIST_VALUE.OWNER_USER_ID);
         }
 
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertCodeListRevision(
+                        codeListRecord, codeListManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
 
         return new UpdateCodeListOwnerRepositoryResponse(codeListManifestRecord.getCodeListManifestId().toBigInteger());
     }

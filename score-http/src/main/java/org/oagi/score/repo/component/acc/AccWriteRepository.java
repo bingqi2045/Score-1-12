@@ -10,19 +10,19 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
-import org.oagi.score.data.LogAction;
 import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.data.RevisionAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcId;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
-import org.oagi.score.repo.LogRepository;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.domain.LogSerializer;
+import org.oagi.score.repo.domain.RevisionSerializer;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +54,10 @@ public class AccWriteRepository {
     private SessionService sessionService;
 
     @Autowired
-    private LogRepository logRepository;
+    private RevisionRepository revisionRepository;
 
     @Autowired
-    private LogSerializer serializer;
+    private RevisionSerializer serializer;
 
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
@@ -79,7 +79,7 @@ public class AccWriteRepository {
         }
 
         AccRecord acc = new AccRecord();
-        acc.setGuid(SrtGuid.randomGuid());
+        acc.setGuid(ScoreGuid.randomGuid());
         acc.setObjectClassTerm(request.getInitialObjectClassTerm());
         acc.setDen(acc.getObjectClassTerm() + ". Details");
         acc.setOagisComponentType(request.getInitialComponentType().getValue());
@@ -113,12 +113,12 @@ public class AccWriteRepository {
             accManifest.setBasedAccManifestId(basedAccManifest.getAccManifestId());
         }
 
-        LogRecord logRecord =
-                logRepository.insertAccLog(
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
                         acc,
-                        LogAction.Added,
+                        RevisionAction.Added,
                         userId, timestamp);
-        accManifest.setLogId(logRecord.getLogId());
+        accManifest.setRevisionId(revisionRecord.getRevisionId());
 
         accManifest.setAccManifestId(
                 dslContext.insertInto(ACC_MANIFEST)
@@ -203,16 +203,16 @@ public class AccWriteRepository {
         linkSeqKeys(nextAccRecord);
 
         // creates new revision for revised record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        nextAccRecord, accManifestRecord.getLogId(),
-                        LogAction.Revised,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        nextAccRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Revised,
                         userId, timestamp);
 
         ULong responseAccManifestId;
         accManifestRecord.setAccId(nextAccRecord.getAccId());
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID);
 
         responseAccManifestId = accManifestRecord.getAccManifestId();
 
@@ -559,14 +559,14 @@ public class AccWriteRepository {
 
         if (moreStep != null) {
             // creates new revision for updated record.
-            LogRecord logRecord =
-                    logRepository.insertAccLog(
-                            accRecord, accManifestRecord.getLogId(),
-                            LogAction.Modified,
+            RevisionRecord revisionRecord =
+                    revisionRepository.insertAccRevision(
+                            accRecord, accManifestRecord.getRevisionId(),
+                            RevisionAction.Modified,
                             userId, timestamp);
 
-            accManifestRecord.setLogId(logRecord.getLogId());
-            accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+            accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+            accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
         }
 
         return new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
@@ -615,10 +615,10 @@ public class AccWriteRepository {
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for updated record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        accRecord, accManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
         if (request.getBasedAccManifestId() == null) {
@@ -626,8 +626,8 @@ public class AccWriteRepository {
         } else {
             accManifestRecord.setBasedAccManifestId(ULong.valueOf(request.getBasedAccManifestId()));
         }
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
         return new UpdateAccBasedAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -641,7 +641,7 @@ public class AccWriteRepository {
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
-
+        
         List<ULong> asccpManifestIds = asccManifestRecords.stream()
                 .map(AsccManifestRecord::getToAsccpManifestId).collect(Collectors.toList());
 
@@ -649,7 +649,7 @@ public class AccWriteRepository {
                 .map(BccManifestRecord::getToBccpManifestId).collect(Collectors.toList());
 
 
-        while (basedAccManifestRecord != null) {
+        while(basedAccManifestRecord != null) {
             if (dslContext.selectCount()
                     .from(ASCC_MANIFEST)
                     .where(and(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(basedAccManifestRecord.getAccManifestId()),
@@ -718,16 +718,16 @@ public class AccWriteRepository {
         updateBccListForStateUpdatedRecord(accManifestRecord, accRecord, nextState, userId, timestamp);
 
         // creates new revision for updated record.
-        LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
-                ? LogAction.Restored : LogAction.Modified;
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        accRecord, accManifestRecord.getLogId(),
-                        logAction,
+        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
+                ? RevisionAction.Restored : RevisionAction.Modified;
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        revisionAction,
                         userId, timestamp);
 
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
         return new UpdateAccStateRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -837,14 +837,14 @@ public class AccWriteRepository {
                 ACC.LAST_UPDATED_BY, ACC.LAST_UPDATE_TIMESTAMP);
 
         // creates new revision for deleted record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        accRecord, accManifestRecord.getLogId(),
-                        LogAction.Deleted,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Deleted,
                         userId, timestamp);
 
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
         return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -951,14 +951,14 @@ public class AccWriteRepository {
             bccRecord.update(BCC.OWNER_USER_ID);
         }
 
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        accRecord, accManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
         return new UpdateAccOwnerRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
@@ -989,14 +989,14 @@ public class AccWriteRepository {
         moveSeq(request.getUser(), accRecord, request.getAccManifestId(),
                 request.getItem(), request.getAfter());
 
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        accRecord, accManifestRecord.getLogId(),
-                        LogAction.Modified,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        accRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Modified,
                         userId, timestamp);
 
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
     }
 
     public void moveSeq(AuthenticatedPrincipal requester, AccRecord accRecord, BigInteger accManifestId,
@@ -1114,10 +1114,10 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accRecord.getPrevAccId())).fetchOne();
 
         // creates new revision for canceled record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(
-                        prevAccRecord, accManifestRecord.getLogId(),
-                        LogAction.Canceled,
+        RevisionRecord revisionRecord =
+                revisionRepository.insertAccRevision(
+                        prevAccRecord, accManifestRecord.getRevisionId(),
+                        RevisionAction.Canceled,
                         userId, timestamp);
 
         // update ACC MANIFEST's acc_id and revision_id
@@ -1131,10 +1131,10 @@ public class AccWriteRepository {
             accManifestRecord.setBasedAccManifestId(basedAccManifest.getAccManifestId());
         }
         accManifestRecord.setAccId(accRecord.getPrevAccId());
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.LOG_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
+        accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.REVISION_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
 
-        discardLogAssociations(accManifestRecord, accRecord);
+        discardRevisionAssociations(accManifestRecord, accRecord);
 
         // unlink prev ACC
         prevAccRecord.setNextAccId(null);
@@ -1146,7 +1146,7 @@ public class AccWriteRepository {
         return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
 
-    private void discardLogAssociations(AccManifestRecord accManifestRecord, AccRecord accRecord) {
+    private void discardRevisionAssociations(AccManifestRecord accManifestRecord, AccRecord accRecord) {
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
@@ -1156,7 +1156,7 @@ public class AccWriteRepository {
         for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
             AsccRecord asccRecord = dslContext.selectFrom(ASCC)
                     .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
-
+            
             if (asccRecord.getPrevAsccId() == null) {
                 //delete ascc and ascc manifest which added this revision
                 asccManifestRecord.delete();
@@ -1224,30 +1224,30 @@ public class AccWriteRepository {
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
 
-        LogRecord cursorLog = dslContext.selectFrom(LOG)
-                .where(LOG.LOG_ID.eq(accManifestRecord.getLogId())).fetchOne();
+        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
+                .where(REVISION.REVISION_ID.eq(accManifestRecord.getRevisionId())).fetchOne();
 
-        UInteger revisionNum = cursorLog.getRevisionNum();
+        UInteger revisionNum = cursorRevision.getRevisionNum();
 
-        if (cursorLog.getPrevLogId() == null) {
+        if (cursorRevision.getPrevRevisionId() == null) {
             throw new IllegalArgumentException("There is no change to be reset.");
         }
 
-        List<ULong> deleteLogTargets = new ArrayList<>();
+        List<ULong> deleteRevisionTargets = new ArrayList<>();
 
-        while (cursorLog.getPrevLogId() != null) {
-            if (!cursorLog.getRevisionNum().equals(revisionNum)) {
+        while(cursorRevision.getPrevRevisionId() != null) {
+            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
                 throw new IllegalArgumentException("Can not found reset point");
             }
-            if (cursorLog.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
                 break;
             }
-            deleteLogTargets.add(cursorLog.getLogId());
-            cursorLog = dslContext.selectFrom(LOG)
-                    .where(LOG.LOG_ID.eq(cursorLog.getPrevLogId())).fetchOne();
+            deleteRevisionTargets.add(cursorRevision.getRevisionId());
+            cursorRevision = dslContext.selectFrom(REVISION)
+                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
         }
 
-        JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
+        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
 
         ULong basedAccId = serializer.getSnapshotId(snapshot.get("basedAccId"));
 
@@ -1267,8 +1267,8 @@ public class AccWriteRepository {
             accManifestRecord.setBasedAccManifestId(null);
             accRecord.setBasedAccId(null);
         }
-        accManifestRecord.setLogId(cursorLog.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.LOG_ID);
+        accManifestRecord.setRevisionId(cursorRevision.getRevisionId());
+        accManifestRecord.update(ACC_MANIFEST.BASED_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
         accRecord.setObjectClassTerm(serializer.getSnapshotString(snapshot.get("objectClassTerm")));
         accRecord.setDen(accRecord.getObjectClassTerm() + ". Details");
@@ -1283,14 +1283,14 @@ public class AccWriteRepository {
 
         resetAssociations(snapshot.get("associations"), accManifestRecord);
 
-        cursorLog.setNextLogId(null);
-        cursorLog.update(LOG.NEXT_LOG_ID);
-        dslContext.update(LOG)
-                .setNull(LOG.PREV_LOG_ID)
-                .setNull(LOG.NEXT_LOG_ID)
-                .where(LOG.LOG_ID.in(deleteLogTargets))
+        cursorRevision.setNextRevisionId(null);
+        cursorRevision.update(REVISION.NEXT_REVISION_ID);
+        dslContext.update(REVISION)
+                .setNull(REVISION.PREV_REVISION_ID)
+                .setNull(REVISION.NEXT_REVISION_ID)
+                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
                 .execute();
-        dslContext.deleteFrom(LOG).where(LOG.LOG_ID.in(deleteLogTargets)).execute();
+        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
 
         return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
@@ -1312,8 +1312,8 @@ public class AccWriteRepository {
             AsccRecord asccRecord = dslContext.selectFrom(ASCC)
                     .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
             JsonObject asccObject = associationObjects.stream().filter(o ->
-                    serializer.getSnapshotString(o.get("component")).equals("ascc")
-                            && serializer.getSnapshotString(o.get("guid")).equals(asccRecord.getGuid())
+                serializer.getSnapshotString(o.get("component")).equals("ascc")
+                        && serializer.getSnapshotString(o.get("guid")).equals(asccRecord.getGuid())
             ).findFirst().orElse(null);
 
             if (asccObject == null) {

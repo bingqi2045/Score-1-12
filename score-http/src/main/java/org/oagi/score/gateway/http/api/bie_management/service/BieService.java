@@ -73,6 +73,19 @@ public class BieService {
 
     @Transactional
     public BieCreateResponse createBie(AuthenticatedPrincipal user, BieCreateRequest request) {
+        BigInteger userId = sessionService.userId(user);
+        if (userId == null) {
+            throw new IllegalArgumentException("`userId` parameter must not be null.");
+        }
+        if (request.asccpManifestId() == null) {
+            throw new IllegalArgumentException("`ASCCP` parameter must not be null.");
+        }
+
+        List<BigInteger> bizCtxIds = request.getBizCtxIds();
+        if (bizCtxIds == null || bizCtxIds.isEmpty()) {
+            throw new IllegalArgumentException("`bizCtxIds` parameter must not be null.");
+        }
+
         AsccpManifestRecord asccpManifest =
                 ccRepository.getAsccpManifestByManifestId(request.asccpManifestId());
         if (asccpManifest == null) {
@@ -84,7 +97,6 @@ public class BieService {
         accPath = String.join(">",
                 Arrays.asList(asccpPath, accPath));
 
-        BigInteger userId = sessionService.userId(user);
         long millis = System.currentTimeMillis();
 
         ULong topLevelAsbiepId = bieRepository.insertTopLevelAsbiep()
@@ -103,7 +115,7 @@ public class BieService {
 
         bieRepository.insertBizCtxAssignments()
                 .setTopLevelAsbiepId(topLevelAsbiepId)
-                .setBizCtxIds(request.getBizCtxIds())
+                .setBizCtxIds(bizCtxIds)
                 .execute();
 
         ULong asbiepId = bieRepository.insertAsbiep()

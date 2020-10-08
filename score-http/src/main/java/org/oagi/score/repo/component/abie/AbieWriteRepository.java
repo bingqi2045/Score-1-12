@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AbieRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +41,7 @@ public class AbieWriteRepository {
 
         if (abieRecord == null) {
             abieRecord = new AbieRecord();
-            abieRecord.setGuid(SrtGuid.randomGuid());
+            abieRecord.setGuid(ScoreGuid.randomGuid());
             abieRecord.setBasedAccManifestId(ULong.valueOf(abie.getBasedAccManifestId()));
             abieRecord.setPath(abie.getPath());
             abieRecord.setHashPath(hashPath);

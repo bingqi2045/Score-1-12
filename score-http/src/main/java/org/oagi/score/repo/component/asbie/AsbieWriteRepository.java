@@ -6,7 +6,7 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.component.ascc.AsccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -48,7 +48,7 @@ public class AsbieWriteRepository {
 
         if (asbieRecord == null) {
             asbieRecord = new AsbieRecord();
-            asbieRecord.setGuid(SrtGuid.randomGuid());
+            asbieRecord.setGuid(ScoreGuid.randomGuid());
             asbieRecord.setBasedAsccManifestId(ULong.valueOf(asbie.getBasedAsccManifestId()));
             asbieRecord.setPath(asbie.getPath());
             asbieRecord.setHashPath(hashPath);

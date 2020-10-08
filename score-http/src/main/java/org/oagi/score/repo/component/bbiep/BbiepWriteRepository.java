@@ -5,7 +5,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.SrtGuid;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,7 +41,7 @@ public class BbiepWriteRepository {
 
         if (bbiepRecord == null) {
             bbiepRecord = new BbiepRecord();
-            bbiepRecord.setGuid(SrtGuid.randomGuid());
+            bbiepRecord.setGuid(ScoreGuid.randomGuid());
             bbiepRecord.setBasedBccpManifestId(ULong.valueOf(bbiep.getBasedBccpManifestId()));
             bbiepRecord.setPath(bbiep.getPath());
             bbiepRecord.setHashPath(hashPath);

@@ -4,12 +4,12 @@ import org.jooq.DSLContext;
 import org.jooq.JSON;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
-import org.oagi.score.data.LogAction;
-import org.oagi.score.gateway.http.helper.SrtGuid;
-import org.oagi.score.repo.LogRepository;
+import org.oagi.score.data.RevisionAction;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.domain.LogSerializer;
+import org.oagi.score.repo.domain.RevisionSerializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
-import static org.oagi.score.gateway.http.api.log_management.helper.LogUtils.generateHash;
 import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -33,10 +32,10 @@ public class RepositoryInitializer implements InitializingBean {
     private DSLContext dslContext;
 
     @Autowired
-    private LogRepository logRepository;
+    private RevisionRepository revisionRepository;
     
     @Autowired
-    private LogSerializer serializer;
+    private RevisionSerializer serializer;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -46,15 +45,15 @@ public class RepositoryInitializer implements InitializingBean {
 
         initModuleDir();
 
-        initAccLog();
-        initAsccpLog();
-        initBccpLog();
+        initAccRevision();
+        initAsccpRevision();
+        initBccpRevision();
 
-        initCodeListLog();
-        initAgencyIdListLog();
-        initDtLog();
+        initCodeListRevision();
+        initAgencyIdListRevision();
+        initDtRevision();
 
-        initXbtLog();
+        initXbtRevision();
     }
 
     private void initCodeListValueGuid() {
@@ -68,7 +67,7 @@ public class RepositoryInitializer implements InitializingBean {
         codeListValueRecords.stream()
                 .filter(e -> e.getPrevCodeListValueId() == null)
                 .forEach(e -> {
-                    e.setGuid(SrtGuid.randomGuid());
+                    e.setGuid(ScoreGuid.randomGuid());
                     e.update(CODE_LIST_VALUE.GUID);
                 });
 
@@ -96,7 +95,7 @@ public class RepositoryInitializer implements InitializingBean {
         agencyIdListValueRecords.stream()
                 .filter(e -> e.getPrevAgencyIdListValueId() == null)
                 .forEach(e -> {
-                    e.setGuid(SrtGuid.randomGuid());
+                    e.setGuid(ScoreGuid.randomGuid());
                     e.update(AGENCY_ID_LIST_VALUE.GUID);
                 });
 
@@ -337,13 +336,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initAccLog() {
+    private void initAccRevision() {
         // For 'Non-Working' releases.
         List<AccManifestRecord> accManifestRecordList = dslContext.select(ACC_MANIFEST.fields())
                 .from(ACC_MANIFEST).join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        ACC_MANIFEST.LOG_ID.isNull()
+                        ACC_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AccManifestRecord.class);
 
@@ -364,24 +363,23 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId()))
                     .fetch();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(accRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(accRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(
                     serializer.serialize(accRecord, asccRecords, bccRecords, seqKeyRecords)
             ));
-            logRecord.setCreatedBy(accRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
+            revisionRecord.setCreatedBy(accRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            accManifestRecord.setLogId(logId);
-            accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+            accManifestRecord.setRevisionId(revisionId);
+            accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -389,7 +387,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(ACC_MANIFEST).join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        ACC_MANIFEST.LOG_ID.isNull()
+                        ACC_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AccManifestRecord.class);
 
@@ -405,8 +403,8 @@ public class RepositoryInitializer implements InitializingBean {
             prevAccManifestRecord.update(ACC_MANIFEST.NEXT_ACC_MANIFEST_ID);
 
             nextAccManifestRecord.setPrevAccManifestId(prevAccManifestRecord.getAccManifestId());
-            nextAccManifestRecord.setLogId(prevAccManifestRecord.getLogId());
-            nextAccManifestRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.LOG_ID);
+            nextAccManifestRecord.setRevisionId(prevAccManifestRecord.getRevisionId());
+            nextAccManifestRecord.update(ACC_MANIFEST.PREV_ACC_MANIFEST_ID, ACC_MANIFEST.REVISION_ID);
 
             // update prev/next ascc_manifest_id
             for (AsccManifestRecord prevAsccManifestRecord :
@@ -460,13 +458,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initAsccpLog() {
+    private void initAsccpRevision() {
         // For 'Non-Working' releases.
         List<AsccpManifestRecord> asccpManifestRecordList = dslContext.select(ASCCP_MANIFEST.fields())
                 .from(ASCCP_MANIFEST).join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        ASCCP_MANIFEST.LOG_ID.isNull()
+                        ASCCP_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AsccpManifestRecord.class);
 
@@ -475,22 +473,21 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                     .fetchOne();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(asccpRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
-            logRecord.setCreatedBy(asccpRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(asccpRecord.getCreationTimestamp());
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(asccpRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
+            revisionRecord.setCreatedBy(asccpRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(asccpRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            asccpManifestRecord.setLogId(logId);
-            asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
+            asccpManifestRecord.setRevisionId(revisionId);
+            asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -498,7 +495,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(ASCCP_MANIFEST).join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        ASCCP_MANIFEST.LOG_ID.isNull()
+                        ASCCP_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AsccpManifestRecord.class);
 
@@ -514,18 +511,18 @@ public class RepositoryInitializer implements InitializingBean {
             prevAsccpManifestRecord.update(ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID);
 
             nextAsccpManifestRecord.setPrevAsccpManifestId(prevAsccpManifestRecord.getAsccpManifestId());
-            nextAsccpManifestRecord.setLogId(prevAsccpManifestRecord.getLogId());
-            nextAsccpManifestRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.LOG_ID);
+            nextAsccpManifestRecord.setRevisionId(prevAsccpManifestRecord.getRevisionId());
+            nextAsccpManifestRecord.update(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID, ASCCP_MANIFEST.REVISION_ID);
         }
     }
 
-    private void initBccpLog() {
+    private void initBccpRevision() {
         // For 'Non-Working' releases.
         List<BccpManifestRecord> bccpManifestRecordList = dslContext.select(BCCP_MANIFEST.fields())
                 .from(BCCP_MANIFEST).join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        BCCP_MANIFEST.LOG_ID.isNull()
+                        BCCP_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(BccpManifestRecord.class);
 
@@ -534,22 +531,21 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(BCCP.BCCP_ID.eq(bccpManifestRecord.getBccpId()))
                     .fetchOne();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(bccpRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
-            logRecord.setCreatedBy(bccpRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(bccpRecord.getCreationTimestamp());
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(bccpRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+            revisionRecord.setCreatedBy(bccpRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(bccpRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            bccpManifestRecord.setLogId(logId);
-            bccpManifestRecord.update(BCCP_MANIFEST.LOG_ID);
+            bccpManifestRecord.setRevisionId(revisionId);
+            bccpManifestRecord.update(BCCP_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -557,7 +553,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(BCCP_MANIFEST).join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        BCCP_MANIFEST.LOG_ID.isNull()
+                        BCCP_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(BccpManifestRecord.class);
 
@@ -573,18 +569,18 @@ public class RepositoryInitializer implements InitializingBean {
             prevBccpManifestRecord.update(BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID);
 
             nextBccpManifestRecord.setPrevBccpManifestId(prevBccpManifestRecord.getBccpManifestId());
-            nextBccpManifestRecord.setLogId(prevBccpManifestRecord.getLogId());
-            nextBccpManifestRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.LOG_ID);
+            nextBccpManifestRecord.setRevisionId(prevBccpManifestRecord.getRevisionId());
+            nextBccpManifestRecord.update(BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID, BCCP_MANIFEST.REVISION_ID);
         }
     }
 
-    private void initCodeListLog() {
+    private void initCodeListRevision() {
         // For 'Non-Working' releases.
         List<CodeListManifestRecord> codeListManifestRecordList = dslContext.select(CODE_LIST_MANIFEST.fields())
                 .from(CODE_LIST_MANIFEST).join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        CODE_LIST_MANIFEST.LOG_ID.isNull()
+                        CODE_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(CodeListManifestRecord.class);
 
@@ -598,24 +594,23 @@ public class RepositoryInitializer implements InitializingBean {
                     .orderBy(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.asc())
                     .fetch();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(codeListRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(codeListRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(
                     serializer.serialize(codeListRecord, codeListValueRecordList)
             ));
-            logRecord.setCreatedBy(codeListRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(codeListRecord.getCreationTimestamp());
+            revisionRecord.setCreatedBy(codeListRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(codeListRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            codeListManifestRecord.setLogId(logId);
-            codeListManifestRecord.update(CODE_LIST_MANIFEST.LOG_ID);
+            codeListManifestRecord.setRevisionId(revisionId);
+            codeListManifestRecord.update(CODE_LIST_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -623,7 +618,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(CODE_LIST_MANIFEST).join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        CODE_LIST_MANIFEST.LOG_ID.isNull()
+                        CODE_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(CodeListManifestRecord.class);
 
@@ -639,8 +634,8 @@ public class RepositoryInitializer implements InitializingBean {
             prevCodeListManifestRecord.update(CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID);
 
             nextCodeListManifestRecord.setPrevCodeListManifestId(prevCodeListManifestRecord.getCodeListManifestId());
-            nextCodeListManifestRecord.setLogId(prevCodeListManifestRecord.getLogId());
-            nextCodeListManifestRecord.update(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.LOG_ID);
+            nextCodeListManifestRecord.setRevisionId(prevCodeListManifestRecord.getRevisionId());
+            nextCodeListManifestRecord.update(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID, CODE_LIST_MANIFEST.REVISION_ID);
 
             // update prev/next code_list_value_manifest_id
             for (CodeListValueManifestRecord prevCodeListValueManifestRecord :
@@ -673,13 +668,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initAgencyIdListLog() {
+    private void initAgencyIdListRevision() {
         // For 'Non-Working' releases.
         List<AgencyIdListManifestRecord> agencyIdListManifestRecordList = dslContext.select(AGENCY_ID_LIST_MANIFEST.fields())
                 .from(AGENCY_ID_LIST_MANIFEST).join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        AGENCY_ID_LIST_MANIFEST.LOG_ID.isNull()
+                        AGENCY_ID_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AgencyIdListManifestRecord.class);
 
@@ -693,24 +688,23 @@ public class RepositoryInitializer implements InitializingBean {
                     .orderBy(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.asc())
                     .fetch();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(agencyIdListRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(agencyIdListRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(
                     serializer.serialize(agencyIdListRecord, agencyIdListValueRecordList)
             ));
-            logRecord.setCreatedBy(agencyIdListRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(agencyIdListRecord.getCreationTimestamp());
+            revisionRecord.setCreatedBy(agencyIdListRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(agencyIdListRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            agencyIdListManifestRecord.setLogId(logId);
-            agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.LOG_ID);
+            agencyIdListManifestRecord.setRevisionId(revisionId);
+            agencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -718,7 +712,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(AGENCY_ID_LIST_MANIFEST).join(RELEASE).on(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        AGENCY_ID_LIST_MANIFEST.LOG_ID.isNull()
+                        AGENCY_ID_LIST_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(AgencyIdListManifestRecord.class);
 
@@ -734,8 +728,8 @@ public class RepositoryInitializer implements InitializingBean {
             prevAgencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID);
 
             nextAgencyIdListManifestRecord.setPrevAgencyIdListManifestId(prevAgencyIdListManifestRecord.getAgencyIdListManifestId());
-            nextAgencyIdListManifestRecord.setLogId(prevAgencyIdListManifestRecord.getLogId());
-            nextAgencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.LOG_ID);
+            nextAgencyIdListManifestRecord.setRevisionId(prevAgencyIdListManifestRecord.getRevisionId());
+            nextAgencyIdListManifestRecord.update(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID, AGENCY_ID_LIST_MANIFEST.REVISION_ID);
 
             // update prev/next code_list_value_manifest_id
             for (AgencyIdListValueManifestRecord prevAgencyIdListValueManifestRecord :
@@ -768,13 +762,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initDtLog() {
+    private void initDtRevision() {
         // For 'Non-Working' releases.
         List<DtManifestRecord> dtManifestRecordList = dslContext.select(DT_MANIFEST.fields())
                 .from(DT_MANIFEST).join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        DT_MANIFEST.LOG_ID.isNull()
+                        DT_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(DtManifestRecord.class);
 
@@ -788,24 +782,23 @@ public class RepositoryInitializer implements InitializingBean {
                     .orderBy(DT_SC.DT_SC_ID.asc())
                     .fetch();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(dtRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(dtRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(
                     JSON.valueOf(serializer.serialize(dtRecord, dtScRecordList))
             );
-            logRecord.setCreatedBy(dtRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(dtRecord.getCreationTimestamp());
+            revisionRecord.setCreatedBy(dtRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(dtRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            dtManifestRecord.setLogId(logId);
-            dtManifestRecord.update(DT_MANIFEST.LOG_ID);
+            dtManifestRecord.setRevisionId(revisionId);
+            dtManifestRecord.update(DT_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -813,7 +806,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(DT_MANIFEST).join(RELEASE).on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        DT_MANIFEST.LOG_ID.isNull()
+                        DT_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(DtManifestRecord.class);
 
@@ -829,8 +822,8 @@ public class RepositoryInitializer implements InitializingBean {
             prevDtManifestRecord.update(DT_MANIFEST.NEXT_DT_MANIFEST_ID);
 
             nextDtManifestRecord.setPrevDtManifestId(prevDtManifestRecord.getDtManifestId());
-            nextDtManifestRecord.setLogId(prevDtManifestRecord.getLogId());
-            nextDtManifestRecord.update(DT_MANIFEST.PREV_DT_MANIFEST_ID, DT_MANIFEST.LOG_ID);
+            nextDtManifestRecord.setRevisionId(prevDtManifestRecord.getRevisionId());
+            nextDtManifestRecord.update(DT_MANIFEST.PREV_DT_MANIFEST_ID, DT_MANIFEST.REVISION_ID);
 
             // update prev/next code_list_value_manifest_id
             for (DtScManifestRecord prevDtScManifestRecord :
@@ -863,13 +856,13 @@ public class RepositoryInitializer implements InitializingBean {
         }
     }
 
-    private void initXbtLog() {
+    private void initXbtRevision() {
         // For 'Non-Working' releases.
         List<XbtManifestRecord> xbtManifestRecordList = dslContext.select(XBT_MANIFEST.fields())
                 .from(XBT_MANIFEST).join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.notEqual("Working"),
-                        XBT_MANIFEST.LOG_ID.isNull()
+                        XBT_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(XbtManifestRecord.class);
 
@@ -878,22 +871,21 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(XBT.XBT_ID.eq(xbtManifestRecord.getXbtId()))
                     .fetchOne();
 
-            LogRecord logRecord = new LogRecord();
-            logRecord.setHash(generateHash());
-            logRecord.setReference(xbtRecord.getGuid());
-            logRecord.setRevisionNum(UInteger.valueOf(1));
-            logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
-            logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(xbtRecord)));
-            logRecord.setCreatedBy(xbtRecord.getCreatedBy());
-            logRecord.setCreationTimestamp(xbtRecord.getCreationTimestamp());
+            RevisionRecord revisionRecord = new RevisionRecord();
+            revisionRecord.setReference(xbtRecord.getGuid());
+            revisionRecord.setRevisionNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionTrackingNum(UInteger.valueOf(1));
+            revisionRecord.setRevisionAction(RevisionAction.Added.name());
+            revisionRecord.setSnapshot(JSON.valueOf(serializer.serialize(xbtRecord)));
+            revisionRecord.setCreatedBy(xbtRecord.getCreatedBy());
+            revisionRecord.setCreationTimestamp(xbtRecord.getCreationTimestamp());
 
-            ULong logId = dslContext.insertInto(LOG)
-                    .set(logRecord)
-                    .returning(LOG.LOG_ID).fetchOne().getLogId();
+            ULong revisionId = dslContext.insertInto(REVISION)
+                    .set(revisionRecord)
+                    .returning(REVISION.REVISION_ID).fetchOne().getRevisionId();
 
-            xbtManifestRecord.setLogId(logId);
-            xbtManifestRecord.update(XBT_MANIFEST.LOG_ID);
+            xbtManifestRecord.setRevisionId(revisionId);
+            xbtManifestRecord.update(XBT_MANIFEST.REVISION_ID);
         }
 
         // For 'Working' release.
@@ -901,7 +893,7 @@ public class RepositoryInitializer implements InitializingBean {
                 .from(XBT_MANIFEST).join(RELEASE).on(XBT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         RELEASE.RELEASE_NUM.equal("Working"),
-                        XBT_MANIFEST.LOG_ID.isNull()
+                        XBT_MANIFEST.REVISION_ID.isNull()
                 ))
                 .fetchInto(XbtManifestRecord.class);
 
@@ -917,8 +909,8 @@ public class RepositoryInitializer implements InitializingBean {
             prevXbtManifestRecord.update(XBT_MANIFEST.NEXT_XBT_MANIFEST_ID);
 
             nextXbtManifestRecord.setPrevXbtManifestId(prevXbtManifestRecord.getXbtManifestId());
-            nextXbtManifestRecord.setLogId(prevXbtManifestRecord.getLogId());
-            nextXbtManifestRecord.update(XBT_MANIFEST.PREV_XBT_MANIFEST_ID, XBT_MANIFEST.LOG_ID);
+            nextXbtManifestRecord.setRevisionId(prevXbtManifestRecord.getRevisionId());
+            nextXbtManifestRecord.update(XBT_MANIFEST.PREV_XBT_MANIFEST_ID, XBT_MANIFEST.REVISION_ID);
         }
     }
 }
