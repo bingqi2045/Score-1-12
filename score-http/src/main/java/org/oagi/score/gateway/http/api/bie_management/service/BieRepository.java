@@ -104,7 +104,7 @@ public class BieRepository {
                 .fetchOneInto(BieEditAcc.class);
     }
 
-    public BieEditAcc getAcc(BigInteger accId, BigInteger releaseId) {
+    public BieEditAcc getAcc(BigInteger accManifestId, BigInteger releaseId) {
         return dslContext.select(
                 ACC_MANIFEST.ACC_MANIFEST_ID,
                 ACC.ACC_ID,
@@ -124,7 +124,7 @@ public class BieRepository {
                 .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
                 .leftJoin(ACC_MANIFEST.as("base"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("base").ACC_MANIFEST_ID))
-                .where(ACC.ACC_ID.eq(ULong.valueOf(accId))
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId))
                         .and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .fetchOptionalInto(BieEditAcc.class).orElse(null);
     }
