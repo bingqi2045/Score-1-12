@@ -11,6 +11,8 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.TOP_LEVEL_ASBIEP;
+
 @Repository
 public class TopLevelAsbiepRepository implements SrtRepository<TopLevelAsbiep> {
 
@@ -19,7 +21,7 @@ public class TopLevelAsbiepRepository implements SrtRepository<TopLevelAsbiep> {
 
     @Override
     public List<TopLevelAsbiep> findAll() {
-        return dslContext.select(Tables.TOP_LEVEL_ASBIEP.fields()).from(Tables.TOP_LEVEL_ASBIEP)
+        return dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .fetchInto(TopLevelAsbiep.class);
     }
 
@@ -28,23 +30,23 @@ public class TopLevelAsbiepRepository implements SrtRepository<TopLevelAsbiep> {
         if (id == null || id.longValue() <= 0L) {
             return null;
         }
-        return dslContext.select(Tables.TOP_LEVEL_ASBIEP.fields()).from(Tables.TOP_LEVEL_ASBIEP)
-                .where(Tables.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(id)))
+        return dslContext.selectFrom(TOP_LEVEL_ASBIEP)
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(id)))
                 .fetchOneInto(TopLevelAsbiep.class);
     }
 
     public List<TopLevelAsbiep> findByIdIn(List<BigInteger> topLevelAbieIds) {
-        return dslContext.select(Tables.TOP_LEVEL_ASBIEP.fields()).from(Tables.TOP_LEVEL_ASBIEP)
-                .where(Tables.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAbieIds))
+        return dslContext.selectFrom(TOP_LEVEL_ASBIEP)
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAbieIds))
                 .fetchInto(TopLevelAsbiep.class);
     }
 
     public void updateTopLevelAbieLastUpdated(BigInteger userId, BigInteger topLevelAbieId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        dslContext.update(Tables.TOP_LEVEL_ASBIEP)
-                .set(Tables.TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
-                .set(Tables.TOP_LEVEL_ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .where(Tables.TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)))
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
+                .set(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)))
                 .execute();
     }
 }

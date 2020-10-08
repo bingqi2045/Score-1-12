@@ -431,17 +431,17 @@ public class BieCopyService implements InitializingBean {
                 fireChangeEvent("abie", previousAbieId, nextAbieId);
             }
 
-            bieRepository.updateTopLevelAsbiep()
-                    .setAsbiepId(ULong.valueOf(copiedTopLevelAsbiep.getAsbiepId()))
-                    .setTopLevelAsbiepId(copiedTopLevelAsbiep.getTopLevelAsbiepId())
-                    .execute();
-
             for (BieCopyAsbiep asbiep : asbiepList) {
                 BigInteger previousAsbiepId = asbiep.getAsbiepId();
                 BigInteger nextAsbiepId = insertAsbiep(asbiep);
 
                 fireChangeEvent("asbiep", previousAsbiepId, nextAsbiepId);
             }
+
+            bieRepository.updateTopLevelAsbiep()
+                    .setAsbiepId(ULong.valueOf(copiedTopLevelAsbiep.getAsbiepId()))
+                    .setTopLevelAsbiepId(copiedTopLevelAsbiep.getTopLevelAsbiepId())
+                    .execute();
 
             for (BieCopyBbiep bbiep : bbiepList) {
                 BigInteger previousBbiepId = bbiep.getBbiepId();
