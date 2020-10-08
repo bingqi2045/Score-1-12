@@ -23,8 +23,9 @@ public class ReleaseController {
 
     @RequestMapping(value = "/simple_releases", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleRelease> getSimpleReleases(@RequestParam(name = "states", required = false) String states) {
-        SimpleReleasesRequest request = new SimpleReleasesRequest();
+    public List<SimpleRelease> getSimpleReleases(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                 @RequestParam(name = "states", required = false) String states) {
+        SimpleReleasesRequest request = new SimpleReleasesRequest(user);
 
         request.setStates(!StringUtils.isEmpty(states) ?
                 Arrays.asList(states.split(",")).stream()

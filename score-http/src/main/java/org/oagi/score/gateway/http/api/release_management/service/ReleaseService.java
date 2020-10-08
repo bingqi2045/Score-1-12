@@ -2,9 +2,8 @@ package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
+import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.release_management.data.*;
@@ -12,6 +11,7 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.event.ReleaseCleanupEvent;
 import org.oagi.score.gateway.http.event.ReleaseCreateRequestEvent;
 import org.oagi.score.redis.event.EventListenerContainer;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.release.ReleaseRepositoryDiscardRequest;
 import org.redisson.api.RLock;
@@ -33,13 +33,13 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.RELEASE;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,21 +77,37 @@ public class ReleaseService implements InitializingBean {
     }
 
     public List<SimpleRelease> getSimpleReleases(SimpleReleasesRequest request) {
+        AppUser requester = sessionService.getAppUser(request.getUser());
+
         List<Condition> conditions = new ArrayList();
         if (!request.getStates().isEmpty()) {
             conditions.add(RELEASE.STATE.in(request.getStates()));
         }
-        return dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
+
+        List<SimpleRelease> releases = new ArrayList(dslContext.select(RELEASE.RELEASE_ID, RELEASE.RELEASE_NUM, RELEASE.STATE)
                 .from(RELEASE)
                 .where(conditions)
-                .orderBy(RELEASE.RELEASE_NUM.desc())
+                .orderBy(RELEASE.RELEASE_ID.desc())
                 .fetch().map(row -> {
                     SimpleRelease simpleRelease = new SimpleRelease();
                     simpleRelease.setReleaseId(row.getValue(RELEASE.RELEASE_ID).toBigInteger());
                     simpleRelease.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
                     simpleRelease.setState(ReleaseState.valueOf(row.getValue(RELEASE.STATE)));
                     return simpleRelease;
-                });
+                })
+        );
+
+        SimpleRelease workingRelease =
+                releases.stream().filter(e -> "Working".equalsIgnoreCase(e.getReleaseNum())).findAny().orElse(null);
+        releases.remove(workingRelease);
+
+        if (requester.isDeveloper()) {
+            releases.add(0, workingRelease);
+        } else {
+            releases.add(workingRelease);
+        }
+
+        return releases;
     }
 
     public SimpleRelease getSimpleReleaseByReleaseId(BigInteger releaseId) {
