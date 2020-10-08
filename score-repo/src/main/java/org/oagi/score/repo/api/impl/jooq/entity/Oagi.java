@@ -63,6 +63,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
@@ -81,7 +82,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
@@ -96,7 +96,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 1041851960;
+    private static final long serialVersionUID = 1624710690;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -381,6 +381,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final DtUsageRule DT_USAGE_RULE = DtUsageRule.DT_USAGE_RULE;
 
     /**
+     * The table <code>oagi.log</code>.
+     */
+    public final Log LOG = Log.LOG;
+
+    /**
      * The module table stores information about a physical file, into which CC components will be generated during the expression generation.
      */
     public final Module MODULE = Module.MODULE;
@@ -469,11 +474,6 @@ If we use a separate table for each expression, then we need binding all the way
      * The is table store the release information.
      */
     public final Release RELEASE = Release.RELEASE;
-
-    /**
-     * The table <code>oagi.revision</code>.
-     */
-    public final Revision REVISION = Revision.REVISION;
 
     /**
      * The table <code>oagi.seq_key</code>.
@@ -574,6 +574,7 @@ If we use a separate table for each expression, then we need binding all the way
             DtSc.DT_SC,
             DtScManifest.DT_SC_MANIFEST,
             DtUsageRule.DT_USAGE_RULE,
+            Log.LOG,
             Module.MODULE,
             ModuleAccManifest.MODULE_ACC_MANIFEST,
             ModuleAgencyIdListManifest.MODULE_AGENCY_ID_LIST_MANIFEST,
@@ -592,7 +593,6 @@ If we use a separate table for each expression, then we need binding all the way
             Oauth2App.OAUTH2_APP,
             Oauth2AppScope.OAUTH2_APP_SCOPE,
             Release.RELEASE,
-            Revision.REVISION,
             SeqKey.SEQ_KEY,
             TopLevelAsbiep.TOP_LEVEL_ASBIEP,
             UsageRule.USAGE_RULE,

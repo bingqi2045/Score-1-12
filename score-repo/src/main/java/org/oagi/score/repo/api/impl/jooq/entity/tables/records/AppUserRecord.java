@@ -6,8 +6,8 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record6;
-import org.jooq.Row6;
+import org.jooq.Record7;
+import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
@@ -18,9 +18,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
  * purposes.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record6<ULong, String, String, String, String, Byte> {
+public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record7<ULong, String, String, String, String, Byte, Byte> {
 
-    private static final long serialVersionUID = -733541004;
+    private static final long serialVersionUID = -1972869863;
 
     /**
      * Setter for <code>oagi.app_user.app_user_id</code>. Primary key column.
@@ -106,6 +106,20 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
         return (Byte) get(5);
     }
 
+    /**
+     * Setter for <code>oagi.app_user.is_enabled</code>.
+     */
+    public void setIsEnabled(Byte value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>oagi.app_user.is_enabled</code>.
+     */
+    public Byte getIsEnabled() {
+        return (Byte) get(6);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -116,17 +130,17 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     // -------------------------------------------------------------------------
-    // Record6 type implementation
+    // Record7 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<ULong, String, String, String, String, Byte, Byte> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row6<ULong, String, String, String, String, Byte> valuesRow() {
-        return (Row6) super.valuesRow();
+    public Row7<ULong, String, String, String, String, Byte, Byte> valuesRow() {
+        return (Row7) super.valuesRow();
     }
 
     @Override
@@ -160,6 +174,11 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
+    public Field<Byte> field7() {
+        return AppUser.APP_USER.IS_ENABLED;
+    }
+
+    @Override
     public ULong component1() {
         return getAppUserId();
     }
@@ -190,6 +209,11 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
+    public Byte component7() {
+        return getIsEnabled();
+    }
+
+    @Override
     public ULong value1() {
         return getAppUserId();
     }
@@ -217,6 +241,11 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     @Override
     public Byte value6() {
         return getIsDeveloper();
+    }
+
+    @Override
+    public Byte value7() {
+        return getIsEnabled();
     }
 
     @Override
@@ -256,13 +285,20 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     }
 
     @Override
-    public AppUserRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6) {
+    public AppUserRecord value7(Byte value) {
+        setIsEnabled(value);
+        return this;
+    }
+
+    @Override
+    public AppUserRecord values(ULong value1, String value2, String value3, String value4, String value5, Byte value6, Byte value7) {
         value1(value1);
         value2(value2);
         value3(value3);
         value4(value4);
         value5(value5);
         value6(value6);
+        value7(value7);
         return this;
     }
 
@@ -280,7 +316,7 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     /**
      * Create a detached, initialised AppUserRecord
      */
-    public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte isDeveloper) {
+    public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte isDeveloper, Byte isEnabled) {
         super(AppUser.APP_USER);
 
         set(0, appUserId);
@@ -289,5 +325,6 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
         set(3, name);
         set(4, organization);
         set(5, isDeveloper);
+        set(6, isEnabled);
     }
 }

@@ -57,9 +57,9 @@ public class CcNodeRepository {
                 ACC.OBJECT_CLASS_TERM,
                 ACC.STATE,
                 ACC.TYPE.as("accType"),
-                ACC_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                ACC_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 ACC_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
                 ACC.OWNER_USER_ID,
@@ -69,8 +69,8 @@ public class CcNodeRepository {
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(RELEASE)
                 .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID));
+                .join(LOG)
+                .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID));
     }
 
     public CcAccNode getAccNodeByAccId(AuthenticatedPrincipal user, BigInteger accId, BigInteger releaseId) {
@@ -185,9 +185,9 @@ public class CcNodeRepository {
                 ACC_MANIFEST.ACC_ID.as("role_of_acc_id"),
                 ASCCP.STATE,
                 ASCCP.TYPE.as("asccpType"),
-                ASCCP_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                ASCCP_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 ASCCP_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID.as("manifest_id"),
@@ -199,8 +199,8 @@ public class CcNodeRepository {
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
                 .join(RELEASE)
                 .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(ACC_MANIFEST)
                 .on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID));
     }
@@ -245,9 +245,9 @@ public class CcNodeRepository {
                 BCCP.PROPERTY_TERM.as("name"),
                 DT_MANIFEST.DT_ID.as("bdt_id"),
                 BCCP.STATE,
-                BCCP_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                BCCP_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 BCCP_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
                 BCCP_MANIFEST.BCCP_MANIFEST_ID.as("manifest_id"),
@@ -259,8 +259,8 @@ public class CcNodeRepository {
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
                 .join(RELEASE)
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(DT_MANIFEST)
                 .on(BCCP_MANIFEST.BDT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID));
     }
@@ -441,9 +441,9 @@ public class CcNodeRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 ACC_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                ACC_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
+                ACC_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(ACC_MANIFEST)
                 .join(ACC)
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
@@ -451,8 +451,8 @@ public class CcNodeRepository {
                 .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(RELEASE)
                 .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(accNode.getManifestId())))
                 .fetchOneInto(CcAccNodeDetail.class);
     }
@@ -476,9 +476,9 @@ public class CcNodeRepository {
                     APP_USER.LOGIN_ID.as("owner"),
                     ACC_MANIFEST.RELEASE_ID,
                     RELEASE.RELEASE_NUM,
-                    ACC_MANIFEST.REVISION_ID,
-                    REVISION.REVISION_NUM,
-                    REVISION.REVISION_TRACKING_NUM)
+                    ACC_MANIFEST.LOG_ID,
+                    LOG.REVISION_NUM,
+                    LOG.REVISION_TRACKING_NUM)
                     .from(ASCC_MANIFEST)
                     .join(ASCC)
                     .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
@@ -490,8 +490,8 @@ public class CcNodeRepository {
                     .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                     .join(RELEASE)
                     .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                    .join(REVISION)
-                    .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                    .join(LOG)
+                    .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                     .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
                     .fetchOneInto(CcAsccpNodeDetail.Ascc.class);
             asccpNodeDetail.setAscc(ascc);
@@ -514,9 +514,9 @@ public class CcNodeRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 ASCCP_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                ASCCP_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
+                ASCCP_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(ASCCP_MANIFEST)
                 .join(ASCCP)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
@@ -524,8 +524,8 @@ public class CcNodeRepository {
                 .on(ASCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(RELEASE)
                 .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestIdId)))
                 .fetchOneInto(CcAsccpNodeDetail.Asccp.class);
         asccpNodeDetail.setAsccp(asccp);
@@ -575,9 +575,9 @@ public class CcNodeRepository {
                     APP_USER.LOGIN_ID.as("owner"),
                     ACC_MANIFEST.RELEASE_ID,
                     RELEASE.RELEASE_NUM,
-                    ACC_MANIFEST.REVISION_ID,
-                    REVISION.REVISION_NUM,
-                    REVISION.REVISION_TRACKING_NUM)
+                    ACC_MANIFEST.LOG_ID,
+                    LOG.REVISION_NUM,
+                    LOG.REVISION_TRACKING_NUM)
                     .from(BCC_MANIFEST)
                     .join(BCC)
                     .on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
@@ -589,8 +589,8 @@ public class CcNodeRepository {
                     .on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                     .join(RELEASE)
                     .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                    .join(REVISION)
-                    .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                    .join(LOG)
+                    .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                     .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                     .fetchOneInto(CcBccpNodeDetail.Bcc.class);
             bccpNodeDetail.setBcc(bcc);
@@ -614,9 +614,9 @@ public class CcNodeRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 BCCP_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                BCCP_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
+                BCCP_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(BCCP_MANIFEST)
                 .join(BCCP)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
@@ -624,8 +624,8 @@ public class CcNodeRepository {
                 .on(BCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(RELEASE)
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(CcBccpNodeDetail.Bccp.class);
         bccpNodeDetail.setBccp(bccp);
@@ -643,9 +643,9 @@ public class CcNodeRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 DT_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                DT_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
+                DT_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(DT)
                 .join(DT_MANIFEST)
                 .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID))
@@ -655,8 +655,8 @@ public class CcNodeRepository {
                 .on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(RELEASE)
                 .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOneInto(CcBccpNodeDetail.Bdt.class);
         bccpNodeDetail.setBdt(bdt);
@@ -690,9 +690,9 @@ public class CcNodeRepository {
                 APP_USER.LOGIN_ID.as("owner"),
                 DT_MANIFEST.RELEASE_ID,
                 RELEASE.RELEASE_NUM,
-                DT_MANIFEST.REVISION_ID,
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM)
+                DT_MANIFEST.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(DT_SC_MANIFEST)
                 .join(DT_SC)
                 .on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
@@ -704,8 +704,8 @@ public class CcNodeRepository {
                 .on(DT.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
                 .join(RELEASE)
                 .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .join(REVISION)
-                .on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(DT_SC_MANIFEST.DT_SC_MANIFEST_ID.eq(ULong.valueOf(manifestId)))
                 .fetchOneInto(CcBdtScNodeDetail.class);
     }

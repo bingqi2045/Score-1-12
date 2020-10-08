@@ -7,15 +7,15 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.data.RevisionAction;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.SrtGuid;
-import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.LogRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
 import org.oagi.score.repo.component.ascc.UpdateAsccPropertiesRepositoryRequest;
-import org.oagi.score.repo.domain.RevisionSerializer;
+import org.oagi.score.repo.domain.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,10 +44,10 @@ public class AsccpWriteRepository {
     private AsccWriteRepository asccWriteRepository;
 
     @Autowired
-    private RevisionRepository revisionRepository;
+    private LogRepository logRepository;
 
     @Autowired
-    private RevisionSerializer serializer;
+    private LogSerializer serializer;
 
     private String objectClassTerm(ULong accId) {
         return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
@@ -95,12 +95,12 @@ public class AsccpWriteRepository {
         asccpManifest.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         asccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
 
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
                         asccp,
-                        RevisionAction.Added,
+                        LogAction.Added,
                         userId, timestamp);
-        asccpManifest.setRevisionId(revisionRecord.getRevisionId());
+        asccpManifest.setLogId(logRecord.getLogId());
 
         asccpManifest.setAsccpManifestId(
                 dslContext.insertInto(ASCCP_MANIFEST)
@@ -179,18 +179,18 @@ public class AsccpWriteRepository {
         prevAsccpRecord.setNextAsccpId(nextAsccpRecord.getAsccpId());
         prevAsccpRecord.update(ASCCP.NEXT_ASCCP_ID);
 
-        // creates new revision for revised record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        nextAsccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Revised,
+        // creates new log for revised record.
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        nextAsccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Revised,
                         userId, timestamp);
 
         ULong responseAsccpManifestId;
 
         asccpManifestRecord.setAsccpId(nextAsccpRecord.getAsccpId());
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.LOG_ID);
 
         responseAsccpManifestId = asccpManifestRecord.getAsccpManifestId();
 
@@ -280,15 +280,15 @@ public class AsccpWriteRepository {
                     .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId()))
                     .fetchOne();
 
-            // creates new revision for updated record.
-            RevisionRecord revisionRecord =
-                    revisionRepository.insertAsccpRevision(
-                            asccpRecord, asccpManifestRecord.getRevisionId(),
-                            RevisionAction.Modified,
+            // creates new log for updated record.
+            LogRecord logRecord =
+                    logRepository.insertAsccpLog(
+                            asccpRecord, asccpManifestRecord.getLogId(),
+                            LogAction.Modified,
                             userId, timestamp);
 
-            asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-            asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+            asccpManifestRecord.setLogId(logRecord.getLogId());
+            asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
         }
 
         if (propertyTermChanged) {
@@ -345,15 +345,15 @@ public class AsccpWriteRepository {
                     .fetchOne();
         }
 
-        // creates new revision for updated record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
+        // creates new log for updated record.
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Modified,
                         userId, timestamp);
 
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
         return new UpdateAsccpPropertiesRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
@@ -395,16 +395,16 @@ public class AsccpWriteRepository {
         asccpRecord.update(ASCCP.ROLE_OF_ACC_ID, ASCCP.DEN,
                 ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
 
-        // creates new revision for updated record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
+        // creates new log for updated record.
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Modified,
                         userId, timestamp);
 
         asccpManifestRecord.setRoleOfAccManifestId(roleOfAccManifestId);
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.LOG_ID);
 
         return new UpdateAsccpRoleOfAccRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
@@ -452,17 +452,17 @@ public class AsccpWriteRepository {
         asccpRecord.update(ASCCP.STATE,
                 ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP, ASCCP.OWNER_USER_ID);
 
-        // creates new revision for updated record.
-        RevisionAction revisionAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
-                ? RevisionAction.Restored : RevisionAction.Modified;
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        revisionAction,
+        // creates new log for updated record.
+        LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
+                ? LogAction.Restored : LogAction.Modified;
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpRecord, asccpManifestRecord.getLogId(),
+                        logAction,
                         userId, timestamp);
 
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
         return new UpdateAsccpStateRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
@@ -497,15 +497,15 @@ public class AsccpWriteRepository {
         asccpRecord.update(ASCCP.STATE,
                 ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
 
-        // creates new revision for deleted record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Deleted,
+        // creates new log for deleted record.
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Deleted,
                         userId, timestamp);
 
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
         return new DeleteAsccpRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
@@ -578,14 +578,14 @@ public class AsccpWriteRepository {
         asccpRecord.setLastUpdateTimestamp(timestamp);
         asccpRecord.update(ASCCP.OWNER_USER_ID, ASCCP.LAST_UPDATED_BY, ASCCP.LAST_UPDATE_TIMESTAMP);
 
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        asccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Modified,
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Modified,
                         userId, timestamp);
 
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.LOG_ID);
 
         return new UpdateAsccpOwnerRepositoryResponse(asccpManifestRecord.getAsccpManifestId().toBigInteger());
     }
@@ -605,20 +605,20 @@ public class AsccpWriteRepository {
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
 
         if (asccpRecord.getPrevAsccpId() == null) {
-            throw new IllegalArgumentException("Not found previous revision");
+            throw new IllegalArgumentException("Not found previous log");
         }
 
         AsccpRecord prevAsccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpRecord.getPrevAsccpId())).fetchOne();
 
-        // creates new revision for canceled record.
-        RevisionRecord revisionRecord =
-                revisionRepository.insertAsccpRevision(
-                        prevAsccpRecord, asccpManifestRecord.getRevisionId(),
-                        RevisionAction.Canceled,
+        // creates new log for canceled record.
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        prevAsccpRecord, asccpManifestRecord.getLogId(),
+                        LogAction.Canceled,
                         userId, timestamp);
 
-        // update ASCCP MANIFEST's asccp_id and revision_id
+        // update ASCCP MANIFEST's asccp_id and log_id
         if (prevAsccpRecord.getRoleOfAccId() != null) {
             String prevRoleOfAccGuid = dslContext.select(ACC.GUID)
                     .from(ACC).where(ACC.ACC_ID.eq(prevAsccpRecord.getRoleOfAccId())).fetchOneInto(String.class);
@@ -629,8 +629,8 @@ public class AsccpWriteRepository {
             asccpManifestRecord.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         }
         asccpManifestRecord.setAsccpId(asccpRecord.getPrevAsccpId());
-        asccpManifestRecord.setRevisionId(revisionRecord.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.REVISION_ID,
+        asccpManifestRecord.setLogId(logRecord.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.LOG_ID,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID);
 
         // update ASCCs which using current ASCCP
@@ -649,7 +649,7 @@ public class AsccpWriteRepository {
         return new CancelRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
     }
 
-    public CancelRevisionAsccpRepositoryResponse resetRevisionAsccp(CancelRevisionAsccpRepositoryRequest request) {
+    public CancelRevisionAsccpRepositoryResponse resetLogAsccp(CancelRevisionAsccpRepositoryRequest request) {
         AsccpManifestRecord asccpManifestRecord = dslContext.selectFrom(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(request.getAsccpManifestId()))).fetchOne();
 
@@ -660,30 +660,30 @@ public class AsccpWriteRepository {
         AsccpRecord asccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpManifestRecord.getAsccpId())).fetchOne();
 
-        RevisionRecord cursorRevision = dslContext.selectFrom(REVISION)
-                .where(REVISION.REVISION_ID.eq(asccpManifestRecord.getRevisionId())).fetchOne();
+        LogRecord cursorLog = dslContext.selectFrom(LOG)
+                .where(LOG.LOG_ID.eq(asccpManifestRecord.getLogId())).fetchOne();
 
-        UInteger revisionNum = cursorRevision.getRevisionNum();
+        UInteger logNum = cursorLog.getRevisionNum();
 
-        if (cursorRevision.getPrevRevisionId() == null) {
+        if (cursorLog.getPrevLogId() == null) {
             throw new IllegalArgumentException("There is no change to be reset.");
         }
 
-        List<ULong> deleteRevisionTargets = new ArrayList<>();
+        List<ULong> deleteLogTargets = new ArrayList<>();
 
-        while(cursorRevision.getPrevRevisionId() != null) {
-            if (!cursorRevision.getRevisionNum().equals(revisionNum)) {
+        while (cursorLog.getPrevLogId() != null) {
+            if (!cursorLog.getRevisionNum().equals(logNum)) {
                 throw new IllegalArgumentException("Can not found reset point");
             }
-            if(cursorRevision.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
+            if (cursorLog.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
                 break;
             }
-            deleteRevisionTargets.add(cursorRevision.getRevisionId());
-            cursorRevision = dslContext.selectFrom(REVISION)
-                    .where(REVISION.REVISION_ID.eq(cursorRevision.getPrevRevisionId())).fetchOne();
+            deleteLogTargets.add(cursorLog.getLogId());
+            cursorLog = dslContext.selectFrom(LOG)
+                    .where(LOG.LOG_ID.eq(cursorLog.getPrevLogId())).fetchOne();
         }
 
-        JsonObject snapshot = serializer.deserialize(cursorRevision.getSnapshot().toString());
+        JsonObject snapshot = serializer.deserialize(cursorLog.getSnapshot().toString());
 
         ULong roleOfAccId = serializer.getSnapshotId(snapshot.get("roleOfAccId"));
         AccManifestRecord accManifestRecord = dslContext.selectFrom(ACC_MANIFEST).where(and(
@@ -698,8 +698,8 @@ public class AsccpWriteRepository {
         AccRecord accRecord = dslContext.selectFrom(ACC).where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
 
         asccpManifestRecord.setRoleOfAccManifestId(accManifestRecord.getAccManifestId());
-        asccpManifestRecord.setRevisionId(cursorRevision.getRevisionId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.REVISION_ID);
+        asccpManifestRecord.setLogId(cursorLog.getLogId());
+        asccpManifestRecord.update(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID, ASCCP_MANIFEST.LOG_ID);
 
         asccpRecord.setRoleOfAccId(accManifestRecord.getAccId());
         asccpRecord.setPropertyTerm(serializer.getSnapshotString(snapshot.get("propertyTerm")));
@@ -712,14 +712,14 @@ public class AsccpWriteRepository {
         asccpRecord.setReusableIndicator(serializer.getSnapshotByte(snapshot.get("reusable")));
         asccpRecord.update();
 
-        cursorRevision.setNextRevisionId(null);
-        cursorRevision.update(REVISION.NEXT_REVISION_ID);
-        dslContext.update(REVISION)
-                .setNull(REVISION.PREV_REVISION_ID)
-                .setNull(REVISION.NEXT_REVISION_ID)
-                .where(REVISION.REVISION_ID.in(deleteRevisionTargets))
+        cursorLog.setNextLogId(null);
+        cursorLog.update(LOG.NEXT_LOG_ID);
+        dslContext.update(LOG)
+                .setNull(LOG.PREV_LOG_ID)
+                .setNull(LOG.NEXT_LOG_ID)
+                .where(LOG.LOG_ID.in(deleteLogTargets))
                 .execute();
-        dslContext.deleteFrom(REVISION).where(REVISION.REVISION_ID.in(deleteRevisionTargets)).execute();
+        dslContext.deleteFrom(LOG).where(LOG.LOG_ID.in(deleteLogTargets)).execute();
 
         return new CancelRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
     }

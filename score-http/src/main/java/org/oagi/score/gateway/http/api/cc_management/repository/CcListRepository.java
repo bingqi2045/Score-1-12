@@ -142,7 +142,7 @@ public class CcListRepository {
                     .atZone(ZoneId.systemDefault()).toInstant()));
             ccList.setOwner((String) row.getValue("owner"));
             ccList.setLastUpdateUser((String) row.getValue("last_update_user"));
-            ccList.setRevision(row.getValue(REVISION.REVISION_NUM).toString());
+            ccList.setRevision(row.getValue(LOG.REVISION_NUM).toString());
             ccList.setReleaseNum(row.getValue(RELEASE.RELEASE_NUM));
             return ccList;
         });
@@ -348,14 +348,14 @@ public class CcListRepository {
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ACC)
                 .join(ACC_MANIFEST)
                 .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID).and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -463,8 +463,8 @@ public class CcListRepository {
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ASCC)
                 .join(ASCC_MANIFEST)
@@ -475,8 +475,8 @@ public class CcListRepository {
                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
                 ))
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(ASCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -584,8 +584,8 @@ public class CcListRepository {
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(BCC)
                 .join(BCC_MANIFEST)
@@ -596,8 +596,8 @@ public class CcListRepository {
                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID)
                 ))
                 .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
-                .join(REVISION)
-                .on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -708,14 +708,14 @@ public class CcListRepository {
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
-                .join(REVISION)
-                .on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -811,14 +811,14 @@ public class CcListRepository {
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(BCCP)
                 .join(BCCP_MANIFEST)
                 .on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID).and(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
-                .join(REVISION)
-                .on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)
@@ -900,14 +900,14 @@ public class CcListRepository {
                 concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                REVISION.REVISION_NUM,
-                REVISION.REVISION_TRACKING_NUM,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
                 .from(DT)
                 .join(DT_MANIFEST)
                 .on(DT.DT_ID.eq(DT_MANIFEST.DT_ID).and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
-                .join(REVISION)
-                .on(DT_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG)
+                .on(DT_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
                 .on(DT_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(appUserOwner)

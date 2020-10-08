@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = -1788816793;
+    private static final long serialVersionUID = -172748240;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -83,9 +83,9 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
-     * The column <code>oagi.dt_sc_manifest.revision_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     * The column <code>oagi.dt_sc_manifest.log_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
-    public final TableField<DtScManifestRecord, Byte> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
+    public final TableField<DtScManifestRecord, Byte> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
      * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.

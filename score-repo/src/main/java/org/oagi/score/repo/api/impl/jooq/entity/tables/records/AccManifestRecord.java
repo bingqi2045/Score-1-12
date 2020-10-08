@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -488692021;
+    private static final long serialVersionUID = -1381697247;
 
     /**
      * Setter for <code>oagi.acc_manifest.acc_manifest_id</code>.
@@ -92,16 +92,16 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
     }
 
     /**
-     * Setter for <code>oagi.acc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.acc_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.acc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.acc_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(5);
     }
 
@@ -197,7 +197,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public Field<ULong> field6() {
-        return AccManifest.ACC_MANIFEST.REVISION_ID;
+        return AccManifest.ACC_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public ULong component6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -287,7 +287,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public ULong value6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -337,7 +337,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
 
     @Override
     public AccManifestRecord value6(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
     /**
      * Create a detached, initialised AccManifestRecord
      */
-    public AccManifestRecord(ULong accManifestId, ULong releaseId, ULong accId, ULong basedAccManifestId, Byte conflict, ULong revisionId, ULong replacementAccManifestId, ULong prevAccManifestId, ULong nextAccManifestId) {
+    public AccManifestRecord(ULong accManifestId, ULong releaseId, ULong accId, ULong basedAccManifestId, Byte conflict, ULong logId, ULong replacementAccManifestId, ULong prevAccManifestId, ULong nextAccManifestId) {
         super(AccManifest.ACC_MANIFEST);
 
         set(0, accManifestId);
@@ -395,7 +395,7 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
         set(2, accId);
         set(3, basedAccManifestId);
         set(4, conflict);
-        set(5, revisionId);
+        set(5, logId);
         set(6, replacementAccManifestId);
         set(7, prevAccManifestId);
         set(8, nextAccManifestId);

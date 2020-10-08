@@ -57,6 +57,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAgencyIdListManifest;
@@ -75,7 +76,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.Revision;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
@@ -368,6 +368,11 @@ If we use a separate table for each expression, then we need binding all the way
     public static final DtUsageRule DT_USAGE_RULE = DtUsageRule.DT_USAGE_RULE;
 
     /**
+     * The table <code>oagi.log</code>.
+     */
+    public static final Log LOG = Log.LOG;
+
+    /**
      * The module table stores information about a physical file, into which CC components will be generated during the expression generation.
      */
     public static final Module MODULE = Module.MODULE;
@@ -456,11 +461,6 @@ If we use a separate table for each expression, then we need binding all the way
      * The is table store the release information.
      */
     public static final Release RELEASE = Release.RELEASE;
-
-    /**
-     * The table <code>oagi.revision</code>.
-     */
-    public static final Revision REVISION = Revision.REVISION;
 
     /**
      * The table <code>oagi.seq_key</code>.

@@ -26,7 +26,7 @@ public class InsertBccpArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
+    private ULong logId;
     private Boolean isNillable;
     private String defaultValue;
     private String fixedValue;
@@ -200,11 +200,11 @@ public class InsertBccpArguments {
     }
 
     public ULong getRevisionId() {
-        return revisionId;
+        return logId;
     }
 
-    public InsertBccpArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
+    public InsertBccpArguments setRevisionId(ULong logId) {
+        this.logId = logId;
         return this;
     }
 

@@ -30,7 +30,7 @@ public class ACC implements CoreComponent {
     private CcState state;
     private BigInteger releaseId = BigInteger.ZERO;
     private String releaseNum;
-    private BigInteger revisionId = BigInteger.ZERO;
+    private BigInteger logId = BigInteger.ZERO;
     private int revisionNum;
     private int revisionTrackingNum;
     private boolean deprecated;

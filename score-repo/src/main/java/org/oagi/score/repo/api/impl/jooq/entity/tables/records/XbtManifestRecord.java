@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> implements Record7<ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1597341536;
+    private static final long serialVersionUID = 1805229342;
 
     /**
      * Setter for <code>oagi.xbt_manifest.xbt_manifest_id</code>.
@@ -78,16 +78,16 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
     }
 
     /**
-     * Setter for <code>oagi.xbt_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(4);
     }
 
@@ -164,7 +164,7 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
 
     @Override
     public Field<ULong> field5() {
-        return XbtManifest.XBT_MANIFEST.REVISION_ID;
+        return XbtManifest.XBT_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -199,7 +199,7 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
 
     @Override
     public ULong component5() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -234,7 +234,7 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
 
     @Override
     public ULong value5() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -273,7 +273,7 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
 
     @Override
     public XbtManifestRecord value5(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -315,14 +315,14 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
     /**
      * Create a detached, initialised XbtManifestRecord
      */
-    public XbtManifestRecord(ULong xbtManifestId, ULong releaseId, ULong xbtId, Byte conflict, ULong revisionId, ULong prevXbtManifestId, ULong nextXbtManifestId) {
+    public XbtManifestRecord(ULong xbtManifestId, ULong releaseId, ULong xbtId, Byte conflict, ULong logId, ULong prevXbtManifestId, ULong nextXbtManifestId) {
         super(XbtManifest.XBT_MANIFEST);
 
         set(0, xbtManifestId);
         set(1, releaseId);
         set(2, xbtId);
         set(3, conflict);
-        set(4, revisionId);
+        set(4, logId);
         set(5, prevXbtManifestId);
         set(6, nextXbtManifestId);
     }

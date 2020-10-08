@@ -27,7 +27,7 @@ public class InsertAccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
+    private ULong logId;
     private Boolean isDeprecated;
     private Boolean isAbstract;
     private ULong prevAccId;
@@ -182,11 +182,11 @@ public class InsertAccArguments {
     }
 
     public ULong getRevisionId() {
-        return revisionId;
+        return logId;
     }
 
-    public InsertAccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
+    public InsertAccArguments setRevisionId(ULong logId) {
+        this.logId = logId;
         return this;
     }
 

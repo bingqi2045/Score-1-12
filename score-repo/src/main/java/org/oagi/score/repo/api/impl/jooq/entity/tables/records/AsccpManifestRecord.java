@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 206057935;
+    private static final long serialVersionUID = -231591609;
 
     /**
      * Setter for <code>oagi.asccp_manifest.asccp_manifest_id</code>.
@@ -92,16 +92,16 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
     }
 
     /**
-     * Setter for <code>oagi.asccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.asccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(5);
     }
 
@@ -197,7 +197,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
 
     @Override
     public Field<ULong> field6() {
-        return AsccpManifest.ASCCP_MANIFEST.REVISION_ID;
+        return AsccpManifest.ASCCP_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
 
     @Override
     public ULong component6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -287,7 +287,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
 
     @Override
     public ULong value6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -337,7 +337,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
 
     @Override
     public AsccpManifestRecord value6(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
     /**
      * Create a detached, initialised AsccpManifestRecord
      */
-    public AsccpManifestRecord(ULong asccpManifestId, ULong releaseId, ULong asccpId, ULong roleOfAccManifestId, Byte conflict, ULong revisionId, ULong replacementAsccpManifestId, ULong prevAsccpManifestId, ULong nextAsccpManifestId) {
+    public AsccpManifestRecord(ULong asccpManifestId, ULong releaseId, ULong asccpId, ULong roleOfAccManifestId, Byte conflict, ULong logId, ULong replacementAsccpManifestId, ULong prevAsccpManifestId, ULong nextAsccpManifestId) {
         super(AsccpManifest.ASCCP_MANIFEST);
 
         set(0, asccpManifestId);
@@ -395,7 +395,7 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
         set(2, asccpId);
         set(3, roleOfAccManifestId);
         set(4, conflict);
-        set(5, revisionId);
+        set(5, logId);
         set(6, replacementAsccpManifestId);
         set(7, prevAsccpManifestId);
         set(8, nextAsccpManifestId);

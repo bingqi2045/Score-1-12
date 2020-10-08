@@ -6,14 +6,14 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
-import org.oagi.score.data.RevisionAction;
+import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
 import org.oagi.score.repo.CoreComponentRepository;
-import org.oagi.score.repo.RevisionRepository;
+import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.acc.*;
 import org.oagi.score.repo.component.ascc.*;
@@ -67,7 +67,7 @@ public class CcNodeService extends EventHandler {
     private BccWriteRepository bccWriteRepository;
 
     @Autowired
-    private RevisionRepository revisionRepository;
+    private LogRepository logRepository;
 
     @Autowired
     private SessionService sessionService;
@@ -727,12 +727,12 @@ public class CcNodeService extends EventHandler {
         AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(ULong.valueOf(accManifestId));
         AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
 
-        ULong revisionId = revisionRepository.insertRevisionArguments()
+        ULong logId = logRepository.insertLogArguments()
                 .setCreatedBy(userId)
                 .setCreationTimestamp(timestamp)
-                .setRevisionAction(RevisionAction.Modified)
+                .setLogAction(LogAction.Modified)
                 .setReference(CcType.ACC.name() + "-" + accManifestRecord.getAccManifestId())
-                .setPrevRevisionId(accManifestRecord.getRevisionId())
+                .setPrevLogId(accManifestRecord.getLogId())
                 .execute();
 
         ULong accId = ccRepository.updateAccArguments(accRecord)
@@ -747,7 +747,7 @@ public class CcNodeService extends EventHandler {
                 .setBasedAccManifestId(null)
                 .execute();
 
-        updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp, revisionId);
+        updateAccChain(userId, accManifestRecord.getAccManifestId(), timestamp, logId);
 
         return getAccNode(user, accManifestId);
     }
@@ -923,16 +923,16 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    private void updateAccChain(ULong userId, ULong accManifestId, LocalDateTime timestamp, ULong revisionId) {
+    private void updateAccChain(ULong userId, ULong accManifestId, LocalDateTime timestamp, ULong logId) {
         AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(accManifestId);
         AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-        updateAsccByFromAcc(userId, accManifestRecord, accRecord, timestamp, revisionId);
-        updateBccByFromAcc(userId, accManifestRecord, accRecord, timestamp, revisionId);
-        updateAsccpByRoleOfAcc(userId, accManifestRecord, accRecord, timestamp, revisionId);
-        updateAccByBasedAcc(userId, accManifestRecord, accRecord, timestamp, revisionId);
+        updateAsccByFromAcc(userId, accManifestRecord, accRecord, timestamp, logId);
+        updateBccByFromAcc(userId, accManifestRecord, accRecord, timestamp, logId);
+        updateAsccpByRoleOfAcc(userId, accManifestRecord, accRecord, timestamp, logId);
+        updateAccByBasedAcc(userId, accManifestRecord, accRecord, timestamp, logId);
     }
 
-    private void updateAsccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp, ULong revisionId) {
+    private void updateAsccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp, ULong logId) {
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
@@ -955,7 +955,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    private void updateAsccByToAsccp(ULong userId, ULong asccpManifestId, LocalDateTime timestamp, ULong revisionId) {
+    private void updateAsccByToAsccp(ULong userId, ULong asccpManifestId, LocalDateTime timestamp, ULong logId) {
         AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(asccpManifestId);
         AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifestRecord.getAsccpId());
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifestId);
@@ -979,7 +979,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    private void updateBccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp, ULong revisionId) {
+    private void updateBccByFromAcc(ULong userId, AccManifestRecord accManifest, AccRecord acc, LocalDateTime timestamp, ULong logId) {
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
@@ -1002,7 +1002,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    private void updateBccByToBccp(ULong userId, ULong bccpManifestId, LocalDateTime timestamp, ULong revisionId) {
+    private void updateBccByToBccp(ULong userId, ULong bccpManifestId, LocalDateTime timestamp, ULong logId) {
         BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(bccpManifestId);
         BccpRecord bccpRecord = ccRepository.getBccpById(bccpManifestRecord.getBccpId());
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifestId);
@@ -1026,7 +1026,7 @@ public class CcNodeService extends EventHandler {
         }
     }
 
-    private void updateAsccpByRoleOfAcc(ULong userId, AccManifestRecord accManifestRecord, AccRecord accRecord, LocalDateTime timestamp, ULong revisionId) {
+    private void updateAsccpByRoleOfAcc(ULong userId, AccManifestRecord accManifestRecord, AccRecord accRecord, LocalDateTime timestamp, ULong logId) {
         List<AsccpManifestRecord> asccpManifestRecordList = ccRepository.getAsccpManifestByRolOfAccManifestId(accManifestRecord.getAccManifestId());
         for (AsccpManifestRecord asccpManifest : asccpManifestRecordList) {
             AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifest.getAsccpId());
@@ -1045,11 +1045,11 @@ public class CcNodeService extends EventHandler {
                     .execute();
             asccpManifest.setAsccpId(asccpId);
 
-            updateAsccByToAsccp(userId, asccpManifest.getAsccpManifestId(), timestamp, revisionId);
+            updateAsccByToAsccp(userId, asccpManifest.getAsccpManifestId(), timestamp, logId);
         }
     }
 
-    private void updateAccByBasedAcc(ULong userId, AccManifestRecord basedAccManifestRecord, AccRecord basedAccRecord, LocalDateTime timestamp, ULong revisionId) {
+    private void updateAccByBasedAcc(ULong userId, AccManifestRecord basedAccManifestRecord, AccRecord basedAccRecord, LocalDateTime timestamp, ULong logId) {
         List<AccManifestRecord> accManifestRecordList = ccRepository.getAccManifestByBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
         for (AccManifestRecord accManifestRecord : accManifestRecordList) {
             AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
@@ -1068,7 +1068,7 @@ public class CcNodeService extends EventHandler {
             AccRecord updatedAcc = ccRepository.getAccById(accId);
             accManifestRecord.setAccId(accId);
 
-            updateAsccByFromAcc(userId, accManifestRecord, updatedAcc, timestamp, revisionId);
+            updateAsccByFromAcc(userId, accManifestRecord, updatedAcc, timestamp, logId);
         }
     }
 

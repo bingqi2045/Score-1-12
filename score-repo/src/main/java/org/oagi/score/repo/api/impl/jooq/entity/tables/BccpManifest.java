@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
-    private static final long serialVersionUID = 624617969;
+    private static final long serialVersionUID = -29583869;
 
     /**
      * The reference instance of <code>oagi.bccp_manifest</code>
@@ -73,9 +73,9 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     public final TableField<BccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.bccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * The column <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<BccpManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+    public final TableField<BccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
@@ -147,7 +147,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     @Override
     public List<ForeignKey<BccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_REVISION_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccpManifestRecord, ?>>asList(Keys.BCCP_MANIFEST_RELEASE_ID_FK, Keys.BCCP_MANIFEST_BCCP_ID_FK, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_PREV_BCCP_MANIFEST_ID_FK, Keys.BCCP_MANIFEST_NEXT_BCCP_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,10 +160,6 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     public DtManifest dtManifest() {
         return new DtManifest(this, Keys.BCCP_MANIFEST_BDT_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.BCCP_MANIFEST_REVISION_ID_FK);
     }
 
     public BccpManifest bccpReplacementBccpManifestIdFk() {

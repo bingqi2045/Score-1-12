@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifest extends TableImpl<AccManifestRecord> {
 
-    private static final long serialVersionUID = -60746087;
+    private static final long serialVersionUID = -243920697;
 
     /**
      * The reference instance of <code>oagi.acc_manifest</code>
@@ -73,9 +73,9 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     public final TableField<AccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.acc_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * The column <code>oagi.acc_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<AccManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+    public final TableField<AccManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.acc_manifest.replacement_acc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
@@ -147,7 +147,7 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     @Override
     public List<ForeignKey<AccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccManifestRecord, ?>>asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_REVISION_ID_FK, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AccManifestRecord, ?>>asList(Keys.ACC_MANIFEST_RELEASE_ID_FK, Keys.ACC_MANIFEST_ACC_ID_FK, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK, Keys.ACC_REPLACEMENT_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_PREV_ACC_MANIFEST_ID_FK, Keys.ACC_MANIFEST_NEXT_ACC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,10 +160,6 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     public AccManifest accManifestBasedAccManifestIdFk() {
         return new AccManifest(this, Keys.ACC_MANIFEST_BASED_ACC_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.ACC_MANIFEST_REVISION_ID_FK);
     }
 
     public AccManifest accReplacementAccManifestIdFk() {

@@ -25,7 +25,7 @@ public class CcAccNodeDetail implements CcNodeDetail {
     private String owner;
     private BigInteger releaseId;
     private String releaseNum;
-    private BigInteger revisionId;
+    private BigInteger logId;
     private int revisionNum;
     private int revisionTrackingNum;
 }

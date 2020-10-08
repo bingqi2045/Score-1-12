@@ -11,7 +11,7 @@ public abstract class TrackableImpl implements Trackable {
     private BigInteger releaseId;
     private String releaseNum;
 
-    private BigInteger revisionId;
+    private BigInteger logId;
     private int revisionNum;
     private int revisionTrackingNum;
 

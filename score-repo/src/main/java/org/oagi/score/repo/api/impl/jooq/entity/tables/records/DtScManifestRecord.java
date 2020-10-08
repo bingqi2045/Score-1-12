@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, Byte, ULong> {
 
-    private static final long serialVersionUID = -1646521610;
+    private static final long serialVersionUID = 1926316510;
 
     /**
      * Setter for <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.
@@ -120,16 +120,16 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.dt_sc_manifest.revision_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     * Setter for <code>oagi.dt_sc_manifest.log_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
-    public void setRevisionId(Byte value) {
+    public void setLogId(Byte value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>oagi.dt_sc_manifest.revision_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
+     * Getter for <code>oagi.dt_sc_manifest.log_id</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
-    public Byte getRevisionId() {
+    public Byte getLogId() {
         return (Byte) get(7);
     }
 
@@ -207,7 +207,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public Field<Byte> field8() {
-        return DtScManifest.DT_SC_MANIFEST.REVISION_ID;
+        return DtScManifest.DT_SC_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -252,7 +252,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public Byte component8() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -297,7 +297,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public Byte value8() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -349,7 +349,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
 
     @Override
     public DtScManifestRecord value8(Byte value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     /**
      * Create a detached, initialised DtScManifestRecord
      */
-    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong prevDtScManifestId, ULong nextDtScManifestId, Byte revisionId, ULong replacementDtScManifestId) {
+    public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong prevDtScManifestId, ULong nextDtScManifestId, Byte logId, ULong replacementDtScManifestId) {
         super(DtScManifest.DT_SC_MANIFEST);
 
         set(0, dtScManifestId);
@@ -397,7 +397,7 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
         set(4, conflict);
         set(5, prevDtScManifestId);
         set(6, nextDtScManifestId);
-        set(7, revisionId);
+        set(7, logId);
         set(8, replacementDtScManifestId);
     }
 }

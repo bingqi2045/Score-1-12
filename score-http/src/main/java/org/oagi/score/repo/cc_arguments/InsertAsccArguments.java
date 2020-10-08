@@ -27,7 +27,7 @@ public class InsertAsccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
+    private ULong logId;
     private ULong prevAsccId;
     private ULong nextAsccId;
 
@@ -189,11 +189,11 @@ public class InsertAsccArguments {
     }
 
     public ULong getRevisionId() {
-        return revisionId;
+        return logId;
     }
 
-    public InsertAsccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
+    public InsertAsccArguments setRevisionId(ULong logId) {
+        this.logId = logId;
         return this;
     }
 

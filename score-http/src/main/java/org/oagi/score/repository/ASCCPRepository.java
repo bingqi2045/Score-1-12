@@ -37,9 +37,9 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 Tables.ASCCP.STATE,
                 Tables.ASCCP_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.ASCCP_MANIFEST.REVISION_ID,
-                Tables.REVISION.REVISION_NUM,
-                Tables.REVISION.REVISION_TRACKING_NUM,
+                Tables.ASCCP_MANIFEST.LOG_ID,
+                Tables.LOG.REVISION_NUM,
+                Tables.LOG.REVISION_TRACKING_NUM,
                 Tables.ASCCP.REUSABLE_INDICATOR,
                 Tables.ASCCP.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCCP.IS_NILLABLE.as("nillable"))
@@ -48,8 +48,8 @@ public class ASCCPRepository implements SrtRepository<ASCCP> {
                 .on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID))
                 .join(Tables.RELEASE)
                 .on(Tables.ASCCP_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
-                .join(Tables.REVISION)
-                .on(Tables.ASCCP_MANIFEST.REVISION_ID.eq(Tables.REVISION.REVISION_ID));
+                .join(Tables.LOG)
+                .on(Tables.ASCCP_MANIFEST.LOG_ID.eq(Tables.LOG.LOG_ID));
     }
 
     @Override

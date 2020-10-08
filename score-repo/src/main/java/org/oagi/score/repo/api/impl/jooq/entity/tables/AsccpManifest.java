@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestReco
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
-    private static final long serialVersionUID = 2117853098;
+    private static final long serialVersionUID = -1997328174;
 
     /**
      * The reference instance of <code>oagi.asccp_manifest</code>
@@ -73,9 +73,9 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     public final TableField<AsccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.asccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<AsccpManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+    public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.asccp_manifest.replacement_asccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
@@ -147,7 +147,7 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     @Override
     public List<ForeignKey<AsccpManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccpManifestRecord, ?>>asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_REVISION_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AsccpManifestRecord, ?>>asList(Keys.ASCCP_MANIFEST_RELEASE_ID_FK, Keys.ASCCP_MANIFEST_ASCCP_ID_FK, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_PREV_ASCCP_MANIFEST_ID_FK, Keys.ASCCP_MANIFEST_NEXT_ASCCP_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -160,10 +160,6 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     public AccManifest accManifest() {
         return new AccManifest(this, Keys.ASCCP_MANIFEST_ROLE_OF_ACC_MANIFEST_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.ASCCP_MANIFEST_REVISION_ID_FK);
     }
 
     public AsccpManifest asccpReplacementAsccpManifestIdFk() {

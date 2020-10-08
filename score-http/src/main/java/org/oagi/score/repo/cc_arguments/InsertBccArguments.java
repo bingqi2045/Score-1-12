@@ -32,7 +32,7 @@ public class InsertBccArguments {
     private LocalDateTime creationTimestamp;
     private LocalDateTime lastUpdateTimestamp;
     private CcState state;
-    private ULong revisionId;
+    private ULong logId;
     private ULong prevBccId;
     private ULong nextBccId;
 
@@ -230,11 +230,11 @@ public class InsertBccArguments {
     }
 
     public ULong getRevisionId() {
-        return revisionId;
+        return logId;
     }
 
-    public InsertBccArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
+    public InsertBccArguments setRevisionId(ULong logId) {
+        this.logId = logId;
         return this;
     }
 

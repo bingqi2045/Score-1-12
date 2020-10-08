@@ -36,7 +36,7 @@ public class CoreComponentRepository {
     private SessionService sessionService;
 
     @Autowired
-    private RevisionRepository revisionRepository;
+    private LogRepository logRepository;
 
     public AccManifestRecord getAccManifestByManifestId(ULong manifestId) {
         if (manifestId == null || manifestId.longValue() <= 0L) {

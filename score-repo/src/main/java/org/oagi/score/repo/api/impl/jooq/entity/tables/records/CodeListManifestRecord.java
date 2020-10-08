@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 534562714;
+    private static final long serialVersionUID = 1993354582;
 
     /**
      * Setter for <code>oagi.code_list_manifest.code_list_manifest_id</code>.
@@ -92,16 +92,16 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
     }
 
     /**
-     * Setter for <code>oagi.code_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.code_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.code_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(5);
     }
 
@@ -197,7 +197,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public Field<ULong> field6() {
-        return CodeListManifest.CODE_LIST_MANIFEST.REVISION_ID;
+        return CodeListManifest.CODE_LIST_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public ULong component6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -287,7 +287,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public ULong value6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -337,7 +337,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
 
     @Override
     public CodeListManifestRecord value6(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
     /**
      * Create a detached, initialised CodeListManifestRecord
      */
-    public CodeListManifestRecord(ULong codeListManifestId, ULong releaseId, ULong codeListId, ULong basedCodeListManifestId, Byte conflict, ULong revisionId, ULong replacementCodeListManifestId, ULong prevCodeListManifestId, ULong nextCodeListManifestId) {
+    public CodeListManifestRecord(ULong codeListManifestId, ULong releaseId, ULong codeListId, ULong basedCodeListManifestId, Byte conflict, ULong logId, ULong replacementCodeListManifestId, ULong prevCodeListManifestId, ULong nextCodeListManifestId) {
         super(CodeListManifest.CODE_LIST_MANIFEST);
 
         set(0, codeListManifestId);
@@ -395,7 +395,7 @@ public class CodeListManifestRecord extends UpdatableRecordImpl<CodeListManifest
         set(2, codeListId);
         set(3, basedCodeListManifestId);
         set(4, conflict);
-        set(5, revisionId);
+        set(5, logId);
         set(6, replacementCodeListManifestId);
         set(7, prevCodeListManifestId);
         set(8, nextCodeListManifestId);

@@ -26,7 +26,7 @@ public class InsertAsccpArguments {
     private ULong namespaceId;
     private Boolean reuseableIndicator;
     private Boolean isDeprecated;
-    private ULong revisionId;
+    private ULong logId;
     private Boolean isNillable;
     private ULong prevAsccpId;
     private ULong nextAsccpId;
@@ -175,11 +175,11 @@ public class InsertAsccpArguments {
     }
 
     public ULong getRevisionId() {
-        return revisionId;
+        return logId;
     }
 
-    public InsertAsccpArguments setRevisionId(ULong revisionId) {
-        this.revisionId = revisionId;
+    public InsertAsccpArguments setRevisionId(ULong logId) {
+        this.logId = logId;
         return this;
     }
 

@@ -7,13 +7,13 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.Release;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repository.SrtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -22,15 +22,13 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.*;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class ReleaseRepository implements SrtRepository<Release> {
@@ -278,7 +276,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 ACC_MANIFEST.ACC_ID,
                 ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                 ACC_MANIFEST.CONFLICT,
-                ACC_MANIFEST.REVISION_ID,
+                ACC_MANIFEST.LOG_ID,
                 ACC_MANIFEST.PREV_ACC_MANIFEST_ID,
                 ACC_MANIFEST.NEXT_ACC_MANIFEST_ID)
                 .select(dslContext.select(
@@ -286,7 +284,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         ACC_MANIFEST.ACC_ID,
                         ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                         ACC_MANIFEST.CONFLICT,
-                        ACC_MANIFEST.REVISION_ID,
+                        ACC_MANIFEST.LOG_ID,
                         ACC_MANIFEST.PREV_ACC_MANIFEST_ID,
                         ACC_MANIFEST.ACC_MANIFEST_ID)
                         .from(ACC_MANIFEST)
@@ -302,14 +300,14 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 DT_MANIFEST.RELEASE_ID,
                 DT_MANIFEST.DT_ID,
                 DT_MANIFEST.CONFLICT,
-                DT_MANIFEST.REVISION_ID,
+                DT_MANIFEST.LOG_ID,
                 DT_MANIFEST.PREV_DT_MANIFEST_ID,
                 DT_MANIFEST.NEXT_DT_MANIFEST_ID)
                 .select(dslContext.select(
                         inline(ULong.valueOf(releaseId)),
                         DT_MANIFEST.DT_ID,
                         DT_MANIFEST.CONFLICT,
-                        DT_MANIFEST.REVISION_ID,
+                        DT_MANIFEST.LOG_ID,
                         DT_MANIFEST.PREV_DT_MANIFEST_ID,
                         DT_MANIFEST.DT_MANIFEST_ID)
                         .from(DT_MANIFEST)
@@ -326,7 +324,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 ASCCP_MANIFEST.ASCCP_ID,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                 ASCCP_MANIFEST.CONFLICT,
-                ASCCP_MANIFEST.REVISION_ID,
+                ASCCP_MANIFEST.LOG_ID,
                 ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID,
                 ASCCP_MANIFEST.NEXT_ASCCP_MANIFEST_ID)
                 .select(dslContext.select(
@@ -334,7 +332,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         ASCCP_MANIFEST.ASCCP_ID,
                         ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                         ASCCP_MANIFEST.CONFLICT,
-                        ASCCP_MANIFEST.REVISION_ID,
+                        ASCCP_MANIFEST.LOG_ID,
                         ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID,
                         ASCCP_MANIFEST.ASCCP_MANIFEST_ID)
                         .from(ASCCP_MANIFEST)
@@ -351,7 +349,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 BCCP_MANIFEST.BCCP_ID,
                 BCCP_MANIFEST.BDT_MANIFEST_ID,
                 BCCP_MANIFEST.CONFLICT,
-                BCCP_MANIFEST.REVISION_ID,
+                BCCP_MANIFEST.LOG_ID,
                 BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID,
                 BCCP_MANIFEST.NEXT_BCCP_MANIFEST_ID)
                 .select(dslContext.select(
@@ -359,7 +357,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         BCCP_MANIFEST.BCCP_ID,
                         BCCP_MANIFEST.BDT_MANIFEST_ID,
                         BCCP_MANIFEST.CONFLICT,
-                        BCCP_MANIFEST.REVISION_ID,
+                        BCCP_MANIFEST.LOG_ID,
                         BCCP_MANIFEST.PREV_BCCP_MANIFEST_ID,
                         BCCP_MANIFEST.BCCP_MANIFEST_ID)
                         .from(BCCP_MANIFEST)
@@ -426,7 +424,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 DT_SC_MANIFEST.DT_SC_ID,
                 DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
                 DT_SC_MANIFEST.CONFLICT,
-                DT_SC_MANIFEST.REVISION_ID,
+                DT_SC_MANIFEST.LOG_ID,
                 DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                 DT_SC_MANIFEST.NEXT_DT_SC_MANIFEST_ID)
                 .select(dslContext.select(
@@ -434,7 +432,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         DT_SC_MANIFEST.DT_SC_ID,
                         DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID,
                         DT_SC_MANIFEST.CONFLICT,
-                        DT_SC_MANIFEST.REVISION_ID,
+                        DT_SC_MANIFEST.LOG_ID,
                         DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID,
                         DT_SC_MANIFEST.DT_SC_MANIFEST_ID)
                         .from(DT_SC_MANIFEST)
@@ -467,7 +465,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 CODE_LIST_MANIFEST.CODE_LIST_ID,
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.CONFLICT,
-                CODE_LIST_MANIFEST.REVISION_ID,
+                CODE_LIST_MANIFEST.LOG_ID,
                 CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
                 CODE_LIST_MANIFEST.NEXT_CODE_LIST_MANIFEST_ID)
                 .select(dslContext.select(
@@ -475,7 +473,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         CODE_LIST_MANIFEST.CODE_LIST_ID,
                         CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
                         CODE_LIST_MANIFEST.CONFLICT,
-                        CODE_LIST_MANIFEST.REVISION_ID,
+                        CODE_LIST_MANIFEST.LOG_ID,
                         CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID,
                         CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
                         .from(CODE_LIST_MANIFEST)
@@ -516,7 +514,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
                 AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.CONFLICT,
-                AGENCY_ID_LIST_MANIFEST.REVISION_ID,
+                AGENCY_ID_LIST_MANIFEST.LOG_ID,
                 AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
                 AGENCY_ID_LIST_MANIFEST.NEXT_AGENCY_ID_LIST_MANIFEST_ID)
                 .select(dslContext.select(
@@ -524,7 +522,7 @@ public class ReleaseRepository implements SrtRepository<Release> {
                         AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
                         AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
                         AGENCY_ID_LIST_MANIFEST.CONFLICT,
-                        AGENCY_ID_LIST_MANIFEST.REVISION_ID,
+                        AGENCY_ID_LIST_MANIFEST.LOG_ID,
                         AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID,
                         AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
                         .from(AGENCY_ID_LIST_MANIFEST)
@@ -775,12 +773,12 @@ public class ReleaseRepository implements SrtRepository<Release> {
                 dslContext.select(
                         ACC_MANIFEST.ACC_MANIFEST_ID, ACC.DEN, RELEASE.RELEASE_NUM,
                         ACC.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ACC.STATE,
-                        REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                        LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
                         .from(ACC_MANIFEST)
                         .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .join(APP_USER).on(ACC.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                        .join(REVISION).on(ACC_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                        .join(LOG).on(ACC_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                         .where(and(
                                 or(
                                         RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -815,12 +813,12 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map = dslContext.select(
                 ASCCP_MANIFEST.ASCCP_MANIFEST_ID, ASCCP.DEN, RELEASE.RELEASE_NUM,
                 ASCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, ASCCP.STATE,
-                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
                 .from(ASCCP_MANIFEST)
                 .join(RELEASE).on(ASCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(ASCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .join(REVISION).on(ASCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG).on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -855,12 +853,12 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map = dslContext.select(
                 BCCP_MANIFEST.BCCP_MANIFEST_ID, BCCP.DEN, RELEASE.RELEASE_NUM,
                 BCCP.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, BCCP.STATE,
-                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
                 .from(BCCP_MANIFEST)
                 .join(RELEASE).on(BCCP_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(BCCP).on(BCCP_MANIFEST.BCCP_ID.eq(BCCP.BCCP_ID))
                 .join(APP_USER).on(BCCP.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .join(REVISION).on(BCCP_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG).on(BCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),
@@ -895,12 +893,12 @@ public class ReleaseRepository implements SrtRepository<Release> {
         map = dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID, CODE_LIST.NAME, RELEASE.RELEASE_NUM,
                 CODE_LIST.LAST_UPDATE_TIMESTAMP, APP_USER.LOGIN_ID, CODE_LIST.STATE,
-                REVISION.REVISION_NUM, REVISION.REVISION_TRACKING_NUM)
+                LOG.REVISION_NUM, LOG.REVISION_TRACKING_NUM)
                 .from(CODE_LIST_MANIFEST)
                 .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(APP_USER).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.APP_USER_ID))
-                .join(REVISION).on(CODE_LIST_MANIFEST.REVISION_ID.eq(REVISION.REVISION_ID))
+                .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .where(and(
                         or(
                                 RELEASE.RELEASE_ID.eq(ULong.valueOf(releaseId)),

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdListManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1320596026;
+    private static final long serialVersionUID = 1829250518;
 
     /**
      * Setter for <code>oagi.agency_id_list_manifest.agency_id_list_manifest_id</code>.
@@ -92,16 +92,16 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
     }
 
     /**
-     * Setter for <code>oagi.agency_id_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.agency_id_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.agency_id_list_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.agency_id_list_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(5);
     }
 
@@ -197,7 +197,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public Field<ULong> field6() {
-        return AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.REVISION_ID;
+        return AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public ULong component6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -287,7 +287,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public ULong value6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -337,7 +337,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
 
     @Override
     public AgencyIdListManifestRecord value6(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
     /**
      * Create a detached, initialised AgencyIdListManifestRecord
      */
-    public AgencyIdListManifestRecord(ULong agencyIdListManifestId, ULong releaseId, ULong agencyIdListId, ULong basedAgencyIdListManifestId, Byte conflict, ULong revisionId, ULong replacementAgencyIdListManifestId, ULong prevAgencyIdListManifestId, ULong nextAgencyIdListManifestId) {
+    public AgencyIdListManifestRecord(ULong agencyIdListManifestId, ULong releaseId, ULong agencyIdListId, ULong basedAgencyIdListManifestId, Byte conflict, ULong logId, ULong replacementAgencyIdListManifestId, ULong prevAgencyIdListManifestId, ULong nextAgencyIdListManifestId) {
         super(AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST);
 
         set(0, agencyIdListManifestId);
@@ -395,7 +395,7 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
         set(2, agencyIdListId);
         set(3, basedAgencyIdListManifestId);
         set(4, conflict);
-        set(5, revisionId);
+        set(5, logId);
         set(6, replacementAgencyIdListManifestId);
         set(7, prevAgencyIdListManifestId);
         set(8, nextAgencyIdListManifestId);

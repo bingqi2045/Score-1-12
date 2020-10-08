@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -2028639697;
+    private static final long serialVersionUID = 374505245;
 
     /**
      * Setter for <code>oagi.bccp_manifest.bccp_manifest_id</code>.
@@ -92,16 +92,16 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
     }
 
     /**
-     * Setter for <code>oagi.bccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Setter for <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public void setRevisionId(ULong value) {
+    public void setLogId(ULong value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>oagi.bccp_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * Getter for <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public ULong getRevisionId() {
+    public ULong getLogId() {
         return (ULong) get(5);
     }
 
@@ -197,7 +197,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public Field<ULong> field6() {
-        return BccpManifest.BCCP_MANIFEST.REVISION_ID;
+        return BccpManifest.BCCP_MANIFEST.LOG_ID;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public ULong component6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -287,7 +287,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public ULong value6() {
-        return getRevisionId();
+        return getLogId();
     }
 
     @Override
@@ -337,7 +337,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
 
     @Override
     public BccpManifestRecord value6(ULong value) {
-        setRevisionId(value);
+        setLogId(value);
         return this;
     }
 
@@ -387,7 +387,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
     /**
      * Create a detached, initialised BccpManifestRecord
      */
-    public BccpManifestRecord(ULong bccpManifestId, ULong releaseId, ULong bccpId, ULong bdtManifestId, Byte conflict, ULong revisionId, ULong replacementBccpManifestId, ULong prevBccpManifestId, ULong nextBccpManifestId) {
+    public BccpManifestRecord(ULong bccpManifestId, ULong releaseId, ULong bccpId, ULong bdtManifestId, Byte conflict, ULong logId, ULong replacementBccpManifestId, ULong prevBccpManifestId, ULong nextBccpManifestId) {
         super(BccpManifest.BCCP_MANIFEST);
 
         set(0, bccpManifestId);
@@ -395,7 +395,7 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
         set(2, bccpId);
         set(3, bdtManifestId);
         set(4, conflict);
-        set(5, revisionId);
+        set(5, logId);
         set(6, replacementBccpManifestId);
         set(7, prevBccpManifestId);
         set(8, nextBccpManifestId);

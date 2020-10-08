@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
-    private static final long serialVersionUID = 1937632791;
+    private static final long serialVersionUID = -238238935;
 
     /**
      * The reference instance of <code>oagi.xbt_manifest</code>
@@ -68,9 +68,9 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
     public final TableField<XbtManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
-     * The column <code>oagi.xbt_manifest.revision_id</code>. A foreign key pointed to revision for the current record.
+     * The column <code>oagi.xbt_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<XbtManifestRecord, ULong> REVISION_ID = createField(DSL.name("revision_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to revision for the current record.");
+    public final TableField<XbtManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.xbt_manifest.prev_xbt_manifest_id</code>.
@@ -137,7 +137,7 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     @Override
     public List<ForeignKey<XbtManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_REVISION_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<XbtManifestRecord, ?>>asList(Keys.XBT_MANIFEST_RELEASE_ID_FK, Keys.XBT_MANIFEST_XBT_ID_FK, Keys.XBT_MANIFEST_PREV_XBT_MANIFEST_ID_FK, Keys.XBT_MANIFEST_NEXT_XBT_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -146,10 +146,6 @@ public class XbtManifest extends TableImpl<XbtManifestRecord> {
 
     public Xbt xbt() {
         return new Xbt(this, Keys.XBT_MANIFEST_XBT_ID_FK);
-    }
-
-    public Revision revision() {
-        return new Revision(this, Keys.XBT_MANIFEST_REVISION_ID_FK);
     }
 
     public XbtManifest xbtManifestPrevXbtManifestIdFk() {
