@@ -85,6 +85,7 @@ public class BbieScWriteRepository {
                 bbieScRecord.setCardinalityMin(bbieSc.getCardinalityMin());
                 bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
             }
+            bbieScRecord.setBizTerm(bbieSc.getBizTerm());
             bbieScRecord.setExample(bbieSc.getExample());
             bbieScRecord.setRemark(bbieSc.getRemark());
 
@@ -149,6 +150,10 @@ public class BbieScWriteRepository {
                 bbieScRecord.setCardinalityMax(bbieSc.getCardinalityMax());
             }
 
+            if (bbieSc.getBizTerm() != null) {
+                bbieScRecord.setBizTerm(emptyToNull(bbieSc.getBizTerm()));
+            }
+
             if (bbieSc.getExample() != null) {
                 bbieScRecord.setExample(emptyToNull(bbieSc.getExample()));
             }
@@ -190,6 +195,7 @@ public class BbieScWriteRepository {
                         BBIE_SC.DEFINITION,
                         BBIE_SC.CARDINALITY_MIN,
                         BBIE_SC.CARDINALITY_MAX,
+                        BBIE_SC.BIZ_TERM,
                         BBIE_SC.EXAMPLE,
                         BBIE_SC.REMARK,
                         BBIE_SC.DEFAULT_VALUE,
