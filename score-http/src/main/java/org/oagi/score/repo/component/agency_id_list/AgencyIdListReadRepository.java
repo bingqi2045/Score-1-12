@@ -3,7 +3,6 @@ package org.oagi.score.repo.component.agency_id_list;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
-import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
@@ -78,28 +77,34 @@ public class AgencyIdListReadRepository {
         }
 
         List<AvailableAgencyIdList> availableAgencyIdLists = dslContext.select(
-                CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
-                CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
-                CODE_LIST.CODE_LIST_ID,
-                CODE_LIST.NAME.as("code_list_name"))
-                .from(CODE_LIST)
-                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID,
+                AGENCY_ID_LIST.AGENCY_ID_LIST_ID,
+                AGENCY_ID_LIST.NAME.as("code_list_name"))
+                .from(AGENCY_ID_LIST)
+                .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID))
                 .where(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(ULong.valueOf(agencyIdListManifestId)))
                 .fetchInto(AvailableAgencyIdList.class);
 
+        List<BigInteger> associatedAgencyIdLists = dslContext.selectDistinct(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID)
+                .from(AGENCY_ID_LIST_MANIFEST)
+                .where(AGENCY_ID_LIST_MANIFEST.BASED_AGENCY_ID_LIST_MANIFEST_ID.in(
+                        availableAgencyIdLists.stream()
+                                .filter(e -> e.getAgencyIdListManifestId() != null)
+                                .map(e -> e.getAgencyIdListManifestId())
+                                .distinct()
+                                .collect(Collectors.toList())
+                ))
+                .fetchInto(BigInteger.class);
+        
         List<AvailableAgencyIdList> mergedAgencyIdLists = new ArrayList();
-        mergedAgencyIdLists.addAll(availableAgencyIdLists.stream()
-                .filter(e -> e.getBasedAgencyIdListManifestId() != null)
-                .distinct()
-                .map(e -> availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
-                        e.getBasedAgencyIdListManifestId(), releaseId))
-                .flatMap(e -> e.stream())
-                .collect(Collectors.toList())
-        );
-        mergedAgencyIdLists.addAll(availableAgencyIdLists.stream()
-                .filter(e -> e.getBasedAgencyIdListManifestId() == null)
-                .collect(Collectors.toList())
-        );
+        mergedAgencyIdLists.addAll(availableAgencyIdLists);
+        for (BigInteger associatedAgencyId : associatedAgencyIdLists) {
+            mergedAgencyIdLists.addAll(
+                    availableAgencyIdListByAgencyIdListManifestIdOrReleaseId(
+                            associatedAgencyId, releaseId)
+            );
+        }
         return mergedAgencyIdLists.stream().distinct().collect(Collectors.toList());
     }
 

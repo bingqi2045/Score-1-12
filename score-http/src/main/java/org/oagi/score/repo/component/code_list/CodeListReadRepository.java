@@ -93,19 +93,25 @@ public class CodeListReadRepository {
                 .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(ULong.valueOf(codeListManifestId)))
                 .fetchInto(AvailableCodeList.class);
 
+        List<BigInteger> associatedCodeLists = dslContext.selectDistinct(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID)
+                .from(CODE_LIST_MANIFEST)
+                .where(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(
+                        availableCodeLists.stream()
+                                .filter(e -> e.getBasedCodeListManifestId() != null)
+                                .map(e -> e.getBasedCodeListManifestId())
+                                .distinct()
+                                .collect(Collectors.toList())
+                ))
+                .fetchInto(BigInteger.class);
+
         List<AvailableCodeList> mergedCodeLists = new ArrayList();
-        mergedCodeLists.addAll(availableCodeLists.stream()
-                .filter(e -> e.getBasedCodeListManifestId() != null)
-                .distinct()
-                .map(e -> availableCodeListByCodeListManifestIdOrReleaseId(
-                        e.getBasedCodeListManifestId(), releaseId))
-                .flatMap(e -> e.stream())
-                .collect(Collectors.toList())
-        );
-        mergedCodeLists.addAll(availableCodeLists.stream()
-                .filter(e -> e.getBasedCodeListManifestId() == null)
-                .collect(Collectors.toList())
-        );
+        mergedCodeLists.addAll(availableCodeLists);
+        for (BigInteger associatedCodeListId : associatedCodeLists) {
+            mergedCodeLists.addAll(
+                    availableCodeListByCodeListManifestIdOrReleaseId(
+                            associatedCodeListId, releaseId)
+            );
+        }
         return mergedCodeLists.stream().distinct().collect(Collectors.toList());
     }
 
