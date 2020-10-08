@@ -605,7 +605,7 @@ public class BusinessInformationEntityRepository {
             ULong, String, String, String, String,
             String, ULong, String, String, String,
             LocalDateTime, String, String>> getSelectOnConditionStep() {
-        return dslContext.select(
+        return dslContext.selectDistinct(
                 TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
                 TOP_LEVEL_ASBIEP.VERSION,
                 TOP_LEVEL_ASBIEP.STATUS,
@@ -629,7 +629,9 @@ public class BusinessInformationEntityRepository {
                 .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER).on(APP_USER.APP_USER_ID.eq(TOP_LEVEL_ASBIEP.OWNER_USER_ID))
                 .join(APP_USER.as("updater")).on(APP_USER.as("updater").APP_USER_ID.eq(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY))
-                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ASBIEP.RELEASE_ID));
+                .join(RELEASE).on(RELEASE.RELEASE_ID.eq(TOP_LEVEL_ASBIEP.RELEASE_ID))
+                .join(BIZ_CTX_ASSIGNMENT).on(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(BIZ_CTX_ASSIGNMENT.TOP_LEVEL_ASBIEP_ID))
+                .join(BIZ_CTX).on(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID.eq(BIZ_CTX.BIZ_CTX_ID));
     }
 
     private <E> PaginationResponse<E> selectBieList(SelectBieListArguments arguments, Class<? extends E> type) {
