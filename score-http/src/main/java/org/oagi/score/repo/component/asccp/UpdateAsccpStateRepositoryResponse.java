@@ -1,10 +1,8 @@
 package org.oagi.score.repo.component.asccp;
 
-import org.oagi.score.data.RepositoryResponse;
-
 import java.math.BigInteger;
 
-public class UpdateAsccpStateRepositoryResponse extends RepositoryResponse {
+public class UpdateAsccpStateRepositoryResponse {
 
     private final BigInteger asccpManifestId;
 

@@ -3,7 +3,10 @@ package org.oagi.score.gateway.http.api.cc_management.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.data.*;
+import org.oagi.score.data.AppUser;
+import org.oagi.score.data.BCCEntityType;
+import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.data.RevisionAction;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
@@ -27,9 +30,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.gateway.http.api.cc_management.data.CcASCCPType.Extension;
-import static org.oagi.score.gateway.http.api.cc_management.data.CcState.Deleted;
-import static org.oagi.score.gateway.http.api.cc_management.data.CcState.WIP;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
@@ -89,17 +89,11 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public void deleteAcc(AuthenticatedPrincipal user, BigInteger manifestId) {
-        DeleteAccRepositoryRequest request =
+        DeleteAccRepositoryRequest repositoryRequest =
                 new DeleteAccRepositoryRequest(user, manifestId);
 
-        DeleteAccRepositoryResponse response =
-                accWriteRepository.deleteAcc(request);
-
-        if (hasExtensionAssociation(user, manifestId)) {
-            AsccpManifestRecord extension
-                    = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(manifestId);
-            deleteExtensionComponents(request, extension.getAsccpManifestId().toBigInteger());
-        }
+        DeleteAccRepositoryResponse repositoryResponse =
+                accWriteRepository.deleteAcc(repositoryRequest);
 
         fireEvent(new DeletedAccEvent());
     }
@@ -131,28 +125,9 @@ public class CcNodeService extends EventHandler {
         DeleteAsccRepositoryRequest request =
                 new DeleteAsccRepositoryRequest(user, asccManifestId);
 
-        AsccManifestRecord asccManifest = asccReadRepository.getAsccManifestById(asccManifestId);
         asccWriteRepository.deleteAscc(request);
 
-        BigInteger toAsccpManifestId = asccManifest.getToAsccpManifestId().toBigInteger();
-        if (isExtensionAsccp(user, toAsccpManifestId)) {
-            deleteExtensionComponents(request, toAsccpManifestId);
-        }
-
         fireEvent(new DeletedAsccEvent());
-    }
-
-    private void deleteExtensionComponents(RepositoryRequest request, BigInteger extensionAsccpManifestId) {
-        AsccpManifestRecord asccpManifest = asccpReadRepository.getAsccpManifestById(extensionAsccpManifestId);
-        DeleteAccRepositoryRequest deleteAccRepositoryRequest
-                = new DeleteAccRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                asccpManifest.getRoleOfAccManifestId().toBigInteger());
-        accWriteRepository.deleteAcc(deleteAccRepositoryRequest);
-
-        DeleteAsccpRepositoryRequest deleteAsccpRepositoryRequest
-                = new DeleteAsccpRepositoryRequest(request.getUser(), request.getLocalDateTime(),
-                asccpManifest.getAsccpManifestId().toBigInteger());
-        asccpWriteRepository.deleteAsccp(deleteAsccpRepositoryRequest);
     }
 
     @Transactional
@@ -230,30 +205,6 @@ public class CcNodeService extends EventHandler {
         return repositoryResponse.getBccpManifestId();
     }
 
-    private BigInteger restoreExtensionsIfExists(AuthenticatedPrincipal user,
-                                                 AccManifestRecord accManifestRecord, AccRecord accRecord) {
-        AccManifestRecord extensionAccManifest = accReadRepository.getAccManifestByObjectClassTermAndReleaseId(
-                accRecord.getObjectClassTerm() + " Extension", accManifestRecord.getReleaseId().toBigInteger()
-        );
-        if (extensionAccManifest == null) {
-            return null;
-        }
-        BigInteger extensionAccManifestId = extensionAccManifest.getAccManifestId().toBigInteger();
-        AccRecord extensionAcc = accReadRepository.getAccByManifestId(extensionAccManifestId);
-        if (CcState.valueOf(extensionAcc.getState()) == Deleted) {
-            updateAccState(user, extensionAccManifestId, Deleted, WIP);
-        }
-        AsccpManifestRecord extensionAsccpManifest =
-                asccpReadRepository.getAsccpManifestByAssociatedAccManifestId(extensionAccManifestId);
-        BigInteger extensionAsccpManifestId = extensionAsccpManifest.getAsccpManifestId().toBigInteger();
-        AsccpRecord extensionAsccp =
-                asccpReadRepository.getAsccpByManifestId(extensionAsccpManifestId);
-        if (CcState.valueOf(extensionAsccp.getState()) == Deleted) {
-            updateAsccpState(user, extensionAsccpManifestId, Deleted, WIP);
-        }
-        return extensionAsccpManifestId;
-    }
-
     @Transactional
     public BigInteger createAccExtension(AuthenticatedPrincipal user, CcExtensionCreateRequest request) {
         LocalDateTime timestamp = LocalDateTime.now();
@@ -261,48 +212,45 @@ public class CcNodeService extends EventHandler {
         BigInteger releaseId = accManifestRecord.getReleaseId().toBigInteger();
         AccRecord accRecord = accReadRepository.getAccByManifestId(request.getAccManifestId());
 
-        BigInteger extensionAsccpManifestId = restoreExtensionsIfExists(user, accManifestRecord, accRecord);
-        if (extensionAsccpManifestId == null) {
-            AccManifestRecord allExtension
-                    = accReadRepository.getAllExtensionAccManifest(releaseId);
+        AccManifestRecord allExtension
+                = accReadRepository.getAllExtensionAccManifest(releaseId);
 
-            // create extension ACC
-            CreateAccRepositoryRequest createAccRepositoryRequest
-                    = new CreateAccRepositoryRequest(user, timestamp, releaseId);
+        // create extension ACC
+        CreateAccRepositoryRequest createAccRepositoryRequest
+                = new CreateAccRepositoryRequest(user, timestamp, releaseId);
 
-            createAccRepositoryRequest.setInitialComponentType(OagisComponentType.Extension);
-            createAccRepositoryRequest.setInitialType(CcACCType.Extension);
-            createAccRepositoryRequest.setInitialObjectClassTerm(accRecord.getObjectClassTerm() + " Extension");
-            createAccRepositoryRequest.setBasedAccManifestId(allExtension.getAccManifestId().toBigInteger());
-            if (accRecord.getNamespaceId() != null) {
-                createAccRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
-            }
-
-            CreateAccRepositoryResponse createAccRepositoryResponse
-                    = accWriteRepository.createAcc(createAccRepositoryRequest);
-
-            BigInteger extensionAccManifestId = createAccRepositoryResponse.getAccManifestId();
-
-            // create extension ASCCP
-            CreateAsccpRepositoryRequest createAsccpRepositoryRequest
-                    = new CreateAsccpRepositoryRequest(user, timestamp, extensionAccManifestId, releaseId);
-
-            String extensionAsccpDefintion = "Allows the user of OAGIS to extend the specification in order to " +
-                    "provide additional information that is not captured in OAGIS.";
-            String extensionAsccpDefintionSource = "http://www.openapplications.org/oagis/10/platform/2";
-            createAsccpRepositoryRequest.setInitialPropertyTerm("Extension");
-            createAsccpRepositoryRequest.setInitialType(Extension);
-            createAsccpRepositoryRequest.setDefinition(extensionAsccpDefintion);
-            createAsccpRepositoryRequest.setDefinitionSource(extensionAsccpDefintionSource);
-            if (accRecord.getNamespaceId() != null) {
-                createAsccpRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
-            }
-            createAsccpRepositoryRequest.setReusable(false);
-
-            CreateAsccpRepositoryResponse createAsccpRepositoryResponse
-                    = asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
-            extensionAsccpManifestId = createAsccpRepositoryResponse.getAsccpManifestId();
+        createAccRepositoryRequest.setInitialComponentType(OagisComponentType.Extension);
+        createAccRepositoryRequest.setInitialType(CcACCType.Extension);
+        createAccRepositoryRequest.setInitialObjectClassTerm(accRecord.getObjectClassTerm() + " Extension");
+        createAccRepositoryRequest.setBasedAccManifestId(allExtension.getAccManifestId().toBigInteger());
+        if (accRecord.getNamespaceId() != null) {
+            createAccRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
         }
+
+        CreateAccRepositoryResponse createAccRepositoryResponse
+                = accWriteRepository.createAcc(createAccRepositoryRequest);
+
+        BigInteger extensionAccManifestId = createAccRepositoryResponse.getAccManifestId();
+
+        // create extension ASCCP
+        CreateAsccpRepositoryRequest createAsccpRepositoryRequest
+                = new CreateAsccpRepositoryRequest(user, timestamp, extensionAccManifestId, releaseId);
+
+        String extensionAsccpDefintion = "Allows the user of OAGIS to extend the specification in order to " +
+                "provide additional information that is not captured in OAGIS.";
+        String extensionAsccpDefintionSource = "http://www.openapplications.org/oagis/10/platform/2";
+        createAsccpRepositoryRequest.setInitialPropertyTerm("Extension");
+        createAsccpRepositoryRequest.setInitialType(CcASCCPType.Extension);
+        createAsccpRepositoryRequest.setDefinition(extensionAsccpDefintion);
+        createAsccpRepositoryRequest.setDefinitionSource(extensionAsccpDefintionSource);
+        if (accRecord.getNamespaceId() != null) {
+            createAsccpRepositoryRequest.setNamespaceId(accRecord.getNamespaceId().toBigInteger());
+        }
+        createAsccpRepositoryRequest.setReusable(false);
+
+        CreateAsccpRepositoryResponse createAsccpRepositoryResponse
+                = asccpWriteRepository.createAsccp(createAsccpRepositoryRequest);
+        BigInteger extensionAsccpManifestId = createAsccpRepositoryResponse.getAsccpManifestId();
 
         // create ASCC between extension ACC and extension ASCCP
         CreateAsccRepositoryRequest createAsccRepositoryRequest
@@ -348,6 +296,7 @@ public class CcNodeService extends EventHandler {
                 timestamp,
                 extensionManifestAsccp.getAsccpManifestId().toBigInteger());
 
+        updateAsccpPropertiesRepositoryRequest.setPropertyTerm(extensionAsccp.getPropertyTerm());
         updateAsccpPropertiesRepositoryRequest.setDefinition(extensionAsccp.getDefinition());
         updateAsccpPropertiesRepositoryRequest.setDefinitionSource(extensionAsccp.getDefinitionSource());
 
@@ -447,19 +396,15 @@ public class CcNodeService extends EventHandler {
         for (CcAccNodeDetail detail : ccAccNodeDetails) {
             CcAccNode ccAccNode = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(getAccNodeDetail(user, ccAccNode));
-            if (hasExtensionAssociation(user, ccAccNode.getManifestId())) {
-                updateExtensionComponentProperties(user, detail);
-            }
-            if (isUserExtensionGroup(user, ccAccNode.getManifestId())) {
-                updateUserExtensionNamespace(user, detail);
-            }
+            // Do not sync data b/w ACC and Extension components #916
+//            if(hasExtensionAssociation(user, ccAccNode.getManifestId())) {
+//                updateExtensionComponentProperties(user, detail);
+//            }
+//            if(isUserExtensionGroup(user, ccAccNode.getManifestId())) {
+//                updateUserExtensionNamespace(user, detail);
+//            }
         }
         return updatedAccNodeDetails;
-    }
-
-    private boolean isExtensionAsccp(AuthenticatedPrincipal user, BigInteger asccpManifestId) {
-        AsccpRecord asccp = asccpReadRepository.getAsccpByManifestId(asccpManifestId);
-        return CcASCCPType.valueOf(asccp.getType()) == Extension;
     }
 
     private boolean hasExtensionAssociation(AuthenticatedPrincipal user, BigInteger accManifestId) {
@@ -657,7 +602,7 @@ public class CcNodeService extends EventHandler {
                 new UpdateAsccpRoleOfAccRepositoryRequest(user, asccpManifestId, roleOfAccManifestId);
 
         UpdateAsccpRoleOfAccRepositoryResponse repositoryResponse =
-                asccpWriteRepository.updateRoleOfAcc(repositoryRequest);
+                asccpWriteRepository.updateAsccpBdt(repositoryRequest);
 
         fireEvent(new UpdatedAsccpRoleOfAccEvent());
 
@@ -690,10 +635,6 @@ public class CcNodeService extends EventHandler {
 
         UpdateAccStateRepositoryResponse repositoryResponse =
                 accWriteRepository.updateAccState(repositoryRequest);
-
-        if (hasExtensionAssociation(user, accManifestId)) {
-            updateExtensionComponentState(user, accManifestId, fromState, toState);
-        }
 
         fireEvent(new UpdatedAccStateEvent());
 
@@ -812,8 +753,8 @@ public class CcNodeService extends EventHandler {
     }
 
     private CcState getStateCode(String state) {
-        if (WIP.name().equals(state)) {
-            return WIP;
+        if (CcState.WIP.name().equals(state)) {
+            return CcState.WIP;
         } else if (CcState.Draft.name().equals(state)) {
             return CcState.Draft;
         } else if (CcState.Candidate.name().equals(state)) {
@@ -995,7 +936,7 @@ public class CcNodeService extends EventHandler {
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
-            if (asccRecord.getState().equals(Deleted.name())) {
+            if (asccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             AsccpManifestRecord asccpManifestRecord = ccRepository.getAsccpManifestByManifestId(asccManifest.getToAsccpManifestId());
@@ -1020,7 +961,7 @@ public class CcNodeService extends EventHandler {
         List<AsccManifestRecord> asccManifestRecordList = ccRepository.getAsccManifestByToAsccpManifestId(asccpManifestId);
         for (AsccManifestRecord asccManifest : asccManifestRecordList) {
             AsccRecord asccRecord = ccRepository.getAsccById(asccManifest.getAsccId());
-            if (asccRecord.getState().equals(Deleted.name())) {
+            if (asccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(asccManifest.getFromAccManifestId());
@@ -1042,7 +983,7 @@ public class CcNodeService extends EventHandler {
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByFromAccManifestId(accManifest.getAccManifestId());
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
-            if (bccRecord.getState().equals(Deleted.name())) {
+            if (bccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             BccpManifestRecord bccpManifestRecord = ccRepository.getBccpManifestByManifestId(bccManifest.getToBccpManifestId());
@@ -1067,7 +1008,7 @@ public class CcNodeService extends EventHandler {
         List<BccManifestRecord> bccManifestRecordList = ccRepository.getBccManifestByToBccpManifestId(bccpManifestId);
         for (BccManifestRecord bccManifest : bccManifestRecordList) {
             BccRecord bccRecord = ccRepository.getBccById(bccManifest.getBccId());
-            if (bccRecord.getState().equals(Deleted.name())) {
+            if (bccRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             AccManifestRecord AccManifestRecord = ccRepository.getAccManifestByManifestId(bccManifest.getFromAccManifestId());
@@ -1089,7 +1030,7 @@ public class CcNodeService extends EventHandler {
         List<AsccpManifestRecord> asccpManifestRecordList = ccRepository.getAsccpManifestByRolOfAccManifestId(accManifestRecord.getAccManifestId());
         for (AsccpManifestRecord asccpManifest : asccpManifestRecordList) {
             AsccpRecord asccpRecord = ccRepository.getAsccpById(asccpManifest.getAsccpId());
-            if (asccpRecord.getState().equals(Deleted.name())) {
+            if (asccpRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             ULong asccpId = ccRepository.updateAsccpArguments(asccpRecord)
@@ -1112,7 +1053,7 @@ public class CcNodeService extends EventHandler {
         List<AccManifestRecord> accManifestRecordList = ccRepository.getAccManifestByBasedAccManifestId(basedAccManifestRecord.getAccManifestId());
         for (AccManifestRecord accManifestRecord : accManifestRecordList) {
             AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
-            if (accRecord.getState().equals(Deleted.name())) {
+            if (accRecord.getState().equals(CcState.Deleted.name())) {
                 continue;
             }
             ULong accId = ccRepository.updateAccArguments(accRecord)
@@ -1135,13 +1076,6 @@ public class CcNodeService extends EventHandler {
         UpdateAccOwnerRepositoryRequest request =
                 new UpdateAccOwnerRepositoryRequest(user, accManifestId, ownerUserId);
         accWriteRepository.updateAccOwner(request);
-
-        if (hasExtensionAssociation(user, accManifestId)) {
-            AsccpManifestRecord extension
-                    = asccpReadRepository.getExtensionAsccpManifestByAccManifestId(accManifestId);
-            updateAsccpOwnerUserId(user, extension.getAsccpManifestId().toBigInteger(), ownerUserId);
-            updateAccOwnerUserId(user, extension.getRoleOfAccManifestId().toBigInteger(), ownerUserId);
-        }
 
         fireEvent(new UpdatedAccOwnerEvent());
     }

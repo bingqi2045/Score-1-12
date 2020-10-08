@@ -6,14 +6,14 @@ import java.math.BigInteger;
 
 public class UpdateSeqKeyResponse extends Response {
 
-    private final BigInteger accManifestId;
+    private final BigInteger seqKeyId;
 
-    public UpdateSeqKeyResponse(BigInteger accManifestId) {
-        this.accManifestId = accManifestId;
+    public UpdateSeqKeyResponse(BigInteger seqKeyId) {
+        this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getAccManifestId() {
-        return accManifestId;
+    public BigInteger getSeqKeyId() {
+        return seqKeyId;
     }
 
 }

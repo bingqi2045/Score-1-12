@@ -1,20 +1,22 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
+import com.google.common.collect.Lists;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ACC;
 import org.oagi.score.data.*;
-import org.oagi.score.gateway.http.api.cc_management.data.*;
-import org.oagi.score.gateway.http.api.cc_management.repository.CcListRepository;
-import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
-import org.oagi.score.gateway.http.api.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
-import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
+import org.oagi.score.gateway.http.api.cc_management.data.*;
+import org.oagi.score.gateway.http.api.cc_management.repository.CcListRepository;
+import org.oagi.score.gateway.http.api.cc_management.repository.ManifestRepository;
+import org.oagi.score.gateway.http.api.common.data.PageRequest;
+import org.oagi.score.gateway.http.api.common.data.PageResponse;
+import org.oagi.score.gateway.http.api.info.data.SummaryCcExt;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repository.UserRepository;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.jooq.impl.DSL.and;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;

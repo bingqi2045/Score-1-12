@@ -125,7 +125,7 @@ public class SeqKeyWriteRepositoryTest
         UpdateSeqKeyRequest request = new UpdateSeqKeyRequest(requester)
                 .withSeqKey(head);
         UpdateSeqKeyResponse response = repository.updateSeqKey(request);
-        assertEquals(head.getSeqKeyId(), response.getAccManifestId());
+        assertEquals(head.getSeqKeyId(), response.getSeqKeyId());
 
         // reload
         head = scoreRepositoryFactory().createSeqKeyReadRepository()

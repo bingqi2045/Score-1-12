@@ -205,7 +205,7 @@ public class SeqKeyHandler {
 
         UpdateSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyWriteRepository()
                 .updateSeqKey(new UpdateSeqKeyRequest(requester).withSeqKey(seqKey));
-        if (response != null && seqKey.getSeqKeyId().equals(response.getAccManifestId())) {
+        if (response != null && seqKey.getSeqKeyId().equals(response.getSeqKeyId())) {
             logger.debug(seqKey + " changed.");
         }
     }

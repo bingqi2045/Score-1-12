@@ -1,10 +1,8 @@
 package org.oagi.score.repo.component.acc;
 
-import org.oagi.score.data.RepositoryResponse;
-
 import java.math.BigInteger;
 
-public class UpdateAccStateRepositoryResponse extends RepositoryResponse {
+public class UpdateAccStateRepositoryResponse {
 
     private final BigInteger accManifestId;
 

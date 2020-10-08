@@ -20,7 +20,6 @@ import org.oagi.score.repo.RevisionRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
-import org.oagi.score.repo.api.corecomponent.seqkey.model.UpdateSeqKeyResponse;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -435,17 +434,12 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        UpdateAccPropertiesRepositoryResponse response =
-                new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            response.setFailureWithMessage("Only the core component in 'WIP' state can be modified.");
-            return response;
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update acc record.
@@ -576,8 +570,7 @@ public class AccWriteRepository {
             accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
         }
 
-        response.setSucceed(true);
-        return response;
+        return new UpdateAccPropertiesRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     public UpdateAccBasedAccRepositoryResponse updateAccBasedAcc(UpdateAccBasedAccRepositoryRequest request) {
@@ -693,20 +686,15 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        UpdateAccStateRepositoryResponse response =
-                new UpdateAccStateRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         CcState prevState = CcState.valueOf(accRecord.getState());
         CcState nextState = request.getToState();
 
         if (prevState != request.getFromState()) {
-            response.setFailureWithMessage("Target core component is not in '" + request.getFromState() + "' state.");
-            return response;
+            throw new IllegalArgumentException("Target core component is not in '" + request.getFromState() + "' state.");
         }
 
         if (!prevState.canMove(nextState)) {
-            response.setFailureWithMessage("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
-            return response;
+            throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
         // Change owner of CC when it restored.
@@ -714,11 +702,9 @@ public class AccWriteRepository {
             accRecord.setOwnerUserId(userId);
         } else if (prevState != CcState.Deleted && !accRecord.getOwnerUserId().equals(userId)
                 && !prevState.canForceMove(request.getToState())) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         } else if (accRecord.getNamespaceId() == null) {
-            response.setFailureWithMessage("'" + accRecord.getDen() + "' namespace required.");
-            return response;
+            throw new IllegalArgumentException("'" + accRecord.getDen() + "' namespace required.");
         }
 
         // update acc state.
@@ -744,8 +730,7 @@ public class AccWriteRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
-        response.setSucceed(true);
-        return response;
+        return new UpdateAccStateRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     private void updateAsccListForStateUpdatedRecord(
@@ -837,17 +822,12 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        DeleteAccRepositoryResponse response =
-                new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            response.setFailureWithMessage("Only the core component in 'WIP' state can be deleted.");
-            return response;
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         // update acc state.
@@ -867,8 +847,7 @@ public class AccWriteRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
-        response.setSucceed(true);
-        return response;
+        return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     public DeleteAccRepositoryResponse removeAcc(DeleteAccRepositoryRequest request) {
@@ -886,17 +865,12 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        DeleteAccRepositoryResponse response =
-                new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            response.setFailureWithMessage("Only the core component in 'WIP' state can be deleted.");
-            return response;
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be deleted.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         if (dslContext.selectCount()
@@ -923,8 +897,7 @@ public class AccWriteRepository {
             }
         }
 
-        response.setSucceed(true);
-        return response;
+        return new DeleteAccRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
     public UpdateAccOwnerRepositoryResponse updateAccOwner(UpdateAccOwnerRepositoryRequest request) {
@@ -942,17 +915,12 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        UpdateAccOwnerRepositoryResponse response =
-                new UpdateAccOwnerRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            response.setFailureWithMessage("Only the core component in 'WIP' state can be modified.");
-            return response;
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         accRecord.setOwnerUserId(ULong.valueOf(request.getOwnerId()));
@@ -993,11 +961,10 @@ public class AccWriteRepository {
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
 
-        response.setSucceed(true);
-        return response;
+        return new UpdateAccOwnerRepositoryResponse(accManifestRecord.getAccManifestId().toBigInteger());
     }
 
-    public UpdateSeqKeyResponse moveSeq(UpdateSeqKeyRequest request) {
+    public void moveSeq(UpdateSeqKeyRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
         LocalDateTime timestamp = request.getLocalDateTime();
@@ -1012,16 +979,12 @@ public class AccWriteRepository {
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                 .fetchOne();
 
-        UpdateSeqKeyResponse response = new UpdateSeqKeyResponse(accManifestRecord.getAccManifestId().toBigInteger());
-
         if (!CcState.WIP.equals(CcState.valueOf(accRecord.getState()))) {
-            response.setFailureWithMessage("Only the core component in 'WIP' state can be deleted.");
-            return response;
+            throw new IllegalArgumentException("Only the core component in 'WIP' state can be modified.");
         }
 
         if (!accRecord.getOwnerUserId().equals(userId)) {
-            response.setFailureWithMessage("It only allows to modify the core component by the owner.");
-            return response;
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
         moveSeq(request.getUser(), accRecord, request.getAccManifestId(),
@@ -1035,9 +998,6 @@ public class AccWriteRepository {
 
         accManifestRecord.setRevisionId(revisionRecord.getRevisionId());
         accManifestRecord.update(ACC_MANIFEST.REVISION_ID);
-
-        response.setSucceed(true);
-        return response;
     }
 
     public void moveSeq(AuthenticatedPrincipal requester, AccRecord accRecord, BigInteger accManifestId,

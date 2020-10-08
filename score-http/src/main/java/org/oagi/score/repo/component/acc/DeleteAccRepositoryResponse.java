@@ -1,10 +1,8 @@
 package org.oagi.score.repo.component.acc;
 
-import org.oagi.score.data.RepositoryResponse;
-
 import java.math.BigInteger;
 
-public class DeleteAccRepositoryResponse extends RepositoryResponse {
+public class DeleteAccRepositoryResponse {
 
     private final BigInteger accManifestId;
 

@@ -1,10 +1,8 @@
 package org.oagi.score.repo.component.bccp;
 
-import org.oagi.score.data.RepositoryResponse;
-
 import java.math.BigInteger;
 
-public class UpdateBccpOwnerRepositoryResponse extends RepositoryResponse {
+public class UpdateBccpOwnerRepositoryResponse {
 
     private final BigInteger bccpManifestId;
 
