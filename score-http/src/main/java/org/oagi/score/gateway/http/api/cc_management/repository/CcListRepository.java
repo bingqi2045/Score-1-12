@@ -581,9 +581,9 @@ public class CcListRepository {
                 ACC.STATE,
                 BCC.IS_DEPRECATED,
                 BCC.LAST_UPDATE_TIMESTAMP,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 appUserOwner.LOGIN_ID.as("owner"),
                 appUserUpdater.LOGIN_ID.as("last_update_user"),
-                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 LOG.REVISION_NUM,
                 LOG.REVISION_TRACKING_NUM,
                 RELEASE.RELEASE_NUM)
