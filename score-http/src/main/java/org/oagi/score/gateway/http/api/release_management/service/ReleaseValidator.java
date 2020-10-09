@@ -200,7 +200,7 @@ public class ReleaseValidator {
                     .forEach(asccpManifestRecord -> {
                         AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
-                        if (asccpState == CcState.WIP || asccpState == CcState.Draft) {
+                        if (asccpState == CcState.WIP || asccpState == CcState.Draft || asccpState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
@@ -219,7 +219,7 @@ public class ReleaseValidator {
                         AsccpManifestRecord asccpManifestRecord = asccpManifestRecordMap.get(asccManifestRecord.getToAsccpManifestId());
                         AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
-                        if (asccpState == CcState.WIP || asccpState == CcState.Draft) {
+                        if (asccpState == CcState.WIP || asccpState == CcState.Draft || asccpState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
@@ -243,7 +243,7 @@ public class ReleaseValidator {
                         BccpManifestRecord bccpManifestRecord = bccpManifestRecordMap.get(bccManifestRecord.getToBccpManifestId());
                         BccpRecord bccpRecord = bccpRecordMap.get(bccpManifestRecord.getBccpId());
                         CcState bccpState = CcState.valueOf(bccpRecord.getState());
-                        if (bccpState == CcState.WIP || bccpState == CcState.Draft) {
+                        if (bccpState == CcState.WIP || bccpState == CcState.Draft || bccpState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + bccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
                             response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
@@ -284,7 +284,7 @@ public class ReleaseValidator {
                         AccManifestRecord accManifestRecord = accManifestRecordMap.get(asccManifestRecord.getFromAccManifestId());
                         AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
                         CcState accState = CcState.valueOf(accRecord.getState());
-                        if (accState == CcState.WIP || accState == CcState.Draft) {
+                        if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + accRecord.getDen() + "' is required");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
@@ -302,7 +302,7 @@ public class ReleaseValidator {
                     .forEach(accManifestRecord -> {
                         AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
                         CcState accState = CcState.valueOf(accRecord.getState());
-                        if (accState == CcState.WIP || accState == CcState.Draft) {
+                        if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + accRecord.getDen() + "' is required");
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
@@ -337,7 +337,7 @@ public class ReleaseValidator {
                         AccManifestRecord accManifestRecord = accManifestRecordMap.get(bccManifestRecord.getFromAccManifestId());
                         AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
                         CcState accState = CcState.valueOf(accRecord.getState());
-                        if (accState == CcState.WIP || accState == CcState.Draft) {
+                        if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
                                     Error, "'" + accRecord.getDen() + "' is required");
                             response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
