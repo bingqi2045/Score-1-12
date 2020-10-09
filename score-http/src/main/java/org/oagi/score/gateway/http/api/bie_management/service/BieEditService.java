@@ -274,46 +274,8 @@ public class BieEditService implements InitializingBean {
         );
 
         this.updateTopLevelAsbiepLastUpdated(user, request.getTopLevelAsbiepId());
-        this.updateEnabledVersionIdWithVersionFieldValue(user, request.getTopLevelAsbiepId());
         return response;
     }
-
-    @Transactional
-    public void updateEnabledVersionIdWithVersionFieldValue(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
-        // Issue #844
-        ULong enabledVersionIdBbieId = dslContext.select(BBIE.BBIE_ID)
-                .from(TOP_LEVEL_ASBIEP)
-                .join(ASBIEP).on(TOP_LEVEL_ASBIEP.ASBIEP_ID.eq(ASBIEP.ASBIEP_ID))
-                .join(ABIE).on(ASBIEP.ROLE_OF_ABIE_ID.eq(ABIE.ABIE_ID))
-                .join(BBIE).on(ABIE.ABIE_ID.eq(BBIE.FROM_ABIE_ID))
-                .join(BCC_MANIFEST).on(BBIE.BASED_BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
-                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .where(and(
-                        TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
-                        BBIE.IS_USED.eq((byte) 1),
-                        BCC.DEN.eq("Business Object Document. Version Identifier. Text")
-                ))
-                .fetchOptionalInto(ULong.class).orElse(null);
-
-        if (enabledVersionIdBbieId != null) {
-            UpdateSetMoreStep step = dslContext.update(BBIE)
-                    .setNull(BBIE.DEFAULT_VALUE);
-
-            String version = dslContext.select(TOP_LEVEL_ASBIEP.VERSION)
-                    .from(TOP_LEVEL_ASBIEP)
-                    .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
-                    .fetchOneInto(String.class);
-
-            if (StringUtils.isEmpty(version)) {
-                step = step.setNull(BBIE.FIXED_VALUE);
-            } else {
-                step = step.set(BBIE.FIXED_VALUE, version);
-            }
-
-            step.where(BBIE.BBIE_ID.eq(enabledVersionIdBbieId)).execute();
-        }
-    }
-
 
     @Transactional
     public CreateExtensionResponse createLocalAbieExtension(AuthenticatedPrincipal user, BieEditAsbiepNode extension) {
