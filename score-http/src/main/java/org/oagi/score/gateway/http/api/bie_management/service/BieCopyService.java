@@ -650,6 +650,10 @@ public class BieCopyService implements InitializingBean {
                     .set(BBIE_SC.CARDINALITY_MIN, bbieSc.getCardinalityMin())
                     .set(BBIE_SC.CARDINALITY_MAX, bbieSc.getCardinalityMax())
                     .set(BBIE_SC.IS_USED, (byte) ((bbieSc.isUsed()) ? 1 : 0))
+                    .set(BBIE_SC.CREATED_BY, ULong.valueOf(userId))
+                    .set(BBIE_SC.LAST_UPDATED_BY, ULong.valueOf(userId))
+                    .set(BBIE_SC.CREATION_TIMESTAMP, timestamp.toLocalDateTime())
+                    .set(BBIE_SC.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                     .set(BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID, ULong.valueOf(copiedTopLevelAsbiep.getTopLevelAsbiepId()))
                     .returning(BBIE_SC.BBIE_SC_ID).fetchOne().getValue(BBIE_SC.BBIE_SC_ID).toBigInteger();
         }
