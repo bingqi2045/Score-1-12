@@ -107,7 +107,7 @@ public class CodeListGraphContext implements GraphContext {
     }
 
     @Override
-    public List<Node> findChildren(Node node) {
+    public List<Node> findChildren(Node node, boolean excludeUEG) {
         switch (node.getType()) {
             case CODE_LIST:
                 List<Node> children = new ArrayList();

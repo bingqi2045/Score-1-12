@@ -3,6 +3,7 @@ package org.oagi.score.gateway.http.api.graph;
 import org.jooq.tools.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class GraphController {
     @RequestMapping(value = "/graphs/{type}/{id:[\\d]+}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getGraph(@AuthenticationPrincipal AuthenticationPrincipal user,
+    public Map<String, Object> getGraph(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                         @PathVariable("type") String type,
                                         @PathVariable("id") BigInteger id,
                                         @RequestParam(value = "q", required = false) String query) {
@@ -33,7 +34,7 @@ public class GraphController {
                 break;
 
             case "asccp":
-                graph = graphService.getAsccpGraph(id);
+                graph = graphService.getAsccpGraph(id, false);
                 break;
 
             case "bccp":
@@ -41,7 +42,7 @@ public class GraphController {
                 break;
 
             case "abie":
-                graph = graphService.getBieGraph(id);
+                graph = graphService.getBieGraph(user, id);
                 break;
 
             // This is only for UI to draw 'All Extension' as a based ACC.

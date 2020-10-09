@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.graph;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
@@ -13,6 +14,7 @@ import org.oagi.score.repo.component.graph.CodeListGraphContext;
 import org.oagi.score.repo.component.graph.CoreComponentGraphContext;
 import org.oagi.score.repo.component.graph.GraphContext;
 import org.oagi.score.repo.component.graph.GraphContextRepository;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,9 @@ public class GraphService {
     private CodeListReadRepository codeListReadRepository;
 
     @Autowired
+    private SessionService sessionService;
+
+    @Autowired
     private DSLContext dslContext;
 
     public Graph getAccGraph(BigInteger accManifestId) {
@@ -51,10 +56,10 @@ public class GraphService {
 
         CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(accManifest);
-        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(accManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(accManifest), false);
     }
 
-    public Graph getAsccpGraph(BigInteger asccpManifestId) {
+    public Graph getAsccpGraph(BigInteger asccpManifestId, boolean excludeUEG) {
         AsccpManifestRecord asccpManifest =
                 coreComponentRepository.getAsccpManifestByManifestId(ULong.valueOf(asccpManifestId));
         if (asccpManifest == null) {
@@ -63,7 +68,7 @@ public class GraphService {
 
         CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(asccpManifest);
-        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(asccpManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(asccpManifest), excludeUEG);
     }
 
     public Graph getBccpGraph(BigInteger bccpManifestId) {
@@ -75,12 +80,13 @@ public class GraphService {
 
         CoreComponentGraphContext coreComponentGraphContext =
                 graphContextRepository.buildGraphContext(bccpManifest);
-        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(bccpManifest));
+        return buildGraph(coreComponentGraphContext, coreComponentGraphContext.toNode(bccpManifest), false);
     }
 
-    public Graph getBieGraph(BigInteger topLevelAsbiepId) {
+    public Graph getBieGraph(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
+        boolean excludeUEG = sessionService.getAppUser(user).isDeveloper();
         BigInteger asccpManifestId = bieRepository.getAsccpManifestIdByTopLevelAsbiepId(topLevelAsbiepId);
-        return getAsccpGraph(asccpManifestId);
+        return getAsccpGraph(asccpManifestId, excludeUEG);
     }
 
     public Graph getExtensionGraph(BigInteger extensionAccManifestId) {
@@ -114,10 +120,10 @@ public class GraphService {
 
         CodeListGraphContext codeListGraphContext =
                 graphContextRepository.buildGraphContext(codeListManifestRecord);
-        return buildGraph(codeListGraphContext, codeListGraphContext.toNode(codeListManifestRecord));
+        return buildGraph(codeListGraphContext, codeListGraphContext.toNode(codeListManifestRecord), false);
     }
 
-    private Graph buildGraph(GraphContext graphContext, Node root) {
+    private Graph buildGraph(GraphContext graphContext, Node root, boolean excludeUEG) {
         Queue<Node> manifestQueue = new LinkedList<>();
         manifestQueue.add(root);
 
@@ -129,7 +135,7 @@ public class GraphService {
                 continue;
             }
 
-            List<Node> children = graphContext.findChildren(node);
+            List<Node> children = graphContext.findChildren(node, excludeUEG);
             if (children.isEmpty()) {
                 continue;
             }
@@ -144,5 +150,4 @@ public class GraphService {
 
         return graph;
     }
-
 }

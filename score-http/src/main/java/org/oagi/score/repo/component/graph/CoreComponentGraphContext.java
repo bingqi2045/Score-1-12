@@ -288,7 +288,7 @@ public class CoreComponentGraphContext implements GraphContext {
     }
 
     @Override
-    public List<Node> findChildren(Node node) {
+    public List<Node> findChildren(Node node, boolean excludeUEG) {
         switch (node.getType()) {
             case ACC:
                 List<Node> children = new ArrayList();
@@ -298,6 +298,13 @@ public class CoreComponentGraphContext implements GraphContext {
                 }
 
                 List<SeqKeySupportable> assocs = new ArrayList();
+
+                if (excludeUEG) {
+                    if (accManifestMap.get(node.getManifestId())
+                            .getComponentType().equals(OagisComponentType.UserExtensionGroup)) {
+                        return children;
+                    }
+                }
                 assocs.addAll(asccManifestMap.getOrDefault(node.getManifestId(),
                         asccManifestMap.getOrDefault(node.getPrevManifestId(), Collections.emptyList()))
                         .stream().filter(e -> e.getReleaseId().equals(releaseId)).collect(Collectors.toList()));
