@@ -188,10 +188,10 @@ public class RepositoryInitializer implements InitializingBean {
     }
 
     private class SeqKeyWrapper {
-        private int seqKey;
-        private LocalDateTime timestamp;
-        private SeqKeyType seqKeyType;
-        private ULong id;
+        private final int seqKey;
+        private final LocalDateTime timestamp;
+        private final SeqKeyType seqKeyType;
+        private final ULong id;
 
         private SeqKeyRecord seqKeyRecord;
 

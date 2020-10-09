@@ -36,7 +36,7 @@ public class AppPermissionRepository {
     public class SelectAppPermissionArguments {
         private String segment;
         private String object;
-        private List<Condition> conditions = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;
@@ -225,9 +225,6 @@ public class AppPermissionRepository {
         AppPermission appPermission = getSelectOnConditionStepForAppPermission()
                 .where(APP_PERMISSION.APP_PERMISSION_ID.eq(appPermissionId))
                 .fetchOptionalInto(AppPermission.class).orElse(null);
-        if (appPermission == null) {
-            return null;
-        }
 
         return appPermission;
     }

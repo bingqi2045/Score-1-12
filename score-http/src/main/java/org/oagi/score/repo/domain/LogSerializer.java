@@ -17,14 +17,17 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
 public class LogSerializer {
 
-    private Gson gson;
+    private final Gson gson;
 
     @Autowired
     private LogSnapshotResolver resolver;
@@ -47,8 +50,8 @@ public class LogSerializer {
         properties.put("objectClassQualifier", accRecord.getObjectClassQualifier());
         properties.put("componentType", OagisComponentType.valueOf(accRecord.getOagisComponentType()).name());
         properties.put("state", accRecord.getState());
-        properties.put("deprecated", ((byte) 1 == accRecord.getIsDeprecated()) ? true : false);
-        properties.put("abstract", ((byte) 1 == accRecord.getIsAbstract()) ? true : false);
+        properties.put("deprecated", (byte) 1 == accRecord.getIsDeprecated());
+        properties.put("abstract", (byte) 1 == accRecord.getIsAbstract());
 
         properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ? accRecord.getOwnerUserId() : null);
         properties.put("basedAccId", (accRecord.getBasedAccId() != null) ? accRecord.getBasedAccId() : null);
@@ -138,9 +141,9 @@ public class LogSerializer {
 
     private class AssocRecord {
 
-        private int seqKey;
-        private LocalDateTime timestamp;
-        private Object delegate;
+        private final int seqKey;
+        private final LocalDateTime timestamp;
+        private final Object delegate;
 
         AssocRecord(AsccRecord ascc) {
             this.seqKey = ascc.getSeqKey();
@@ -177,7 +180,7 @@ public class LogSerializer {
         properties.put("cardinalityMax", asccRecord.getCardinalityMax());
         properties.put("definition", asccRecord.getDefinition());
         properties.put("definitionSource", asccRecord.getDefinitionSource());
-        properties.put("deprecated", ((byte) 1 == asccRecord.getIsDeprecated()) ? true : false);
+        properties.put("deprecated", (byte) 1 == asccRecord.getIsDeprecated());
         properties.put("state", asccRecord.getState());
 
         properties.put("toAsccpId", (asccRecord.getToAsccpId() != null) ? asccRecord.getToAsccpId().toBigInteger() : null);
@@ -214,8 +217,8 @@ public class LogSerializer {
         properties.put("definitionSource", bccRecord.getDefinitionSource());
         properties.put("defaultValue", bccRecord.getDefaultValue());
         properties.put("fixedValue", bccRecord.getFixedValue());
-        properties.put("deprecated", ((byte) 1 == bccRecord.getIsDeprecated()) ? true : false);
-        properties.put("nillable", ((byte) 1 == bccRecord.getIsNillable()) ? true : false);
+        properties.put("deprecated", (byte) 1 == bccRecord.getIsDeprecated());
+        properties.put("nillable", (byte) 1 == bccRecord.getIsNillable());
         properties.put("state", bccRecord.getState());
 
         properties.put("toBccpId", (bccRecord.getToBccpId() != null) ? bccRecord.getToBccpId().toBigInteger() : null);
@@ -249,9 +252,9 @@ public class LogSerializer {
         properties.put("definition", asccpRecord.getDefinition());
         properties.put("definitionSource", asccpRecord.getDefinitionSource());
         properties.put("state", asccpRecord.getState());
-        properties.put("reusable", ((byte) 1 == asccpRecord.getReusableIndicator()) ? true : false);
-        properties.put("deprecated", ((byte) 1 == asccpRecord.getIsDeprecated()) ? true : false);
-        properties.put("nillable", ((byte) 1 == asccpRecord.getIsNillable()) ? true : false);
+        properties.put("reusable", (byte) 1 == asccpRecord.getReusableIndicator());
+        properties.put("deprecated", (byte) 1 == asccpRecord.getIsDeprecated());
+        properties.put("nillable", (byte) 1 == asccpRecord.getIsNillable());
 
         properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ? asccpRecord.getOwnerUserId() : null);
         properties.put("roleOfAccId", (asccpRecord.getRoleOfAccId() != null) ? asccpRecord.getRoleOfAccId() : null);
@@ -299,8 +302,8 @@ public class LogSerializer {
         properties.put("defaultValue", bccpRecord.getDefaultValue());
         properties.put("fixedValue", bccpRecord.getFixedValue());
         properties.put("state", bccpRecord.getState());
-        properties.put("deprecated", ((byte) 1 == bccpRecord.getIsDeprecated()) ? true : false);
-        properties.put("nillable", ((byte) 1 == bccpRecord.getIsNillable()) ? true : false);
+        properties.put("deprecated", (byte) 1 == bccpRecord.getIsDeprecated());
+        properties.put("nillable", (byte) 1 == bccpRecord.getIsNillable());
 
         properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ? bccpRecord.getOwnerUserId() : null);
         properties.put("bdtId", (bccpRecord.getBdtId() != null) ? bccpRecord.getBdtId() : null);
@@ -350,7 +353,7 @@ public class LogSerializer {
         properties.put("contentComponentDefinition", dtRecord.getContentComponentDefinition());
         properties.put("revisionDoc", dtRecord.getRevisionDoc());
         properties.put("state", dtRecord.getState());
-        properties.put("deprecated", ((byte) 1 == dtRecord.getIsDeprecated()) ? true : false);
+        properties.put("deprecated", (byte) 1 == dtRecord.getIsDeprecated());
 
         properties.put("ownerUserId", (dtRecord.getOwnerUserId() != null) ? dtRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("basedDtId", (dtRecord.getBasedDtId() != null) ? dtRecord.getBasedDtId().toBigInteger() : null);
@@ -416,8 +419,8 @@ public class LogSerializer {
         properties.put("definition", codeListRecord.getDefinition());
         properties.put("definitionSource", codeListRecord.getDefinitionSource());
         properties.put("state", codeListRecord.getState());
-        properties.put("deprecated", ((byte) 1 == codeListRecord.getIsDeprecated()) ? true : false);
-        properties.put("extensible", ((byte) 1 == codeListRecord.getExtensibleIndicator()) ? true : false);
+        properties.put("deprecated", (byte) 1 == codeListRecord.getIsDeprecated());
+        properties.put("extensible", (byte) 1 == codeListRecord.getExtensibleIndicator());
 
         properties.put("ownerUserId", (codeListRecord.getOwnerUserId() != null) ? codeListRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("basedCodeListId", (codeListRecord.getBasedCodeListId() != null) ? codeListRecord.getBasedCodeListId().toBigInteger() : null);
@@ -443,10 +446,10 @@ public class LogSerializer {
         properties.put("name", codeListValueRecord.getName());
         properties.put("definition", codeListValueRecord.getDefinition());
         properties.put("definitionSource", codeListValueRecord.getDefinitionSource());
-        properties.put("deprecated", ((byte) 1 == codeListValueRecord.getIsDeprecated()) ? true : false);
-        properties.put("used", ((byte) 1 == codeListValueRecord.getUsedIndicator()) ? true : false);
-        properties.put("locked", ((byte) 1 == codeListValueRecord.getLockedIndicator()) ? true : false);
-        properties.put("extension", ((byte) 1 == codeListValueRecord.getExtensionIndicator()) ? true : false);
+        properties.put("deprecated", (byte) 1 == codeListValueRecord.getIsDeprecated());
+        properties.put("used", (byte) 1 == codeListValueRecord.getUsedIndicator());
+        properties.put("locked", (byte) 1 == codeListValueRecord.getLockedIndicator());
+        properties.put("extension", (byte) 1 == codeListValueRecord.getExtensionIndicator());
 
         return properties;
     }
@@ -479,7 +482,7 @@ public class LogSerializer {
         properties.put("versionId", agencyIdListRecord.getVersionId());
         properties.put("definition", agencyIdListRecord.getDefinition());
         properties.put("state", agencyIdListRecord.getState());
-        properties.put("deprecated", ((byte) 1 == agencyIdListRecord.getIsDeprecated()) ? true : false);
+        properties.put("deprecated", (byte) 1 == agencyIdListRecord.getIsDeprecated());
 
         properties.put("agencyIdListValueId", (agencyIdListRecord.getAgencyIdListValueId() != null) ? agencyIdListRecord.getAgencyIdListValueId().toBigInteger() : null);
         properties.put("ownerUserId", (agencyIdListRecord.getOwnerUserId() != null) ? agencyIdListRecord.getOwnerUserId().toBigInteger() : null);
@@ -505,7 +508,7 @@ public class LogSerializer {
         properties.put("value", agencyIdListValueRecord.getValue());
         properties.put("name", agencyIdListValueRecord.getName());
         properties.put("definition", agencyIdListValueRecord.getDefinition());
-        properties.put("deprecated", ((byte) 1 == agencyIdListValueRecord.getIsDeprecated()) ? true : false);
+        properties.put("deprecated", (byte) 1 == agencyIdListValueRecord.getIsDeprecated());
 
         return properties;
     }
@@ -538,7 +541,7 @@ public class LogSerializer {
         properties.put("jbtDraft05Map", xbtRecord.getJbtDraft05Map());
         properties.put("openapi30Map", xbtRecord.getOpenapi30Map());
         properties.put("state", xbtRecord.getState());
-        properties.put("deprecated", ((byte) 1 == xbtRecord.getIsDeprecated()) ? true : false);
+        properties.put("deprecated", (byte) 1 == xbtRecord.getIsDeprecated());
 
         properties.put("ownerUserId", (xbtRecord.getOwnerUserId() != null) ? xbtRecord.getOwnerUserId().toBigInteger() : null);
         properties.put("subTypeOfXbtId", (xbtRecord.getSubtypeOfXbtId() != null) ? xbtRecord.getSubtypeOfXbtId().toBigInteger() : null);

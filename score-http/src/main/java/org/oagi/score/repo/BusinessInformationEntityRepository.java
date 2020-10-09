@@ -3,9 +3,9 @@ package org.oagi.score.repo;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BieState;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 import static org.jooq.impl.DSL.or;
 import static org.oagi.score.data.BieState.*;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.helper.Utility.sha256;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class BusinessInformationEntityRepository {
@@ -411,7 +411,7 @@ public class BusinessInformationEntityRepository {
 
     public class SelectBieListArguments {
 
-        private List<Condition> conditions = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;

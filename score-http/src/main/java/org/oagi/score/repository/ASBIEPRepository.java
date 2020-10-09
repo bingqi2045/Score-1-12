@@ -8,14 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ASBIEPRepository implements SrtRepository<ASBIEP> {
+public class ASBIEPRepository implements ScoreRepository<ASBIEP> {
 
     @Autowired
     private DSLContext dslContext;
@@ -60,15 +59,8 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
                 .fetchOneInto(ASBIEP.class);
     }
 
-    public List<ASBIEP> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId.longValue() <= 0L) {
-            return Collections.emptyList();
-        }
-        return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
-    }
-
-    public List<ASBIEP> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
-        if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
+    public List<ASBIEP> findByOwnerTopLevelAsbiepIds(Collection<BigInteger> ownerTopLevelAsbiepIds) {
+        if (ownerTopLevelAsbiepIds == null || ownerTopLevelAsbiepIds.isEmpty()) {
             return Collections.emptyList();
         }
         return dslContext.select(Tables.ASBIEP.BASED_ASCCP_MANIFEST_ID,
@@ -85,11 +77,11 @@ public class ASBIEPRepository implements SrtRepository<ASBIEP> {
                 Tables.ASBIEP.DEFINITION)
                 .from(Tables.ASBIEP)
                 .where(
-                        (ownerTopLevelAbieIds.size() == 1) ?
+                        (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
+                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
                                 Tables.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
 
                 )
                 .fetchInto(ASBIEP.class);

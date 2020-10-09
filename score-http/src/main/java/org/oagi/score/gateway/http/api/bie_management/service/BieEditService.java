@@ -8,11 +8,6 @@ import org.oagi.score.data.ACC;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.TopLevelAsbiepRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditAbieNode;
@@ -25,6 +20,11 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.cc_management.service.ExtensionService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventListenerContainer;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.abie.AbieNode;
 import org.oagi.score.repo.component.abie.AbieReadRepository;
@@ -88,7 +88,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Transactional(readOnly = true)
 public class BieEditService implements InitializingBean {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TopLevelAsbiepRepository topLevelAsbiepRepository;
@@ -117,7 +117,7 @@ public class BieEditService implements InitializingBean {
     @Autowired
     private TopLevelAsbiepWriteRepository topLevelAsbiepWriteRepository;
 
-    private String PURGE_BIE_EVENT_NAME = "purgeBieEvent";
+    private final String PURGE_BIE_EVENT_NAME = "purgeBieEvent";
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -399,7 +399,7 @@ public class BieEditService implements InitializingBean {
 
     @Transactional
     public void updateTopLevelAsbiepLastUpdated(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
-        topLevelAsbiepRepository.updateTopLevelAbieLastUpdated(sessionService.userId(user), topLevelAsbiepId);
+        topLevelAsbiepRepository.updateTopLevelAsbiepLastUpdated(sessionService.userId(user), topLevelAsbiepId);
     }
 
     @Autowired

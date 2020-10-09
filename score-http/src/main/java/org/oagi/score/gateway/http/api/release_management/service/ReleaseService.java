@@ -34,7 +34,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.Published;
@@ -45,7 +44,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.RELEASE;
 @Transactional(readOnly = true)
 public class ReleaseService implements InitializingBean {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;

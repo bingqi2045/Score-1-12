@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 
 @Repository
-public class BBIESCRepository implements SrtRepository<BBIESC> {
+public class BBIESCRepository implements ScoreRepository<BBIESC> {
 
     @Autowired
     private DSLContext dslContext;
@@ -64,18 +63,14 @@ public class BBIESCRepository implements SrtRepository<BBIESC> {
                 .fetchOptionalInto(BBIESC.class).orElse(null);
     }
 
-    public List<BBIESC> findByOwnerTopLevelAbieIdAndUsed(BigInteger ownerTopLevelAbieId, boolean used) {
-        return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAbieId), used);
-    }
-
-    public List<BBIESC> findByOwnerTopLevelAbieIdsAndUsed(Collection<BigInteger> ownerTopLevelAbieIds, boolean used) {
+    public List<BBIESC> findByOwnerTopLevelAsbiepIdsAndUsed(Collection<BigInteger> ownerTopLevelAsbiepIds, boolean used) {
         return getSelectJoinStep()
                 .where(and(
-                        (ownerTopLevelAbieIds.size() == 1) ?
+                        (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
+                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
                                 Tables.BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
+                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
                         Tables.BBIE_SC.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIESC.class);
     }

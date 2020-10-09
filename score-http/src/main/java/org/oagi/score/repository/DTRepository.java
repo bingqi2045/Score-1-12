@@ -13,7 +13,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class DTRepository implements SrtRepository<DT> {
+public class DTRepository implements ScoreRepository<DT> {
 
     @Autowired
     private DSLContext dslContext;

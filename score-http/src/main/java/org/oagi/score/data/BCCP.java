@@ -26,7 +26,7 @@ public class BCCP implements CoreComponent {
     private BigInteger ownerUserId = BigInteger.ZERO;
     private BigInteger lastUpdatedBy = BigInteger.ZERO;
     private Date creationTimestamp;
-    private Date lastUpdateTimestamp;;
+    private Date lastUpdateTimestamp;
     private CcState state;
     private BigInteger releaseId = BigInteger.ZERO;
     private String releaseNum;

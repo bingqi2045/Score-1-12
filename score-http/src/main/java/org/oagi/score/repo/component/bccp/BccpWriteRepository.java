@@ -258,11 +258,11 @@ public class BccpWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCCP.DEFINITION_SOURCE, request.getDefinitionSource());
         }
-        if ((bccpRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+        if ((bccpRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCCP.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }
-        if ((bccpRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+        if ((bccpRecord.getIsNillable() == 1) != request.isNillable()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCCP.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
         }

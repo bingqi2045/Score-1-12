@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public class CdtScAwdPriXpsTypeMapRepository implements SrtRepository<CdtScAwdPriXpsTypeMap> {
+public class CdtScAwdPriXpsTypeMapRepository implements ScoreRepository<CdtScAwdPriXpsTypeMap> {
 
     @Autowired
     private DSLContext dslContext;

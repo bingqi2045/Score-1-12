@@ -23,7 +23,7 @@ import java.sql.SQLSyntaxErrorException;
 @RestControllerAdvice
 public class ScoreResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(

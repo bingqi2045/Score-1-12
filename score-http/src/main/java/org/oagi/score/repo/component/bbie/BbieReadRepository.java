@@ -2,10 +2,10 @@ package org.oagi.score.repo.component.bbie;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -53,8 +53,8 @@ public class BbieReadRepository {
         bcc.setState(CcState.valueOf(bccRecord.getState()));
         bcc.setDefaultValue(bccRecord.getDefaultValue());
         bcc.setFixedValue(bccRecord.getFixedValue());
-        bcc.setDeprecated(bccRecord.getIsDeprecated() == 1 ? true : false);
-        bcc.setNillable(bccRecord.getIsNillable() == 1 ? true : false);
+        bcc.setDeprecated(bccRecord.getIsDeprecated() == 1);
+        bcc.setNillable(bccRecord.getIsNillable() == 1);
 
         BbieNode.Bbie bbie = getBbie(topLevelAbieId, hashPath);
         bbieNode.setBbie(bbie);
@@ -92,11 +92,11 @@ public class BbieReadRepository {
                     ))
                     .fetchOneInto(String.class));
             bbie.setBasedBccManifestId(bbieRecord.getBasedBccManifestId().toBigInteger());
-            bbie.setUsed(bbieRecord.getIsUsed() == 1 ? true : false);
+            bbie.setUsed(bbieRecord.getIsUsed() == 1);
             bbie.setGuid(bbieRecord.getGuid());
             bbie.setCardinalityMin(bbieRecord.getCardinalityMin());
             bbie.setCardinalityMax(bbieRecord.getCardinalityMax());
-            bbie.setNillable(bbieRecord.getIsNillable() == 1 ? true : false);
+            bbie.setNillable(bbieRecord.getIsNillable() == 1);
             bbie.setRemark(bbieRecord.getRemark());
             bbie.setDefinition(bbieRecord.getDefinition());
             bbie.setDefaultValue(bbieRecord.getDefaultValue());

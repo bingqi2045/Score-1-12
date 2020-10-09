@@ -2,7 +2,6 @@ package org.oagi.score.repo.component.ascc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 import org.springframework.beans.factory.annotation.Autowired;

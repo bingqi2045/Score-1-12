@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.and;
 
 @Repository
-public class BBIERepository implements SrtRepository<BBIE> {
+public class BBIERepository implements ScoreRepository<BBIE> {
 
     @Autowired
     private DSLContext dslContext;
@@ -66,18 +65,14 @@ public class BBIERepository implements SrtRepository<BBIE> {
                 .fetchOptionalInto(BBIE.class).orElse(null);
     }
 
-    public List<BBIE> findByOwnerTopLevelAsbiepIdAndUsed(BigInteger ownerTopLevelAsbiepId, boolean used) {
-        return findByOwnerTopLevelAbieIdsAndUsed(Arrays.asList(ownerTopLevelAsbiepId), used);
-    }
-
-    public List<BBIE> findByOwnerTopLevelAbieIdsAndUsed(Collection<BigInteger> ownerTopLevelAbieIds, boolean used) {
+    public List<BBIE> findByOwnerTopLevelAsbiepIdsAndUsed(Collection<BigInteger> ownerTopLevelAsbiepIds, boolean used) {
         return getSelectOnConditionStep()
                 .where(and(
-                        (ownerTopLevelAbieIds.size() == 1) ?
+                        (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
+                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
                                 Tables.BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
+                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList())),
                         Tables.BBIE.IS_USED.eq((byte) (used ? 1 : 0))))
                 .fetchInto(BBIE.class);
     }

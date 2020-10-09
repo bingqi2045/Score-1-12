@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
-public interface SrtRepository<T> {
+public interface ScoreRepository<T> {
 
     List<T> findAll();
 

@@ -2,9 +2,9 @@ package org.oagi.score.gateway.http.api.release_management.service;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 public class ReleaseValidator {
 
-    private DSLContext dslContext;
+    private final DSLContext dslContext;
 
     private List<BigInteger> assignedAccComponentManifestIds = Collections.emptyList();
     private List<BigInteger> assignedAsccpComponentManifestIds = Collections.emptyList();

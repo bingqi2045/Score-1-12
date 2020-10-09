@@ -230,11 +230,11 @@ public class BccWriteRepository {
                 }
             }
         }
-        if ((bccRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+        if ((bccRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }
-        if ((bccRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+        if ((bccRecord.getIsNillable() == 1) != request.isNillable()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCC.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
         }

@@ -2,10 +2,10 @@ package org.oagi.score.repo.component.bbiep;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.component.bccp.BccpReadRepository;
 import org.oagi.score.repo.component.dt.DtReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class BbiepReadRepository {
         bccp.setDen(bccpRecord.getDen());
         bccp.setDefinition(bccpRecord.getDefinition());
         bccp.setState(CcState.valueOf(bccpRecord.getState()));
-        bccp.setNillable(bccpRecord.getIsNillable() == 1 ? true : false);
+        bccp.setNillable(bccpRecord.getIsNillable() == 1);
         bccp.setDefaultValue(bccpRecord.getDefaultValue());
         bccp.setFixedValue(bccpRecord.getFixedValue());
 

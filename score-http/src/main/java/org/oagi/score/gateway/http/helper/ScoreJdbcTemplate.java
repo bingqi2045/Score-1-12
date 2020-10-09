@@ -19,7 +19,7 @@ public class ScoreJdbcTemplate {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
-    private List<Class<?>> primitiveClasses = Arrays.asList(Integer.class, Long.class, Float.class, Double.class, String.class);
+    private final List<Class<?>> primitiveClasses = Arrays.asList(Integer.class, Long.class, Float.class, Double.class, String.class);
 
     public static MapSqlParameterSource newSqlParameterSource() {
         return new MapSqlParameterSource();

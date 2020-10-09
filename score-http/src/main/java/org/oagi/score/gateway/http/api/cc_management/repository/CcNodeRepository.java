@@ -788,11 +788,7 @@ public class CcNodeRepository {
                 .from(ABIE)
                 .where(ABIE.BASED_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
-        if (cnt > 0) {
-            return true;
-        }
-
-        return false;
+        return cnt > 0;
     }
 
     public boolean isAsccpManifestUsed(long asccpManifestId) {
@@ -810,11 +806,7 @@ public class CcNodeRepository {
                 .from(ASBIEP)
                 .where(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
-        if (cnt > 0) {
-            return true;
-        }
-
-        return false;
+        return cnt > 0;
     }
 
     public boolean isBccpManifestUsed(BigInteger bccpManifestId) {
@@ -832,11 +824,7 @@ public class CcNodeRepository {
                 .from(BBIEP)
                 .where(BBIEP.BASED_BCCP_MANIFEST_ID.eq(ULong.valueOf(bccpManifestId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
-        if (cnt > 0) {
-            return true;
-        }
-
-        return false;
+        return cnt > 0;
     }
 
     public void deleteAccRecords(AccManifestRecord accManifestRecord) {

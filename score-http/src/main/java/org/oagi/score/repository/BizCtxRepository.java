@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class BizCtxRepository implements SrtRepository<BizCtx> {
+public class BizCtxRepository implements ScoreRepository<BizCtx> {
 
     @Autowired
     private DSLContext dslContext;

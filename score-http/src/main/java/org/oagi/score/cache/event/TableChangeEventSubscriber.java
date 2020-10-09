@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TableChangeEventSubscriber implements InitializingBean {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private EventListenerContainer eventListenerContainer;

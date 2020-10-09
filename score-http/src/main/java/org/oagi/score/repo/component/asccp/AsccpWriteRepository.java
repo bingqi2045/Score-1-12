@@ -255,15 +255,15 @@ public class AsccpWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.DEFINITION_SOURCE, request.getDefinitionSource());
         }
-        if ((asccpRecord.getReusableIndicator() == 1 ? true : false) != request.isReusable()) {
+        if ((asccpRecord.getReusableIndicator() == 1) != request.isReusable()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.REUSABLE_INDICATOR, (byte) ((request.isReusable()) ? 1 : 0));
         }
-        if ((asccpRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+        if ((asccpRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }
-        if ((asccpRecord.getIsNillable() == 1 ? true : false) != request.isNillable()) {
+        if ((asccpRecord.getIsNillable() == 1) != request.isNillable()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCCP.IS_NILLABLE, (byte) ((request.isNillable()) ? 1 : 0));
         }

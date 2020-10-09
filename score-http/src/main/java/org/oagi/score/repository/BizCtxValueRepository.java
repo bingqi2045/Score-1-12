@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Repository
-public class BizCtxValueRepository implements SrtRepository<BusinessContextValue> {
+public class BizCtxValueRepository implements ScoreRepository<BusinessContextValue> {
 
     @Autowired
     private DSLContext dslContext;

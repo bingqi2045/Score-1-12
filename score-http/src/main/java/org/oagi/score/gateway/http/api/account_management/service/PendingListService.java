@@ -2,13 +2,13 @@ package org.oagi.score.gateway.http.api.account_management.service;
 
 import org.jooq.*;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.oagi.score.gateway.http.api.account_management.data.AppOauth2User;
 import org.oagi.score.gateway.http.api.account_management.data.PendingListRequest;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;

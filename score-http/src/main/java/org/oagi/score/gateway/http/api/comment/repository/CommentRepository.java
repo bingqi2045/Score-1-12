@@ -6,8 +6,8 @@ import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
 import org.jooq.tools.StringUtils;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CommentRecord;
 import org.oagi.score.gateway.http.api.comment.data.Comment;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CommentRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

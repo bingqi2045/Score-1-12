@@ -32,7 +32,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class BieXMLGenerateExpression implements BieGenerateExpression, InitializingBean {
 
     private static final String OAGI_NS = "http://www.openapplications.org/oagis/10";
-    private static org.jdom2.Namespace XSD_NAMESPACE = org.jdom2.Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
+    private static final org.jdom2.Namespace XSD_NAMESPACE = org.jdom2.Namespace.getNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Document document;
@@ -41,7 +41,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     private GenerateExpressionOption option;
 
-    private Map<String, Element> processedElements = new HashMap();
+    private final Map<String, Element> processedElements = new HashMap();
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -1336,7 +1336,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     private class Definition {
-        private String definition;
+        private final String definition;
         private String definitionSource;
 
         public Definition(String definition) {
@@ -1626,7 +1626,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     private class ASBIEPDocumentation extends AbstractBIEDocumentation {
         private final ASBIEP asbiep;
         private final ASCCP asccp;
-        private TopLevelAsbiep topLevelAsbiep;
+        private final TopLevelAsbiep topLevelAsbiep;
 
         public ASBIEPDocumentation(
                 ASBIEP asbiep,

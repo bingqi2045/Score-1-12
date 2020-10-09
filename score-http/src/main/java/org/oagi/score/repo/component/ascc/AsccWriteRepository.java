@@ -34,7 +34,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_
 @Repository
 public class AsccWriteRepository {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -237,7 +237,7 @@ public class AsccWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCC.DEFINITION_SOURCE, request.getDefinitionSource());
         }
-        if ((asccRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+        if ((asccRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ASCC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }

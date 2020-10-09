@@ -3,10 +3,10 @@ package org.oagi.score.repo.component.bbie;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
 import org.oagi.score.repo.component.bdt_pri_restri.AvailableBdtPriRestri;
 import org.oagi.score.repo.component.bdt_pri_restri.BdtPriRestriReadRepository;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class BbieWriteRepository {

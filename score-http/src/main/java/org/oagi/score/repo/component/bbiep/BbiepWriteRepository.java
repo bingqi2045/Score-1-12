@@ -3,15 +3,15 @@ package org.oagi.score.repo.component.bbiep;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbiepRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIEP;
 import static org.oagi.score.gateway.http.helper.Utility.emptyToNull;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BBIEP;
 
 @Repository
 public class BbiepWriteRepository {

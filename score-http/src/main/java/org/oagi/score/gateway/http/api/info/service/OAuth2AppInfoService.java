@@ -2,8 +2,8 @@ package org.oagi.score.gateway.http.api.info.service;
 
 
 import org.jooq.DSLContext;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
 import org.oagi.score.gateway.http.api.info.data.OAuth2AppInfo;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -20,7 +20,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App.OAUTH2_A
 @Transactional(readOnly = true)
 public class OAuth2AppInfoService {
 
-    private static String authorizationRequestBaseUri = "oauth2/authorization";
+    private static final String authorizationRequestBaseUri = "oauth2/authorization";
 
     @Autowired
     private DSLContext dslContext;

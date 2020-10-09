@@ -4,8 +4,8 @@ import java.util.List;
 
 public class PaginationResponse<E> {
 
-    private int pageCount;
-    private List<E> result;
+    private final int pageCount;
+    private final List<E> result;
 
     public PaginationResponse(int pageCount, List<E> result) {
         this.pageCount = pageCount;

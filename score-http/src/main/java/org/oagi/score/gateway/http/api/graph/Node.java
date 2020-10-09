@@ -37,7 +37,7 @@ public class Node {
     private ULong linkedManifestId;
     private ULong prevManifestId;
 
-    private Map<String, Object> properties = new HashMap();
+    private final Map<String, Object> properties = new HashMap();
 
     public Node(NodeType type, ULong manifestId, CcState state) {
         setType(type);

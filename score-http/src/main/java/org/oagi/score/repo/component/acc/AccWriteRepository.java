@@ -465,11 +465,11 @@ public class AccWriteRepository {
                         .set(ACC.OAGIS_COMPONENT_TYPE, request.getComponentType().getValue());
             }
         }
-        if ((accRecord.getIsAbstract() == 1 ? true : false) != request.isAbstract()) {
+        if ((accRecord.getIsAbstract() == 1) != request.isAbstract()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ACC.IS_ABSTRACT, (byte) ((request.isAbstract()) ? 1 : 0));
         }
-        if ((accRecord.getIsDeprecated() == 1 ? true : false) != request.isDeprecated()) {
+        if ((accRecord.getIsDeprecated() == 1) != request.isDeprecated()) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(ACC.IS_DEPRECATED, (byte) ((request.isDeprecated()) ? 1 : 0));
         }

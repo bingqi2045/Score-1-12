@@ -2,10 +2,10 @@ package org.oagi.score.repo.component.bbie_sc;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.oagi.score.repo.component.dt_sc.DtScReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -88,7 +88,7 @@ public class BbieScReadRepository {
                     ))
                     .fetchOneInto(String.class));
             bbieSc.setBasedDtScManifestId(bbieScRecord.getBasedDtScManifestId().toBigInteger());
-            bbieSc.setUsed(bbieScRecord.getIsUsed() == 1 ? true : false);
+            bbieSc.setUsed(bbieScRecord.getIsUsed() == 1);
             bbieSc.setGuid(bbieScRecord.getGuid());
             bbieSc.setCardinalityMin(bbieScRecord.getCardinalityMin());
             bbieSc.setCardinalityMax(bbieScRecord.getCardinalityMax());

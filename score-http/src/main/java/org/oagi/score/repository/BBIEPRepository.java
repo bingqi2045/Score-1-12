@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class BBIEPRepository implements SrtRepository<BBIEP> {
+public class BBIEPRepository implements ScoreRepository<BBIEP> {
 
     @Autowired
     private DSLContext dslContext;
@@ -58,14 +56,7 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 .fetchOneInto(BBIEP.class);
     }
 
-    public List<BBIEP> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId.longValue() <= 0L) {
-            return Collections.emptyList();
-        }
-        return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
-    }
-
-    public List<BBIEP> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
+    public List<BBIEP> findByOwnerTopLevelAsbiepIds(Collection<BigInteger> ownerTopLevelAsbiepIds) {
         return dslContext.select(Tables.BBIEP.BBIEP_ID,
                 Tables.BBIEP.GUID,
                 Tables.BBIEP.BASED_BCCP_MANIFEST_ID,
@@ -79,11 +70,11 @@ public class BBIEPRepository implements SrtRepository<BBIEP> {
                 Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID)
                 .from(Tables.BBIEP)
                 .where(
-                        (ownerTopLevelAbieIds.size() == 1) ?
+                        (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
+                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
                                 Tables.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )
                 .fetchInto(BBIEP.class);
     }

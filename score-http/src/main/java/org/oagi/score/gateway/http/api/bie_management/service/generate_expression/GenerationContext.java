@@ -21,7 +21,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 @Scope(SCOPE_PROTOTYPE)
 public class GenerationContext implements InitializingBean {
 
-    private List<TopLevelAsbiep> topLevelAbies;
+    private final List<TopLevelAsbiep> topLevelAbies;
 
     @Autowired
     private AgencyIdListRepository agencyIdListRepository;
@@ -254,36 +254,36 @@ public class GenerationContext implements InitializingBean {
         findAgencyIdListValueByOwnerListIdMap = agencyIdListValues.stream()
                 .collect(Collectors.groupingBy(e -> e.getOwnerListId()));
 
-        List<ABIE> abieList = abieRepository.findByOwnerTopLevelAbieIds(topLevelAbieIds);
+        List<ABIE> abieList = abieRepository.findByOwnerTopLevelAsbiepIds(topLevelAbieIds);
         findAbieMap = abieList.stream()
                 .collect(Collectors.toMap(e -> e.getAbieId(), Function.identity()));
 
         List<BBIE> bbieList =
-                bbieRepository.findByOwnerTopLevelAbieIdsAndUsed(topLevelAbieIds, true);
+                bbieRepository.findByOwnerTopLevelAsbiepIdsAndUsed(topLevelAbieIds, true);
         findBbieByFromAbieIdAndUsedIsTrueMap = bbieList.stream()
                 .filter(e -> e.isUsed())
                 .collect(Collectors.groupingBy(e -> e.getFromAbieId()));
 
         List<BBIESC> bbieScList =
-                bbieScRepository.findByOwnerTopLevelAbieIdsAndUsed(topLevelAbieIds, true);
+                bbieScRepository.findByOwnerTopLevelAsbiepIdsAndUsed(topLevelAbieIds, true);
         findBbieScByBbieIdAndUsedIsTrueMap = bbieScList.stream()
                 .filter(e -> e.isUsed())
                 .collect(Collectors.groupingBy(e -> e.getBbieId()));
 
         List<ASBIE> asbieList =
-                asbieRepository.findByOwnerTopLevelAbieIds(topLevelAbieIds);
+                asbieRepository.findByOwnerTopLevelAsbiepIds(topLevelAbieIds);
         findAsbieByFromAbieIdMap = asbieList.stream()
                 .collect(Collectors.groupingBy(e -> e.getFromAbieId()));
 
         List<ASBIEP> asbiepList =
-                asbiepRepository.findByOwnerTopLevelAbieIds(topLevelAbieIds);
+                asbiepRepository.findByOwnerTopLevelAsbiepIds(topLevelAbieIds);
         findASBIEPMap = asbiepList.stream()
                 .collect(Collectors.toMap(e -> e.getAsbiepId(), Function.identity()));
         findAsbiepByRoleOfAbieIdMap = asbiepList.stream()
                 .collect(Collectors.toMap(e -> e.getRoleOfAbieId(), Function.identity()));
 
         List<BBIEP> bbiepList =
-                bbiepRepository.findByOwnerTopLevelAbieIds(topLevelAbieIds);
+                bbiepRepository.findByOwnerTopLevelAsbiepIds(topLevelAbieIds);
         findBBIEPMap = bbiepList.stream()
                 .collect(Collectors.toMap(e -> e.getBbiepId(), Function.identity()));
 

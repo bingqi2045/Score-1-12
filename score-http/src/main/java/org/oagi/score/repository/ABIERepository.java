@@ -11,14 +11,13 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class ABIERepository implements SrtRepository<ABIE> {
+public class ABIERepository implements ScoreRepository<ABIE> {
 
     @Autowired
     private DSLContext dslContext;
@@ -58,24 +57,17 @@ public class ABIERepository implements SrtRepository<ABIE> {
                 .fetchOneInto(ABIE.class);
     }
 
-    public List<ABIE> findByOwnerTopLevelAbieId(BigInteger ownerTopLevelAbieId) {
-        if (ownerTopLevelAbieId.longValue() <= 0L) {
-            return Collections.emptyList();
-        }
-        return findByOwnerTopLevelAbieIds(Arrays.asList(ownerTopLevelAbieId));
-    }
-
-    public List<ABIE> findByOwnerTopLevelAbieIds(Collection<BigInteger> ownerTopLevelAbieIds) {
-        if (ownerTopLevelAbieIds == null || ownerTopLevelAbieIds.isEmpty()) {
+    public List<ABIE> findByOwnerTopLevelAsbiepIds(Collection<BigInteger> ownerTopLevelAsbiepIds) {
+        if (ownerTopLevelAsbiepIds == null || ownerTopLevelAsbiepIds.isEmpty()) {
             return Collections.emptyList();
         }
         return getSelectJoinStep()
                 .where(
-                        (ownerTopLevelAbieIds.size() == 1) ?
+                        (ownerTopLevelAsbiepIds.size() == 1) ?
                                 Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(
-                                        ULong.valueOf(ownerTopLevelAbieIds.iterator().next())) :
+                                        ULong.valueOf(ownerTopLevelAsbiepIds.iterator().next())) :
                                 Tables.ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.in(
-                                        ownerTopLevelAbieIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
+                                        ownerTopLevelAsbiepIds.stream().map(e -> ULong.valueOf(e)).collect(Collectors.toList()))
                 )
                 .fetchInto(ABIE.class);
     }

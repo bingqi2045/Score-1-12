@@ -9,7 +9,6 @@ import org.oagi.score.data.BieState;
 import org.oagi.score.data.OagisComponentType;
 import org.oagi.score.data.SeqKeySupportable;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.*;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.*;
@@ -17,6 +16,7 @@ import org.oagi.score.gateway.http.api.bie_management.service.BieRepository;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -421,7 +421,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             asbie.setBasedAsccId(ascc.getAsccId());
             asbie.setFromAbieId(fromAbieId);
             asbie.setToAsbiepId(asbiepId);
-            asbie.setUsed((asbieRecord.getIsUsed() == 1) ? true : false);
+            asbie.setUsed(asbieRecord.getIsUsed() == 1);
             asbie.setCardinalityMin(asbieRecord.getCardinalityMin());
             asbie.setCardinalityMax(asbieRecord.getCardinalityMax());
         }
@@ -479,7 +479,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
             bbie.setBbieId(bbieId);
             bbie.setFromAbieId(fromAbieId);
             bbie.setToBbiepId(bbiepId);
-            bbie.setUsed((bbieRecord.getIsUsed() == 1) ? true : false);
+            bbie.setUsed(bbieRecord.getIsUsed() == 1);
             bbie.setCardinalityMin(bbieRecord.getCardinalityMin());
             bbie.setCardinalityMax(bbieRecord.getCardinalityMax());
         }

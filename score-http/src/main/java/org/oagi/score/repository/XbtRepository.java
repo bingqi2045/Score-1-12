@@ -12,11 +12,11 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.XBT_MANIFEST;
 
 @Repository
-public class XbtRepository implements SrtRepository<Xbt> {
+public class XbtRepository implements ScoreRepository<Xbt> {
 
     @Autowired
     private DSLContext dslContext;

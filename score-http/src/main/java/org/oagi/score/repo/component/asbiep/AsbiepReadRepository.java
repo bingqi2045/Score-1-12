@@ -2,9 +2,9 @@ package org.oagi.score.repo.component.asbiep;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbiepRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.component.asccp.AsccpReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -47,7 +47,7 @@ public class AsbiepReadRepository {
         asccp.setDen(asccpRecord.getDen());
         asccp.setDefinition(asccpRecord.getDefinition());
         asccp.setState(CcState.valueOf(asccpRecord.getState()));
-        asccp.setNillable(asccpRecord.getIsNillable() == 1 ? true : false);
+        asccp.setNillable(asccpRecord.getIsNillable() == 1);
 
         AsbiepNode.Asbiep asbiep = getAsbiep(topLevelAbieId, hashPath);
         asbiepNode.setAsbiep(asbiep);

@@ -2,7 +2,6 @@ package org.oagi.score.repo.component.bdt_pri_restri;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.component.bdt_sc_pri_restri.AvailableBdtScPriRestri;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

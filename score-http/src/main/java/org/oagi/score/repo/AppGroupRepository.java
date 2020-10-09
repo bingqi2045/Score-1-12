@@ -77,7 +77,7 @@ public class AppGroupRepository {
 
     public class SelectAppGroupArguments {
         private String name;
-        private List<Condition> conditions = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;
@@ -331,9 +331,6 @@ public class AppGroupRepository {
         AppGroup appGroup = getSelectOnConditionStepForAppGroup()
                 .where(APP_GROUP.APP_GROUP_ID.eq(appGroupId))
                 .fetchOptionalInto(AppGroup.class).orElse(null);
-        if (appGroup == null) {
-            return null;
-        }
 
         return appGroup;
     }

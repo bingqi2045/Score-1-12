@@ -8,8 +8,6 @@ import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.BizCtx;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
@@ -20,12 +18,13 @@ import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
 import org.oagi.score.gateway.http.api.context_management.data.BusinessContext;
-import org.oagi.score.gateway.http.api.graph.GraphService;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.BusinessContextRepository;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.PaginationResponse;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repository.ABIERepository;
 import org.oagi.score.repository.BizCtxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +48,6 @@ public class BieService {
 
     @Autowired
     private SessionService sessionService;
-
-    @Autowired
-    private GraphService graphService;
 
     @Autowired
     private ABIERepository abieRepository;

@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface GraphContext {
 
-    public List<Node> findChildren(Node node, boolean excludeUEG);
+    List<Node> findChildren(Node node, boolean excludeUEG);
 
 }

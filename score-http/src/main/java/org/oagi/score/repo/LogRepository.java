@@ -32,9 +32,9 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Repository
 public class LogRepository {
 
-    private DSLContext dslContext;
+    private final DSLContext dslContext;
 
-    private LogSerializer serializer;
+    private final LogSerializer serializer;
 
     public LogRepository(@Autowired DSLContext dslContext,
                          @Autowired LogSerializer serializer) {
@@ -220,7 +220,7 @@ public class LogRepository {
         final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
 
         private ObjectNode content;
-        private ULong logId;
+        private final ULong logId;
         private String reference;
 
         UpdateLogArguments(ULong logId) {

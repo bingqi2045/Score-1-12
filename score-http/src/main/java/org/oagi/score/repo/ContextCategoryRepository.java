@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.count;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class ContextCategoryRepository {
 
-    private DSLContext dslContext;
+    private final DSLContext dslContext;
 
     public ContextCategoryRepository(@Autowired DSLContext dslContext) {
         this.dslContext = dslContext;
@@ -31,8 +31,8 @@ public class ContextCategoryRepository {
 
     public class SelectContextCategoryArguments {
 
-        private List<ULong> contextCategoryIds = new ArrayList();
-        private List<Condition> conditions = new ArrayList();
+        private final List<ULong> contextCategoryIds = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;
@@ -208,7 +208,7 @@ public class ContextCategoryRepository {
     }
 
     public class InsertContextCategoryArguments {
-        private CtxCategoryRecord record;
+        private final CtxCategoryRecord record;
 
         public InsertContextCategoryArguments() {
             this.record = new CtxCategoryRecord();
@@ -269,8 +269,8 @@ public class ContextCategoryRepository {
     }
 
     public class UpdateContextCategoryArguments {
-        private CtxCategoryRecord record;
-        private ULong ctxCategoryId;
+        private final CtxCategoryRecord record;
+        private final ULong ctxCategoryId;
 
         public UpdateContextCategoryArguments(BigInteger ctxCategoryId) {
             if (ctxCategoryId == null || ctxCategoryId.longValue() <= 0L) {

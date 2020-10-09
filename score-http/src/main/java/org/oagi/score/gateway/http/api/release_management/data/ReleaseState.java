@@ -5,5 +5,5 @@ public enum ReleaseState {
     Processing,
     Initialized,
     Draft,
-    Published;
+    Published
 }

@@ -9,10 +9,10 @@ import java.util.function.Predicate;
 
 public class AnyWordContainsFilter<T> implements Predicate<T> {
 
-    private List<String> queries;
-    private Function<T, String> mapper;
-    private String splitRegex;
-    private boolean ignoreCase;
+    private final List<String> queries;
+    private final Function<T, String> mapper;
+    private final String splitRegex;
+    private final boolean ignoreCase;
 
     public AnyWordContainsFilter(String query, Function<T, String> mapper, boolean ignoreCase) {
         this(query, mapper, ignoreCase, " ");

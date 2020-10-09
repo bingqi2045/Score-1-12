@@ -2,15 +2,18 @@ package org.oagi.score.repo.component.graph;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record3;
+import org.jooq.Record4;
+import org.jooq.Record5;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.gateway.http.api.graph.Node;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecord;
-import org.oagi.score.gateway.http.api.cc_management.data.CcState;
-import org.oagi.score.gateway.http.api.graph.Node;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 

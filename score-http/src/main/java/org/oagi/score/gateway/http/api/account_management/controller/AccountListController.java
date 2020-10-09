@@ -48,11 +48,7 @@ public class AccountListController {
         if (!StringUtils.isEmpty(status)) {
             List<String> statusList = Arrays.asList(status.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList());
             if (statusList.size() == 1) {
-                if ("enable".equalsIgnoreCase(statusList.get(0))) {
-                    request.setEnabled(true);
-                } else {
-                    request.setEnabled(false);
-                }
+                request.setEnabled("enable".equalsIgnoreCase(statusList.get(0)));
             }
         }
         request.setRole(role);

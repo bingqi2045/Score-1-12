@@ -28,11 +28,11 @@ import static org.springframework.security.oauth2.core.ClientAuthenticationMetho
 public class ScoreClientRegistrationRepository
         implements ClientRegistrationRepository, Iterable<ClientRegistration>, InitializingBean {
 
-    private static Map<String, ClientAuthenticationMethod> predefinedClientAuthenticationMethodMap =
+    private static final Map<String, ClientAuthenticationMethod> predefinedClientAuthenticationMethodMap =
             Arrays.asList(BASIC, POST)
                     .stream().collect(Collectors.toMap(ClientAuthenticationMethod::getValue, Function.identity()));
 
-    private static Map<String, AuthorizationGrantType> predefinedAuthorizationGrantTypeMap =
+    private static final Map<String, AuthorizationGrantType> predefinedAuthorizationGrantTypeMap =
             Arrays.asList(AUTHORIZATION_CODE, IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD)
                     .stream().collect(Collectors.toMap(AuthorizationGrantType::getValue, Function.identity()));
 
@@ -41,7 +41,7 @@ public class ScoreClientRegistrationRepository
 
     private Map<String, ClientRegistration> registrations;
 
-    private Map<String, Map<String, Object>> additionalParameters = new HashMap();
+    private final Map<String, Map<String, Object>> additionalParameters = new HashMap();
 
     @Override
     public void afterPropertiesSet() throws Exception {

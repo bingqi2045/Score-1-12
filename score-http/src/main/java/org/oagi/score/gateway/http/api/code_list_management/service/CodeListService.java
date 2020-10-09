@@ -5,10 +5,6 @@ import org.jooq.*;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueManifestRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueRecord;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.code_list_management.data.*;
@@ -17,6 +13,10 @@ import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.redis.event.EventHandler;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueRecord;
 import org.oagi.score.repo.component.code_list.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,8 +32,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)

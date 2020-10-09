@@ -112,7 +112,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint((AuthenticationEntryPoint) (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                 .formLogin()
                 .loginProcessingUrl("/login")

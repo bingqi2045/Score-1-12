@@ -14,7 +14,7 @@ import org.oagi.score.gateway.http.api.code_list_management.service.CodeListServ
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
-import org.oagi.score.repository.SrtRepository;
+import org.oagi.score.repository.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
@@ -31,11 +31,11 @@ import static org.oagi.score.gateway.http.api.release_management.data.ReleaseSta
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
-public class ReleaseRepository implements SrtRepository<Release> {
-    private Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap<>();
-    private Map<ULong, ULong> prevNextAsccpManifestIdMap = new HashMap<>();
-    private Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap<>();
-    private Map<ULong, ULong> prevNextBdtManifestIdMap = new HashMap<>();
+public class ReleaseRepository implements ScoreRepository<Release> {
+    private final Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap<>();
+    private final Map<ULong, ULong> prevNextAsccpManifestIdMap = new HashMap<>();
+    private final Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap<>();
+    private final Map<ULong, ULong> prevNextBdtManifestIdMap = new HashMap<>();
 
     @Autowired
     private DSLContext dslContext;

@@ -49,7 +49,7 @@ public class ScoreOAuth2AuthorizedClientService implements OAuth2AuthorizedClien
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public ScoreOAuth2AuthorizedClientService(@Autowired RedisOperations<Object, Object> sessionRedisOperations,
                                               @Autowired ClientRegistrationRepository clientRegistrationRepository) {

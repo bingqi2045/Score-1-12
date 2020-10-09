@@ -14,7 +14,7 @@ public class SafeDeserializationRepository<S extends Session> implements Session
     private final RedisOperations<Object, Object> sessionRedisOperations;
     private final Log logger = LogFactory.getLog(getClass());
 
-    private String namespace = DEFAULT_NAMESPACE + ":";
+    private final String namespace = DEFAULT_NAMESPACE + ":";
 
     public SafeDeserializationRepository(SessionRepository<S> delegate,
                                          RedisOperations<Object, Object> sessionRedisOperations) {

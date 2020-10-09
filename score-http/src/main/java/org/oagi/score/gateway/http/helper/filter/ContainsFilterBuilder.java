@@ -32,10 +32,7 @@ public class ContainsFilterBuilder {
         if (StringUtils.isEmpty(s)) {
             return false;
         }
-        if (s.length() > 2 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"') {
-            return true;
-        }
-        return false;
+        return s.length() > 2 && s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"';
     }
 
     public static String unquote(String s) {

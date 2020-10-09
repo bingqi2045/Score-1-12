@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class ASCCRepository implements SrtRepository<ASCC> {
+public class ASCCRepository implements ScoreRepository<ASCC> {
 
     @Autowired
     private DSLContext dslContext;

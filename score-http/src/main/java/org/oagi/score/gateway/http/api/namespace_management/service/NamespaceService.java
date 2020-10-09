@@ -1,18 +1,17 @@
 package org.oagi.score.gateway.http.api.namespace_management.service;
 
 import org.jooq.DSLContext;
-import org.jooq.Record5;
 import org.jooq.Record6;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.namespace_management.data.Namespace;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceList;
 import org.oagi.score.gateway.http.api.namespace_management.data.NamespaceListRequest;
 import org.oagi.score.gateway.http.api.namespace_management.data.SimpleNamespace;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 import org.oagi.score.repo.component.namespace.NamespaceReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;

@@ -5,9 +5,9 @@ import lombok.Data;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.types.ULong;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.graph.Node;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListManifestRecord;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -98,9 +98,9 @@ public class CodeListGraphContext implements GraphContext {
                         record.get(CODE_LIST_VALUE.NAME),
                         record.get(CODE_LIST_VALUE.VALUE),
                         record.get(CODE_LIST.STATE),
-                        (record.get(CODE_LIST_VALUE.USED_INDICATOR) == (byte) 1) ? true : false,
-                        (record.get(CODE_LIST_VALUE.LOCKED_INDICATOR) == (byte) 1) ? true : false,
-                        (record.get(CODE_LIST_VALUE.EXTENSION_INDICATOR) == (byte) 1) ? true : false,
+                        record.get(CODE_LIST_VALUE.USED_INDICATOR) == (byte) 1,
+                        record.get(CODE_LIST_VALUE.LOCKED_INDICATOR) == (byte) 1,
+                        record.get(CODE_LIST_VALUE.EXTENSION_INDICATOR) == (byte) 1,
                         record.get(CODE_LIST_VALUE_MANIFEST.RELEASE_ID)
                 )).stream()
                 .collect(groupingBy(CodeListValueManifest::getCodeListManifestId));

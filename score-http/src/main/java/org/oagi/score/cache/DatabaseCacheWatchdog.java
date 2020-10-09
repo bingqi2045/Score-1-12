@@ -1,7 +1,7 @@
 package org.oagi.score.cache;
 
 import com.google.common.collect.Iterables;
-import org.oagi.score.repository.SrtRepository;
+import org.oagi.score.repository.ScoreRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
         implements InitializingBean, DisposableBean, Runnable {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -40,7 +40,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
     @Autowired
     private RedissonClient redissonClient;
 
-    private SrtRepository<T> delegate;
+    private final ScoreRepository<T> delegate;
 
     private long delay = 2L;
     private TimeUnit unit = TimeUnit.SECONDS;
@@ -48,7 +48,7 @@ public abstract class DatabaseCacheWatchdog<T> extends DatabaseCacheHandler
     private ScheduledExecutorService scheduledExecutorService;
 
     public DatabaseCacheWatchdog(String tableName, Class<T> mappedClass,
-                                 SrtRepository<T> delegate) {
+                                 ScoreRepository<T> delegate) {
         super(tableName, mappedClass);
         this.delegate = delegate;
     }

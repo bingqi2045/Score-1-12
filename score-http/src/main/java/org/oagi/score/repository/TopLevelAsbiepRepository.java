@@ -3,7 +3,6 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +13,7 @@ import java.util.List;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.TOP_LEVEL_ASBIEP;
 
 @Repository
-public class TopLevelAsbiepRepository implements SrtRepository<TopLevelAsbiep> {
+public class TopLevelAsbiepRepository implements ScoreRepository<TopLevelAsbiep> {
 
     @Autowired
     private DSLContext dslContext;
@@ -41,12 +40,12 @@ public class TopLevelAsbiepRepository implements SrtRepository<TopLevelAsbiep> {
                 .fetchInto(TopLevelAsbiep.class);
     }
 
-    public void updateTopLevelAbieLastUpdated(BigInteger userId, BigInteger topLevelAbieId) {
+    public void updateTopLevelAsbiepLastUpdated(BigInteger userId, BigInteger topLevelAsbiepId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         dslContext.update(TOP_LEVEL_ASBIEP)
                 .set(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
                 .set(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
                 .execute();
     }
 }

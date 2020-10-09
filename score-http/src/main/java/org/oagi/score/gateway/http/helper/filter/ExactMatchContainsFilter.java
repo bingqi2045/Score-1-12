@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 
 public class ExactMatchContainsFilter<T> implements Predicate<T> {
 
-    private String query;
-    private Function<T, String> mapper;
-    private boolean ignoreCase;
+    private final String query;
+    private final Function<T, String> mapper;
+    private final boolean ignoreCase;
 
     public ExactMatchContainsFilter(String query, Function<T, String> mapper, boolean ignoreCase) {
         this.query = (StringUtils.isEmpty(query)) ? null : ((ignoreCase) ? query.toLowerCase() : query);
@@ -28,16 +28,10 @@ public class ExactMatchContainsFilter<T> implements Predicate<T> {
         }
 
         if (this.ignoreCase) {
-            if (s.toLowerCase().contains(query)) {
-                return true;
-            }
+            return s.toLowerCase().contains(query);
         } else {
-            if (s.contains(query)) {
-                return true;
-            }
+            return s.contains(query);
         }
-
-        return false;
     }
 
 }

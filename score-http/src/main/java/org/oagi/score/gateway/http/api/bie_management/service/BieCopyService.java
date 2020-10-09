@@ -42,7 +42,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Transactional
 public class BieCopyService implements InitializingBean {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -71,7 +71,7 @@ public class BieCopyService implements InitializingBean {
     @Autowired
     private EventListenerContainer eventListenerContainer;
 
-    private String INTERESTED_EVENT_NAME = "bieCopyRequestEvent";
+    private final String INTERESTED_EVENT_NAME = "bieCopyRequestEvent";
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -373,30 +373,30 @@ public class BieCopyService implements InitializingBean {
 
     private class BieCopyContext {
 
-        private TopLevelAsbiep sourceTopLevelAsbiep;
-        private TopLevelAsbiep copiedTopLevelAsbiep;
-        private List<BigInteger> bizCtxIds;
-        private BigInteger userId;
-        private boolean isDeveloper;
+        private final TopLevelAsbiep sourceTopLevelAsbiep;
+        private final TopLevelAsbiep copiedTopLevelAsbiep;
+        private final List<BigInteger> bizCtxIds;
+        private final BigInteger userId;
+        private final boolean isDeveloper;
         private Timestamp timestamp;
 
-        private List<BieCopyAbie> abieList;
+        private final List<BieCopyAbie> abieList;
 
-        private List<BieCopyAsbiep> asbiepList;
-        private Map<BigInteger, List<BieCopyAsbiep>> roleOfAbieToAsbiepMap;
+        private final List<BieCopyAsbiep> asbiepList;
+        private final Map<BigInteger, List<BieCopyAsbiep>> roleOfAbieToAsbiepMap;
 
-        private List<BieCopyBbiep> bbiepList;
+        private final List<BieCopyBbiep> bbiepList;
 
-        private List<BieCopyAsbie> asbieList;
-        private Map<BigInteger, List<BieCopyAsbie>> fromAbieToAsbieMap;
-        private Map<BigInteger, List<BieCopyAsbie>> toAsbiepToAsbieMap;
+        private final List<BieCopyAsbie> asbieList;
+        private final Map<BigInteger, List<BieCopyAsbie>> fromAbieToAsbieMap;
+        private final Map<BigInteger, List<BieCopyAsbie>> toAsbiepToAsbieMap;
 
-        private List<BieCopyBbie> bbieList;
-        private Map<BigInteger, List<BieCopyBbie>> fromAbieToBbieMap;
-        private Map<BigInteger, List<BieCopyBbie>> toBbiepToBbieMap;
+        private final List<BieCopyBbie> bbieList;
+        private final Map<BigInteger, List<BieCopyBbie>> fromAbieToBbieMap;
+        private final Map<BigInteger, List<BieCopyBbie>> toBbiepToBbieMap;
 
-        private List<BieCopyBbieSc> bbieScList;
-        private Map<BigInteger, List<BieCopyBbieSc>> bbieToBbieScMap;
+        private final List<BieCopyBbieSc> bbieScList;
+        private final Map<BigInteger, List<BieCopyBbieSc>> bbieToBbieScMap;
 
         public BieCopyContext(BieCopyRequestEvent bieCopyRequestEvent) {
             BigInteger sourceTopLevelAsbiepId = bieCopyRequestEvent.getSourceTopLevelAsbiepId();

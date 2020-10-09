@@ -6,8 +6,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BieState;
 import org.oagi.score.data.TopLevelAsbiep;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.CreateBieFromExistingBieRequest;
 import org.oagi.score.gateway.http.api.cc_management.data.CcType;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -15,6 +13,8 @@ import org.oagi.score.gateway.http.event.BieCreateFromExistingBieRequestEvent;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.Utility;
 import org.oagi.score.redis.event.EventListenerContainer;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRecord;
 import org.oagi.score.repository.TopLevelAsbiepRepository;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -44,7 +44,7 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 @Transactional
 public class BieCreateFromExistingBieService implements InitializingBean {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -67,7 +67,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
     @Autowired
     private EventListenerContainer eventListenerContainer;
 
-    private String INTERESTED_EVENT_NAME = "bieCreateFromExistingBieRequestEvent";
+    private final String INTERESTED_EVENT_NAME = "bieCreateFromExistingBieRequestEvent";
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -85,7 +85,7 @@ public class BieCreateFromExistingBieService implements InitializingBean {
                 .where(
                         and(ASBIE.HASH_PATH.eq(request.getAsbieHashPath()),
                             ASBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId)))
-                .fetchOneInto(ULong.class);;
+                .fetchOneInto(ULong.class);
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
@@ -349,11 +349,11 @@ public class BieCreateFromExistingBieService implements InitializingBean {
 
     private class BieCreateFromExistingBieContext {
 
-        private TopLevelAsbiep sourceTopLevelAsbiep;
-        private TopLevelAsbiep targetTopLevelAsbiep;
+        private final TopLevelAsbiep sourceTopLevelAsbiep;
+        private final TopLevelAsbiep targetTopLevelAsbiep;
         private List<BigInteger> bizCtxIds;
-        private BigInteger userId;
-        private String sourceAsccpKey;
+        private final BigInteger userId;
+        private final String sourceAsccpKey;
 
         private LocalDateTime timestamp;
 
@@ -361,20 +361,20 @@ public class BieCreateFromExistingBieService implements InitializingBean {
         private List<BieCreateFromExistingBieAbie> abieList;
 
         private List<BieCreateFromExistingBieAsbiep> asbiepList;
-        private Map<BigInteger, List<BieCreateFromExistingBieAsbiep>> roleOfAbieToAsbiepMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieAsbiep>> roleOfAbieToAsbiepMap;
 
         private List<BieCreateFromExistingBieBbiep> bbiepList;
 
         private List<BieCreateFromExistingBieAsbie> asbieList;
-        private Map<BigInteger, List<BieCreateFromExistingBieAsbie>> fromAbieToAsbieMap;
-        private Map<BigInteger, List<BieCreateFromExistingBieAsbie>> toAsbiepToAsbieMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieAsbie>> fromAbieToAsbieMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieAsbie>> toAsbiepToAsbieMap;
 
         private List<BieCreateFromExistingBieBbie> bbieList;
-        private Map<BigInteger, List<BieCreateFromExistingBieBbie>> fromAbieToBbieMap;
-        private Map<BigInteger, List<BieCreateFromExistingBieBbie>> toBbiepToBbieMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieBbie>> fromAbieToBbieMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieBbie>> toBbiepToBbieMap;
 
         private List<BieCreateFromExistingBieBbieSc> bbieScList;
-        private Map<BigInteger, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
+        private final Map<BigInteger, List<BieCreateFromExistingBieBbieSc>> bbieToBbieScMap;
 
         public BieCreateFromExistingBieContext(BieCreateFromExistingBieRequestEvent event) {
             sourceAsccpKey = CcType.ASCCP.name() + "-" + dslContext.select(ASBIEP.BASED_ASCCP_MANIFEST_ID)

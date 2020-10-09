@@ -372,7 +372,7 @@ public class ScoreOAuth2LoginConfigurer<B extends HttpSecurityBuilder<B>> extend
     public class UserInfoEndpointConfig {
         private OAuth2UserService<OAuth2UserRequest, OAuth2User> userService;
         private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService;
-        private Map<String, Class<? extends OAuth2User>> customUserTypes = new HashMap<>();
+        private final Map<String, Class<? extends OAuth2User>> customUserTypes = new HashMap<>();
 
         private UserInfoEndpointConfig() {
         }

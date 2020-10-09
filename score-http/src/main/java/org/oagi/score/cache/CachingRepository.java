@@ -2,7 +2,7 @@ package org.oagi.score.cache;
 
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.oagi.score.repository.SrtRepository;
+import org.oagi.score.repository.ScoreRepository;
 import org.redisson.api.RReadWriteLock;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class CachingRepository<T> extends DatabaseCacheHandler {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DSLContext dslContext;
@@ -35,9 +35,9 @@ public class CachingRepository<T> extends DatabaseCacheHandler {
     @Autowired
     private RedissonClient redissonClient;
 
-    private SrtRepository<T> delegate;
+    private final ScoreRepository<T> delegate;
 
-    public CachingRepository(String tableName, Class<T> mappedClass, SrtRepository<T> delegate) {
+    public CachingRepository(String tableName, Class<T> mappedClass, ScoreRepository<T> delegate) {
         super(tableName, mappedClass);
         this.delegate = delegate;
     }

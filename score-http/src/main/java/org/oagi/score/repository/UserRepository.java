@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class UserRepository implements SrtRepository<AppUser> {
+public class UserRepository implements ScoreRepository<AppUser> {
 
     @Autowired
     private DSLContext dslContext;

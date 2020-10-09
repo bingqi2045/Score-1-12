@@ -23,7 +23,7 @@ public class ScoreOAuth2AuthorizationRequestRepository
 
     private final RedisOperations<Object, Object> sessionRedisOperations;
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public ScoreOAuth2AuthorizationRequestRepository(@Autowired RedisOperations<Object, Object> sessionRedisOperations) {
         this.sessionRedisOperations = sessionRedisOperations;

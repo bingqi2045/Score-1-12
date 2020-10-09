@@ -17,13 +17,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class BusinessContextRepository {
 
-    private DSLContext dslContext;
+    private final DSLContext dslContext;
 
     public BusinessContextRepository(@Autowired DSLContext dslContext) {
         this.dslContext = dslContext;
@@ -32,8 +32,8 @@ public class BusinessContextRepository {
     public class SelectBusinessContextArguments {
 
         private ULong topLevelAsbiepId;
-        private List<ULong> bizCtxIds = new ArrayList();
-        private List<Condition> conditions = new ArrayList();
+        private final List<ULong> bizCtxIds = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
         private SortField sortField;
         private int offset = -1;
         private int numberOfRows = -1;
@@ -275,7 +275,7 @@ public class BusinessContextRepository {
 
     public class SelectContextSchemeValueArguments {
 
-        private List<Condition> conditions = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
 
         public SelectContextSchemeValueArguments setContextSchemeId(BigInteger contextSchemeId) {
             return setContextSchemeId(ULong.valueOf(contextSchemeId));
@@ -311,7 +311,7 @@ public class BusinessContextRepository {
 
     public class SelectBusinessContextValueArguments {
 
-        private List<Condition> conditions = new ArrayList();
+        private final List<Condition> conditions = new ArrayList();
 
         public SelectBusinessContextValueArguments setBusinessContextId(BigInteger businessContextId) {
             return setBusinessContextId(ULong.valueOf(businessContextId));
