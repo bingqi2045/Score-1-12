@@ -4,8 +4,10 @@ import lombok.Data;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Error;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warn;
 
 @Data
 public class ReleaseValidationResponse {
@@ -57,6 +59,21 @@ public class ReleaseValidationResponse {
                (statusMapForAsccp.isEmpty() || statusMapForAsccp.values().stream().flatMap(e -> e.stream()).filter(e -> e.getLevel() == Error).count() == 0) &&
                (statusMapForBccp.isEmpty() || statusMapForBccp.values().stream().flatMap(e -> e.stream()).filter(e -> e.getLevel() == Error).count() == 0) &&
                (statusMapForCodeList.isEmpty() || statusMapForCodeList.values().stream().flatMap(e -> e.stream()).filter(e -> e.getLevel() == Error).count() == 0);
+    }
+
+    public void clearWarnings() {
+        statusMapForAcc.entrySet().forEach(e -> {
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+        });
+        statusMapForAsccp.entrySet().forEach(e -> {
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+        });
+        statusMapForBccp.entrySet().forEach(e -> {
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+        });
+        statusMapForCodeList.entrySet().forEach(e -> {
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+        });
     }
 
     public void addMessageForAcc(BigInteger manifestId, ValidationMessageLevel level, String message) {
