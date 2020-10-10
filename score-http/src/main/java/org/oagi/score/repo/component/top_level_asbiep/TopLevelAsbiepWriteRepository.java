@@ -1,6 +1,7 @@
 package org.oagi.score.repo.component.top_level_asbiep;
 
 import org.jooq.DSLContext;
+import org.jooq.UpdateSetFirstStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
@@ -45,12 +46,13 @@ public class TopLevelAsbiepWriteRepository {
             record.setVersion(emptyToNull(request.getVersion()));
         }
 
-        if (record.changed()) {
-            record.setLastUpdateTimestamp(request.getLocalDateTime());
-            record.update(TOP_LEVEL_ASBIEP.STATUS,
-                    TOP_LEVEL_ASBIEP.VERSION,
-                    TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP);
-        }
+        dslContext.update(TOP_LEVEL_ASBIEP)
+                .set(TOP_LEVEL_ASBIEP.STATUS, record.getStatus())
+                .set(TOP_LEVEL_ASBIEP.VERSION, record.getVersion())
+                .set(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP, request.getLocalDateTime())
+                .set(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY, requesterId)
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(record.getTopLevelAsbiepId()))
+                .execute();
     }
 
 }
