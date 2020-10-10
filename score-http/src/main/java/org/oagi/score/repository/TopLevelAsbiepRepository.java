@@ -39,13 +39,4 @@ public class TopLevelAsbiepRepository implements ScoreRepository<TopLevelAsbiep>
                 .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAbieIds))
                 .fetchInto(TopLevelAsbiep.class);
     }
-
-    public void updateTopLevelAsbiepLastUpdated(BigInteger userId, BigInteger topLevelAsbiepId) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        dslContext.update(TOP_LEVEL_ASBIEP)
-                .set(TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP, timestamp.toLocalDateTime())
-                .set(TOP_LEVEL_ASBIEP.LAST_UPDATED_BY, ULong.valueOf(userId))
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)))
-                .execute();
-    }
 }

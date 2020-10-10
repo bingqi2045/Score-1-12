@@ -155,15 +155,6 @@ public class BieEditService implements InitializingBean {
     }
 
     @Transactional
-    public BieEditAbieNode updateRootNode(AuthenticatedPrincipal user, TopLevelAsbiepRequest request) {
-        UpdateTopLevelAsbiepRequest updateTopLevelAsbiepRequest = new UpdateTopLevelAsbiepRequest(
-                user, LocalDateTime.now(), request.getTopLevelAsbiepId(), request.getStatus(), request.getVersion());
-        topLevelAsbiepWriteRepository.updateTopLevelAsbiep(updateTopLevelAsbiepRequest);
-        BieEditTreeController treeController = getTreeController(user, request.getTopLevelAsbiepId());
-        return treeController.getRootNode(request.getTopLevelAsbiepId());
-    }
-
-    @Transactional
     public BccForBie getBcc(AuthenticatedPrincipal user, BigInteger bccId) {
         return bieRepository.getBcc(bccId);
     }
@@ -273,7 +264,11 @@ public class BieEditService implements InitializingBean {
                         .collect(Collectors.toMap(e -> e.getHashPath(), Function.identity()))
         );
 
-        this.updateTopLevelAsbiepLastUpdated(user, request.getTopLevelAsbiepId());
+        String status = request.getTopLevelAsbiepDetail().getStatus();
+        String version = request.getTopLevelAsbiepDetail().getVersion();
+        UpdateTopLevelAsbiepRequest topLevelAsbiepRequest = new UpdateTopLevelAsbiepRequest(user, timestamp,
+                request.getTopLevelAsbiepId(), status, version);
+        topLevelAsbiepWriteRepository.updateTopLevelAsbiep(topLevelAsbiepRequest);
         return response;
     }
 
@@ -357,11 +352,6 @@ public class BieEditService implements InitializingBean {
 
         BigInteger manifestId = extensionService.appendUserExtension(eAcc, ueAcc, releaseId, user);
         return manifestId;
-    }
-
-    @Transactional
-    public void updateTopLevelAsbiepLastUpdated(AuthenticatedPrincipal user, BigInteger topLevelAsbiepId) {
-        topLevelAsbiepRepository.updateTopLevelAsbiepLastUpdated(sessionService.userId(user), topLevelAsbiepId);
     }
 
     @Autowired

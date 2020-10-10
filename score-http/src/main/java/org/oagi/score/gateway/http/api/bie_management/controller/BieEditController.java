@@ -89,15 +89,6 @@ public class BieEditController {
         return rootNode;
     }
 
-    @RequestMapping(value = "/profile_bie/node/root/{id}", method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public BieEditNode updateRootNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                      @PathVariable("id") BigInteger topLevelAsbiepId,
-                                      @RequestBody TopLevelAsbiepRequest request) {
-
-        return service.updateRootNode(user, request);
-    }
-
     @RequestMapping(value = "/profile_bie/{topLevelAsbiepId}/abie/{manifestId}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
