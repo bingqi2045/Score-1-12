@@ -17,13 +17,22 @@ public class ReleaseValidationResponse {
         Error
     }
 
+    public enum ValidationMessageCode {
+        ACC_BasedACC,
+        ACC_Association,
+        ASCCP_RoleOfAcc,
+        NAMESPACE
+    }
+
     private class ValidationMessage {
         private ValidationMessageLevel level;
         private String message;
+        private ValidationMessageCode code;
 
-        public ValidationMessage(ValidationMessageLevel level, String message) {
+        public ValidationMessage(ValidationMessageLevel level, String message, ValidationMessageCode code) {
             this.level = level;
             this.message = message;
+            this.code = code;
         }
 
         public ValidationMessageLevel getLevel() {
@@ -32,6 +41,10 @@ public class ReleaseValidationResponse {
 
         public String getMessage() {
             return message;
+        }
+
+        public ValidationMessageCode getCode() {
+            return code;
         }
 
         @Override
@@ -76,24 +89,25 @@ public class ReleaseValidationResponse {
         });
     }
 
-    public void addMessageForAcc(BigInteger manifestId, ValidationMessageLevel level, String message) {
-        addMessage(statusMapForAcc, manifestId, level, message);
+    public void addMessageForAcc(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+        addMessage(statusMapForAcc, manifestId, level, message, code);
     }
 
-    public void addMessageForAsccp(BigInteger manifestId, ValidationMessageLevel level, String message) {
-        addMessage(statusMapForAsccp, manifestId, level, message);
+    public void addMessageForAsccp(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+        addMessage(statusMapForAsccp, manifestId, level, message, code);
     }
 
-    public void addMessageForBccp(BigInteger manifestId, ValidationMessageLevel level, String message) {
-        addMessage(statusMapForBccp, manifestId, level, message);
+    public void addMessageForBccp(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+        addMessage(statusMapForBccp, manifestId, level, message, code);
     }
 
-    public void addMessageForCodeList(BigInteger manifestId, ValidationMessageLevel level, String message) {
-        addMessage(statusMapForCodeList, manifestId, level, message);
+    public void addMessageForCodeList(BigInteger manifestId, ValidationMessageLevel level, String message, ValidationMessageCode code) {
+        addMessage(statusMapForCodeList, manifestId, level, message, code);
     }
 
     private void addMessage(Map<BigInteger, Set<ValidationMessage>> statusMap,
-                            BigInteger manifestId, ValidationMessageLevel level, String message) {
+                            BigInteger manifestId, ValidationMessageLevel level, String message,
+                            ValidationMessageCode code) {
         Set<ValidationMessage> messages;
         if (!statusMap.containsKey(manifestId)) {
             messages = new HashSet();
@@ -102,6 +116,6 @@ public class ReleaseValidationResponse {
             messages = statusMap.get(manifestId);
         }
 
-        messages.add(new ValidationMessage(level, message));
+        messages.add(new ValidationMessage(level, message, code));
     }
 }

@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.NAMESPACE;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ACC_Association;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ACC_BasedACC;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ASCCP_RoleOfAcc;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Error;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warn;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -192,31 +196,8 @@ public class ReleaseValidator {
             }
             if (accRecord.getNamespaceId() == null) {
                 response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                        Error, "Namespace is required.");
+                        Error, "Namespace is required.", NAMESPACE);
             }
-
-            // check ASCCPs whose `roleOfAcc` is this acc.
-            asccpManifestRecords.stream().filter(e -> e.getRoleOfAccManifestId().equals(accManifestRecord.getAccManifestId()))
-                    .forEach(asccpManifestRecord -> {
-                        AsccpRecord asccpRecord = asccpRecordMap.get(asccpManifestRecord.getAsccpId());
-                        CcState asccpState = CcState.valueOf(asccpRecord.getState());
-                        if (asccpState == CcState.WIP || asccpState == CcState.Draft || asccpState == CcState.Deleted) {
-                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
-                            response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                    Error, "'" + asccpRecord.getDen() + "' is required");
-                        } else if (asccpState == CcState.Candidate &&
-                                !assignedAsccpComponentManifestIds.contains(
-                                        asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
-                            if (asccpManifestRecord.getPrevAsccpManifestId() != null) {
-                                response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                        Warn, "'" + asccpRecord.getDen() + "' may need to be assigned");
-                            } else {
-                                response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                        Error, "'" + asccpRecord.getDen() + "' is required");
-                            }
-                        }
-                    });
 
             // check ACCs whose `basedACC` is this acc.
             accManifestRecords.stream().filter(e -> e.getAccManifestId().equals(accManifestRecord.getBasedAccManifestId()))
@@ -225,18 +206,22 @@ public class ReleaseValidator {
                         CcState basedAccstate = CcState.valueOf(basedAcc.getState());
                         if (basedAccstate == CcState.WIP || basedAccstate == CcState.Draft || basedAccstate == CcState.Deleted) {
                             response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + basedAcc.getDen() + "' should be in '" + CcState.Candidate + "'.");
-                            response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + basedAcc.getDen() + "' is required");
+                                    Error, "'" + basedAcc.getDen() + "' should be in '" + CcState.Candidate + "'.",
+                                    ACC_BasedACC);
+                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                    Error, "'" + accRecord.getDen() + "' is required.",
+                                    ACC_BasedACC);
                         } else if (basedAccstate == CcState.Candidate &&
-                                !assignedAsccpComponentManifestIds.contains(
-                                        accManifestRecord.getAccManifestId().toBigInteger())) {
+                                !assignedAccComponentManifestIds.contains(
+                                        basedAccManifestRecord.getAccManifestId().toBigInteger())) {
                             if (basedAccManifestRecord.getPrevAccManifestId() != null) {
-                                response.addMessageForAsccp(basedAccManifestRecord.getAccManifestId().toBigInteger(),
-                                        Warn, "'" + basedAcc.getDen() + "' may need to be assigned");
+                                response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
+                                        Warn, "'" + basedAcc.getDen() + "' may need to be assigned.",
+                                        ACC_BasedACC);
                             } else {
-                                response.addMessageForAsccp(basedAccManifestRecord.getAccManifestId().toBigInteger(),
-                                        Error, "'" + basedAcc.getDen() + "' is required");
+                                response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                        Error, "'" + basedAcc.getDen() + "' is required.",
+                                        ACC_BasedACC);
                             }
                         }
                     });
@@ -249,18 +234,22 @@ public class ReleaseValidator {
                         CcState asccpState = CcState.valueOf(asccpRecord.getState());
                         if (asccpState == CcState.WIP || asccpState == CcState.Draft || asccpState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
+                                    Error, "'" + asccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
+                                    ACC_Association);
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                    Error, "'" + asccpRecord.getDen() + "' is required");
+                                    Error, "'" + asccpRecord.getDen() + "' is required.",
+                                    ACC_Association);
                         } else if (asccpState == CcState.Candidate &&
                                 !assignedAsccpComponentManifestIds.contains(
                                         asccpManifestRecord.getAsccpManifestId().toBigInteger())) {
                             if (asccManifestRecord.getPrevAsccManifestId() != null) {
                                 response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                        Warn, "'" + asccpRecord.getDen() + "' may need to be assigned");
+                                        Warn, "'" + asccpRecord.getDen() + "' may need to be assigned.",
+                                        ACC_Association);
                             } else {
                                 response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                        Error, "'" + asccpRecord.getDen() + "' is required");
+                                        Error, "'" + asccpRecord.getDen() + "' is required.",
+                                        ACC_Association);
                             }
                         }
                     });
@@ -273,18 +262,22 @@ public class ReleaseValidator {
                         CcState bccpState = CcState.valueOf(bccpRecord.getState());
                         if (bccpState == CcState.WIP || bccpState == CcState.Draft || bccpState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + bccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
+                                    Error, "'" + bccpRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
+                                    ACC_Association);
                             response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                                    Error, "'" + bccpRecord.getDen() + "' is required");
+                                    Error, "'" + bccpRecord.getDen() + "' is required.",
+                                    ACC_Association);
                         } else if (bccpState == CcState.Candidate &&
                                 !assignedBccpComponentManifestIds.contains(
                                         bccpManifestRecord.getBccpManifestId().toBigInteger())) {
                             if (bccManifestRecord.getPrevBccManifestId() != null) {
                                 response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                                        Warn, "'" + bccpRecord.getDen() + "' may need to be assigned");
+                                        Warn, "'" + bccpRecord.getDen() + "' may need to be assigned.",
+                                        ACC_Association);
                             } else {
                                 response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                                        Error, "'" + bccpRecord.getDen() + "' is required");
+                                        Error, "'" + bccpRecord.getDen() + "' is required.",
+                                        ACC_Association);
                             }
                         }
                     });
@@ -302,32 +295,8 @@ public class ReleaseValidator {
             }
             if (asccpRecord.getNamespaceId() == null) {
                 response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                        Error, "Namespace is required.");
+                        Error, "Namespace is required.", NAMESPACE);
             }
-
-            // check ASCCs whose `toAsccp` is this asccp.
-            asccManifestRecords.stream().filter(e -> e.getToAsccpManifestId().equals(asccpManifestRecord.getAsccpManifestId()))
-                    .forEach(asccManifestRecord -> {
-                        AccManifestRecord accManifestRecord = accManifestRecordMap.get(asccManifestRecord.getFromAccManifestId());
-                        AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
-                        CcState accState = CcState.valueOf(accRecord.getState());
-                        if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
-                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' is required");
-                            response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
-                        } else if (accState == CcState.Candidate &&
-                                !assignedAccComponentManifestIds.contains(
-                                        accManifestRecord.getAccManifestId().toBigInteger())) {
-                            if (accManifestRecord.getPrevAccManifestId() != null) {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Warn, "'" + accRecord.getDen() + "' may need to be assigned");
-                            } else {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Error, "'" + accRecord.getDen() + "' is required");
-                            }
-                        }
-                    });
 
             // check ACCs whose `roleOfAcc` is this acc.
             accManifestRecords.stream().filter(e -> e.getAccManifestId().equals(asccpManifestRecord.getRoleOfAccManifestId()))
@@ -336,18 +305,22 @@ public class ReleaseValidator {
                         CcState accState = CcState.valueOf(accRecord.getState());
                         if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
                             response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' is required");
+                                    Error, "'" + accRecord.getDen() + "' is required.",
+                                    ASCCP_RoleOfAcc);
                             response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
+                                    Error, "'" + accRecord.getDen() + "' should be in '" + CcState.Candidate + "'.",
+                                    ASCCP_RoleOfAcc);
                         } else if (accState == CcState.Candidate &&
                                 !assignedAccComponentManifestIds.contains(
                                         accManifestRecord.getAccManifestId().toBigInteger())) {
                             if (accManifestRecord.getPrevAccManifestId() != null) {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Warn, "'" + accRecord.getDen() + "' may need to be assigned");
+                                response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                        Warn, "'" + accRecord.getDen() + "' may need to be assigned.",
+                                        ASCCP_RoleOfAcc);
                             } else {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Error, "'" + accRecord.getDen() + "' is required");
+                                response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
+                                        Error, "'" + accRecord.getDen() + "' is required.",
+                                        ASCCP_RoleOfAcc);
                             }
                         }
                     });
@@ -365,32 +338,8 @@ public class ReleaseValidator {
             }
             if (bccpRecord.getNamespaceId() == null) {
                 response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                        Error, "Namespace is required.");
+                        Error, "Namespace is required.", NAMESPACE);
             }
-
-            // check BCCs whose `toBccp` is this bccp.
-            bccManifestRecords.stream().filter(e -> e.getToBccpManifestId().equals(bccpManifestRecord.getBccpManifestId()))
-                    .forEach(bccManifestRecord -> {
-                        AccManifestRecord accManifestRecord = accManifestRecordMap.get(bccManifestRecord.getFromAccManifestId());
-                        AccRecord accRecord = accRecordMap.get(accManifestRecord.getAccId());
-                        CcState accState = CcState.valueOf(accRecord.getState());
-                        if (accState == CcState.WIP || accState == CcState.Draft || accState == CcState.Deleted) {
-                            response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' is required");
-                            response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                                    Error, "'" + accRecord.getDen() + "' should be in '" + CcState.Candidate + "'.");
-                        } else if (accState == CcState.Candidate &&
-                                !assignedAccComponentManifestIds.contains(
-                                        accManifestRecord.getAccManifestId().toBigInteger())) {
-                            if (bccpManifestRecord.getPrevBccpManifestId() != null) {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Warn, "'" + accRecord.getDen() + "' may need to be assigned");
-                            } else {
-                                response.addMessageForAsccp(accManifestRecord.getAccManifestId().toBigInteger(),
-                                        Error, "'" + accRecord.getDen() + "' is required");
-                            }
-                        }
-                    });
         }
     }
 
