@@ -82,7 +82,7 @@ public class CcListRepository {
                 field = field("den");
                 break;
             case "revision":
-                field = field("revision");
+                field = field(LOG.REVISION_NUM);
                 break;
             case "owner":
                 field = field("owner");
