@@ -18,7 +18,7 @@ import static org.oagi.score.gateway.http.api.release_management.data.ReleaseVal
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ACC_BasedACC;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageCode.ASCCP_RoleOfAcc;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Error;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warn;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warning;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 public class ReleaseValidator {
@@ -218,7 +218,7 @@ public class ReleaseValidator {
                                             ACC_BasedACC);
                                 } else {
                                     response.addMessageForAcc(basedAccManifestRecord.getAccManifestId().toBigInteger(),
-                                            Warn, "'" + basedAcc.getDen() + "' has been revised but not included in the release assignment.",
+                                            Warning, "'" + basedAcc.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_BasedACC);
                                 }
                             }
@@ -245,7 +245,7 @@ public class ReleaseValidator {
                                             ACC_Association);
                                 } else {
                                     response.addMessageForAsccp(asccpManifestRecord.getAsccpManifestId().toBigInteger(),
-                                            Warn, "'" + asccpRecord.getDen() + "' has been revised but not included in the release assignment.",
+                                            Warning, "'" + asccpRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_Association);
                                 }
                             }
@@ -272,7 +272,7 @@ public class ReleaseValidator {
                                             ACC_Association);
                                 } else {
                                     response.addMessageForBccp(bccpManifestRecord.getBccpManifestId().toBigInteger(),
-                                            Warn, "'" + bccpRecord.getDen() + "' has been revised but not included in the release assignment.",
+                                            Warning, "'" + bccpRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ACC_Association);
                                 }
                             }
@@ -314,7 +314,7 @@ public class ReleaseValidator {
                                             ASCCP_RoleOfAcc);
                                 } else {
                                     response.addMessageForAcc(accManifestRecord.getAccManifestId().toBigInteger(),
-                                            Warn, "'" + accRecord.getDen() + "' has been revised but not included in the release assignment.",
+                                            Warning, "'" + accRecord.getDen() + "' has been revised but not included in the release assignment.",
                                             ASCCP_RoleOfAcc);
                                 }
                             }

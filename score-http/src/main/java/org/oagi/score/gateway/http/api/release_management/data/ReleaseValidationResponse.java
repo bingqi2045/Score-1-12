@@ -7,13 +7,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Error;
-import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warn;
+import static org.oagi.score.gateway.http.api.release_management.data.ReleaseValidationResponse.ValidationMessageLevel.Warning;
 
 @Data
 public class ReleaseValidationResponse {
 
     public enum ValidationMessageLevel {
-        Warn,
+        Warning,
         Error
     }
 
@@ -76,16 +76,16 @@ public class ReleaseValidationResponse {
 
     public void clearWarnings() {
         statusMapForAcc.entrySet().forEach(e -> {
-            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warning).collect(Collectors.toSet()));
         });
         statusMapForAsccp.entrySet().forEach(e -> {
-            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warning).collect(Collectors.toSet()));
         });
         statusMapForBccp.entrySet().forEach(e -> {
-            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warning).collect(Collectors.toSet()));
         });
         statusMapForCodeList.entrySet().forEach(e -> {
-            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warn).collect(Collectors.toSet()));
+            e.setValue(e.getValue().stream().filter(x -> x.getLevel() != Warning).collect(Collectors.toSet()));
         });
     }
 
