@@ -59,6 +59,9 @@ public class ExtensionService {
     private CcNodeRepository repository;
 
     @Autowired
+    private CcNodeService service;
+
+    @Autowired
     private ManifestRepository manifestRepository;
 
     @Autowired
@@ -76,6 +79,9 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
+        if (!ueAcc.getObjectClassTerm().equals("All User Extension Group")) {
+            return service.getAccNode(user, manifestId);
+        }
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
         if (asccpNode == null) {
             return null;
