@@ -621,7 +621,6 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
-        conditions.add(ASCCP.DEN.notContains("User Extension Group"));
 
         if (request.getDeprecated() != null) {
             conditions.add(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));
@@ -654,9 +653,11 @@ public class CcListRepository {
         if (request.getUpdateEndDate() != null) {
             conditions.add(ASCCP.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
-
         if (request.getAsccpTypes().size() != 0) {
             conditions.add(ASCCP.TYPE.in(request.getAsccpTypes()));
+        }
+        if (request.getIsBIEUsable() != null && request.getIsBIEUsable()) {
+            conditions.add(ACC.OAGIS_COMPONENT_TYPE.notIn(Arrays.asList(SemanticGroup.getValue(), UserExtensionGroup.getValue())));
         }
 
         if (request.getFindUsages() != null) {
@@ -714,6 +715,10 @@ public class CcListRepository {
                 .from(ASCCP)
                 .join(ASCCP_MANIFEST)
                 .on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID).and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(release.getReleaseId()))))
+                .join(ACC_MANIFEST)
+                .on(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID))
+                .join(ACC)
+                .on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(LOG)
                 .on(ASCCP_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(RELEASE)
