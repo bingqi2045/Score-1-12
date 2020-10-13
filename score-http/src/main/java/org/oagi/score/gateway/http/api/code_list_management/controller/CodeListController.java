@@ -30,6 +30,8 @@ public class CodeListController {
             @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestParam(name = "releaseId") long releaseId,
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "definition", required = false) String definition,
+            @RequestParam(name = "module", required = false) String module,
             @RequestParam(name = "states", required = false) String states,
             @RequestParam(name = "deprecated", required = false) String deprecated,
             @RequestParam(name = "extensible", required = false) Boolean extensible,
@@ -46,6 +48,8 @@ public class CodeListController {
 
         request.setReleaseId(releaseId);
         request.setName(name);
+        request.setDefinition(definition);
+        request.setModule(module);
         if (!StringUtils.isEmpty(states)) {
             List<String> stateStrings = Arrays.asList(states.split(",")).stream().collect(Collectors.toList());
             request.setStates(stateStrings.stream()

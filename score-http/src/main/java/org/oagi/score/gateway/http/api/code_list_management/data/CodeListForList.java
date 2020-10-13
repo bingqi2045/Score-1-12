@@ -11,6 +11,9 @@ public class CodeListForList {
 
     private BigInteger codeListManifestId;
     private String codeListName;
+    private String definition;
+    private String definitionSource;
+    private String modulePath;
     private String guid;
     private BigInteger basedCodeListManifestId;
     private String basedCodeListName;

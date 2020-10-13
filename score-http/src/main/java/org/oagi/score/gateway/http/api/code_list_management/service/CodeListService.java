@@ -31,7 +31,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.*;
+import static org.oagi.score.gateway.http.api.module_management.data.Module.MODULE_SEPARATOR;
 import static org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder.contains;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
@@ -48,11 +49,7 @@ public class CodeListService extends EventHandler {
     @Autowired
     private CodeListWriteRepository codeListWriteRepository;
 
-    private SelectOnConditionStep<Record17<
-            ULong, String, String, ULong, String,
-            String, ULong, String, String, LocalDateTime,
-            ULong, String, String, Byte, String,
-            Byte, UInteger>> getSelectOnConditionStep() {
+    private SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> getSelectOnConditionStep() {
         return dslContext.select(
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.GUID,
@@ -70,6 +67,9 @@ public class CodeListService extends EventHandler {
                 CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
                 CODE_LIST.STATE,
                 CODE_LIST.IS_DEPRECATED.as("deprecated"),
+                CODE_LIST.DEFINITION,
+                CODE_LIST.DEFINITION_SOURCE,
+                concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).as("module_path"),
                 LOG.REVISION_NUM.as("revision"))
                 .from(CODE_LIST_MANIFEST)
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
@@ -78,21 +78,31 @@ public class CodeListService extends EventHandler {
                 .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .leftJoin(CODE_LIST_MANIFEST.as("based")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID))
                 .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
-                .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID));
+                .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .leftJoin(MODULE_CODE_LIST_MANIFEST)
+                .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
+                .leftJoin(MODULE_SET_ASSIGNMENT)
+                .on(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
+                .leftJoin(MODULE)
+                .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
+                .leftJoin(MODULE_DIR)
+                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID));
     }
 
     public PageResponse<CodeListForList> getCodeLists(AuthenticatedPrincipal user, CodeListForListRequest request) {
-        SelectOnConditionStep<
-                Record17<ULong, String, String, ULong, String,
-                        String, ULong, String, String, LocalDateTime,
-                        ULong, String, String, Byte, String,
-                        Byte, UInteger>> step = getSelectOnConditionStep();
+        SelectOnConditionStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> step = getSelectOnConditionStep();
 
         List<Condition> conditions = new ArrayList();
         conditions.add(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
 
         if (!StringUtils.isEmpty(request.getName())) {
             conditions.addAll(contains(request.getName(), CODE_LIST.NAME));
+        }
+        if (!StringUtils.isEmpty(request.getDefinition())) {
+            conditions.addAll(contains(request.getDefinition(), CODE_LIST.DEFINITION));
+        }
+        if (!StringUtils.isEmpty(request.getModule())) {
+            conditions.add(concat(MODULE_DIR.PATH, inline(MODULE_SEPARATOR), MODULE.NAME).containsIgnoreCase(request.getModule()));
         }
         if (!request.getStates().isEmpty()) {
             conditions.add(CODE_LIST.STATE.in(
@@ -117,10 +127,7 @@ public class CodeListService extends EventHandler {
             conditions.add(CODE_LIST.LAST_UPDATE_TIMESTAMP.lessThan(new Timestamp(request.getUpdateEndDate().getTime()).toLocalDateTime()));
         }
 
-        SelectConnectByStep<Record17<ULong, String, String, ULong, String,
-                String, ULong, String, String, LocalDateTime,
-                ULong, String, String, Byte, String,
-                Byte, UInteger>> conditionStep = step;
+        SelectConnectByStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> conditionStep = step;
         if (!conditions.isEmpty()) {
             conditionStep = step.where(conditions);
         }
@@ -151,10 +158,7 @@ public class CodeListService extends EventHandler {
         }
 
 
-        SelectWithTiesAfterOffsetStep<Record17<ULong, String, String, ULong, String,
-                String, ULong, String, String, LocalDateTime,
-                ULong, String, String, Byte, String,
-                Byte, UInteger>> offsetStep = null;
+        SelectWithTiesAfterOffsetStep<Record20<ULong, String, String, ULong, String, String, ULong, String, String, LocalDateTime, ULong, String, String, Byte, String, Byte, String, String, String, UInteger>> offsetStep = null;
         if (sortField != null) {
             offsetStep = conditionStep.orderBy(sortField)
                     .limit(pageRequest.getOffset(), pageRequest.getPageSize());
@@ -186,10 +190,22 @@ public class CodeListService extends EventHandler {
         response.setPage(pageRequest.getPageIndex());
         response.setSize(pageRequest.getPageSize());
         response.setLength(dslContext.selectCount()
-                .from(CODE_LIST)
-                .join(CODE_LIST_MANIFEST).on(CODE_LIST.CODE_LIST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_ID))
+                .from(CODE_LIST_MANIFEST)
+                .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(APP_USER.as("owner")).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .join(APP_USER.as("updater")).on(CODE_LIST.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
+                .leftJoin(CODE_LIST_MANIFEST.as("based")).on(CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.as("based").CODE_LIST_MANIFEST_ID))
+                .leftJoin(CODE_LIST.as("based_code_list")).on(CODE_LIST_MANIFEST.as("based").CODE_LIST_ID.eq(CODE_LIST.as("based_code_list").CODE_LIST_ID))
+                .leftJoin(AGENCY_ID_LIST_VALUE).on(CODE_LIST.AGENCY_ID.eq(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID))
+                .leftJoin(MODULE_CODE_LIST_MANIFEST)
+                .on(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.eq(MODULE_CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
+                .leftJoin(MODULE_SET_ASSIGNMENT)
+                .on(MODULE_CODE_LIST_MANIFEST.MODULE_SET_ASSIGNMENT_ID.eq(MODULE_SET_ASSIGNMENT.MODULE_SET_ASSIGNMENT_ID))
+                .leftJoin(MODULE)
+                .on(MODULE_SET_ASSIGNMENT.MODULE_ID.eq(MODULE.MODULE_ID))
+                .leftJoin(MODULE_DIR)
+                .on(MODULE.MODULE_DIR_ID.eq(MODULE_DIR.MODULE_DIR_ID))
                 .where(conditions)
                 .fetchOptionalInto(Integer.class).orElse(0));
 

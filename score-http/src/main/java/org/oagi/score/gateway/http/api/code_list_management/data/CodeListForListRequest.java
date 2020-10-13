@@ -13,6 +13,8 @@ public class CodeListForListRequest {
 
     private long releaseId;
     private String name;
+    private String definition;
+    private String module;
     private List<CcState> states = Collections.emptyList();
     private Boolean deprecated;
     private Boolean extensible;
