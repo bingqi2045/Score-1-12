@@ -26,6 +26,7 @@ public class CcListRequest {
     private List<String> excludes;
     private CcId findUsages;
     private Boolean isBIEUsable;
+    private Boolean commonlyUsed;
 
     private Date updateStartDate;
     private Date updateEndDate;

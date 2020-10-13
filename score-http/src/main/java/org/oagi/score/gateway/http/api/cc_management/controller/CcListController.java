@@ -43,6 +43,7 @@ public class CcListController {
             @RequestParam(name = "findUsagesType", required = false) String findUsagesType,
             @RequestParam(name = "findUsagesManifestId", required = false) BigInteger findUsagesManifestId,
             @RequestParam(name = "isBIEUsable", required = false) String isBIEUsable,
+            @RequestParam(name = "commonlyUsed", required = false) String commonlyUsed,
             @RequestParam(name = "sortActive") String sortActive,
             @RequestParam(name = "sortDirection") String sortDirection,
             @RequestParam(name = "pageIndex") int pageIndex,
@@ -69,6 +70,13 @@ public class CcListController {
                 request.setIsBIEUsable(true);
             } else if ("false".equalsIgnoreCase(isBIEUsable.toLowerCase())) {
                 request.setIsBIEUsable(false);
+            }
+        }
+        if (!StringUtils.isEmpty(commonlyUsed)) {
+            if ("true".equalsIgnoreCase(commonlyUsed.toLowerCase())) {
+                request.setCommonlyUsed(true);
+            } else if ("false".equalsIgnoreCase(commonlyUsed.toLowerCase())) {
+                request.setCommonlyUsed(false);
             }
         }
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :

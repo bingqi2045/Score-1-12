@@ -881,6 +881,9 @@ public class CcListRepository {
         } else {
             conditions.add(DT.TYPE.notEqual(DTType.Core.toString()));
         }
+        if (request.getCommonlyUsed() != null) {
+            conditions.add(DT.COMMONLY_USED.eq((byte) (request.getCommonlyUsed() ? 1 : 0)));
+        }
         if (request.getUpdateStartDate() != null) {
             conditions.add(DT.LAST_UPDATE_TIMESTAMP.greaterThan(new Timestamp(request.getUpdateStartDate().getTime()).toLocalDateTime()));
         }

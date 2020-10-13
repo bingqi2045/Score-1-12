@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dt extends TableImpl<DtRecord> {
 
-    private static final long serialVersionUID = -73662101;
+    private static final long serialVersionUID = 2089656647;
 
     /**
      * The reference instance of <code>oagi.dt</code>
@@ -131,6 +131,11 @@ public class Dt extends TableImpl<DtRecord> {
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public final TableField<DtRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the DT.\n\nState change can't be undone. But the history record can still keep the records of when the state was changed.");
+
+    /**
+     * The column <code>oagi.dt.commonly_used</code>. This is a flag to indicate commonly used DT(s) by BCCPs.
+     */
+    public final TableField<DtRecord, Byte> COMMONLY_USED = createField(DSL.name("commonly_used"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This is a flag to indicate commonly used DT(s) by BCCPs.");
 
     /**
      * The column <code>oagi.dt.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this DT.

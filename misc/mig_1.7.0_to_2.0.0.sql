@@ -457,6 +457,14 @@ UPDATE `dt`
 SET `dt`.`state` = 'QA'
 WHERE `dt`.`state` = 'Candidate' AND (`app_user`.`is_developer` != 1 OR `dt`.`release_id` != (SELECT `release_id` FROM `release` WHERE `release_num` = 'Working'));
 
+-- Add `commonly_used` column
+ALTER TABLE `dt` ADD COLUMN `commonly_used` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This is a flag to indicate commonly used DT(s) by BCCPs.' AFTER `state`;
+
+-- Update `commonly_used` column
+UPDATE `dt`, (SELECT DISTINCT `bdt_id` FROM `bccp`) t
+SET `dt`.`commonly_used` = 1
+WHERE `dt`.`dt_id` = t.`bdt_id`;
+
 -- Add deprecated annotations
 ALTER TABLE `dt` MODIFY COLUMN `release_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nRELEASE_ID is an incremental integer. It is an unformatted counter part of the RELEASE_NUMBER in the RELEASE table. RELEASE_ID can be 1, 2, 3, and so on. A release ID indicates the release point when a particular component revision is released. A component revision is only released once and assumed to be included in the subsequent releases unless it has been deleted (as indicated by the REVISION_ACTION column).\n\nNot all component revisions have an associated RELEASE_ID because some revisions may never be released. USER_EXTENSION_GROUP component type is never part of a release.\n\nUnpublished components cannot be released.\n\nThis column is NULL for the current record.',
                  MODIFY COLUMN `current_bdt_id` bigint(20) unsigned DEFAULT NULL COMMENT '@deprecated since 2.0.0.\n\nThis is a self-foreign-key. It points from a revised record to the current record. The current record is denoted by the record whose REVISION_NUM is 0. Revised records (a.k.a. history records) and their current record must have the same GUID.\n\nIt is noted that although this is a foreign key by definition, we don''t specify a foreign key in the data model. This is because when an entity is deleted the current record won''t exist anymore.\n\nThe value of this column for the current record should be left NULL.\n\nThe column name is specific to BDT because, the column does not apply to CDT.',
@@ -2271,7 +2279,7 @@ UPDATE
 		    `dt`
 			JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `dt`.`dt_id`
 			JOIN `module_dt_manifest` ON `module_dt_manifest`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`
-			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` = 'Fields') AS `t`
+			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` LIKE '%Fields') AS `t`
 	ON `t`.`dt_id` = `dt`.`dt_id`
 SET
 	`dt`.`type` = 'Unqualified';
@@ -2285,7 +2293,7 @@ UPDATE
 		    `dt`
 			JOIN `dt_manifest` ON `dt_manifest`.`dt_id` = `dt`.`dt_id`
 			JOIN `module_dt_manifest` ON `module_dt_manifest`.`dt_manifest_id` = `dt_manifest`.`dt_manifest_id`
-			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` = 'BusinessDataType_1') AS `t`
+			JOIN `module` on `module_dt_manifest`.`module_id` = `module`.`module_id` AND `module`.`name` LIKE '%BusinessDataType_1') AS `t`
 	ON `t`.`dt_id` = `dt`.`dt_id`
 SET
 	`dt`.`type` = 'Default';
