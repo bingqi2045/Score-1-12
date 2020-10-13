@@ -5,9 +5,13 @@ import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.tree.BieEditRef;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 import org.oagi.score.repo.component.ascc.AsccReadRepository;
+import org.oagi.score.repo.component.asccp.AsccpReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +33,9 @@ public class AsbieReadRepository {
     @Autowired
     private AsccReadRepository asccReadRepository;
 
+    @Autowired
+    private AsccpReadRepository asccpReadRepository;
+
     private AsbieRecord getAsbieByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
         return dslContext.selectFrom(ASBIE)
                 .where(and(
@@ -39,7 +46,10 @@ public class AsbieReadRepository {
     }
 
     public AsbieNode getAsbieNode(BigInteger topLevelAbieId, BigInteger asccManifestId, String hashPath) {
+        AsccManifestRecord asccManifestRecord = asccReadRepository.getAsccManifestById(asccManifestId);
         AsccRecord asccRecord = asccReadRepository.getAsccByManifestId(asccManifestId);
+
+        AsccpRecord asccpRecord = asccpReadRepository.getAsccpByManifestId(asccManifestRecord.getToAsccpManifestId().toBigInteger());
         if (asccRecord == null) {
             return null;
         }
@@ -62,6 +72,7 @@ public class AsbieReadRepository {
             asbie.setBasedAsccManifestId(ascc.getAsccManifestId());
             asbie.setCardinalityMin(ascc.getCardinalityMin());
             asbie.setCardinalityMax(ascc.getCardinalityMax());
+            asbie.setNillable(asccpRecord.getIsNillable() == 1);
         }
 
         return asbieNode;

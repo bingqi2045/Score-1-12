@@ -5,8 +5,11 @@ import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.bie_management.data.bie_edit.BieEditUsed;
 import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 import org.oagi.score.repo.component.bcc.BccReadRepository;
+import org.oagi.score.repo.component.bccp.BccpReadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +29,9 @@ public class BbieReadRepository {
     @Autowired
     private BccReadRepository bccReadRepository;
 
+    @Autowired
+    private BccpReadRepository bccpReadRepository;
+
     private BbieRecord getBbieByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
         return dslContext.selectFrom(BBIE)
                 .where(and(
@@ -36,10 +42,12 @@ public class BbieReadRepository {
     }
 
     public BbieNode getBbieNode(BigInteger topLevelAbieId, BigInteger bccManifestId, String hashPath) {
+        BccManifestRecord bccManifestRecord = bccReadRepository.getBccManifestByManifestId(bccManifestId);
         BccRecord bccRecord = bccReadRepository.getBccByManifestId(bccManifestId);
         if (bccRecord == null) {
             return null;
         }
+        BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(bccManifestRecord.getToBccpManifestId().toBigInteger());
 
         BbieNode bbieNode = new BbieNode();
 
@@ -65,6 +73,7 @@ public class BbieReadRepository {
             bbie.setCardinalityMax(bccRecord.getCardinalityMax());
             bbie.setDefaultValue(bccRecord.getDefaultValue());
             bbie.setFixedValue(bccRecord.getFixedValue());
+            bbie.setNillable(bccpRecord.getIsNillable() == 1);
         }
 
         return bbieNode;
