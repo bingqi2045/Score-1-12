@@ -18,7 +18,7 @@ public class Utility {
     }
 
     public static String generateGUID(UUID uuid) {
-        return "oagis-id-" + uuid.toString().replaceAll("-", "");
+        return uuid.toString().replaceAll("-", "");
     }
 
     public static String first(String den) {

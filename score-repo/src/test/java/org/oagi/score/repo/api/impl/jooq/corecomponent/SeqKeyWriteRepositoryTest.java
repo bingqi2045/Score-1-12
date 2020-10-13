@@ -48,7 +48,7 @@ public class SeqKeyWriteRepositoryTest
 
     private BigInteger createTestBcc(String propertyTerm, String representationTerm) {
         BccRecord bccRecord = new BccRecord();
-        bccRecord.setGuid("oagis-id-" + (UUID.randomUUID().toString().replace("-", "")));
+        bccRecord.setGuid(UUID.randomUUID().toString().replace("-", ""));
         bccRecord.setCardinalityMin(0);
         bccRecord.setCardinalityMax(-1);
         bccRecord.setFromAccId(ULong.valueOf(allExtensionAccId));

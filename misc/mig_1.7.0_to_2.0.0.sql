@@ -2601,5 +2601,58 @@ ALTER TABLE `module_blob_content_manifest`
 ALTER TABLE `code_list` MODIFY COLUMN `version_id` varchar(100) NOT NULL COMMENT 'Code list version number.';
 ALTER TABLE `ctx_scheme_value` MODIFY COLUMN `value` varchar(100) NOT NULL DEFAULT '' COMMENT 'A short value for the scheme value similar to the code list value.';
 
+-- Remove 'oagis-id-' prefix.
+UPDATE `acc`, (SELECT `acc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `acc` WHERE `guid` LIKE 'oagis-id-%') t SET `acc`.`guid` = t.`guid` WHERE `acc`.`acc_id` = t.`acc_id`;
+UPDATE `ascc`, (SELECT `ascc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `ascc` WHERE `guid` LIKE 'oagis-id-%') t SET `ascc`.`guid` = t.`guid` WHERE `ascc`.`ascc_id` = t.`ascc_id`;
+UPDATE `bcc`, (SELECT `bcc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bcc` WHERE `guid` LIKE 'oagis-id-%') t SET `bcc`.`guid` = t.`guid` WHERE `bcc`.`bcc_id` = t.`bcc_id`;
+UPDATE `asccp`, (SELECT `asccp_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `asccp` WHERE `guid` LIKE 'oagis-id-%') t SET `asccp`.`guid` = t.`guid` WHERE `asccp`.`asccp_id` = t.`asccp_id`;
+UPDATE `bccp`, (SELECT `bccp_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bccp` WHERE `guid` LIKE 'oagis-id-%') t SET `bccp`.`guid` = t.`guid` WHERE `bccp`.`bccp_id` = t.`bccp_id`;
+UPDATE `dt`, (SELECT `dt_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `dt` WHERE `guid` LIKE 'oagis-id-%') t SET `dt`.`guid` = t.`guid` WHERE `dt`.`dt_id` = t.`dt_id`;
+UPDATE `dt_sc`, (SELECT `dt_sc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `dt_sc` WHERE `guid` LIKE 'oagis-id-%') t SET `dt_sc`.`guid` = t.`guid` WHERE `dt_sc`.`dt_sc_id` = t.`dt_sc_id`;
+UPDATE `code_list`, (SELECT `code_list_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `code_list` WHERE `guid` LIKE 'oagis-id-%') t SET `code_list`.`guid` = t.`guid` WHERE `code_list`.`code_list_id` = t.`code_list_id`;
+UPDATE `code_list_value`, (SELECT `code_list_value_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `code_list_value` WHERE `guid` LIKE 'oagis-id-%') t SET `code_list_value`.`guid` = t.`guid` WHERE `code_list_value`.`code_list_value_id` = t.`code_list_value_id`;
+UPDATE `agency_id_list`, (SELECT `agency_id_list_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `agency_id_list` WHERE `guid` LIKE 'oagis-id-%') t SET `agency_id_list`.`guid` = t.`guid` WHERE `agency_id_list`.`agency_id_list_id` = t.`agency_id_list_id`;
+UPDATE `agency_id_list_value`, (SELECT `agency_id_list_value_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `agency_id_list_value` WHERE `guid` LIKE 'oagis-id-%') t SET `agency_id_list_value`.`guid` = t.`guid` WHERE `agency_id_list_value`.`agency_id_list_value_id` = t.`agency_id_list_value_id`;
+UPDATE `release`, (SELECT `release_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `release` WHERE `guid` LIKE 'oagis-id-%') t SET `release`.`guid` = t.`guid` WHERE `release`.`release_id` = t.`release_id`;
+UPDATE `release` SET `guid` = replace(`guid`, '-', '');
+UPDATE `xbt`, (SELECT `xbt_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `xbt` WHERE `guid` LIKE 'oagis-id-%') t SET `xbt`.`guid` = t.`guid` WHERE `xbt`.`xbt_id` = t.`xbt_id`;
+UPDATE `abie`, (SELECT `abie_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `abie` WHERE `guid` LIKE 'oagis-id-%') t SET `abie`.`guid` = t.`guid` WHERE `abie`.`abie_id` = t.`abie_id`;
+UPDATE `asbie`, (SELECT `asbie_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `asbie` WHERE `guid` LIKE 'oagis-id-%') t SET `asbie`.`guid` = t.`guid` WHERE `asbie`.`asbie_id` = t.`asbie_id`;
+UPDATE `bbie`, (SELECT `bbie_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bbie` WHERE `guid` LIKE 'oagis-id-%') t SET `bbie`.`guid` = t.`guid` WHERE `bbie`.`bbie_id` = t.`bbie_id`;
+UPDATE `asbiep`, (SELECT `asbiep_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `asbiep` WHERE `guid` LIKE 'oagis-id-%') t SET `asbiep`.`guid` = t.`guid` WHERE `asbiep`.`asbiep_id` = t.`asbiep_id`;
+UPDATE `bbiep`, (SELECT `bbiep_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bbiep` WHERE `guid` LIKE 'oagis-id-%') t SET `bbiep`.`guid` = t.`guid` WHERE `bbiep`.`bbiep_id` = t.`bbiep_id`;
+UPDATE `bbie_sc`, (SELECT `bbie_sc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bbie_sc` WHERE `guid` LIKE 'oagis-id-%') t SET `bbie_sc`.`guid` = t.`guid` WHERE `bbie_sc`.`bbie_sc_id` = t.`bbie_sc_id`;
+UPDATE `ctx_category`, (SELECT `ctx_category_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `ctx_category` WHERE `guid` LIKE 'oagis-id-%') t SET `ctx_category`.`guid` = t.`guid` WHERE `ctx_category`.`ctx_category_id` = t.`ctx_category_id`;
+UPDATE `ctx_scheme`, (SELECT `ctx_scheme_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `ctx_scheme` WHERE `guid` LIKE 'oagis-id-%') t SET `ctx_scheme`.`guid` = t.`guid` WHERE `ctx_scheme`.`ctx_scheme_id` = t.`ctx_scheme_id`;
+UPDATE `ctx_scheme_value`, (SELECT `ctx_scheme_value_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `ctx_scheme_value` WHERE `guid` LIKE 'oagis-id-%') t SET `ctx_scheme_value`.`guid` = t.`guid` WHERE `ctx_scheme_value`.`ctx_scheme_value_id` = t.`ctx_scheme_value_id`;
+UPDATE `biz_ctx`, (SELECT `biz_ctx_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `biz_ctx` WHERE `guid` LIKE 'oagis-id-%') t SET `biz_ctx`.`guid` = t.`guid` WHERE `biz_ctx`.`biz_ctx_id` = t.`biz_ctx_id`;
+UPDATE `module_set`, (SELECT `module_set_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `module_set` WHERE `guid` LIKE 'oagis-id-%') t SET `module_set`.`guid` = t.`guid` WHERE `module_set`.`module_set_id` = t.`module_set_id`;
+UPDATE `log`, (SELECT `log_id`, SUBSTR(`reference`, 10, 41) `reference` FROM `log` WHERE `reference` LIKE 'oagis-id-%') t SET `log`.`reference` = t.`reference` WHERE `log`.`log_id` = t.`log_id`;
+UPDATE `log` SET `snapshot` = replace(`snapshot`, 'oagis-id-', '');
+
+ALTER TABLE `acc` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `ascc` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `bcc` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `asccp` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `bccp` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `dt` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `dt_sc` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `code_list` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `code_list_value` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `agency_id_list` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `agency_id_list_value` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `release` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `xbt` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `abie` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `asbie` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `bbie` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `asbiep` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `bbiep` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `bbie_sc` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `ctx_category` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `ctx_scheme` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `ctx_scheme_value` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `biz_ctx` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
+ALTER TABLE `module_set` MODIFY COLUMN `guid` CHAR(32) CHARACTER SET ascii NOT NULL COMMENT 'A globally unique identifier (GUID).';
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -8,7 +8,7 @@ public final class ScoreGuid {
     }
 
     public static String randomGuid() {
-        return "oagis-id-" + (UUID.randomUUID().toString().replace("-", ""));
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
 }

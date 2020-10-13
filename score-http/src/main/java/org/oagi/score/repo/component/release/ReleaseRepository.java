@@ -13,6 +13,7 @@ import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repository.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static org.jooq.impl.DSL.*;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.Candidate;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcState.ReleaseDraft;
 import static org.oagi.score.gateway.http.api.release_management.data.ReleaseState.*;
+import static org.oagi.score.gateway.http.helper.ScoreGuid.randomGuid;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -112,7 +114,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
         LocalDateTime timestamp = LocalDateTime.now();
         ReleaseRecord releaseRecord = dslContext.insertInto(RELEASE)
-                .set(RELEASE.GUID, UUID.randomUUID().toString())
+                .set(RELEASE.GUID, randomGuid())
                 .set(RELEASE.RELEASE_NUM, releaseNum)
                 .set(RELEASE.RELEASE_NOTE, releaseNote)
                 .set(RELEASE.RELEASE_LICENSE, releaseLicense)
