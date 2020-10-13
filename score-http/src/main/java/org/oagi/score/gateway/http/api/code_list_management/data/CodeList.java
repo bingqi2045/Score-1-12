@@ -1,6 +1,7 @@
 package org.oagi.score.gateway.http.api.code_list_management.data;
 
 import lombok.Data;
+import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 
 import java.math.BigInteger;
@@ -10,7 +11,6 @@ import java.util.List;
 @Data
 public class CodeList {
 
-    private BigInteger releaseId;
     private BigInteger codeListManifestId;
     private String codeListName;
     private String guid;
@@ -33,6 +33,13 @@ public class CodeList {
     private BigInteger ownerId;
     private String state;
     private AccessPrivilege access;
+
+    private String owner;
+    private BigInteger releaseId;
+    private String releaseNum;
+    private BigInteger logId;
+    private int revisionNum;
+    private int revisionTrackingNum;
 
     private List<CodeListValue> codeListValues = Collections.emptyList();
 

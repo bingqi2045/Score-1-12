@@ -215,6 +215,7 @@ public class CodeListService extends EventHandler {
     public CodeList getCodeList(AuthenticatedPrincipal user, BigInteger manifestId) {
         CodeList codeList = dslContext.select(
                 CODE_LIST_MANIFEST.RELEASE_ID,
+                RELEASE.RELEASE_NUM,
                 CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID,
                 CODE_LIST.NAME.as("code_list_name"),
                 CODE_LIST_MANIFEST.BASED_CODE_LIST_MANIFEST_ID,
@@ -231,10 +232,14 @@ public class CodeListService extends EventHandler {
                 CODE_LIST.REMARK,
                 CODE_LIST.EXTENSIBLE_INDICATOR.as("extensible"),
                 APP_USER.as("owner").APP_USER_ID.as("owner_id"),
+                APP_USER.as("owner").LOGIN_ID.as("owner"),
                 CODE_LIST.STATE,
                 CODE_LIST.IS_DEPRECATED.as("deprecated"),
-                LOG.REVISION_NUM.as("revision"))
+                LOG.LOG_ID,
+                LOG.REVISION_NUM,
+                LOG.REVISION_TRACKING_NUM)
                 .from(CODE_LIST_MANIFEST)
+                .join(RELEASE).on(CODE_LIST_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                 .join(LOG).on(CODE_LIST_MANIFEST.LOG_ID.eq(LOG.LOG_ID))
                 .join(APP_USER.as("owner")).on(CODE_LIST.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
