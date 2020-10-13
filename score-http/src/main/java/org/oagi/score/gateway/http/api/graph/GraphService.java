@@ -90,25 +90,7 @@ public class GraphService {
     }
 
     public Graph getExtensionGraph(BigInteger extensionAccManifestId) {
-        Graph extensionAccGraph = getAccGraph(extensionAccManifestId);
-        Node extensionNode = extensionAccGraph.getNode(Node.NodeType.ACC, extensionAccManifestId);
-        String objectClassTerm = (String) extensionNode.getProperties().get("objectClassTerm");
-
-        // !isGlobalExtension
-        if (!"All Extension".equals(objectClassTerm)) {
-            BigInteger globalExtensionAccManifestId =
-                    coreComponentRepository.getGlobalExtensionAccManifestId(extensionAccManifestId);
-            Graph globalExtensionAccGraph = getAccGraph(globalExtensionAccManifestId);
-            extensionAccGraph.merge(globalExtensionAccGraph);
-
-            Node globalExtensionNode =
-                    globalExtensionAccGraph.getNode(Node.NodeType.ACC, globalExtensionAccManifestId);
-
-            Edge extensionEdge = extensionAccGraph.addEdges(extensionNode, Collections.emptyList());
-            extensionEdge.addTarget(0, globalExtensionNode.getKey());
-        }
-
-        return extensionAccGraph;
+        return getAccGraph(extensionAccManifestId);
     }
 
     public Graph getCodeListGraph(BigInteger codeListManifestId) {

@@ -621,6 +621,7 @@ public class CcListRepository {
 
         List<Condition> conditions = new ArrayList();
         conditions.add(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(request.getReleaseId())));
+        conditions.add(ASCCP.DEN.notContains("User Extension Group"));
 
         if (request.getDeprecated() != null) {
             conditions.add(ASCCP.IS_DEPRECATED.eq((byte) (request.getDeprecated() ? 1 : 0)));

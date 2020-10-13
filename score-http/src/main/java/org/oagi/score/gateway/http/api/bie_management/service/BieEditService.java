@@ -287,10 +287,10 @@ public class BieEditService implements InitializingBean {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Candidate) {
+            if (ueAcc.getState() == CcState.Production) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Draft) {
+            } else if (ueAcc.getState() == CcState.QA) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user).equals(latestUeAcc.getOwnerUserId());
@@ -327,10 +327,10 @@ public class BieEditService implements InitializingBean {
 
         if (ueAcc != null) {
             ACC latestUeAcc = ueAcc;
-            if (ueAcc.getState() == CcState.Candidate) {
+            if (ueAcc.getState() == CcState.Production) {
                 response.setCanEdit(true);
                 response.setCanView(true);
-            } else if (ueAcc.getState() == CcState.Draft) {
+            } else if (ueAcc.getState() == CcState.QA) {
                 response.setCanView(true);
             }
             boolean isSameBetweenRequesterAndOwner = sessionService.userId(user).equals(latestUeAcc.getOwnerUserId());

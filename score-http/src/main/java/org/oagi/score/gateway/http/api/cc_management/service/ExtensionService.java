@@ -43,6 +43,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.boolAnd;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
@@ -79,9 +80,6 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
-        if (!ueAcc.getObjectClassTerm().equals("All User Extension Group")) {
-            return service.getAccNode(user, manifestId);
-        }
         CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
         if (asccpNode == null) {
             return null;
