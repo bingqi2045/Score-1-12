@@ -47,7 +47,7 @@ public class BdtPriRestriReadRepository {
     public List<AvailableBdtPriRestri> availableBdtPriRestriListByBccManifestId(BigInteger bccManifestId) {
         return dslContext.select(
                 BDT_PRI_RESTRI.BDT_PRI_RESTRI_ID, DT.DATA_TYPE_TERM,
-                BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME.as("xbt_name"))
+                BDT_PRI_RESTRI.IS_DEFAULT, XBT.XBT_ID, XBT.NAME)
                 .from(BDT_PRI_RESTRI)
                 .join(CDT_AWD_PRI_XPS_TYPE_MAP)
                 .on(BDT_PRI_RESTRI.CDT_AWD_PRI_XPS_TYPE_MAP_ID.eq(CDT_AWD_PRI_XPS_TYPE_MAP.CDT_AWD_PRI_XPS_TYPE_MAP_ID))
