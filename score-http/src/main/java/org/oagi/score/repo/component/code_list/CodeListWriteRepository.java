@@ -324,12 +324,12 @@ public class CodeListWriteRepository {
             List<CodeListValueManifestRecord> codeListValueManifestRecordList,
             List<CodeListValueRecord> codeListValueRecordList
     ) {
-        Map<String, CodeListValueRecord> codeListValueRecordMapByName =
+        Map<String, CodeListValueRecord> codeListValueRecordMapByValue =
                 codeListValueRecordList.stream()
-                        .collect(Collectors.toMap(CodeListValueRecord::getName, Function.identity()));
+                        .collect(Collectors.toMap(CodeListValueRecord::getValue, Function.identity()));
 
         for (ModifyCodeListValuesRepositoryRequest.CodeListValue codeListValue : request.getCodeListValueList()) {
-            if (codeListValueRecordMapByName.containsKey(codeListValue.getName())) {
+            if (codeListValueRecordMapByValue.containsKey(codeListValue.getValue())) {
                 continue;
             }
 
@@ -380,18 +380,18 @@ public class CodeListWriteRepository {
             List<CodeListValueManifestRecord> codeListValueManifestRecordList,
             List<CodeListValueRecord> codeListValueRecordList
     ) {
-        Map<String, CodeListValueRecord> codeListValueRecordMapByName =
+        Map<String, CodeListValueRecord> codeListValueRecordMapByValue =
                 codeListValueRecordList.stream()
-                        .collect(Collectors.toMap(CodeListValueRecord::getName, Function.identity()));
+                        .collect(Collectors.toMap(CodeListValueRecord::getValue, Function.identity()));
 
         for (ModifyCodeListValuesRepositoryRequest.CodeListValue codeListValue : request.getCodeListValueList()) {
-            if (!codeListValueRecordMapByName.containsKey(codeListValue.getName())) {
+            if (!codeListValueRecordMapByValue.containsKey(codeListValue.getValue())) {
                 continue;
             }
 
-            CodeListValueRecord codeListValueRecord = codeListValueRecordMapByName.get(codeListValue.getName());
+            CodeListValueRecord codeListValueRecord = codeListValueRecordMapByValue.get(codeListValue.getValue());
 
-            codeListValueRecord.setValue(codeListValue.getValue());
+            codeListValueRecord.setName(codeListValue.getName());
             codeListValueRecord.setDefinition(codeListValue.getDefinition());
             codeListValueRecord.setDefinitionSource(codeListValue.getDefinitionSource());
             codeListValueRecord.setLockedIndicator((byte) (codeListValue.isLocked() ? 1 : 0));
@@ -402,7 +402,7 @@ public class CodeListWriteRepository {
             codeListValueRecord.setLastUpdateTimestamp(timestamp);
 
             codeListValueRecord.update(
-                    CODE_LIST_VALUE.VALUE,
+                    CODE_LIST_VALUE.NAME,
                     CODE_LIST_VALUE.DEFINITION, CODE_LIST_VALUE.DEFINITION_SOURCE,
                     CODE_LIST_VALUE.LOCKED_INDICATOR, CODE_LIST_VALUE.USED_INDICATOR,
                     CODE_LIST_VALUE.EXTENSION_INDICATOR, CODE_LIST_VALUE.IS_DEPRECATED,
@@ -417,19 +417,19 @@ public class CodeListWriteRepository {
             List<CodeListValueManifestRecord> codeListValueManifestRecordList,
             List<CodeListValueRecord> codeListValueRecordList
     ) {
-        Map<String, CodeListValueRecord> codeListValueRecordMapByName =
+        Map<String, CodeListValueRecord> codeListValueRecordMapByValue =
                 codeListValueRecordList.stream()
-                        .collect(Collectors.toMap(CodeListValueRecord::getName, Function.identity()));
+                        .collect(Collectors.toMap(CodeListValueRecord::getValue, Function.identity()));
 
         for (ModifyCodeListValuesRepositoryRequest.CodeListValue codeListValue : request.getCodeListValueList()) {
-            codeListValueRecordMapByName.remove(codeListValue.getName());
+            codeListValueRecordMapByValue.remove(codeListValue.getValue());
         }
 
         Map<ULong, CodeListValueManifestRecord> codeListValueManifestRecordMapById =
                 codeListValueManifestRecordList.stream()
                         .collect(Collectors.toMap(CodeListValueManifestRecord::getCodeListValueId, Function.identity()));
 
-        for (CodeListValueRecord codeListValueRecord : codeListValueRecordMapByName.values()) {
+        for (CodeListValueRecord codeListValueRecord : codeListValueRecordMapByValue.values()) {
             codeListValueManifestRecordMapById.get(
                     codeListValueRecord.getCodeListValueId()
             ).delete();
