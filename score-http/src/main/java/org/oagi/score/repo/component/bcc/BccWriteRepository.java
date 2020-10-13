@@ -209,24 +209,26 @@ public class BccWriteRepository {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCC.DEFINITION, request.getDefinition());
         }
-        if (compare(bccRecord.getDefinition(), request.getDefinitionSource()) != 0) {
+        if (compare(bccRecord.getDefinitionSource(), request.getDefinitionSource()) != 0) {
             moreStep = ((moreStep != null) ? moreStep : firstStep)
                     .set(BCC.DEFINITION_SOURCE, request.getDefinitionSource());
         }
-        if (request.getEntityType().getValue() != bccRecord.getEntityType()) {
-            moreStep = ((moreStep != null) ? moreStep : firstStep)
-                    .set(BCC.ENTITY_TYPE, request.getEntityType().getValue());
+        if (request.getEntityType() != null) {
+            if (request.getEntityType().getValue() != bccRecord.getEntityType()) {
+                moreStep = ((moreStep != null) ? moreStep : firstStep)
+                        .set(BCC.ENTITY_TYPE, request.getEntityType().getValue());
 
-            if (request.getEntityType() == Element) {
-                seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
-            } else if (request.getEntityType() == Attribute) {
-                seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST_OF_ATTR);
-                // Issue #919
-                if (request.getCardinalityMin() < 0 || request.getCardinalityMin() > 1) {
-                    request.setCardinalityMin(0);
-                }
-                if (request.getCardinalityMax() < 0 || request.getCardinalityMax() > 1) {
-                    request.setCardinalityMax(1);
+                if (request.getEntityType() == Element) {
+                    seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
+                } else if (request.getEntityType() == Attribute) {
+                    seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST_OF_ATTR);
+                    // Issue #919
+                    if (request.getCardinalityMin() < 0 || request.getCardinalityMin() > 1) {
+                        request.setCardinalityMin(0);
+                    }
+                    if (request.getCardinalityMax() < 0 || request.getCardinalityMax() > 1) {
+                        request.setCardinalityMax(1);
+                    }
                 }
             }
         }
