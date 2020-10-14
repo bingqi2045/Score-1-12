@@ -292,7 +292,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(ACC_MANIFEST)
                         .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID))
                         .where(and(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(ACC.STATE.eq(Published.name()), // WIP
+                                (or(ACC_MANIFEST.PREV_ACC_MANIFEST_ID.isNotNull(),
                                         ACC_MANIFEST.ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
@@ -315,7 +315,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(DT_MANIFEST)
                         .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
                         .where(and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(DT.STATE.eq(Published.name()),
+                                (or(DT_MANIFEST.PREV_DT_MANIFEST_ID.isNotNull(),
                                         DT_MANIFEST.DT_MANIFEST_ID.in(dtManifestIds)))))).execute();
     }
 
@@ -340,7 +340,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(ASCCP_MANIFEST)
                         .join(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                         .where(and(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(ASCCP.STATE.eq(Published.name()),
+                                (or(ASCCP_MANIFEST.PREV_ASCCP_MANIFEST_ID.isNotNull(),
                                         ASCCP_MANIFEST.ASCCP_MANIFEST_ID.in(asccpManifestIds)))))).execute();
     }
 
@@ -390,7 +390,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
                         .where(and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(ASCC.STATE.eq(Published.name()),
+                                (or(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.isNotNull(),
                                         ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
@@ -415,7 +415,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                         .where(and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(BCC.STATE.eq(Published.name()),
+                                (or(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.isNotNull(),
                                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
     }
 
@@ -481,7 +481,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(CODE_LIST_MANIFEST)
                         .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                         .where(and(CODE_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(CODE_LIST.STATE.eq(Published.name()),
+                                (or(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID.isNotNull(),
                                         CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds)))))).execute();
     }
 
@@ -505,7 +505,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .join(CODE_LIST_MANIFEST).on(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID))
                         .join(CODE_LIST).on(CODE_LIST_MANIFEST.CODE_LIST_ID.eq(CODE_LIST.CODE_LIST_ID))
                         .where(and(CODE_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(CODE_LIST.STATE.eq(Published.name()),
+                                (or(CODE_LIST_MANIFEST.PREV_CODE_LIST_MANIFEST_ID.isNotNull(),
                                         CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID.in(codeListManifestIds)))))).execute();
     }
 
@@ -530,7 +530,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .from(AGENCY_ID_LIST_MANIFEST)
                         .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
                         .where(and(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(AGENCY_ID_LIST.STATE.eq(Published.name()),
+                                (or(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID.isNotNull(),
                                         AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds)))))).execute();
     }
 
@@ -554,7 +554,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .join(AGENCY_ID_LIST_MANIFEST).on(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID))
                         .join(AGENCY_ID_LIST).on(AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID.eq(AGENCY_ID_LIST.AGENCY_ID_LIST_ID))
                         .where(and(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
-                                (or(AGENCY_ID_LIST.STATE.eq(Published.name()),
+                                (or(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID.isNotNull(),
                                         AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds)))))).execute();
     }
     
