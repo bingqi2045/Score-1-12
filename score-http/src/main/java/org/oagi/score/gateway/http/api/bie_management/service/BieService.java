@@ -4,10 +4,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.types.ULong;
-import org.oagi.score.data.AppUser;
-import org.oagi.score.data.BieState;
-import org.oagi.score.data.BizCtx;
-import org.oagi.score.data.TopLevelAsbiep;
+import org.oagi.score.data.*;
 import org.oagi.score.gateway.http.api.DataAccessForbiddenException;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
@@ -24,6 +21,8 @@ import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.PaginationResponse;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repository.ABIERepository;
 import org.oagi.score.repository.BizCtxRepository;
@@ -86,6 +85,11 @@ public class BieService {
                 ccRepository.getAsccpManifestByManifestId(request.asccpManifestId());
         if (asccpManifest == null) {
             throw new IllegalArgumentException();
+        }
+        AccManifestRecord accManifestRecord = ccRepository.getAccManifestByManifestId(asccpManifest.getRoleOfAccManifestId());
+        AccRecord accRecord = ccRepository.getAccById(accManifestRecord.getAccId());
+        if (OagisComponentType.valueOf(accRecord.getOagisComponentType()).isGroup()) {
+            throw new IllegalArgumentException("Cannot create BIE of `ASCCP` with group `ACC`.");
         }
 
         String asccpPath = "ASCCP-" + asccpManifest.getAsccpManifestId();
