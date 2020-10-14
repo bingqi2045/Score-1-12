@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = -127075507;
+    private static final long serialVersionUID = 352012013;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.
@@ -37,14 +37,14 @@ public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
     }
 
     /**
-     * Setter for <code>oagi.code_list.guid</code>. GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.code_list.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.code_list.guid</code>. GUID of the code list. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.code_list.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

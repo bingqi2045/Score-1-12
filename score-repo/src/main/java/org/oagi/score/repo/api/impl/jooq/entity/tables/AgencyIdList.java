@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
 
-    private static final long serialVersionUID = -1332621312;
+    private static final long serialVersionUID = 425268924;
 
     /**
      * The reference instance of <code>oagi.agency_id_list</code>
@@ -55,9 +55,9 @@ public class AgencyIdList extends TableImpl<AgencyIdListRecord> {
     public final TableField<AgencyIdListRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key.");
 
     /**
-     * The column <code>oagi.agency_id_list.guid</code>. A globally unique identifier (GUID) of an agency identifier scheme. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.agency_id_list.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<AgencyIdListRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41), this, "A globally unique identifier (GUID) of an agency identifier scheme. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<AgencyIdListRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.agency_id_list.enum_type_guid</code>. This column stores the GUID of the type containing the enumerated values. In OAGIS, most code lists and agnecy ID lists are defined by an XyzCodeContentType (or XyzAgencyIdentificationContentType) and XyzCodeEnumerationType (or XyzAgencyIdentificationEnumerationContentType). However, some don't have the enumeration type. When that is the case, this column is null.

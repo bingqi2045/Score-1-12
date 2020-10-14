@@ -43,7 +43,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Acc extends TableImpl<AccRecord> {
 
-    private static final long serialVersionUID = 1843792839;
+    private static final long serialVersionUID = 67904998;
 
     /**
      * The reference instance of <code>oagi.acc</code>
@@ -64,9 +64,9 @@ public class Acc extends TableImpl<AccRecord> {
     public final TableField<AccRecord, ULong> ACC_ID = createField(DSL.name("acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an ACC.");
 
     /**
-     * The column <code>oagi.acc.guid</code>. A globally unique identifier (GUID) of an ACC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.acc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<AccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ACC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<AccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.acc.type</code>. The Type of the ACC. List: Default, Extension, AllExtension.

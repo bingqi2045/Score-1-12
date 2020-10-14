@@ -37,7 +37,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BbieScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieSc extends TableImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = -699897845;
+    private static final long serialVersionUID = 570933080;
 
     /**
      * The reference instance of <code>oagi.bbie_sc</code>
@@ -58,9 +58,9 @@ public class BbieSc extends TableImpl<BbieScRecord> {
     public final TableField<BbieScRecord, ULong> BBIE_SC_ID = createField(DSL.name("bbie_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of a BBIE_SC.");
 
     /**
-     * The column <code>oagi.bbie_sc.guid</code>. A globally unique identifier (GUID). It is different from the GUID fo the SC on the CC side. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.bbie_sc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<BbieScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID). It is different from the GUID fo the SC on the CC side. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<BbieScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.bbie_sc.based_dt_sc_manifest_id</code>. Foreign key to the DT_SC_MANIFEST table. This should correspond to the DT_SC of the BDT of the based BCC and BCCP.

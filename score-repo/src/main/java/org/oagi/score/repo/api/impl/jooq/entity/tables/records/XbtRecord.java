@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
-    private static final long serialVersionUID = 353712790;
+    private static final long serialVersionUID = 979324886;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
@@ -40,14 +40,14 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     }
 
     /**
-     * Setter for <code>oagi.xbt.guid</code>. A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.xbt.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.xbt.guid</code>. A globally unique identifier (GUID) of an XBT. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.xbt.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

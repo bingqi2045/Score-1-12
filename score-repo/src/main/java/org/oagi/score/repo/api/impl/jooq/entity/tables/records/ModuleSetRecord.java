@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSet;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetRecord extends UpdatableRecordImpl<ModuleSetRecord> implements Record8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1435069669;
+    private static final long serialVersionUID = -112131053;
 
     /**
      * Setter for <code>oagi.module_set.module_set_id</code>. Primary key.
@@ -38,14 +38,14 @@ public class ModuleSetRecord extends UpdatableRecordImpl<ModuleSetRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.module_set.guid</code>. A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.
+     * Setter for <code>oagi.module_set.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.module_set.guid</code>. A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.
+     * Getter for <code>oagi.module_set.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

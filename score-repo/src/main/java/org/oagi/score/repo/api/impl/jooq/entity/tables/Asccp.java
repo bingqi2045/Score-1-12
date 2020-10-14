@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Asccp extends TableImpl<AsccpRecord> {
 
-    private static final long serialVersionUID = 505511949;
+    private static final long serialVersionUID = 1025910936;
 
     /**
      * The reference instance of <code>oagi.asccp</code>
@@ -56,9 +56,9 @@ public class Asccp extends TableImpl<AsccpRecord> {
     public final TableField<AsccpRecord, ULong> ASCCP_ID = createField(DSL.name("asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an ASCCP.");
 
     /**
-     * The column <code>oagi.asccp.guid</code>. A globally unique identifier (GUID) of an ASCCP. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.asccp.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<AsccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ASCCP. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<AsccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.asccp.type</code>. The Type of the ASCCP. List: Default, Extension 

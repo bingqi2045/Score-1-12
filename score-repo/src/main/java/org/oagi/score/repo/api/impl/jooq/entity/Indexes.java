@@ -9,8 +9,6 @@ import org.jooq.OrderField;
 import org.jooq.impl.Internal;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroupUser;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppPermissionGroup;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
@@ -45,8 +43,6 @@ public class Indexes {
     public static final Index ABIE_ABIE_PATH_K = Indexes0.ABIE_ABIE_PATH_K;
     public static final Index ACC_ACC_GUID_IDX = Indexes0.ACC_ACC_GUID_IDX;
     public static final Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX;
-    public static final Index APP_GROUP_USER_APP_USER_ID = Indexes0.APP_GROUP_USER_APP_USER_ID;
-    public static final Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Indexes0.APP_PERMISSION_GROUP_APP_PERMISSION_ID;
     public static final Index ASBIE_ASBIE_HASH_PATH_K = Indexes0.ASBIE_ASBIE_HASH_PATH_K;
     public static final Index ASBIE_ASBIE_PATH_K = Indexes0.ASBIE_ASBIE_PATH_K;
     public static final Index ASBIEP_ASBIEP_HASH_PATH_K = Indexes0.ASBIEP_ASBIEP_HASH_PATH_K;
@@ -87,8 +83,6 @@ public class Indexes {
         public static Index ABIE_ABIE_PATH_K = Internal.createIndex("abie_path_k", Abie.ABIE, new OrderField[] { Abie.ABIE.PATH }, false);
         public static Index ACC_ACC_GUID_IDX = Internal.createIndex("acc_guid_idx", Acc.ACC, new OrderField[] { Acc.ACC.GUID }, false);
         public static Index ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("acc_last_update_timestamp_desc_idx", Acc.ACC, new OrderField[] { Acc.ACC.LAST_UPDATE_TIMESTAMP }, false);
-        public static Index APP_GROUP_USER_APP_USER_ID = Internal.createIndex("app_user_id", AppGroupUser.APP_GROUP_USER, new OrderField[] { AppGroupUser.APP_GROUP_USER.APP_USER_ID }, false);
-        public static Index APP_PERMISSION_GROUP_APP_PERMISSION_ID = Internal.createIndex("app_permission_id", AppPermissionGroup.APP_PERMISSION_GROUP, new OrderField[] { AppPermissionGroup.APP_PERMISSION_GROUP.APP_PERMISSION_ID }, false);
         public static Index ASBIE_ASBIE_HASH_PATH_K = Internal.createIndex("asbie_hash_path_k", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.HASH_PATH }, false);
         public static Index ASBIE_ASBIE_PATH_K = Internal.createIndex("asbie_path_k", Asbie.ASBIE, new OrderField[] { Asbie.ASBIE.PATH }, false);
         public static Index ASBIEP_ASBIEP_HASH_PATH_K = Internal.createIndex("asbiep_hash_path_k", Asbiep.ASBIEP, new OrderField[] { Asbiep.ASBIEP.HASH_PATH }, false);

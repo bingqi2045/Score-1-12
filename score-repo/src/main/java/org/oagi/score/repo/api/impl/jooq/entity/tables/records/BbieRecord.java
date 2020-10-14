@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = 1799123513;
+    private static final long serialVersionUID = -981317239;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -42,14 +42,14 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     }
 
     /**
-     * Setter for <code>oagi.bbie.guid</code>. A globally unique identifier (GUID) of an SC. GUID of a BBIE's SC  is different from the one in the DT_SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.bbie.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.bbie.guid</code>. A globally unique identifier (GUID) of an SC. GUID of a BBIE's SC  is different from the one in the DT_SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.bbie.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

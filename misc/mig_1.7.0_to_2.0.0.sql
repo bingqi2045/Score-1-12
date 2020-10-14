@@ -7,79 +7,6 @@
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-DELETE FROM `app_user` WHERE `app_user_id` = 0;
-INSERT INTO `app_user` (`login_id`, `password`, `name`, `organization`, `is_developer`)
-VALUES
-	('sysadm', '$2a$10$N6lPv6XNewi0eryQqlow5.dSEgOnFlxYGyGVIGZxXY1dimEPRmhOu', 'System Administrator', 'System', 1);
-
-UPDATE `app_user` SET `app_user_id` = 0 WHERE `login_id` = 'sysadm';
-
-SET @max_user_id = (SELECT MAX(`app_user_id`) + 1 FROM `app_user`);
-SET @sql = CONCAT('ALTER TABLE `app_user` AUTO_INCREMENT = ', @max_user_id);
-PREPARE st FROM @sql;
-EXECUTE st;
-
-DROP TABLE IF EXISTS `app_group`;
-CREATE TABLE `app_group` (
-    `app_group_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-    `name` varchar(100) NOT NULL DEFAULT '',
-    `authority` int(10) unsigned NOT NULL,
-    PRIMARY KEY (`app_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `app_group` (`app_group_id`, `name`, `authority`)
-VALUES
-	(1, 'Administrator', 0),
-	(2, 'Developer', 10),
-	(3, 'User', 99);
-
-DROP TABLE IF EXISTS `app_group_user`;
-CREATE TABLE `app_group_user` (
-    `app_group_id` bigint(20) unsigned NOT NULL,
-    `app_user_id` bigint(20) unsigned NOT NULL,
-    PRIMARY KEY (`app_group_id`,`app_user_id`),
-    KEY `app_user_id` (`app_user_id`),
-    CONSTRAINT `app_group_user_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
-    CONSTRAINT `app_group_user_fk_2` FOREIGN KEY (`app_user_id`) REFERENCES `app_user` (`app_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
-VALUES
-	(1, 0);
-
-INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
-SELECT (SELECT `app_group_id` FROM `app_group` WHERE `name` = 'Developer'), `app_user_id`
-FROM `app_user`
-WHERE `app_user`.`is_developer` = 1 AND `app_user`.`app_user_id` != 0;
-
-INSERT INTO `app_group_user` (`app_group_id`, `app_user_id`)
-SELECT (SELECT `app_group_id` FROM `app_group` WHERE `name` = 'User'), `app_user_id`
-FROM `app_user`
-WHERE `app_user`.`is_developer` = 0;
-
--- Create syntax for TABLE 'app_permission'
-DROP TABLE IF EXISTS `app_permission`;
-CREATE TABLE `app_permission` (
-    `app_permission_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-    `segment` varchar(64) NOT NULL DEFAULT '',
-    `object` varchar(256) NOT NULL DEFAULT '',
-    `operation` varchar(64) NOT NULL DEFAULT 'Unprepared',
-    `description` tinytext,
-    PRIMARY KEY (`app_permission_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-
--- Create syntax for TABLE 'app_permission_group'
-DROP TABLE IF EXISTS `app_permission_group`;
-CREATE TABLE `app_permission_group` (
-    `app_permission_id` bigint(20) unsigned NOT NULL,
-    `app_group_id` bigint(20) unsigned NOT NULL,
-    PRIMARY KEY (`app_permission_id`,`app_group_id`),
-    KEY `app_permission_id` (`app_permission_id`),
-    KEY `app_permission_group_fk_1` (`app_group_id`),
-    CONSTRAINT `app_permission_group_fk_1` FOREIGN KEY (`app_group_id`) REFERENCES `app_group` (`app_group_id`),
-    CONSTRAINT `app_permission_group_fk_2` FOREIGN KEY (`app_permission_id`) REFERENCES `app_permission` (`app_permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- Create `log` table for history management
 DROP TABLE IF EXISTS `log`;
 CREATE TABLE `log` (
@@ -2610,6 +2537,8 @@ UPDATE `bccp`, (SELECT `bccp_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `bccp` WHER
 UPDATE `dt`, (SELECT `dt_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `dt` WHERE `guid` LIKE 'oagis-id-%') t SET `dt`.`guid` = t.`guid` WHERE `dt`.`dt_id` = t.`dt_id`;
 UPDATE `dt_sc`, (SELECT `dt_sc_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `dt_sc` WHERE `guid` LIKE 'oagis-id-%') t SET `dt_sc`.`guid` = t.`guid` WHERE `dt_sc`.`dt_sc_id` = t.`dt_sc_id`;
 UPDATE `code_list`, (SELECT `code_list_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `code_list` WHERE `guid` LIKE 'oagis-id-%') t SET `code_list`.`guid` = t.`guid` WHERE `code_list`.`code_list_id` = t.`code_list_id`;
+UPDATE `code_list`, (SELECT `code_list_id`, SUBSTR(`enum_type_guid`, 10, 41) `enum_type_guid` FROM `code_list` WHERE `enum_type_guid` LIKE 'oagis-id-%') t SET `code_list`.`enum_type_guid` = t.`enum_type_guid` WHERE `code_list`.`code_list_id` = t.`code_list_id`;
+UPDATE `code_list`, (SELECT `code_list_id`, SUBSTR(`list_id`, 10, 41) `list_id` FROM `code_list` WHERE `list_id` LIKE 'oagis-id-%') t SET `code_list`.`list_id` = t.`list_id` WHERE `code_list`.`code_list_id` = t.`code_list_id`;
 UPDATE `code_list_value`, (SELECT `code_list_value_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `code_list_value` WHERE `guid` LIKE 'oagis-id-%') t SET `code_list_value`.`guid` = t.`guid` WHERE `code_list_value`.`code_list_value_id` = t.`code_list_value_id`;
 UPDATE `agency_id_list`, (SELECT `agency_id_list_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `agency_id_list` WHERE `guid` LIKE 'oagis-id-%') t SET `agency_id_list`.`guid` = t.`guid` WHERE `agency_id_list`.`agency_id_list_id` = t.`agency_id_list_id`;
 UPDATE `agency_id_list_value`, (SELECT `agency_id_list_value_id`, SUBSTR(`guid`, 10, 41) `guid` FROM `agency_id_list_value` WHERE `guid` LIKE 'oagis-id-%') t SET `agency_id_list_value`.`guid` = t.`guid` WHERE `agency_id_list_value`.`agency_id_list_value_id` = t.`agency_id_list_value_id`;

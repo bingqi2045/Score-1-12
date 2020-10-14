@@ -11,11 +11,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroup;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroupUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppPermission;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppPermissionGroup;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
@@ -132,29 +128,9 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
     public static final AgencyIdListValueManifest AGENCY_ID_LIST_VALUE_MANIFEST = AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST;
 
     /**
-     * The table <code>oagi.app_group</code>.
-     */
-    public static final AppGroup APP_GROUP = AppGroup.APP_GROUP;
-
-    /**
-     * The table <code>oagi.app_group_user</code>.
-     */
-    public static final AppGroupUser APP_GROUP_USER = AppGroupUser.APP_GROUP_USER;
-
-    /**
      * The table <code>oagi.app_oauth2_user</code>.
      */
     public static final AppOauth2User APP_OAUTH2_USER = AppOauth2User.APP_OAUTH2_USER;
-
-    /**
-     * The table <code>oagi.app_permission</code>.
-     */
-    public static final AppPermission APP_PERMISSION = AppPermission.APP_PERMISSION;
-
-    /**
-     * The table <code>oagi.app_permission_group</code>.
-     */
-    public static final AppPermissionGroup APP_PERMISSION_GROUP = AppPermissionGroup.APP_PERMISSION_GROUP;
 
     /**
      * This table captures the user information for authentication and authorization purposes.

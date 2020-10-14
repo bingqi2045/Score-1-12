@@ -36,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bccp extends TableImpl<BccpRecord> {
 
-    private static final long serialVersionUID = -361475867;
+    private static final long serialVersionUID = -134441322;
 
     /**
      * The reference instance of <code>oagi.bccp</code>
@@ -57,9 +57,9 @@ public class Bccp extends TableImpl<BccpRecord> {
     public final TableField<BccpRecord, ULong> BCCP_ID = createField(DSL.name("bccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key.");
 
     /**
-     * The column <code>oagi.bccp.guid</code>. A globally unique identifier (GUID). Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.',
+     * The column <code>oagi.bccp.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<BccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID). Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.',");
+    public final TableField<BccpRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.bccp.property_term</code>. The property concept that the BCCP models.

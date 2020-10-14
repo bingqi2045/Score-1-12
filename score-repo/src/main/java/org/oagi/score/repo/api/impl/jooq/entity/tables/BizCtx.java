@@ -34,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtx extends TableImpl<BizCtxRecord> {
 
-    private static final long serialVersionUID = -1126953517;
+    private static final long serialVersionUID = 1432092044;
 
     /**
      * The reference instance of <code>oagi.biz_ctx</code>
@@ -55,9 +55,9 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     public final TableField<BizCtxRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID). Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<BizCtxRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID). Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<BizCtxRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.biz_ctx.name</code>. Short, descriptive name of the business context.

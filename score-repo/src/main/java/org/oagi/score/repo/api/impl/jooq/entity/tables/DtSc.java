@@ -37,7 +37,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = 521075734;
+    private static final long serialVersionUID = -1474318891;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>
@@ -58,9 +58,9 @@ public class DtSc extends TableImpl<DtScRecord> {
     public final TableField<DtScRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
 
     /**
-     * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.
+     * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.");
+    public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.dt_sc.property_term</code>. Property term of the SC.

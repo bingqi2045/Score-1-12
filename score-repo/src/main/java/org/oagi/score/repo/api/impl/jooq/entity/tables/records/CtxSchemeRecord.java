@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -515391941;
+    private static final long serialVersionUID = -1422864491;
 
     /**
      * Setter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary, database key.
@@ -39,14 +39,14 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     }
 
     /**
-     * Setter for <code>oagi.ctx_scheme.guid</code>. GUID of the classification scheme. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.ctx_scheme.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_scheme.guid</code>. GUID of the classification scheme. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.ctx_scheme.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

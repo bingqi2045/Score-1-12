@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -451528967;
+    private static final long serialVersionUID = -119372745;
 
     /**
      * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Internal, primary, database key.
@@ -39,14 +39,14 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     }
 
     /**
-     * Setter for <code>oagi.ctx_category.guid</code>. GUID of the context category.  Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.ctx_category.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.ctx_category.guid</code>. GUID of the context category.  Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.ctx_category.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

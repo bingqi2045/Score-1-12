@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bcc extends TableImpl<BccRecord> {
 
-    private static final long serialVersionUID = 1013751712;
+    private static final long serialVersionUID = -2129413637;
 
     /**
      * The reference instance of <code>oagi.bcc</code>
@@ -56,9 +56,9 @@ public class Bcc extends TableImpl<BccRecord> {
     public final TableField<BccRecord, ULong> BCC_ID = createField(DSL.name("bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an BCC.");
 
     /**
-     * The column <code>oagi.bcc.guid</code>. A globally unique identifier (GUID) of BCC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.',
+     * The column <code>oagi.bcc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<BccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of BCC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.',");
+    public final TableField<BccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.bcc.cardinality_min</code>. Minimum cardinality of the TO_BCCP_ID. The valid values are non-negative integer.

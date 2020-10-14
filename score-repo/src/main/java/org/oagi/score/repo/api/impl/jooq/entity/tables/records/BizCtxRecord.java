@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 917780793;
+    private static final long serialVersionUID = -910610375;
 
     /**
      * Setter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal database key.
@@ -39,14 +39,14 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID). Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Setter for <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID). Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * Getter for <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

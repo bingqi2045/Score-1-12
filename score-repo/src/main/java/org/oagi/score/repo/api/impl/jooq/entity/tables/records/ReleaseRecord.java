@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record11<ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String> {
 
-    private static final long serialVersionUID = -1450611470;
+    private static final long serialVersionUID = 1902759698;
 
     /**
      * Setter for <code>oagi.release.release_id</code>. RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.
@@ -38,14 +38,14 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     }
 
     /**
-     * Setter for <code>oagi.release.guid</code>. GUID of the release.
+     * Setter for <code>oagi.release.guid</code>. A globally unique identifier (GUID).
      */
     public void setGuid(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.release.guid</code>. GUID of the release.
+     * Getter for <code>oagi.release.guid</code>. A globally unique identifier (GUID).
      */
     public String getGuid() {
         return (String) get(1);

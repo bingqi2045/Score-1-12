@@ -36,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = -1563982552;
+    private static final long serialVersionUID = -898932553;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
@@ -57,9 +57,9 @@ public class Ascc extends TableImpl<AsccRecord> {
     public final TableField<AsccRecord, ULong> ASCC_ID = createField(DSL.name("ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "An internal, primary database key of an ASCC.");
 
     /**
-     * The column <code>oagi.ascc.guid</code>. A globally unique identifier (GUID) of an ASCC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.ascc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<AsccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an ASCC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<AsccRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.ascc.cardinality_min</code>. Minimum occurrence of the TO_ASCCP_ID. The valid values are non-negative integer.

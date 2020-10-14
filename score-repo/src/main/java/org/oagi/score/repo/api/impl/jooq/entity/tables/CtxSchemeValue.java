@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRec
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
-    private static final long serialVersionUID = -205180662;
+    private static final long serialVersionUID = 296405587;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme_value</code>
@@ -54,9 +54,9 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
     public final TableField<CtxSchemeValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
-     * The column <code>oagi.ctx_scheme_value.guid</code>. GUID of the context scheme value. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence.
+     * The column <code>oagi.ctx_scheme_value.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<CtxSchemeValueRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "GUID of the context scheme value. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence.");
+    public final TableField<CtxSchemeValueRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.ctx_scheme_value.value</code>. A short value for the scheme value similar to the code list value.

@@ -17,11 +17,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValueManifest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroup;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppGroupUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppPermission;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AppPermissionGroup;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
@@ -96,7 +92,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = 1624710690;
+    private static final long serialVersionUID = -1862414058;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -145,29 +141,9 @@ In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
     public final AgencyIdListValueManifest AGENCY_ID_LIST_VALUE_MANIFEST = AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST;
 
     /**
-     * The table <code>oagi.app_group</code>.
-     */
-    public final AppGroup APP_GROUP = AppGroup.APP_GROUP;
-
-    /**
-     * The table <code>oagi.app_group_user</code>.
-     */
-    public final AppGroupUser APP_GROUP_USER = AppGroupUser.APP_GROUP_USER;
-
-    /**
      * The table <code>oagi.app_oauth2_user</code>.
      */
     public final AppOauth2User APP_OAUTH2_USER = AppOauth2User.APP_OAUTH2_USER;
-
-    /**
-     * The table <code>oagi.app_permission</code>.
-     */
-    public final AppPermission APP_PERMISSION = AppPermission.APP_PERMISSION;
-
-    /**
-     * The table <code>oagi.app_permission_group</code>.
-     */
-    public final AppPermissionGroup APP_PERMISSION_GROUP = AppPermissionGroup.APP_PERMISSION_GROUP;
 
     /**
      * This table captures the user information for authentication and authorization purposes.
@@ -528,11 +504,7 @@ If we use a separate table for each expression, then we need binding all the way
             AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST,
             AgencyIdListValue.AGENCY_ID_LIST_VALUE,
             AgencyIdListValueManifest.AGENCY_ID_LIST_VALUE_MANIFEST,
-            AppGroup.APP_GROUP,
-            AppGroupUser.APP_GROUP_USER,
             AppOauth2User.APP_OAUTH2_USER,
-            AppPermission.APP_PERMISSION,
-            AppPermissionGroup.APP_PERMISSION_GROUP,
             AppUser.APP_USER,
             Asbie.ASBIE,
             Asbiep.ASBIEP,

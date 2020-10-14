@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSet extends TableImpl<ModuleSetRecord> {
 
-    private static final long serialVersionUID = 1116640770;
+    private static final long serialVersionUID = 1880033071;
 
     /**
      * The reference instance of <code>oagi.module_set</code>
@@ -54,9 +54,9 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
     public final TableField<ModuleSetRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
-     * The column <code>oagi.module_set.guid</code>. A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form "oagis-id-" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.
+     * The column <code>oagi.module_set.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<ModuleSetRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(41).nullable(false), this, "A globally unique identifier (GUID) of an SC. Per OAGIS, a GUID is of the form \"oagis-id-\" followed by a 32 Hex character sequence. Note that each SC is considered intrinsic to each DT, so a SC has a different GUID from the based SC, i.e., SC inherited from the based DT has a new, different GUID.");
+    public final TableField<ModuleSetRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.module_set.name</code>. This is the name of the module set.

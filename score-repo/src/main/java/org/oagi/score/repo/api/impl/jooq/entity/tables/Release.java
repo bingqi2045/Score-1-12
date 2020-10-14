@@ -33,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
-    private static final long serialVersionUID = -1557641861;
+    private static final long serialVersionUID = 1088486278;
 
     /**
      * The reference instance of <code>oagi.release</code>
@@ -54,9 +54,9 @@ public class Release extends TableImpl<ReleaseRecord> {
     public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
 
     /**
-     * The column <code>oagi.release.guid</code>. GUID of the release.
+     * The column <code>oagi.release.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<ReleaseRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.VARCHAR(36).nullable(false), this, "GUID of the release.");
+    public final TableField<ReleaseRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
