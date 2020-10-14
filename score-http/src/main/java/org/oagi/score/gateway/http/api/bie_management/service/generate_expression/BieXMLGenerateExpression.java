@@ -335,10 +335,10 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
 
     private void setOptionalDocumentation(Element node, AbstractBIEDocumentation bieDocumentation) {
         boolean bieCctsMetaData = option.isBieCctsMetaData();
-        boolean bieOagiSrtMetaData = option.isBieOagiSrtMetaData();
+        boolean bieOagiScoreMetaData = option.isBieOagiScoreMetaData();
         boolean basedCcMetaData = option.isBasedCcMetaData();
 
-        if (!basedCcMetaData && !bieOagiSrtMetaData && !basedCcMetaData) {
+        if (!basedCcMetaData && !bieOagiScoreMetaData && !basedCcMetaData) {
             return;
         }
 
@@ -421,7 +421,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
             }
         }
 
-        if (bieOagiSrtMetaData) {
+        if (bieOagiScoreMetaData) {
             String releaseNumber = bieDocumentation.getReleaseNumber();
             if (!StringUtils.isEmpty(releaseNumber)) {
                 Element srt_BasedStandardReleaseNumber = new Element("srt_BasedStandardReleaseNumber", OAGI_NS);

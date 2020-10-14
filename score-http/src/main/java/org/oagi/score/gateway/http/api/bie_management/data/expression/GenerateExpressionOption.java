@@ -13,7 +13,7 @@ public class GenerateExpressionOption {
     private boolean businessContext;
     private boolean includeCctsDefinitionTag;
     private boolean includeWhoColumns;
-    private boolean bieOagiSrtMetaData;
+    private boolean bieOagiScoreMetaData;
     private boolean basedCcMetaData;
 
     private String expressionOption;
