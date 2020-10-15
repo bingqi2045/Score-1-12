@@ -34,9 +34,9 @@ public class TopLevelAsbiepRepository implements ScoreRepository<TopLevelAsbiep>
                 .fetchOneInto(TopLevelAsbiep.class);
     }
 
-    public List<TopLevelAsbiep> findByIdIn(List<BigInteger> topLevelAbieIds) {
+    public List<TopLevelAsbiep> findByIdIn(List<BigInteger> topLevelAsbiepIds) {
         return dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAbieIds))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.in(topLevelAsbiepIds))
                 .fetchInto(TopLevelAsbiep.class);
     }
 }

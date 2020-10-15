@@ -417,8 +417,8 @@ public class BieEditService implements InitializingBean {
                 .filter(e -> e.getRefTopLevelAsbiepId() != null)
                 .map(BieEditRef::getRefTopLevelAsbiepId)
                 .distinct()
-                .forEach(refTopLevelAbieId -> {
-                    usedList.addAll(getBieUsedList(user, refTopLevelAbieId));
+                .forEach(refTopLevelAsbiepId -> {
+                    usedList.addAll(getBieUsedList(user, refTopLevelAsbiepId));
                 });
 
         usedList.addAll(asbieReadRepository.getUsedAsbieList(topLevelAsbiepId));

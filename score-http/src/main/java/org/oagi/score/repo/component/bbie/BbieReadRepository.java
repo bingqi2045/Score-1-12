@@ -32,16 +32,16 @@ public class BbieReadRepository {
     @Autowired
     private BccpReadRepository bccpReadRepository;
 
-    private BbieRecord getBbieByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
+    private BbieRecord getBbieByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(BBIE)
                 .where(and(
-                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BBIE.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public BbieNode getBbieNode(BigInteger topLevelAbieId, BigInteger bccManifestId, String hashPath) {
+    public BbieNode getBbieNode(BigInteger topLevelAsbiepId, BigInteger bccManifestId, String hashPath) {
         BccManifestRecord bccManifestRecord = bccReadRepository.getBccManifestByManifestId(bccManifestId);
         BccRecord bccRecord = bccReadRepository.getBccByManifestId(bccManifestId);
         if (bccRecord == null) {
@@ -64,7 +64,7 @@ public class BbieReadRepository {
         bcc.setDeprecated(bccRecord.getIsDeprecated() == 1);
         bcc.setNillable(bccRecord.getIsNillable() == 1);
 
-        BbieNode.Bbie bbie = getBbie(topLevelAbieId, hashPath);
+        BbieNode.Bbie bbie = getBbie(topLevelAsbiepId, hashPath);
         bbieNode.setBbie(bbie);
 
         if (bbie.getBbieId() == null) {
@@ -79,24 +79,24 @@ public class BbieReadRepository {
         return bbieNode;
     }
 
-    public BbieNode.Bbie getBbie(BigInteger topLevelAbieId, String hashPath) {
+    public BbieNode.Bbie getBbie(BigInteger topLevelAsbiepId, String hashPath) {
         BbieNode.Bbie bbie = new BbieNode.Bbie();
         bbie.setHashPath(hashPath);
 
-        BbieRecord bbieRecord = getBbieByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
+        BbieRecord bbieRecord = getBbieByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbieRecord != null) {
             bbie.setBbieId(bbieRecord.getBbieId().toBigInteger());
             bbie.setFromAbieHashPath(dslContext.select(ABIE.HASH_PATH)
                     .from(ABIE)
                     .where(and(
-                            ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                             ABIE.ABIE_ID.eq(bbieRecord.getFromAbieId())
                     ))
                     .fetchOneInto(String.class));
             bbie.setToBbiepHashPath(dslContext.select(BBIEP.HASH_PATH)
                     .from(BBIEP)
                     .where(and(
-                            BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                             BBIEP.BBIEP_ID.eq(bbieRecord.getToBbiepId())
                     ))
                     .fetchOneInto(String.class));

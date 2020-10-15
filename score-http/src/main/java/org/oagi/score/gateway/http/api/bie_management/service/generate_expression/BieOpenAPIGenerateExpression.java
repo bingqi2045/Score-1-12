@@ -61,8 +61,8 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     @Override
-    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
-        List<TopLevelAsbiep> mergedTopLevelAsbieps = new ArrayList(topLevelAbies);
+    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAsbieps, GenerateExpressionOption option) {
+        List<TopLevelAsbiep> mergedTopLevelAsbieps = new ArrayList(topLevelAsbieps);
 
         /*
          * Issue #587
@@ -108,10 +108,10 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
         expressionMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        generateTopLevelAbie(topLevelAsbiep);
+        generateTopLevelAsbiep(topLevelAsbiep);
     }
 
-    private void generateTopLevelAbie(TopLevelAsbiep topLevelAsbiep) {
+    private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
         ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
 
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);

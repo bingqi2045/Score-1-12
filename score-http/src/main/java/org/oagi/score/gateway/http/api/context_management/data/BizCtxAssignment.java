@@ -9,6 +9,6 @@ public class BizCtxAssignment implements Serializable {
 
     private long bizCtxAssignmentId;
     private long bizCtxId;
-    private long topLevelAbieId;
+    private long topLevelAsbiepId;
 
 }

@@ -32,7 +32,7 @@ public class AsbiepReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public AsbiepNode getAsbiepNode(BigInteger topLevelAbieId, BigInteger asccpManifestId, String hashPath) {
+    public AsbiepNode getAsbiepNode(BigInteger topLevelAsbiepId, BigInteger asccpManifestId, String hashPath) {
         AsccpRecord asccpRecord = asccpReadRepository.getAsccpByManifestId(asccpManifestId);
         if (asccpRecord == null) {
             return null;
@@ -49,7 +49,7 @@ public class AsbiepReadRepository {
         asccp.setState(CcState.valueOf(asccpRecord.getState()));
         asccp.setNillable(asccpRecord.getIsNillable() == 1);
 
-        AsbiepNode.Asbiep asbiep = getAsbiep(topLevelAbieId, hashPath);
+        AsbiepNode.Asbiep asbiep = getAsbiep(topLevelAsbiepId, hashPath);
         asbiepNode.setAsbiep(asbiep);
 
         if (asbiep.getAsbiepId() == null) {

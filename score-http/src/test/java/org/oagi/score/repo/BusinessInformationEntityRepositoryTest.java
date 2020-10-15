@@ -39,11 +39,11 @@ public class BusinessInformationEntityRepositoryTest {
     private LocalDateTime timestamp = LocalDateTime.now();
 
     @Test
-    public void insertTopLevelAbieTest() {
-        ULong topLevelAbieId = insertTopLevelAbie();
+    public void insertTopLevelAsbiepTest() {
+        ULong topLevelAsbiepId = insertTopLevelAsbiep();
 
         TopLevelAsbiepRecord topLevelAsbiep = dslContext.selectFrom(TOP_LEVEL_ASBIEP)
-                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAbieId))
+                .where(TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID.eq(topLevelAsbiepId))
                 .fetchOptional().orElse(null);
 
         assertNotNull(topLevelAsbiep);
@@ -52,7 +52,7 @@ public class BusinessInformationEntityRepositoryTest {
         assertEquals(releaseId, topLevelAsbiep.getReleaseId());
     }
 
-    private ULong insertTopLevelAbie() {
+    private ULong insertTopLevelAsbiep() {
         return bieRepository.insertTopLevelAsbiep()
                 .setUserId(userId)
                 .setReleaseId(releaseId)
@@ -62,11 +62,11 @@ public class BusinessInformationEntityRepositoryTest {
 
     @Test
     public void insertAbieTest() {
-        // tested by #insertTopLevelAbieTest
-        ULong topLevelAbieId = insertTopLevelAbie();
+        // tested by #insertTopLevelAsbiepTest
+        ULong topLevelAsbiepId = insertTopLevelAsbiep();
 
         ULong roleOfAccManifestId = ULong.valueOf(1L);
-        ULong abieId = insertAbie(topLevelAbieId, roleOfAccManifestId);
+        ULong abieId = insertAbie(topLevelAsbiepId, roleOfAccManifestId);
 
         AbieRecord abie = dslContext.selectFrom(ABIE)
                 .where(ABIE.ABIE_ID.eq(abieId))
@@ -75,35 +75,35 @@ public class BusinessInformationEntityRepositoryTest {
         assertNotNull(abie);
         assertEquals(userId, abie.getCreatedBy());
         assertEquals(timestamp, abie.getCreationTimestamp());
-        assertEquals(topLevelAbieId, abie.getOwnerTopLevelAsbiepId());
+        assertEquals(topLevelAsbiepId, abie.getOwnerTopLevelAsbiepId());
         assertEquals(roleOfAccManifestId, abie.getBasedAccManifestId());
     }
 
-    private ULong insertAbie(ULong topLevelAbieId, ULong roleOfAccManifestId) {
+    private ULong insertAbie(ULong topLevelAsbiepId, ULong roleOfAccManifestId) {
         return bieRepository.insertAbie()
                 .setUserId(userId)
-                .setTopLevelAsbiepId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .setAccManifestId(roleOfAccManifestId)
                 .setTimestamp(timestamp)
                 .execute();
     }
 
-    private ULong insertAbie(ULong topLevelAbieId) {
-        return insertAbie(topLevelAbieId, ULong.valueOf(1L));
+    private ULong insertAbie(ULong topLevelAsbiepId) {
+        return insertAbie(topLevelAsbiepId, ULong.valueOf(1L));
     }
 
     @Test
     public void insertAsbiepTest() {
-        // tested by #insertTopLevelAbieTest
-        ULong topLevelAbieId = insertTopLevelAbie();
+        // tested by #insertTopLevelAsbiepTest
+        ULong topLevelAsbiepId = insertTopLevelAsbiep();
         // tested by #insertAbieTest
-        ULong abieId = insertAbie(topLevelAbieId);
+        ULong abieId = insertAbie(topLevelAsbiepId);
 
         ULong asccpManifestId = ULong.valueOf(1L);
         ULong asbiepId = bieRepository.insertAsbiep()
                 .setAsccpManifestId(asccpManifestId)
                 .setRoleOfAbieId(abieId)
-                .setTopLevelAsbiepId(topLevelAbieId)
+                .setTopLevelAsbiepId(topLevelAsbiepId)
                 .setUserId(userId)
                 .setTimestamp(timestamp)
                 .execute();
@@ -115,7 +115,7 @@ public class BusinessInformationEntityRepositoryTest {
         assertNotNull(asbiep);
         assertEquals(userId, asbiep.getCreatedBy());
         assertEquals(timestamp, asbiep.getCreationTimestamp());
-        assertEquals(topLevelAbieId, asbiep.getOwnerTopLevelAsbiepId());
+        assertEquals(topLevelAsbiepId, asbiep.getOwnerTopLevelAsbiepId());
         assertEquals(abieId, asbiep.getRoleOfAbieId());
         assertEquals(asccpManifestId, asbiep.getBasedAsccpManifestId());
     }

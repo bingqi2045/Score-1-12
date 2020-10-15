@@ -377,10 +377,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                                                BieEditAsbie asbie, BieEditAscc ascc) {
         BieEditAsbiepNode asbiepNode = new BieEditAsbiepNode();
 
-        BigInteger topLevelAbieId = topLevelAsbiep.getTopLevelAsbiepId();
+        BigInteger topLevelAsbiepId = topLevelAsbiep.getTopLevelAsbiepId();
         BigInteger releaseId = topLevelAsbiep.getReleaseId();
 
-        asbiepNode.setTopLevelAsbiepId(topLevelAbieId);
+        asbiepNode.setTopLevelAsbiepId(topLevelAsbiepId);
         asbiepNode.setReleaseId(releaseId);
         asbiepNode.setType("asbiep");
         asbiepNode.setGuid(ascc.getGuid());
@@ -411,10 +411,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                     .setAccManifestId(acc.getAccManifestId())
                     .execute().toBigInteger();
 
-            AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpManifestId(), abieId, topLevelAbieId);
+            AsbiepRecord asbiepRecord = repository.createAsbiep(user, asccp.getAsccpManifestId(), abieId, topLevelAsbiepId);
             BigInteger asbiepId = asbiepRecord.getAsbiepId().toBigInteger();
             AsbieRecord asbieRecord = repository.createAsbie(user, fromAbieId, asbiepId, ascc.getAsccManifestId(),
-                    seqKey, topLevelAbieId);
+                    seqKey, topLevelAsbiepId);
 
             asbie = new BieEditAsbie();
             asbie.setAsbieId(asbieRecord.getAsbieId().toBigInteger());
@@ -449,10 +449,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
                                              boolean hideUnused) {
         BieEditBbiepNode bbiepNode = new BieEditBbiepNode();
 
-        BigInteger topLevelAbieId = topLevelAsbiep.getTopLevelAsbiepId();
+        BigInteger topLevelAsbiepId = topLevelAsbiep.getTopLevelAsbiepId();
         BigInteger releaseId = topLevelAsbiep.getReleaseId();
 
-        bbiepNode.setTopLevelAsbiepId(topLevelAbieId);
+        bbiepNode.setTopLevelAsbiepId(topLevelAsbiepId);
         bbiepNode.setReleaseId(releaseId);
         bbiepNode.setType("bbiep");
         bbiepNode.setGuid(bcc.getGuid());
@@ -468,10 +468,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         }
 
         if (bbie == null && isForceBieUpdate()) {
-            BbiepRecord bbiepRecord = repository.createBbiep(user, bcc.getToBccpManifestId(), topLevelAbieId);
+            BbiepRecord bbiepRecord = repository.createBbiep(user, bcc.getToBccpManifestId(), topLevelAsbiepId);
             BigInteger bbiepId = bbiepRecord.getBbiepId().toBigInteger();
             BbieRecord bbieRecord = repository.createBbie(user, fromAbieId, bbiepId,
-                    bcc.getBccManifestId(), bccp.getBdtManifestId(), seqKey, topLevelAbieId);
+                    bcc.getBccManifestId(), bccp.getBdtManifestId(), seqKey, topLevelAsbiepId);
             BigInteger bbieId = bbieRecord.getBbieId().toBigInteger();
 
             bbie = new BieEditBbie();
@@ -519,10 +519,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
     private List<BieEditNode> getDescendants(BieEditBbiepNode bbiepNode, boolean hideUnused) {
         BigInteger bbiepId = bbiepNode.getBbiepId();
-        BigInteger topLevelAbieId = bbiepNode.getTopLevelAsbiepId();
+        BigInteger topLevelAsbiepId = bbiepNode.getTopLevelAsbiepId();
         BieEditBccp bccp;
         if (bbiepId.longValue() > 0L) {
-            BieEditBbiep bbiep = repository.getBbiep(bbiepId, topLevelAbieId);
+            BieEditBbiep bbiep = repository.getBbiep(bbiepId, topLevelAsbiepId);
             bccp = repository.getBccp(bbiep.getBasedBccpId(), bbiepNode.getReleaseId());
         } else {
             if (hideUnused) {
@@ -538,7 +538,7 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
         for (BieEditBdtSc bdtSc : bdtScList) {
             BieEditBbieScNode bbieScNode = new BieEditBbieScNode();
 
-            bbieScNode.setTopLevelAsbiepId(topLevelAbieId);
+            bbieScNode.setTopLevelAsbiepId(topLevelAsbiepId);
             bbieScNode.setReleaseId(bbiepNode.getReleaseId());
             bbieScNode.setType("bbie_sc");
             bbieScNode.setGuid(bdtSc.getGuid());
@@ -546,10 +546,10 @@ public class DefaultBieEditTreeController implements BieEditTreeController {
 
             BigInteger dtScManifestId = bdtSc.getDtScManifestId();
             if (bbieId.longValue() > 0L) {
-                BieEditBbieSc bbieSc = repository.getBbieScIdByBbieIdAndDtScId(bbieId, dtScManifestId, topLevelAbieId);
+                BieEditBbieSc bbieSc = repository.getBbieScIdByBbieIdAndDtScId(bbieId, dtScManifestId, topLevelAsbiepId);
                 if (bbieSc == null) {
                     if (isForceBieUpdate()) {
-                        BigInteger bbieScId = repository.createBbieSc(user, bbieId, dtScManifestId, topLevelAbieId);
+                        BigInteger bbieScId = repository.createBbieSc(user, bbieId, dtScManifestId, topLevelAsbiepId);
                         bbieSc = new BieEditBbieSc();
                         bbieSc.setBbieScManifestId(bbieScId);
                     }

@@ -8,22 +8,22 @@ import java.time.LocalDateTime;
 
 public class UpsertAsbiepRequest extends RepositoryRequest {
 
-    private final BigInteger topLevelAbieId;
+    private final BigInteger topLevelAsbiepId;
     private final AsbiepNode.Asbiep asbiep;
 
     private BigInteger roleOfAbieId;
-    private BigInteger refTopLevelAbieId;
-    private boolean refTopLevelAbieIdNull;
+    private BigInteger refTopLevelAsbiepId;
+    private boolean refTopLevelAsbiepIdNull;
 
     public UpsertAsbiepRequest(AuthenticatedPrincipal user, LocalDateTime localDateTime,
-                               BigInteger topLevelAbieId, AsbiepNode.Asbiep asbiep) {
+                               BigInteger topLevelAsbiepId, AsbiepNode.Asbiep asbiep) {
         super(user, localDateTime);
-        this.topLevelAbieId = topLevelAbieId;
+        this.topLevelAsbiepId = topLevelAsbiepId;
         this.asbiep = asbiep;
     }
 
-    public BigInteger getTopLevelAbieId() {
-        return topLevelAbieId;
+    public BigInteger getTopLevelAsbiepId() {
+        return topLevelAsbiepId;
     }
 
     public AsbiepNode.Asbiep getAsbiep() {
@@ -38,19 +38,19 @@ public class UpsertAsbiepRequest extends RepositoryRequest {
         this.roleOfAbieId = roleOfAbieId;
     }
 
-    public BigInteger getRefTopLevelAbieId() {
-        return refTopLevelAbieId;
+    public BigInteger getRefTopLevelAsbiepId() {
+        return refTopLevelAsbiepId;
     }
 
-    public void setRefTopLevelAbieId(BigInteger refTopLevelAbieId) {
-        this.refTopLevelAbieId = refTopLevelAbieId;
+    public void setRefTopLevelAsbiepId(BigInteger refTopLevelAsbiepId) {
+        this.refTopLevelAsbiepId = refTopLevelAsbiepId;
     }
 
-    public boolean isRefTopLevelAbieIdNull() {
-        return refTopLevelAbieIdNull;
+    public boolean isRefTopLevelAsbiepIdNull() {
+        return refTopLevelAsbiepIdNull;
     }
 
-    public void setRefTopLevelAbieIdNull(boolean refTopLevelAbieIdNull) {
-        this.refTopLevelAbieIdNull = refTopLevelAbieIdNull;
+    public void setRefTopLevelAsbiepIdNull(boolean refTopLevelAsbiepIdNull) {
+        this.refTopLevelAsbiepIdNull = refTopLevelAsbiepIdNull;
     }
 }

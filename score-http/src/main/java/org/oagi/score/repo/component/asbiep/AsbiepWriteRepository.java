@@ -28,8 +28,8 @@ public class AsbiepWriteRepository {
 
     public AsbiepNode.Asbiep upsertAsbiep(UpsertAsbiepRequest request) {
         AsbiepNode.Asbiep asbiep = request.getAsbiep();
-        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAbieId());
-        ULong refTopLevelAbieId = (request.getRefTopLevelAbieId() != null) ? ULong.valueOf(request.getRefTopLevelAbieId()) : null;
+        ULong topLevelAsbiepId = ULong.valueOf(request.getTopLevelAsbiepId());
+        ULong refTopLevelAsbiepId = (request.getRefTopLevelAsbiepId() != null) ? ULong.valueOf(request.getRefTopLevelAsbiepId()) : null;
         String hashPath = asbiep.getHashPath();
         AsbiepRecord asbiepRecord = dslContext.selectFrom(ASBIEP)
                 .where(and(
@@ -53,7 +53,7 @@ public class AsbiepWriteRepository {
                 asbiepRecord.setRoleOfAbieId(dslContext.select(ABIE.ABIE_ID)
                         .from(ABIE)
                         .where(and(
-                                ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq((refTopLevelAbieId != null) ? refTopLevelAbieId : topLevelAsbiepId),
+                                ABIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq((refTopLevelAsbiepId != null) ? refTopLevelAsbiepId : topLevelAsbiepId),
                                 ABIE.HASH_PATH.eq(asbiep.getRoleOfAbieHashPath())
                         ))
                         .fetchOneInto(ULong.class));
@@ -101,7 +101,7 @@ public class AsbiepWriteRepository {
 
         }
 
-        return readRepository.getAsbiep(request.getTopLevelAbieId(), hashPath);
+        return readRepository.getAsbiep(request.getTopLevelAsbiepId(), hashPath);
     }
     
 }

@@ -26,16 +26,16 @@ public class BbieScReadRepository {
     @Autowired
     private DtScReadRepository dtScReadRepository;
 
-    private BbieScRecord getBbieScByTopLevelAbieIdAndHashPath(BigInteger topLevelAbieId, String hashPath) {
+    private BbieScRecord getBbieScByTopLevelAsbiepIdAndHashPath(BigInteger topLevelAsbiepId, String hashPath) {
         return dslContext.selectFrom(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BBIE_SC.HASH_PATH.eq(hashPath)
                 ))
                 .fetchOptional().orElse(null);
     }
 
-    public BbieScNode getBbieScNode(BigInteger topLevelAbieId, BigInteger dtScManifestId, String hashPath) {
+    public BbieScNode getBbieScNode(BigInteger topLevelAsbiepId, BigInteger dtScManifestId, String hashPath) {
         DtScRecord dtScRecord = dtScReadRepository.getDtScByManifestId(dtScManifestId);
         if (dtScRecord == null) {
             return null;
@@ -59,7 +59,7 @@ public class BbieScReadRepository {
                         .where(DT.DT_ID.eq(dtScRecord.getOwnerDtId()))
                         .fetchOneInto(String.class)));
 
-        BbieScNode.BbieSc bbieSc = getBbieSc(topLevelAbieId, hashPath);
+        BbieScNode.BbieSc bbieSc = getBbieSc(topLevelAsbiepId, hashPath);
         bbieScNode.setBbieSc(bbieSc);
 
         if (bbieSc.getBbieScId() == null) {
@@ -73,17 +73,17 @@ public class BbieScReadRepository {
         return bbieScNode;
     }
 
-    public BbieScNode.BbieSc getBbieSc(BigInteger topLevelAbieId, String hashPath) {
+    public BbieScNode.BbieSc getBbieSc(BigInteger topLevelAsbiepId, String hashPath) {
         BbieScNode.BbieSc bbieSc = new BbieScNode.BbieSc();
         bbieSc.setHashPath(hashPath);
 
-        BbieScRecord bbieScRecord = getBbieScByTopLevelAbieIdAndHashPath(topLevelAbieId, hashPath);
+        BbieScRecord bbieScRecord = getBbieScByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbieScRecord != null) {
             bbieSc.setBbieScId(bbieScRecord.getBbieScId().toBigInteger());
             bbieSc.setBbieHashPath(dslContext.select(BBIE.HASH_PATH)
                     .from(BBIE)
                     .where(and(
-                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                            BBIE.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                             BBIE.BBIE_ID.eq(bbieScRecord.getBbieId())
                     ))
                     .fetchOneInto(String.class));
@@ -110,18 +110,18 @@ public class BbieScReadRepository {
         return bbieSc;
     }
 
-    public List<BieEditUsed> getUsedBbieScList(BigInteger topLevelAbieId) {
+    public List<BieEditUsed> getUsedBbieScList(BigInteger topLevelAsbiepId) {
         return dslContext.select(BBIE_SC.HASH_PATH)
                 .from(BBIE_SC)
                 .where(and(
-                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAbieId)),
+                        BBIE_SC.OWNER_TOP_LEVEL_ASBIEP_ID.eq(ULong.valueOf(topLevelAsbiepId)),
                         BBIE_SC.IS_USED.eq((byte) 1)
                 ))
                 .fetchStream().map(record -> {
                     BieEditUsed bieEditUsed = new BieEditUsed();
                     bieEditUsed.setType("BBIE_SC");
                     bieEditUsed.setHashPath(record.get(BBIE_SC.HASH_PATH));
-                    bieEditUsed.setTopLevelAsbiepId(topLevelAbieId);
+                    bieEditUsed.setTopLevelAsbiepId(topLevelAsbiepId);
                     bieEditUsed.setUsed(true);
                     return bieEditUsed;
                 })

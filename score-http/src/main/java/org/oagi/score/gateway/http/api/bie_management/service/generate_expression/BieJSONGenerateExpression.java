@@ -57,22 +57,22 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     @Override
-    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
-        List<TopLevelAsbiep> mergedTopLevelAbies = new ArrayList(topLevelAbies);
+    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAsbieps, GenerateExpressionOption option) {
+        List<TopLevelAsbiep> mergedTopLevelAsbieps = new ArrayList(topLevelAsbieps);
 
         /* Issue 587 */
         if (option.isIncludeMetaHeaderForJson()) {
             TopLevelAsbiep metaHeaderTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepId());
-            mergedTopLevelAbies.add(metaHeaderTopLevelAsbiep);
+            mergedTopLevelAsbieps.add(metaHeaderTopLevelAsbiep);
         }
         if (option.isIncludePaginationResponseForJson()) {
             TopLevelAsbiep paginationResponseTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getPaginationResponseTopLevelAsbiepId());
-            mergedTopLevelAbies.add(paginationResponseTopLevelAsbiep);
+            mergedTopLevelAsbieps.add(paginationResponseTopLevelAsbiep);
         }
 
-        return applicationContext.getBean(GenerationContext.class, mergedTopLevelAbies);
+        return applicationContext.getBean(GenerationContext.class, mergedTopLevelAsbieps);
     }
 
     @Override
@@ -80,10 +80,10 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         this.generationContext = generationContext;
         this.option = option;
 
-        generateTopLevelAbie(topLevelAsbiep);
+        generateTopLevelAsbiep(topLevelAsbiep);
     }
 
-    private void generateTopLevelAbie(TopLevelAsbiep topLevelAsbiep) {
+    private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
         ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
 
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);

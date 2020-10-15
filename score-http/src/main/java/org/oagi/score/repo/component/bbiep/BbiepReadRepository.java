@@ -37,7 +37,7 @@ public class BbiepReadRepository {
                 .fetchOptional().orElse(null);
     }
 
-    public BbiepNode getBbiepNode(BigInteger topLevelAbieId, BigInteger bccpManifestId, String hashPath) {
+    public BbiepNode getBbiepNode(BigInteger topLevelAsbiepId, BigInteger bccpManifestId, String hashPath) {
         BccpRecord bccpRecord = bccpReadRepository.getBccpByManifestId(bccpManifestId);
         if (bccpRecord == null) {
             return null;
@@ -65,7 +65,7 @@ public class BbiepReadRepository {
         bdt.setDefinition(bdtRecord.getDefinition());
         bdt.setState(CcState.valueOf(bdtRecord.getState()));
 
-        BbiepNode.Bbiep bbiep = getBbiep(topLevelAbieId, hashPath);
+        BbiepNode.Bbiep bbiep = getBbiep(topLevelAsbiepId, hashPath);
         bbiepNode.setBbiep(bbiep);
 
         if (bbiep.getBbiepId() == null) {
@@ -75,12 +75,12 @@ public class BbiepReadRepository {
         return bbiepNode;
     }
 
-    public BbiepNode.Bbiep getBbiep(BigInteger topLevelAbieId, String hashPath) {
+    public BbiepNode.Bbiep getBbiep(BigInteger topLevelAsbiepId, String hashPath) {
         BbiepNode.Bbiep bbiep = new BbiepNode.Bbiep();
         bbiep.setUsed(true);
         bbiep.setHashPath(hashPath);
 
-        BbiepRecord bbiepRecord = getBbiepByTopLevelAsbiepIdAndHashPath(topLevelAbieId, hashPath);
+        BbiepRecord bbiepRecord = getBbiepByTopLevelAsbiepIdAndHashPath(topLevelAsbiepId, hashPath);
         if (bbiepRecord != null) {
             bbiep.setBbiepId(bbiepRecord.getBbiepId().toBigInteger());
             bbiep.setBasedBccpManifestId(bbiepRecord.getBasedBccpManifestId().toBigInteger());

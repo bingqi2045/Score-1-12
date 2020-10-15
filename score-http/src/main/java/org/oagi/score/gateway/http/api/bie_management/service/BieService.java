@@ -288,7 +288,7 @@ public class BieService {
                     .set(BIZ_CTX_ASSIGNMENT.BIZ_CTX_ID, ULong.valueOf(newList.get(i)))
                     .onDuplicateKeyIgnore()
                     .execute();
-            //if a couple (biz ctx id , toplevelabieId) already exist dont insert it - just update it.
+            //if a couple (biz ctx id , toplevelasbiepId) already exist dont insert it - just update it.
         }
 
     }

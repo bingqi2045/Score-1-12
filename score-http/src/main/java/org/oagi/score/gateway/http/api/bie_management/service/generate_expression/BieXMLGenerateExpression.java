@@ -70,8 +70,8 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     @Override
-    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option) {
-        return applicationContext.getBean(GenerationContext.class, topLevelAbies);
+    public GenerationContext generateContext(List<TopLevelAsbiep> topLevelAsbieps, GenerateExpressionOption option) {
+        return applicationContext.getBean(GenerationContext.class, topLevelAsbieps);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         this.generationContext = generationContext;
         this.option = option;
 
-        generateTopLevelAbie(topLevelAsbiep);
+        generateTopLevelAsbiep(topLevelAsbiep);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         return tempFile;
     }
 
-    private void generateTopLevelAbie(TopLevelAsbiep topLevelAsbiep) {
+    private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
         ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);
         logger.debug("Generating Top Level ABIE w/ given ASBIEP Id: " + asbiep.getAsbiepId());

@@ -73,9 +73,9 @@ public class BieGenerateService {
         return result;
     }
 
-    public File generateSchema(List<TopLevelAsbiep> topLevelAbies,
+    public File generateSchema(List<TopLevelAsbiep> topLevelAsbieps,
                                GenerateExpressionOption option) throws BieGenerateFailureException {
-        if (topLevelAbies == null || topLevelAbies.isEmpty()) {
+        if (topLevelAsbieps == null || topLevelAsbieps.isEmpty()) {
             throw new IllegalArgumentException();
         }
         if (option == null) {
@@ -89,10 +89,10 @@ public class BieGenerateService {
 
         switch (packageOption.toUpperCase()) {
             case "ALL":
-                return generateSchemaForAll(topLevelAbies, option);
+                return generateSchemaForAll(topLevelAsbieps, option);
 
             case "EACH":
-                Map<BigInteger, File> files = generateSchemaForEach(topLevelAbies, option);
+                Map<BigInteger, File> files = generateSchemaForEach(topLevelAsbieps, option);
                 if (files.size() == 1) {
                     return files.values().iterator().next();
                 }
@@ -133,13 +133,13 @@ public class BieGenerateService {
         return schemaExpressionFile;
     }
 
-    public Map<BigInteger, File> generateSchemaForEach(List<TopLevelAsbiep> topLevelAbies,
+    public Map<BigInteger, File> generateSchemaForEach(List<TopLevelAsbiep> topLevelAsbieps,
                                                        GenerateExpressionOption option) throws BieGenerateFailureException {
         Map<BigInteger, File> targetFiles = new HashMap();
         BieGenerateExpression generateExpression = createBieGenerateExpression(option);
-        GenerationContext generationContext = generateExpression.generateContext(topLevelAbies, option);
+        GenerationContext generationContext = generateExpression.generateContext(topLevelAsbieps, option);
 
-        for (TopLevelAsbiep topLevelAsbiep : topLevelAbies) {
+        for (TopLevelAsbiep topLevelAsbiep : topLevelAsbieps) {
             try {
                 generateExpression.reset();
             } catch (Exception e) {

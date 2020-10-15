@@ -38,7 +38,7 @@ public class BieListController {
                                             @RequestParam(name = "access", required = false) String access,
                                             @RequestParam(name = "states", required = false) String states,
                                             @RequestParam(name = "excludePropertyTerms", required = false) String excludePropertyTerms,
-                                            @RequestParam(name = "excludeTopLevelAbieIds", required = false) String excludeTopLevelAbieIds,
+                                            @RequestParam(name = "excludeTopLevelAsbiepIds", required = false) String excludeTopLevelAsbiepIds,
                                             @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
                                             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
@@ -61,8 +61,8 @@ public class BieListController {
                         .map(e -> BieState.valueOf(e)).collect(Collectors.toList()) : Collections.emptyList());
         request.setExcludePropertyTerms(StringUtils.isEmpty(excludePropertyTerms) ? Collections.emptyList() :
                 Arrays.asList(excludePropertyTerms.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-        request.setExcludeTopLevelAsbiepIds(StringUtils.isEmpty(excludeTopLevelAbieIds) ? Collections.emptyList() :
-                Arrays.asList(excludeTopLevelAbieIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+        request.setExcludeTopLevelAsbiepIds(StringUtils.isEmpty(excludeTopLevelAsbiepIds) ? Collections.emptyList() :
+                Arrays.asList(excludeTopLevelAsbiepIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
         request.setOwnerLoginIds(StringUtils.isEmpty(ownerLoginIds) ? Collections.emptyList() :
                 Arrays.asList(ownerLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :

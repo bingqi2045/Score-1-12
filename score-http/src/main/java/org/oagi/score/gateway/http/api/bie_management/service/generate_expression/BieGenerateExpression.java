@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public interface BieGenerateExpression {
 
-    GenerationContext generateContext(List<TopLevelAsbiep> topLevelAbies, GenerateExpressionOption option);
+    GenerationContext generateContext(List<TopLevelAsbiep> topLevelAsbieps, GenerateExpressionOption option);
 
     void reset() throws Exception;
 
