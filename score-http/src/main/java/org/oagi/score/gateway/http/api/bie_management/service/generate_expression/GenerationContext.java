@@ -164,14 +164,19 @@ public class GenerationContext implements InitializingBean {
             throw new IllegalStateException("'topLevelAsbieps' parameter must not be null.");
         }
 
-        Set<BigInteger> releaseIdSet =
-                topLevelAsbieps.stream().map(e -> e.getReleaseId()).collect(Collectors.toSet());
+        Set<BigInteger> releaseIdSet = topLevelAsbieps.stream().map(e -> e.getReleaseId()).collect(Collectors.toSet());
         if (releaseIdSet.size() != 1) {
             throw new UnsupportedOperationException("`releaseId` for all `topLevelAsbieps` parameter must be same.");
         }
 
         Set<TopLevelAsbiep> topLevelAsbiepSet = new HashSet();
         topLevelAsbiepSet.addAll(topLevelAsbieps);
+        topLevelAsbiepSet.addAll(findRefTopLevelAsbieps(topLevelAsbiepSet));
+
+        init(topLevelAsbiepSet.stream().map(e -> e.getTopLevelAsbiepId()).collect(Collectors.toList()), releaseIdSet.iterator().next());
+    }
+
+    private Set<TopLevelAsbiep> findRefTopLevelAsbieps(Set<TopLevelAsbiep> topLevelAsbiepSet) {
         Set<TopLevelAsbiep> refTopLevelAsbiepSet = new HashSet();
         refTopLevelAsbiepSet.addAll(
                 topLevelAsbiepReadRepository.findRefTopLevelAsbieps(
@@ -179,17 +184,11 @@ public class GenerationContext implements InitializingBean {
                 )
         );
 
-        while (refTopLevelAsbiepSet.size() > 0 && !topLevelAsbiepSet.containsAll(refTopLevelAsbiepSet)) {
-            topLevelAsbiepSet.addAll(refTopLevelAsbiepSet);
-            refTopLevelAsbiepSet.clear();
-            refTopLevelAsbiepSet.addAll(
-                    topLevelAsbiepReadRepository.findRefTopLevelAsbieps(
-                            topLevelAsbiepSet.stream().map(e -> e.getTopLevelAsbiepId()).collect(Collectors.toSet())
-                    )
-            );
+        if (!refTopLevelAsbiepSet.isEmpty()) {
+            refTopLevelAsbiepSet.addAll(findRefTopLevelAsbieps(refTopLevelAsbiepSet));
         }
 
-        init(topLevelAsbiepSet.stream().map(e -> e.getTopLevelAsbiepId()).collect(Collectors.toList()), releaseIdSet.iterator().next());
+        return refTopLevelAsbiepSet;
     }
 
     private void init(Collection<BigInteger> topLevelAsbiepIds, BigInteger releaseId) {
