@@ -9,6 +9,7 @@ import org.oagi.score.gateway.http.api.context_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -313,10 +314,42 @@ public class ContextSchemeService {
                 .fetchOneInto(BusinessContext.class);
     }
 
+    public boolean hasSameCtxScheme(ContextScheme contextScheme) {
+        Condition idMatch = trueCondition();
+        if (contextScheme.getCtxSchemeId() > 0) {
+            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getCtxSchemeId()));
+        }
+
+        return dslContext.selectCount().from(CTX_SCHEME).where(
+                and(CTX_SCHEME.SCHEME_ID.eq(contextScheme.getSchemeId()),
+                        CTX_SCHEME.SCHEME_AGENCY_ID.eq(contextScheme.getSchemeAgencyId()),
+                        CTX_SCHEME.SCHEME_VERSION_ID.eq(contextScheme.getSchemeVersionId()),
+                        idMatch))
+                .fetchOneInto(Integer.class) > 0;
+    }
+
+    public boolean hasSameCtxSchemeName(ContextScheme contextScheme) {
+        Condition idMatch = trueCondition();
+        if (contextScheme.getCtxSchemeId() > 0) {
+            idMatch = CTX_SCHEME.CTX_SCHEME_ID.notEqual(ULong.valueOf(contextScheme.getCtxSchemeId()));
+        }
+        return dslContext.selectCount().from(CTX_SCHEME).where(
+                and(CTX_SCHEME.SCHEME_ID.eq(contextScheme.getSchemeId()),
+                        CTX_SCHEME.SCHEME_AGENCY_ID.eq(contextScheme.getSchemeAgencyId()),
+                        CTX_SCHEME.SCHEME_VERSION_ID.notEqual(contextScheme.getSchemeVersionId()),
+                        CTX_SCHEME.SCHEME_NAME.notEqual(contextScheme.getSchemeName()),
+                        idMatch))
+                .fetchOneInto(Integer.class) > 0;
+    }
+
     @Transactional
     public void insert(AuthenticatedPrincipal user, ContextScheme contextScheme) {
         if (StringUtils.isEmpty(contextScheme.getGuid())) {
             contextScheme.setGuid(ScoreGuid.randomGuid());
+        }
+
+        if (hasSameCtxScheme(contextScheme)) {
+            throw new IllegalArgumentException("Same ContextScheme already exist.");
         }
 
         ULong userId = ULong.valueOf(sessionService.userId(user));
@@ -370,6 +403,9 @@ public class ContextSchemeService {
 
     @Transactional
     public void update(AuthenticatedPrincipal user, ContextScheme contextScheme) {
+        if (hasSameCtxScheme(contextScheme)) {
+            throw new IllegalArgumentException("Same ContextScheme already exist.");
+        }
         dslContext.update(CTX_SCHEME)
                 .set(CTX_SCHEME.SCHEME_NAME, contextScheme.getSchemeName())
                 .set(CTX_SCHEME.CTX_CATEGORY_ID, ULong.valueOf(contextScheme.getCtxCategoryId()))

@@ -154,4 +154,20 @@ public class ContextSchemeController {
         service.delete(request.getCtxSchemeIds());
         return ResponseEntity.noContent().build();
     }
+
+    @RequestMapping(value = "/context_scheme/check_uniqueness", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkUniqueness(
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @RequestBody ContextScheme contextScheme) {
+        return service.hasSameCtxScheme(contextScheme);
+    }
+
+    @RequestMapping(value = "/context_scheme/check_name_uniqueness", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean checkNameUniqueness(
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @RequestBody ContextScheme contextScheme) {
+        return service.hasSameCtxSchemeName(contextScheme);
+    }
 }
