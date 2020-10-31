@@ -15,6 +15,7 @@ import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.log_management.data.Log;
 import org.oagi.score.gateway.http.api.log_management.data.LogListRequest;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.oagi.score.gateway.http.api.log_management.helper.LogUtils.generateHash;
@@ -283,30 +285,43 @@ public class LogRepository {
     /*
      * Begins ACC
      */
-    public LogRecord insertAccLog(AccRecord accRecord,
+    public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
+                                  AccRecord accRecord,
                                   LogAction logAction,
                                   ULong requesterId,
                                   LocalDateTime timestamp) {
-        return insertAccLog(accRecord, null, logAction, requesterId, timestamp);
+        return insertAccLog(accManifestRecord, accRecord, null, logAction, requesterId, timestamp);
     }
 
-    private String serialize(AccRecord accRecord) {
+    private String serialize(AccManifestRecord accManifestRecord, AccRecord accRecord) {
+        List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                .fetch();
+
         List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
                 .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
+                .fetch();
+
+        List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 .fetch();
 
         List<BccRecord> bccRecords = dslContext.selectFrom(BCC)
                 .where(BCC.FROM_ACC_ID.eq(accRecord.getAccId()))
                 .fetch();
 
-        List<SeqKeyRecord> seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId()))
-                .fetch();
+        List<SeqKeyRecord> seqKeyRecords = Collections.emptyList();
+        if(accManifestRecord.getAccManifestId() != null) {
+            seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
+                    .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch();
+        }
 
-        return serializer.serialize(accRecord, asccRecords, bccRecords, seqKeyRecords);
+        return serializer.serialize(accRecord, asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords);
     }
 
-    public LogRecord insertAccLog(AccRecord accRecord,
+    public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
+                                  AccRecord accRecord,
                                   ULong prevLogId,
                                   LogAction logAction,
                                   ULong requesterId,
@@ -340,7 +355,7 @@ public class LogRepository {
         }
         logRecord.setLogAction(logAction.name());
 
-        logRecord.setSnapshot(JSON.valueOf(serialize(accRecord)));
+        logRecord.setSnapshot(JSON.valueOf(serialize(accManifestRecord, accRecord)));
         logRecord.setReference(accRecord.getGuid());
         logRecord.setCreatedBy(requesterId);
         logRecord.setCreationTimestamp(timestamp);

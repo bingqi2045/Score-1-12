@@ -38,6 +38,7 @@ public class LogSerializer {
 
     @SneakyThrows(JsonIOException.class)
     public String serialize(AccRecord accRecord,
+                            List<AsccManifestRecord> asccManifestRecords, List<BccManifestRecord> bccManifestRecords,
                             List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
                             List<SeqKeyRecord> seqKeyRecords) {
         Map<String, Object> properties = new HashMap();
@@ -60,7 +61,7 @@ public class LogSerializer {
         List<Map<String, Object>> associations = new ArrayList();
         properties.put("associations", associations);
 
-        for (AssocRecord assocRecord : sort(asccRecords, bccRecords, seqKeyRecords)) {
+        for (AssocRecord assocRecord : sort(asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)) {
             Object delegate = assocRecord.getDelegate();
             if (delegate instanceof AsccRecord) {
                 associations.add(serialize((AsccRecord) delegate));
@@ -109,8 +110,14 @@ public class LogSerializer {
         }
     }
 
-    private List<AssocRecord> sort(List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
+    private List<AssocRecord> sort(List<AsccManifestRecord> asccManifestRecords, List<BccManifestRecord> bccManifestRecords,
+                                   List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
                                    List<SeqKeyRecord> seqKeyRecords) {
+
+        Map<ULong, AsccManifestRecord> asccManifestRecordMap = asccManifestRecords.stream().collect(
+                Collectors.toMap(AsccManifestRecord::getAsccManifestId, Function.identity()));
+        Map<ULong, BccManifestRecord> bccManifestRecordMap = bccManifestRecords.stream().collect(
+                Collectors.toMap(BccManifestRecord::getBccManifestId, Function.identity()));
 
         Map<ULong, AsccRecord> asccRecordMap = asccRecords.stream().collect(
                 Collectors.toMap(AsccRecord::getAsccId, Function.identity()));
@@ -123,13 +130,12 @@ public class LogSerializer {
                     Collectors.toMap(SeqKeyRecord::getSeqKeyId, Function.identity()));
             SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
             while (node != null) {
-                node.getCcId();
                 switch (node.getType()) {
-                    case ascc:
-                        sortedRecords.add(new AssocRecord(asccRecordMap.get(node.getCcId())));
+                    case asccManifest:
+                        sortedRecords.add(new AssocRecord(asccRecordMap.get(asccManifestRecordMap.get(node.getCcManifestId()).getAsccId())));
                         break;
-                    case bcc:
-                        sortedRecords.add(new AssocRecord(bccRecordMap.get(node.getCcId())));
+                    case bccManifest:
+                        sortedRecords.add(new AssocRecord(bccRecordMap.get(bccManifestRecordMap.get(node.getCcManifestId()).getBccId())));
                         break;
                 }
                 node = seqKeyRecordMap.get(node.getNextSeqKeyId());

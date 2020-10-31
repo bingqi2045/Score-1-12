@@ -35,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SeqKey extends TableImpl<SeqKeyRecord> {
 
-    private static final long serialVersionUID = -1246874771;
+    private static final long serialVersionUID = 1148693922;
 
     /**
      * The reference instance of <code>oagi.seq_key</code>
@@ -56,9 +56,9 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     public final TableField<SeqKeyRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>oagi.seq_key.from_acc_id</code>.
+     * The column <code>oagi.seq_key.from_acc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> FROM_ACC_ID = createField(DSL.name("from_acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<SeqKeyRecord, ULong> FROM_ACC_MANIFEST_ID = createField(DSL.name("from_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.seq_key.type</code>.
@@ -66,9 +66,9 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     public final TableField<SeqKeyRecord, SeqKeyType> TYPE = createField(DSL.name("type"), org.jooq.impl.SQLDataType.VARCHAR(4).asEnumDataType(org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType.class), this, "");
 
     /**
-     * The column <code>oagi.seq_key.cc_id</code>.
+     * The column <code>oagi.seq_key.cc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> CC_ID = createField(DSL.name("cc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<SeqKeyRecord, ULong> CC_MANIFEST_ID = createField(DSL.name("cc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.seq_key.prev_seq_key_id</code>.
@@ -143,8 +143,8 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
         return Arrays.<ForeignKey<SeqKeyRecord, ?>>asList(Keys.SEQ_KEY_FROM_ACC_ID_FK, Keys.SEQ_KEY_PREV_SEQ_KEY_ID_FK, Keys.SEQ_KEY_NEXT_SEQ_KEY_ID_FK);
     }
 
-    public Acc acc() {
-        return new Acc(this, Keys.SEQ_KEY_FROM_ACC_ID_FK);
+    public AccManifest accManifest() {
+        return new AccManifest(this, Keys.SEQ_KEY_FROM_ACC_ID_FK);
     }
 
     public SeqKey seqKeyPrevSeqKeyIdFk() {

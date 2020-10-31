@@ -203,7 +203,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         ASCC.STATE, ASCC_MANIFEST.RELEASE_ID, ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID)
                         .from(ASCC_MANIFEST)
                         .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                        .join(SEQ_KEY).on(ASCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
+                        .join(SEQ_KEY).on(ASCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);
@@ -233,7 +233,7 @@ public class CoreComponentGraphContext implements GraphContext {
                         BCC.STATE, BCC_MANIFEST.RELEASE_ID, BCC_MANIFEST.PREV_BCC_MANIFEST_ID)
                         .from(BCC_MANIFEST)
                         .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                        .join(SEQ_KEY).on(BCC.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
+                        .join(SEQ_KEY).on(BCC_MANIFEST.SEQ_KEY_ID.eq(SEQ_KEY.SEQ_KEY_ID))
                         .fetch(record -> {
                             ULong seqKeyId = record.get(SEQ_KEY.SEQ_KEY_ID);
                             ULong prevSeqKeyId = record.get(SEQ_KEY.PREV_SEQ_KEY_ID);

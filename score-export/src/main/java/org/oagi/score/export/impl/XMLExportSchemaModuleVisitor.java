@@ -16,7 +16,6 @@ import org.oagi.score.populate.helper.Context;
 import org.oagi.score.provider.CoreComponentProvider;
 import org.oagi.score.provider.ImportedDataProvider;
 import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -791,7 +790,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
                 accComplexType.getRawId().toBigInteger().longValue(), coreComponentProvider);
         // for ASCC or BCC (Sequence Key != 0)
         for (SeqKeyRecord seqKey : seqKeys) {
-            if (seqKey.getType() == SeqKeyType.ascc) {
+            if (seqKey.getType() == SeqKeyType.asccManifest) {
                 AsccRecord ascc = importedDataProvider.findASCC(seqKey.getCcId());
                 if (ascc.getDen().endsWith("Any Structured Content")) {
                     Element anyElement = new Element("any", XSD_NS);
@@ -877,7 +876,7 @@ public class XMLExportSchemaModuleVisitor implements SchemaModuleVisitor {
 
         // for BCCP (Sequence Key == 0)
         for (SeqKeyRecord seqKey : seqKeys) {
-            if (seqKey.getType().equals(SeqKeyType.bcc)) {
+            if (seqKey.getType().equals(SeqKeyType.bccManifest)) {
                 BccRecord bcc = importedDataProvider.findBCC(seqKey.getCcId());
                 BccManifestRecord bccManifest = importedDataProvider.findBCCManifest(bcc.getBccId());
                 BccpManifestRecord bccpManifest = importedDataProvider.findBCCPManifest(bccManifest.getToBccpManifestId());

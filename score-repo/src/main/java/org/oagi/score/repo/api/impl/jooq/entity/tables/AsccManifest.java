@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
-    private static final long serialVersionUID = 1838932400;
+    private static final long serialVersionUID = 1730255305;
 
     /**
      * The reference instance of <code>oagi.ascc_manifest</code>
@@ -61,6 +61,11 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
      * The column <code>oagi.ascc_manifest.ascc_id</code>.
      */
     public final TableField<AsccManifestRecord, ULong> ASCC_ID = createField(DSL.name("ascc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.ascc_manifest.seq_key_id</code>.
+     */
+    public final TableField<AsccManifestRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.ascc_manifest.from_acc_manifest_id</code>.
@@ -147,7 +152,7 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
     @Override
     public List<ForeignKey<AsccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccManifestRecord, ?>>asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<AsccManifestRecord, ?>>asList(Keys.ASCC_MANIFEST_RELEASE_ID_FK, Keys.ASCC_MANIFEST_ASCC_ID_FK, Keys.ASCC_MANIFEST_SEQ_KEY_ID_FK, Keys.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_PREV_ASCC_MANIFEST_ID_FK, Keys.ASCC_MANIFEST_NEXT_ASCC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -156,6 +161,10 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
 
     public Ascc ascc() {
         return new Ascc(this, Keys.ASCC_MANIFEST_ASCC_ID_FK);
+    }
+
+    public SeqKey seqKey() {
+        return new SeqKey(this, Keys.ASCC_MANIFEST_SEQ_KEY_ID_FK);
     }
 
     public AccManifest accManifest() {
@@ -205,11 +214,11 @@ public class AsccManifest extends TableImpl<AsccManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<ULong, ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

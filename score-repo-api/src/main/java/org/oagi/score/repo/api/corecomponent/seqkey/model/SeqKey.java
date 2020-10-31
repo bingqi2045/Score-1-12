@@ -11,7 +11,7 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
 
     private BigInteger seqKeyId;
 
-    private BigInteger fromAccId;
+    private BigInteger fromAccManifestId;
 
     private SeqKeyType seqKeyType;
 
@@ -31,12 +31,12 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         this.seqKeyId = seqKeyId;
     }
 
-    public BigInteger getFromAccId() {
-        return fromAccId;
+    public BigInteger getFromAccManifestId() {
+        return fromAccManifestId;
     }
 
-    public void setFromAccId(BigInteger fromAccId) {
-        this.fromAccId = fromAccId;
+    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+        this.fromAccManifestId = fromAccManifestId;
     }
 
     public SeqKeyType getSeqKeyType() {
@@ -106,14 +106,14 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SeqKey seqKey = (SeqKey) o;
-        return fromAccId.equals(seqKey.fromAccId) &&
+        return fromAccManifestId.equals(seqKey.fromAccManifestId) &&
                 seqKeyType == seqKey.seqKeyType &&
                 ccId.equals(seqKey.ccId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fromAccId, seqKeyType, ccId);
+        return Objects.hash(fromAccManifestId, seqKeyType, ccId);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
                 "seqKeyId=" + seqKeyId +
                 ", prevSeqKey=" + ((prevSeqKey != null) ? prevSeqKey.getSeqKeyId() : null) +
                 ", nextSeqKey=" + ((nextSeqKey != null) ? nextSeqKey.getSeqKeyId() : null) +
-                ", fromAccId=" + fromAccId +
+                ", fromAccId=" + fromAccManifestId +
                 ", seqKeyType=" + seqKeyType +
                 ", ccId=" + ccId +
                 '}';

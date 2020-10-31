@@ -15,9 +15,9 @@ import org.jooq.Schema;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public enum SeqKeyType implements EnumType {
 
-    ascc("ascc"),
+    asccManifest("ascc_manifest"),
 
-    bcc("bcc");
+    bccManifest("bcc_manifest");
 
     private final String literal;
 

@@ -38,7 +38,7 @@ public class SeqKeyReadRepositoryTest
     @Order(1)
     public void getSeqKeyOfBusinessObjectDocumentTest() {
         GetSeqKeyRequest request = new GetSeqKeyRequest(requester)
-                .withFromAccId(getAccIdByObjectClassTerm("Business Object Document"));
+                .withFromAccManifestId(getAccIdByObjectClassTerm("Business Object Document"));
         GetSeqKeyResponse response = repository.getSeqKey(request);
         assertNotNull(response.getSeqKey());
 

@@ -30,10 +30,10 @@ public class JooqSeqKeyWriteRepository
     public CreateSeqKeyResponse createSeqKey(CreateSeqKeyRequest request) throws ScoreDataAccessException {
 
         SeqKeyRecord record = new SeqKeyRecord();
-        record.setFromAccId(ULong.valueOf(request.getFromAccId()));
+        record.setFromAccManifestId(ULong.valueOf(request.getFromAccManifestId()));
         record.setType(org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType.valueOf(
                 request.getType().name().toLowerCase()));
-        record.setCcId(ULong.valueOf(request.getCcId()));
+        record.setCcManifestId(ULong.valueOf(request.getCcId()));
         record.setSeqKeyId(
                 dslContext().insertInto(SEQ_KEY)
                         .set(record)
@@ -42,27 +42,27 @@ public class JooqSeqKeyWriteRepository
         );
 
         switch (record.getType()) {
-            case ascc:
-                dslContext().update(ASCC)
-                        .set(ASCC.SEQ_KEY_ID, record.getSeqKeyId())
-                        .where(ASCC.ASCC_ID.eq(record.getCcId()))
+            case asccManifest:
+                dslContext().update(ASCC_MANIFEST)
+                        .set(ASCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
+                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(record.getCcManifestId()))
                         .execute();
                 break;
 
-            case bcc:
-                dslContext().update(BCC)
-                        .set(BCC.SEQ_KEY_ID, record.getSeqKeyId())
-                        .where(BCC.BCC_ID.eq(record.getCcId()))
+            case bccManifest:
+                dslContext().update(BCC_MANIFEST)
+                        .set(BCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
+                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(record.getCcManifestId()))
                         .execute();
                 break;
         }
 
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(record.getSeqKeyId().toBigInteger());
-        seqKey.setFromAccId(record.getFromAccId().toBigInteger());
+        seqKey.setFromAccManifestId(record.getFromAccManifestId().toBigInteger());
         seqKey.setSeqKeyType(org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKeyType.valueOf(
                 record.getType().name().toUpperCase()));
-        seqKey.setCcId(record.getCcId().toBigInteger());
+        seqKey.setCcId(record.getCcManifestId().toBigInteger());
 
         return new CreateSeqKeyResponse(seqKey);
     }
@@ -196,11 +196,11 @@ public class JooqSeqKeyWriteRepository
     public DeleteSeqKeyResponse deleteSeqKey(DeleteSeqKeyRequest request) throws ScoreDataAccessException {
         BigInteger seqKeyId = request.getSeqKeyId();
 
-        int asccCnt = dslContext().selectCount().from(ASCC)
-                .where(ASCC.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+        int asccCnt = dslContext().selectCount().from(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
-        int bccCnt = dslContext().selectCount().from(BCC)
-                .where(BCC.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+        int bccCnt = dslContext().selectCount().from(BCC_MANIFEST)
+                .where(BCC_MANIFEST.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
                 .fetchOptionalInto(Integer.class).orElse(0);
 
         if (asccCnt + bccCnt > 0) {

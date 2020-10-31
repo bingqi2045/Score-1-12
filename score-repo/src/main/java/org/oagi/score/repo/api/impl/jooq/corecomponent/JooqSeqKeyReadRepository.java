@@ -35,28 +35,28 @@ public class JooqSeqKeyReadRepository
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public GetSeqKeyResponse getSeqKey(GetSeqKeyRequest request) throws ScoreDataAccessException {
-        BigInteger fromAccId = null;
+        BigInteger fromAccManifestId = null;
         if (!isNull(request.getSeqKeyId())) {
-            fromAccId = dslContext().select(SEQ_KEY.FROM_ACC_ID)
+            fromAccManifestId = dslContext().select(SEQ_KEY.FROM_ACC_MANIFEST_ID)
                     .from(SEQ_KEY)
                     .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(request.getSeqKeyId())))
                     .fetchOptionalInto(BigInteger.class).orElse(null);
-        } else if (!isNull(request.getFromAccId())) {
-            fromAccId = request.getFromAccId();
+        } else if (!isNull(request.getFromAccManifestId())) {
+            fromAccManifestId = request.getFromAccManifestId();
         }
 
-        if (fromAccId == null) {
+        if (fromAccManifestId == null) {
             throw new ScoreDataAccessException(new IllegalArgumentException());
         }
 
         SeqKey seqKey = null;
         Map<ULong, Record> seqKeyRecordMap = dslContext()
-                .select(SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.TYPE, SEQ_KEY.CC_ID, SEQ_KEY.FROM_ACC_ID,
+                .select(SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.TYPE, SEQ_KEY.CC_MANIFEST_ID, SEQ_KEY.FROM_ACC_MANIFEST_ID,
                         SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
                         BCC.ENTITY_TYPE)
                 .from(SEQ_KEY)
-                .leftJoin(BCC).on(SEQ_KEY.CC_ID.eq(BCC.BCC_ID))
-                .where(SEQ_KEY.FROM_ACC_ID.eq(ULong.valueOf(fromAccId)))
+                .leftJoin(BCC).on(SEQ_KEY.CC_MANIFEST_ID.eq(BCC.BCC_ID))
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
 
@@ -84,9 +84,9 @@ public class JooqSeqKeyReadRepository
     private SeqKey mapper(Map<ULong, Record> seqKeyRecordMap, Record node, SeqKey prev) {
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(node.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
-        seqKey.setFromAccId(node.get(SEQ_KEY.FROM_ACC_ID).toBigInteger());
+        seqKey.setFromAccManifestId(node.get(SEQ_KEY.FROM_ACC_MANIFEST_ID).toBigInteger());
         seqKey.setSeqKeyType(SeqKeyType.valueOf(node.get(SEQ_KEY.TYPE).toString().toUpperCase()));
-        seqKey.setCcId(node.get(SEQ_KEY.CC_ID).toBigInteger());
+        seqKey.setCcId(node.get(SEQ_KEY.CC_MANIFEST_ID).toBigInteger());
         if (SeqKeyType.BCC == seqKey.getSeqKeyType()) {
             Integer entityType = node.get(BCC.ENTITY_TYPE);
             seqKey.setEntityType(

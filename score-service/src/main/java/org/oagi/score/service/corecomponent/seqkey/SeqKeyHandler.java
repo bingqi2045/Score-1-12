@@ -34,17 +34,17 @@ public class SeqKeyHandler {
         this.requester = requester;
     }
 
-    public void initAscc(BigInteger fromAccId, BigInteger seqKeyId, BigInteger associationId) {
-        init(fromAccId, seqKeyId, SeqKeyType.ASCC, associationId);
+    public void initAscc(BigInteger fromAccManifestId, BigInteger seqKeyId, BigInteger associationId) {
+        init(fromAccManifestId, seqKeyId, SeqKeyType.ASCC, associationId);
     }
 
-    public void initBcc(BigInteger fromAccId, BigInteger seqKeyId, BigInteger associationId) {
-        init(fromAccId, seqKeyId, SeqKeyType.BCC, associationId);
+    public void initBcc(BigInteger fromAccManifestId, BigInteger seqKeyId, BigInteger associationId) {
+        init(fromAccManifestId, seqKeyId, SeqKeyType.BCC, associationId);
     }
 
-    private void init(BigInteger fromAccId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationId) {
+    private void init(BigInteger fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationId) {
         GetSeqKeyRequest getSeqKeyRequest = new GetSeqKeyRequest(this.requester)
-                .withFromAccId(fromAccId);
+                .withFromAccManifestId(fromAccManifestId);
         GetSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyReadRepository()
                 .getSeqKey(getSeqKeyRequest);
 
@@ -65,7 +65,7 @@ public class SeqKeyHandler {
         if (this.current == null) {
             this.current = scoreRepositoryFactory.createSeqKeyWriteRepository()
                     .createSeqKey(new CreateSeqKeyRequest(this.requester)
-                            .withFromAccId(fromAccId)
+                            .withFromAccId(fromAccManifestId)
                             .withType(type)
                             .withCcId(associationId))
                     .getSeqKey();

@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public class CreateSeqKeyRequest extends Request {
 
-    private BigInteger fromAccId;
+    private BigInteger fromAccManifestId;
 
     private SeqKeyType type;
 
@@ -17,16 +17,16 @@ public class CreateSeqKeyRequest extends Request {
         super(requester);
     }
 
-    public BigInteger getFromAccId() {
-        return fromAccId;
+    public BigInteger getFromAccManifestId() {
+        return fromAccManifestId;
     }
 
-    public void setFromAccId(BigInteger fromAccId) {
-        this.fromAccId = fromAccId;
+    public void setFromAccManifestId(BigInteger fromAccManifestId) {
+        this.fromAccManifestId = fromAccManifestId;
     }
 
     public CreateSeqKeyRequest withFromAccId(BigInteger fromAccId) {
-        setFromAccId(fromAccId);
+        setFromAccManifestId(fromAccId);
         return this;
     }
 

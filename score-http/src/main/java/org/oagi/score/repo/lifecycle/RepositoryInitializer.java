@@ -2,6 +2,7 @@ package org.oagi.score.repo.lifecycle;
 
 import org.jooq.DSLContext;
 import org.jooq.JSON;
+import org.jooq.Record;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.LogAction;
@@ -114,42 +115,50 @@ public class RepositoryInitializer implements InitializingBean {
     }
 
     private void initSeqKey() {
-        Set<ULong> distinctFromAccIds = new HashSet();
-        distinctFromAccIds.addAll(dslContext.selectDistinct(ASCC.FROM_ACC_ID)
-                .from(ASCC)
-                .where(ASCC.SEQ_KEY_ID.isNull())
-                .fetch(ASCC.FROM_ACC_ID));
-        distinctFromAccIds.addAll(dslContext.selectDistinct(BCC.FROM_ACC_ID)
-                .from(BCC)
-                .where(BCC.SEQ_KEY_ID.isNull())
-                .fetch(BCC.FROM_ACC_ID));
+        Set<ULong> distinctFromAccManifestIds = new HashSet();
+        distinctFromAccManifestIds.addAll(dslContext.selectDistinct(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID)
+                .from(ASCC_MANIFEST)
+                .where(ASCC_MANIFEST.SEQ_KEY_ID.isNull())
+                .fetch(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID));
+        distinctFromAccManifestIds.addAll(dslContext.selectDistinct(BCC_MANIFEST.FROM_ACC_MANIFEST_ID)
+                .from(BCC_MANIFEST)
+                .where(BCC_MANIFEST.SEQ_KEY_ID.isNull())
+                .fetch(BCC_MANIFEST.FROM_ACC_MANIFEST_ID));
 
-        List<ULong> fromAccIds = new ArrayList(distinctFromAccIds);
-        Collections.sort(fromAccIds);
+        List<ULong> fromAccManifestIds = new ArrayList(distinctFromAccManifestIds);
+        Collections.sort(fromAccManifestIds);
 
-        for (ULong fromAccId : fromAccIds) {
-            upsertSeqKey(fromAccId);
+        for (ULong fromAccManifestId : fromAccManifestIds) {
+            upsertSeqKey(fromAccManifestId);
         }
     }
 
-    private void upsertSeqKey(ULong fromAccId) {
+    private void upsertSeqKey(ULong fromAccManifestId) {
         // cleaning data up at first.
         dslContext.deleteFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(fromAccId))
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .execute();
 
         List<SeqKeyWrapper> seqKeyWrappers = new ArrayList();
 
-        seqKeyWrappers.addAll(dslContext.select(ASCC.ASCC_ID, ASCC.SEQ_KEY, ASCC.CREATION_TIMESTAMP)
+        seqKeyWrappers.addAll(new ArrayList<>(dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID, ASCC.ASCC_ID, ASCC.SEQ_KEY, ASCC.CREATION_TIMESTAMP)
                 .from(ASCC)
-                .where(ASCC.FROM_ACC_ID.eq(fromAccId))
-                .fetchInto(AsccRecord.class).stream().map(e -> new SeqKeyWrapper(e))
-                .collect(Collectors.toList()));
-        seqKeyWrappers.addAll(dslContext.select(BCC.BCC_ID, BCC.SEQ_KEY, BCC.CREATION_TIMESTAMP)
+                .join(ASCC_MANIFEST).on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
+                .fetch(e -> new SeqKeyWrapper(
+                        e.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
+                        e.get(ASCC.SEQ_KEY),
+                        e.get(ASCC.CREATION_TIMESTAMP),
+                        SeqKeyType.asccManifest))));
+        seqKeyWrappers.addAll(new ArrayList<>(dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID, BCC.BCC_ID, BCC.SEQ_KEY, BCC.CREATION_TIMESTAMP)
                 .from(BCC)
-                .where(BCC.FROM_ACC_ID.eq(fromAccId))
-                .fetchInto(BccRecord.class).stream().map(e -> new SeqKeyWrapper(e))
-                .collect(Collectors.toList()));
+                .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
+                .fetch(e -> new SeqKeyWrapper(
+                        e.get(BCC_MANIFEST.BCC_MANIFEST_ID),
+                        e.get(BCC.SEQ_KEY),
+                        e.get(BCC.CREATION_TIMESTAMP),
+                        SeqKeyType.bccManifest))));
 
         Collections.sort(seqKeyWrappers, (o1, o2) -> {
             if (o1.getSeqKey() == o2.getSeqKey()) {
@@ -162,9 +171,9 @@ public class RepositoryInitializer implements InitializingBean {
             SeqKeyWrapper seqKeyWrapper = seqKeyWrappers.get(i);
 
             SeqKeyRecord seqKeyRecord = new SeqKeyRecord();
-            seqKeyRecord.setFromAccId(fromAccId);
+            seqKeyRecord.setFromAccManifestId(fromAccManifestId);
             seqKeyRecord.setType(seqKeyWrapper.getSeqKeyType());
-            seqKeyRecord.setCcId(seqKeyWrapper.getId());
+            seqKeyRecord.setCcManifestId(seqKeyWrapper.getManifestId());
 
             seqKeyWrapper.setSeqKeyRecord(seqKeyRecord);
             seqKeyWrapper.setPrev(
@@ -191,25 +200,18 @@ public class RepositoryInitializer implements InitializingBean {
         private final int seqKey;
         private final LocalDateTime timestamp;
         private final SeqKeyType seqKeyType;
-        private final ULong id;
+        private final ULong manifestId;
 
         private SeqKeyRecord seqKeyRecord;
 
         private SeqKeyWrapper prev;
         private SeqKeyWrapper next;
 
-        SeqKeyWrapper(AsccRecord delegate) {
-            this.seqKey = delegate.getSeqKey();
-            this.timestamp = delegate.getCreationTimestamp();
-            this.seqKeyType = SeqKeyType.ascc;
-            this.id = delegate.getAsccId();
-        }
-
-        SeqKeyWrapper(BccRecord delegate) {
-            this.seqKey = delegate.getSeqKey();
-            this.timestamp = delegate.getCreationTimestamp();
-            this.seqKeyType = SeqKeyType.bcc;
-            this.id = delegate.getBccId();
+        SeqKeyWrapper(ULong asccManifestId, int seqKey, LocalDateTime timestamp, SeqKeyType type) {
+            this.seqKey = seqKey;
+            this.timestamp = timestamp;
+            this.seqKeyType = type;
+            this.manifestId = asccManifestId;
         }
 
         public int getSeqKey() {
@@ -224,8 +226,8 @@ public class RepositoryInitializer implements InitializingBean {
             return this.seqKeyType;
         }
 
-        public ULong getId() {
-            return this.id;
+        public ULong getManifestId() {
+            return this.manifestId;
         }
 
         public void setSeqKeyRecord(SeqKeyRecord seqKeyRecord) {
@@ -248,17 +250,17 @@ public class RepositoryInitializer implements InitializingBean {
                     .execute();
 
             switch (this.seqKeyType) {
-                case ascc:
-                    dslContext.update(ASCC)
-                            .set(ASCC.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
-                            .where(ASCC.ASCC_ID.eq(this.id))
+                case asccManifest:
+                    dslContext.update(ASCC_MANIFEST)
+                            .set(ASCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                            .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(this.manifestId))
                             .execute();
                     break;
 
-                case bcc:
-                    dslContext.update(BCC)
-                            .set(BCC.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
-                            .where(BCC.BCC_ID.eq(this.id))
+                case bccManifest:
+                    dslContext.update(BCC_MANIFEST)
+                            .set(BCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                            .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(this.manifestId))
                             .execute();
                     break;
             }
@@ -352,6 +354,14 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(ACC.ACC_ID.eq(accManifestRecord.getAccId()))
                     .fetchOne();
 
+            List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
+                    .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch();
+
+            List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
+                    .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                    .fetch();
+
             List<AsccRecord> asccRecords = dslContext.selectFrom(ASCC)
                     .where(ASCC.FROM_ACC_ID.eq(accRecord.getAccId()))
                     .fetch();
@@ -361,7 +371,7 @@ public class RepositoryInitializer implements InitializingBean {
                     .fetch();
 
             List<SeqKeyRecord> seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
-                    .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId()))
+                    .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
@@ -371,7 +381,7 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
             logRecord.setSnapshot(JSON.valueOf(
-                    serializer.serialize(accRecord, asccRecords, bccRecords, seqKeyRecords)
+                    serializer.serialize(accRecord, asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)
             ));
             logRecord.setCreatedBy(accRecord.getCreatedBy());
             logRecord.setCreationTimestamp(accRecord.getCreationTimestamp());

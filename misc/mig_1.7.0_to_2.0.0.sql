@@ -53,19 +53,19 @@ CREATE TABLE `comment` (
 
 -- This table purposes to replace `seq_key` column on `ascc` and `bcc` tables.
 CREATE TABLE `seq_key` (
-    `seq_key_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-    `from_acc_id` bigint(20) unsigned NOT NULL,
-    `type` enum('ascc','bcc') DEFAULT NULL,
-    `cc_id` bigint(20) unsigned NOT NULL,
-    `prev_seq_key_id` bigint(20) unsigned DEFAULT NULL,
-    `next_seq_key_id` bigint(20) unsigned DEFAULT NULL,
-    PRIMARY KEY (`seq_key_id`),
-    KEY `seq_key_from_acc_id` (`from_acc_id`),
-    KEY `seq_key_prev_seq_key_id_fk` (`prev_seq_key_id`),
-    KEY `seq_key_next_seq_key_id_fk` (`next_seq_key_id`),
-    CONSTRAINT `seq_key_from_acc_id_fk` FOREIGN KEY (`from_acc_id`) REFERENCES `acc` (`acc_id`),
-    CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
-    CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`)
+  `seq_key_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
+  `type` enum('ascc_manifest','bcc_manifest') DEFAULT NULL,
+  `cc_manifest_id` bigint(20) unsigned NOT NULL,
+  `prev_seq_key_id` bigint(20) unsigned DEFAULT NULL,
+  `next_seq_key_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`seq_key_id`),
+  KEY `seq_key_from_acc_id` (`from_acc_manifest_id`),
+  KEY `seq_key_prev_seq_key_id_fk` (`prev_seq_key_id`),
+  KEY `seq_key_next_seq_key_id_fk` (`next_seq_key_id`),
+  CONSTRAINT `seq_key_from_acc_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
+  CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
+  CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Update `namespace_id` = NULL for all user extension groups.
@@ -564,9 +564,7 @@ CREATE INDEX `bccp_last_update_timestamp_desc_idx` ON `bccp` (`last_update_times
 
 -- Making relations between `ascc` and `release` tables.
 ALTER TABLE `ascc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.',
-                   MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.',
-                   ADD COLUMN `seq_key_id` bigint(20) unsigned AFTER `seq_key`,
-                   ADD CONSTRAINT `ascc_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+                   MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.';
 UPDATE `ascc` SET `state` = 'Editing' where `state` = '1';
 UPDATE `ascc` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `ascc` SET `state` = 'Published' where `state` = '3';
@@ -575,6 +573,7 @@ CREATE TABLE `ascc_manifest` (
     `ascc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
     `ascc_id` bigint(20) unsigned NOT NULL,
+    `seq_key_id` bigint(20) unsigned,
     `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
     `to_asccp_manifest_id` bigint(20) unsigned NOT NULL,
     `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
@@ -588,6 +587,7 @@ CREATE TABLE `ascc_manifest` (
     KEY `ascc_manifest_prev_ascc_manifest_id_fk` (`prev_ascc_manifest_id`),
     KEY `ascc_manifest_next_ascc_manifest_id_fk` (`next_ascc_manifest_id`),
     CONSTRAINT `ascc_manifest_ascc_id_fk` FOREIGN KEY (`ascc_id`) REFERENCES `ascc` (`ascc_id`),
+    CONSTRAINT `ascc_manifest_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
     CONSTRAINT `ascc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `ascc_manifest_to_asccp_manifest_id_fk` FOREIGN KEY (`to_asccp_manifest_id`) REFERENCES `asccp_manifest` (`asccp_manifest_id`),
     CONSTRAINT `ascc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),
@@ -673,9 +673,7 @@ CREATE INDEX `ascc_last_update_timestamp_desc_idx` ON `ascc` (`last_update_times
 
 -- Making relations between `bcc` and `release` tables.
 ALTER TABLE `bcc` MODIFY COLUMN `state` varchar(20) COMMENT 'Deleted, WIP, Draft, QA, Candidate, Production, Release Draft, Published. This the revision life cycle state of the BCC.\n\nState change can''t be undone. But the history record can still keep the records of when the state was changed.',
-                  MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.',
-                  ADD COLUMN `seq_key_id` bigint(20) unsigned AFTER `seq_key`,
-                  ADD CONSTRAINT `bcc_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`);
+                  MODIFY COLUMN `seq_key` int(11) COMMENT '@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.';
 UPDATE `bcc` SET `state` = 'Editing' where `state` = '1';
 UPDATE `bcc` SET `state` = 'Candidate' where `state` = '2';
 UPDATE `bcc` SET `state` = 'Published' where `state` = '3';
@@ -686,6 +684,7 @@ CREATE TABLE `bcc_manifest` (
     `bcc_manifest_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `release_id` bigint(20) unsigned NOT NULL,
     `bcc_id` bigint(20) unsigned NOT NULL,
+    `seq_key_id` bigint(20) unsigned,
     `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
     `to_bccp_manifest_id` bigint(20) unsigned NOT NULL,
     `conflict` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'This indicates that there is a conflict between self and relationship.',
@@ -699,6 +698,7 @@ CREATE TABLE `bcc_manifest` (
     KEY `bcc_manifest_prev_bcc_manifest_id_fk` (`prev_bcc_manifest_id`),
     KEY `bcc_manifest_next_bcc_manifest_id_fk` (`next_bcc_manifest_id`),
     CONSTRAINT `bcc_manifest_bcc_id_fk` FOREIGN KEY (`bcc_id`) REFERENCES `bcc` (`bcc_id`),
+    CONSTRAINT `bcc_manifest_seq_key_id_fk` FOREIGN KEY (`seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
     CONSTRAINT `bcc_manifest_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
     CONSTRAINT `bcc_manifest_to_bccp_manifest_id_fk` FOREIGN KEY (`to_bccp_manifest_id`) REFERENCES `bccp_manifest` (`bccp_manifest_id`),
     CONSTRAINT `bcc_manifest_release_id_fk` FOREIGN KEY (`release_id`) REFERENCES `release` (`release_id`),

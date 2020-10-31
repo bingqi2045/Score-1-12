@@ -124,8 +124,6 @@ public class BccWriteRepository {
                         .returning(BCC.BCC_ID).fetchOne().getBccId()
         );
 
-        seqKeyHandler(request.getUser(), bcc).moveTo(request.getPos());
-
         BccManifestRecord bccManifestRecord = new BccManifestRecord();
         bccManifestRecord.setBccId(bcc.getBccId());
         bccManifestRecord.setReleaseId(ULong.valueOf(request.getReleaseId()));
@@ -136,6 +134,8 @@ public class BccWriteRepository {
                         .set(bccManifestRecord)
                         .returning(BCC_MANIFEST.BCC_MANIFEST_ID).fetchOne().getBccManifestId()
         );
+
+        seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(request.getPos());
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -151,7 +151,7 @@ public class BccWriteRepository {
                                                  ULong releaseId,
                                                  ULong userId, LocalDateTime timestamp) {
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord,
                         accManifestRecord.getLogId(),
                         LogAction.Modified,
@@ -219,9 +219,9 @@ public class BccWriteRepository {
                         .set(BCC.ENTITY_TYPE, request.getEntityType().getValue());
 
                 if (request.getEntityType() == Element) {
-                    seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST);
+                    seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(LAST);
                 } else if (request.getEntityType() == Attribute) {
-                    seqKeyHandler(request.getUser(), bccRecord).moveTo(LAST_OF_ATTR);
+                    seqKeyHandler(request.getUser(), bccManifestRecord).moveTo(LAST_OF_ATTR);
                     // Issue #919
                     if (request.getCardinalityMin() < 0 || request.getCardinalityMin() > 1) {
                         request.setCardinalityMin(0);
@@ -277,32 +277,6 @@ public class BccWriteRepository {
         return new UpdateBccPropertiesRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
 
-    private void setBccSeqKeyByEntityType(BccRecord bccRecord,
-                                          BCCEntityType source, BCCEntityType target) {
-
-        dslContext.selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(bccRecord.getFromAccId()))
-                .fetch();
-
-        SeqKeyRecord thisSeqKeyRecord = dslContext.selectFrom(SEQ_KEY)
-                .where(SEQ_KEY.SEQ_KEY_ID.eq(bccRecord.getSeqKeyId()))
-                .fetchOne();
-        SeqKeyRecord prevSeqKeyRecord = (thisSeqKeyRecord.getPrevSeqKeyId() != null) ?
-                dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(thisSeqKeyRecord.getPrevSeqKeyId()))
-                        .fetchOne() : null;
-        SeqKeyRecord nextSeqKeyRecord = (thisSeqKeyRecord.getNextSeqKeyId() != null) ?
-                dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(thisSeqKeyRecord.getNextSeqKeyId()))
-                        .fetchOne() : null;
-
-        if (source == Element && target == Attribute) {
-
-        } else if (source == Attribute && target == Element) {
-
-        }
-    }
-
     public DeleteBccRepositoryResponse deleteBcc(DeleteBccRepositoryRequest request) {
         AppUser user = sessionService.getAppUser(request.getUser());
         ULong userId = ULong.valueOf(user.getAppUserId());
@@ -335,7 +309,7 @@ public class BccWriteRepository {
         // delete from Tables
         bccManifestRecord.delete();
         bccRecord.delete();
-        seqKeyHandler(request.getUser(), bccRecord).deleteCurrent();
+        seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -346,13 +320,13 @@ public class BccWriteRepository {
         return new DeleteBccRepositoryResponse(bccManifestRecord.getBccManifestId().toBigInteger());
     }
 
-    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccRecord bccRecord) {
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccManifestRecord bccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initBcc(
-                bccRecord.getFromAccId().toBigInteger(),
-                (bccRecord.getSeqKeyId() != null) ? bccRecord.getSeqKeyId().toBigInteger() : null,
-                bccRecord.getBccId().toBigInteger());
+                bccManifestRecord.getFromAccManifestId().toBigInteger(),
+                (bccManifestRecord.getSeqKeyId() != null) ? bccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                bccManifestRecord.getBccManifestId().toBigInteger());
         return seqKeyHandler;
     }
 }

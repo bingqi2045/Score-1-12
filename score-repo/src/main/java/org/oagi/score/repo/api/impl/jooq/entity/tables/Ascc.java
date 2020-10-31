@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -36,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Ascc extends TableImpl<AsccRecord> {
 
-    private static final long serialVersionUID = -898932553;
+    private static final long serialVersionUID = -2065425455;
 
     /**
      * The reference instance of <code>oagi.ascc</code>
@@ -75,11 +75,6 @@ public class Ascc extends TableImpl<AsccRecord> {
      * The column <code>oagi.ascc.seq_key</code>. @deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.
      */
     public final TableField<AsccRecord, Integer> SEQ_KEY = createField(DSL.name("seq_key"), org.jooq.impl.SQLDataType.INTEGER, this, "@deprecated since 2.0.0. This indicates the order of the associations among other siblings. A valid value is positive integer. The SEQ_KEY at the CC side is localized. In other words, if an ACC is based on another ACC, SEQ_KEY of ASCCs or BCCs of the former ACC starts at 1 again.");
-
-    /**
-     * The column <code>oagi.ascc.seq_key_id</code>.
-     */
-    public final TableField<AsccRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.ascc.from_acc_id</code>. FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.
@@ -228,11 +223,7 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public List<ForeignKey<AsccRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_SEQ_KEY_ID_FK, Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
-    }
-
-    public SeqKey seqKey() {
-        return new SeqKey(this, Keys.ASCC_SEQ_KEY_ID_FK);
+        return Arrays.<ForeignKey<AsccRecord, ?>>asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
     }
 
     public Acc acc() {
@@ -294,11 +285,11 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, Integer, Integer, Integer, ULong, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

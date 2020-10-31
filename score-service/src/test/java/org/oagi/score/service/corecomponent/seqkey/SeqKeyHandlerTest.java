@@ -29,7 +29,7 @@ public class SeqKeyHandlerTest
         businessObjectDocumentAccId = getAccIdByObjectClassTerm("Business Object Document");
         seqKey = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccId(businessObjectDocumentAccId))
+                        .withFromAccManifestId(businessObjectDocumentAccId))
                 .getSeqKey();
     }
 

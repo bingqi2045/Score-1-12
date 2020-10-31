@@ -115,6 +115,7 @@ public class AccWriteRepository {
 
         LogRecord logRecord =
                 logRepository.insertAccLog(
+                        accManifest,
                         acc,
                         LogAction.Added,
                         userId, timestamp);
@@ -200,11 +201,11 @@ public class AccWriteRepository {
         // create new associations for revised record.
         createNewAsccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
         createNewBccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
-        linkSeqKeys(nextAccRecord);
+        linkSeqKeys(accManifestRecord);
 
         // creates new revision for revised record.
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         nextAccRecord, accManifestRecord.getLogId(),
                         LogAction.Revised,
                         userId, timestamp);
@@ -286,17 +287,15 @@ public class AccWriteRepository {
             prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
 
             ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
-                    .set(SEQ_KEY.FROM_ACC_ID, nextAccRecord.getAccId())
-                    .set(SEQ_KEY.TYPE, SeqKeyType.ascc)
-                    .set(SEQ_KEY.CC_ID, nextAsccRecord.getAsccId())
+                    .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
+                    .set(SEQ_KEY.TYPE, SeqKeyType.asccManifest)
+                    .set(SEQ_KEY.CC_MANIFEST_ID, asccManifestRecord.getAsccManifestId())
                     .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
-
-            nextAsccRecord.setSeqKeyId(seqKeyId);
-            nextAsccRecord.update(ASCC.SEQ_KEY_ID);
 
             asccManifestRecord.setAsccId(nextAsccRecord.getAsccId());
             asccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
-            asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID);
+            asccManifestRecord.setSeqKeyId(seqKeyId);
+            asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, ASCC_MANIFEST.SEQ_KEY_ID);
         }
     }
 
@@ -343,33 +342,31 @@ public class AccWriteRepository {
             prevBccRecord.update(BCC.NEXT_BCC_ID);
 
             ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
-                    .set(SEQ_KEY.FROM_ACC_ID, nextAccRecord.getAccId())
-                    .set(SEQ_KEY.TYPE, SeqKeyType.bcc)
-                    .set(SEQ_KEY.CC_ID, nextBccRecord.getBccId())
+                    .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
+                    .set(SEQ_KEY.TYPE, SeqKeyType.bccManifest)
+                    .set(SEQ_KEY.CC_MANIFEST_ID, bccManifestRecord.getBccManifestId())
                     .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
-
-            nextBccRecord.setSeqKeyId(seqKeyId);
-            nextBccRecord.update(BCC.SEQ_KEY_ID);
 
             bccManifestRecord.setBccId(nextBccRecord.getBccId());
             bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
+            bccManifestRecord.setSeqKeyId(seqKeyId);
             bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.FROM_ACC_MANIFEST_ID);
         }
     }
 
-    private void linkSeqKeys(AccRecord accRecord) {
+    private void linkSeqKeys(AccManifestRecord accManifestRecordRecord) {
         SeqKeyRecord prevHead = dslContext.selectFrom(SEQ_KEY)
-                .where(and(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getPrevAccId()),
+                .where(and(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecordRecord.getPrevAccManifestId()),
                         SEQ_KEY.PREV_SEQ_KEY_ID.isNull())).fetchOne();
         List<ULong> orderedSeqIds = new ArrayList<>();
         if (prevHead != null) {
             while (prevHead.getNextSeqKeyId() != null) {
-                orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accRecord));
+                orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accManifestRecordRecord));
                 prevHead = dslContext.selectFrom(SEQ_KEY)
                         .where(SEQ_KEY.SEQ_KEY_ID.eq(prevHead.getNextSeqKeyId()))
                         .fetchOne();
             }
-            orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accRecord));
+            orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accManifestRecordRecord));
 
             if (orderedSeqIds.size() < 2) {
                 return;
@@ -396,24 +393,24 @@ public class AccWriteRepository {
         }
     }
 
-    private ULong getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccRecord accRecord) {
-        if (seqKeyRecord.getType().equals(SeqKeyType.ascc)) {
-            return dslContext.select(ASCC.as("next").SEQ_KEY_ID)
-                    .from(ASCC.as("prev"))
-                    .join(ASCC.as("next"))
-                    .on(ASCC.as("prev").ASCC_ID.eq(ASCC.as("next").PREV_ASCC_ID))
-                    .where(and(ASCC.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
-                            ASCC.as("prev").FROM_ACC_ID.eq(accRecord.getPrevAccId()),
-                            ASCC.as("next").FROM_ACC_ID.eq(accRecord.getAccId()))
+    private ULong getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccManifestRecord accManifestRecord) {
+        if (seqKeyRecord.getType().equals(SeqKeyType.asccManifest)) {
+            return dslContext.select(ASCC_MANIFEST.as("next").SEQ_KEY_ID)
+                    .from(ASCC_MANIFEST.as("prev"))
+                    .join(ASCC_MANIFEST.as("next"))
+                    .on(ASCC_MANIFEST.as("prev").ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("next").PREV_ASCC_MANIFEST_ID))
+                    .where(and(ASCC_MANIFEST.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
+                            ASCC_MANIFEST.as("prev").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId()),
+                            ASCC_MANIFEST.as("next").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                     .fetchOneInto(ULong.class);
         } else {
-            return dslContext.select(BCC.as("next").SEQ_KEY_ID)
-                    .from(BCC.as("prev"))
-                    .join(BCC.as("next"))
-                    .on(BCC.as("prev").BCC_ID.eq(BCC.as("next").PREV_BCC_ID))
-                    .where(and(BCC.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
-                            BCC.as("prev").FROM_ACC_ID.eq(accRecord.getPrevAccId()),
-                            BCC.as("next").FROM_ACC_ID.eq(accRecord.getAccId()))
+            return dslContext.select(BCC_MANIFEST.as("next").SEQ_KEY_ID)
+                    .from(BCC_MANIFEST.as("prev"))
+                    .join(BCC_MANIFEST.as("next"))
+                    .on(BCC_MANIFEST.as("prev").BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("next").PREV_BCC_MANIFEST_ID))
+                    .where(and(BCC_MANIFEST.as("prev").SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId())),
+                            BCC_MANIFEST.as("prev").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId()),
+                            BCC_MANIFEST.as("next").FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                     .fetchOneInto(ULong.class);
         }
     }
@@ -560,7 +557,7 @@ public class AccWriteRepository {
         if (moreStep != null) {
             // creates new revision for updated record.
             LogRecord logRecord =
-                    logRepository.insertAccLog(
+                    logRepository.insertAccLog(accManifestRecord,
                             accRecord, accManifestRecord.getLogId(),
                             LogAction.Modified,
                             userId, timestamp);
@@ -616,7 +613,7 @@ public class AccWriteRepository {
 
         // creates new revision for updated record.
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -721,7 +718,7 @@ public class AccWriteRepository {
         LogAction logAction = (CcState.Deleted == prevState && CcState.WIP == nextState)
                 ? LogAction.Restored : LogAction.Modified;
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
                         logAction,
                         userId, timestamp);
@@ -838,7 +835,7 @@ public class AccWriteRepository {
 
         // creates new revision for deleted record.
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
                         LogAction.Deleted,
                         userId, timestamp);
@@ -952,7 +949,7 @@ public class AccWriteRepository {
         }
 
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -986,11 +983,11 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
-        moveSeq(request.getUser(), accRecord, request.getAccManifestId(),
+        moveSeq(request.getUser(), accRecord, accManifestRecord,
                 request.getItem(), request.getAfter());
 
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord, accManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -999,21 +996,25 @@ public class AccWriteRepository {
         accManifestRecord.update(ACC_MANIFEST.LOG_ID);
     }
 
-    public void moveSeq(AuthenticatedPrincipal requester, AccRecord accRecord, BigInteger accManifestId,
+    public void moveSeq(AuthenticatedPrincipal requester, AccRecord accRecord, AccManifestRecord accManifestRecord,
                         CcId item, CcId after) {
         AppUser user = sessionService.getAppUser(requester);
         ULong userId = ULong.valueOf(user.getAppUserId());
         SeqKeyHandler seqKeyHandler;
 
+        if (!accRecord.getOwnerUserId().equals(userId)) {
+            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
+        }
+
         switch (item.getType().toLowerCase()) {
             case "asccp":
-                AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
-                seqKeyHandler = seqKeyHandler(requester, asccRecord);
+                AsccManifestRecord asccManifestRecord = getAsccManifestRecordForUpdateSeq(accManifestRecord, item);
+                seqKeyHandler = seqKeyHandler(requester, asccManifestRecord);
                 break;
 
             case "bccp":
-                BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, item);
-                seqKeyHandler = seqKeyHandler(requester, bccRecord);
+                BccManifestRecord bccManifestRecord = getBccManifestRecordForUpdateSeq(accManifestRecord, item);
+                seqKeyHandler = seqKeyHandler(requester, bccManifestRecord);
                 break;
 
             default:
@@ -1026,18 +1027,18 @@ public class AccWriteRepository {
             SeqKey seqKey;
             switch (after.getType().toLowerCase()) {
                 case "asccp":
-                    AsccRecord asccRecord = getAsccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
+                    AsccManifestRecord asccManifestRecord = getAsccManifestRecordForUpdateSeq(accManifestRecord, after);
                     seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
                             .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
-                                    .withSeqKeyId(asccRecord.getSeqKeyId().toBigInteger()))
+                                    .withSeqKeyId(asccManifestRecord.getSeqKeyId().toBigInteger()))
                             .getSeqKey();
                     break;
 
                 case "bccp":
-                    BccRecord bccRecord = getBccRecordForUpdateSeq(userId, accRecord, accManifestId, after);
+                    BccManifestRecord bccManifestRecord = getBccManifestRecordForUpdateSeq(accManifestRecord, after);
                     seqKey = scoreRepositoryFactory.createSeqKeyReadRepository()
                             .getSeqKey(new GetSeqKeyRequest(sessionService.asScoreUser(requester))
-                                    .withSeqKeyId(bccRecord.getSeqKeyId().toBigInteger()))
+                                    .withSeqKeyId(bccManifestRecord.getSeqKeyId().toBigInteger()))
                             .getSeqKey();
                     break;
 
@@ -1049,47 +1050,38 @@ public class AccWriteRepository {
         }
     }
 
-    private AsccRecord getAsccRecordForUpdateSeq(ULong userId, AccRecord accRecord, BigInteger accManidestId, CcId ccId) {
-        AsccRecord asccRecord = dslContext
-                .select(ASCC.ASCC_ID, ASCC.SEQ_KEY_ID, ASCC.FROM_ACC_ID, ASCC.OWNER_USER_ID)
-                .from(ASCC)
-                .join(ASCC_MANIFEST)
-                .on(ASCC.ASCC_ID.eq(ASCC_MANIFEST.ASCC_ID))
+    private AsccManifestRecord getAsccManifestRecordForUpdateSeq(AccManifestRecord accManifestRecord, CcId ccId) {
+        AsccManifestRecord asccManifestRecord = dslContext
+                .selectFrom(ASCC_MANIFEST)
                 .where(
                         and(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId())),
-                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManidestId)))
+                                ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                 )
-                .fetchOneInto(AsccRecord.class);
+                .fetchOneInto(AsccManifestRecord.class);
 
-        if (!asccRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-        }
-        if (!asccRecord.getFromAccId().equals(accRecord.getAccId())) {
+        
+        if (!asccManifestRecord.getFromAccManifestId().equals(accManifestRecord.getAccManifestId())) {
             throw new IllegalArgumentException("It only allows to modify the core component for the corresponding component.");
         }
 
-        return asccRecord;
+        return asccManifestRecord;
     }
 
-    private BccRecord getBccRecordForUpdateSeq(ULong userId, AccRecord accRecord, BigInteger accManidestId, CcId ccId) {
-        BccRecord bccRecord = dslContext
-                .select(BCC.BCC_ID, BCC.SEQ_KEY_ID, BCC.FROM_ACC_ID, BCC.OWNER_USER_ID)
-                .from(BCC)
-                .join(BCC_MANIFEST)
-                .on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+    private BccManifestRecord getBccManifestRecordForUpdateSeq(AccManifestRecord accManifestRecord, CcId ccId) {
+        BccManifestRecord bccManifestRecord = dslContext
+                .selectFrom(BCC_MANIFEST)
                 .where(
-                        and(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId()))),
-                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManidestId)))
-                .fetchOneInto(BccRecord.class);
+                        and(BCC_MANIFEST.TO_BCCP_MANIFEST_ID.eq(ULong.valueOf(ccId.getManifestId())),
+                                BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
+                )
+                .fetchOneInto(BccManifestRecord.class);
 
-        if (!bccRecord.getOwnerUserId().equals(userId)) {
-            throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
-        }
-        if (!bccRecord.getFromAccId().equals(accRecord.getAccId())) {
+
+        if (!bccManifestRecord.getFromAccManifestId().equals(accManifestRecord.getAccManifestId())) {
             throw new IllegalArgumentException("It only allows to modify the core component for the corresponding component.");
         }
 
-        return bccRecord;
+        return bccManifestRecord;
     }
 
     public CancelRevisionAccRepositoryResponse cancelRevisionAcc(CancelRevisionAccRepositoryRequest request) {
@@ -1115,7 +1107,7 @@ public class AccWriteRepository {
 
         // creates new revision for canceled record.
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         prevAccRecord, accManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);
@@ -1209,8 +1201,8 @@ public class AccWriteRepository {
         dslContext.update(SEQ_KEY)
                 .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
                 .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId())).execute();
-        dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_ID.eq(accRecord.getAccId())).execute();
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
     }
 
     public CancelRevisionAccRepositoryResponse resetRevisionAcc(CancelRevisionAccRepositoryRequest request) {
@@ -1353,23 +1345,23 @@ public class AccWriteRepository {
         }
     }
 
-    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccRecord asccRecord) {
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccManifestRecord asccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initAscc(
-                asccRecord.getFromAccId().toBigInteger(),
-                (asccRecord.getSeqKeyId() != null) ? asccRecord.getSeqKeyId().toBigInteger() : null,
-                asccRecord.getAsccId().toBigInteger());
+                asccManifestRecord.getFromAccManifestId().toBigInteger(),
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                asccManifestRecord.getAsccManifestId().toBigInteger());
         return seqKeyHandler;
     }
 
-    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccRecord bccRecord) {
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, BccManifestRecord asccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initBcc(
-                bccRecord.getFromAccId().toBigInteger(),
-                (bccRecord.getSeqKeyId() != null) ? bccRecord.getSeqKeyId().toBigInteger() : null,
-                bccRecord.getBccId().toBigInteger());
+                asccManifestRecord.getFromAccManifestId().toBigInteger(),
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                asccManifestRecord.getBccManifestId().toBigInteger());
         return seqKeyHandler;
     }
 

@@ -29,6 +29,7 @@ public class SeqKeyWriteRepositoryTest
     private ScoreUser requester;
 
     private BigInteger allExtensionAccId;
+    private BigInteger allExtensionAccManifestId;
 
     private BigInteger identifierBccId;
     private BigInteger indicatorBccId;
@@ -40,6 +41,7 @@ public class SeqKeyWriteRepositoryTest
         requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
 
         allExtensionAccId = getAccIdByObjectClassTerm("All Extension");
+        allExtensionAccManifestId = getAccManifestIdByObjectClassTerm("All Extension");
 
         identifierBccId = createTestBcc("Identifier", "Identifier");
         indicatorBccId = createTestBcc("Indicator", "Indicator");
@@ -103,7 +105,7 @@ public class SeqKeyWriteRepositoryTest
         // prerequisites
         SeqKey head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
 
         Assumptions.assumeTrue(head != null);
@@ -130,7 +132,7 @@ public class SeqKeyWriteRepositoryTest
         // reload
         head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
         assertEquals(identifierBccId, head.getCcId());
 
@@ -156,7 +158,7 @@ public class SeqKeyWriteRepositoryTest
         // prerequisites
         SeqKey head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
 
         Assumptions.assumeTrue(head != null);
@@ -182,7 +184,7 @@ public class SeqKeyWriteRepositoryTest
         // reload
         head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
         assertEquals(identifierBccId, head.getCcId());
 
@@ -198,6 +200,18 @@ public class SeqKeyWriteRepositoryTest
 
     private BigInteger getAccIdByObjectClassTerm(String objectClassTerm) {
         return dslContext().select(ACC.ACC_ID)
+                .from(ACC)
+                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .where(and(
+                        ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
+                        RELEASE.RELEASE_NUM.eq("10.6")
+                ))
+                .fetchOneInto(BigInteger.class);
+    }
+
+    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+        return dslContext().select(ACC_MANIFEST.ACC_MANIFEST_ID)
                 .from(ACC)
                 .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
@@ -233,7 +247,7 @@ public class SeqKeyWriteRepositoryTest
                 .execute();
 
         dslContext().deleteFrom(SEQ_KEY)
-                .where(SEQ_KEY.FROM_ACC_ID.eq(ULong.valueOf(allExtensionAccId)))
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(allExtensionAccManifestId)))
                 .execute();
     }
 

@@ -402,7 +402,6 @@ public class Keys {
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = ForeignKeys0.ASBIEP_CREATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = ForeignKeys0.ASBIEP_LAST_UPDATED_BY_FK;
     public static final ForeignKey<AsbiepRecord, TopLevelAsbiepRecord> ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK = ForeignKeys0.ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK;
-    public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = ForeignKeys0.ASCC_SEQ_KEY_ID_FK;
     public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = ForeignKeys0.ASCC_FROM_ACC_ID_FK;
     public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = ForeignKeys0.ASCC_TO_ASCCP_ID_FK;
     public static final ForeignKey<AsccRecord, AsccRecord> ASCC_REPLACEMENT_ASCC_ID_FK = ForeignKeys0.ASCC_REPLACEMENT_ASCC_ID_FK;
@@ -413,6 +412,7 @@ public class Keys {
     public static final ForeignKey<AsccRecord, AsccRecord> ASCC_NEXT_ASCC_ID_FK = ForeignKeys0.ASCC_NEXT_ASCC_ID_FK;
     public static final ForeignKey<AsccManifestRecord, ReleaseRecord> ASCC_MANIFEST_RELEASE_ID_FK = ForeignKeys0.ASCC_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = ForeignKeys0.ASCC_MANIFEST_ASCC_ID_FK;
+    public static final ForeignKey<AsccManifestRecord, SeqKeyRecord> ASCC_MANIFEST_SEQ_KEY_ID_FK = ForeignKeys0.ASCC_MANIFEST_SEQ_KEY_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = ForeignKeys0.ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK;
     public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK = ForeignKeys0.ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK;
@@ -456,7 +456,6 @@ public class Keys {
     public static final ForeignKey<BbiepRecord, TopLevelAsbiepRecord> BBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK = ForeignKeys0.BBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK;
     public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = ForeignKeys0.BCC_TO_BCCP_ID_FK;
     public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = ForeignKeys0.BCC_FROM_ACC_ID_FK;
-    public static final ForeignKey<BccRecord, SeqKeyRecord> BCC_SEQ_KEY_ID_FK = ForeignKeys0.BCC_SEQ_KEY_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = ForeignKeys0.BCC_CREATED_BY_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = ForeignKeys0.BCC_OWNER_USER_ID_FK;
     public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = ForeignKeys0.BCC_LAST_UPDATED_BY_FK;
@@ -465,6 +464,7 @@ public class Keys {
     public static final ForeignKey<BccRecord, BccRecord> BCC_NEXT_BCC_ID_FK = ForeignKeys0.BCC_NEXT_BCC_ID_FK;
     public static final ForeignKey<BccManifestRecord, ReleaseRecord> BCC_MANIFEST_RELEASE_ID_FK = ForeignKeys0.BCC_MANIFEST_RELEASE_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = ForeignKeys0.BCC_MANIFEST_BCC_ID_FK;
+    public static final ForeignKey<BccManifestRecord, SeqKeyRecord> BCC_MANIFEST_SEQ_KEY_ID_FK = ForeignKeys0.BCC_MANIFEST_SEQ_KEY_ID_FK;
     public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = ForeignKeys0.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK;
     public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_REPLACEMENT_BCC_MANIFEST_ID_FK = ForeignKeys0.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK;
@@ -656,7 +656,7 @@ public class Keys {
     public static final ForeignKey<ReleaseRecord, NamespaceRecord> RELEASE_NAMESPACE_ID_FK = ForeignKeys0.RELEASE_NAMESPACE_ID_FK;
     public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_CREATED_BY_FK = ForeignKeys0.RELEASE_CREATED_BY_FK;
     public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_LAST_UPDATED_BY_FK = ForeignKeys0.RELEASE_LAST_UPDATED_BY_FK;
-    public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = ForeignKeys0.SEQ_KEY_FROM_ACC_ID_FK;
+    public static final ForeignKey<SeqKeyRecord, AccManifestRecord> SEQ_KEY_FROM_ACC_ID_FK = ForeignKeys0.SEQ_KEY_FROM_ACC_ID_FK;
     public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_PREV_SEQ_KEY_ID_FK;
     public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = ForeignKeys0.SEQ_KEY_NEXT_SEQ_KEY_ID_FK;
     public static final ForeignKey<TopLevelAsbiepRecord, AsbiepRecord> TOP_LEVEL_ASBIEP_ASBIEP_ID_FK = ForeignKeys0.TOP_LEVEL_ASBIEP_ASBIEP_ID_FK;
@@ -831,7 +831,7 @@ public class Keys {
         public static final UniqueKey<ModuleSetReleaseRecord> KEY_MODULE_SET_RELEASE_PRIMARY = Internal.createUniqueKey(ModuleSetRelease.MODULE_SET_RELEASE, "KEY_module_set_release_PRIMARY", new TableField[] { ModuleSetRelease.MODULE_SET_RELEASE.MODULE_SET_RELEASE_ID }, true);
         public static final UniqueKey<ModuleXbtManifestRecord> KEY_MODULE_XBT_MANIFEST_PRIMARY = Internal.createUniqueKey(ModuleXbtManifest.MODULE_XBT_MANIFEST, "KEY_module_xbt_manifest_PRIMARY", new TableField[] { ModuleXbtManifest.MODULE_XBT_MANIFEST.MODULE_XBT_MANIFEST_ID }, true);
         public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_PRIMARY = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_PRIMARY", new TableField[] { Namespace.NAMESPACE.NAMESPACE_ID }, true);
-        public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_namespace_uk1", new TableField[] { Namespace.NAMESPACE.PREFIX }, true);
+        public static final UniqueKey<NamespaceRecord> KEY_NAMESPACE_NAMESPACE_UK1 = Internal.createUniqueKey(Namespace.NAMESPACE, "KEY_namespace_namespace_uk1", new TableField[] { Namespace.NAMESPACE.URI }, true);
         public static final UniqueKey<Oauth2AppRecord> KEY_OAUTH2_APP_PRIMARY = Internal.createUniqueKey(Oauth2App.OAUTH2_APP, "KEY_oauth2_app_PRIMARY", new TableField[] { Oauth2App.OAUTH2_APP.OAUTH2_APP_ID }, true);
         public static final UniqueKey<Oauth2AppScopeRecord> KEY_OAUTH2_APP_SCOPE_PRIMARY = Internal.createUniqueKey(Oauth2AppScope.OAUTH2_APP_SCOPE, "KEY_oauth2_app_scope_PRIMARY", new TableField[] { Oauth2AppScope.OAUTH2_APP_SCOPE.OAUTH2_APP_SCOPE_ID }, true);
         public static final UniqueKey<ReleaseRecord> KEY_RELEASE_PRIMARY = Internal.createUniqueKey(Release.RELEASE, "KEY_release_PRIMARY", new TableField[] { Release.RELEASE.RELEASE_ID }, true);
@@ -906,7 +906,6 @@ public class Keys {
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_created_by_fk", new TableField[] { Asbiep.ASBIEP.CREATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, AppUserRecord> ASBIEP_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Asbiep.ASBIEP, "asbiep_last_updated_by_fk", new TableField[] { Asbiep.ASBIEP.LAST_UPDATED_BY }, true);
         public static final ForeignKey<AsbiepRecord, TopLevelAsbiepRecord> ASBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ASBIEP_PRIMARY, Asbiep.ASBIEP, "asbiep_owner_top_level_asbiep_id_fk", new TableField[] { Asbiep.ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID }, true);
-        public static final ForeignKey<AsccRecord, SeqKeyRecord> ASCC_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, Ascc.ASCC, "ascc_seq_key_id_fk", new TableField[] { Ascc.ASCC.SEQ_KEY_ID }, true);
         public static final ForeignKey<AsccRecord, AccRecord> ASCC_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Ascc.ASCC, "ascc_from_acc_id_fk", new TableField[] { Ascc.ASCC.FROM_ACC_ID }, true);
         public static final ForeignKey<AsccRecord, AsccpRecord> ASCC_TO_ASCCP_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_PRIMARY, Ascc.ASCC, "ascc_to_asccp_id_fk", new TableField[] { Ascc.ASCC.TO_ASCCP_ID }, true);
         public static final ForeignKey<AsccRecord, AsccRecord> ASCC_REPLACEMENT_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, Ascc.ASCC, "ascc_replacement_ascc_id_fk", new TableField[] { Ascc.ASCC.REPLACEMENT_ASCC_ID }, true);
@@ -917,6 +916,7 @@ public class Keys {
         public static final ForeignKey<AsccRecord, AsccRecord> ASCC_NEXT_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, Ascc.ASCC, "ascc_next_ascc_id_fk", new TableField[] { Ascc.ASCC.NEXT_ASCC_ID }, true);
         public static final ForeignKey<AsccManifestRecord, ReleaseRecord> ASCC_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_release_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccRecord> ASCC_MANIFEST_ASCC_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_ascc_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.ASCC_ID }, true);
+        public static final ForeignKey<AsccManifestRecord, SeqKeyRecord> ASCC_MANIFEST_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_seq_key_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.SEQ_KEY_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AccManifestRecord> ASCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_from_acc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccpManifestRecord> ASCC_MANIFEST_TO_ASCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCCP_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_manifest_to_asccp_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID }, true);
         public static final ForeignKey<AsccManifestRecord, AsccManifestRecord> ASCC_REPLACEMENT_ASCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ASCC_MANIFEST_PRIMARY, AsccManifest.ASCC_MANIFEST, "ascc_replacement_ascc_manifest_id_fk", new TableField[] { AsccManifest.ASCC_MANIFEST.REPLACEMENT_ASCC_MANIFEST_ID }, true);
@@ -960,7 +960,6 @@ public class Keys {
         public static final ForeignKey<BbiepRecord, TopLevelAsbiepRecord> BBIEP_OWNER_TOP_LEVEL_ASBIEP_ID_FK = Internal.createForeignKey(Keys.KEY_TOP_LEVEL_ASBIEP_PRIMARY, Bbiep.BBIEP, "bbiep_owner_top_level_asbiep_id_fk", new TableField[] { Bbiep.BBIEP.OWNER_TOP_LEVEL_ASBIEP_ID }, true);
         public static final ForeignKey<BccRecord, BccpRecord> BCC_TO_BCCP_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_PRIMARY, Bcc.BCC, "bcc_to_bccp_id_fk", new TableField[] { Bcc.BCC.TO_BCCP_ID }, true);
         public static final ForeignKey<BccRecord, AccRecord> BCC_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, Bcc.BCC, "bcc_from_acc_id_fk", new TableField[] { Bcc.BCC.FROM_ACC_ID }, true);
-        public static final ForeignKey<BccRecord, SeqKeyRecord> BCC_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, Bcc.BCC, "bcc_seq_key_id_fk", new TableField[] { Bcc.BCC.SEQ_KEY_ID }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_created_by_fk", new TableField[] { Bcc.BCC.CREATED_BY }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_OWNER_USER_ID_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_owner_user_id_fk", new TableField[] { Bcc.BCC.OWNER_USER_ID }, true);
         public static final ForeignKey<BccRecord, AppUserRecord> BCC_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Bcc.BCC, "bcc_last_updated_by_fk", new TableField[] { Bcc.BCC.LAST_UPDATED_BY }, true);
@@ -969,6 +968,7 @@ public class Keys {
         public static final ForeignKey<BccRecord, BccRecord> BCC_NEXT_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, Bcc.BCC, "bcc_next_bcc_id_fk", new TableField[] { Bcc.BCC.NEXT_BCC_ID }, true);
         public static final ForeignKey<BccManifestRecord, ReleaseRecord> BCC_MANIFEST_RELEASE_ID_FK = Internal.createForeignKey(Keys.KEY_RELEASE_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_release_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.RELEASE_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccRecord> BCC_MANIFEST_BCC_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_bcc_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.BCC_ID }, true);
+        public static final ForeignKey<BccManifestRecord, SeqKeyRecord> BCC_MANIFEST_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_seq_key_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.SEQ_KEY_ID }, true);
         public static final ForeignKey<BccManifestRecord, AccManifestRecord> BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_from_acc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccpManifestRecord> BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCCP_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_manifest_to_bccp_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.TO_BCCP_MANIFEST_ID }, true);
         public static final ForeignKey<BccManifestRecord, BccManifestRecord> BCC_REPLACEMENT_BCC_MANIFEST_ID_FK = Internal.createForeignKey(Keys.KEY_BCC_MANIFEST_PRIMARY, BccManifest.BCC_MANIFEST, "bcc_replacement_bcc_manifest_id_fk", new TableField[] { BccManifest.BCC_MANIFEST.REPLACEMENT_BCC_MANIFEST_ID }, true);
@@ -1160,7 +1160,7 @@ public class Keys {
         public static final ForeignKey<ReleaseRecord, NamespaceRecord> RELEASE_NAMESPACE_ID_FK = Internal.createForeignKey(Keys.KEY_NAMESPACE_PRIMARY, Release.RELEASE, "release_namespace_id_fk", new TableField[] { Release.RELEASE.NAMESPACE_ID }, true);
         public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_CREATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Release.RELEASE, "release_created_by_fk", new TableField[] { Release.RELEASE.CREATED_BY }, true);
         public static final ForeignKey<ReleaseRecord, AppUserRecord> RELEASE_LAST_UPDATED_BY_FK = Internal.createForeignKey(Keys.KEY_APP_USER_PRIMARY, Release.RELEASE, "release_last_updated_by_fk", new TableField[] { Release.RELEASE.LAST_UPDATED_BY }, true);
-        public static final ForeignKey<SeqKeyRecord, AccRecord> SEQ_KEY_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_PRIMARY, SeqKey.SEQ_KEY, "seq_key_from_acc_id_fk", new TableField[] { SeqKey.SEQ_KEY.FROM_ACC_ID }, true);
+        public static final ForeignKey<SeqKeyRecord, AccManifestRecord> SEQ_KEY_FROM_ACC_ID_FK = Internal.createForeignKey(Keys.KEY_ACC_MANIFEST_PRIMARY, SeqKey.SEQ_KEY, "seq_key_from_acc_id_fk", new TableField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, true);
         public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_PREV_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_prev_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.PREV_SEQ_KEY_ID }, true);
         public static final ForeignKey<SeqKeyRecord, SeqKeyRecord> SEQ_KEY_NEXT_SEQ_KEY_ID_FK = Internal.createForeignKey(Keys.KEY_SEQ_KEY_PRIMARY, SeqKey.SEQ_KEY, "seq_key_next_seq_key_id_fk", new TableField[] { SeqKey.SEQ_KEY.NEXT_SEQ_KEY_ID }, true);
         public static final ForeignKey<TopLevelAsbiepRecord, AsbiepRecord> TOP_LEVEL_ASBIEP_ASBIEP_ID_FK = Internal.createForeignKey(Keys.KEY_ASBIEP_PRIMARY, TopLevelAsbiep.TOP_LEVEL_ASBIEP, "top_level_asbiep_asbiep_id_fk", new TableField[] { TopLevelAsbiep.TOP_LEVEL_ASBIEP.ASBIEP_ID }, true);

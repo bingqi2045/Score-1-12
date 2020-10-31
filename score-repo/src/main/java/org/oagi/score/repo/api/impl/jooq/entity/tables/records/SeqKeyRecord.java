@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements Record6<ULong, ULong, SeqKeyType, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -703928057;
+    private static final long serialVersionUID = 1918564697;
 
     /**
      * Setter for <code>oagi.seq_key.seq_key_id</code>.
@@ -37,16 +37,16 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.seq_key.from_acc_id</code>.
+     * Setter for <code>oagi.seq_key.from_acc_manifest_id</code>.
      */
-    public void setFromAccId(ULong value) {
+    public void setFromAccManifestId(ULong value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>oagi.seq_key.from_acc_id</code>.
+     * Getter for <code>oagi.seq_key.from_acc_manifest_id</code>.
      */
-    public ULong getFromAccId() {
+    public ULong getFromAccManifestId() {
         return (ULong) get(1);
     }
 
@@ -65,16 +65,16 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
     }
 
     /**
-     * Setter for <code>oagi.seq_key.cc_id</code>.
+     * Setter for <code>oagi.seq_key.cc_manifest_id</code>.
      */
-    public void setCcId(ULong value) {
+    public void setCcManifestId(ULong value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>oagi.seq_key.cc_id</code>.
+     * Getter for <code>oagi.seq_key.cc_manifest_id</code>.
      */
-    public ULong getCcId() {
+    public ULong getCcManifestId() {
         return (ULong) get(3);
     }
 
@@ -136,7 +136,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public Field<ULong> field2() {
-        return SeqKey.SEQ_KEY.FROM_ACC_ID;
+        return SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public Field<ULong> field4() {
-        return SeqKey.SEQ_KEY.CC_ID;
+        return SeqKey.SEQ_KEY.CC_MANIFEST_ID;
     }
 
     @Override
@@ -166,7 +166,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public ULong component2() {
-        return getFromAccId();
+        return getFromAccManifestId();
     }
 
     @Override
@@ -176,7 +176,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public ULong component4() {
-        return getCcId();
+        return getCcManifestId();
     }
 
     @Override
@@ -196,7 +196,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public ULong value2() {
-        return getFromAccId();
+        return getFromAccManifestId();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public ULong value4() {
-        return getCcId();
+        return getCcManifestId();
     }
 
     @Override
@@ -227,7 +227,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public SeqKeyRecord value2(ULong value) {
-        setFromAccId(value);
+        setFromAccManifestId(value);
         return this;
     }
 
@@ -239,7 +239,7 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
 
     @Override
     public SeqKeyRecord value4(ULong value) {
-        setCcId(value);
+        setCcManifestId(value);
         return this;
     }
 
@@ -280,13 +280,13 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
     /**
      * Create a detached, initialised SeqKeyRecord
      */
-    public SeqKeyRecord(ULong seqKeyId, ULong fromAccId, SeqKeyType type, ULong ccId, ULong prevSeqKeyId, ULong nextSeqKeyId) {
+    public SeqKeyRecord(ULong seqKeyId, ULong fromAccManifestId, SeqKeyType type, ULong ccManifestId, ULong prevSeqKeyId, ULong nextSeqKeyId) {
         super(SeqKey.SEQ_KEY);
 
         set(0, seqKeyId);
-        set(1, fromAccId);
+        set(1, fromAccManifestId);
         set(2, type);
-        set(3, ccId);
+        set(3, ccManifestId);
         set(4, prevSeqKeyId);
         set(5, nextSeqKeyId);
     }

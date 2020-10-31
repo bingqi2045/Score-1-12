@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -32,7 +32,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifest extends TableImpl<BccManifestRecord> {
 
-    private static final long serialVersionUID = -331981750;
+    private static final long serialVersionUID = -1300695347;
 
     /**
      * The reference instance of <code>oagi.bcc_manifest</code>
@@ -61,6 +61,11 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
      * The column <code>oagi.bcc_manifest.bcc_id</code>.
      */
     public final TableField<BccManifestRecord, ULong> BCC_ID = createField(DSL.name("bcc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.bcc_manifest.seq_key_id</code>.
+     */
+    public final TableField<BccManifestRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.bcc_manifest.from_acc_manifest_id</code>.
@@ -147,7 +152,7 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     @Override
     public List<ForeignKey<BccManifestRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
+        return Arrays.<ForeignKey<BccManifestRecord, ?>>asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_SEQ_KEY_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
     }
 
     public Release release() {
@@ -156,6 +161,10 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     public Bcc bcc() {
         return new Bcc(this, Keys.BCC_MANIFEST_BCC_ID_FK);
+    }
+
+    public SeqKey seqKey() {
+        return new SeqKey(this, Keys.BCC_MANIFEST_SEQ_KEY_ID_FK);
     }
 
     public AccManifest accManifest() {
@@ -205,11 +214,11 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row10<ULong, ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

@@ -148,7 +148,6 @@ public class AsccWriteRepository {
                         .set(ascc)
                         .returning(ASCC.ASCC_ID).fetchOne().getAsccId()
         );
-        seqKeyHandler(request.getUser(), ascc).moveTo(request.getPos());
 
         AsccManifestRecord asccManifest = new AsccManifestRecord();
         asccManifest.setAsccId(ascc.getAsccId());
@@ -160,6 +159,8 @@ public class AsccWriteRepository {
                         .set(asccManifest)
                         .returning(ASCC_MANIFEST.ASCC_MANIFEST_ID).fetchOne().getAsccManifestId()
         );
+
+        seqKeyHandler(request.getUser(), asccManifest).moveTo(request.getPos());
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -175,7 +176,7 @@ public class AsccWriteRepository {
                                                  ULong releaseId,
                                                  ULong userId, LocalDateTime timestamp) {
         LogRecord logRecord =
-                logRepository.insertAccLog(
+                logRepository.insertAccLog(accManifestRecord,
                         accRecord,
                         accManifestRecord.getLogId(),
                         LogAction.Modified,
@@ -304,7 +305,7 @@ public class AsccWriteRepository {
         // delete from Tables
         asccManifestRecord.delete();
         asccRecord.delete();
-        seqKeyHandler(request.getUser(), asccRecord).deleteCurrent();
+        seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
@@ -315,13 +316,13 @@ public class AsccWriteRepository {
         return new DeleteAsccRepositoryResponse(asccManifestRecord.getAsccManifestId().toBigInteger());
     }
 
-    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccRecord asccRecord) {
+    private SeqKeyHandler seqKeyHandler(AuthenticatedPrincipal user, AsccManifestRecord asccManifestRecord) {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory,
                 sessionService.asScoreUser(user));
         seqKeyHandler.initAscc(
-                asccRecord.getFromAccId().toBigInteger(),
-                (asccRecord.getSeqKeyId() != null) ? asccRecord.getSeqKeyId().toBigInteger() : null,
-                asccRecord.getAsccId().toBigInteger());
+                asccManifestRecord.getFromAccManifestId().toBigInteger(),
+                (asccManifestRecord.getSeqKeyId() != null) ? asccManifestRecord.getSeqKeyId().toBigInteger() : null,
+                asccManifestRecord.getAsccManifestId().toBigInteger());
         return seqKeyHandler;
     }
 }

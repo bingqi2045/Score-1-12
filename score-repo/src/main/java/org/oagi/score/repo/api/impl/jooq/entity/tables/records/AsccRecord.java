@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record21;
-import org.jooq.Row21;
+import org.jooq.Record20;
+import org.jooq.Row20;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
@@ -20,9 +20,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
  * an ASCCP. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record21<ULong, String, Integer, Integer, Integer, ULong, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
+public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
-    private static final long serialVersionUID = 1252646608;
+    private static final long serialVersionUID = -669563187;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.
@@ -95,115 +95,101 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
     }
 
     /**
-     * Setter for <code>oagi.ascc.seq_key_id</code>.
-     */
-    public void setSeqKeyId(ULong value) {
-        set(5, value);
-    }
-
-    /**
-     * Getter for <code>oagi.ascc.seq_key_id</code>.
-     */
-    public ULong getSeqKeyId() {
-        return (ULong) get(5);
-    }
-
-    /**
      * Setter for <code>oagi.ascc.from_acc_id</code>. FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.
      */
     public void setFromAccId(ULong value) {
-        set(6, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.from_acc_id</code>. FROM_ACC_ID is a foreign key pointing to an ACC record. It is basically pointing to a parent data element (type) of the TO_ASCCP_ID.
      */
     public ULong getFromAccId() {
-        return (ULong) get(6);
+        return (ULong) get(5);
     }
 
     /**
      * Setter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
      */
     public void setToAsccpId(ULong value) {
-        set(7, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.to_asccp_id</code>. TO_ASCCP_ID is a foreign key to an ASCCP table record. It is basically pointing to a child data element of the FROM_ACC_ID. 
      */
     public ULong getToAsccpId() {
-        return (ULong) get(7);
+        return (ULong) get(6);
     }
 
     /**
      * Setter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public void setDen(String value) {
-        set(8, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.den</code>. DEN (dictionary entry name) of the ASCC. This column can be derived from Qualifier and OBJECT_CLASS_TERM of the FROM_ACC_ID and DEN of the TO_ASCCP_ID as Qualifier + "_ " + OBJECT_CLASS_TERM + ". " + DEN. 
      */
     public String getDen() {
-        return (String) get(8);
+        return (String) get(7);
     }
 
     /**
      * Setter for <code>oagi.ascc.definition</code>. This is a documentation or description of the ASCC. Since ASCC is business context independent, this is a business context independent description of the ASCC. Since there are definitions also in the ASCCP (as referenced by the TO_ASCCP_ID column) and the ACC under that ASCCP, definition in the ASCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the ASCCP.
      */
     public void setDefinition(String value) {
-        set(9, value);
+        set(8, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.definition</code>. This is a documentation or description of the ASCC. Since ASCC is business context independent, this is a business context independent description of the ASCC. Since there are definitions also in the ASCCP (as referenced by the TO_ASCCP_ID column) and the ACC under that ASCCP, definition in the ASCC is a specific description about the relationship between the ACC (as in FROM_ACC_ID) and the ASCCP.
      */
     public String getDefinition() {
-        return (String) get(9);
+        return (String) get(8);
     }
 
     /**
      * Setter for <code>oagi.ascc.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public void setDefinitionSource(String value) {
-        set(10, value);
+        set(9, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
     public String getDefinitionSource() {
-        return (String) get(10);
+        return (String) get(9);
     }
 
     /**
      * Setter for <code>oagi.ascc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public void setIsDeprecated(Byte value) {
-        set(11, value);
+        set(10, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.is_deprecated</code>. Indicates whether the CC is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
     public Byte getIsDeprecated() {
-        return (Byte) get(11);
+        return (Byte) get(10);
     }
 
     /**
      * Setter for <code>oagi.ascc.replacement_ascc_id</code>. This refers to a replacement if the record is deprecated.
      */
     public void setReplacementAsccId(ULong value) {
-        set(12, value);
+        set(11, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.replacement_ascc_id</code>. This refers to a replacement if the record is deprecated.
      */
     public ULong getReplacementAsccId() {
-        return (ULong) get(12);
+        return (ULong) get(11);
     }
 
     /**
@@ -212,7 +198,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Recor
 This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public void setCreatedBy(ULong value) {
-        set(13, value);
+        set(12, value);
     }
 
     /**
@@ -221,7 +207,7 @@ This column never change between the history and the current record for a given 
 This column never change between the history and the current record for a given revision. The history record should have the same value as that of its current record.
      */
     public ULong getCreatedBy() {
-        return (ULong) get(13);
+        return (ULong) get(12);
     }
 
     /**
@@ -230,7 +216,7 @@ This column never change between the history and the current record for a given 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public void setOwnerUserId(ULong value) {
-        set(14, value);
+        set(13, value);
     }
 
     /**
@@ -239,7 +225,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 The ownership can change throughout the history, but undoing shouldn't rollback the ownership. 
      */
     public ULong getOwnerUserId() {
-        return (ULong) get(14);
+        return (ULong) get(13);
     }
 
     /**
@@ -248,7 +234,7 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public void setLastUpdatedBy(ULong value) {
-        set(15, value);
+        set(14, value);
     }
 
     /**
@@ -257,7 +243,7 @@ In the history record, this should always be the user who is editing the entity 
 In the history record, this should always be the user who is editing the entity (perhaps except when the ownership has just been changed).
      */
     public ULong getLastUpdatedBy() {
-        return (ULong) get(15);
+        return (ULong) get(14);
     }
 
     /**
@@ -266,7 +252,7 @@ In the history record, this should always be the user who is editing the entity 
 This never change for a revision.
      */
     public void setCreationTimestamp(LocalDateTime value) {
-        set(16, value);
+        set(15, value);
     }
 
     /**
@@ -275,7 +261,7 @@ This never change for a revision.
 This never change for a revision.
      */
     public LocalDateTime getCreationTimestamp() {
-        return (LocalDateTime) get(16);
+        return (LocalDateTime) get(15);
     }
 
     /**
@@ -284,7 +270,7 @@ This never change for a revision.
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public void setLastUpdateTimestamp(LocalDateTime value) {
-        set(17, value);
+        set(16, value);
     }
 
     /**
@@ -293,7 +279,7 @@ The value of this column in the latest history record should be the same as that
 The value of this column in the latest history record should be the same as that of the current record. This column keeps the record of when the change has occurred.
      */
     public LocalDateTime getLastUpdateTimestamp() {
-        return (LocalDateTime) get(17);
+        return (LocalDateTime) get(16);
     }
 
     /**
@@ -302,7 +288,7 @@ The value of this column in the latest history record should be the same as that
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public void setState(String value) {
-        set(18, value);
+        set(17, value);
     }
 
     /**
@@ -311,35 +297,35 @@ State change can't be undone. But the history record can still keep the records 
 State change can't be undone. But the history record can still keep the records of when the state was changed.
      */
     public String getState() {
-        return (String) get(18);
+        return (String) get(17);
     }
 
     /**
      * Setter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public void setPrevAsccId(ULong value) {
-        set(19, value);
+        set(18, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.prev_ascc_id</code>. A self-foreign key to indicate the previous history record.
      */
     public ULong getPrevAsccId() {
-        return (ULong) get(19);
+        return (ULong) get(18);
     }
 
     /**
      * Setter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
      */
     public void setNextAsccId(ULong value) {
-        set(20, value);
+        set(19, value);
     }
 
     /**
      * Getter for <code>oagi.ascc.next_ascc_id</code>. A self-foreign key to indicate the next history record.
      */
     public ULong getNextAsccId() {
-        return (ULong) get(20);
+        return (ULong) get(19);
     }
 
     // -------------------------------------------------------------------------
@@ -352,17 +338,17 @@ State change can't be undone. But the history record can still keep the records 
     }
 
     // -------------------------------------------------------------------------
-    // Record21 type implementation
+    // Record20 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<ULong, String, Integer, Integer, Integer, ULong, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 
     @Override
-    public Row21<ULong, String, Integer, Integer, Integer, ULong, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
-        return (Row21) super.valuesRow();
+    public Row20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> valuesRow() {
+        return (Row20) super.valuesRow();
     }
 
     @Override
@@ -392,81 +378,76 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public Field<ULong> field6() {
-        return Ascc.ASCC.SEQ_KEY_ID;
-    }
-
-    @Override
-    public Field<ULong> field7() {
         return Ascc.ASCC.FROM_ACC_ID;
     }
 
     @Override
-    public Field<ULong> field8() {
+    public Field<ULong> field7() {
         return Ascc.ASCC.TO_ASCCP_ID;
     }
 
     @Override
-    public Field<String> field9() {
+    public Field<String> field8() {
         return Ascc.ASCC.DEN;
     }
 
     @Override
-    public Field<String> field10() {
+    public Field<String> field9() {
         return Ascc.ASCC.DEFINITION;
     }
 
     @Override
-    public Field<String> field11() {
+    public Field<String> field10() {
         return Ascc.ASCC.DEFINITION_SOURCE;
     }
 
     @Override
-    public Field<Byte> field12() {
+    public Field<Byte> field11() {
         return Ascc.ASCC.IS_DEPRECATED;
     }
 
     @Override
-    public Field<ULong> field13() {
+    public Field<ULong> field12() {
         return Ascc.ASCC.REPLACEMENT_ASCC_ID;
     }
 
     @Override
-    public Field<ULong> field14() {
+    public Field<ULong> field13() {
         return Ascc.ASCC.CREATED_BY;
     }
 
     @Override
-    public Field<ULong> field15() {
+    public Field<ULong> field14() {
         return Ascc.ASCC.OWNER_USER_ID;
     }
 
     @Override
-    public Field<ULong> field16() {
+    public Field<ULong> field15() {
         return Ascc.ASCC.LAST_UPDATED_BY;
     }
 
     @Override
-    public Field<LocalDateTime> field17() {
+    public Field<LocalDateTime> field16() {
         return Ascc.ASCC.CREATION_TIMESTAMP;
     }
 
     @Override
-    public Field<LocalDateTime> field18() {
+    public Field<LocalDateTime> field17() {
         return Ascc.ASCC.LAST_UPDATE_TIMESTAMP;
     }
 
     @Override
-    public Field<String> field19() {
+    public Field<String> field18() {
         return Ascc.ASCC.STATE;
     }
 
     @Override
-    public Field<ULong> field20() {
+    public Field<ULong> field19() {
         return Ascc.ASCC.PREV_ASCC_ID;
     }
 
     @Override
-    public Field<ULong> field21() {
+    public Field<ULong> field20() {
         return Ascc.ASCC.NEXT_ASCC_ID;
     }
 
@@ -497,81 +478,76 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong component6() {
-        return getSeqKeyId();
-    }
-
-    @Override
-    public ULong component7() {
         return getFromAccId();
     }
 
     @Override
-    public ULong component8() {
+    public ULong component7() {
         return getToAsccpId();
     }
 
     @Override
-    public String component9() {
+    public String component8() {
         return getDen();
     }
 
     @Override
-    public String component10() {
+    public String component9() {
         return getDefinition();
     }
 
     @Override
-    public String component11() {
+    public String component10() {
         return getDefinitionSource();
     }
 
     @Override
-    public Byte component12() {
+    public Byte component11() {
         return getIsDeprecated();
     }
 
     @Override
-    public ULong component13() {
+    public ULong component12() {
         return getReplacementAsccId();
     }
 
     @Override
-    public ULong component14() {
+    public ULong component13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong component15() {
+    public ULong component14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong component16() {
+    public ULong component15() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime component17() {
+    public LocalDateTime component16() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime component18() {
+    public LocalDateTime component17() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public String component19() {
+    public String component18() {
         return getState();
     }
 
     @Override
-    public ULong component20() {
+    public ULong component19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong component21() {
+    public ULong component20() {
         return getNextAsccId();
     }
 
@@ -602,81 +578,76 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public ULong value6() {
-        return getSeqKeyId();
-    }
-
-    @Override
-    public ULong value7() {
         return getFromAccId();
     }
 
     @Override
-    public ULong value8() {
+    public ULong value7() {
         return getToAsccpId();
     }
 
     @Override
-    public String value9() {
+    public String value8() {
         return getDen();
     }
 
     @Override
-    public String value10() {
+    public String value9() {
         return getDefinition();
     }
 
     @Override
-    public String value11() {
+    public String value10() {
         return getDefinitionSource();
     }
 
     @Override
-    public Byte value12() {
+    public Byte value11() {
         return getIsDeprecated();
     }
 
     @Override
-    public ULong value13() {
+    public ULong value12() {
         return getReplacementAsccId();
     }
 
     @Override
-    public ULong value14() {
+    public ULong value13() {
         return getCreatedBy();
     }
 
     @Override
-    public ULong value15() {
+    public ULong value14() {
         return getOwnerUserId();
     }
 
     @Override
-    public ULong value16() {
+    public ULong value15() {
         return getLastUpdatedBy();
     }
 
     @Override
-    public LocalDateTime value17() {
+    public LocalDateTime value16() {
         return getCreationTimestamp();
     }
 
     @Override
-    public LocalDateTime value18() {
+    public LocalDateTime value17() {
         return getLastUpdateTimestamp();
     }
 
     @Override
-    public String value19() {
+    public String value18() {
         return getState();
     }
 
     @Override
-    public ULong value20() {
+    public ULong value19() {
         return getPrevAsccId();
     }
 
     @Override
-    public ULong value21() {
+    public ULong value20() {
         return getNextAsccId();
     }
 
@@ -712,102 +683,96 @@ State change can't be undone. But the history record can still keep the records 
 
     @Override
     public AsccRecord value6(ULong value) {
-        setSeqKeyId(value);
-        return this;
-    }
-
-    @Override
-    public AsccRecord value7(ULong value) {
         setFromAccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value8(ULong value) {
+    public AsccRecord value7(ULong value) {
         setToAsccpId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value9(String value) {
+    public AsccRecord value8(String value) {
         setDen(value);
         return this;
     }
 
     @Override
-    public AsccRecord value10(String value) {
+    public AsccRecord value9(String value) {
         setDefinition(value);
         return this;
     }
 
     @Override
-    public AsccRecord value11(String value) {
+    public AsccRecord value10(String value) {
         setDefinitionSource(value);
         return this;
     }
 
     @Override
-    public AsccRecord value12(Byte value) {
+    public AsccRecord value11(Byte value) {
         setIsDeprecated(value);
         return this;
     }
 
     @Override
-    public AsccRecord value13(ULong value) {
+    public AsccRecord value12(ULong value) {
         setReplacementAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value14(ULong value) {
+    public AsccRecord value13(ULong value) {
         setCreatedBy(value);
         return this;
     }
 
     @Override
-    public AsccRecord value15(ULong value) {
+    public AsccRecord value14(ULong value) {
         setOwnerUserId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value16(ULong value) {
+    public AsccRecord value15(ULong value) {
         setLastUpdatedBy(value);
         return this;
     }
 
     @Override
-    public AsccRecord value17(LocalDateTime value) {
+    public AsccRecord value16(LocalDateTime value) {
         setCreationTimestamp(value);
         return this;
     }
 
     @Override
-    public AsccRecord value18(LocalDateTime value) {
+    public AsccRecord value17(LocalDateTime value) {
         setLastUpdateTimestamp(value);
         return this;
     }
 
     @Override
-    public AsccRecord value19(String value) {
+    public AsccRecord value18(String value) {
         setState(value);
         return this;
     }
 
     @Override
-    public AsccRecord value20(ULong value) {
+    public AsccRecord value19(ULong value) {
         setPrevAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord value21(ULong value) {
+    public AsccRecord value20(ULong value) {
         setNextAsccId(value);
         return this;
     }
 
     @Override
-    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, ULong value8, String value9, String value10, String value11, Byte value12, ULong value13, ULong value14, ULong value15, ULong value16, LocalDateTime value17, LocalDateTime value18, String value19, ULong value20, ULong value21) {
+    public AsccRecord values(ULong value1, String value2, Integer value3, Integer value4, Integer value5, ULong value6, ULong value7, String value8, String value9, String value10, Byte value11, ULong value12, ULong value13, ULong value14, ULong value15, LocalDateTime value16, LocalDateTime value17, String value18, ULong value19, ULong value20) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -828,7 +793,6 @@ State change can't be undone. But the history record can still keep the records 
         value18(value18);
         value19(value19);
         value20(value20);
-        value21(value21);
         return this;
     }
 
@@ -846,7 +810,7 @@ State change can't be undone. But the history record can still keep the records 
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong seqKeyId, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
+    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
         super(Ascc.ASCC);
 
         set(0, asccId);
@@ -854,21 +818,20 @@ State change can't be undone. But the history record can still keep the records 
         set(2, cardinalityMin);
         set(3, cardinalityMax);
         set(4, seqKey);
-        set(5, seqKeyId);
-        set(6, fromAccId);
-        set(7, toAsccpId);
-        set(8, den);
-        set(9, definition);
-        set(10, definitionSource);
-        set(11, isDeprecated);
-        set(12, replacementAsccId);
-        set(13, createdBy);
-        set(14, ownerUserId);
-        set(15, lastUpdatedBy);
-        set(16, creationTimestamp);
-        set(17, lastUpdateTimestamp);
-        set(18, state);
-        set(19, prevAsccId);
-        set(20, nextAsccId);
+        set(5, fromAccId);
+        set(6, toAsccpId);
+        set(7, den);
+        set(8, definition);
+        set(9, definitionSource);
+        set(10, isDeprecated);
+        set(11, replacementAsccId);
+        set(12, createdBy);
+        set(13, ownerUserId);
+        set(14, lastUpdatedBy);
+        set(15, creationTimestamp);
+        set(16, lastUpdateTimestamp);
+        set(17, state);
+        set(18, prevAsccId);
+        set(19, nextAsccId);
     }
 }
