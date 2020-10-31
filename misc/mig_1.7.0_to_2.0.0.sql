@@ -2190,7 +2190,7 @@ ALTER TABLE `code_list` DROP FOREIGN KEY `code_list_module_id_fk`,
 ALTER TABLE `agency_id_list` DROP FOREIGN KEY `agency_id_list_module_id_fk`,
                              DROP COLUMN `module_id`;
 
-ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (prefix);
+ALTER TABLE `namespace` ADD CONSTRAINT `namespace_uk1` UNIQUE (uri);
 ALTER TABLE `dt` CHANGE `type` `type` VARCHAR(64) NOT NULL COMMENT 'This is the types of DT. List value is CDT, default BDT, unqualified BDT, qualified BDT.';
 
 -- set dt Type Core
