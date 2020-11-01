@@ -55,7 +55,7 @@ CREATE TABLE `comment` (
 CREATE TABLE `seq_key` (
   `seq_key_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `from_acc_manifest_id` bigint(20) unsigned NOT NULL,
-  `type` enum('ascc_manifest','bcc_manifest') DEFAULT NULL,
+  `type` enum('ascc','bcc') DEFAULT NULL,
   `cc_manifest_id` bigint(20) unsigned NOT NULL,
   `prev_seq_key_id` bigint(20) unsigned DEFAULT NULL,
   `next_seq_key_id` bigint(20) unsigned DEFAULT NULL,

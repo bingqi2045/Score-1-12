@@ -149,7 +149,7 @@ public class RepositoryInitializer implements InitializingBean {
                         e.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
                         e.get(ASCC.SEQ_KEY),
                         e.get(ASCC.CREATION_TIMESTAMP),
-                        SeqKeyType.asccManifest))));
+                        SeqKeyType.ascc))));
         seqKeyWrappers.addAll(new ArrayList<>(dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID, BCC.BCC_ID, BCC.SEQ_KEY, BCC.CREATION_TIMESTAMP)
                 .from(BCC)
                 .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
@@ -158,7 +158,7 @@ public class RepositoryInitializer implements InitializingBean {
                         e.get(BCC_MANIFEST.BCC_MANIFEST_ID),
                         e.get(BCC.SEQ_KEY),
                         e.get(BCC.CREATION_TIMESTAMP),
-                        SeqKeyType.bccManifest))));
+                        SeqKeyType.bcc))));
 
         Collections.sort(seqKeyWrappers, (o1, o2) -> {
             if (o1.getSeqKey() == o2.getSeqKey()) {
@@ -250,14 +250,14 @@ public class RepositoryInitializer implements InitializingBean {
                     .execute();
 
             switch (this.seqKeyType) {
-                case asccManifest:
+                case ascc:
                     dslContext.update(ASCC_MANIFEST)
                             .set(ASCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
                             .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(this.manifestId))
                             .execute();
                     break;
 
-                case bccManifest:
+                case bcc:
                     dslContext.update(BCC_MANIFEST)
                             .set(BCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
                             .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(this.manifestId))

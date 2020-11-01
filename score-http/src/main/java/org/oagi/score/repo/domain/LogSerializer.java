@@ -131,10 +131,10 @@ public class LogSerializer {
             SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
             while (node != null) {
                 switch (node.getType()) {
-                    case asccManifest:
+                    case ascc:
                         sortedRecords.add(new AssocRecord(asccRecordMap.get(asccManifestRecordMap.get(node.getCcManifestId()).getAsccId())));
                         break;
-                    case bccManifest:
+                    case bcc:
                         sortedRecords.add(new AssocRecord(bccRecordMap.get(bccManifestRecordMap.get(node.getCcManifestId()).getBccId())));
                         break;
                 }

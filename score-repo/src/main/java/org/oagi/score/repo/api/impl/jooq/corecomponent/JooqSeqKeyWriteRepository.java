@@ -42,14 +42,14 @@ public class JooqSeqKeyWriteRepository
         );
 
         switch (record.getType()) {
-            case asccManifest:
+            case ascc:
                 dslContext().update(ASCC_MANIFEST)
                         .set(ASCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
                         .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(record.getCcManifestId()))
                         .execute();
                 break;
 
-            case bccManifest:
+            case bcc:
                 dslContext().update(BCC_MANIFEST)
                         .set(BCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
                         .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(record.getCcManifestId()))
