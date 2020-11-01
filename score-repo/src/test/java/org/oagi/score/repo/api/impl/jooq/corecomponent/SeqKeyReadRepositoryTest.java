@@ -38,7 +38,7 @@ public class SeqKeyReadRepositoryTest
     @Order(1)
     public void getSeqKeyOfBusinessObjectDocumentTest() {
         GetSeqKeyRequest request = new GetSeqKeyRequest(requester)
-                .withFromAccManifestId(getAccIdByObjectClassTerm("Business Object Document"));
+                .withFromAccManifestId(getAccManifestIdByObjectClassTerm("Business Object Document"));
         GetSeqKeyResponse response = repository.getSeqKey(request);
         assertNotNull(response.getSeqKey());
 
@@ -49,31 +49,31 @@ public class SeqKeyReadRepositoryTest
 
         assertTrue(seqKeys.size() == 5);
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(0).getSeqKeyType());
-        assertEquals("Release Identifier", getBccpPropertyTerm(seqKeys.get(0).getCcId()));
+        assertNotNull(seqKeys.get(0).getBccManifestId());
+        assertEquals("Release Identifier", getBccpPropertyTerm(seqKeys.get(0).getBccManifestId()));
         assertEquals(BccEntityType.Attribute, seqKeys.get(0).getEntityType());
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(1).getSeqKeyType());
-        assertEquals("Version Identifier", getBccpPropertyTerm(seqKeys.get(1).getCcId()));
+        assertNotNull(seqKeys.get(1).getBccManifestId());
+        assertEquals("Version Identifier", getBccpPropertyTerm(seqKeys.get(1).getBccManifestId()));
         assertEquals(BccEntityType.Attribute, seqKeys.get(1).getEntityType());
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(2).getSeqKeyType());
-        assertEquals("System Environment Code", getBccpPropertyTerm(seqKeys.get(2).getCcId()));
+        assertNotNull(seqKeys.get(2).getBccManifestId());
+        assertEquals("System Environment Code", getBccpPropertyTerm(seqKeys.get(2).getBccManifestId()));
         assertEquals(BccEntityType.Attribute, seqKeys.get(2).getEntityType());
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(3).getSeqKeyType());
-        assertEquals("Language Code", getBccpPropertyTerm(seqKeys.get(3).getCcId()));
+        assertNotNull(seqKeys.get(3).getBccManifestId());
+        assertEquals("Language Code", getBccpPropertyTerm(seqKeys.get(3).getBccManifestId()));
         assertEquals(BccEntityType.Attribute, seqKeys.get(3).getEntityType());
 
-        assertEquals(SeqKeyType.ASCC, seqKeys.get(4).getSeqKeyType());
-        assertEquals("Application Area", getAsccpPropertyTerm(seqKeys.get(4).getCcId()));
+        assertNotNull(seqKeys.get(4).getBccManifestId());
+        assertEquals("Application Area", getAsccpPropertyTerm(seqKeys.get(4).getAsccManifestId()));
         assertEquals(null, seqKeys.get(4).getEntityType());
     }
 
-    private BigInteger getAccIdByObjectClassTerm(String objectClassTerm) {
-        return dslContext().select(ACC.ACC_ID)
-                .from(ACC)
-                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+        return dslContext().select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
@@ -82,21 +82,23 @@ public class SeqKeyReadRepositoryTest
                 .fetchOneInto(BigInteger.class);
     }
 
-    private String getAsccpPropertyTerm(BigInteger asccId) {
+    private String getAsccpPropertyTerm(BigInteger asccManifestId) {
         return dslContext()
                 .select(ASCCP.PROPERTY_TERM)
                 .from(ASCCP)
-                .join(ASCC).on(ASCCP.ASCCP_ID.eq(ASCC.TO_ASCCP_ID))
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
+                .join(ASCCP_MANIFEST).on(ASCCP.ASCCP_ID.eq(ASCCP_MANIFEST.ASCCP_ID))
+                .join(ASCC_MANIFEST).on(ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID))
+                .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(ULong.valueOf(asccManifestId)))
                 .fetchOneInto(String.class);
     }
 
-    private String getBccpPropertyTerm(BigInteger bccId) {
+    private String getBccpPropertyTerm(BigInteger bccManifestId) {
         return dslContext()
                 .select(BCCP.PROPERTY_TERM)
                 .from(BCCP)
-                .join(BCC).on(BCCP.BCCP_ID.eq(BCC.TO_BCCP_ID))
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
+                .join(BCCP_MANIFEST).on(BCCP.BCCP_ID.eq(BCCP_MANIFEST.BCCP_ID))
+                .join(BCC_MANIFEST).on(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(BCC_MANIFEST.TO_BCCP_MANIFEST_ID))
+                .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(ULong.valueOf(bccManifestId)))
                 .fetchOneInto(String.class);
     }
 

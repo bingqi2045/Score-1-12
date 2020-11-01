@@ -9,7 +9,6 @@ import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyResponse;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
-import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.security.AccessControl;
 
@@ -18,8 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.BCC;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.SEQ_KEY;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
@@ -51,11 +49,11 @@ public class JooqSeqKeyReadRepository
 
         SeqKey seqKey = null;
         Map<ULong, Record> seqKeyRecordMap = dslContext()
-                .select(SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.TYPE, SEQ_KEY.CC_MANIFEST_ID, SEQ_KEY.FROM_ACC_MANIFEST_ID,
+                .select(SEQ_KEY.SEQ_KEY_ID, SEQ_KEY.ASCC_MANIFEST_ID, SEQ_KEY.BCC_MANIFEST_ID, SEQ_KEY.FROM_ACC_MANIFEST_ID,
                         SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
                         BCC.ENTITY_TYPE)
                 .from(SEQ_KEY)
-                .leftJoin(BCC).on(SEQ_KEY.CC_MANIFEST_ID.eq(BCC.BCC_ID))
+                .leftJoin(BCC).on(SEQ_KEY.BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
                 .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
@@ -85,9 +83,11 @@ public class JooqSeqKeyReadRepository
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(node.get(SEQ_KEY.SEQ_KEY_ID).toBigInteger());
         seqKey.setFromAccManifestId(node.get(SEQ_KEY.FROM_ACC_MANIFEST_ID).toBigInteger());
-        seqKey.setSeqKeyType(SeqKeyType.valueOf(node.get(SEQ_KEY.TYPE).toString().toUpperCase()));
-        seqKey.setCcId(node.get(SEQ_KEY.CC_MANIFEST_ID).toBigInteger());
-        if (SeqKeyType.BCC == seqKey.getSeqKeyType()) {
+        if (node.get(SEQ_KEY.ASCC_MANIFEST_ID) != null) {
+            seqKey.setAsccManifestId(node.get(SEQ_KEY.ASCC_MANIFEST_ID).toBigInteger());
+        }
+        if (node.get(SEQ_KEY.BCC_MANIFEST_ID) != null) {
+            seqKey.setBccManifestId(node.get(SEQ_KEY.BCC_MANIFEST_ID).toBigInteger());
             Integer entityType = node.get(BCC.ENTITY_TYPE);
             seqKey.setEntityType(
                     (entityType != null) ?

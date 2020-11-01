@@ -19,24 +19,24 @@ public class SeqKeyHandlerTest
 
     private ScoreUser requester;
 
-    private BigInteger businessObjectDocumentAccId;
+    private BigInteger businessObjectDocumentAccManifestId;
     private SeqKey seqKey;
 
     @BeforeAll
     void setUp() {
         requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
 
-        businessObjectDocumentAccId = getAccIdByObjectClassTerm("Business Object Document");
+        businessObjectDocumentAccManifestId = getAccManifestIdByObjectClassTerm("Business Object Document");
         seqKey = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccManifestId(businessObjectDocumentAccId))
+                        .withFromAccManifestId(businessObjectDocumentAccManifestId))
                 .getSeqKey();
     }
 
-    private BigInteger getAccIdByObjectClassTerm(String objectClassTerm) {
-        return dslContext().select(ACC.ACC_ID)
-                .from(ACC)
-                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+    private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
+        return dslContext().select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
                 .where(and(
                         ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
@@ -49,12 +49,12 @@ public class SeqKeyHandlerTest
     @Order(1)
     public void initBccTest() {
         SeqKeyHandler seqKeyHandler = new SeqKeyHandler(scoreRepositoryFactory(), requester);
-        seqKeyHandler.initBcc(businessObjectDocumentAccId, seqKey.getSeqKeyId(), seqKey.getCcId());
+        seqKeyHandler.initBcc(businessObjectDocumentAccManifestId, seqKey.getSeqKeyId(), seqKey.getBccManifestId());
 
         assertNull(seqKeyHandler.getHead().getPrevSeqKey());
         assertNull(seqKeyHandler.getTail().getNextSeqKey());
         assertNotNull(seqKeyHandler.getCurrent());
-        assertEquals(seqKey.getCcId(), seqKeyHandler.getCurrent().getCcId());
+        assertEquals(seqKey.getBccManifestId(), seqKeyHandler.getCurrent().getBccManifestId());
     }
 
     @AfterAll

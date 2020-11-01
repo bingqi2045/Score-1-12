@@ -42,7 +42,7 @@ public class SeqKeyHandler {
         init(fromAccManifestId, seqKeyId, SeqKeyType.BCC, associationId);
     }
 
-    private void init(BigInteger fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationId) {
+    private void init(BigInteger fromAccManifestId, BigInteger seqKeyId, SeqKeyType type, BigInteger associationManifestId) {
         GetSeqKeyRequest getSeqKeyRequest = new GetSeqKeyRequest(this.requester)
                 .withFromAccManifestId(fromAccManifestId);
         GetSeqKeyResponse response = scoreRepositoryFactory.createSeqKeyReadRepository()
@@ -65,9 +65,9 @@ public class SeqKeyHandler {
         if (this.current == null) {
             this.current = scoreRepositoryFactory.createSeqKeyWriteRepository()
                     .createSeqKey(new CreateSeqKeyRequest(this.requester)
-                            .withFromAccId(fromAccManifestId)
+                            .withFromAccManifestId(fromAccManifestId)
                             .withType(type)
-                            .withCcId(associationId))
+                            .withManifestId(associationManifestId))
                     .getSeqKey();
         }
     }
@@ -128,7 +128,7 @@ public class SeqKeyHandler {
                 SeqKey target = this.head;
 
                 while (target != null &&
-                        target.getSeqKeyType() == SeqKeyType.BCC &&
+                        target.getBccManifestId() != null &&
                         target.getEntityType() == BccEntityType.Attribute) {
                     target = target.getNextSeqKey();
                 }

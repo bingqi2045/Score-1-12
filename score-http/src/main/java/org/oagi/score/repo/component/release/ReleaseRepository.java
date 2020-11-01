@@ -13,7 +13,6 @@ import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.score.gateway.http.api.code_list_management.service.CodeListService;
 import org.oagi.score.gateway.http.api.release_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 import org.oagi.score.repository.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -297,7 +296,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyDtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                   List<BigInteger> dtManifestIds) {
+                                                  List<BigInteger> dtManifestIds) {
         dslContext.insertInto(DT_MANIFEST,
                 DT_MANIFEST.RELEASE_ID,
                 DT_MANIFEST.DT_ID,
@@ -320,7 +319,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyAsccpManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                   List<BigInteger> asccpManifestIds) {
+                                                     List<BigInteger> asccpManifestIds) {
         dslContext.insertInto(ASCCP_MANIFEST,
                 ASCCP_MANIFEST.RELEASE_ID,
                 ASCCP_MANIFEST.ASCCP_ID,
@@ -345,7 +344,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyBccpManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                     List<BigInteger> bccpManifestIds) {
+                                                    List<BigInteger> bccpManifestIds) {
         dslContext.insertInto(BCCP_MANIFEST,
                 BCCP_MANIFEST.RELEASE_ID,
                 BCCP_MANIFEST.BCCP_ID,
@@ -370,7 +369,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyAsccManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                   List<BigInteger> accManifestIds) {
+                                                    List<BigInteger> accManifestIds) {
         dslContext.insertInto(ASCC_MANIFEST,
                 ASCC_MANIFEST.RELEASE_ID,
                 ASCC_MANIFEST.ASCC_ID,
@@ -395,7 +394,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyBccManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                    List<BigInteger> accManifestIds) {
+                                                   List<BigInteger> accManifestIds) {
         dslContext.insertInto(BCC_MANIFEST,
                 BCC_MANIFEST.RELEASE_ID,
                 BCC_MANIFEST.BCC_ID,
@@ -420,7 +419,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyDtScManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                   List<BigInteger> dtScManifestIds) {
+                                                    List<BigInteger> dtScManifestIds) {
         dslContext.insertInto(DT_SC_MANIFEST,
                 DT_SC_MANIFEST.RELEASE_ID,
                 DT_SC_MANIFEST.DT_SC_ID,
@@ -440,7 +439,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyXbtManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                    List<BigInteger> xbtManifestIds) {
+                                                   List<BigInteger> xbtManifestIds) {
         dslContext.insertInto(XBT_MANIFEST,
                 XBT_MANIFEST.RELEASE_ID,
                 XBT_MANIFEST.XBT_ID,
@@ -457,11 +456,11 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         XBT_MANIFEST.XBT_MANIFEST_ID)
                         .from(XBT_MANIFEST)
                         .where(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId))))
-                        .execute();
+                .execute();
     }
 
     private void copyCodeListManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                    List<BigInteger> codeListManifestIds) {
+                                                        List<BigInteger> codeListManifestIds) {
         dslContext.insertInto(CODE_LIST_MANIFEST,
                 CODE_LIST_MANIFEST.RELEASE_ID,
                 CODE_LIST_MANIFEST.CODE_LIST_ID,
@@ -486,7 +485,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyCodeListValueManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                        List<BigInteger> codeListManifestIds) {
+                                                             List<BigInteger> codeListManifestIds) {
         dslContext.insertInto(CODE_LIST_VALUE_MANIFEST,
                 CODE_LIST_VALUE_MANIFEST.RELEASE_ID,
                 CODE_LIST_VALUE_MANIFEST.CODE_LIST_VALUE_ID,
@@ -510,7 +509,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyAgencyIdListManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                        List<BigInteger> agencyIdListManifestIds) {
+                                                            List<BigInteger> agencyIdListManifestIds) {
         dslContext.insertInto(AGENCY_ID_LIST_MANIFEST,
                 AGENCY_ID_LIST_MANIFEST.RELEASE_ID,
                 AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_ID,
@@ -535,7 +534,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
     }
 
     private void copyAgencyIdListValueManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
-                                                             List<BigInteger> agencyIdListManifestIds) {
+                                                                 List<BigInteger> agencyIdListManifestIds) {
         dslContext.insertInto(AGENCY_ID_LIST_VALUE_MANIFEST,
                 AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID,
                 AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_VALUE_ID,
@@ -557,7 +556,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                                 (or(AGENCY_ID_LIST_MANIFEST.PREV_AGENCY_ID_LIST_MANIFEST_ID.isNotNull(),
                                         AGENCY_ID_LIST_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.in(agencyIdListManifestIds)))))).execute();
     }
-    
+
     private void updateAccDependencies(BigInteger releaseId) {
         dslContext.update(ACC_MANIFEST.join(ACC_MANIFEST.as("based"))
                 .on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("based").NEXT_ACC_MANIFEST_ID)))
@@ -655,7 +654,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         BCC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
     }
-    
+
     private void updateDtDependencies(BigInteger releaseId) {
         dslContext.update(DT_MANIFEST
                 .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
@@ -767,7 +766,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         AGENCY_ID_LIST.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
     }
-    
+
     public void unassignManifests(
             BigInteger releaseId,
             List<BigInteger> accManifestIds,
@@ -1335,7 +1334,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .set(DT_MANIFEST.as("next").PREV_DT_MANIFEST_ID, DT_MANIFEST.DT_MANIFEST_ID)
                 .where(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))
                 .execute();
-        
+
         //DTSCs
         dslContext.update(DT_SC_MANIFEST
                 .join(DT_SC_MANIFEST.as("prev"))

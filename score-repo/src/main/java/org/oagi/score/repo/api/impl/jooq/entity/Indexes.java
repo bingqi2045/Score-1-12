@@ -70,7 +70,9 @@ public class Indexes {
     public static final Index MODULE_DIR_MODULE_DIR_PATH_K = Indexes0.MODULE_DIR_MODULE_DIR_PATH_K;
     public static final Index COMMENT_REFERENCE = Indexes0.COMMENT_REFERENCE;
     public static final Index LOG_REFERENCE = Indexes0.LOG_REFERENCE;
-    public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_ID = Indexes0.SEQ_KEY_SEQ_KEY_FROM_ACC_ID;
+    public static final Index SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID = Indexes0.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID;
+    public static final Index SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID = Indexes0.SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID;
+    public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID = Indexes0.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID;
     public static final Index XBT_XBT_GUID_IDX = Indexes0.XBT_XBT_GUID_IDX;
     public static final Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Indexes0.XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX;
 
@@ -110,7 +112,9 @@ public class Indexes {
         public static Index MODULE_DIR_MODULE_DIR_PATH_K = Internal.createIndex("module_dir_path_k", ModuleDir.MODULE_DIR, new OrderField[] { ModuleDir.MODULE_DIR.PATH }, false);
         public static Index COMMENT_REFERENCE = Internal.createIndex("reference", Comment.COMMENT, new OrderField[] { Comment.COMMENT.REFERENCE }, false);
         public static Index LOG_REFERENCE = Internal.createIndex("reference", Log.LOG, new OrderField[] { Log.LOG.REFERENCE }, false);
-        public static Index SEQ_KEY_SEQ_KEY_FROM_ACC_ID = Internal.createIndex("seq_key_from_acc_id", SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, false);
+        public static Index SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID = Internal.createIndex("seq_key_ascc_manifest_id", SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.ASCC_MANIFEST_ID }, false);
+        public static Index SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID = Internal.createIndex("seq_key_bcc_manifest_id", SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.BCC_MANIFEST_ID }, false);
+        public static Index SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID = Internal.createIndex("seq_key_from_acc_manifest_id", SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, false);
         public static Index XBT_XBT_GUID_IDX = Internal.createIndex("xbt_guid_idx", Xbt.XBT, new OrderField[] { Xbt.XBT.GUID }, false);
         public static Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex("xbt_last_update_timestamp_desc_idx", Xbt.XBT, new OrderField[] { Xbt.XBT.LAST_UPDATE_TIMESTAMP }, false);
     }

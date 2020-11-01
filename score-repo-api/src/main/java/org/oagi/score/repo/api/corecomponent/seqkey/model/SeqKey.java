@@ -13,9 +13,9 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
 
     private BigInteger fromAccManifestId;
 
-    private SeqKeyType seqKeyType;
+    private BigInteger asccManifestId;
 
-    private BigInteger ccId;
+    private BigInteger bccManifestId;
 
     private BccEntityType entityType;
 
@@ -39,20 +39,20 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public SeqKeyType getSeqKeyType() {
-        return seqKeyType;
+    public BigInteger getAsccManifestId() {
+        return asccManifestId;
     }
 
-    public void setSeqKeyType(SeqKeyType seqKeyType) {
-        this.seqKeyType = seqKeyType;
+    public void setAsccManifestId(BigInteger asccManifestId) {
+        this.asccManifestId = asccManifestId;
     }
 
-    public BigInteger getCcId() {
-        return ccId;
+    public BigInteger getBccManifestId() {
+        return bccManifestId;
     }
 
-    public void setCcId(BigInteger ccId) {
-        this.ccId = ccId;
+    public void setBccManifestId(BigInteger bccManifestId) {
+        this.bccManifestId = bccManifestId;
     }
 
     public BccEntityType getEntityType() {
@@ -106,25 +106,28 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SeqKey seqKey = (SeqKey) o;
-        return fromAccManifestId.equals(seqKey.fromAccManifestId) &&
-                seqKeyType == seqKey.seqKeyType &&
-                ccId.equals(seqKey.ccId);
+        return Objects.equals(seqKeyId, seqKey.seqKeyId) &&
+                Objects.equals(fromAccManifestId, seqKey.fromAccManifestId) &&
+                Objects.equals(asccManifestId, seqKey.asccManifestId) &&
+                Objects.equals(bccManifestId, seqKey.bccManifestId) &&
+                entityType == seqKey.entityType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fromAccManifestId, seqKeyType, ccId);
+        return Objects.hash(seqKeyId, fromAccManifestId, asccManifestId, bccManifestId, entityType);
     }
 
     @Override
     public String toString() {
         return "SeqKey{" +
                 "seqKeyId=" + seqKeyId +
-                ", prevSeqKey=" + ((prevSeqKey != null) ? prevSeqKey.getSeqKeyId() : null) +
-                ", nextSeqKey=" + ((nextSeqKey != null) ? nextSeqKey.getSeqKeyId() : null) +
-                ", fromAccId=" + fromAccManifestId +
-                ", seqKeyType=" + seqKeyType +
-                ", ccId=" + ccId +
+                ", fromAccManifestId=" + fromAccManifestId +
+                ", asccManifestId=" + asccManifestId +
+                ", bccManifestId=" + bccManifestId +
+                ", entityType=" + entityType +
+                ", prevSeqKey=" + prevSeqKey +
+                ", nextSeqKey=" + nextSeqKey +
                 '}';
     }
 

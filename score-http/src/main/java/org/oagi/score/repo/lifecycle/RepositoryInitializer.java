@@ -8,7 +8,6 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.LogAction;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
-import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.LogSerializer;
 import org.springframework.beans.factory.InitializingBean;
@@ -147,18 +146,18 @@ public class RepositoryInitializer implements InitializingBean {
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .fetch(e -> new SeqKeyWrapper(
                         e.get(ASCC_MANIFEST.ASCC_MANIFEST_ID),
+                        null,
                         e.get(ASCC.SEQ_KEY),
-                        e.get(ASCC.CREATION_TIMESTAMP),
-                        SeqKeyType.ascc))));
+                        e.get(ASCC.CREATION_TIMESTAMP)))));
         seqKeyWrappers.addAll(new ArrayList<>(dslContext.select(BCC_MANIFEST.BCC_MANIFEST_ID, BCC.BCC_ID, BCC.SEQ_KEY, BCC.CREATION_TIMESTAMP)
                 .from(BCC)
                 .join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId))
                 .fetch(e -> new SeqKeyWrapper(
+                        null,
                         e.get(BCC_MANIFEST.BCC_MANIFEST_ID),
                         e.get(BCC.SEQ_KEY),
-                        e.get(BCC.CREATION_TIMESTAMP),
-                        SeqKeyType.bcc))));
+                        e.get(BCC.CREATION_TIMESTAMP)))));
 
         Collections.sort(seqKeyWrappers, (o1, o2) -> {
             if (o1.getSeqKey() == o2.getSeqKey()) {
@@ -172,9 +171,8 @@ public class RepositoryInitializer implements InitializingBean {
 
             SeqKeyRecord seqKeyRecord = new SeqKeyRecord();
             seqKeyRecord.setFromAccManifestId(fromAccManifestId);
-            seqKeyRecord.setType(seqKeyWrapper.getSeqKeyType());
-            seqKeyRecord.setCcManifestId(seqKeyWrapper.getManifestId());
-
+            seqKeyRecord.setAsccManifestId(seqKeyWrapper.getAsccManifestId());
+            seqKeyRecord.setBccManifestId(seqKeyWrapper.getBccManifestId());
             seqKeyWrapper.setSeqKeyRecord(seqKeyRecord);
             seqKeyWrapper.setPrev(
                     (i == 0) ? null : seqKeyWrappers.get(i - 1)
@@ -199,19 +197,19 @@ public class RepositoryInitializer implements InitializingBean {
     private class SeqKeyWrapper {
         private final int seqKey;
         private final LocalDateTime timestamp;
-        private final SeqKeyType seqKeyType;
-        private final ULong manifestId;
+        private final ULong asccManifestId;
+        private final ULong bccManifestId;
 
         private SeqKeyRecord seqKeyRecord;
 
         private SeqKeyWrapper prev;
         private SeqKeyWrapper next;
 
-        SeqKeyWrapper(ULong asccManifestId, int seqKey, LocalDateTime timestamp, SeqKeyType type) {
+        SeqKeyWrapper(ULong asccManifestId, ULong bccManifestId, int seqKey, LocalDateTime timestamp) {
             this.seqKey = seqKey;
             this.timestamp = timestamp;
-            this.seqKeyType = type;
-            this.manifestId = asccManifestId;
+            this.asccManifestId = asccManifestId;
+            this.bccManifestId = bccManifestId;
         }
 
         public int getSeqKey() {
@@ -222,12 +220,12 @@ public class RepositoryInitializer implements InitializingBean {
             return timestamp;
         }
 
-        public SeqKeyType getSeqKeyType() {
-            return this.seqKeyType;
+        public ULong getAsccManifestId() {
+            return asccManifestId;
         }
 
-        public ULong getManifestId() {
-            return this.manifestId;
+        public ULong getBccManifestId() {
+            return bccManifestId;
         }
 
         public void setSeqKeyRecord(SeqKeyRecord seqKeyRecord) {
@@ -249,20 +247,16 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKeyRecord.getSeqKeyId()))
                     .execute();
 
-            switch (this.seqKeyType) {
-                case ascc:
-                    dslContext.update(ASCC_MANIFEST)
-                            .set(ASCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
-                            .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(this.manifestId))
-                            .execute();
-                    break;
-
-                case bcc:
-                    dslContext.update(BCC_MANIFEST)
-                            .set(BCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
-                            .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(this.manifestId))
-                            .execute();
-                    break;
+            if (this.asccManifestId != null) {
+                dslContext.update(ASCC_MANIFEST)
+                        .set(ASCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(this.asccManifestId))
+                        .execute();
+            } else {
+                dslContext.update(BCC_MANIFEST)
+                        .set(BCC_MANIFEST.SEQ_KEY_ID, this.seqKeyRecord.getSeqKeyId())
+                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(this.bccManifestId))
+                        .execute();
             }
         }
     }

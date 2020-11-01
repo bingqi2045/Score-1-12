@@ -20,7 +20,6 @@ import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
 import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
-import org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.LogSerializer;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
@@ -288,8 +287,7 @@ public class AccWriteRepository {
 
             ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
                     .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
-                    .set(SEQ_KEY.TYPE, SeqKeyType.ascc)
-                    .set(SEQ_KEY.CC_MANIFEST_ID, asccManifestRecord.getAsccManifestId())
+                    .set(SEQ_KEY.ASCC_MANIFEST_ID, asccManifestRecord.getAsccManifestId())
                     .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
 
             asccManifestRecord.setAsccId(nextAsccRecord.getAsccId());
@@ -343,8 +341,7 @@ public class AccWriteRepository {
 
             ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
                     .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
-                    .set(SEQ_KEY.TYPE, SeqKeyType.bcc)
-                    .set(SEQ_KEY.CC_MANIFEST_ID, bccManifestRecord.getBccManifestId())
+                    .set(SEQ_KEY.BCC_MANIFEST_ID, bccManifestRecord.getBccManifestId())
                     .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
 
             bccManifestRecord.setBccId(nextBccRecord.getBccId());
@@ -394,7 +391,7 @@ public class AccWriteRepository {
     }
 
     private ULong getNewSeqkeyIdByOldSeq(SeqKeyRecord seqKeyRecord, AccManifestRecord accManifestRecord) {
-        if (seqKeyRecord.getType().equals(SeqKeyType.ascc)) {
+        if (seqKeyRecord.getAsccManifestId() != null) {
             return dslContext.select(ASCC_MANIFEST.as("next").SEQ_KEY_ID)
                     .from(ASCC_MANIFEST.as("prev"))
                     .join(ASCC_MANIFEST.as("next"))

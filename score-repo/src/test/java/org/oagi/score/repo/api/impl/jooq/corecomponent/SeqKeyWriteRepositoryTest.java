@@ -40,7 +40,7 @@ public class SeqKeyWriteRepositoryTest
         repository = scoreRepositoryFactory().createSeqKeyWriteRepository();
         requester = new ScoreUser(BigInteger.ONE, "oagis", DEVELOPER);
 
-        allExtensionAccId = getAccIdByObjectClassTerm("All Extension");
+        allExtensionAccId = getAccManifestIdByObjectClassTerm("All Extension");
         allExtensionAccManifestId = getAccManifestIdByObjectClassTerm("All Extension");
 
         identifierBccId = createTestBcc("Identifier", "Identifier");
@@ -82,9 +82,9 @@ public class SeqKeyWriteRepositoryTest
     @Order(1)
     public void createSeqKeyTest() {
         CreateSeqKeyRequest request = new CreateSeqKeyRequest(requester)
-                .withFromAccId(allExtensionAccId)
+                .withFromAccManifestId(allExtensionAccId)
                 .withType(SeqKeyType.BCC)
-                .withCcId(identifierBccId);
+                .withManifestId(identifierBccId);
         CreateSeqKeyResponse response = repository.createSeqKey(request);
         assertNotNull(response.getSeqKey());
 
@@ -95,8 +95,7 @@ public class SeqKeyWriteRepositoryTest
 
         assertTrue(seqKeys.size() == 1);
 
-        assertEquals(request.getType(), seqKeys.get(0).getSeqKeyType());
-        assertEquals(request.getCcId(), seqKeys.get(0).getCcId());
+        assertEquals(request.getManifestId(), seqKeys.get(0).getBccManifestId());
     }
 
     @Test
@@ -105,21 +104,21 @@ public class SeqKeyWriteRepositoryTest
         // prerequisites
         SeqKey head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccManifestIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
 
         Assumptions.assumeTrue(head != null);
-        Assumptions.assumeTrue(head.getCcId().equals(identifierBccId));
+        Assumptions.assumeTrue(head.getBccManifestId().equals(identifierBccId));
 
         // create next
         SeqKey next = repository.createSeqKey(
                 new CreateSeqKeyRequest(requester)
-                        .withFromAccId(allExtensionAccId)
+                        .withFromAccManifestId(allExtensionAccId)
                         .withType(SeqKeyType.BCC)
-                        .withCcId(indicatorBccId))
+                        .withManifestId(indicatorBccId))
                 .getSeqKey();
 
-        assertEquals(indicatorBccId, next.getCcId());
+        assertEquals(indicatorBccId, next.getBccManifestId());
 
         head.setNextSeqKey(next);
         next.setPrevSeqKey(head);
@@ -132,9 +131,9 @@ public class SeqKeyWriteRepositoryTest
         // reload
         head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccManifestIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
-        assertEquals(identifierBccId, head.getCcId());
+        assertEquals(identifierBccId, head.getBccManifestId());
 
         List<SeqKey> seqKeys = new ArrayList();
         for (SeqKey seqKey : head) {
@@ -143,12 +142,10 @@ public class SeqKeyWriteRepositoryTest
 
         assertTrue(seqKeys.size() == 2);
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(0).getSeqKeyType());
-        assertEquals(identifierBccId, seqKeys.get(0).getCcId());
+        assertEquals(identifierBccId, seqKeys.get(0).getBccManifestId());
         assertEquals(BccEntityType.Element, seqKeys.get(0).getEntityType());
 
-        assertEquals(SeqKeyType.BCC, seqKeys.get(1).getSeqKeyType());
-        assertEquals(indicatorBccId, seqKeys.get(1).getCcId());
+        assertEquals(indicatorBccId, seqKeys.get(1).getBccManifestId());
         assertEquals(BccEntityType.Element, seqKeys.get(1).getEntityType());
     }
 
@@ -158,14 +155,14 @@ public class SeqKeyWriteRepositoryTest
         // prerequisites
         SeqKey head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccManifestIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
 
         Assumptions.assumeTrue(head != null);
-        Assumptions.assumeTrue(head.getCcId().equals(identifierBccId));
+        Assumptions.assumeTrue(head.getBccManifestId().equals(identifierBccId));
 
         Assumptions.assumeTrue(head.getNextSeqKey() != null);
-        Assumptions.assumeTrue(head.getNextSeqKey().getCcId().equals(indicatorBccId));
+        Assumptions.assumeTrue(head.getNextSeqKey().getBccManifestId().equals(indicatorBccId));
 
         dslContext().deleteFrom(BCC)
                 .where(BCC.BCC_ID.eq(ULong.valueOf(indicatorBccId)))
@@ -184,9 +181,9 @@ public class SeqKeyWriteRepositoryTest
         // reload
         head = scoreRepositoryFactory().createSeqKeyReadRepository()
                 .getSeqKey(new GetSeqKeyRequest(requester)
-                        .withFromAccManifestId(getAccIdByObjectClassTerm("All Extension")))
+                        .withFromAccManifestId(getAccManifestIdByObjectClassTerm("All Extension")))
                 .getSeqKey();
-        assertEquals(identifierBccId, head.getCcId());
+        assertEquals(identifierBccId, head.getBccManifestId());
 
         List<SeqKey> seqKeys = new ArrayList();
         for (SeqKey seqKey : head) {
@@ -196,18 +193,6 @@ public class SeqKeyWriteRepositoryTest
         assertTrue(seqKeys.size() == 1);
         assertNull(seqKeys.get(0).getPrevSeqKey());
         assertNull(seqKeys.get(0).getNextSeqKey());
-    }
-
-    private BigInteger getAccIdByObjectClassTerm(String objectClassTerm) {
-        return dslContext().select(ACC.ACC_ID)
-                .from(ACC)
-                .join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
-                .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
-                .where(and(
-                        ACC.OBJECT_CLASS_TERM.eq(objectClassTerm),
-                        RELEASE.RELEASE_NUM.eq("10.6")
-                ))
-                .fetchOneInto(BigInteger.class);
     }
 
     private BigInteger getAccManifestIdByObjectClassTerm(String objectClassTerm) {
@@ -220,24 +205,6 @@ public class SeqKeyWriteRepositoryTest
                         RELEASE.RELEASE_NUM.eq("10.6")
                 ))
                 .fetchOneInto(BigInteger.class);
-    }
-
-    private String getAsccpPropertyTerm(BigInteger asccId) {
-        return dslContext()
-                .select(ASCCP.PROPERTY_TERM)
-                .from(ASCCP)
-                .join(ASCC).on(ASCCP.ASCCP_ID.eq(ASCC.TO_ASCCP_ID))
-                .where(ASCC.ASCC_ID.eq(ULong.valueOf(asccId)))
-                .fetchOneInto(String.class);
-    }
-
-    private String getBccpPropertyTerm(BigInteger bccId) {
-        return dslContext()
-                .select(BCCP.PROPERTY_TERM)
-                .from(BCCP)
-                .join(BCC).on(BCCP.BCCP_ID.eq(BCC.TO_BCCP_ID))
-                .where(BCC.BCC_ID.eq(ULong.valueOf(bccId)))
-                .fetchOneInto(String.class);
     }
 
     @AfterAll

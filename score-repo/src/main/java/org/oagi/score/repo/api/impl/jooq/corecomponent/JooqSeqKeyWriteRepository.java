@@ -31,9 +31,11 @@ public class JooqSeqKeyWriteRepository
 
         SeqKeyRecord record = new SeqKeyRecord();
         record.setFromAccManifestId(ULong.valueOf(request.getFromAccManifestId()));
-        record.setType(org.oagi.score.repo.api.impl.jooq.entity.enums.SeqKeyType.valueOf(
-                request.getType().name().toLowerCase()));
-        record.setCcManifestId(ULong.valueOf(request.getCcId()));
+        if (ASCC.equals(request.getType())) {
+            record.setAsccManifestId(ULong.valueOf(request.getManifestId()));
+        } else {
+            record.setBccManifestId(ULong.valueOf(request.getManifestId()));
+        }
         record.setSeqKeyId(
                 dslContext().insertInto(SEQ_KEY)
                         .set(record)
@@ -41,18 +43,18 @@ public class JooqSeqKeyWriteRepository
                         .fetchOne().getSeqKeyId()
         );
 
-        switch (record.getType()) {
-            case ascc:
+        switch (request.getType()) {
+            case ASCC:
                 dslContext().update(ASCC_MANIFEST)
                         .set(ASCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
-                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(record.getCcManifestId()))
+                        .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(record.getAsccManifestId()))
                         .execute();
                 break;
 
-            case bcc:
+            case BCC:
                 dslContext().update(BCC_MANIFEST)
                         .set(BCC_MANIFEST.SEQ_KEY_ID, record.getSeqKeyId())
-                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(record.getCcManifestId()))
+                        .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(record.getBccManifestId()))
                         .execute();
                 break;
         }
@@ -60,9 +62,12 @@ public class JooqSeqKeyWriteRepository
         SeqKey seqKey = new SeqKey();
         seqKey.setSeqKeyId(record.getSeqKeyId().toBigInteger());
         seqKey.setFromAccManifestId(record.getFromAccManifestId().toBigInteger());
-        seqKey.setSeqKeyType(org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKeyType.valueOf(
-                record.getType().name().toUpperCase()));
-        seqKey.setCcId(record.getCcManifestId().toBigInteger());
+        if (record.getAsccManifestId() != null) {
+            seqKey.setAsccManifestId(record.getAsccManifestId().toBigInteger());
+        }
+        if (record.getBccManifestId() != null) {
+            seqKey.setBccManifestId(record.getBccManifestId().toBigInteger());
+        }
 
         return new CreateSeqKeyResponse(seqKey);
     }

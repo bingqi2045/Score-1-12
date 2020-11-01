@@ -11,7 +11,7 @@ public class CreateSeqKeyRequest extends Request {
 
     private SeqKeyType type;
 
-    private BigInteger ccId;
+    private BigInteger manifestId;
 
     public CreateSeqKeyRequest(ScoreUser requester) {
         super(requester);
@@ -25,8 +25,8 @@ public class CreateSeqKeyRequest extends Request {
         this.fromAccManifestId = fromAccManifestId;
     }
 
-    public CreateSeqKeyRequest withFromAccId(BigInteger fromAccId) {
-        setFromAccManifestId(fromAccId);
+    public CreateSeqKeyRequest withFromAccManifestId(BigInteger fromAccManifestId) {
+        setFromAccManifestId(fromAccManifestId);
         return this;
     }
 
@@ -43,16 +43,16 @@ public class CreateSeqKeyRequest extends Request {
         return this;
     }
 
-    public BigInteger getCcId() {
-        return ccId;
+    public BigInteger getManifestId() {
+        return manifestId;
     }
 
-    public void setCcId(BigInteger ccId) {
-        this.ccId = ccId;
+    public void setManifestId(BigInteger manifestId) {
+        this.manifestId = manifestId;
     }
 
-    public CreateSeqKeyRequest withCcId(BigInteger ccId) {
-        setCcId(ccId);
+    public CreateSeqKeyRequest withManifestId(BigInteger manifestId) {
+        setManifestId(manifestId);
         return this;
     }
 
