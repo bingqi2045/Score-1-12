@@ -60,10 +60,10 @@ CREATE TABLE `seq_key` (
   `prev_seq_key_id` bigint(20) unsigned DEFAULT NULL,
   `next_seq_key_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`seq_key_id`),
-  KEY `seq_key_from_acc_id` (`from_acc_manifest_id`),
+  KEY `seq_key_from_acc_manifest_id` (`from_acc_manifest_id`),
   KEY `seq_key_prev_seq_key_id_fk` (`prev_seq_key_id`),
   KEY `seq_key_next_seq_key_id_fk` (`next_seq_key_id`),
-  CONSTRAINT `seq_key_from_acc_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
+  CONSTRAINT `seq_key_from_acc_manifest_id_fk` FOREIGN KEY (`from_acc_manifest_id`) REFERENCES `acc_manifest` (`acc_manifest_id`),
   CONSTRAINT `seq_key_next_seq_key_id_fk` FOREIGN KEY (`next_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`),
   CONSTRAINT `seq_key_prev_seq_key_id_fk` FOREIGN KEY (`prev_seq_key_id`) REFERENCES `seq_key` (`seq_key_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
