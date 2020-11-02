@@ -209,7 +209,6 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             // copying manifests from 'Working' release
             copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
-            updateAccDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyDtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
@@ -229,6 +228,9 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             copyBccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
             updateBccDependencies(releaseRecord.getReleaseId().toBigInteger());
+
+            // Run after ASCC/BCC dependency resolved b/c ASCC/BCC use ACC's state.
+            updateAccDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copySeqKeyRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger());
             updateSeqKeyPrevNext(releaseRecord.getReleaseId().toBigInteger());
