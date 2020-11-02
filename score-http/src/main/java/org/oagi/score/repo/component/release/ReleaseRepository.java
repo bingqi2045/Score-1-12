@@ -241,6 +241,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
             copyXbtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), xbtManifestIds);
+            updateXbtDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyCodeListManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), codeListManifestIds);
@@ -846,6 +847,17 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .set(DT_SC_MANIFEST.DT_SC_ID, DT_SC_MANIFEST.as("prev").DT_SC_ID)
                 .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                .execute();
+    }
+
+    private void updateXbtDependencies(BigInteger releaseId) {
+        dslContext.update(XBT_MANIFEST
+                .join(XBT).on(XBT_MANIFEST.XBT_ID.eq(XBT.XBT_ID))
+                .join(XBT_MANIFEST.as("prev")).on(XBT_MANIFEST.PREV_XBT_MANIFEST_ID.eq(XBT_MANIFEST.as("prev").XBT_MANIFEST_ID)))
+                .set(XBT_MANIFEST.XBT_ID, XBT_MANIFEST.as("prev").XBT_ID)
+                .set(XBT_MANIFEST.LOG_ID, XBT_MANIFEST.as("prev").LOG_ID)
+                .where(and(XBT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        XBT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
     }
 
