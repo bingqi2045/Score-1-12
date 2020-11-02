@@ -209,6 +209,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             // copying manifests from 'Working' release
             copyAccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
+            updateAccDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copyDtManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), bdtManifestIds);
@@ -228,9 +229,6 @@ public class ReleaseRepository implements ScoreRepository<Release> {
             copyBccManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
             updateBccDependencies(releaseRecord.getReleaseId().toBigInteger());
-
-            // Run after ASCC/BCC dependency resolved b/c ASCC/BCC use ACC's state.
-            updateAccDependencies(releaseRecord.getReleaseId().toBigInteger());
 
             copySeqKeyRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger());
             updateSeqKeyPrevNext(releaseRecord.getReleaseId().toBigInteger());
@@ -778,10 +776,12 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
         dslContext.update(ASCC_MANIFEST
                 .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
-                .join(ASCC_MANIFEST.as("prev")).on(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("prev").ASCC_MANIFEST_ID)))
+                .join(ASCC_MANIFEST.as("prev")).on(ASCC_MANIFEST.PREV_ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("prev").ASCC_MANIFEST_ID))
+                .join(ACC_MANIFEST).on(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID)))
                 .set(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.as("prev").ASCC_ID)
                 .where(and(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        ASCC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                        ACC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
     }
 
@@ -799,10 +799,12 @@ public class ReleaseRepository implements ScoreRepository<Release> {
 
         dslContext.update(BCC_MANIFEST
                 .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
-                .join(BCC_MANIFEST.as("prev")).on(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("prev").BCC_MANIFEST_ID)))
+                .join(BCC_MANIFEST.as("prev")).on(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("prev").BCC_MANIFEST_ID))
+                .join(ACC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(ACC).on(ACC_MANIFEST.ACC_ID.eq(ACC.ACC_ID)))
                 .set(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.as("prev").BCC_ID)
                 .where(and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-                        BCC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                        ACC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
     }
 
@@ -816,15 +818,14 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
                 .execute();
 
-        //TODO: after add DT management
-//        dslContext.update(DT_MANIFEST
-//                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
-//                .join(DT_MANIFEST.as("prev")).on(DT_MANIFEST.PREV_DT_MANIFEST_ID.eq(DT_MANIFEST.as("prev").DT_MANIFEST_ID)))
-//                .set(DT_MANIFEST.DT_ID, DT_MANIFEST.as("prev").DT_ID)
-//                .set(DT_MANIFEST.LOG_ID, DT_MANIFEST.as("prev").LOG_ID)
-//                .where(and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-//                        DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
-//                .execute();
+        dslContext.update(DT_MANIFEST
+                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID))
+                .join(DT_MANIFEST.as("prev")).on(DT_MANIFEST.PREV_DT_MANIFEST_ID.eq(DT_MANIFEST.as("prev").DT_MANIFEST_ID)))
+                .set(DT_MANIFEST.DT_ID, DT_MANIFEST.as("prev").DT_ID)
+                .set(DT_MANIFEST.LOG_ID, DT_MANIFEST.as("prev").LOG_ID)
+                .where(and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                .execute();
     }
 
     private void updateBdtScDependencies(BigInteger releaseId) {
@@ -835,15 +836,15 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))))
                 .execute();
 
-        //TODO: after add `state` to DT_SC
-//        dslContext.update(DT_SC_MANIFEST
-//                .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
-//                .join(DT_SC_MANIFEST.as("prev")).on(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.eq(DT_SC_MANIFEST.as("prev").DT_SC_MANIFEST_ID)))
-//                .set(DT_SC_MANIFEST.DT_SC_ID, DT_SC_MANIFEST.as("prev").DT_SC_ID)
-//                .set(DT_SC_MANIFEST.LOG_ID, DT_SC_MANIFEST.as("prev").LOG_ID)
-//                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
-//                        DT_SC.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
-//                .execute();
+        dslContext.update(DT_SC_MANIFEST
+                .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .join(DT_SC_MANIFEST.as("prev")).on(DT_SC_MANIFEST.PREV_DT_SC_MANIFEST_ID.eq(DT_SC_MANIFEST.as("prev").DT_SC_MANIFEST_ID))
+                .join(DT_MANIFEST).on(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(DT_MANIFEST.DT_MANIFEST_ID))
+                .join(DT).on(DT_MANIFEST.DT_ID.eq(DT.DT_ID)))
+                .set(DT_SC_MANIFEST.DT_SC_ID, DT_SC_MANIFEST.as("prev").DT_SC_ID)
+                .where(and(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
+                        DT.STATE.notIn(Arrays.asList(CcState.ReleaseDraft, CcState.Published))))
+                .execute();
     }
 
     private void updateCodeListDependencies(BigInteger releaseId) {
