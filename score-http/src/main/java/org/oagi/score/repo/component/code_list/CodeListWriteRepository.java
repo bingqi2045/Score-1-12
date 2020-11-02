@@ -59,7 +59,7 @@ public class CodeListWriteRepository {
                             .eq(ULong.valueOf(request.getbasedCodeListManifestId())))
                     .fetchOne();
             if (basedCodeListManifestRecord == null) {
-                throw new IllegalArgumentException("Can not found Based Code List");
+                throw new IllegalArgumentException("Cannot find Based Code List");
             }
 
             CodeListRecord basedCodeListRecord = dslContext.selectFrom(CODE_LIST)

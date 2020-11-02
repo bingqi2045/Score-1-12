@@ -203,7 +203,7 @@ public class AccountListService {
                     and(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(account.getAppOauth2UserId())),
                             APP_OAUTH2_USER.SUB.eq(account.getSub()))).fetchOne();
             if (oauth2User == null) {
-                throw new IllegalStateException("Can not found Oauth2 account ");
+                throw new IllegalStateException("Cannot find Oauth2 account ");
             }
             oauth2User.setAppUserId(appUserId);
             oauth2User.update(APP_OAUTH2_USER.APP_USER_ID);

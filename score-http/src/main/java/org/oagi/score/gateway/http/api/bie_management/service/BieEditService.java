@@ -648,7 +648,7 @@ public class BieEditService implements InitializingBean {
                 .fetchOne();
 
         if (asbieRecord == null) {
-            throw new IllegalArgumentException("Can not fount target BIE.");
+            throw new IllegalArgumentException("Cannot fount target BIE.");
         }
 
         TopLevelAsbiepRecord topLevelAsbiepRecord = dslContext.selectFrom(TOP_LEVEL_ASBIEP)

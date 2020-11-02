@@ -189,14 +189,14 @@ public class PendingListService {
                 .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(appUserId))).fetchOne();
 
         if (appUserRecord == null) {
-            throw new IllegalArgumentException("Can not found target Account");
+            throw new IllegalArgumentException("Cannot find target Account");
         }
 
         AppOauth2UserRecord appOauth2UserRecord = dslContext.selectFrom(APP_OAUTH2_USER)
                 .where(APP_OAUTH2_USER.APP_OAUTH2_USER_ID.eq(ULong.valueOf(appOauth2UserId))).fetchOne();
 
         if (appOauth2UserRecord == null) {
-            throw new IllegalArgumentException("Can not found target Pending Account");
+            throw new IllegalArgumentException("Cannot find target Pending Account");
         }
 
         dslContext.update(APP_OAUTH2_USER)

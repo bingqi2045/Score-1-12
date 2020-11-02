@@ -678,7 +678,7 @@ public class AsccpWriteRepository {
 
         while (cursorLog.getPrevLogId() != null) {
             if (!cursorLog.getRevisionNum().equals(logNum)) {
-                throw new IllegalArgumentException("Can not found reset point");
+                throw new IllegalArgumentException("Cannot find reset point");
             }
             if (cursorLog.getRevisionTrackingNum().equals(UInteger.valueOf(1))) {
                 break;
