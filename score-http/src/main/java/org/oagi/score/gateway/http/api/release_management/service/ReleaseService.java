@@ -402,7 +402,6 @@ public class ReleaseService implements InitializingBean {
         }
         try {
             logger.debug("Received ReleaseCreateRequestEvent: " + releaseCreateRequestEvent);
-            repository.clear();
             repository.copyWorkingManifestsTo(releaseCreateRequestEvent.getReleaseId(),
                     releaseCreateRequestEvent.getAccManifestIds(),
                     releaseCreateRequestEvent.getAsccpManifestIds(),

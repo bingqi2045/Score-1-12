@@ -33,10 +33,6 @@ import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
 public class ReleaseRepository implements ScoreRepository<Release> {
-    private final Map<ULong, ULong> prevNextAccManifestIdMap = new HashMap<>();
-    private final Map<ULong, ULong> prevNextAsccpManifestIdMap = new HashMap<>();
-    private final Map<ULong, ULong> prevNextBccpManifestIdMap = new HashMap<>();
-    private final Map<ULong, ULong> prevNextBdtManifestIdMap = new HashMap<>();
 
     @Autowired
     private DSLContext dslContext;
@@ -187,13 +183,6 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .execute();
     }
 
-    public void clear() {
-        prevNextAccManifestIdMap.clear();
-        prevNextAsccpManifestIdMap.clear();
-        prevNextBccpManifestIdMap.clear();
-        prevNextBdtManifestIdMap.clear();
-    }
-
     public void copyWorkingManifestsTo(
             BigInteger releaseId,
             List<BigInteger> accManifestIds,
@@ -213,7 +202,7 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 .fetchOne();
 
         if (workingReleaseRecord == null) {
-            throw new IllegalStateException("Can not find 'Working' release");
+            throw new IllegalStateException("Cannot find 'Working' release");
         }
 
         try {
