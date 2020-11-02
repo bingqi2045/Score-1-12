@@ -200,17 +200,9 @@ public class JooqSeqKeyWriteRepository
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
     public DeleteSeqKeyResponse deleteSeqKey(DeleteSeqKeyRequest request) throws ScoreDataAccessException {
         BigInteger seqKeyId = request.getSeqKeyId();
-
-        int asccCnt = dslContext().selectCount().from(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
-                .fetchOptionalInto(Integer.class).orElse(0);
-        int bccCnt = dslContext().selectCount().from(BCC_MANIFEST)
-                .where(BCC_MANIFEST.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
-                .fetchOptionalInto(Integer.class).orElse(0);
-
-        if (asccCnt + bccCnt > 0) {
-            throw new ScoreDataAccessException(new IllegalStateException());
-        }
+        SeqKeyRecord seqKeyRecord = dslContext().selectFrom(SEQ_KEY)
+                .where(SEQ_KEY.SEQ_KEY_ID.eq(ULong.valueOf(seqKeyId)))
+                .fetchOne();
 
         // disconnect links between prev and next
         {
@@ -239,6 +231,18 @@ public class JooqSeqKeyWriteRepository
                         .where(SEQ_KEY.SEQ_KEY_ID.eq(next.getSeqKeyId()))
                         .execute();
             }
+        }
+
+        if (seqKeyRecord.getAsccManifestId() != null) {
+            dslContext().update(ASCC_MANIFEST)
+                    .setNull(ASCC_MANIFEST.SEQ_KEY_ID)
+                    .where(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(seqKeyRecord.getAsccManifestId()))
+                    .execute();
+        } else if (seqKeyRecord.getBccManifestId() != null) {
+            dslContext().update(BCC_MANIFEST)
+                    .setNull(BCC_MANIFEST.SEQ_KEY_ID)
+                    .where(BCC_MANIFEST.BCC_MANIFEST_ID.eq(seqKeyRecord.getBccManifestId()))
+                    .execute();
         }
 
         int affectedRows = dslContext().deleteFrom(SEQ_KEY)

@@ -65,7 +65,7 @@ public class SeqKeyReadRepositoryTest
         assertEquals("Language Code", getBccpPropertyTerm(seqKeys.get(3).getBccManifestId()));
         assertEquals(BccEntityType.Attribute, seqKeys.get(3).getEntityType());
 
-        assertNotNull(seqKeys.get(4).getBccManifestId());
+        assertNotNull(seqKeys.get(4).getAsccManifestId());
         assertEquals("Application Area", getAsccpPropertyTerm(seqKeys.get(4).getAsccManifestId()));
         assertEquals(null, seqKeys.get(4).getEntityType());
     }

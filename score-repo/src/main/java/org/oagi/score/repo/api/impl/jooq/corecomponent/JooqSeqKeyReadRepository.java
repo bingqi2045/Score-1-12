@@ -53,7 +53,8 @@ public class JooqSeqKeyReadRepository
                         SEQ_KEY.PREV_SEQ_KEY_ID, SEQ_KEY.NEXT_SEQ_KEY_ID,
                         BCC.ENTITY_TYPE)
                 .from(SEQ_KEY)
-                .leftJoin(BCC).on(SEQ_KEY.BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
+                .leftJoin(BCC_MANIFEST).on(SEQ_KEY.BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID))
+                .leftJoin(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
                 .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(fromAccManifestId)))
                 .fetchStream()
                 .collect(Collectors.toMap(e -> e.get(SEQ_KEY.SEQ_KEY_ID), Function.identity()));
