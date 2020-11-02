@@ -200,7 +200,6 @@ public class AccWriteRepository {
         // create new associations for revised record.
         createNewAsccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
         createNewBccListForRevisedRecord(user, accManifestRecord, nextAccRecord, targetReleaseId, timestamp);
-        linkSeqKeys(accManifestRecord);
 
         // creates new revision for revised record.
         LogRecord logRecord =
@@ -285,15 +284,9 @@ public class AccWriteRepository {
             prevAsccRecord.setNextAsccId(nextAsccRecord.getAsccId());
             prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
 
-            ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
-                    .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
-                    .set(SEQ_KEY.ASCC_MANIFEST_ID, asccManifestRecord.getAsccManifestId())
-                    .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
-
             asccManifestRecord.setAsccId(nextAsccRecord.getAsccId());
             asccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
-            asccManifestRecord.setSeqKeyId(seqKeyId);
-            asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID, ASCC_MANIFEST.SEQ_KEY_ID);
+            asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.FROM_ACC_MANIFEST_ID);
         }
     }
 
@@ -339,54 +332,9 @@ public class AccWriteRepository {
             prevBccRecord.setNextBccId(nextBccRecord.getBccId());
             prevBccRecord.update(BCC.NEXT_BCC_ID);
 
-            ULong seqKeyId = dslContext.insertInto(SEQ_KEY)
-                    .set(SEQ_KEY.FROM_ACC_MANIFEST_ID, accManifestRecord.getAccManifestId())
-                    .set(SEQ_KEY.BCC_MANIFEST_ID, bccManifestRecord.getBccManifestId())
-                    .returning(SEQ_KEY.SEQ_KEY_ID).fetchOne().getSeqKeyId();
-
             bccManifestRecord.setBccId(nextBccRecord.getBccId());
             bccManifestRecord.setFromAccManifestId(accManifestRecord.getAccManifestId());
-            bccManifestRecord.setSeqKeyId(seqKeyId);
             bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.FROM_ACC_MANIFEST_ID);
-        }
-    }
-
-    private void linkSeqKeys(AccManifestRecord accManifestRecordRecord) {
-        SeqKeyRecord prevHead = dslContext.selectFrom(SEQ_KEY)
-                .where(and(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecordRecord.getPrevAccManifestId()),
-                        SEQ_KEY.PREV_SEQ_KEY_ID.isNull())).fetchOne();
-        List<ULong> orderedSeqIds = new ArrayList<>();
-        if (prevHead != null) {
-            while (prevHead.getNextSeqKeyId() != null) {
-                orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accManifestRecordRecord));
-                prevHead = dslContext.selectFrom(SEQ_KEY)
-                        .where(SEQ_KEY.SEQ_KEY_ID.eq(prevHead.getNextSeqKeyId()))
-                        .fetchOne();
-            }
-            orderedSeqIds.add(getNewSeqkeyIdByOldSeq(prevHead, accManifestRecordRecord));
-
-            if (orderedSeqIds.size() < 2) {
-                return;
-            }
-            for (ULong seqKey : orderedSeqIds) {
-                ULong prev = orderedSeqIds.indexOf(seqKey) < 1 ? null : orderedSeqIds.get(orderedSeqIds.indexOf(seqKey) - 1);
-                ULong next = orderedSeqIds.indexOf(seqKey) == orderedSeqIds.size() - 1 ? null : orderedSeqIds.get(orderedSeqIds.indexOf(seqKey) + 1);
-
-                if (prev == null) {
-                    dslContext.update(SEQ_KEY)
-                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, next)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
-                } else if (next == null) {
-                    dslContext.update(SEQ_KEY)
-                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, prev)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
-                } else {
-                    dslContext.update(SEQ_KEY)
-                            .set(SEQ_KEY.NEXT_SEQ_KEY_ID, next)
-                            .set(SEQ_KEY.PREV_SEQ_KEY_ID, prev)
-                            .where(SEQ_KEY.SEQ_KEY_ID.eq(seqKey)).execute();
-                }
-            }
         }
     }
 
