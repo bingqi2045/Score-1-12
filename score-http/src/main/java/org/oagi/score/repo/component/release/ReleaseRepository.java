@@ -230,6 +230,9 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                     workingReleaseRecord.getReleaseId().toBigInteger(), accManifestIds);
             updateBccDependencies(releaseRecord.getReleaseId().toBigInteger());
 
+            copySeqKeyRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger());
+            updateSeqKeyPrevNext(releaseRecord.getReleaseId().toBigInteger());
+
             copyDtScManifestRecordsFromWorking(releaseRecord.getReleaseId().toBigInteger(),
                     workingReleaseRecord.getReleaseId().toBigInteger(), bdtScManifestIds);
             updateBdtScDependencies(releaseRecord.getReleaseId().toBigInteger());
@@ -405,6 +408,99 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                         .where(and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(workingReleaseId)),
                                 (or(BCC_MANIFEST.PREV_BCC_MANIFEST_ID.isNotNull(),
                                         BCC_MANIFEST.FROM_ACC_MANIFEST_ID.in(accManifestIds)))))).execute();
+    }
+
+    private void copySeqKeyRecordsFromWorking(BigInteger releaseId) {
+        // insert ASCC SEQ_KEY Records
+        dslContext.insertInto(SEQ_KEY,
+                SEQ_KEY.FROM_ACC_MANIFEST_ID,
+                SEQ_KEY.ASCC_MANIFEST_ID)
+                .select(dslContext.select(
+                        ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                        ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                        .from(ASCC_MANIFEST)
+                        .join(SEQ_KEY).on(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.eq(SEQ_KEY.ASCC_MANIFEST_ID))
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).execute();
+        
+        // insert BCC SEQ_KEY Records
+        dslContext.insertInto(SEQ_KEY,
+                SEQ_KEY.FROM_ACC_MANIFEST_ID,
+                SEQ_KEY.BCC_MANIFEST_ID)
+                .select(dslContext.select(
+                        BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                        BCC_MANIFEST.BCC_MANIFEST_ID)
+                        .from(BCC_MANIFEST)
+                        .join(SEQ_KEY).on(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.eq(SEQ_KEY.BCC_MANIFEST_ID))
+                        .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)))).execute();
+
+        // Link SEQ_KEY to Manifest
+        dslContext.update(ASCC_MANIFEST
+                .join(SEQ_KEY).on(ASCC_MANIFEST.ASCC_MANIFEST_ID.eq(SEQ_KEY.ASCC_MANIFEST_ID)))
+                .set(ASCC_MANIFEST.SEQ_KEY_ID, SEQ_KEY.SEQ_KEY_ID)
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).execute();
+
+        dslContext.update(BCC_MANIFEST
+                .join(SEQ_KEY).on(BCC_MANIFEST.BCC_MANIFEST_ID.eq(SEQ_KEY.BCC_MANIFEST_ID)))
+                .set(BCC_MANIFEST.SEQ_KEY_ID, SEQ_KEY.SEQ_KEY_ID)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).execute();
+    }
+
+    private void updateSeqKeyPrevNext(BigInteger releaseId) {
+        // Update prev/next seq_key for ASCC
+        dslContext.update(SEQ_KEY
+                .join(ASCC_MANIFEST).on(SEQ_KEY.SEQ_KEY_ID.eq(ASCC_MANIFEST.SEQ_KEY_ID))
+                .join(SEQ_KEY.as("working_seq")).on(ASCC_MANIFEST.NEXT_ASCC_MANIFEST_ID.eq(SEQ_KEY.as("working_seq").ASCC_MANIFEST_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("working_prev_ascc")).on(SEQ_KEY.as("working_seq").PREV_SEQ_KEY_ID.eq(ASCC_MANIFEST.as("working_prev_ascc").SEQ_KEY_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("cur_prev_ascc")).on(
+                        and(ASCC_MANIFEST.as("working_prev_ascc").ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("cur_prev_ascc").NEXT_ASCC_MANIFEST_ID),
+                                ASCC_MANIFEST.as("cur_prev_ascc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(BCC_MANIFEST.as("working_prev_bcc")).on(SEQ_KEY.as("working_seq").PREV_SEQ_KEY_ID.eq(BCC_MANIFEST.as("working_prev_bcc").SEQ_KEY_ID))
+                .leftOuterJoin(BCC_MANIFEST.as("cur_prev_bcc")).on(
+                        and(BCC_MANIFEST.as("working_prev_bcc").BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("cur_prev_bcc").NEXT_BCC_MANIFEST_ID),
+                                BCC_MANIFEST.as("cur_prev_bcc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(ASCC_MANIFEST.as("working_next_ascc")).on(SEQ_KEY.as("working_seq").NEXT_SEQ_KEY_ID.eq(ASCC_MANIFEST.as("working_next_ascc").SEQ_KEY_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("cur_next_ascc")).on(
+                        and(ASCC_MANIFEST.as("working_next_ascc").ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("cur_next_ascc").NEXT_ASCC_MANIFEST_ID),
+                                ASCC_MANIFEST.as("cur_next_ascc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(BCC_MANIFEST.as("working_next_bcc")).on(SEQ_KEY.as("working_seq").NEXT_SEQ_KEY_ID.eq(BCC_MANIFEST.as("working_next_bcc").SEQ_KEY_ID))
+                .leftOuterJoin(BCC_MANIFEST.as("cur_next_bcc")).on(
+                        and(BCC_MANIFEST.as("working_next_bcc").BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("cur_next_bcc").NEXT_BCC_MANIFEST_ID),
+                                BCC_MANIFEST.as("cur_next_bcc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+        )
+                .set(SEQ_KEY.PREV_SEQ_KEY_ID, ifnull(ASCC_MANIFEST.as("cur_prev_ascc").SEQ_KEY_ID, BCC_MANIFEST.as("cur_prev_bcc").SEQ_KEY_ID))
+                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, ifnull(ASCC_MANIFEST.as("cur_next_ascc").SEQ_KEY_ID, BCC_MANIFEST.as("cur_next_bcc").SEQ_KEY_ID))
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).execute();
+
+        // Update prev/next seq_key for BCC
+        dslContext.update(SEQ_KEY
+                .join(BCC_MANIFEST).on(SEQ_KEY.SEQ_KEY_ID.eq(BCC_MANIFEST.SEQ_KEY_ID))
+                .join(SEQ_KEY.as("working_seq")).on(BCC_MANIFEST.NEXT_BCC_MANIFEST_ID.eq(SEQ_KEY.as("working_seq").BCC_MANIFEST_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("working_prev_ascc")).on(SEQ_KEY.as("working_seq").PREV_SEQ_KEY_ID.eq(ASCC_MANIFEST.as("working_prev_ascc").SEQ_KEY_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("cur_prev_ascc")).on(
+                        and(ASCC_MANIFEST.as("working_prev_ascc").ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("cur_prev_ascc").NEXT_ASCC_MANIFEST_ID),
+                                ASCC_MANIFEST.as("cur_prev_ascc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(BCC_MANIFEST.as("working_prev_bcc")).on(SEQ_KEY.as("working_seq").PREV_SEQ_KEY_ID.eq(BCC_MANIFEST.as("working_prev_bcc").SEQ_KEY_ID))
+                .leftOuterJoin(BCC_MANIFEST.as("cur_prev_bcc")).on(
+                        and(BCC_MANIFEST.as("working_prev_bcc").BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("cur_prev_bcc").NEXT_BCC_MANIFEST_ID),
+                                BCC_MANIFEST.as("cur_prev_bcc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(ASCC_MANIFEST.as("working_next_ascc")).on(SEQ_KEY.as("working_seq").NEXT_SEQ_KEY_ID.eq(ASCC_MANIFEST.as("working_next_ascc").SEQ_KEY_ID))
+                .leftOuterJoin(ASCC_MANIFEST.as("cur_next_ascc")).on(
+                        and(ASCC_MANIFEST.as("working_next_ascc").ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.as("cur_next_ascc").NEXT_ASCC_MANIFEST_ID),
+                                ASCC_MANIFEST.as("cur_next_ascc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+
+                .leftOuterJoin(BCC_MANIFEST.as("working_next_bcc")).on(SEQ_KEY.as("working_seq").NEXT_SEQ_KEY_ID.eq(BCC_MANIFEST.as("working_next_bcc").SEQ_KEY_ID))
+                .leftOuterJoin(BCC_MANIFEST.as("cur_next_bcc")).on(
+                        and(BCC_MANIFEST.as("working_next_bcc").BCC_MANIFEST_ID.eq(BCC_MANIFEST.as("cur_next_bcc").NEXT_BCC_MANIFEST_ID),
+                                BCC_MANIFEST.as("cur_next_bcc").RELEASE_ID.eq(ULong.valueOf(releaseId))))
+        )
+                .set(SEQ_KEY.PREV_SEQ_KEY_ID, ifnull(ASCC_MANIFEST.as("cur_prev_ascc").SEQ_KEY_ID, BCC_MANIFEST.as("cur_prev_bcc").SEQ_KEY_ID))
+                .set(SEQ_KEY.NEXT_SEQ_KEY_ID, ifnull(ASCC_MANIFEST.as("cur_next_ascc").SEQ_KEY_ID, BCC_MANIFEST.as("cur_next_bcc").SEQ_KEY_ID))
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId))).execute();
     }
 
     private void copyDtScManifestRecordsFromWorking(BigInteger releaseId, BigInteger workingReleaseId,
@@ -1107,7 +1203,32 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 }
             } else if (toCcState == Candidate) {
                 updateCCStates(user, fromCcState, toCcState, timestamp);
-
+                dslContext.update(ASCC_MANIFEST).setNull(ASCC_MANIFEST.SEQ_KEY_ID)
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.update(BCC_MANIFEST).setNull(BCC_MANIFEST.SEQ_KEY_ID)
+                        .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.update(SEQ_KEY.join(ASCC_MANIFEST).on(SEQ_KEY.ASCC_MANIFEST_ID.eq(ASCC_MANIFEST.ASCC_MANIFEST_ID)))
+                        .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                        .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.update(SEQ_KEY.join(BCC_MANIFEST).on(SEQ_KEY.BCC_MANIFEST_ID.eq(BCC_MANIFEST.BCC_MANIFEST_ID)))
+                        .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                        .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                        .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.ASCC_MANIFEST_ID.in(
+                        select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                        .from(ASCC_MANIFEST)
+                        .where(ASCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))))
+                        .execute();
+                dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.BCC_MANIFEST_ID.in(
+                        select(BCC_MANIFEST.BCC_MANIFEST_ID)
+                                .from(BCC_MANIFEST)
+                                .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))))
+                        .execute();
                 dslContext.deleteFrom(BCC_MANIFEST)
                         .where(BCC_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
