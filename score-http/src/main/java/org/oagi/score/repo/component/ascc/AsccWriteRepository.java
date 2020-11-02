@@ -303,9 +303,9 @@ public class AsccWriteRepository {
         }
 
         // delete from Tables
+        seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
         asccManifestRecord.delete();
         asccRecord.delete();
-        seqKeyHandler(request.getUser(), asccManifestRecord).deleteCurrent();
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,

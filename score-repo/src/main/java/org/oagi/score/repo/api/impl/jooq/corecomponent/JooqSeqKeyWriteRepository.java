@@ -31,11 +31,12 @@ public class JooqSeqKeyWriteRepository
 
         SeqKeyRecord record = new SeqKeyRecord();
         record.setFromAccManifestId(ULong.valueOf(request.getFromAccManifestId()));
-        if (ASCC.equals(request.getType())) {
+        if (SeqKeyType.ASCC == request.getType()) {
             record.setAsccManifestId(ULong.valueOf(request.getManifestId()));
         } else {
             record.setBccManifestId(ULong.valueOf(request.getManifestId()));
         }
+
         record.setSeqKeyId(
                 dslContext().insertInto(SEQ_KEY)
                         .set(record)

@@ -126,8 +126,6 @@ public class SeqKey implements Iterable<SeqKey>, Serializable {
                 ", asccManifestId=" + asccManifestId +
                 ", bccManifestId=" + bccManifestId +
                 ", entityType=" + entityType +
-                ", prevSeqKey=" + prevSeqKey +
-                ", nextSeqKey=" + nextSeqKey +
                 '}';
     }
 

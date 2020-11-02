@@ -27,6 +27,7 @@ import static org.oagi.score.data.BCCEntityType.Element;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.ASCC_MANIFEST;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BCC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BCC_MANIFEST;
 import static org.oagi.score.service.corecomponent.seqkey.MoveTo.LAST;
@@ -307,9 +308,9 @@ public class BccWriteRepository {
         }
 
         // delete from Tables
+        seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
         bccManifestRecord.delete();
         bccRecord.delete();
-        seqKeyHandler(request.getUser(), bccManifestRecord).deleteCurrent();
 
         upsertLogIntoAccAndAssociations(
                 accRecord, accManifestRecord,
