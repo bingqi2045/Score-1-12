@@ -67,7 +67,8 @@ public class LogRepository {
                 LOG.LOG_ACTION,
                 LOG.PREV_LOG_ID,
                 LOG.CREATION_TIMESTAMP.as("timestamp"),
-                APP_USER.LOGIN_ID.as("loginId")
+                APP_USER.LOGIN_ID.as("loginId"),
+                APP_USER.IS_DEVELOPER
         )
                 .from(LOG)
                 .join(APP_USER)
