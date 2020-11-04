@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAccManifest
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
 
-    private static final long serialVersionUID = 987097064;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_acc_manifest</code>
@@ -51,48 +52,49 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
     /**
      * The column <code>oagi.module_acc_manifest.module_acc_manifest_id</code>. Primary key.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> MODULE_ACC_MANIFEST_ID = createField(DSL.name("module_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleAccManifestRecord, ULong> MODULE_ACC_MANIFEST_ID = createField(DSL.name("module_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_acc_manifest.module_set_release_id</code>. A foreign key of the module set release record.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleAccManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_acc_manifest.acc_manifest_id</code>. A foreign key of the acc manifest record.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the acc manifest record.");
+    public final TableField<ModuleAccManifestRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the acc manifest record.");
 
     /**
      * The column <code>oagi.module_acc_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleAccManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_acc_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleAccManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_acc_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleAccManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleAccManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_acc_manifest.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleAccManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleAccManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_acc_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleAccManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleAccManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_acc_manifest</code> table reference
-     */
-    public ModuleAccManifest() {
-        this(DSL.name("module_acc_manifest"), null);
+    private ModuleAccManifest(Name alias, Table<ModuleAccManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleAccManifest(Name alias, Table<ModuleAccManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
         this(alias, MODULE_ACC_MANIFEST);
     }
 
-    private ModuleAccManifest(Name alias, Table<ModuleAccManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleAccManifest(Name alias, Table<ModuleAccManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_acc_manifest</code> table reference
+     */
+    public ModuleAccManifest() {
+        this(DSL.name("module_acc_manifest"), null);
     }
 
     public <O extends Record> ModuleAccManifest(Table<O> child, ForeignKey<O, ModuleAccManifestRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleAccManifest extends TableImpl<ModuleAccManifestRecord> {
 
     @Override
     public Identity<ModuleAccManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_ACC_MANIFEST;
+        return (Identity<ModuleAccManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -36,7 +37,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtUsageRuleRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
 
-    private static final long serialVersionUID = -517657416;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.dt_usage_rule</code>
@@ -54,28 +55,29 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
     /**
      * The column <code>oagi.dt_usage_rule.dt_usage_rule_id</code>. Primary key of the table.
      */
-    public final TableField<DtUsageRuleRecord, ULong> DT_USAGE_RULE_ID = createField(DSL.name("dt_usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
+    public final TableField<DtUsageRuleRecord, ULong> DT_USAGE_RULE_ID = createField(DSL.name("dt_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
 
     /**
      * The column <code>oagi.dt_usage_rule.assigned_usage_rule_id</code>. Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.");
+    public final TableField<DtUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to the DT content component or DT_SC.");
 
     /**
      * The column <code>oagi.dt_usage_rule.target_dt_id</code>. Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_ID = createField(DSL.name("target_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
+    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_ID = createField(DSL.name("target_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_ID for assigning a usage rule to the corresponding DT content component.");
 
     /**
      * The column <code>oagi.dt_usage_rule.target_dt_sc_id</code>. Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.
      */
-    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
+    public final TableField<DtUsageRuleRecord, ULong> TARGET_DT_SC_ID = createField(DSL.name("target_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreing key to the DT_SC_ID for assigning a usage rule to the corresponding DT_SC.");
 
-    /**
-     * Create a <code>oagi.dt_usage_rule</code> table reference
-     */
-    public DtUsageRule() {
-        this(DSL.name("dt_usage_rule"), null);
+    private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and the DT content component and usage rules and DT supplementary component. In a particular record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not both."), TableOptions.table());
     }
 
     /**
@@ -92,12 +94,11 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
         this(alias, DT_USAGE_RULE);
     }
 
-    private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private DtUsageRule(Name alias, Table<DtUsageRuleRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and the DT content component and usage rules and DT supplementary component. In a particular record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not both."), TableOptions.table());
+    /**
+     * Create a <code>oagi.dt_usage_rule</code> table reference
+     */
+    public DtUsageRule() {
+        this(DSL.name("dt_usage_rule"), null);
     }
 
     public <O extends Record> DtUsageRule(Table<O> child, ForeignKey<O, DtUsageRuleRecord> key) {
@@ -111,7 +112,7 @@ public class DtUsageRule extends TableImpl<DtUsageRuleRecord> {
 
     @Override
     public Identity<DtUsageRuleRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_DT_USAGE_RULE;
+        return (Identity<DtUsageRuleRecord, ULong>) super.getIdentity();
     }
 
     @Override

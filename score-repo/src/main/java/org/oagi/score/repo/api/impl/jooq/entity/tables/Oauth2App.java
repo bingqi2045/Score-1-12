@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oauth2App extends TableImpl<Oauth2AppRecord> {
 
-    private static final long serialVersionUID = 1269923620;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.oauth2_app</code>
@@ -50,98 +51,99 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
     /**
      * The column <code>oagi.oauth2_app.oauth2_app_id</code>.
      */
-    public final TableField<Oauth2AppRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<Oauth2AppRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.provider_name</code>.
      */
-    public final TableField<Oauth2AppRecord, String> PROVIDER_NAME = createField(DSL.name("provider_name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> PROVIDER_NAME = createField(DSL.name("provider_name"), SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.issuer_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> ISSUER_URI = createField(DSL.name("issuer_uri"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+    public final TableField<Oauth2AppRecord, String> ISSUER_URI = createField(DSL.name("issuer_uri"), SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.authorization_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> AUTHORIZATION_URI = createField(DSL.name("authorization_uri"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+    public final TableField<Oauth2AppRecord, String> AUTHORIZATION_URI = createField(DSL.name("authorization_uri"), SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.token_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> TOKEN_URI = createField(DSL.name("token_uri"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+    public final TableField<Oauth2AppRecord, String> TOKEN_URI = createField(DSL.name("token_uri"), SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.user_info_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> USER_INFO_URI = createField(DSL.name("user_info_uri"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+    public final TableField<Oauth2AppRecord, String> USER_INFO_URI = createField(DSL.name("user_info_uri"), SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.jwk_set_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> JWK_SET_URI = createField(DSL.name("jwk_set_uri"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "");
+    public final TableField<Oauth2AppRecord, String> JWK_SET_URI = createField(DSL.name("jwk_set_uri"), SQLDataType.VARCHAR(200), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.redirect_uri</code>.
      */
-    public final TableField<Oauth2AppRecord, String> REDIRECT_URI = createField(DSL.name("redirect_uri"), org.jooq.impl.SQLDataType.VARCHAR(200).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> REDIRECT_URI = createField(DSL.name("redirect_uri"), SQLDataType.VARCHAR(200).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.client_id</code>.
      */
-    public final TableField<Oauth2AppRecord, String> CLIENT_ID = createField(DSL.name("client_id"), org.jooq.impl.SQLDataType.VARCHAR(200).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> CLIENT_ID = createField(DSL.name("client_id"), SQLDataType.VARCHAR(200).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.client_secret</code>.
      */
-    public final TableField<Oauth2AppRecord, String> CLIENT_SECRET = createField(DSL.name("client_secret"), org.jooq.impl.SQLDataType.VARCHAR(200).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> CLIENT_SECRET = createField(DSL.name("client_secret"), SQLDataType.VARCHAR(200).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.client_authentication_method</code>.
      */
-    public final TableField<Oauth2AppRecord, String> CLIENT_AUTHENTICATION_METHOD = createField(DSL.name("client_authentication_method"), org.jooq.impl.SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> CLIENT_AUTHENTICATION_METHOD = createField(DSL.name("client_authentication_method"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.authorization_grant_type</code>.
      */
-    public final TableField<Oauth2AppRecord, String> AUTHORIZATION_GRANT_TYPE = createField(DSL.name("authorization_grant_type"), org.jooq.impl.SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<Oauth2AppRecord, String> AUTHORIZATION_GRANT_TYPE = createField(DSL.name("authorization_grant_type"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.prompt</code>.
      */
-    public final TableField<Oauth2AppRecord, String> PROMPT = createField(DSL.name("prompt"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "");
+    public final TableField<Oauth2AppRecord, String> PROMPT = createField(DSL.name("prompt"), SQLDataType.VARCHAR(20), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.display_provider_name</code>.
      */
-    public final TableField<Oauth2AppRecord, String> DISPLAY_PROVIDER_NAME = createField(DSL.name("display_provider_name"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
+    public final TableField<Oauth2AppRecord, String> DISPLAY_PROVIDER_NAME = createField(DSL.name("display_provider_name"), SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.background_color</code>.
      */
-    public final TableField<Oauth2AppRecord, String> BACKGROUND_COLOR = createField(DSL.name("background_color"), org.jooq.impl.SQLDataType.VARCHAR(50), this, "");
+    public final TableField<Oauth2AppRecord, String> BACKGROUND_COLOR = createField(DSL.name("background_color"), SQLDataType.VARCHAR(50), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.font_color</code>.
      */
-    public final TableField<Oauth2AppRecord, String> FONT_COLOR = createField(DSL.name("font_color"), org.jooq.impl.SQLDataType.VARCHAR(50), this, "");
+    public final TableField<Oauth2AppRecord, String> FONT_COLOR = createField(DSL.name("font_color"), SQLDataType.VARCHAR(50), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.display_order</code>.
      */
-    public final TableField<Oauth2AppRecord, Integer> DISPLAY_ORDER = createField(DSL.name("display_order"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<Oauth2AppRecord, Integer> DISPLAY_ORDER = createField(DSL.name("display_order"), SQLDataType.INTEGER.defaultValue(DSL.inline("0", SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>oagi.oauth2_app.is_disabled</code>.
      */
-    public final TableField<Oauth2AppRecord, Byte> IS_DISABLED = createField(DSL.name("is_disabled"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<Oauth2AppRecord, Byte> IS_DISABLED = createField(DSL.name("is_disabled"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
 
-    /**
-     * Create a <code>oagi.oauth2_app</code> table reference
-     */
-    public Oauth2App() {
-        this(DSL.name("oauth2_app"), null);
+    private Oauth2App(Name alias, Table<Oauth2AppRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Oauth2App(Name alias, Table<Oauth2AppRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -158,12 +160,11 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
         this(alias, OAUTH2_APP);
     }
 
-    private Oauth2App(Name alias, Table<Oauth2AppRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Oauth2App(Name alias, Table<Oauth2AppRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.oauth2_app</code> table reference
+     */
+    public Oauth2App() {
+        this(DSL.name("oauth2_app"), null);
     }
 
     public <O extends Record> Oauth2App(Table<O> child, ForeignKey<O, Oauth2AppRecord> key) {
@@ -177,7 +178,7 @@ public class Oauth2App extends TableImpl<Oauth2AppRecord> {
 
     @Override
     public Identity<Oauth2AppRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_OAUTH2_APP;
+        return (Identity<Oauth2AppRecord, ULong>) super.getIdentity();
     }
 
     @Override

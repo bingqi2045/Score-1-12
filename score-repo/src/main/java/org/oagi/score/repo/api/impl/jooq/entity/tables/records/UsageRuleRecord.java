@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRule;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implements Record3<ULong, String, Integer> {
 
-    private static final long serialVersionUID = 1927854508;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the usage rule.
@@ -177,8 +177,8 @@ public class UsageRuleRecord extends UpdatableRecordImpl<UsageRuleRecord> implem
     public UsageRuleRecord(ULong usageRuleId, String name, Integer conditionType) {
         super(UsageRule.USAGE_RULE);
 
-        set(0, usageRuleId);
-        set(1, name);
-        set(2, conditionType);
+        setUsageRuleId(usageRuleId);
+        setName(name);
+        setConditionType(conditionType);
     }
 }

@@ -112,13 +112,6 @@ public class CodeListWriteRepository {
         CodeListManifestRecord codeListManifest = new CodeListManifestRecord();
         codeListManifest.setCodeListId(codeList.getCodeListId());
         codeListManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeList,
-                        LogAction.Added,
-                        userId, timestamp);
-        codeListManifest.setLogId(logRecord.getLogId());
         if (basedCodeListManifestRecord != null) {
             codeListManifest.setBasedCodeListManifestId(basedCodeListManifestRecord.getCodeListManifestId());
         }
@@ -164,6 +157,15 @@ public class CodeListWriteRepository {
                         .execute();
             }
         }
+
+        LogRecord logRecord =
+                logRepository.insertCodeListLog(
+                        codeListManifest,
+                        codeList,
+                        LogAction.Added,
+                        userId, timestamp);
+        codeListManifest.setLogId(logRecord.getLogId());
+        codeListManifest.update(CODE_LIST_MANIFEST.LOG_ID);
 
         return new CreateCodeListRepositoryResponse(codeListManifest.getCodeListManifestId().toBigInteger());
     }
@@ -212,6 +214,7 @@ public class CodeListWriteRepository {
         // creates new revision for updated record.
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         codeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -260,6 +263,7 @@ public class CodeListWriteRepository {
                 ? LogAction.Restored : LogAction.Modified;
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         codeListRecord, codeListManifestRecord.getLogId(),
                         logAction,
                         userId, timestamp);
@@ -471,6 +475,7 @@ public class CodeListWriteRepository {
         // creates new revision for deleted record.
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         codeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Deleted,
                         userId, timestamp);
@@ -525,6 +530,7 @@ public class CodeListWriteRepository {
         // creates new revision for deleted record.
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         codeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Restored,
                         userId, timestamp);
@@ -608,6 +614,7 @@ public class CodeListWriteRepository {
         // creates new revision for revised record.
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         nextCodeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Revised,
                         userId, timestamp);
@@ -646,6 +653,7 @@ public class CodeListWriteRepository {
         // creates new revision for canceled record.
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         prevCodeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);
@@ -778,6 +786,7 @@ public class CodeListWriteRepository {
 
         LogRecord logRecord =
                 logRepository.insertCodeListLog(
+                        codeListManifestRecord,
                         codeListRecord, codeListManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);

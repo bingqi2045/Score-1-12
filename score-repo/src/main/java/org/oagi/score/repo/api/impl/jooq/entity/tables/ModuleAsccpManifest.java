@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAsccpManife
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
 
-    private static final long serialVersionUID = -1429734671;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_asccp_manifest</code>
@@ -51,48 +52,49 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
     /**
      * The column <code>oagi.module_asccp_manifest.module_asccp_manifest_id</code>. Primary key.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_ASCCP_MANIFEST_ID = createField(DSL.name("module_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_ASCCP_MANIFEST_ID = createField(DSL.name("module_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.module_set_release_id</code>. A foreign key of the module set release record.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.asccp_manifest_id</code>. A foreign key of the asccp manifest record.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the asccp manifest record.");
+    public final TableField<ModuleAsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the asccp manifest record.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleAsccpManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_asccp_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleAsccpManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleAsccpManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleAsccpManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleAsccpManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleAsccpManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_asccp_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleAsccpManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleAsccpManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_asccp_manifest</code> table reference
-     */
-    public ModuleAsccpManifest() {
-        this(DSL.name("module_asccp_manifest"), null);
+    private ModuleAsccpManifest(Name alias, Table<ModuleAsccpManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleAsccpManifest(Name alias, Table<ModuleAsccpManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
         this(alias, MODULE_ASCCP_MANIFEST);
     }
 
-    private ModuleAsccpManifest(Name alias, Table<ModuleAsccpManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleAsccpManifest(Name alias, Table<ModuleAsccpManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_asccp_manifest</code> table reference
+     */
+    public ModuleAsccpManifest() {
+        this(DSL.name("module_asccp_manifest"), null);
     }
 
     public <O extends Record> ModuleAsccpManifest(Table<O> child, ForeignKey<O, ModuleAsccpManifestRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleAsccpManifest extends TableImpl<ModuleAsccpManifestRecord> {
 
     @Override
     public Identity<ModuleAsccpManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_ASCCP_MANIFEST;
+        return (Identity<ModuleAsccpManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

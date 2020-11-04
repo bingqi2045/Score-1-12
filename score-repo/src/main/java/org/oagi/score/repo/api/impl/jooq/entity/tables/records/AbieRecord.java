@@ -29,7 +29,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Abie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Record15<ULong, String, ULong, String, String, ULong, String, ULong, ULong, LocalDateTime, LocalDateTime, Integer, String, String, ULong> {
 
-    private static final long serialVersionUID = -1907250968;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.abie.abie_id</code>. A internal, primary database key of an ABIE.
@@ -616,20 +616,20 @@ public class AbieRecord extends UpdatableRecordImpl<AbieRecord> implements Recor
     public AbieRecord(ULong abieId, String guid, ULong basedAccManifestId, String path, String hashPath, ULong bizCtxId, String definition, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Integer state, String remark, String bizTerm, ULong ownerTopLevelAsbiepId) {
         super(Abie.ABIE);
 
-        set(0, abieId);
-        set(1, guid);
-        set(2, basedAccManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, bizCtxId);
-        set(6, definition);
-        set(7, createdBy);
-        set(8, lastUpdatedBy);
-        set(9, creationTimestamp);
-        set(10, lastUpdateTimestamp);
-        set(11, state);
-        set(12, remark);
-        set(13, bizTerm);
-        set(14, ownerTopLevelAsbiepId);
+        setAbieId(abieId);
+        setGuid(guid);
+        setBasedAccManifestId(basedAccManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setBizCtxId(bizCtxId);
+        setDefinition(definition);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setRemark(remark);
+        setBizTerm(bizTerm);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

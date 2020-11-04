@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxAssignmentR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
-    private static final long serialVersionUID = 1814998979;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.biz_ctx_assignment</code>
@@ -52,23 +53,24 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
     /**
      * The column <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ASSIGNMENT_ID = createField(DSL.name("biz_ctx_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.biz_ctx_assignment.biz_ctx_id</code>.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BizCtxAssignmentRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.biz_ctx_assignment.top_level_asbiep_id</code>. This is a foreign key to the top-level ASBIEP.
      */
-    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
+    public final TableField<BizCtxAssignmentRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This is a foreign key to the top-level ASBIEP.");
 
-    /**
-     * Create a <code>oagi.biz_ctx_assignment</code> table reference
-     */
-    public BizCtxAssignment() {
-        this(DSL.name("biz_ctx_assignment"), null);
+    private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -85,12 +87,11 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
         this(alias, BIZ_CTX_ASSIGNMENT);
     }
 
-    private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BizCtxAssignment(Name alias, Table<BizCtxAssignmentRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.biz_ctx_assignment</code> table reference
+     */
+    public BizCtxAssignment() {
+        this(DSL.name("biz_ctx_assignment"), null);
     }
 
     public <O extends Record> BizCtxAssignment(Table<O> child, ForeignKey<O, BizCtxAssignmentRecord> key) {
@@ -109,7 +110,7 @@ public class BizCtxAssignment extends TableImpl<BizCtxAssignmentRecord> {
 
     @Override
     public Identity<BizCtxAssignmentRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BIZ_CTX_ASSIGNMENT;
+        return (Identity<BizCtxAssignmentRecord, ULong>) super.getIdentity();
     }
 
     @Override

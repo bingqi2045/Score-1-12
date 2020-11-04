@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpRecord extends UpdatableRecordImpl<BccpRecord> implements Record22<ULong, String, String, String, ULong, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, String, String, ULong, ULong> {
 
-    private static final long serialVersionUID = 82137228;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bccp.bccp_id</code>. An internal, primary database key.
@@ -885,27 +885,27 @@ State change can't be undone. But the history record can still keep the records 
     public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String den, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacementBccpId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
         super(Bccp.BCCP);
 
-        set(0, bccpId);
-        set(1, guid);
-        set(2, propertyTerm);
-        set(3, representationTerm);
-        set(4, bdtId);
-        set(5, den);
-        set(6, definition);
-        set(7, definitionSource);
-        set(8, namespaceId);
-        set(9, isDeprecated);
-        set(10, replacementBccpId);
-        set(11, createdBy);
-        set(12, ownerUserId);
-        set(13, lastUpdatedBy);
-        set(14, creationTimestamp);
-        set(15, lastUpdateTimestamp);
-        set(16, state);
-        set(17, isNillable);
-        set(18, defaultValue);
-        set(19, fixedValue);
-        set(20, prevBccpId);
-        set(21, nextBccpId);
+        setBccpId(bccpId);
+        setGuid(guid);
+        setPropertyTerm(propertyTerm);
+        setRepresentationTerm(representationTerm);
+        setBdtId(bdtId);
+        setDen(den);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setNamespaceId(namespaceId);
+        setIsDeprecated(isDeprecated);
+        setReplacementBccpId(replacementBccpId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setIsNillable(isNillable);
+        setDefaultValue(defaultValue);
+        setFixedValue(fixedValue);
+        setPrevBccpId(prevBccpId);
+        setNextBccpId(nextBccpId);
     }
 }

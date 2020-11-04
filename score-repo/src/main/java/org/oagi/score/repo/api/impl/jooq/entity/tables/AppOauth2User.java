@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppOauth2UserReco
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
 
-    private static final long serialVersionUID = -25276986;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.app_oauth2_user</code>
@@ -51,58 +52,59 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
     /**
      * The column <code>oagi.app_oauth2_user.app_oauth2_user_id</code>. Primary key.
      */
-    public final TableField<AppOauth2UserRecord, ULong> APP_OAUTH2_USER_ID = createField(DSL.name("app_oauth2_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<AppOauth2UserRecord, ULong> APP_OAUTH2_USER_ID = createField(DSL.name("app_oauth2_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.app_oauth2_user.app_user_id</code>. A reference to the record in `app_user`. If it is not set, this is treated as a pending record.
      */
-    public final TableField<AppOauth2UserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
+    public final TableField<AppOauth2UserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.BIGINTUNSIGNED, this, "A reference to the record in `app_user`. If it is not set, this is treated as a pending record.");
 
     /**
      * The column <code>oagi.app_oauth2_user.oauth2_app_id</code>. A reference to the record in `oauth2_app`.
      */
-    public final TableField<AppOauth2UserRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A reference to the record in `oauth2_app`.");
+    public final TableField<AppOauth2UserRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A reference to the record in `oauth2_app`.");
 
     /**
      * The column <code>oagi.app_oauth2_user.sub</code>. `sub` claim defined in OIDC spec. This is a unique identifier of the subject in the provider.
      */
-    public final TableField<AppOauth2UserRecord, String> SUB = createField(DSL.name("sub"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "`sub` claim defined in OIDC spec. This is a unique identifier of the subject in the provider.");
+    public final TableField<AppOauth2UserRecord, String> SUB = createField(DSL.name("sub"), SQLDataType.VARCHAR(100).nullable(false), this, "`sub` claim defined in OIDC spec. This is a unique identifier of the subject in the provider.");
 
     /**
      * The column <code>oagi.app_oauth2_user.name</code>. `name` claim defined in OIDC spec.
      */
-    public final TableField<AppOauth2UserRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "`name` claim defined in OIDC spec.");
+    public final TableField<AppOauth2UserRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(200), this, "`name` claim defined in OIDC spec.");
 
     /**
      * The column <code>oagi.app_oauth2_user.email</code>. `email` claim defined in OIDC spec.
      */
-    public final TableField<AppOauth2UserRecord, String> EMAIL = createField(DSL.name("email"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "`email` claim defined in OIDC spec.");
+    public final TableField<AppOauth2UserRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(200), this, "`email` claim defined in OIDC spec.");
 
     /**
      * The column <code>oagi.app_oauth2_user.nickname</code>. `nickname` claim defined in OIDC spec.
      */
-    public final TableField<AppOauth2UserRecord, String> NICKNAME = createField(DSL.name("nickname"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "`nickname` claim defined in OIDC spec.");
+    public final TableField<AppOauth2UserRecord, String> NICKNAME = createField(DSL.name("nickname"), SQLDataType.VARCHAR(200), this, "`nickname` claim defined in OIDC spec.");
 
     /**
      * The column <code>oagi.app_oauth2_user.preferred_username</code>. `preferred_username` claim defined in OIDC spec.
      */
-    public final TableField<AppOauth2UserRecord, String> PREFERRED_USERNAME = createField(DSL.name("preferred_username"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "`preferred_username` claim defined in OIDC spec.");
+    public final TableField<AppOauth2UserRecord, String> PREFERRED_USERNAME = createField(DSL.name("preferred_username"), SQLDataType.VARCHAR(200), this, "`preferred_username` claim defined in OIDC spec.");
 
     /**
      * The column <code>oagi.app_oauth2_user.phone_number</code>. `phone_number` claim defined in OIDC spec.
      */
-    public final TableField<AppOauth2UserRecord, String> PHONE_NUMBER = createField(DSL.name("phone_number"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "`phone_number` claim defined in OIDC spec.");
+    public final TableField<AppOauth2UserRecord, String> PHONE_NUMBER = createField(DSL.name("phone_number"), SQLDataType.VARCHAR(200), this, "`phone_number` claim defined in OIDC spec.");
 
     /**
      * The column <code>oagi.app_oauth2_user.creation_timestamp</code>. Timestamp when this record is created.
      */
-    public final TableField<AppOauth2UserRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when this record is created.");
+    public final TableField<AppOauth2UserRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "Timestamp when this record is created.");
 
-    /**
-     * Create a <code>oagi.app_oauth2_user</code> table reference
-     */
-    public AppOauth2User() {
-        this(DSL.name("app_oauth2_user"), null);
+    private AppOauth2User(Name alias, Table<AppOauth2UserRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private AppOauth2User(Name alias, Table<AppOauth2UserRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -119,12 +121,11 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
         this(alias, APP_OAUTH2_USER);
     }
 
-    private AppOauth2User(Name alias, Table<AppOauth2UserRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private AppOauth2User(Name alias, Table<AppOauth2UserRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.app_oauth2_user</code> table reference
+     */
+    public AppOauth2User() {
+        this(DSL.name("app_oauth2_user"), null);
     }
 
     public <O extends Record> AppOauth2User(Table<O> child, ForeignKey<O, AppOauth2UserRecord> key) {
@@ -138,7 +139,7 @@ public class AppOauth2User extends TableImpl<AppOauth2UserRecord> {
 
     @Override
     public Identity<AppOauth2UserRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_APP_OAUTH2_USER;
+        return (Identity<AppOauth2UserRecord, ULong>) super.getIdentity();
     }
 
     @Override

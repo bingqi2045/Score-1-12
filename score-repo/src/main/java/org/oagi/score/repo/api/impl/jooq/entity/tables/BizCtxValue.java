@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxValueRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
 
-    private static final long serialVersionUID = 897020162;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.biz_ctx_value</code>
@@ -52,23 +53,24 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
     /**
      * The column <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary, internal database key.
      */
-    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_VALUE_ID = createField(DSL.name("biz_ctx_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_VALUE_ID = createField(DSL.name("biz_ctx_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.biz_ctx_value.biz_ctx_id</code>. Foreign key to the biz_ctx table.
      */
-    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the biz_ctx table.");
+    public final TableField<BizCtxValueRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the biz_ctx table.");
 
     /**
      * The column <code>oagi.biz_ctx_value.ctx_scheme_value_id</code>. Foreign key to the CTX_SCHEME_VALUE table.
      */
-    public final TableField<BizCtxValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME_VALUE table.");
+    public final TableField<BizCtxValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME_VALUE table.");
 
-    /**
-     * Create a <code>oagi.biz_ctx_value</code> table reference
-     */
-    public BizCtxValue() {
-        this(DSL.name("biz_ctx_value"), null);
+    private BizCtxValue(Name alias, Table<BizCtxValueRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BizCtxValue(Name alias, Table<BizCtxValueRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table represents business context values for business contexts. It provides the associations between a business context and a context scheme value."), TableOptions.table());
     }
 
     /**
@@ -85,12 +87,11 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
         this(alias, BIZ_CTX_VALUE);
     }
 
-    private BizCtxValue(Name alias, Table<BizCtxValueRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BizCtxValue(Name alias, Table<BizCtxValueRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table represents business context values for business contexts. It provides the associations between a business context and a context scheme value."), TableOptions.table());
+    /**
+     * Create a <code>oagi.biz_ctx_value</code> table reference
+     */
+    public BizCtxValue() {
+        this(DSL.name("biz_ctx_value"), null);
     }
 
     public <O extends Record> BizCtxValue(Table<O> child, ForeignKey<O, BizCtxValueRecord> key) {
@@ -104,7 +105,7 @@ public class BizCtxValue extends TableImpl<BizCtxValueRecord> {
 
     @Override
     public Identity<BizCtxValueRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BIZ_CTX_VALUE;
+        return (Identity<BizCtxValueRecord, ULong>) super.getIdentity();
     }
 
     @Override

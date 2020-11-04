@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccRecord extends UpdatableRecordImpl<AsccRecord> implements Record20<ULong, String, Integer, Integer, Integer, ULong, ULong, String, String, String, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, ULong> {
 
-    private static final long serialVersionUID = -669563187;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.ascc.ascc_id</code>. An internal, primary database key of an ASCC.
@@ -813,25 +813,25 @@ State change can't be undone. But the history record can still keep the records 
     public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String den, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
         super(Ascc.ASCC);
 
-        set(0, asccId);
-        set(1, guid);
-        set(2, cardinalityMin);
-        set(3, cardinalityMax);
-        set(4, seqKey);
-        set(5, fromAccId);
-        set(6, toAsccpId);
-        set(7, den);
-        set(8, definition);
-        set(9, definitionSource);
-        set(10, isDeprecated);
-        set(11, replacementAsccId);
-        set(12, createdBy);
-        set(13, ownerUserId);
-        set(14, lastUpdatedBy);
-        set(15, creationTimestamp);
-        set(16, lastUpdateTimestamp);
-        set(17, state);
-        set(18, prevAsccId);
-        set(19, nextAsccId);
+        setAsccId(asccId);
+        setGuid(guid);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setSeqKey(seqKey);
+        setFromAccId(fromAccId);
+        setToAsccpId(toAsccpId);
+        setDen(den);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setIsDeprecated(isDeprecated);
+        setReplacementAsccId(replacementAsccId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setPrevAsccId(prevAsccId);
+        setNextAsccId(nextAsccId);
     }
 }

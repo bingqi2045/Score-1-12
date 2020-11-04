@@ -18,8 +18,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
 /**
  * Each record in this table stores a code list value of a code list. A code 
  * list value may be inherited from another code list on which it is based. 
- * However, inherited value may be restricted (i.e., disabled and cannot be 
- * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
+ * However, inherited value may be restricted (    i.e., disabled and cannot be 
+     * used) in this code list, i.e., the USED_INDICATOR = false. If the value 
  * cannot be used since the based code list, then the LOCKED_INDICATOR = TRUE, 
  * because the USED_INDICATOR of such code list value is FALSE by default 
  * and can no longer be changed.
@@ -27,7 +27,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueRecord extends UpdatableRecordImpl<CodeListValueRecord> implements Record19<ULong, String, ULong, String, String, String, String, Byte, Byte, Byte, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = -406594800;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.code_list_value.code_list_value_id</code>. Internal, primary database key.
@@ -762,24 +762,24 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     public CodeListValueRecord(ULong codeListValueId, String guid, ULong codeListId, String value, String name, String definition, String definitionSource, Byte usedIndicator, Byte lockedIndicator, Byte extensionIndicator, Byte isDeprecated, ULong replacementCodeListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevCodeListValueId, ULong nextCodeListValueId) {
         super(CodeListValue.CODE_LIST_VALUE);
 
-        set(0, codeListValueId);
-        set(1, guid);
-        set(2, codeListId);
-        set(3, value);
-        set(4, name);
-        set(5, definition);
-        set(6, definitionSource);
-        set(7, usedIndicator);
-        set(8, lockedIndicator);
-        set(9, extensionIndicator);
-        set(10, isDeprecated);
-        set(11, replacementCodeListValueId);
-        set(12, createdBy);
-        set(13, ownerUserId);
-        set(14, lastUpdatedBy);
-        set(15, creationTimestamp);
-        set(16, lastUpdateTimestamp);
-        set(17, prevCodeListValueId);
-        set(18, nextCodeListValueId);
+        setCodeListValueId(codeListValueId);
+        setGuid(guid);
+        setCodeListId(codeListId);
+        setValue(value);
+        setName(name);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setUsedIndicator(usedIndicator);
+        setLockedIndicator(lockedIndicator);
+        setExtensionIndicator(extensionIndicator);
+        setIsDeprecated(isDeprecated);
+        setReplacementCodeListValueId(replacementCodeListValueId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setPrevCodeListValueId(prevCodeListValueId);
+        setNextCodeListValueId(nextCodeListValueId);
     }
 }

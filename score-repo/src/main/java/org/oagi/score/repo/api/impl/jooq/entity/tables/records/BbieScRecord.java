@@ -14,14 +14,14 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
 
 /**
  * Because there is no single table that is a contextualized counterpart of 
- * the DT table (which stores both CDT and BDT), The context specific constraints 
+ * the DT table (    which stores both CDT and BDT), The context specific constraints 
  * associated with the DT are stored in the BBIE table, while this table stores 
  * the constraints associated with the DT's SCs. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieScRecord extends UpdatableRecordImpl<BbieScRecord> {
 
-    private static final long serialVersionUID = 55689046;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bbie_sc.bbie_sc_id</code>. A internal, primary database key of a BBIE_SC.
@@ -387,28 +387,28 @@ This column, the DT_SC_PRI_RESTRI_ID column, and CODE_LIST_ID column cannot have
     public BbieScRecord(ULong bbieScId, String guid, ULong basedDtScManifestId, String path, String hashPath, ULong bbieId, ULong dtScPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, String fixedValue, String definition, String example, String remark, String bizTerm, Byte isUsed, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(BbieSc.BBIE_SC);
 
-        set(0, bbieScId);
-        set(1, guid);
-        set(2, basedDtScManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, bbieId);
-        set(6, dtScPriRestriId);
-        set(7, codeListId);
-        set(8, agencyIdListId);
-        set(9, cardinalityMin);
-        set(10, cardinalityMax);
-        set(11, defaultValue);
-        set(12, fixedValue);
-        set(13, definition);
-        set(14, example);
-        set(15, remark);
-        set(16, bizTerm);
-        set(17, isUsed);
-        set(18, createdBy);
-        set(19, lastUpdatedBy);
-        set(20, creationTimestamp);
-        set(21, lastUpdateTimestamp);
-        set(22, ownerTopLevelAsbiepId);
+        setBbieScId(bbieScId);
+        setGuid(guid);
+        setBasedDtScManifestId(basedDtScManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setBbieId(bbieId);
+        setDtScPriRestriId(dtScPriRestriId);
+        setCodeListId(codeListId);
+        setAgencyIdListId(agencyIdListId);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setDefaultValue(defaultValue);
+        setFixedValue(fixedValue);
+        setDefinition(definition);
+        setExample(example);
+        setRemark(remark);
+        setBizTerm(bizTerm);
+        setIsUsed(isUsed);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

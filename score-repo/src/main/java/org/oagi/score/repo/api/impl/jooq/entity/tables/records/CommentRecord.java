@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Comment;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CommentRecord extends UpdatableRecordImpl<CommentRecord> implements Record9<ULong, String, String, Byte, Byte, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1671876393;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.comment.comment_id</code>.
@@ -392,14 +392,14 @@ public class CommentRecord extends UpdatableRecordImpl<CommentRecord> implements
     public CommentRecord(ULong commentId, String reference, String comment, Byte isHidden, Byte isDeleted, ULong prevCommentId, ULong createdBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Comment.COMMENT);
 
-        set(0, commentId);
-        set(1, reference);
-        set(2, comment);
-        set(3, isHidden);
-        set(4, isDeleted);
-        set(5, prevCommentId);
-        set(6, createdBy);
-        set(7, creationTimestamp);
-        set(8, lastUpdateTimestamp);
+        setCommentId(commentId);
+        setReference(reference);
+        setComment(comment);
+        setIsHidden(isHidden);
+        setIsDeleted(isDeleted);
+        setPrevCommentId(prevCommentId);
+        setCreatedBy(createdBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

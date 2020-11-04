@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> implements Record7<ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1805229342;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.xbt_manifest.xbt_manifest_id</code>.
@@ -318,12 +318,12 @@ public class XbtManifestRecord extends UpdatableRecordImpl<XbtManifestRecord> im
     public XbtManifestRecord(ULong xbtManifestId, ULong releaseId, ULong xbtId, Byte conflict, ULong logId, ULong prevXbtManifestId, ULong nextXbtManifestId) {
         super(XbtManifest.XBT_MANIFEST);
 
-        set(0, xbtManifestId);
-        set(1, releaseId);
-        set(2, xbtId);
-        set(3, conflict);
-        set(4, logId);
-        set(5, prevXbtManifestId);
-        set(6, nextXbtManifestId);
+        setXbtManifestId(xbtManifestId);
+        setReleaseId(releaseId);
+        setXbtId(xbtId);
+        setConflict(conflict);
+        setLogId(logId);
+        setPrevXbtManifestId(prevXbtManifestId);
+        setNextXbtManifestId(nextXbtManifestId);
     }
 }

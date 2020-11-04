@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDtManifestR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
 
-    private static final long serialVersionUID = 633475143;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_dt_manifest</code>
@@ -51,48 +52,49 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
     /**
      * The column <code>oagi.module_dt_manifest.module_dt_manifest_id</code>. Primary key.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> MODULE_DT_MANIFEST_ID = createField(DSL.name("module_dt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleDtManifestRecord, ULong> MODULE_DT_MANIFEST_ID = createField(DSL.name("module_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_dt_manifest.module_set_release_id</code>. A foreign key of the module set release record.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleDtManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_dt_manifest.dt_manifest_id</code>. A foreign key of the dt manifest record.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the dt manifest record.");
+    public final TableField<ModuleDtManifestRecord, ULong> DT_MANIFEST_ID = createField(DSL.name("dt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the dt manifest record.");
 
     /**
      * The column <code>oagi.module_dt_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleDtManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_dt_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleDtManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_dt_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleDtManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleDtManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_dt_manifest.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleDtManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleDtManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_dt_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleDtManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleDtManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_dt_manifest</code> table reference
-     */
-    public ModuleDtManifest() {
-        this(DSL.name("module_dt_manifest"), null);
+    private ModuleDtManifest(Name alias, Table<ModuleDtManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleDtManifest(Name alias, Table<ModuleDtManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
         this(alias, MODULE_DT_MANIFEST);
     }
 
-    private ModuleDtManifest(Name alias, Table<ModuleDtManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleDtManifest(Name alias, Table<ModuleDtManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_dt_manifest</code> table reference
+     */
+    public ModuleDtManifest() {
+        this(DSL.name("module_dt_manifest"), null);
     }
 
     public <O extends Record> ModuleDtManifest(Table<O> child, ForeignKey<O, ModuleDtManifestRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleDtManifest extends TableImpl<ModuleDtManifestRecord> {
 
     @Override
     public Identity<ModuleDtManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_DT_MANIFEST;
+        return (Identity<ModuleDtManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

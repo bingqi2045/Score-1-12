@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAsccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAsccpManifestRecord extends UpdatableRecordImpl<ModuleAsccpManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 767531100;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_asccp_manifest.module_asccp_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleAsccpManifestRecord extends UpdatableRecordImpl<ModuleAsccpMa
     public ModuleAsccpManifestRecord(ULong moduleAsccpManifestId, ULong moduleSetReleaseId, ULong asccpManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleAsccpManifest.MODULE_ASCCP_MANIFEST);
 
-        set(0, moduleAsccpManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, asccpManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleAsccpManifestId(moduleAsccpManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setAsccpManifestId(asccpManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

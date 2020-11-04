@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
-    private static final long serialVersionUID = 364136160;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.dt_sc_manifest</code>
@@ -50,48 +51,49 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
     /**
      * The column <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> DT_SC_MANIFEST_ID = createField(DSL.name("dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<DtScManifestRecord, ULong> DT_SC_MANIFEST_ID = createField(DSL.name("dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.release_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtScManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.dt_sc_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtScManifestRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.owner_dt_manifest_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> OWNER_DT_MANIFEST_ID = createField(DSL.name("owner_dt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<DtScManifestRecord, ULong> OWNER_DT_MANIFEST_ID = createField(DSL.name("owner_dt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<DtScManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<DtScManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.dt_sc_manifest.replacement_dt_sc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<DtScManifestRecord, ULong> REPLACEMENT_DT_SC_MANIFEST_ID = createField(DSL.name("replacement_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<DtScManifestRecord, ULong> REPLACEMENT_DT_SC_MANIFEST_ID = createField(DSL.name("replacement_dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.dt_sc_manifest.prev_dt_sc_manifest_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> PREV_DT_SC_MANIFEST_ID = createField(DSL.name("prev_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<DtScManifestRecord, ULong> PREV_DT_SC_MANIFEST_ID = createField(DSL.name("prev_dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.dt_sc_manifest.next_dt_sc_manifest_id</code>.
      */
-    public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<DtScManifestRecord, ULong> NEXT_DT_SC_MANIFEST_ID = createField(DSL.name("next_dt_sc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.dt_sc_manifest</code> table reference
-     */
-    public DtScManifest() {
-        this(DSL.name("dt_sc_manifest"), null);
+    private DtScManifest(Name alias, Table<DtScManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private DtScManifest(Name alias, Table<DtScManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -108,12 +110,11 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
         this(alias, DT_SC_MANIFEST);
     }
 
-    private DtScManifest(Name alias, Table<DtScManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private DtScManifest(Name alias, Table<DtScManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.dt_sc_manifest</code> table reference
+     */
+    public DtScManifest() {
+        this(DSL.name("dt_sc_manifest"), null);
     }
 
     public <O extends Record> DtScManifest(Table<O> child, ForeignKey<O, DtScManifestRecord> key) {
@@ -127,7 +128,7 @@ public class DtScManifest extends TableImpl<DtScManifestRecord> {
 
     @Override
     public Identity<DtScManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_DT_SC_MANIFEST;
+        return (Identity<DtScManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

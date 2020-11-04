@@ -16,13 +16,13 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxScheme;
 
 
 /**
- * This table represents a context scheme (a classification scheme) for a 
+ * This table represents a context scheme (    a classification scheme) for a 
  * context category.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implements Record13<ULong, String, String, String, String, String, String, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -1422864491;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary, database key.
@@ -537,18 +537,18 @@ public class CtxSchemeRecord extends UpdatableRecordImpl<CtxSchemeRecord> implem
     public CtxSchemeRecord(ULong ctxSchemeId, String guid, String schemeId, String schemeName, String description, String schemeAgencyId, String schemeVersionId, ULong ctxCategoryId, ULong codeListId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxScheme.CTX_SCHEME);
 
-        set(0, ctxSchemeId);
-        set(1, guid);
-        set(2, schemeId);
-        set(3, schemeName);
-        set(4, description);
-        set(5, schemeAgencyId);
-        set(6, schemeVersionId);
-        set(7, ctxCategoryId);
-        set(8, codeListId);
-        set(9, createdBy);
-        set(10, lastUpdatedBy);
-        set(11, creationTimestamp);
-        set(12, lastUpdateTimestamp);
+        setCtxSchemeId(ctxSchemeId);
+        setGuid(guid);
+        setSchemeId(schemeId);
+        setSchemeName(schemeName);
+        setDescription(description);
+        setSchemeAgencyId(schemeAgencyId);
+        setSchemeVersionId(schemeVersionId);
+        setCtxCategoryId(ctxCategoryId);
+        setCodeListId(codeListId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

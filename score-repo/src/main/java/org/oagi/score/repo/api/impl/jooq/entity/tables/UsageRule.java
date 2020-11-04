@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRule extends TableImpl<UsageRuleRecord> {
 
-    private static final long serialVersionUID = 772359687;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.usage_rule</code>
@@ -53,23 +54,24 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
     /**
      * The column <code>oagi.usage_rule.usage_rule_id</code>. Primary key of the usage rule.
      */
-    public final TableField<UsageRuleRecord, ULong> USAGE_RULE_ID = createField(DSL.name("usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule.");
+    public final TableField<UsageRuleRecord, ULong> USAGE_RULE_ID = createField(DSL.name("usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule.");
 
     /**
      * The column <code>oagi.usage_rule.name</code>. Short nmenomic name of the usage rule.
      */
-    public final TableField<UsageRuleRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.CLOB, this, "Short nmenomic name of the usage rule.");
+    public final TableField<UsageRuleRecord, String> NAME = createField(DSL.name("name"), SQLDataType.CLOB, this, "Short nmenomic name of the usage rule.");
 
     /**
      * The column <code>oagi.usage_rule.condition_type</code>. Condition type according to the CC specification. It is a value list column. 0 = pre-condition, 1 = post-condition, 2 = invariant.
      */
-    public final TableField<UsageRuleRecord, Integer> CONDITION_TYPE = createField(DSL.name("condition_type"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "Condition type according to the CC specification. It is a value list column. 0 = pre-condition, 1 = post-condition, 2 = invariant.");
+    public final TableField<UsageRuleRecord, Integer> CONDITION_TYPE = createField(DSL.name("condition_type"), SQLDataType.INTEGER.nullable(false), this, "Condition type according to the CC specification. It is a value list column. 0 = pre-condition, 1 = post-condition, 2 = invariant.");
 
-    /**
-     * Create a <code>oagi.usage_rule</code> table reference
-     */
-    public UsageRule() {
-        this(DSL.name("usage_rule"), null);
+    private UsageRule(Name alias, Table<UsageRuleRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private UsageRule(Name alias, Table<UsageRuleRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table captures a usage rule information. A usage rule may be expressed in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION table. To capture a description of a usage rule, create a usage rule expression with the unstructured constraint type."), TableOptions.table());
     }
 
     /**
@@ -86,12 +88,11 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
         this(alias, USAGE_RULE);
     }
 
-    private UsageRule(Name alias, Table<UsageRuleRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private UsageRule(Name alias, Table<UsageRuleRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table captures a usage rule information. A usage rule may be expressed in multiple expressions. Each expression is captured in the USAGE_RULE_EXPRESSION table. To capture a description of a usage rule, create a usage rule expression with the unstructured constraint type."), TableOptions.table());
+    /**
+     * Create a <code>oagi.usage_rule</code> table reference
+     */
+    public UsageRule() {
+        this(DSL.name("usage_rule"), null);
     }
 
     public <O extends Record> UsageRule(Table<O> child, ForeignKey<O, UsageRuleRecord> key) {
@@ -105,7 +106,7 @@ public class UsageRule extends TableImpl<UsageRuleRecord> {
 
     @Override
     public Identity<UsageRuleRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_USAGE_RULE;
+        return (Identity<UsageRuleRecord, ULong>) super.getIdentity();
     }
 
     @Override

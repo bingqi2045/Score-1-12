@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CtxCategory;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> implements Record8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -119372745;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.ctx_category.ctx_category_id</code>. Internal, primary, database key.
@@ -357,13 +357,13 @@ public class CtxCategoryRecord extends UpdatableRecordImpl<CtxCategoryRecord> im
     public CtxCategoryRecord(ULong ctxCategoryId, String guid, String name, String description, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(CtxCategory.CTX_CATEGORY);
 
-        set(0, ctxCategoryId);
-        set(1, guid);
-        set(2, name);
-        set(3, description);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setCtxCategoryId(ctxCategoryId);
+        setGuid(guid);
+        setName(name);
+        setDescription(description);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

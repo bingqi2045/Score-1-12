@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AppUserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUser extends TableImpl<AppUserRecord> {
 
-    private static final long serialVersionUID = -13584159;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.app_user</code>
@@ -51,43 +52,44 @@ public class AppUser extends TableImpl<AppUserRecord> {
     /**
      * The column <code>oagi.app_user.app_user_id</code>. Primary key column.
      */
-    public final TableField<AppUserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key column.");
+    public final TableField<AppUserRecord, ULong> APP_USER_ID = createField(DSL.name("app_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key column.");
 
     /**
      * The column <code>oagi.app_user.login_id</code>. User Id of the user.
      */
-    public final TableField<AppUserRecord, String> LOGIN_ID = createField(DSL.name("login_id"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "User Id of the user.");
+    public final TableField<AppUserRecord, String> LOGIN_ID = createField(DSL.name("login_id"), SQLDataType.VARCHAR(45).nullable(false), this, "User Id of the user.");
 
     /**
      * The column <code>oagi.app_user.password</code>. Password to authenticate the user.
      */
-    public final TableField<AppUserRecord, String> PASSWORD = createField(DSL.name("password"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "Password to authenticate the user.");
+    public final TableField<AppUserRecord, String> PASSWORD = createField(DSL.name("password"), SQLDataType.VARCHAR(100), this, "Password to authenticate the user.");
 
     /**
      * The column <code>oagi.app_user.name</code>. Full name of the user.
      */
-    public final TableField<AppUserRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "Full name of the user.");
+    public final TableField<AppUserRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100), this, "Full name of the user.");
 
     /**
      * The column <code>oagi.app_user.organization</code>. The company the user represents.
      */
-    public final TableField<AppUserRecord, String> ORGANIZATION = createField(DSL.name("organization"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "The company the user represents.");
+    public final TableField<AppUserRecord, String> ORGANIZATION = createField(DSL.name("organization"), SQLDataType.VARCHAR(100), this, "The company the user represents.");
 
     /**
      * The column <code>oagi.app_user.is_developer</code>.
      */
-    public final TableField<AppUserRecord, Byte> IS_DEVELOPER = createField(DSL.name("is_developer"), org.jooq.impl.SQLDataType.TINYINT, this, "");
+    public final TableField<AppUserRecord, Byte> IS_DEVELOPER = createField(DSL.name("is_developer"), SQLDataType.TINYINT, this, "");
 
     /**
      * The column <code>oagi.app_user.is_enabled</code>.
      */
-    public final TableField<AppUserRecord, Byte> IS_ENABLED = createField(DSL.name("is_enabled"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<AppUserRecord, Byte> IS_ENABLED = createField(DSL.name("is_enabled"), SQLDataType.TINYINT.defaultValue(DSL.inline("1", SQLDataType.TINYINT)), this, "");
 
-    /**
-     * Create a <code>oagi.app_user</code> table reference
-     */
-    public AppUser() {
-        this(DSL.name("app_user"), null);
+    private AppUser(Name alias, Table<AppUserRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private AppUser(Name alias, Table<AppUserRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table captures the user information for authentication and authorization purposes."), TableOptions.table());
     }
 
     /**
@@ -104,12 +106,11 @@ public class AppUser extends TableImpl<AppUserRecord> {
         this(alias, APP_USER);
     }
 
-    private AppUser(Name alias, Table<AppUserRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private AppUser(Name alias, Table<AppUserRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table captures the user information for authentication and authorization purposes."), TableOptions.table());
+    /**
+     * Create a <code>oagi.app_user</code> table reference
+     */
+    public AppUser() {
+        this(DSL.name("app_user"), null);
     }
 
     public <O extends Record> AppUser(Table<O> child, ForeignKey<O, AppUserRecord> key) {
@@ -123,7 +124,7 @@ public class AppUser extends TableImpl<AppUserRecord> {
 
     @Override
     public Identity<AppUserRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_APP_USER;
+        return (Identity<AppUserRecord, ULong>) super.getIdentity();
     }
 
     @Override

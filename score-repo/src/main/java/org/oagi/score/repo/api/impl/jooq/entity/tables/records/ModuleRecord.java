@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleRecord extends UpdatableRecordImpl<ModuleRecord> implements Record10<ULong, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1907017315;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module.module_id</code>. Primary, internal database key.
@@ -433,15 +433,15 @@ In the history record, this should always be the user who is editing the entity 
     public ModuleRecord(ULong moduleId, ULong moduleDirId, String name, ULong namespaceId, String versionNum, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Module.MODULE);
 
-        set(0, moduleId);
-        set(1, moduleDirId);
-        set(2, name);
-        set(3, namespaceId);
-        set(4, versionNum);
-        set(5, createdBy);
-        set(6, lastUpdatedBy);
-        set(7, ownerUserId);
-        set(8, creationTimestamp);
-        set(9, lastUpdateTimestamp);
+        setModuleId(moduleId);
+        setModuleDirId(moduleDirId);
+        setName(name);
+        setNamespaceId(namespaceId);
+        setVersionNum(versionNum);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setOwnerUserId(ownerUserId);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

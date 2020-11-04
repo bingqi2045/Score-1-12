@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtx;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements Record7<ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -910610375;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal database key.
@@ -321,12 +321,12 @@ public class BizCtxRecord extends UpdatableRecordImpl<BizCtxRecord> implements R
     public BizCtxRecord(ULong bizCtxId, String guid, String name, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(BizCtx.BIZ_CTX);
 
-        set(0, bizCtxId);
-        set(1, guid);
-        set(2, name);
-        set(3, createdBy);
-        set(4, lastUpdatedBy);
-        set(5, creationTimestamp);
-        set(6, lastUpdateTimestamp);
+        setBizCtxId(bizCtxId);
+        setGuid(guid);
+        setName(name);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

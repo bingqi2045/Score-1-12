@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
+import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.DTType;
@@ -14,13 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,7 +35,7 @@ public class LogSerializer {
     }
 
     @SneakyThrows(JsonIOException.class)
-    public String serialize(AccRecord accRecord,
+    public String serialize(AccManifestRecord accManifestRecord, AccRecord accRecord,
                             List<AsccManifestRecord> asccManifestRecords, List<BccManifestRecord> bccManifestRecords,
                             List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
                             List<SeqKeyRecord> seqKeyRecords) {
@@ -46,68 +44,90 @@ public class LogSerializer {
         properties.put("component", "acc");
         properties.put("guid", accRecord.getGuid());
         properties.put("objectClassTerm", accRecord.getObjectClassTerm());
+        properties.put("objectClassQualifier", accRecord.getObjectClassQualifier());
         properties.put("definition", accRecord.getDefinition());
         properties.put("definitionSource", accRecord.getDefinitionSource());
-        properties.put("objectClassQualifier", accRecord.getObjectClassQualifier());
         properties.put("componentType", OagisComponentType.valueOf(accRecord.getOagisComponentType()).name());
         properties.put("state", accRecord.getState());
         properties.put("deprecated", (byte) 1 == accRecord.getIsDeprecated());
         properties.put("abstract", (byte) 1 == accRecord.getIsAbstract());
 
-        properties.put("ownerUserId", (accRecord.getOwnerUserId() != null) ? accRecord.getOwnerUserId() : null);
-        properties.put("basedAccId", (accRecord.getBasedAccId() != null) ? accRecord.getBasedAccId() : null);
-        properties.put("namespaceId", (accRecord.getNamespaceId() != null) ? accRecord.getNamespaceId() : null);
+        properties.put("basedAcc", resolver.getAcc(accRecord.getBasedAccId()));
+        properties.put("ownerUser", resolver.getUser(accRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(accRecord.getNamespaceId()));
 
         List<Map<String, Object>> associations = new ArrayList();
         properties.put("associations", associations);
 
         for (AssocRecord assocRecord : sort(asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)) {
-            Object delegate = assocRecord.getDelegate();
-            if (delegate instanceof AsccRecord) {
-                associations.add(serialize((AsccRecord) delegate));
+            if (assocRecord.isAssociation()) {
+                associations.add(serialize(
+                        (AsccManifestRecord) assocRecord.getDelegatedManifest(),
+                        (AsccRecord) assocRecord.getDelegatedComponent()));
             } else {
-                associations.add(serialize((BccRecord) delegate));
+                associations.add(serialize(
+                        (BccManifestRecord) assocRecord.getDelegatedManifest(),
+                        (BccRecord) assocRecord.getDelegatedComponent()));
             }
         }
+
+        properties.put("_metadata", toMetadata(accManifestRecord, accRecord,
+                asccManifestRecords, bccManifestRecords,
+                asccRecords, bccRecords,
+                seqKeyRecords));
 
         return gson.toJson(properties, HashMap.class);
     }
 
-    private void accAddProperties(JsonObject properties) {
-        properties.addProperty("den",
-                properties.get("objectClassTerm").getAsString() + ". Details"
-        );
+    private Map<String, Object> toMetadata(AccManifestRecord accManifestRecord, AccRecord accRecord,
+                                           List<AsccManifestRecord> asccManifestRecords, List<BccManifestRecord> bccManifestRecords,
+                                           List<AsccRecord> asccRecords, List<BccRecord> bccRecords,
+                                           List<SeqKeyRecord> seqKeyRecords) {
+        Map<String, Object> metadata = new HashMap();
 
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("basedAccId")) {
-            BigInteger basedAccId = properties.get("basedAccId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("basedAccObjectClassTerm",
-                    resolver.getAccObjectClassTerm(ULong.valueOf(basedAccId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
+        metadata.put("accManifest", toMetadata(accManifestRecord));
+        metadata.put("acc", toMetadata(accRecord));
+        List<Map<String, Object>> associations = new ArrayList();
+        metadata.put("associations", associations);
+        for (AssocRecord assocRecord : sort(asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)) {
+            Map<String, Object> assocMetadata = new HashMap();
+            if (assocRecord.isAssociation()) {
+                assocMetadata.put("asccManifest", toMetadata((AsccManifestRecord) assocRecord.getDelegatedManifest()));
+                assocMetadata.put("ascc", toMetadata((AsccRecord) assocRecord.getDelegatedComponent()));
+            } else {
+                assocMetadata.put("bccManifest", toMetadata((BccManifestRecord) assocRecord.getDelegatedManifest()));
+                assocMetadata.put("bcc", toMetadata((BccRecord) assocRecord.getDelegatedComponent()));
+            }
+            assocMetadata.put("seqKey", toMetadata(assocRecord.getSeqKeyRecord()));
+            associations.add(assocMetadata);
         }
 
-        if (properties.has("associations")) {
-            for (JsonElement element : properties.getAsJsonArray("associations")) {
-                JsonObject association = element.getAsJsonObject();
-                String component = association.get("component").getAsString();
-                if ("ascc".equals(component)) {
-                    asccAddProperties(properties, association);
-                } else if ("bcc".equals(component)) {
-                    bccAddProperties(properties, association);
-                }
+        return metadata;
+    }
+
+    private Map<String, Object> toMetadata(Record record) {
+        if (record == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> properties = new HashMap();
+        for (Field field : record.fields()) {
+            String name = field.getName();
+            // ignore deprecated columns
+            if ("seq_key".equals(name)) {
+                continue;
+            }
+            Object value = record.getValue(field);
+            if (value instanceof Byte) {
+                properties.put(name, (byte) 1 == (Byte) value);
+            } else if (value instanceof ULong) {
+                properties.put(name, ((ULong) value).toBigInteger());
+            } else if (value instanceof LocalDateTime) {
+                properties.put(name, ((LocalDateTime) value).format(DateTimeFormatter.ISO_DATE_TIME));
+            } else {
+                properties.put(name, value);
             }
         }
+        return properties;
     }
 
     private List<AssocRecord> sort(List<AsccManifestRecord> asccManifestRecords, List<BccManifestRecord> bccManifestRecords,
@@ -131,9 +151,13 @@ public class LogSerializer {
             SeqKeyRecord node = seqKeyRecords.stream().filter(e -> e.getPrevSeqKeyId() == null).findAny().get();
             while (node != null) {
                 if (node.getAsccManifestId() != null) {
-                    sortedRecords.add(new AssocRecord(asccRecordMap.get(asccManifestRecordMap.get(node.getAsccManifestId()).getAsccId())));
+                    AsccManifestRecord manifest = asccManifestRecordMap.get(node.getAsccManifestId());
+                    AsccRecord component = asccRecordMap.get(manifest.getAsccId());
+                    sortedRecords.add(new AssocRecord(manifest, component, node));
                 } else {
-                    sortedRecords.add(new AssocRecord(bccRecordMap.get(bccManifestRecordMap.get(node.getBccManifestId()).getBccId())));
+                    BccManifestRecord manifest = bccManifestRecordMap.get(node.getBccManifestId());
+                    BccRecord component = bccRecordMap.get(manifest.getBccId());
+                    sortedRecords.add(new AssocRecord(manifest, component, node));
                 }
                 node = seqKeyRecordMap.get(node.getNextSeqKeyId());
             }
@@ -144,37 +168,51 @@ public class LogSerializer {
 
     private class AssocRecord {
 
-        private final int seqKey;
         private final LocalDateTime timestamp;
-        private final Object delegate;
+        private final Object delegatedManifest;
+        private final Object delegatedComponent;
+        private final SeqKeyRecord seqKeyRecord;
+        private final boolean association;
 
-        AssocRecord(AsccRecord ascc) {
-            this.seqKey = ascc.getSeqKey();
+        AssocRecord(AsccManifestRecord manifest, AsccRecord ascc, SeqKeyRecord seqKeyRecord) {
             this.timestamp = ascc.getLastUpdateTimestamp();
-            this.delegate = ascc;
+            this.delegatedManifest = manifest;
+            this.delegatedComponent = ascc;
+            this.seqKeyRecord = seqKeyRecord;
+            this.association = true;
         }
 
-        AssocRecord(BccRecord bcc) {
-            this.seqKey = bcc.getSeqKey();
+        AssocRecord(BccManifestRecord manifest, BccRecord bcc, SeqKeyRecord seqKeyRecord) {
             this.timestamp = bcc.getLastUpdateTimestamp();
-            this.delegate = bcc;
-        }
-
-        public int getSeqKey() {
-            return this.seqKey;
+            this.delegatedManifest = manifest;
+            this.delegatedComponent = bcc;
+            this.seqKeyRecord = seqKeyRecord;
+            this.association = false;
         }
 
         public LocalDateTime getTimestamp() {
             return timestamp;
         }
 
-        public Object getDelegate() {
-            return this.delegate;
+        public Object getDelegatedManifest() {
+            return delegatedManifest;
+        }
+
+        public Object getDelegatedComponent() {
+            return delegatedComponent;
+        }
+
+        public SeqKeyRecord getSeqKeyRecord() {
+            return seqKeyRecord;
+        }
+
+        public boolean isAssociation() {
+            return association;
         }
     }
 
     @SneakyThrows(JsonIOException.class)
-    public Map<String, Object> serialize(AsccRecord asccRecord) {
+    public Map<String, Object> serialize(AsccManifestRecord asccManifestRecord, AsccRecord asccRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "ascc");
@@ -184,31 +222,13 @@ public class LogSerializer {
         properties.put("definition", asccRecord.getDefinition());
         properties.put("definitionSource", asccRecord.getDefinitionSource());
         properties.put("deprecated", (byte) 1 == asccRecord.getIsDeprecated());
-        properties.put("state", asccRecord.getState());
-
-        properties.put("toAsccpId", (asccRecord.getToAsccpId() != null) ? asccRecord.getToAsccpId().toBigInteger() : null);
+        properties.put("toAsccp", resolver.getAsccp(asccRecord.getToAsccpId()));
 
         return properties;
     }
 
-    private void asccAddProperties(JsonObject accProperties,
-                                   JsonObject properties) {
-
-        properties.addProperty("den",
-                accProperties.get("objectClassTerm").getAsString() + ". " +
-                        resolver.getAsccpDen(
-                                ULong.valueOf(properties.get("toAsccpId").getAsBigInteger())
-                        )
-        );
-        properties.addProperty("toAsccpPropertyTerm",
-                resolver.getAsccpPropertyTerm(
-                        ULong.valueOf(properties.get("toAsccpId").getAsBigInteger())
-                )
-        );
-    }
-
     @SneakyThrows(JsonIOException.class)
-    public Map<String, Object> serialize(BccRecord bccRecord) {
+    public Map<String, Object> serialize(BccManifestRecord bccManifestRecord, BccRecord bccRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "bcc");
@@ -222,31 +242,13 @@ public class LogSerializer {
         properties.put("fixedValue", bccRecord.getFixedValue());
         properties.put("deprecated", (byte) 1 == bccRecord.getIsDeprecated());
         properties.put("nillable", (byte) 1 == bccRecord.getIsNillable());
-        properties.put("state", bccRecord.getState());
-
-        properties.put("toBccpId", (bccRecord.getToBccpId() != null) ? bccRecord.getToBccpId().toBigInteger() : null);
+        properties.put("toBccp", resolver.getBccp(bccRecord.getToBccpId()));
 
         return properties;
     }
 
-    private void bccAddProperties(JsonObject accProperties,
-                                  JsonObject properties) {
-
-        properties.addProperty("den",
-                accProperties.get("objectClassTerm").getAsString() + ". " +
-                        resolver.getBccpDen(
-                                ULong.valueOf(properties.get("toBccpId").getAsBigInteger())
-                        )
-        );
-        properties.addProperty("toBccpPropertyTerm",
-                resolver.getBccpPropertyTerm(
-                        ULong.valueOf(properties.get("toBccpId").getAsBigInteger())
-                )
-        );
-    }
-
     @SneakyThrows(JsonIOException.class)
-    public String serialize(AsccpRecord asccpRecord) {
+    public String serialize(AsccpManifestRecord asccpManifestRecord, AsccpRecord asccpRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "asccp");
@@ -259,41 +261,26 @@ public class LogSerializer {
         properties.put("deprecated", (byte) 1 == asccpRecord.getIsDeprecated());
         properties.put("nillable", (byte) 1 == asccpRecord.getIsNillable());
 
-        properties.put("ownerUserId", (asccpRecord.getOwnerUserId() != null) ? asccpRecord.getOwnerUserId() : null);
-        properties.put("roleOfAccId", (asccpRecord.getRoleOfAccId() != null) ? asccpRecord.getRoleOfAccId() : null);
-        properties.put("namespaceId", (asccpRecord.getNamespaceId() != null) ? asccpRecord.getNamespaceId() : null);
+        properties.put("roleOfAcc", resolver.getAcc(asccpRecord.getRoleOfAccId()));
+        properties.put("ownerUser", resolver.getUser(asccpRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(asccpRecord.getNamespaceId()));
+
+        properties.put("_metadata", toMetadata(asccpManifestRecord, asccpRecord));
 
         return gson.toJson(properties, HashMap.class);
     }
 
-    private void asccpAddProperties(JsonObject properties) {
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("roleOfAccId")) {
-            BigInteger roleOfAccId = properties.get("roleOfAccId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("roleOfAccObjectClassTerm",
-                    resolver.getAccObjectClassTerm(ULong.valueOf(roleOfAccId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
-        }
+    private Map<String, Object> toMetadata(AsccpManifestRecord asccpManifestRecord, AsccpRecord asccpRecord) {
+        Map<String, Object> metadata = new HashMap();
 
-        properties.addProperty("den",
-                properties.get("propertyTerm").getAsString() + ". " +
-                        properties.get("roleOfAccObjectClassTerm").getAsString()
-        );
+        metadata.put("asccpManifest", toMetadata(asccpManifestRecord));
+        metadata.put("asccp", toMetadata(asccpRecord));
+
+        return metadata;
     }
 
     @SneakyThrows(JsonIOException.class)
-    public String serialize(BccpRecord bccpRecord) {
+    public String serialize(BccpManifestRecord bccpManifestRecord, BccpRecord bccpRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "bccp");
@@ -308,41 +295,27 @@ public class LogSerializer {
         properties.put("deprecated", (byte) 1 == bccpRecord.getIsDeprecated());
         properties.put("nillable", (byte) 1 == bccpRecord.getIsNillable());
 
-        properties.put("ownerUserId", (bccpRecord.getOwnerUserId() != null) ? bccpRecord.getOwnerUserId() : null);
-        properties.put("bdtId", (bccpRecord.getBdtId() != null) ? bccpRecord.getBdtId() : null);
-        properties.put("namespaceId", (bccpRecord.getNamespaceId() != null) ? bccpRecord.getNamespaceId() : null);
+        properties.put("bdt", resolver.getDt(bccpRecord.getBdtId()));
+        properties.put("ownerUser", resolver.getUser(bccpRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(bccpRecord.getNamespaceId()));
+
+        properties.put("_metadata", toMetadata(bccpManifestRecord, bccpRecord));
 
         return gson.toJson(properties, HashMap.class);
     }
 
-    private void bccpAddProperties(JsonObject properties) {
-        properties.addProperty("den",
-                properties.get("propertyTerm").getAsString() + ". " +
-                        properties.get("representationTerm").getAsString()
-        );
+    private Map<String, Object> toMetadata(BccpManifestRecord bccpManifestRecord, BccpRecord bccpRecord) {
+        Map<String, Object> metadata = new HashMap();
 
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("bdtId")) {
-            BigInteger bdtId = properties.get("bdtId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("bdtDataTypeTerm",
-                    resolver.getDtDen(ULong.valueOf(bdtId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
-        }
+        metadata.put("bccpManifest", toMetadata(bccpManifestRecord));
+        metadata.put("bccp", toMetadata(bccpRecord));
+
+        return metadata;
     }
 
     @SneakyThrows(JsonIOException.class)
-    public String serialize(DtRecord dtRecord, List<DtScRecord> dtScRecords) {
+    public String serialize(DtManifestRecord dtManifestRecord, DtRecord dtRecord,
+                            List<DtScManifestRecord> dtScManifestRecords, List<DtScRecord> dtScRecords) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "dt");
@@ -358,22 +331,50 @@ public class LogSerializer {
         properties.put("state", dtRecord.getState());
         properties.put("deprecated", (byte) 1 == dtRecord.getIsDeprecated());
 
-        properties.put("ownerUserId", (dtRecord.getOwnerUserId() != null) ? dtRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("basedDtId", (dtRecord.getBasedDtId() != null) ? dtRecord.getBasedDtId().toBigInteger() : null);
-        properties.put("namespaceId", (dtRecord.getNamespaceId() != null) ? dtRecord.getNamespaceId() : null);
+        properties.put("basedDt", resolver.getDt(dtRecord.getBasedDtId()));
+        properties.put("ownerUser", resolver.getUser(dtRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(dtRecord.getNamespaceId()));
 
         List<Map<String, Object>> supplementaryComponents = new ArrayList();
         properties.put("supplementaryComponents", supplementaryComponents);
 
-        for (DtScRecord dtScRecord : dtScRecords) {
-            supplementaryComponents.add(serialize(dtScRecord));
+        Map<ULong, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
+                Collectors.toMap(DtScRecord::getDtScId, Function.identity()));
+        for (DtScManifestRecord dtScManifestRecord : dtScManifestRecords) {
+            DtScRecord dtScRecord = dtScRecordMap.get(dtScManifestRecord.getDtScId());
+            supplementaryComponents.add(serialize(dtScManifestRecord, dtScRecord));
         }
+
+        properties.put("_metadata", toMetadata(dtManifestRecord, dtRecord,
+                dtScManifestRecords, dtScRecords));
 
         return gson.toJson(properties, HashMap.class);
     }
 
+    private Map<String, Object> toMetadata(DtManifestRecord dtManifestRecord, DtRecord dtRecord,
+                              List<DtScManifestRecord> dtScManifestRecords, List<DtScRecord> dtScRecords) {
+        Map<String, Object> metadata = new HashMap();
+
+        metadata.put("dtManifest", toMetadata(dtManifestRecord));
+        metadata.put("dt", toMetadata(dtRecord));
+        List<Map<String, Object>> supplementaryComponents = new ArrayList();
+        metadata.put("supplementaryComponents", supplementaryComponents);
+
+        Map<ULong, DtScRecord> dtScRecordMap = dtScRecords.stream().collect(
+                Collectors.toMap(DtScRecord::getDtScId, Function.identity()));
+        for (DtScManifestRecord dtScManifestRecord : dtScManifestRecords) {
+            DtScRecord dtScRecord = dtScRecordMap.get(dtScManifestRecord.getDtScId());
+            Map<String, Object> dtScMetadata = new HashMap();
+            dtScMetadata.put("dtScManifest", toMetadata(dtScManifestRecord));
+            dtScMetadata.put("dtSc", toMetadata(dtScRecord));
+            supplementaryComponents.add(dtScMetadata);
+        }
+
+        return metadata;
+    }
+
     @SneakyThrows(JsonIOException.class)
-    private Map<String, Object> serialize(DtScRecord dtScRecord) {
+    private Map<String, Object> serialize(DtScManifestRecord dtScManifestRecord, DtScRecord dtScRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "dtSc");
@@ -386,29 +387,15 @@ public class LogSerializer {
         properties.put("fixedValue", dtScRecord.getFixedValue());
         properties.put("definition", dtScRecord.getDefinition());
         properties.put("definitionSource", dtScRecord.getDefinitionSource());
-
-        properties.put("basedDtScId", (dtScRecord.getBasedDtScId() != null) ? dtScRecord.getBasedDtScId().toBigInteger() : null);
+        properties.put("basedDtSc", resolver.getDtSc(dtScRecord.getBasedDtScId()));
 
         return properties;
     }
 
-    private void dtAddProperties(JsonObject properties) {
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
-        }
-    }
-
     @SneakyThrows(JsonIOException.class)
-    public String serialize(CodeListRecord codeListRecord,
+    public String serialize(CodeListManifestRecord codeListManifestRecord,
+                            CodeListRecord codeListRecord,
+                            List<CodeListValueManifestRecord> codeListValueManifestRecords,
                             List<CodeListValueRecord> codeListValueRecords) {
         Map<String, Object> properties = new HashMap();
 
@@ -416,7 +403,7 @@ public class LogSerializer {
         properties.put("guid", codeListRecord.getGuid());
         properties.put("name", codeListRecord.getName());
         properties.put("listId", codeListRecord.getListId());
-        properties.put("agencyId", codeListRecord.getAgencyId());
+        properties.put("agencyId", resolver.getAgencyIdListValue(codeListRecord.getAgencyId()));
         properties.put("versionId", codeListRecord.getVersionId());
         properties.put("remark", codeListRecord.getRemark());
         properties.put("definition", codeListRecord.getDefinition());
@@ -425,22 +412,53 @@ public class LogSerializer {
         properties.put("deprecated", (byte) 1 == codeListRecord.getIsDeprecated());
         properties.put("extensible", (byte) 1 == codeListRecord.getExtensibleIndicator());
 
-        properties.put("ownerUserId", (codeListRecord.getOwnerUserId() != null) ? codeListRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("basedCodeListId", (codeListRecord.getBasedCodeListId() != null) ? codeListRecord.getBasedCodeListId().toBigInteger() : null);
-        properties.put("namespaceId", (codeListRecord.getNamespaceId() != null) ? codeListRecord.getNamespaceId() : null);
+        properties.put("basedCodeList", resolver.getCodeList(codeListRecord.getBasedCodeListId()));
+        properties.put("ownerUser", resolver.getUser(codeListRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(codeListRecord.getNamespaceId()));
 
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
 
-        for (CodeListValueRecord codeListValueRecord : codeListValueRecords) {
-            values.add(serialize(codeListValueRecord));
+        Map<ULong, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
+                Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
+        for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecords) {
+            CodeListValueRecord codeListValueRecord = codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
+            values.add(serialize(codeListValueManifestRecord, codeListValueRecord));
         }
+
+        properties.put("_metadata", toMetadata(codeListManifestRecord, codeListRecord,
+                codeListValueManifestRecords, codeListValueRecords));
 
         return gson.toJson(properties, HashMap.class);
     }
 
+    private Map<String, Object> toMetadata(CodeListManifestRecord codeListManifestRecord,
+                                           CodeListRecord codeListRecord,
+                                           List<CodeListValueManifestRecord> codeListValueManifestRecords,
+                                           List<CodeListValueRecord> codeListValueRecords) {
+        Map<String, Object> metadata = new HashMap();
+
+        metadata.put("codeListManifest", toMetadata(codeListManifestRecord));
+        metadata.put("codeList", toMetadata(codeListRecord));
+        List<Map<String, Object>> values = new ArrayList();
+        metadata.put("values", values);
+
+        Map<ULong, CodeListValueRecord> codeListValueRecordMap = codeListValueRecords.stream().collect(
+                Collectors.toMap(CodeListValueRecord::getCodeListValueId, Function.identity()));
+        for (CodeListValueManifestRecord codeListValueManifestRecord : codeListValueManifestRecords) {
+            CodeListValueRecord codeListValueRecord = codeListValueRecordMap.get(codeListValueManifestRecord.getCodeListValueId());
+            Map<String, Object> codeListValueMetadata = new HashMap();
+            codeListValueMetadata.put("codeListValueManifest", toMetadata(codeListValueManifestRecord));
+            codeListValueMetadata.put("codeListValue", toMetadata(codeListValueRecord));
+            values.add(codeListValueMetadata);
+        }
+
+        return metadata;
+    }
+
     @SneakyThrows(JsonIOException.class)
-    private Map<String, Object> serialize(CodeListValueRecord codeListValueRecord) {
+    private Map<String, Object> serialize(CodeListValueManifestRecord codeListValueManifestRecord,
+                                          CodeListValueRecord codeListValueRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "codeListValue");
@@ -457,29 +475,15 @@ public class LogSerializer {
         return properties;
     }
 
-    private void codeListAddProperties(JsonObject properties) {
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
-        }
-    }
-
     @SneakyThrows(JsonIOException.class)
-    public String serialize(AgencyIdListRecord agencyIdListRecord,
-                            List<AgencyIdListValueRecord> agencyIdListValueRecords) {
+    public String serialize(AgencyIdListManifestRecord agencyIdListManifestRecord, AgencyIdListRecord agencyIdListRecord,
+                            List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords, List<AgencyIdListValueRecord> agencyIdListValueRecords) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "agencyIdList");
         properties.put("guid", agencyIdListRecord.getGuid());
         properties.put("enumTypeGuid", agencyIdListRecord.getEnumTypeGuid());
+        properties.put("agencyIdListValue", resolver.getAgencyIdListValue(agencyIdListRecord.getAgencyIdListValueId()));
         properties.put("name", agencyIdListRecord.getName());
         properties.put("listId", agencyIdListRecord.getListId());
         properties.put("versionId", agencyIdListRecord.getVersionId());
@@ -487,23 +491,53 @@ public class LogSerializer {
         properties.put("state", agencyIdListRecord.getState());
         properties.put("deprecated", (byte) 1 == agencyIdListRecord.getIsDeprecated());
 
-        properties.put("agencyIdListValueId", (agencyIdListRecord.getAgencyIdListValueId() != null) ? agencyIdListRecord.getAgencyIdListValueId().toBigInteger() : null);
-        properties.put("ownerUserId", (agencyIdListRecord.getOwnerUserId() != null) ? agencyIdListRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("basedAgencyIdListId", (agencyIdListRecord.getBasedAgencyIdListId() != null) ? agencyIdListRecord.getBasedAgencyIdListId().toBigInteger() : null);
-        properties.put("namespaceId", (agencyIdListRecord.getNamespaceId() != null) ? agencyIdListRecord.getNamespaceId() : null);
+        properties.put("basedAgencyIdList", resolver.getAgencyIdList(agencyIdListRecord.getBasedAgencyIdListId()));
+        properties.put("ownerUser", resolver.getUser(agencyIdListRecord.getOwnerUserId()));
+        properties.put("namespace", resolver.getNamespace(agencyIdListRecord.getNamespaceId()));
 
         List<Map<String, Object>> values = new ArrayList();
         properties.put("values", values);
 
-        for (AgencyIdListValueRecord agencyIdListValueRecord : agencyIdListValueRecords) {
-            values.add(serialize(agencyIdListValueRecord));
+        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
+                Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
+        for (AgencyIdListValueManifestRecord agencyIdListValueManifestRecord : agencyIdListValueManifestRecords) {
+            AgencyIdListValueRecord agencyIdListValueRecord = agencyIdListValueRecordMap.get(agencyIdListValueManifestRecord.getAgencyIdListValueId());
+            values.add(serialize(agencyIdListValueManifestRecord, agencyIdListValueRecord));
         }
+
+        properties.put("_metadata", toMetadata(agencyIdListManifestRecord, agencyIdListRecord,
+                agencyIdListValueManifestRecords, agencyIdListValueRecords));
 
         return gson.toJson(properties, HashMap.class);
     }
 
+    private Map<String, Object> toMetadata(AgencyIdListManifestRecord agencyIdListManifestRecord,
+                                           AgencyIdListRecord agencyIdListRecord,
+                                           List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords,
+                                           List<AgencyIdListValueRecord> agencyIdListValueRecords) {
+        Map<String, Object> metadata = new HashMap();
+
+        metadata.put("agencyIdListManifest", toMetadata(agencyIdListManifestRecord));
+        metadata.put("agencyIdList", toMetadata(agencyIdListRecord));
+        List<Map<String, Object>> values = new ArrayList();
+        metadata.put("values", values);
+
+        Map<ULong, AgencyIdListValueRecord> agencyIdListValueRecordMap = agencyIdListValueRecords.stream().collect(
+                Collectors.toMap(AgencyIdListValueRecord::getAgencyIdListValueId, Function.identity()));
+        for (AgencyIdListValueManifestRecord agencyIdListValueManifestRecord : agencyIdListValueManifestRecords) {
+            AgencyIdListValueRecord agencyIdListValueRecord = agencyIdListValueRecordMap.get(agencyIdListValueManifestRecord.getAgencyIdListValueId());
+            Map<String, Object> agencyIdListValueMetadata = new HashMap();
+            agencyIdListValueMetadata.put("agencyIdListValueManifest", toMetadata(agencyIdListValueManifestRecord));
+            agencyIdListValueMetadata.put("agencyIdListValue", toMetadata(agencyIdListValueRecord));
+            values.add(agencyIdListValueMetadata);
+        }
+
+        return metadata;
+    }
+
     @SneakyThrows(JsonIOException.class)
-    private Map<String, Object> serialize(AgencyIdListValueRecord agencyIdListValueRecord) {
+    private Map<String, Object> serialize(AgencyIdListValueManifestRecord agencyIdListValueManifestRecord,
+                                          AgencyIdListValueRecord agencyIdListValueRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "agencyIdListValue");
@@ -516,23 +550,8 @@ public class LogSerializer {
         return properties;
     }
 
-    private void agencyIdListAddProperties(JsonObject properties) {
-        if (properties.has("ownerUserId")) {
-            BigInteger ownerUserId = properties.get("ownerUserId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("ownerUserLoginId",
-                    resolver.getUserLoginId(ULong.valueOf(ownerUserId))
-            );
-        }
-        if (properties.has("namespaceId")) {
-            BigInteger basedAccId = properties.get("namespaceId").getAsJsonObject().get("value").getAsBigInteger();
-            properties.addProperty("namespaceUrl",
-                    resolver.getNamespaceUrl(ULong.valueOf(basedAccId))
-            );
-        }
-    }
-
     @SneakyThrows(JsonIOException.class)
-    public String serialize(XbtRecord xbtRecord) {
+    public String serialize(XbtManifestRecord xbtManifestRecord, XbtRecord xbtRecord) {
         Map<String, Object> properties = new HashMap();
 
         properties.put("component", "xbt");
@@ -546,10 +565,21 @@ public class LogSerializer {
         properties.put("state", xbtRecord.getState());
         properties.put("deprecated", (byte) 1 == xbtRecord.getIsDeprecated());
 
-        properties.put("ownerUserId", (xbtRecord.getOwnerUserId() != null) ? xbtRecord.getOwnerUserId().toBigInteger() : null);
-        properties.put("subTypeOfXbtId", (xbtRecord.getSubtypeOfXbtId() != null) ? xbtRecord.getSubtypeOfXbtId().toBigInteger() : null);
+        properties.put("subTypeOfXbt", resolver.getXbt(xbtRecord.getSubtypeOfXbtId()));
+        properties.put("ownerUser", resolver.getUser(xbtRecord.getOwnerUserId()));
+
+        properties.put("_metadata", toMetadata(xbtManifestRecord, xbtRecord));
 
         return gson.toJson(properties, HashMap.class);
+    }
+
+    private Map<String, Object> toMetadata(XbtManifestRecord xbtManifestRecord, XbtRecord xbtRecord) {
+        Map<String, Object> metadata = new HashMap();
+
+        metadata.put("xbtManifest", toMetadata(xbtManifestRecord));
+        metadata.put("xbt", toMetadata(xbtRecord));
+
+        return metadata;
     }
 
     @SneakyThrows()
@@ -562,12 +592,6 @@ public class LogSerializer {
         String component = properties.get("component").getAsString();
         if (StringUtils.isEmpty(component)) {
             return properties;
-        }
-
-        try {
-            Method method = this.getClass().getDeclaredMethod(component + "AddProperties", JsonObject.class);
-            method.invoke(this, properties);
-        } catch (NoSuchMethodException ignore) {
         }
 
         return properties;

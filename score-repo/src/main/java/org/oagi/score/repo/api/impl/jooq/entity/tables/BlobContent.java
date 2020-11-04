@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContent extends TableImpl<BlobContentRecord> {
 
-    private static final long serialVersionUID = -1927676049;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.blob_content</code>
@@ -51,18 +52,19 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
     /**
      * The column <code>oagi.blob_content.blob_content_id</code>. Primary, internal database key.
      */
-    public final TableField<BlobContentRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BlobContentRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.blob_content.content</code>. The Blob content of the schema file.
      */
-    public final TableField<BlobContentRecord, byte[]> CONTENT = createField(DSL.name("content"), org.jooq.impl.SQLDataType.BLOB.nullable(false), this, "The Blob content of the schema file.");
+    public final TableField<BlobContentRecord, byte[]> CONTENT = createField(DSL.name("content"), SQLDataType.BLOB.nullable(false), this, "The Blob content of the schema file.");
 
-    /**
-     * Create a <code>oagi.blob_content</code> table reference
-     */
-    public BlobContent() {
-        this(DSL.name("blob_content"), null);
+    private BlobContent(Name alias, Table<BlobContentRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BlobContent(Name alias, Table<BlobContentRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table stores schemas whose content is only imported as a whole and is represented in Blob."), TableOptions.table());
     }
 
     /**
@@ -79,12 +81,11 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
         this(alias, BLOB_CONTENT);
     }
 
-    private BlobContent(Name alias, Table<BlobContentRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BlobContent(Name alias, Table<BlobContentRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table stores schemas whose content is only imported as a whole and is represented in Blob."), TableOptions.table());
+    /**
+     * Create a <code>oagi.blob_content</code> table reference
+     */
+    public BlobContent() {
+        this(DSL.name("blob_content"), null);
     }
 
     public <O extends Record> BlobContent(Table<O> child, ForeignKey<O, BlobContentRecord> key) {
@@ -98,7 +99,7 @@ public class BlobContent extends TableImpl<BlobContentRecord> {
 
     @Override
     public Identity<BlobContentRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BLOB_CONTENT;
+        return (Identity<BlobContentRecord, ULong>) super.getIdentity();
     }
 
     @Override

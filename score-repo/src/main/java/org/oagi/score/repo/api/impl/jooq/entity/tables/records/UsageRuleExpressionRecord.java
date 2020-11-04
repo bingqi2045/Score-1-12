@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.UsageRuleExpression;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpressionRecord> implements Record4<ULong, Integer, String, ULong> {
 
-    private static final long serialVersionUID = 1480257996;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.usage_rule_expression.usage_rule_expression_id</code>. Primary key of the usage rule expression
@@ -212,9 +212,9 @@ public class UsageRuleExpressionRecord extends UpdatableRecordImpl<UsageRuleExpr
     public UsageRuleExpressionRecord(ULong usageRuleExpressionId, Integer constraintType, String constraintText, ULong representedUsageRuleId) {
         super(UsageRuleExpression.USAGE_RULE_EXPRESSION);
 
-        set(0, usageRuleExpressionId);
-        set(1, constraintType);
-        set(2, constraintText);
-        set(3, representedUsageRuleId);
+        setUsageRuleExpressionId(usageRuleExpressionId);
+        setConstraintType(constraintType);
+        setConstraintText(constraintText);
+        setRepresentedUsageRuleId(representedUsageRuleId);
     }
 }

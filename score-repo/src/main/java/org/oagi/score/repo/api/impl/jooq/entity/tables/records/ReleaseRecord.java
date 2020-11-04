@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements Record11<ULong, String, String, String, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String> {
 
-    private static final long serialVersionUID = 1902759698;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.release.release_id</code>. RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.
@@ -464,16 +464,16 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> implements
     public ReleaseRecord(ULong releaseId, String guid, String releaseNum, String releaseNote, String releaseLicense, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state) {
         super(Release.RELEASE);
 
-        set(0, releaseId);
-        set(1, guid);
-        set(2, releaseNum);
-        set(3, releaseNote);
-        set(4, releaseLicense);
-        set(5, namespaceId);
-        set(6, createdBy);
-        set(7, lastUpdatedBy);
-        set(8, creationTimestamp);
-        set(9, lastUpdateTimestamp);
-        set(10, state);
+        setReleaseId(releaseId);
+        setGuid(guid);
+        setReleaseNum(releaseNum);
+        setReleaseNote(releaseNote);
+        setReleaseLicense(releaseLicense);
+        setNamespaceId(namespaceId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
     }
 }

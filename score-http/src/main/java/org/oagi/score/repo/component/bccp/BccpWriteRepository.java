@@ -88,19 +88,20 @@ public class BccpWriteRepository {
         bccpManifest.setBccpId(bccp.getBccpId());
         bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
         bccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccp,
-                        LogAction.Added,
-                        userId, timestamp);
-        bccpManifest.setLogId(logRecord.getLogId());
-
         bccpManifest.setBccpManifestId(
                 dslContext.insertInto(BCCP_MANIFEST)
                         .set(bccpManifest)
                         .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId()
         );
+
+        LogRecord logRecord =
+                logRepository.insertBccpLog(
+                        bccpManifest,
+                        bccp,
+                        LogAction.Added,
+                        userId, timestamp);
+        bccpManifest.setLogId(logRecord.getLogId());
+        bccpManifest.update(BCCP_MANIFEST.LOG_ID);
 
         return new CreateBccpRepositoryResponse(bccpManifest.getBccpManifestId().toBigInteger());
     }
@@ -176,6 +177,7 @@ public class BccpWriteRepository {
         // creates new log for revised record.
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         nextBccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Revised,
                         userId, timestamp);
@@ -288,6 +290,7 @@ public class BccpWriteRepository {
         // creates new log for updated record.
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         bccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -355,6 +358,7 @@ public class BccpWriteRepository {
         // creates new log for updated record.
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         bccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -414,6 +418,7 @@ public class BccpWriteRepository {
                 ? LogAction.Restored : LogAction.Modified;
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         bccpRecord, bccpManifestRecord.getLogId(),
                         logAction,
                         userId, timestamp);
@@ -457,6 +462,7 @@ public class BccpWriteRepository {
         // creates new log for deleted record.
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         bccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Deleted,
                         userId, timestamp);
@@ -497,6 +503,7 @@ public class BccpWriteRepository {
 
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         bccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -531,6 +538,7 @@ public class BccpWriteRepository {
         // creates new log for canceled record.
         LogRecord logRecord =
                 logRepository.insertBccpLog(
+                        bccpManifestRecord,
                         prevBccpRecord, bccpManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);

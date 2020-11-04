@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -28,13 +29,13 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 
 
 /**
- * This table represents a context scheme (a classification scheme) for a 
+ * This table represents a context scheme (    a classification scheme) for a 
  * context category.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxScheme extends TableImpl<CtxSchemeRecord> {
 
-    private static final long serialVersionUID = -1746619364;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme</code>
@@ -52,73 +53,74 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
     /**
      * The column <code>oagi.ctx_scheme.ctx_scheme_id</code>. Internal, primary, database key.
      */
-    public final TableField<CtxSchemeRecord, ULong> CTX_SCHEME_ID = createField(DSL.name("ctx_scheme_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary, database key.");
+    public final TableField<CtxSchemeRecord, ULong> CTX_SCHEME_ID = createField(DSL.name("ctx_scheme_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary, database key.");
 
     /**
      * The column <code>oagi.ctx_scheme.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<CtxSchemeRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<CtxSchemeRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.ctx_scheme.scheme_id</code>. External identification of the scheme. 
      */
-    public final TableField<CtxSchemeRecord, String> SCHEME_ID = createField(DSL.name("scheme_id"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "External identification of the scheme. ");
+    public final TableField<CtxSchemeRecord, String> SCHEME_ID = createField(DSL.name("scheme_id"), SQLDataType.VARCHAR(45).nullable(false), this, "External identification of the scheme. ");
 
     /**
      * The column <code>oagi.ctx_scheme.scheme_name</code>. Pretty print name of the context scheme.
      */
-    public final TableField<CtxSchemeRecord, String> SCHEME_NAME = createField(DSL.name("scheme_name"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "Pretty print name of the context scheme.");
+    public final TableField<CtxSchemeRecord, String> SCHEME_NAME = createField(DSL.name("scheme_name"), SQLDataType.VARCHAR(255), this, "Pretty print name of the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.description</code>. Description of the context scheme.
      */
-    public final TableField<CtxSchemeRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.CLOB, this, "Description of the context scheme.");
+    public final TableField<CtxSchemeRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB, this, "Description of the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.scheme_agency_id</code>. Identification of the agency maintaining the scheme. This column currently does not use the AGENCY_ID_LIST table. It is just a free form text at this point.
      */
-    public final TableField<CtxSchemeRecord, String> SCHEME_AGENCY_ID = createField(DSL.name("scheme_agency_id"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "Identification of the agency maintaining the scheme. This column currently does not use the AGENCY_ID_LIST table. It is just a free form text at this point.");
+    public final TableField<CtxSchemeRecord, String> SCHEME_AGENCY_ID = createField(DSL.name("scheme_agency_id"), SQLDataType.VARCHAR(45).nullable(false), this, "Identification of the agency maintaining the scheme. This column currently does not use the AGENCY_ID_LIST table. It is just a free form text at this point.");
 
     /**
      * The column <code>oagi.ctx_scheme.scheme_version_id</code>. Version number of the context scheme.
      */
-    public final TableField<CtxSchemeRecord, String> SCHEME_VERSION_ID = createField(DSL.name("scheme_version_id"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "Version number of the context scheme.");
+    public final TableField<CtxSchemeRecord, String> SCHEME_VERSION_ID = createField(DSL.name("scheme_version_id"), SQLDataType.VARCHAR(45).nullable(false), this, "Version number of the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.ctx_category_id</code>. This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.");
+    public final TableField<CtxSchemeRecord, ULong> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "This the foreign key to the CTX_CATEGORY table. It identifies the context category associated with this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.code_list_id</code>. This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.");
+    public final TableField<CtxSchemeRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is the foreign key to the CODE_LIST table. It identifies the code list associated with this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this context scheme.");
+    public final TableField<CtxSchemeRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.
      */
-    public final TableField<CtxSchemeRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.");
+    public final TableField<CtxSchemeRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context scheme.");
 
     /**
      * The column <code>oagi.ctx_scheme.creation_timestamp</code>. Timestamp when the scheme was created.
      */
-    public final TableField<CtxSchemeRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the scheme was created.");
+    public final TableField<CtxSchemeRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "Timestamp when the scheme was created.");
 
     /**
      * The column <code>oagi.ctx_scheme.last_update_timestamp</code>. Timestamp when the scheme was last updated.
      */
-    public final TableField<CtxSchemeRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the scheme was last updated.");
+    public final TableField<CtxSchemeRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "Timestamp when the scheme was last updated.");
 
-    /**
-     * Create a <code>oagi.ctx_scheme</code> table reference
-     */
-    public CtxScheme() {
-        this(DSL.name("ctx_scheme"), null);
+    private CtxScheme(Name alias, Table<CtxSchemeRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CtxScheme(Name alias, Table<CtxSchemeRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table represents a context scheme (a classification scheme) for a context category."), TableOptions.table());
     }
 
     /**
@@ -135,12 +137,11 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
         this(alias, CTX_SCHEME);
     }
 
-    private CtxScheme(Name alias, Table<CtxSchemeRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CtxScheme(Name alias, Table<CtxSchemeRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table represents a context scheme (a classification scheme) for a context category."), TableOptions.table());
+    /**
+     * Create a <code>oagi.ctx_scheme</code> table reference
+     */
+    public CtxScheme() {
+        this(DSL.name("ctx_scheme"), null);
     }
 
     public <O extends Record> CtxScheme(Table<O> child, ForeignKey<O, CtxSchemeRecord> key) {
@@ -154,7 +155,7 @@ public class CtxScheme extends TableImpl<CtxSchemeRecord> {
 
     @Override
     public Identity<CtxSchemeRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CTX_SCHEME;
+        return (Identity<CtxSchemeRecord, ULong>) super.getIdentity();
     }
 
     @Override

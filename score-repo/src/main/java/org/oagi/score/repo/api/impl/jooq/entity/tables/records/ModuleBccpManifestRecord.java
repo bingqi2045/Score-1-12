@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleBccpManifestRecord extends UpdatableRecordImpl<ModuleBccpManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -626329560;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_bccp_manifest.module_bccp_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleBccpManifestRecord extends UpdatableRecordImpl<ModuleBccpMani
     public ModuleBccpManifestRecord(ULong moduleBccpManifestId, ULong moduleSetReleaseId, ULong bccpManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleBccpManifest.MODULE_BCCP_MANIFEST);
 
-        set(0, moduleBccpManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, bccpManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleBccpManifestId(moduleBccpManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setBccpManifestId(bccpManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

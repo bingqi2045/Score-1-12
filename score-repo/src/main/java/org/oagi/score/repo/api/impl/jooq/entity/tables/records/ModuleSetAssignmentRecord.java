@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetAssignment;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetAssignmentRecord extends UpdatableRecordImpl<ModuleSetAssignmentRecord> implements Record7<ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -2037586637;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_set_assignment.module_set_assignment_id</code>. Primary key.
@@ -320,12 +320,12 @@ public class ModuleSetAssignmentRecord extends UpdatableRecordImpl<ModuleSetAssi
     public ModuleSetAssignmentRecord(ULong moduleSetAssignmentId, ULong moduleSetId, ULong moduleId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleSetAssignment.MODULE_SET_ASSIGNMENT);
 
-        set(0, moduleSetAssignmentId);
-        set(1, moduleSetId);
-        set(2, moduleId);
-        set(3, createdBy);
-        set(4, lastUpdatedBy);
-        set(5, creationTimestamp);
-        set(6, lastUpdateTimestamp);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setModuleSetId(moduleSetId);
+        setModuleId(moduleId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

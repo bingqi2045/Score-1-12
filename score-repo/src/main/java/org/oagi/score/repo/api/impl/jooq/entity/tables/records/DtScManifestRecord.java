@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 377442767;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.dt_sc_manifest.dt_sc_manifest_id</code>.
@@ -354,13 +354,13 @@ public class DtScManifestRecord extends UpdatableRecordImpl<DtScManifestRecord> 
     public DtScManifestRecord(ULong dtScManifestId, ULong releaseId, ULong dtScId, ULong ownerDtManifestId, Byte conflict, ULong replacementDtScManifestId, ULong prevDtScManifestId, ULong nextDtScManifestId) {
         super(DtScManifest.DT_SC_MANIFEST);
 
-        set(0, dtScManifestId);
-        set(1, releaseId);
-        set(2, dtScId);
-        set(3, ownerDtManifestId);
-        set(4, conflict);
-        set(5, replacementDtScManifestId);
-        set(6, prevDtScManifestId);
-        set(7, nextDtScManifestId);
+        setDtScManifestId(dtScManifestId);
+        setReleaseId(releaseId);
+        setDtScId(dtScId);
+        setOwnerDtManifestId(ownerDtManifestId);
+        setConflict(conflict);
+        setReplacementDtScManifestId(replacementDtScManifestId);
+        setPrevDtScManifestId(prevDtScManifestId);
+        setNextDtScManifestId(nextDtScManifestId);
     }
 }

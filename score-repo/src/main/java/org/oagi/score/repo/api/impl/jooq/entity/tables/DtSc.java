@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -29,7 +30,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 
 
 /**
- * This table represents the supplementary component (SC) of a DT. Revision 
+ * This table represents the supplementary component (    SC) of a DT. Revision 
  * is not tracked at the supplementary component. It is considered intrinsic 
  * part of the DT. In other words, when a new revision of a DT is created 
  * a new set of supplementary components is created along with it. 
@@ -37,7 +38,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtSc extends TableImpl<DtScRecord> {
 
-    private static final long serialVersionUID = -1474318891;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.dt_sc</code>
@@ -55,78 +56,79 @@ public class DtSc extends TableImpl<DtScRecord> {
     /**
      * The column <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.
      */
-    public final TableField<DtScRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<DtScRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
 
     /**
      * The column <code>oagi.dt_sc.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<DtScRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.dt_sc.property_term</code>. Property term of the SC.
      */
-    public final TableField<DtScRecord, String> PROPERTY_TERM = createField(DSL.name("property_term"), org.jooq.impl.SQLDataType.VARCHAR(60), this, "Property term of the SC.");
+    public final TableField<DtScRecord, String> PROPERTY_TERM = createField(DSL.name("property_term"), SQLDataType.VARCHAR(60), this, "Property term of the SC.");
 
     /**
      * The column <code>oagi.dt_sc.representation_term</code>. Representation of the supplementary component.
      */
-    public final TableField<DtScRecord, String> REPRESENTATION_TERM = createField(DSL.name("representation_term"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "Representation of the supplementary component.");
+    public final TableField<DtScRecord, String> REPRESENTATION_TERM = createField(DSL.name("representation_term"), SQLDataType.VARCHAR(20), this, "Representation of the supplementary component.");
 
     /**
      * The column <code>oagi.dt_sc.definition</code>. Description of the supplementary component.
      */
-    public final TableField<DtScRecord, String> DEFINITION = createField(DSL.name("definition"), org.jooq.impl.SQLDataType.CLOB, this, "Description of the supplementary component.");
+    public final TableField<DtScRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.CLOB, this, "Description of the supplementary component.");
 
     /**
      * The column <code>oagi.dt_sc.definition_source</code>. This is typically a URL identifying the source of the DEFINITION column.
      */
-    public final TableField<DtScRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), org.jooq.impl.SQLDataType.VARCHAR(200), this, "This is typically a URL identifying the source of the DEFINITION column.");
+    public final TableField<DtScRecord, String> DEFINITION_SOURCE = createField(DSL.name("definition_source"), SQLDataType.VARCHAR(200), this, "This is typically a URL identifying the source of the DEFINITION column.");
 
     /**
      * The column <code>oagi.dt_sc.owner_dt_id</code>. Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.
      */
-    public final TableField<DtScRecord, ULong> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.");
+    public final TableField<DtScRecord, ULong> OWNER_DT_ID = createField(DSL.name("owner_dt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreigned key to the DT table indicating the data type, to which this supplementary component belongs.");
 
     /**
      * The column <code>oagi.dt_sc.cardinality_min</code>. The minimum occurrence constraint associated with the supplementary component. The valid values zero or one.
      */
-    public final TableField<DtScRecord, Integer> CARDINALITY_MIN = createField(DSL.name("cardinality_min"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "The minimum occurrence constraint associated with the supplementary component. The valid values zero or one.");
+    public final TableField<DtScRecord, Integer> CARDINALITY_MIN = createField(DSL.name("cardinality_min"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.inline("0", SQLDataType.INTEGER)), this, "The minimum occurrence constraint associated with the supplementary component. The valid values zero or one.");
 
     /**
      * The column <code>oagi.dt_sc.cardinality_max</code>. The maximum occurrence constraint associated with the supplementary component. The valid values are zero or one. Zero is used when the SC is restricted from an instantiation in the data type.
      */
-    public final TableField<DtScRecord, Integer> CARDINALITY_MAX = createField(DSL.name("cardinality_max"), org.jooq.impl.SQLDataType.INTEGER, this, "The maximum occurrence constraint associated with the supplementary component. The valid values are zero or one. Zero is used when the SC is restricted from an instantiation in the data type.");
+    public final TableField<DtScRecord, Integer> CARDINALITY_MAX = createField(DSL.name("cardinality_max"), SQLDataType.INTEGER, this, "The maximum occurrence constraint associated with the supplementary component. The valid values are zero or one. Zero is used when the SC is restricted from an instantiation in the data type.");
 
     /**
      * The column <code>oagi.dt_sc.based_dt_sc_id</code>. Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.
      */
-    public final TableField<DtScRecord, ULong> BASED_DT_SC_ID = createField(DSL.name("based_dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.");
+    public final TableField<DtScRecord, ULong> BASED_DT_SC_ID = createField(DSL.name("based_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the DT_SC table itself. This column is used when the SC is derived from the based DT.");
 
     /**
      * The column <code>oagi.dt_sc.default_value</code>. This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.
      */
-    public final TableField<DtScRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
+    public final TableField<DtScRecord, String> DEFAULT_VALUE = createField(DSL.name("default_value"), SQLDataType.CLOB, this, "This column specifies the default value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.dt_sc.fixed_value</code>. This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.
      */
-    public final TableField<DtScRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), org.jooq.impl.SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
+    public final TableField<DtScRecord, String> FIXED_VALUE = createField(DSL.name("fixed_value"), SQLDataType.CLOB, this, "This column captures the fixed value constraint. Default and fixed value constraints cannot be used at the same time.");
 
     /**
      * The column <code>oagi.dt_sc.is_deprecated</code>. Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).
      */
-    public final TableField<DtScRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
+    public final TableField<DtScRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "Indicates whether this is deprecated and should not be reused (i.e., no new reference to this record should be created).");
 
     /**
      * The column <code>oagi.dt_sc.replacement_dt_sc_id</code>. This refers to a replacement if the record is deprecated.
      */
-    public final TableField<DtScRecord, ULong> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
+    public final TableField<DtScRecord, ULong> REPLACEMENT_DT_SC_ID = createField(DSL.name("replacement_dt_sc_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement if the record is deprecated.");
 
-    /**
-     * Create a <code>oagi.dt_sc</code> table reference
-     */
-    public DtSc() {
-        this(DSL.name("dt_sc"), null);
+    private DtSc(Name alias, Table<DtScRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private DtSc(Name alias, Table<DtScRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it. "), TableOptions.table());
     }
 
     /**
@@ -143,12 +145,11 @@ public class DtSc extends TableImpl<DtScRecord> {
         this(alias, DT_SC);
     }
 
-    private DtSc(Name alias, Table<DtScRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private DtSc(Name alias, Table<DtScRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table represents the supplementary component (SC) of a DT. Revision is not tracked at the supplementary component. It is considered intrinsic part of the DT. In other words, when a new revision of a DT is created a new set of supplementary components is created along with it. "), TableOptions.table());
+    /**
+     * Create a <code>oagi.dt_sc</code> table reference
+     */
+    public DtSc() {
+        this(DSL.name("dt_sc"), null);
     }
 
     public <O extends Record> DtSc(Table<O> child, ForeignKey<O, DtScRecord> key) {
@@ -167,7 +168,7 @@ public class DtSc extends TableImpl<DtScRecord> {
 
     @Override
     public Identity<DtScRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_DT_SC;
+        return (Identity<DtScRecord, ULong>) super.getIdentity();
     }
 
     @Override

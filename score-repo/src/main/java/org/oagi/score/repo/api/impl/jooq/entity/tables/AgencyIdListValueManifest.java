@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AgencyIdListValue
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManifestRecord> {
 
-    private static final long serialVersionUID = -2088253968;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.agency_id_list_value_manifest</code>
@@ -50,48 +51,49 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
     /**
      * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_value_manifest_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.release_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_value_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_VALUE_ID = createField(DSL.name("agency_id_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.agency_id_list_manifest_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<AgencyIdListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<AgencyIdListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.replacement_agency_id_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_agency_id_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> REPLACEMENT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.prev_agency_id_list_value_manifest_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_agency_id_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> PREV_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.agency_id_list_value_manifest.next_agency_id_list_value_manifest_id</code>.
      */
-    public final TableField<AgencyIdListValueManifestRecord, ULong> NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_agency_id_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AgencyIdListValueManifestRecord, ULong> NEXT_AGENCY_ID_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_agency_id_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.agency_id_list_value_manifest</code> table reference
-     */
-    public AgencyIdListValueManifest() {
-        this(DSL.name("agency_id_list_value_manifest"), null);
+    private AgencyIdListValueManifest(Name alias, Table<AgencyIdListValueManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private AgencyIdListValueManifest(Name alias, Table<AgencyIdListValueManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -108,12 +110,11 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
         this(alias, AGENCY_ID_LIST_VALUE_MANIFEST);
     }
 
-    private AgencyIdListValueManifest(Name alias, Table<AgencyIdListValueManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private AgencyIdListValueManifest(Name alias, Table<AgencyIdListValueManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.agency_id_list_value_manifest</code> table reference
+     */
+    public AgencyIdListValueManifest() {
+        this(DSL.name("agency_id_list_value_manifest"), null);
     }
 
     public <O extends Record> AgencyIdListValueManifest(Table<O> child, ForeignKey<O, AgencyIdListValueManifestRecord> key) {
@@ -127,7 +128,7 @@ public class AgencyIdListValueManifest extends TableImpl<AgencyIdListValueManife
 
     @Override
     public Identity<AgencyIdListValueManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_AGENCY_ID_LIST_VALUE_MANIFEST;
+        return (Identity<AgencyIdListValueManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Record13<ULong, String, ULong, String, String, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = -1518720121;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bbiep.bbiep_id</code>. A internal, primary database key of an BBIEP.
@@ -537,18 +537,18 @@ public class BbiepRecord extends UpdatableRecordImpl<BbiepRecord> implements Rec
     public BbiepRecord(ULong bbiepId, String guid, ULong basedBccpManifestId, String path, String hashPath, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(Bbiep.BBIEP);
 
-        set(0, bbiepId);
-        set(1, guid);
-        set(2, basedBccpManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, definition);
-        set(6, remark);
-        set(7, bizTerm);
-        set(8, createdBy);
-        set(9, lastUpdatedBy);
-        set(10, creationTimestamp);
-        set(11, lastUpdateTimestamp);
-        set(12, ownerTopLevelAsbiepId);
+        setBbiepId(bbiepId);
+        setGuid(guid);
+        setBasedBccpManifestId(basedBccpManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setDefinition(definition);
+        setRemark(remark);
+        setBizTerm(bizTerm);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

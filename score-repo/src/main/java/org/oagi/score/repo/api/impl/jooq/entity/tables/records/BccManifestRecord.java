@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> implements Record10<ULong, ULong, ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1719580932;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bcc_manifest.bcc_manifest_id</code>.
@@ -426,15 +426,15 @@ public class BccManifestRecord extends UpdatableRecordImpl<BccManifestRecord> im
     public BccManifestRecord(ULong bccManifestId, ULong releaseId, ULong bccId, ULong seqKeyId, ULong fromAccManifestId, ULong toBccpManifestId, Byte conflict, ULong replacementBccManifestId, ULong prevBccManifestId, ULong nextBccManifestId) {
         super(BccManifest.BCC_MANIFEST);
 
-        set(0, bccManifestId);
-        set(1, releaseId);
-        set(2, bccId);
-        set(3, seqKeyId);
-        set(4, fromAccManifestId);
-        set(5, toBccpManifestId);
-        set(6, conflict);
-        set(7, replacementBccManifestId);
-        set(8, prevBccManifestId);
-        set(9, nextBccManifestId);
+        setBccManifestId(bccManifestId);
+        setReleaseId(releaseId);
+        setBccId(bccId);
+        setSeqKeyId(seqKeyId);
+        setFromAccManifestId(fromAccManifestId);
+        setToBccpManifestId(toBccpManifestId);
+        setConflict(conflict);
+        setReplacementBccManifestId(replacementBccManifestId);
+        setPrevBccManifestId(prevBccManifestId);
+        setNextBccManifestId(nextBccManifestId);
     }
 }

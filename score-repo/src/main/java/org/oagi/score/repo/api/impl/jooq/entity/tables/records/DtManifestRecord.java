@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> implements Record8<ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1527677846;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.dt_manifest.dt_manifest_id</code>.
@@ -354,13 +354,13 @@ public class DtManifestRecord extends UpdatableRecordImpl<DtManifestRecord> impl
     public DtManifestRecord(ULong dtManifestId, ULong releaseId, ULong dtId, Byte conflict, ULong logId, ULong replacementDtManifestId, ULong prevDtManifestId, ULong nextDtManifestId) {
         super(DtManifest.DT_MANIFEST);
 
-        set(0, dtManifestId);
-        set(1, releaseId);
-        set(2, dtId);
-        set(3, conflict);
-        set(4, logId);
-        set(5, replacementDtManifestId);
-        set(6, prevDtManifestId);
-        set(7, nextDtManifestId);
+        setDtManifestId(dtManifestId);
+        setReleaseId(releaseId);
+        setDtId(dtId);
+        setConflict(conflict);
+        setLogId(logId);
+        setReplacementDtManifestId(replacementDtManifestId);
+        setPrevDtManifestId(prevDtManifestId);
+        setNextDtManifestId(nextDtManifestId);
     }
 }

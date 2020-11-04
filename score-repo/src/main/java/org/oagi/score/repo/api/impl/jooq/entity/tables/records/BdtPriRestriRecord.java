@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, Byte> {
 
-    private static final long serialVersionUID = 1407559322;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bdt_pri_restri.bdt_pri_restri_id</code>. Primary, internal database key.
@@ -288,11 +288,11 @@ public class BdtPriRestriRecord extends UpdatableRecordImpl<BdtPriRestriRecord> 
     public BdtPriRestriRecord(ULong bdtPriRestriId, ULong bdtId, ULong cdtAwdPriXpsTypeMapId, ULong codeListId, ULong agencyIdListId, Byte isDefault) {
         super(BdtPriRestri.BDT_PRI_RESTRI);
 
-        set(0, bdtPriRestriId);
-        set(1, bdtId);
-        set(2, cdtAwdPriXpsTypeMapId);
-        set(3, codeListId);
-        set(4, agencyIdListId);
-        set(5, isDefault);
+        setBdtPriRestriId(bdtPriRestriId);
+        setBdtId(bdtId);
+        setCdtAwdPriXpsTypeMapId(cdtAwdPriXpsTypeMapId);
+        setCodeListId(codeListId);
+        setAgencyIdListId(agencyIdListId);
+        setIsDefault(isDefault);
     }
 }

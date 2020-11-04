@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSet;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetRecord extends UpdatableRecordImpl<ModuleSetRecord> implements Record8<ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -112131053;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_set.module_set_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleSetRecord extends UpdatableRecordImpl<ModuleSetRecord> implem
     public ModuleSetRecord(ULong moduleSetId, String guid, String name, String description, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleSet.MODULE_SET);
 
-        set(0, moduleSetId);
-        set(1, guid);
-        set(2, name);
-        set(3, description);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleSetId(moduleSetId);
+        setGuid(guid);
+        setName(name);
+        setDescription(description);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

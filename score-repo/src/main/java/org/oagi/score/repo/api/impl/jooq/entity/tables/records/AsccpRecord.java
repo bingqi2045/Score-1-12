@@ -16,12 +16,12 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp;
 
 
 /**
- * An ASCCP specifies a role (or property) an ACC may play under another ACC.
+ * An ASCCP specifies a role (    or property) an ACC may play under another ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> implements Record21<ULong, String, String, String, String, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, ULong, Byte, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 1300118062;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.asccp.asccp_id</code>. An internal, primary database key of an ASCCP.
@@ -848,26 +848,26 @@ State change can't be undone. But the history record can still keep the records 
     public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, String den, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
         super(Asccp.ASCCP);
 
-        set(0, asccpId);
-        set(1, guid);
-        set(2, type);
-        set(3, propertyTerm);
-        set(4, definition);
-        set(5, definitionSource);
-        set(6, roleOfAccId);
-        set(7, den);
-        set(8, createdBy);
-        set(9, ownerUserId);
-        set(10, lastUpdatedBy);
-        set(11, creationTimestamp);
-        set(12, lastUpdateTimestamp);
-        set(13, state);
-        set(14, namespaceId);
-        set(15, reusableIndicator);
-        set(16, isDeprecated);
-        set(17, replacementAsccpId);
-        set(18, isNillable);
-        set(19, prevAsccpId);
-        set(20, nextAsccpId);
+        setAsccpId(asccpId);
+        setGuid(guid);
+        setType(type);
+        setPropertyTerm(propertyTerm);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setRoleOfAccId(roleOfAccId);
+        setDen(den);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setNamespaceId(namespaceId);
+        setReusableIndicator(reusableIndicator);
+        setIsDeprecated(isDeprecated);
+        setReplacementAsccpId(replacementAsccpId);
+        setIsNillable(isNillable);
+        setPrevAsccpId(prevAsccpId);
+        setNextAsccpId(nextAsccpId);
     }
 }

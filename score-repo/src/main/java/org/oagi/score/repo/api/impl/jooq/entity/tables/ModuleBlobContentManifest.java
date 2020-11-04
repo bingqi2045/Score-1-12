@@ -21,6 +21,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleBlobContent
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManifestRecord> {
 
-    private static final long serialVersionUID = -1534172586;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_blob_content_manifest</code>
@@ -53,48 +54,49 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
     /**
      * The column <code>oagi.module_blob_content_manifest.module_blob_content_manifest_id</code>. Primary key.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("module_blob_content_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("module_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.module_set_release_id</code>. A foreign key of the module set release record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.blob_content_manifest_id</code>. A foreign key of the blob content manifest record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the blob content manifest record.");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the blob content manifest record.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleBlobContentManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleBlobContentManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_blob_content_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleBlobContentManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_blob_content_manifest</code> table reference
-     */
-    public ModuleBlobContentManifest() {
-        this(DSL.name("module_blob_content_manifest"), null);
+    private ModuleBlobContentManifest(Name alias, Table<ModuleBlobContentManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleBlobContentManifest(Name alias, Table<ModuleBlobContentManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -111,12 +113,11 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
         this(alias, MODULE_BLOB_CONTENT_MANIFEST);
     }
 
-    private ModuleBlobContentManifest(Name alias, Table<ModuleBlobContentManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleBlobContentManifest(Name alias, Table<ModuleBlobContentManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_blob_content_manifest</code> table reference
+     */
+    public ModuleBlobContentManifest() {
+        this(DSL.name("module_blob_content_manifest"), null);
     }
 
     public <O extends Record> ModuleBlobContentManifest(Table<O> child, ForeignKey<O, ModuleBlobContentManifestRecord> key) {
@@ -135,7 +136,7 @@ public class ModuleBlobContentManifest extends TableImpl<ModuleBlobContentManife
 
     @Override
     public Identity<ModuleBlobContentManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_BLOB_CONTENT_MANIFEST;
+        return (Identity<ModuleBlobContentManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements Record6<ULong, ULong, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -415274757;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.seq_key.seq_key_id</code>.
@@ -282,11 +282,11 @@ public class SeqKeyRecord extends UpdatableRecordImpl<SeqKeyRecord> implements R
     public SeqKeyRecord(ULong seqKeyId, ULong fromAccManifestId, ULong asccManifestId, ULong bccManifestId, ULong prevSeqKeyId, ULong nextSeqKeyId) {
         super(SeqKey.SEQ_KEY);
 
-        set(0, seqKeyId);
-        set(1, fromAccManifestId);
-        set(2, asccManifestId);
-        set(3, bccManifestId);
-        set(4, prevSeqKeyId);
-        set(5, nextSeqKeyId);
+        setSeqKeyId(seqKeyId);
+        setFromAccManifestId(fromAccManifestId);
+        setAsccManifestId(asccManifestId);
+        setBccManifestId(bccManifestId);
+        setPrevSeqKeyId(prevSeqKeyId);
+        setNextSeqKeyId(nextSeqKeyId);
     }
 }

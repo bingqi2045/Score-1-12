@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifest extends TableImpl<AccManifestRecord> {
 
-    private static final long serialVersionUID = 1908045821;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.acc_manifest</code>
@@ -50,53 +51,54 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
     /**
      * The column <code>oagi.acc_manifest.acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AccManifestRecord, ULong> ACC_MANIFEST_ID = createField(DSL.name("acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.release_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AccManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.acc_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> ACC_ID = createField(DSL.name("acc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AccManifestRecord, ULong> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.acc_manifest.based_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, ULong> BASED_ACC_MANIFEST_ID = createField(DSL.name("based_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.acc_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<AccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<AccManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.acc_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<AccManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<AccManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.acc_manifest.replacement_acc_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AccManifestRecord, ULong> REPLACEMENT_ACC_MANIFEST_ID = createField(DSL.name("replacement_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AccManifestRecord, ULong> REPLACEMENT_ACC_MANIFEST_ID = createField(DSL.name("replacement_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.acc_manifest.prev_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> PREV_ACC_MANIFEST_ID = createField(DSL.name("prev_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, ULong> PREV_ACC_MANIFEST_ID = createField(DSL.name("prev_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.acc_manifest.next_acc_manifest_id</code>.
      */
-    public final TableField<AccManifestRecord, ULong> NEXT_ACC_MANIFEST_ID = createField(DSL.name("next_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AccManifestRecord, ULong> NEXT_ACC_MANIFEST_ID = createField(DSL.name("next_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.acc_manifest</code> table reference
-     */
-    public AccManifest() {
-        this(DSL.name("acc_manifest"), null);
+    private AccManifest(Name alias, Table<AccManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private AccManifest(Name alias, Table<AccManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -113,12 +115,11 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
         this(alias, ACC_MANIFEST);
     }
 
-    private AccManifest(Name alias, Table<AccManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private AccManifest(Name alias, Table<AccManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.acc_manifest</code> table reference
+     */
+    public AccManifest() {
+        this(DSL.name("acc_manifest"), null);
     }
 
     public <O extends Record> AccManifest(Table<O> child, ForeignKey<O, AccManifestRecord> key) {
@@ -132,7 +133,7 @@ public class AccManifest extends TableImpl<AccManifestRecord> {
 
     @Override
     public Identity<AccManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_ACC_MANIFEST;
+        return (Identity<AccManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

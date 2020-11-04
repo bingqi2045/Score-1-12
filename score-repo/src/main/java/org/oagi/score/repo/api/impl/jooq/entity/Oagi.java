@@ -59,6 +59,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
@@ -92,7 +93,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oagi extends SchemaImpl {
 
-    private static final long serialVersionUID = -1862414058;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi</code>
@@ -357,6 +358,11 @@ If we use a separate table for each expression, then we need binding all the way
     public final DtUsageRule DT_USAGE_RULE = DtUsageRule.DT_USAGE_RULE;
 
     /**
+     * The table <code>oagi.exception</code>.
+     */
+    public final Exception EXCEPTION = Exception.EXCEPTION;
+
+    /**
      * The table <code>oagi.log</code>.
      */
     public final Log LOG = Log.LOG;
@@ -546,6 +552,7 @@ If we use a separate table for each expression, then we need binding all the way
             DtSc.DT_SC,
             DtScManifest.DT_SC_MANIFEST,
             DtUsageRule.DT_USAGE_RULE,
+            Exception.EXCEPTION,
             Log.LOG,
             Module.MODULE,
             ModuleAccManifest.MODULE_ACC_MANIFEST,

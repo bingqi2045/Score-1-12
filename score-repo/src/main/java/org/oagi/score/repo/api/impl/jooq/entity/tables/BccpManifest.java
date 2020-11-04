@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpManifestRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
-    private static final long serialVersionUID = 1897420157;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.bccp_manifest</code>
@@ -50,53 +51,54 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
     /**
      * The column <code>oagi.bccp_manifest.bccp_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BccpManifestRecord, ULong> BCCP_MANIFEST_ID = createField(DSL.name("bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.release_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.bccp_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> BCCP_ID = createField(DSL.name("bccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestRecord, ULong> BCCP_ID = createField(DSL.name("bccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.bdt_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> BDT_MANIFEST_ID = createField(DSL.name("bdt_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BccpManifestRecord, ULong> BDT_MANIFEST_ID = createField(DSL.name("bdt_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<BccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<BccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.bccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<BccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<BccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.bccp_manifest.replacement_bccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<BccpManifestRecord, ULong> REPLACEMENT_BCCP_MANIFEST_ID = createField(DSL.name("replacement_bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<BccpManifestRecord, ULong> REPLACEMENT_BCCP_MANIFEST_ID = createField(DSL.name("replacement_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.bccp_manifest.prev_bccp_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> PREV_BCCP_MANIFEST_ID = createField(DSL.name("prev_bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BccpManifestRecord, ULong> PREV_BCCP_MANIFEST_ID = createField(DSL.name("prev_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.bccp_manifest.next_bccp_manifest_id</code>.
      */
-    public final TableField<BccpManifestRecord, ULong> NEXT_BCCP_MANIFEST_ID = createField(DSL.name("next_bccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BccpManifestRecord, ULong> NEXT_BCCP_MANIFEST_ID = createField(DSL.name("next_bccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.bccp_manifest</code> table reference
-     */
-    public BccpManifest() {
-        this(DSL.name("bccp_manifest"), null);
+    private BccpManifest(Name alias, Table<BccpManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BccpManifest(Name alias, Table<BccpManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -113,12 +115,11 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
         this(alias, BCCP_MANIFEST);
     }
 
-    private BccpManifest(Name alias, Table<BccpManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BccpManifest(Name alias, Table<BccpManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.bccp_manifest</code> table reference
+     */
+    public BccpManifest() {
+        this(DSL.name("bccp_manifest"), null);
     }
 
     public <O extends Record> BccpManifest(Table<O> child, ForeignKey<O, BccpManifestRecord> key) {
@@ -132,7 +133,7 @@ public class BccpManifest extends TableImpl<BccpManifestRecord> {
 
     @Override
     public Identity<BccpManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BCCP_MANIFEST;
+        return (Identity<BccpManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

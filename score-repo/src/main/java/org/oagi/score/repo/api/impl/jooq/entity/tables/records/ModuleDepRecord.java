@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implements Record4<ULong, Integer, ULong, ULong> {
 
-    private static final long serialVersionUID = 1147782940;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_dep.module_dep_id</code>. Primary, internal database key.
@@ -210,9 +210,9 @@ public class ModuleDepRecord extends UpdatableRecordImpl<ModuleDepRecord> implem
     public ModuleDepRecord(ULong moduleDepId, Integer dependencyType, ULong dependingModuleSetAssignmentId, ULong dependedModuleSetAssignmentId) {
         super(ModuleDep.MODULE_DEP);
 
-        set(0, moduleDepId);
-        set(1, dependencyType);
-        set(2, dependingModuleSetAssignmentId);
-        set(3, dependedModuleSetAssignmentId);
+        setModuleDepId(moduleDepId);
+        setDependencyType(dependencyType);
+        setDependingModuleSetAssignmentId(dependingModuleSetAssignmentId);
+        setDependedModuleSetAssignmentId(dependedModuleSetAssignmentId);
     }
 }

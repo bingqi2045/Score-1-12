@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record16<ULong, String, String, String, String, String, ULong, String, String, Integer, ULong, ULong, ULong, LocalDateTime, LocalDateTime, Byte> {
 
-    private static final long serialVersionUID = 979324886;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
@@ -646,21 +646,21 @@ public class XbtRecord extends UpdatableRecordImpl<XbtRecord> implements Record1
     public XbtRecord(ULong xbtId, String guid, String name, String builtinType, String jbtDraft05Map, String openapi30Map, ULong subtypeOfXbtId, String schemaDefinition, String revisionDoc, Integer state, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated) {
         super(Xbt.XBT);
 
-        set(0, xbtId);
-        set(1, guid);
-        set(2, name);
-        set(3, builtinType);
-        set(4, jbtDraft05Map);
-        set(5, openapi30Map);
-        set(6, subtypeOfXbtId);
-        set(7, schemaDefinition);
-        set(8, revisionDoc);
-        set(9, state);
-        set(10, createdBy);
-        set(11, ownerUserId);
-        set(12, lastUpdatedBy);
-        set(13, creationTimestamp);
-        set(14, lastUpdateTimestamp);
-        set(15, isDeprecated);
+        setXbtId(xbtId);
+        setGuid(guid);
+        setName(name);
+        setBuiltinType(builtinType);
+        setJbtDraft05Map(jbtDraft05Map);
+        setOpenapi30Map(openapi30Map);
+        setSubtypeOfXbtId(subtypeOfXbtId);
+        setSchemaDefinition(schemaDefinition);
+        setRevisionDoc(revisionDoc);
+        setState(state);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setIsDeprecated(isDeprecated);
     }
 }

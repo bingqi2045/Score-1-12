@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtRecord extends UpdatableRecordImpl<DtRecord> {
 
-    private static final long serialVersionUID = 396801461;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.dt.dt_id</code>. Internal, primary database key.
@@ -427,31 +427,31 @@ The value of this column in the latest history record should be the same as that
     public DtRecord(ULong dtId, String guid, String type, String versionNum, ULong previousVersionDtId, String dataTypeTerm, String qualifier, ULong basedDtId, String den, String contentComponentDen, String definition, String definitionSource, ULong namespaceId, String contentComponentDefinition, String revisionDoc, String state, Byte commonlyUsed, ULong createdBy, ULong lastUpdatedBy, ULong ownerUserId, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, Byte isDeprecated, ULong replacementDtId, ULong prevDtId, ULong nextDtId) {
         super(Dt.DT);
 
-        set(0, dtId);
-        set(1, guid);
-        set(2, type);
-        set(3, versionNum);
-        set(4, previousVersionDtId);
-        set(5, dataTypeTerm);
-        set(6, qualifier);
-        set(7, basedDtId);
-        set(8, den);
-        set(9, contentComponentDen);
-        set(10, definition);
-        set(11, definitionSource);
-        set(12, namespaceId);
-        set(13, contentComponentDefinition);
-        set(14, revisionDoc);
-        set(15, state);
-        set(16, commonlyUsed);
-        set(17, createdBy);
-        set(18, lastUpdatedBy);
-        set(19, ownerUserId);
-        set(20, creationTimestamp);
-        set(21, lastUpdateTimestamp);
-        set(22, isDeprecated);
-        set(23, replacementDtId);
-        set(24, prevDtId);
-        set(25, nextDtId);
+        setDtId(dtId);
+        setGuid(guid);
+        setType(type);
+        setVersionNum(versionNum);
+        setPreviousVersionDtId(previousVersionDtId);
+        setDataTypeTerm(dataTypeTerm);
+        setQualifier(qualifier);
+        setBasedDtId(basedDtId);
+        setDen(den);
+        setContentComponentDen(contentComponentDen);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setNamespaceId(namespaceId);
+        setContentComponentDefinition(contentComponentDefinition);
+        setRevisionDoc(revisionDoc);
+        setState(state);
+        setCommonlyUsed(commonlyUsed);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setOwnerUserId(ownerUserId);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setIsDeprecated(isDeprecated);
+        setReplacementDtId(replacementDtId);
+        setPrevDtId(prevDtId);
+        setNextDtId(nextDtId);
     }
 }

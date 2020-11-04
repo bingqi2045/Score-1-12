@@ -53,6 +53,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
@@ -81,7 +82,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest;
 
 
 /**
- * Convenience access to all tables in oagi
+ * Convenience access to all tables in oagi.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
@@ -342,6 +343,11 @@ If we use a separate table for each expression, then we need binding all the way
      * This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and the DT content component and usage rules and DT supplementary component. In a particular record, either a TARGET_DT_ID or TARGET_DT_SC_ID must be present but not both.
      */
     public static final DtUsageRule DT_USAGE_RULE = DtUsageRule.DT_USAGE_RULE;
+
+    /**
+     * The table <code>oagi.exception</code>.
+     */
+    public static final Exception EXCEPTION = Exception.EXCEPTION;
 
     /**
      * The table <code>oagi.log</code>.

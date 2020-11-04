@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleXbtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -2011040556;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_xbt_manifest.module_xbt_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleXbtManifestRecord extends UpdatableRecordImpl<ModuleXbtManife
     public ModuleXbtManifestRecord(ULong moduleXbtManifestId, ULong moduleSetReleaseId, ULong xbtManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleXbtManifest.MODULE_XBT_MANIFEST);
 
-        set(0, moduleXbtManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, xbtManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleXbtManifestId(moduleXbtManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setXbtManifestId(xbtManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContentManifestRecord extends UpdatableRecordImpl<BlobContentManifestRecord> implements Record6<ULong, ULong, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 669965302;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.blob_content_manifest.blob_content_manifest_id</code>.
@@ -282,11 +282,11 @@ public class BlobContentManifestRecord extends UpdatableRecordImpl<BlobContentMa
     public BlobContentManifestRecord(ULong blobContentManifestId, ULong blobContentId, ULong releaseId, Byte conflict, ULong prevBlobContentManifestId, ULong nextBlobContentManifestId) {
         super(BlobContentManifest.BLOB_CONTENT_MANIFEST);
 
-        set(0, blobContentManifestId);
-        set(1, blobContentId);
-        set(2, releaseId);
-        set(3, conflict);
-        set(4, prevBlobContentManifestId);
-        set(5, nextBlobContentManifestId);
+        setBlobContentManifestId(blobContentManifestId);
+        setBlobContentId(blobContentId);
+        setReleaseId(releaseId);
+        setConflict(conflict);
+        setPrevBlobContentManifestId(prevBlobContentManifestId);
+        setNextBlobContentManifestId(nextBlobContentManifestId);
     }
 }

@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppOauth2User;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppOauth2UserRecord extends UpdatableRecordImpl<AppOauth2UserRecord> implements Record10<ULong, ULong, ULong, String, String, String, String, String, String, LocalDateTime> {
 
-    private static final long serialVersionUID = -425418102;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.app_oauth2_user.app_oauth2_user_id</code>. Primary key.
@@ -428,15 +428,15 @@ public class AppOauth2UserRecord extends UpdatableRecordImpl<AppOauth2UserRecord
     public AppOauth2UserRecord(ULong appOauth2UserId, ULong appUserId, ULong oauth2AppId, String sub, String name, String email, String nickname, String preferredUsername, String phoneNumber, LocalDateTime creationTimestamp) {
         super(AppOauth2User.APP_OAUTH2_USER);
 
-        set(0, appOauth2UserId);
-        set(1, appUserId);
-        set(2, oauth2AppId);
-        set(3, sub);
-        set(4, name);
-        set(5, email);
-        set(6, nickname);
-        set(7, preferredUsername);
-        set(8, phoneNumber);
-        set(9, creationTimestamp);
+        setAppOauth2UserId(appOauth2UserId);
+        setAppUserId(appUserId);
+        setOauth2AppId(oauth2AppId);
+        setSub(sub);
+        setName(name);
+        setEmail(email);
+        setNickname(nickname);
+        setPreferredUsername(preferredUsername);
+        setPhoneNumber(phoneNumber);
+        setCreationTimestamp(creationTimestamp);
     }
 }

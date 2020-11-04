@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements Record7<ULong, String, String, String, String, Byte, Byte> {
 
-    private static final long serialVersionUID = -1972869863;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.app_user.app_user_id</code>. Primary key column.
@@ -319,12 +319,12 @@ public class AppUserRecord extends UpdatableRecordImpl<AppUserRecord> implements
     public AppUserRecord(ULong appUserId, String loginId, String password, String name, String organization, Byte isDeveloper, Byte isEnabled) {
         super(AppUser.APP_USER);
 
-        set(0, appUserId);
-        set(1, loginId);
-        set(2, password);
-        set(3, name);
-        set(4, organization);
-        set(5, isDeveloper);
-        set(6, isEnabled);
+        setAppUserId(appUserId);
+        setLoginId(loginId);
+        setPassword(password);
+        setName(name);
+        setOrganization(organization);
+        setIsDeveloper(isDeveloper);
+        setIsEnabled(isEnabled);
     }
 }

@@ -15,8 +15,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
 
 /**
  * This table is a log of events. It keeps track of the User Extension ACC 
- * (the specific revision) used by an Extension ABIE. This can be a named 
- * extension (such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR 
+ * (    the specific revision) used by an Extension ABIE. This can be a named 
+ * extension (    such as ApplicationAreaExtension) or the AllExtension. The REVISED_INDICATOR 
  * flag is designed such that a revision of a User Extension can notify the 
  * user of a top-level ABIE by setting this flag to true. The TOP_LEVEL_ABIE_ID 
  * column makes it more efficient to when opening a top-level ABIE, the user 
@@ -27,7 +27,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevisionRecord> implements Record6<ULong, ULong, ULong, ULong, Byte, ULong> {
 
-    private static final long serialVersionUID = -578206444;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bie_user_ext_revision.bie_user_ext_revision_id</code>. Primary, internal database key.
@@ -290,11 +290,11 @@ public class BieUserExtRevisionRecord extends UpdatableRecordImpl<BieUserExtRevi
     public BieUserExtRevisionRecord(ULong bieUserExtRevisionId, ULong extAbieId, ULong extAccId, ULong userExtAccId, Byte revisedIndicator, ULong topLevelAsbiepId) {
         super(BieUserExtRevision.BIE_USER_EXT_REVISION);
 
-        set(0, bieUserExtRevisionId);
-        set(1, extAbieId);
-        set(2, extAccId);
-        set(3, userExtAccId);
-        set(4, revisedIndicator);
-        set(5, topLevelAsbiepId);
+        setBieUserExtRevisionId(bieUserExtRevisionId);
+        setExtAbieId(extAbieId);
+        setExtAccId(extAccId);
+        setUserExtAccId(userExtAccId);
+        setRevisedIndicator(revisedIndicator);
+        setTopLevelAsbiepId(topLevelAsbiepId);
     }
 }

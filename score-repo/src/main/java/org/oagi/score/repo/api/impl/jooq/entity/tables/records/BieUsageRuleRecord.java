@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUsageRule;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> implements Record7<ULong, ULong, ULong, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 571402501;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary key of the table.
@@ -321,12 +321,12 @@ public class BieUsageRuleRecord extends UpdatableRecordImpl<BieUsageRuleRecord> 
     public BieUsageRuleRecord(ULong bieUsageRuleId, ULong assignedUsageRuleId, ULong targetAbieId, ULong targetAsbieId, ULong targetAsbiepId, ULong targetBbieId, ULong targetBbiepId) {
         super(BieUsageRule.BIE_USAGE_RULE);
 
-        set(0, bieUsageRuleId);
-        set(1, assignedUsageRuleId);
-        set(2, targetAbieId);
-        set(3, targetAsbieId);
-        set(4, targetAsbiepId);
-        set(5, targetBbieId);
-        set(6, targetBbiepId);
+        setBieUsageRuleId(bieUsageRuleId);
+        setAssignedUsageRuleId(assignedUsageRuleId);
+        setTargetAbieId(targetAbieId);
+        setTargetAsbieId(targetAsbieId);
+        setTargetAsbiepId(targetAsbiepId);
+        setTargetBbieId(targetBbieId);
+        setTargetBbiepId(targetBbiepId);
     }
 }

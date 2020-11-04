@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class LogRecord extends UpdatableRecordImpl<LogRecord> implements Record11<ULong, String, UInteger, UInteger, String, String, JSON, ULong, ULong, ULong, LocalDateTime> {
 
-    private static final long serialVersionUID = -261677370;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.log.log_id</code>.
@@ -466,16 +466,16 @@ public class LogRecord extends UpdatableRecordImpl<LogRecord> implements Record1
     public LogRecord(ULong logId, String hash, UInteger revisionNum, UInteger revisionTrackingNum, String logAction, String reference, JSON snapshot, ULong prevLogId, ULong nextLogId, ULong createdBy, LocalDateTime creationTimestamp) {
         super(Log.LOG);
 
-        set(0, logId);
-        set(1, hash);
-        set(2, revisionNum);
-        set(3, revisionTrackingNum);
-        set(4, logAction);
-        set(5, reference);
-        set(6, snapshot);
-        set(7, prevLogId);
-        set(8, nextLogId);
-        set(9, createdBy);
-        set(10, creationTimestamp);
+        setLogId(logId);
+        setHash(hash);
+        setRevisionNum(revisionNum);
+        setRevisionTrackingNum(revisionTrackingNum);
+        setLogAction(logAction);
+        setReference(reference);
+        setSnapshot(snapshot);
+        setPrevLogId(prevLogId);
+        setNextLogId(nextLogId);
+        setCreatedBy(createdBy);
+        setCreationTimestamp(creationTimestamp);
     }
 }

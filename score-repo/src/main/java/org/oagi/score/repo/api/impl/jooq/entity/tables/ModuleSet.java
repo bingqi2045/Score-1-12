@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSet extends TableImpl<ModuleSetRecord> {
 
-    private static final long serialVersionUID = 1880033071;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_set</code>
@@ -51,48 +52,49 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
     /**
      * The column <code>oagi.module_set.module_set_id</code>. Primary key.
      */
-    public final TableField<ModuleSetRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleSetRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_set.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<ModuleSetRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<ModuleSetRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.module_set.name</code>. This is the name of the module set.
      */
-    public final TableField<ModuleSetRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the module set.");
+    public final TableField<ModuleSetRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the module set.");
 
     /**
      * The column <code>oagi.module_set.description</code>. Description or explanation about the module set or use of the module set.
      */
-    public final TableField<ModuleSetRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.CLOB, this, "Description or explanation about the module set or use of the module set.");
+    public final TableField<ModuleSetRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB, this, "Description or explanation about the module set or use of the module set.");
 
     /**
      * The column <code>oagi.module_set.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.
      */
-    public final TableField<ModuleSetRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.");
+    public final TableField<ModuleSetRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET.");
 
     /**
      * The column <code>oagi.module_set.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleSetRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleSetRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_set.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleSetRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleSetRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_set.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleSetRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleSetRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_set</code> table reference
-     */
-    public ModuleSet() {
-        this(DSL.name("module_set"), null);
+    private ModuleSet(Name alias, Table<ModuleSetRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleSet(Name alias, Table<ModuleSetRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
         this(alias, MODULE_SET);
     }
 
-    private ModuleSet(Name alias, Table<ModuleSetRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleSet(Name alias, Table<ModuleSetRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_set</code> table reference
+     */
+    public ModuleSet() {
+        this(DSL.name("module_set"), null);
     }
 
     public <O extends Record> ModuleSet(Table<O> child, ForeignKey<O, ModuleSetRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleSet extends TableImpl<ModuleSetRecord> {
 
     @Override
     public Identity<ModuleSetRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_SET;
+        return (Identity<ModuleSetRecord, ULong>) super.getIdentity();
     }
 
     @Override

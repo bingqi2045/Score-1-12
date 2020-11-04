@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -38,7 +39,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BdtPriRestriRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
 
-    private static final long serialVersionUID = -1176066081;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.bdt_pri_restri</code>
@@ -56,38 +57,39 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
     /**
      * The column <code>oagi.bdt_pri_restri.bdt_pri_restri_id</code>. Primary, internal database key.
      */
-    public final TableField<BdtPriRestriRecord, ULong> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BdtPriRestriRecord, ULong> BDT_PRI_RESTRI_ID = createField(DSL.name("bdt_pri_restri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.bdt_id</code>. Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).
      */
-    public final TableField<BdtPriRestriRecord, ULong> BDT_ID = createField(DSL.name("bdt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
+    public final TableField<BdtPriRestriRecord, ULong> BDT_ID = createField(DSL.name("bdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the DT table. It shall point to only DT that is a BDT (not a CDT).");
 
     /**
      * The column <code>oagi.bdt_pri_restri.cdt_awd_pri_xps_type_map_id</code>. This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows for a primitive restriction based on a built-in type of schema expressions.
      */
-    public final TableField<BdtPriRestriRecord, ULong> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows for a primitive restriction based on a built-in type of schema expressions.");
+    public final TableField<BdtPriRestriRecord, ULong> CDT_AWD_PRI_XPS_TYPE_MAP_ID = createField(DSL.name("cdt_awd_pri_xps_type_map_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the CDT_AWD_PRI_XPS_TYPE_MAP table.  It allows for a primitive restriction based on a built-in type of schema expressions.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.code_list_id</code>. Foreign key to the CODE_LIST table.
      */
-    public final TableField<BdtPriRestriRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the CODE_LIST table.");
+    public final TableField<BdtPriRestriRecord, ULong> CODE_LIST_ID = createField(DSL.name("code_list_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the CODE_LIST table.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.agency_id_list_id</code>. This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.
      */
-    public final TableField<BdtPriRestriRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
+    public final TableField<BdtPriRestriRecord, ULong> AGENCY_ID_LIST_ID = createField(DSL.name("agency_id_list_id"), SQLDataType.BIGINTUNSIGNED, this, "This is a foreign key to the AGENCY_ID_LIST table. It is used in the case that the BDT content can be restricted to an agency identification.");
 
     /**
      * The column <code>oagi.bdt_pri_restri.is_default</code>. This allows overriding the default primitive assigned in the CDT_AWD_PRI_XPS_TYPE_MAP table. It typically indicates the most generic primtive for the data type.
      */
-    public final TableField<BdtPriRestriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This allows overriding the default primitive assigned in the CDT_AWD_PRI_XPS_TYPE_MAP table. It typically indicates the most generic primtive for the data type.");
+    public final TableField<BdtPriRestriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This allows overriding the default primitive assigned in the CDT_AWD_PRI_XPS_TYPE_MAP table. It typically indicates the most generic primtive for the data type.");
 
-    /**
-     * Create a <code>oagi.bdt_pri_restri</code> table reference
-     */
-    public BdtPriRestri() {
-        this(DSL.name("bdt_pri_restri"), null);
+    private BdtPriRestri(Name alias, Table<BdtPriRestriRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BdtPriRestri(Name alias, Table<BdtPriRestriRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table captures the allowed primitives for a BDT. The allowed primitives are captured by three columns the CDT_AWD_PRI_XPS_TYPE_MAP_ID, CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive by the built-in type of an expression language such as the XML Schema built-in type. The second specifies the primitive, which is a code list, while the last one specifies the primitive which is an agency identification list. Only one column among the three can have a value in a particular record."), TableOptions.table());
     }
 
     /**
@@ -104,12 +106,11 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
         this(alias, BDT_PRI_RESTRI);
     }
 
-    private BdtPriRestri(Name alias, Table<BdtPriRestriRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BdtPriRestri(Name alias, Table<BdtPriRestriRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table captures the allowed primitives for a BDT. The allowed primitives are captured by three columns the CDT_AWD_PRI_XPS_TYPE_MAP_ID, CODE_LIST_ID, and AGENCY_ID_LIST_ID. The first column specifies the primitive by the built-in type of an expression language such as the XML Schema built-in type. The second specifies the primitive, which is a code list, while the last one specifies the primitive which is an agency identification list. Only one column among the three can have a value in a particular record."), TableOptions.table());
+    /**
+     * Create a <code>oagi.bdt_pri_restri</code> table reference
+     */
+    public BdtPriRestri() {
+        this(DSL.name("bdt_pri_restri"), null);
     }
 
     public <O extends Record> BdtPriRestri(Table<O> child, ForeignKey<O, BdtPriRestriRecord> key) {
@@ -123,7 +124,7 @@ public class BdtPriRestri extends TableImpl<BdtPriRestriRecord> {
 
     @Override
     public Identity<BdtPriRestriRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BDT_PRI_RESTRI;
+        return (Identity<BdtPriRestriRecord, ULong>) super.getIdentity();
     }
 
     @Override

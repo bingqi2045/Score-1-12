@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetRelease;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetReleaseRecord extends UpdatableRecordImpl<ModuleSetReleaseRecord> implements Record8<ULong, ULong, ULong, Byte, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 52432850;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_set_release.module_set_release_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleSetReleaseRecord extends UpdatableRecordImpl<ModuleSetRelease
     public ModuleSetReleaseRecord(ULong moduleSetReleaseId, ULong moduleSetId, ULong releaseId, Byte isDefault, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleSetRelease.MODULE_SET_RELEASE);
 
-        set(0, moduleSetReleaseId);
-        set(1, moduleSetId);
-        set(2, releaseId);
-        set(3, isDefault);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setModuleSetId(moduleSetId);
+        setReleaseId(releaseId);
+        setIsDefault(isDefault);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDir;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDirRecord extends UpdatableRecordImpl<ModuleDirRecord> implements Record8<ULong, ULong, String, String, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -79912834;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_dir.module_dir_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleDirRecord extends UpdatableRecordImpl<ModuleDirRecord> implem
     public ModuleDirRecord(ULong moduleDirId, ULong parentModuleDirId, String name, String path, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleDir.MODULE_DIR);
 
-        set(0, moduleDirId);
-        set(1, parentModuleDirId);
-        set(2, name);
-        set(3, path);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleDirId(moduleDirId);
+        setParentModuleDirId(parentModuleDirId);
+        setName(name);
+        setPath(path);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

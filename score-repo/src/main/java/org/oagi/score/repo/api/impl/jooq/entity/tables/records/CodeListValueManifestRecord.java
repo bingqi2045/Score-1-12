@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeListValueManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueManifestRecord extends UpdatableRecordImpl<CodeListValueManifestRecord> implements Record8<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -94680462;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
@@ -354,13 +354,13 @@ public class CodeListValueManifestRecord extends UpdatableRecordImpl<CodeListVal
     public CodeListValueManifestRecord(ULong codeListValueManifestId, ULong releaseId, ULong codeListValueId, ULong codeListManifestId, Byte conflict, ULong replacementCodeListValueManifestId, ULong prevCodeListValueManifestId, ULong nextCodeListValueManifestId) {
         super(CodeListValueManifest.CODE_LIST_VALUE_MANIFEST);
 
-        set(0, codeListValueManifestId);
-        set(1, releaseId);
-        set(2, codeListValueId);
-        set(3, codeListManifestId);
-        set(4, conflict);
-        set(5, replacementCodeListValueManifestId);
-        set(6, prevCodeListValueManifestId);
-        set(7, nextCodeListValueManifestId);
+        setCodeListValueManifestId(codeListValueManifestId);
+        setReleaseId(releaseId);
+        setCodeListValueId(codeListValueId);
+        setCodeListManifestId(codeListManifestId);
+        setConflict(conflict);
+        setReplacementCodeListValueManifestId(replacementCodeListValueManifestId);
+        setPrevCodeListValueManifestId(prevCodeListValueManifestId);
+        setNextCodeListValueManifestId(nextCodeListValueManifestId);
     }
 }

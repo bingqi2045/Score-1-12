@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListValueRecord extends UpdatableRecordImpl<AgencyIdListValueRecord> implements Record15<ULong, String, String, String, String, ULong, Byte, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, ULong, ULong> {
 
-    private static final long serialVersionUID = 1223279531;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.agency_id_list_value.agency_id_list_value_id</code>. Primary key column.
@@ -612,20 +612,20 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     public AgencyIdListValueRecord(ULong agencyIdListValueId, String guid, String value, String name, String definition, ULong ownerListId, Byte isDeprecated, ULong replacementAgencyIdListValueId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong prevAgencyIdListValueId, ULong nextAgencyIdListValueId) {
         super(AgencyIdListValue.AGENCY_ID_LIST_VALUE);
 
-        set(0, agencyIdListValueId);
-        set(1, guid);
-        set(2, value);
-        set(3, name);
-        set(4, definition);
-        set(5, ownerListId);
-        set(6, isDeprecated);
-        set(7, replacementAgencyIdListValueId);
-        set(8, createdBy);
-        set(9, ownerUserId);
-        set(10, lastUpdatedBy);
-        set(11, creationTimestamp);
-        set(12, lastUpdateTimestamp);
-        set(13, prevAgencyIdListValueId);
-        set(14, nextAgencyIdListValueId);
+        setAgencyIdListValueId(agencyIdListValueId);
+        setGuid(guid);
+        setValue(value);
+        setName(name);
+        setDefinition(definition);
+        setOwnerListId(ownerListId);
+        setIsDeprecated(isDeprecated);
+        setReplacementAgencyIdListValueId(replacementAgencyIdListValueId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setPrevAgencyIdListValueId(prevAgencyIdListValueId);
+        setNextAgencyIdListValueId(nextAgencyIdListValueId);
     }
 }

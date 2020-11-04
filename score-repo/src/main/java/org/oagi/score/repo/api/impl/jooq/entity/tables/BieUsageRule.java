@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BieUsageRuleRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
 
-    private static final long serialVersionUID = -402573558;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.bie_usage_rule</code>
@@ -53,43 +54,44 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
     /**
      * The column <code>oagi.bie_usage_rule.bie_usage_rule_id</code>. Primary key of the table.
      */
-    public final TableField<BieUsageRuleRecord, ULong> BIE_USAGE_RULE_ID = createField(DSL.name("bie_usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
+    public final TableField<BieUsageRuleRecord, ULong> BIE_USAGE_RULE_ID = createField(DSL.name("bie_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the table.");
 
     /**
      * The column <code>oagi.bie_usage_rule.assigned_usage_rule_id</code>. Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.
      */
-    public final TableField<BieUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
+    public final TableField<BieUsageRuleRecord, ULong> ASSIGNED_USAGE_RULE_ID = createField(DSL.name("assigned_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the USAGE_RULE table indicating the usage rule assigned to a BIE.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_abie_id</code>. Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ABIE_ID = createField(DSL.name("target_abie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, ULong> TARGET_ABIE_ID = createField(DSL.name("target_abie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ABIE table indicating the ABIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_asbie_id</code>. Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIE_ID = createField(DSL.name("target_asbie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIE_ID = createField(DSL.name("target_asbie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIE table indicating the ASBIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_asbiep_id</code>. Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIEP_ID = createField(DSL.name("target_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, ULong> TARGET_ASBIEP_ID = createField(DSL.name("target_asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table indicating the ASBIEP, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_bbie_id</code>. Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIE_ID = createField(DSL.name("target_bbie_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIE_ID = createField(DSL.name("target_bbie_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIE table indicating the BBIE, to which the usage rule is applied.");
 
     /**
      * The column <code>oagi.bie_usage_rule.target_bbiep_id</code>. Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.
      */
-    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIEP_ID = createField(DSL.name("target_bbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.");
+    public final TableField<BieUsageRuleRecord, ULong> TARGET_BBIEP_ID = createField(DSL.name("target_bbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the BBIEP table indicating the ABIEP, to which the usage rule is applied.");
 
-    /**
-     * Create a <code>oagi.bie_usage_rule</code> table reference
-     */
-    public BieUsageRule() {
-        this(DSL.name("bie_usage_rule"), null);
+    private BieUsageRule(Name alias, Table<BieUsageRuleRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BieUsageRule(Name alias, Table<BieUsageRuleRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and all kinds of BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID, TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID."), TableOptions.table());
     }
 
     /**
@@ -106,12 +108,11 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
         this(alias, BIE_USAGE_RULE);
     }
 
-    private BieUsageRule(Name alias, Table<BieUsageRuleRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BieUsageRule(Name alias, Table<BieUsageRuleRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This is an intersection table. Per CCTS, a usage rule may be reused. This table allows m-m relationships between the usage rule and all kinds of BIEs. In a particular record, either only one of the TARGET_ABIE_ID, TARGET_ASBIE_ID, TARGET_ASBIEP_ID, TARGET_BBIE_ID, or TARGET_BBIEP_ID."), TableOptions.table());
+    /**
+     * Create a <code>oagi.bie_usage_rule</code> table reference
+     */
+    public BieUsageRule() {
+        this(DSL.name("bie_usage_rule"), null);
     }
 
     public <O extends Record> BieUsageRule(Table<O> child, ForeignKey<O, BieUsageRuleRecord> key) {
@@ -125,7 +126,7 @@ public class BieUsageRule extends TableImpl<BieUsageRuleRecord> {
 
     @Override
     public Identity<BieUsageRuleRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BIE_USAGE_RULE;
+        return (Identity<BieUsageRuleRecord, ULong>) super.getIdentity();
     }
 
     @Override

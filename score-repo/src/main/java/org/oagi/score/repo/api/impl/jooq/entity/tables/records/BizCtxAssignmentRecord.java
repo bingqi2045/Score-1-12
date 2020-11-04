@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxAssignment;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignmentRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1978484742;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.biz_ctx_assignment.biz_ctx_assignment_id</code>.
@@ -174,8 +174,8 @@ public class BizCtxAssignmentRecord extends UpdatableRecordImpl<BizCtxAssignment
     public BizCtxAssignmentRecord(ULong bizCtxAssignmentId, ULong bizCtxId, ULong topLevelAsbiepId) {
         super(BizCtxAssignment.BIZ_CTX_ASSIGNMENT);
 
-        set(0, bizCtxAssignmentId);
-        set(1, bizCtxId);
-        set(2, topLevelAsbiepId);
+        setBizCtxAssignmentId(bizCtxAssignmentId);
+        setBizCtxId(bizCtxId);
+        setTopLevelAsbiepId(topLevelAsbiepId);
     }
 }

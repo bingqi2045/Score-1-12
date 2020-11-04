@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.gateway.http.api.log_management.helper.LogUtils.generateHash;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -317,7 +318,10 @@ public class LogRepository {
                     .fetch();
         }
 
-        return serializer.serialize(accRecord, asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords);
+        return serializer.serialize(accManifestRecord, accRecord,
+                asccManifestRecords, bccManifestRecords,
+                asccRecords, bccRecords,
+                seqKeyRecords);
     }
 
     public LogRecord insertAccLog(AccManifestRecord accManifestRecord,
@@ -377,14 +381,16 @@ public class LogRepository {
     /*
      * Begins ASCCP
      */
-    public LogRecord insertAsccpLog(AsccpRecord asccpRecord,
+    public LogRecord insertAsccpLog(AsccpManifestRecord asccpManifestRecord,
+                                    AsccpRecord asccpRecord,
                                     LogAction logAction,
                                     ULong requesterId,
                                     LocalDateTime timestamp) {
-        return insertAsccpLog(asccpRecord, null, logAction, requesterId, timestamp);
+        return insertAsccpLog(asccpManifestRecord, asccpRecord, null, logAction, requesterId, timestamp);
     }
 
-    public LogRecord insertAsccpLog(AsccpRecord asccpRecord,
+    public LogRecord insertAsccpLog(AsccpManifestRecord asccpManifestRecord,
+                                    AsccpRecord asccpRecord,
                                     ULong prevLogId,
                                     LogAction logAction,
                                     ULong requesterId,
@@ -417,7 +423,7 @@ public class LogRepository {
             }
         }
         logRecord.setLogAction(logAction.name());
-        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
+        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpManifestRecord, asccpRecord)));
         logRecord.setReference(asccpRecord.getGuid());
         logRecord.setCreatedBy(requesterId);
         logRecord.setCreationTimestamp(timestamp);
@@ -439,14 +445,16 @@ public class LogRepository {
     /*
      * Begins BCCP
      */
-    public LogRecord insertBccpLog(BccpRecord bccpRecord,
+    public LogRecord insertBccpLog(BccpManifestRecord bccpManifestRecord,
+                                   BccpRecord bccpRecord,
                                    LogAction logAction,
                                    ULong requesterId,
                                    LocalDateTime timestamp) {
-        return insertBccpLog(bccpRecord, null, logAction, requesterId, timestamp);
+        return insertBccpLog(bccpManifestRecord, bccpRecord, null, logAction, requesterId, timestamp);
     }
 
-    public LogRecord insertBccpLog(BccpRecord bccpRecord,
+    public LogRecord insertBccpLog(BccpManifestRecord bccpManifestRecord,
+                                   BccpRecord bccpRecord,
                                    ULong prevLogId,
                                    LogAction logAction,
                                    ULong requesterId,
@@ -479,7 +487,7 @@ public class LogRepository {
             }
         }
         logRecord.setLogAction(logAction.name());
-        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpManifestRecord, bccpRecord)));
         logRecord.setReference(bccpRecord.getGuid());
         logRecord.setCreatedBy(requesterId);
         logRecord.setCreationTimestamp(timestamp);
@@ -501,14 +509,16 @@ public class LogRepository {
     /*
      * Begins Code List
      */
-    public LogRecord insertCodeListLog(CodeListRecord codeListRecord,
+    public LogRecord insertCodeListLog(CodeListManifestRecord codeListManifestRecord,
+                                       CodeListRecord codeListRecord,
                                        LogAction logAction,
                                        ULong requesterId,
                                        LocalDateTime timestamp) {
-        return insertCodeListLog(codeListRecord, null, logAction, requesterId, timestamp);
+        return insertCodeListLog(codeListManifestRecord, codeListRecord, null, logAction, requesterId, timestamp);
     }
 
-    public LogRecord insertCodeListLog(CodeListRecord codeListRecord,
+    public LogRecord insertCodeListLog(CodeListManifestRecord codeListManifestRecord,
+                                       CodeListRecord codeListRecord,
                                        ULong prevLogId,
                                        LogAction logAction,
                                        ULong requesterId,
@@ -542,11 +552,18 @@ public class LogRepository {
         }
         logRecord.setLogAction(logAction.name());
 
-        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
-                .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(codeListRecord.getCodeListId()))
+        List<CodeListValueManifestRecord> codeListValueManifestRecords = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestRecord.getCodeListManifestId()))
                 .fetch();
 
-        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(codeListRecord, codeListValueRecords)));
+        List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
+                .where(CODE_LIST_VALUE.CODE_LIST_ID.in(
+                        codeListValueManifestRecords.stream().map(e -> e.getCodeListValueId()).collect(Collectors.toList())
+                ))
+                .fetch();
+
+        logRecord.setSnapshot(JSON.valueOf(serializer.serialize(codeListManifestRecord, codeListRecord,
+                codeListValueManifestRecords, codeListValueRecords)));
         logRecord.setReference(codeListRecord.getGuid());
         logRecord.setCreatedBy(requesterId);
         logRecord.setCreationTimestamp(timestamp);

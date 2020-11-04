@@ -21,15 +21,15 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc;
  * table.
  * 
  * Note that only Extension is supported when deriving ACC from another ACC. 
- * (So if there is a restriction needed, maybe that concept should placed 
- * higher in the derivation hierarchy rather than lower.)
+ * (    So if there is a restriction needed, maybe that concept should placed 
+     * higher in the derivation hierarchy rather than lower.)
  * 
  * In OAGIS, all XSD extensions will be treated as a qualification of an ACC.
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccRecord extends UpdatableRecordImpl<AccRecord> implements Record22<ULong, String, String, String, String, String, String, ULong, String, Integer, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, Byte, ULong, ULong> {
 
-    private static final long serialVersionUID = 901431843;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.acc.acc_id</code>. A internal, primary database key of an ACC.
@@ -872,27 +872,27 @@ State change can't be undone. But the history record can still keep the records 
     public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String den, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAccId, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
         super(Acc.ACC);
 
-        set(0, accId);
-        set(1, guid);
-        set(2, type);
-        set(3, objectClassTerm);
-        set(4, den);
-        set(5, definition);
-        set(6, definitionSource);
-        set(7, basedAccId);
-        set(8, objectClassQualifier);
-        set(9, oagisComponentType);
-        set(10, namespaceId);
-        set(11, createdBy);
-        set(12, ownerUserId);
-        set(13, lastUpdatedBy);
-        set(14, creationTimestamp);
-        set(15, lastUpdateTimestamp);
-        set(16, state);
-        set(17, isDeprecated);
-        set(18, replacementAccId);
-        set(19, isAbstract);
-        set(20, prevAccId);
-        set(21, nextAccId);
+        setAccId(accId);
+        setGuid(guid);
+        setType(type);
+        setObjectClassTerm(objectClassTerm);
+        setDen(den);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setBasedAccId(basedAccId);
+        setObjectClassQualifier(objectClassQualifier);
+        setOagisComponentType(oagisComponentType);
+        setNamespaceId(namespaceId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setIsDeprecated(isDeprecated);
+        setReplacementAccId(replacementAccId);
+        setIsAbstract(isAbstract);
+        setPrevAccId(prevAccId);
+        setNextAccId(nextAccId);
     }
 }

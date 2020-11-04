@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SeqKey extends TableImpl<SeqKeyRecord> {
 
-    private static final long serialVersionUID = -1219129505;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.seq_key</code>
@@ -52,38 +53,39 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
     /**
      * The column <code>oagi.seq_key.seq_key_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<SeqKeyRecord, ULong> SEQ_KEY_ID = createField(DSL.name("seq_key_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.seq_key.from_acc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> FROM_ACC_MANIFEST_ID = createField(DSL.name("from_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<SeqKeyRecord, ULong> FROM_ACC_MANIFEST_ID = createField(DSL.name("from_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.seq_key.ascc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> ASCC_MANIFEST_ID = createField(DSL.name("ascc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, ULong> ASCC_MANIFEST_ID = createField(DSL.name("ascc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.seq_key.bcc_manifest_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, ULong> BCC_MANIFEST_ID = createField(DSL.name("bcc_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.seq_key.prev_seq_key_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> PREV_SEQ_KEY_ID = createField(DSL.name("prev_seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, ULong> PREV_SEQ_KEY_ID = createField(DSL.name("prev_seq_key_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.seq_key.next_seq_key_id</code>.
      */
-    public final TableField<SeqKeyRecord, ULong> NEXT_SEQ_KEY_ID = createField(DSL.name("next_seq_key_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<SeqKeyRecord, ULong> NEXT_SEQ_KEY_ID = createField(DSL.name("next_seq_key_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.seq_key</code> table reference
-     */
-    public SeqKey() {
-        this(DSL.name("seq_key"), null);
+    private SeqKey(Name alias, Table<SeqKeyRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private SeqKey(Name alias, Table<SeqKeyRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -100,12 +102,11 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
         this(alias, SEQ_KEY);
     }
 
-    private SeqKey(Name alias, Table<SeqKeyRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private SeqKey(Name alias, Table<SeqKeyRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.seq_key</code> table reference
+     */
+    public SeqKey() {
+        this(DSL.name("seq_key"), null);
     }
 
     public <O extends Record> SeqKey(Table<O> child, ForeignKey<O, SeqKeyRecord> key) {
@@ -124,7 +125,7 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
 
     @Override
     public Identity<SeqKeyRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_SEQ_KEY;
+        return (Identity<SeqKeyRecord, ULong>) super.getIdentity();
     }
 
     @Override

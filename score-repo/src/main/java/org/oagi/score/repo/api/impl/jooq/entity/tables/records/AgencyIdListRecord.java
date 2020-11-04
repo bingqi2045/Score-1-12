@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListRecord extends UpdatableRecordImpl<AgencyIdListRecord> implements Record20<ULong, String, String, String, String, ULong, String, ULong, String, ULong, ULong, ULong, LocalDateTime, LocalDateTime, String, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 2015294268;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.agency_id_list.agency_id_list_id</code>. A internal, primary database key.
@@ -793,25 +793,25 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     public AgencyIdListRecord(ULong agencyIdListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyIdListValueId, String versionId, ULong basedAgencyIdListId, String definition, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAgencyIdListId, ULong ownerUserId, ULong prevAgencyIdListId, ULong nextAgencyIdListId) {
         super(AgencyIdList.AGENCY_ID_LIST);
 
-        set(0, agencyIdListId);
-        set(1, guid);
-        set(2, enumTypeGuid);
-        set(3, name);
-        set(4, listId);
-        set(5, agencyIdListValueId);
-        set(6, versionId);
-        set(7, basedAgencyIdListId);
-        set(8, definition);
-        set(9, namespaceId);
-        set(10, createdBy);
-        set(11, lastUpdatedBy);
-        set(12, creationTimestamp);
-        set(13, lastUpdateTimestamp);
-        set(14, state);
-        set(15, isDeprecated);
-        set(16, replacementAgencyIdListId);
-        set(17, ownerUserId);
-        set(18, prevAgencyIdListId);
-        set(19, nextAgencyIdListId);
+        setAgencyIdListId(agencyIdListId);
+        setGuid(guid);
+        setEnumTypeGuid(enumTypeGuid);
+        setName(name);
+        setListId(listId);
+        setAgencyIdListValueId(agencyIdListValueId);
+        setVersionId(versionId);
+        setBasedAgencyIdListId(basedAgencyIdListId);
+        setDefinition(definition);
+        setNamespaceId(namespaceId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setIsDeprecated(isDeprecated);
+        setReplacementAgencyIdListId(replacementAgencyIdListId);
+        setOwnerUserId(ownerUserId);
+        setPrevAgencyIdListId(prevAgencyIdListId);
+        setNextAgencyIdListId(nextAgencyIdListId);
     }
 }

@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetAssignme
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetAssignment extends TableImpl<ModuleSetAssignmentRecord> {
 
-    private static final long serialVersionUID = 542042750;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_set_assignment</code>
@@ -51,43 +52,44 @@ public class ModuleSetAssignment extends TableImpl<ModuleSetAssignmentRecord> {
     /**
      * The column <code>oagi.module_set_assignment.module_set_assignment_id</code>. Primary key.
      */
-    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_set_assignment.module_set_id</code>. A foreign key of the module set.
      */
-    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
+    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
 
     /**
      * The column <code>oagi.module_set_assignment.module_id</code>. A foreign key of the module assigned in the module set.
      */
-    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module assigned in the module set.");
+    public final TableField<ModuleSetAssignmentRecord, ULong> MODULE_ID = createField(DSL.name("module_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module assigned in the module set.");
 
     /**
      * The column <code>oagi.module_set_assignment.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_ASSIGNMENT.
      */
-    public final TableField<ModuleSetAssignmentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_ASSIGNMENT.");
+    public final TableField<ModuleSetAssignmentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_ASSIGNMENT.");
 
     /**
      * The column <code>oagi.module_set_assignment.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleSetAssignmentRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleSetAssignmentRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_set_assignment.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleSetAssignmentRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleSetAssignmentRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_set_assignment.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleSetAssignmentRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleSetAssignmentRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_set_assignment</code> table reference
-     */
-    public ModuleSetAssignment() {
-        this(DSL.name("module_set_assignment"), null);
+    private ModuleSetAssignment(Name alias, Table<ModuleSetAssignmentRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleSetAssignment(Name alias, Table<ModuleSetAssignmentRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -104,12 +106,11 @@ public class ModuleSetAssignment extends TableImpl<ModuleSetAssignmentRecord> {
         this(alias, MODULE_SET_ASSIGNMENT);
     }
 
-    private ModuleSetAssignment(Name alias, Table<ModuleSetAssignmentRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleSetAssignment(Name alias, Table<ModuleSetAssignmentRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_set_assignment</code> table reference
+     */
+    public ModuleSetAssignment() {
+        this(DSL.name("module_set_assignment"), null);
     }
 
     public <O extends Record> ModuleSetAssignment(Table<O> child, ForeignKey<O, ModuleSetAssignmentRecord> key) {
@@ -123,7 +124,7 @@ public class ModuleSetAssignment extends TableImpl<ModuleSetAssignmentRecord> {
 
     @Override
     public Identity<ModuleSetAssignmentRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_SET_ASSIGNMENT;
+        return (Identity<ModuleSetAssignmentRecord, ULong>) super.getIdentity();
     }
 
     @Override

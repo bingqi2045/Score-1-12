@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1381697247;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.acc_manifest.acc_manifest_id</code>.
@@ -390,14 +390,14 @@ public class AccManifestRecord extends UpdatableRecordImpl<AccManifestRecord> im
     public AccManifestRecord(ULong accManifestId, ULong releaseId, ULong accId, ULong basedAccManifestId, Byte conflict, ULong logId, ULong replacementAccManifestId, ULong prevAccManifestId, ULong nextAccManifestId) {
         super(AccManifest.ACC_MANIFEST);
 
-        set(0, accManifestId);
-        set(1, releaseId);
-        set(2, accId);
-        set(3, basedAccManifestId);
-        set(4, conflict);
-        set(5, logId);
-        set(6, replacementAccManifestId);
-        set(7, prevAccManifestId);
-        set(8, nextAccManifestId);
+        setAccManifestId(accManifestId);
+        setReleaseId(releaseId);
+        setAccId(accId);
+        setBasedAccManifestId(basedAccManifestId);
+        setConflict(conflict);
+        setLogId(logId);
+        setReplacementAccManifestId(replacementAccManifestId);
+        setPrevAccManifestId(prevAccManifestId);
+        setNextAccManifestId(nextAccManifestId);
     }
 }

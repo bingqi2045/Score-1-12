@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -979309593;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.biz_ctx_value.biz_ctx_value_id</code>. Primary, internal database key.
@@ -176,8 +176,8 @@ public class BizCtxValueRecord extends UpdatableRecordImpl<BizCtxValueRecord> im
     public BizCtxValueRecord(ULong bizCtxValueId, ULong bizCtxId, ULong ctxSchemeValueId) {
         super(BizCtxValue.BIZ_CTX_VALUE);
 
-        set(0, bizCtxValueId);
-        set(1, bizCtxId);
-        set(2, ctxSchemeValueId);
+        setBizCtxValueId(bizCtxValueId);
+        setBizCtxId(bizCtxId);
+        setCtxSchemeValueId(ctxSchemeValueId);
     }
 }

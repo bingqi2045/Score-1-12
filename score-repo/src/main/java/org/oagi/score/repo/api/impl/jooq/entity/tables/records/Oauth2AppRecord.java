@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2App;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oauth2AppRecord extends UpdatableRecordImpl<Oauth2AppRecord> implements Record18<ULong, String, String, String, String, String, String, String, String, String, String, String, String, String, String, String, Integer, Byte> {
 
-    private static final long serialVersionUID = 879450478;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.oauth2_app.oauth2_app_id</code>.
@@ -714,23 +714,23 @@ public class Oauth2AppRecord extends UpdatableRecordImpl<Oauth2AppRecord> implem
     public Oauth2AppRecord(ULong oauth2AppId, String providerName, String issuerUri, String authorizationUri, String tokenUri, String userInfoUri, String jwkSetUri, String redirectUri, String clientId, String clientSecret, String clientAuthenticationMethod, String authorizationGrantType, String prompt, String displayProviderName, String backgroundColor, String fontColor, Integer displayOrder, Byte isDisabled) {
         super(Oauth2App.OAUTH2_APP);
 
-        set(0, oauth2AppId);
-        set(1, providerName);
-        set(2, issuerUri);
-        set(3, authorizationUri);
-        set(4, tokenUri);
-        set(5, userInfoUri);
-        set(6, jwkSetUri);
-        set(7, redirectUri);
-        set(8, clientId);
-        set(9, clientSecret);
-        set(10, clientAuthenticationMethod);
-        set(11, authorizationGrantType);
-        set(12, prompt);
-        set(13, displayProviderName);
-        set(14, backgroundColor);
-        set(15, fontColor);
-        set(16, displayOrder);
-        set(17, isDisabled);
+        setOauth2AppId(oauth2AppId);
+        setProviderName(providerName);
+        setIssuerUri(issuerUri);
+        setAuthorizationUri(authorizationUri);
+        setTokenUri(tokenUri);
+        setUserInfoUri(userInfoUri);
+        setJwkSetUri(jwkSetUri);
+        setRedirectUri(redirectUri);
+        setClientId(clientId);
+        setClientSecret(clientSecret);
+        setClientAuthenticationMethod(clientAuthenticationMethod);
+        setAuthorizationGrantType(authorizationGrantType);
+        setPrompt(prompt);
+        setDisplayProviderName(displayProviderName);
+        setBackgroundColor(backgroundColor);
+        setFontColor(fontColor);
+        setDisplayOrder(displayOrder);
+        setIsDisabled(isDisabled);
     }
 }

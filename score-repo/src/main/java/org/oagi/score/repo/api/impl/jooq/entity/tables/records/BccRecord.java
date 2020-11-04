@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccRecord extends UpdatableRecordImpl<BccRecord> {
 
-    private static final long serialVersionUID = -1287688325;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bcc.bcc_id</code>. A internal, primary database key of an BCC.
@@ -419,29 +419,29 @@ Indicate whether the field can have a NULL This is corresponding to the nillable
     public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String den, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
         super(Bcc.BCC);
 
-        set(0, bccId);
-        set(1, guid);
-        set(2, cardinalityMin);
-        set(3, cardinalityMax);
-        set(4, toBccpId);
-        set(5, fromAccId);
-        set(6, seqKey);
-        set(7, entityType);
-        set(8, den);
-        set(9, definition);
-        set(10, definitionSource);
-        set(11, createdBy);
-        set(12, ownerUserId);
-        set(13, lastUpdatedBy);
-        set(14, creationTimestamp);
-        set(15, lastUpdateTimestamp);
-        set(16, state);
-        set(17, isDeprecated);
-        set(18, replacementBccId);
-        set(19, isNillable);
-        set(20, defaultValue);
-        set(21, fixedValue);
-        set(22, prevBccId);
-        set(23, nextBccId);
+        setBccId(bccId);
+        setGuid(guid);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setToBccpId(toBccpId);
+        setFromAccId(fromAccId);
+        setSeqKey(seqKey);
+        setEntityType(entityType);
+        setDen(den);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setIsDeprecated(isDeprecated);
+        setReplacementBccId(replacementBccId);
+        setIsNillable(isNillable);
+        setDefaultValue(defaultValue);
+        setFixedValue(fixedValue);
+        setPrevBccId(prevBccId);
+        setNextBccId(nextBccId);
     }
 }

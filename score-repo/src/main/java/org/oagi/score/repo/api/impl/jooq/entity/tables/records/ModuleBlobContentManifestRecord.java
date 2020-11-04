@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleBlobContentManifestRecord extends UpdatableRecordImpl<ModuleBlobContentManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -989610380;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_blob_content_manifest.module_blob_content_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleBlobContentManifestRecord extends UpdatableRecordImpl<ModuleB
     public ModuleBlobContentManifestRecord(ULong moduleBlobContentManifestId, ULong moduleSetReleaseId, ULong blobContentManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST);
 
-        set(0, moduleBlobContentManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, blobContentManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleBlobContentManifestId(moduleBlobContentManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setBlobContentManifestId(blobContentManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Release extends TableImpl<ReleaseRecord> {
 
-    private static final long serialVersionUID = 1088486278;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.release</code>
@@ -51,63 +52,64 @@ public class Release extends TableImpl<ReleaseRecord> {
     /**
      * The column <code>oagi.release.release_id</code>. RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.
      */
-    public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
+    public final TableField<ReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "RELEASE_ID must be an incremental integer. RELEASE_ID that is more than another RELEASE_ID is interpreted to be released later than the other.");
 
     /**
      * The column <code>oagi.release.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<ReleaseRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<ReleaseRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.release.release_num</code>. Release number such has 10.0, 10.1, etc. 
      */
-    public final TableField<ReleaseRecord, String> RELEASE_NUM = createField(DSL.name("release_num"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Release number such has 10.0, 10.1, etc. ");
+    public final TableField<ReleaseRecord, String> RELEASE_NUM = createField(DSL.name("release_num"), SQLDataType.VARCHAR(45), this, "Release number such has 10.0, 10.1, etc. ");
 
     /**
      * The column <code>oagi.release.release_note</code>. Description or note associated with the release.
      */
-    public final TableField<ReleaseRecord, String> RELEASE_NOTE = createField(DSL.name("release_note"), org.jooq.impl.SQLDataType.CLOB, this, "Description or note associated with the release.");
+    public final TableField<ReleaseRecord, String> RELEASE_NOTE = createField(DSL.name("release_note"), SQLDataType.CLOB, this, "Description or note associated with the release.");
 
     /**
      * The column <code>oagi.release.release_license</code>. License associated with the release.
      */
-    public final TableField<ReleaseRecord, String> RELEASE_LICENSE = createField(DSL.name("release_license"), org.jooq.impl.SQLDataType.CLOB, this, "License associated with the release.");
+    public final TableField<ReleaseRecord, String> RELEASE_LICENSE = createField(DSL.name("release_license"), SQLDataType.CLOB, this, "License associated with the release.");
 
     /**
      * The column <code>oagi.release.namespace_id</code>. Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.
      */
-    public final TableField<ReleaseRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.");
+    public final TableField<ReleaseRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the NAMESPACE table. It identifies the namespace used with the release. It is particularly useful for a library that uses a single namespace such like the OAGIS 10.x. A library that uses multiple namespace but has a main namespace may also use this column as a specific namespace can be override at the module level.");
 
     /**
      * The column <code>oagi.release.created_by</code>. Foreign key to the APP_USER table identifying user who created the namespace.
      */
-    public final TableField<ReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
+    public final TableField<ReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
 
     /**
      * The column <code>oagi.release.last_updated_by</code>. Foreign key to the APP_USER table identifying the user who last updated the record.
      */
-    public final TableField<ReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
+    public final TableField<ReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
 
     /**
      * The column <code>oagi.release.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ReleaseRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ReleaseRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.release.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
     /**
      * The column <code>oagi.release.state</code>. This indicates the revision life cycle state of the Release.
      */
-    public final TableField<ReleaseRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20).defaultValue(org.jooq.impl.DSL.inline("Initialized", org.jooq.impl.SQLDataType.VARCHAR)), this, "This indicates the revision life cycle state of the Release.");
+    public final TableField<ReleaseRecord, String> STATE = createField(DSL.name("state"), SQLDataType.VARCHAR(20).defaultValue(DSL.inline("Initialized", SQLDataType.VARCHAR)), this, "This indicates the revision life cycle state of the Release.");
 
-    /**
-     * Create a <code>oagi.release</code> table reference
-     */
-    public Release() {
-        this(DSL.name("release"), null);
+    private Release(Name alias, Table<ReleaseRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Release(Name alias, Table<ReleaseRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("The is table store the release information."), TableOptions.table());
     }
 
     /**
@@ -124,12 +126,11 @@ public class Release extends TableImpl<ReleaseRecord> {
         this(alias, RELEASE);
     }
 
-    private Release(Name alias, Table<ReleaseRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Release(Name alias, Table<ReleaseRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("The is table store the release information."), TableOptions.table());
+    /**
+     * Create a <code>oagi.release</code> table reference
+     */
+    public Release() {
+        this(DSL.name("release"), null);
     }
 
     public <O extends Record> Release(Table<O> child, ForeignKey<O, ReleaseRecord> key) {
@@ -143,7 +144,7 @@ public class Release extends TableImpl<ReleaseRecord> {
 
     @Override
     public Identity<ReleaseRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_RELEASE;
+        return (Identity<ReleaseRecord, ULong>) super.getIdentity();
     }
 
     @Override

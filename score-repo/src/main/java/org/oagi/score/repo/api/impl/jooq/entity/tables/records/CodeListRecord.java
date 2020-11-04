@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CodeList;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListRecord extends UpdatableRecordImpl<CodeListRecord> {
 
-    private static final long serialVersionUID = 352012013;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.code_list.code_list_id</code>. Internal, primary database key.
@@ -374,28 +374,28 @@ The ownership can change throughout the history, but undoing shouldn't rollback 
     public CodeListRecord(ULong codeListId, String guid, String enumTypeGuid, String name, String listId, ULong agencyId, String versionId, String definition, String remark, String definitionSource, ULong namespaceId, ULong basedCodeListId, Byte extensibleIndicator, Byte isDeprecated, ULong replacementCodeListId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevCodeListId, ULong nextCodeListId) {
         super(CodeList.CODE_LIST);
 
-        set(0, codeListId);
-        set(1, guid);
-        set(2, enumTypeGuid);
-        set(3, name);
-        set(4, listId);
-        set(5, agencyId);
-        set(6, versionId);
-        set(7, definition);
-        set(8, remark);
-        set(9, definitionSource);
-        set(10, namespaceId);
-        set(11, basedCodeListId);
-        set(12, extensibleIndicator);
-        set(13, isDeprecated);
-        set(14, replacementCodeListId);
-        set(15, createdBy);
-        set(16, ownerUserId);
-        set(17, lastUpdatedBy);
-        set(18, creationTimestamp);
-        set(19, lastUpdateTimestamp);
-        set(20, state);
-        set(21, prevCodeListId);
-        set(22, nextCodeListId);
+        setCodeListId(codeListId);
+        setGuid(guid);
+        setEnumTypeGuid(enumTypeGuid);
+        setName(name);
+        setListId(listId);
+        setAgencyId(agencyId);
+        setVersionId(versionId);
+        setDefinition(definition);
+        setRemark(remark);
+        setDefinitionSource(definitionSource);
+        setNamespaceId(namespaceId);
+        setBasedCodeListId(basedCodeListId);
+        setExtensibleIndicator(extensibleIndicator);
+        setIsDeprecated(isDeprecated);
+        setReplacementCodeListId(replacementCodeListId);
+        setCreatedBy(createdBy);
+        setOwnerUserId(ownerUserId);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setState(state);
+        setPrevCodeListId(prevCodeListId);
+        setNextCodeListId(nextCodeListId);
     }
 }

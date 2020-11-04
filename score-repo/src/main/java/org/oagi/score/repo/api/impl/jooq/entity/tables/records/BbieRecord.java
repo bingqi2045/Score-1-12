@@ -25,7 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
 
-    private static final long serialVersionUID = -981317239;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bbie.bbie_id</code>. A internal, primary database key of a BBIE.
@@ -417,31 +417,31 @@ public class BbieRecord extends UpdatableRecordImpl<BbieRecord> {
     public BbieRecord(ULong bbieId, String guid, ULong basedBccManifestId, String path, String hashPath, ULong fromAbieId, ULong toBbiepId, ULong bdtPriRestriId, ULong codeListId, ULong agencyIdListId, Integer cardinalityMin, Integer cardinalityMax, String defaultValue, Byte isNillable, String fixedValue, Byte isNull, String definition, String example, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
         super(Bbie.BBIE);
 
-        set(0, bbieId);
-        set(1, guid);
-        set(2, basedBccManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, fromAbieId);
-        set(6, toBbiepId);
-        set(7, bdtPriRestriId);
-        set(8, codeListId);
-        set(9, agencyIdListId);
-        set(10, cardinalityMin);
-        set(11, cardinalityMax);
-        set(12, defaultValue);
-        set(13, isNillable);
-        set(14, fixedValue);
-        set(15, isNull);
-        set(16, definition);
-        set(17, example);
-        set(18, remark);
-        set(19, createdBy);
-        set(20, lastUpdatedBy);
-        set(21, creationTimestamp);
-        set(22, lastUpdateTimestamp);
-        set(23, seqKey);
-        set(24, isUsed);
-        set(25, ownerTopLevelAsbiepId);
+        setBbieId(bbieId);
+        setGuid(guid);
+        setBasedBccManifestId(basedBccManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setFromAbieId(fromAbieId);
+        setToBbiepId(toBbiepId);
+        setBdtPriRestriId(bdtPriRestriId);
+        setCodeListId(codeListId);
+        setAgencyIdListId(agencyIdListId);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setDefaultValue(defaultValue);
+        setIsNillable(isNillable);
+        setFixedValue(fixedValue);
+        setIsNull(isNull);
+        setDefinition(definition);
+        setExample(example);
+        setRemark(remark);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setSeqKey(seqKey);
+        setIsUsed(isUsed);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxCategoryRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxCategory extends TableImpl<CtxCategoryRecord> {
 
-    private static final long serialVersionUID = -433833477;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.ctx_category</code>
@@ -52,48 +53,49 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
     /**
      * The column <code>oagi.ctx_category.ctx_category_id</code>. Internal, primary, database key.
      */
-    public final TableField<CtxCategoryRecord, ULong> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary, database key.");
+    public final TableField<CtxCategoryRecord, ULong> CTX_CATEGORY_ID = createField(DSL.name("ctx_category_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary, database key.");
 
     /**
      * The column <code>oagi.ctx_category.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<CtxCategoryRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<CtxCategoryRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.ctx_category.name</code>. Short name of the context category.
      */
-    public final TableField<CtxCategoryRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Short name of the context category.");
+    public final TableField<CtxCategoryRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(45), this, "Short name of the context category.");
 
     /**
      * The column <code>oagi.ctx_category.description</code>. Explanation of what the context category is.
      */
-    public final TableField<CtxCategoryRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.CLOB, this, "Explanation of what the context category is.");
+    public final TableField<CtxCategoryRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB, this, "Explanation of what the context category is.");
 
     /**
      * The column <code>oagi.ctx_category.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created the context category.
      */
-    public final TableField<CtxCategoryRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the context category.");
+    public final TableField<CtxCategoryRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created the context category.");
 
     /**
      * The column <code>oagi.ctx_category.last_updated_by</code>. Foreign key to the APP_USER table. It identifies the user who last updated the context category.
      */
-    public final TableField<CtxCategoryRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context category.");
+    public final TableField<CtxCategoryRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It identifies the user who last updated the context category.");
 
     /**
      * The column <code>oagi.ctx_category.creation_timestamp</code>. Timestamp when the context category was created.
      */
-    public final TableField<CtxCategoryRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was created.");
+    public final TableField<CtxCategoryRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP(6)", SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was created.");
 
     /**
      * The column <code>oagi.ctx_category.last_update_timestamp</code>. Timestamp when the context category was last updated.
      */
-    public final TableField<CtxCategoryRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was last updated.");
+    public final TableField<CtxCategoryRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP(6)", SQLDataType.LOCALDATETIME)), this, "Timestamp when the context category was last updated.");
 
-    /**
-     * Create a <code>oagi.ctx_category</code> table reference
-     */
-    public CtxCategory() {
-        this(DSL.name("ctx_category"), null);
+    private CtxCategory(Name alias, Table<CtxCategoryRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CtxCategory(Name alias, Table<CtxCategoryRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table captures the context category. Examples of context categories as described in the CCTS are business process, industry, etc."), TableOptions.table());
     }
 
     /**
@@ -110,12 +112,11 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
         this(alias, CTX_CATEGORY);
     }
 
-    private CtxCategory(Name alias, Table<CtxCategoryRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CtxCategory(Name alias, Table<CtxCategoryRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table captures the context category. Examples of context categories as described in the CCTS are business process, industry, etc."), TableOptions.table());
+    /**
+     * Create a <code>oagi.ctx_category</code> table reference
+     */
+    public CtxCategory() {
+        this(DSL.name("ctx_category"), null);
     }
 
     public <O extends Record> CtxCategory(Table<O> child, ForeignKey<O, CtxCategoryRecord> key) {
@@ -129,7 +130,7 @@ public class CtxCategory extends TableImpl<CtxCategoryRecord> {
 
     @Override
     public Identity<CtxCategoryRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CTX_CATEGORY;
+        return (Identity<CtxCategoryRecord, ULong>) super.getIdentity();
     }
 
     @Override

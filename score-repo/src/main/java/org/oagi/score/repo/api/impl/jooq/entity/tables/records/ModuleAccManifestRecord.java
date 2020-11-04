@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 1505300490;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_acc_manifest.module_acc_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleAccManifestRecord extends UpdatableRecordImpl<ModuleAccManife
     public ModuleAccManifestRecord(ULong moduleAccManifestId, ULong moduleSetReleaseId, ULong accManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleAccManifest.MODULE_ACC_MANIFEST);
 
-        set(0, moduleAccManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, accManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleAccManifestId(moduleAccManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setAccManifestId(accManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

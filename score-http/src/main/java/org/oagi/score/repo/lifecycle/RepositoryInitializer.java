@@ -375,7 +375,8 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
             logRecord.setSnapshot(JSON.valueOf(
-                    serializer.serialize(accRecord, asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)
+                    serializer.serialize(accManifestRecord, accRecord,
+                            asccManifestRecords, bccManifestRecords, asccRecords, bccRecords, seqKeyRecords)
             ));
             logRecord.setCreatedBy(accRecord.getCreatedBy());
             logRecord.setCreationTimestamp(accRecord.getCreationTimestamp());
@@ -485,7 +486,7 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionNum(UInteger.valueOf(1));
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpRecord)));
+            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(asccpManifestRecord, asccpRecord)));
             logRecord.setCreatedBy(asccpRecord.getCreatedBy());
             logRecord.setCreationTimestamp(asccpRecord.getCreationTimestamp());
 
@@ -544,7 +545,7 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionNum(UInteger.valueOf(1));
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpRecord)));
+            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(bccpManifestRecord, bccpRecord)));
             logRecord.setCreatedBy(bccpRecord.getCreatedBy());
             logRecord.setCreationTimestamp(bccpRecord.getCreationTimestamp());
 
@@ -597,9 +598,14 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(CODE_LIST.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
                     .fetchOne();
 
-            List<CodeListValueRecord> codeListValueRecordList = dslContext.selectFrom(CODE_LIST_VALUE)
-                    .where(CODE_LIST_VALUE.CODE_LIST_ID.eq(codeListManifestRecord.getCodeListId()))
-                    .orderBy(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.asc())
+            List<CodeListValueManifestRecord> codeListValueManifestRecords = dslContext.selectFrom(CODE_LIST_VALUE_MANIFEST)
+                    .where(CODE_LIST_VALUE_MANIFEST.CODE_LIST_MANIFEST_ID.eq(codeListManifestRecord.getCodeListManifestId()))
+                    .fetch();
+
+            List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
+                    .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.in(
+                            codeListValueManifestRecords.stream().map(e -> e.getCodeListValueId()).collect(Collectors.toList())
+                    ))
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
@@ -609,7 +615,8 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
             logRecord.setSnapshot(JSON.valueOf(
-                    serializer.serialize(codeListRecord, codeListValueRecordList)
+                    serializer.serialize(codeListManifestRecord, codeListRecord,
+                            codeListValueManifestRecords, codeListValueRecords)
             ));
             logRecord.setCreatedBy(codeListRecord.getCreatedBy());
             logRecord.setCreationTimestamp(codeListRecord.getCreationTimestamp());
@@ -692,9 +699,14 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(AGENCY_ID_LIST.AGENCY_ID_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
                     .fetchOne();
 
-            List<AgencyIdListValueRecord> agencyIdListValueRecordList = dslContext.selectFrom(AGENCY_ID_LIST_VALUE)
-                    .where(AGENCY_ID_LIST_VALUE.OWNER_LIST_ID.eq(agencyIdListManifestRecord.getAgencyIdListId()))
-                    .orderBy(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.asc())
+            List<AgencyIdListValueManifestRecord> agencyIdListValueManifestRecords = dslContext.selectFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                    .where(AGENCY_ID_LIST_VALUE_MANIFEST.AGENCY_ID_LIST_MANIFEST_ID.eq(agencyIdListManifestRecord.getAgencyIdListManifestId()))
+                    .fetch();
+
+            List<AgencyIdListValueRecord> agencyIdListValueRecords = dslContext.selectFrom(AGENCY_ID_LIST_VALUE)
+                    .where(AGENCY_ID_LIST_VALUE.AGENCY_ID_LIST_VALUE_ID.in(
+                            agencyIdListValueManifestRecords.stream().map(e -> e.getAgencyIdListValueId()).collect(Collectors.toList())
+                    ))
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
@@ -704,7 +716,8 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
             logRecord.setSnapshot(JSON.valueOf(
-                    serializer.serialize(agencyIdListRecord, agencyIdListValueRecordList)
+                    serializer.serialize(agencyIdListManifestRecord, agencyIdListRecord,
+                            agencyIdListValueManifestRecords, agencyIdListValueRecords)
             ));
             logRecord.setCreatedBy(agencyIdListRecord.getCreatedBy());
             logRecord.setCreationTimestamp(agencyIdListRecord.getCreationTimestamp());
@@ -787,9 +800,14 @@ public class RepositoryInitializer implements InitializingBean {
                     .where(DT.DT_ID.eq(dtManifestRecord.getDtId()))
                     .fetchOne();
 
-            List<DtScRecord> dtScRecordList = dslContext.selectFrom(DT_SC)
-                    .where(DT_SC.OWNER_DT_ID.eq(dtRecord.getDtId()))
-                    .orderBy(DT_SC.DT_SC_ID.asc())
+            List<DtScManifestRecord> dtScManifestRecords = dslContext.selectFrom(DT_SC_MANIFEST)
+                    .where(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(dtManifestRecord.getDtManifestId()))
+                    .fetch();
+
+            List<DtScRecord> dtScRecords = dslContext.selectFrom(DT_SC)
+                    .where(DT_SC.DT_SC_ID.in(
+                            dtScManifestRecords.stream().map(e -> e.getDtScId()).collect(Collectors.toList())
+                    ))
                     .fetch();
 
             LogRecord logRecord = new LogRecord();
@@ -799,7 +817,8 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
             logRecord.setSnapshot(
-                    JSON.valueOf(serializer.serialize(dtRecord, dtScRecordList))
+                    JSON.valueOf(serializer.serialize(dtManifestRecord, dtRecord,
+                            dtScManifestRecords, dtScRecords))
             );
             logRecord.setCreatedBy(dtRecord.getCreatedBy());
             logRecord.setCreationTimestamp(dtRecord.getCreationTimestamp());
@@ -888,7 +907,7 @@ public class RepositoryInitializer implements InitializingBean {
             logRecord.setRevisionNum(UInteger.valueOf(1));
             logRecord.setRevisionTrackingNum(UInteger.valueOf(1));
             logRecord.setLogAction(LogAction.Added.name());
-            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(xbtRecord)));
+            logRecord.setSnapshot(JSON.valueOf(serializer.serialize(xbtManifestRecord, xbtRecord)));
             logRecord.setCreatedBy(xbtRecord.getCreatedBy());
             logRecord.setCreationTimestamp(xbtRecord.getCreationTimestamp());
 

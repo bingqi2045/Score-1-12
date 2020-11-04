@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implements Record4<ULong, ULong, ULong, Byte> {
 
-    private static final long serialVersionUID = 518129450;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.cdt_awd_pri.cdt_awd_pri_id</code>. Primary, internal database key.
@@ -212,9 +212,9 @@ public class CdtAwdPriRecord extends UpdatableRecordImpl<CdtAwdPriRecord> implem
     public CdtAwdPriRecord(ULong cdtAwdPriId, ULong cdtId, ULong cdtPriId, Byte isDefault) {
         super(CdtAwdPri.CDT_AWD_PRI);
 
-        set(0, cdtAwdPriId);
-        set(1, cdtId);
-        set(2, cdtPriId);
-        set(3, isDefault);
+        setCdtAwdPriId(cdtAwdPriId);
+        setCdtId(cdtId);
+        setCdtPriId(cdtPriId);
+        setIsDefault(isDefault);
     }
 }

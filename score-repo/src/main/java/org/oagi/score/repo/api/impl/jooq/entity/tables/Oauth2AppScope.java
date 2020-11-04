@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.Oauth2AppScopeRec
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
 
-    private static final long serialVersionUID = 2132851333;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.oauth2_app_scope</code>
@@ -50,23 +51,24 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
     /**
      * The column <code>oagi.oauth2_app_scope.oauth2_app_scope_id</code>.
      */
-    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_SCOPE_ID = createField(DSL.name("oauth2_app_scope_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_SCOPE_ID = createField(DSL.name("oauth2_app_scope_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.oauth2_app_scope.oauth2_app_id</code>.
      */
-    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<Oauth2AppScopeRecord, ULong> OAUTH2_APP_ID = createField(DSL.name("oauth2_app_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.oauth2_app_scope.scope</code>.
      */
-    public final TableField<Oauth2AppScopeRecord, String> SCOPE = createField(DSL.name("scope"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<Oauth2AppScopeRecord, String> SCOPE = createField(DSL.name("scope"), SQLDataType.VARCHAR(100).nullable(false), this, "");
 
-    /**
-     * Create a <code>oagi.oauth2_app_scope</code> table reference
-     */
-    public Oauth2AppScope() {
-        this(DSL.name("oauth2_app_scope"), null);
+    private Oauth2AppScope(Name alias, Table<Oauth2AppScopeRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Oauth2AppScope(Name alias, Table<Oauth2AppScopeRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -83,12 +85,11 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
         this(alias, OAUTH2_APP_SCOPE);
     }
 
-    private Oauth2AppScope(Name alias, Table<Oauth2AppScopeRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Oauth2AppScope(Name alias, Table<Oauth2AppScopeRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.oauth2_app_scope</code> table reference
+     */
+    public Oauth2AppScope() {
+        this(DSL.name("oauth2_app_scope"), null);
     }
 
     public <O extends Record> Oauth2AppScope(Table<O> child, ForeignKey<O, Oauth2AppScopeRecord> key) {
@@ -102,7 +103,7 @@ public class Oauth2AppScope extends TableImpl<Oauth2AppScopeRecord> {
 
     @Override
     public Identity<Oauth2AppScopeRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_OAUTH2_APP_SCOPE;
+        return (Identity<Oauth2AppScopeRecord, ULong>) super.getIdentity();
     }
 
     @Override

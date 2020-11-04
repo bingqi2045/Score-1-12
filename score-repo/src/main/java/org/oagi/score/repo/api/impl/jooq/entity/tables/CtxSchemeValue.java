@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRec
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
-    private static final long serialVersionUID = 296405587;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.ctx_scheme_value</code>
@@ -51,33 +52,34 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
     /**
      * The column <code>oagi.ctx_scheme_value.ctx_scheme_value_id</code>. Primary, internal database key.
      */
-    public final TableField<CtxSchemeValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<CtxSchemeValueRecord, ULong> CTX_SCHEME_VALUE_ID = createField(DSL.name("ctx_scheme_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.ctx_scheme_value.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<CtxSchemeValueRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<CtxSchemeValueRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.ctx_scheme_value.value</code>. A short value for the scheme value similar to the code list value.
      */
-    public final TableField<CtxSchemeValueRecord, String> VALUE = createField(DSL.name("value"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "A short value for the scheme value similar to the code list value.");
+    public final TableField<CtxSchemeValueRecord, String> VALUE = createField(DSL.name("value"), SQLDataType.VARCHAR(100).nullable(false).defaultValue(DSL.inline("", SQLDataType.VARCHAR)), this, "A short value for the scheme value similar to the code list value.");
 
     /**
      * The column <code>oagi.ctx_scheme_value.meaning</code>. The description, explanatiion of the scheme value.
      */
-    public final TableField<CtxSchemeValueRecord, String> MEANING = createField(DSL.name("meaning"), org.jooq.impl.SQLDataType.CLOB, this, "The description, explanatiion of the scheme value.");
+    public final TableField<CtxSchemeValueRecord, String> MEANING = createField(DSL.name("meaning"), SQLDataType.CLOB, this, "The description, explanatiion of the scheme value.");
 
     /**
      * The column <code>oagi.ctx_scheme_value.owner_ctx_scheme_id</code>. Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.
      */
-    public final TableField<CtxSchemeValueRecord, ULong> OWNER_CTX_SCHEME_ID = createField(DSL.name("owner_ctx_scheme_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.");
+    public final TableField<CtxSchemeValueRecord, ULong> OWNER_CTX_SCHEME_ID = createField(DSL.name("owner_ctx_scheme_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the CTX_SCHEME table. It identifies the context scheme, to which this scheme value belongs.");
 
-    /**
-     * Create a <code>oagi.ctx_scheme_value</code> table reference
-     */
-    public CtxSchemeValue() {
-        this(DSL.name("ctx_scheme_value"), null);
+    private CtxSchemeValue(Name alias, Table<CtxSchemeValueRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CtxSchemeValue(Name alias, Table<CtxSchemeValueRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table stores the context scheme values for a particular context scheme in the CTX_SCHEME table."), TableOptions.table());
     }
 
     /**
@@ -94,12 +96,11 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
         this(alias, CTX_SCHEME_VALUE);
     }
 
-    private CtxSchemeValue(Name alias, Table<CtxSchemeValueRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CtxSchemeValue(Name alias, Table<CtxSchemeValueRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table stores the context scheme values for a particular context scheme in the CTX_SCHEME table."), TableOptions.table());
+    /**
+     * Create a <code>oagi.ctx_scheme_value</code> table reference
+     */
+    public CtxSchemeValue() {
+        this(DSL.name("ctx_scheme_value"), null);
     }
 
     public <O extends Record> CtxSchemeValue(Table<O> child, ForeignKey<O, CtxSchemeValueRecord> key) {
@@ -113,7 +114,7 @@ public class CtxSchemeValue extends TableImpl<CtxSchemeValueRecord> {
 
     @Override
     public Identity<CtxSchemeValueRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CTX_SCHEME_VALUE;
+        return (Identity<CtxSchemeValueRecord, ULong>) super.getIdentity();
     }
 
     @Override

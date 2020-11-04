@@ -20,7 +20,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> implements Record2<ULong, byte[]> {
 
-    private static final long serialVersionUID = 216398286;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.blob_content.blob_content_id</code>. Primary, internal database key.
@@ -139,7 +139,7 @@ public class BlobContentRecord extends UpdatableRecordImpl<BlobContentRecord> im
     public BlobContentRecord(ULong blobContentId, byte[] content) {
         super(BlobContent.BLOB_CONTENT);
 
-        set(0, blobContentId);
-        set(1, content);
+        setBlobContentId(blobContentId);
+        setContent(content);
     }
 }

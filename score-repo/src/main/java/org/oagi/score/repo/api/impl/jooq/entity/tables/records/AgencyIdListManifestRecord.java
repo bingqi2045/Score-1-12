@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AgencyIdListManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdListManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1829250518;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.agency_id_list_manifest.agency_id_list_manifest_id</code>.
@@ -390,14 +390,14 @@ public class AgencyIdListManifestRecord extends UpdatableRecordImpl<AgencyIdList
     public AgencyIdListManifestRecord(ULong agencyIdListManifestId, ULong releaseId, ULong agencyIdListId, ULong basedAgencyIdListManifestId, Byte conflict, ULong logId, ULong replacementAgencyIdListManifestId, ULong prevAgencyIdListManifestId, ULong nextAgencyIdListManifestId) {
         super(AgencyIdListManifest.AGENCY_ID_LIST_MANIFEST);
 
-        set(0, agencyIdListManifestId);
-        set(1, releaseId);
-        set(2, agencyIdListId);
-        set(3, basedAgencyIdListManifestId);
-        set(4, conflict);
-        set(5, logId);
-        set(6, replacementAgencyIdListManifestId);
-        set(7, prevAgencyIdListManifestId);
-        set(8, nextAgencyIdListManifestId);
+        setAgencyIdListManifestId(agencyIdListManifestId);
+        setReleaseId(releaseId);
+        setAgencyIdListId(agencyIdListId);
+        setBasedAgencyIdListManifestId(basedAgencyIdListManifestId);
+        setConflict(conflict);
+        setLogId(logId);
+        setReplacementAgencyIdListManifestId(replacementAgencyIdListManifestId);
+        setPrevAgencyIdListManifestId(prevAgencyIdListManifestId);
+        setNextAgencyIdListManifestId(nextAgencyIdListManifestId);
     }
 }

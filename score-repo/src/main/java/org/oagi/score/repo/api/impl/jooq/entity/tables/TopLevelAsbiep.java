@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.TopLevelAsbiepRec
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
 
-    private static final long serialVersionUID = 1353876188;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.top_level_asbiep</code>
@@ -53,53 +54,54 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
     /**
      * The column <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A internal, primary database key of an top-level ASBIEP.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an top-level ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, ULong> TOP_LEVEL_ASBIEP_ID = createField(DSL.name("top_level_asbiep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "A internal, primary database key of an top-level ASBIEP.");
 
     /**
      * The column <code>oagi.top_level_asbiep.asbiep_id</code>. Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.");
+    public final TableField<TopLevelAsbiepRecord, ULong> ASBIEP_ID = createField(DSL.name("asbiep_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the ASBIEP table pointing to a record which is a top-level ASBIEP.");
 
     /**
      * The column <code>oagi.top_level_asbiep.owner_user_id</code>.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<TopLevelAsbiepRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.top_level_asbiep.last_update_timestamp</code>. The timestamp when among all related bie records was last updated.
      */
-    public final TableField<TopLevelAsbiepRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "The timestamp when among all related bie records was last updated.");
+    public final TableField<TopLevelAsbiepRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("CURRENT_TIMESTAMP(6)", SQLDataType.LOCALDATETIME)), this, "The timestamp when among all related bie records was last updated.");
 
     /**
      * The column <code>oagi.top_level_asbiep.last_updated_by</code>. A foreign key referring to the last user who has updated any related bie records.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated any related bie records.");
+    public final TableField<TopLevelAsbiepRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key referring to the last user who has updated any related bie records.");
 
     /**
      * The column <code>oagi.top_level_asbiep.release_id</code>. Foreign key to the RELEASE table. It identifies the release, for which this module is associated.
      */
-    public final TableField<TopLevelAsbiepRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the RELEASE table. It identifies the release, for which this module is associated.");
+    public final TableField<TopLevelAsbiepRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the RELEASE table. It identifies the release, for which this module is associated.");
 
     /**
      * The column <code>oagi.top_level_asbiep.version</code>. This column hold a version number assigned by the user. This column is only used by the top-level ASBIEP. No format of version is enforced.
      */
-    public final TableField<TopLevelAsbiepRecord, String> VERSION = createField(DSL.name("version"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "This column hold a version number assigned by the user. This column is only used by the top-level ASBIEP. No format of version is enforced.");
+    public final TableField<TopLevelAsbiepRecord, String> VERSION = createField(DSL.name("version"), SQLDataType.VARCHAR(45), this, "This column hold a version number assigned by the user. This column is only used by the top-level ASBIEP. No format of version is enforced.");
 
     /**
      * The column <code>oagi.top_level_asbiep.status</code>. This is different from the STATE column which is CRUD life cycle of an entity. The use case for this is to allow the user to indicate the usage status of a top-level ASBIEP (a profile BOD). An integration architect can use this column. Example values are ?Prototype?, ?Test?, and ?Production?. Only the top-level ASBIEP can use this field.
      */
-    public final TableField<TopLevelAsbiepRecord, String> STATUS = createField(DSL.name("status"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "This is different from the STATE column which is CRUD life cycle of an entity. The use case for this is to allow the user to indicate the usage status of a top-level ASBIEP (a profile BOD). An integration architect can use this column. Example values are ?Prototype?, ?Test?, and ?Production?. Only the top-level ASBIEP can use this field.");
+    public final TableField<TopLevelAsbiepRecord, String> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(45), this, "This is different from the STATE column which is CRUD life cycle of an entity. The use case for this is to allow the user to indicate the usage status of a top-level ASBIEP (a profile BOD). An integration architect can use this column. Example values are ?Prototype?, ?Test?, and ?Production?. Only the top-level ASBIEP can use this field.");
 
     /**
      * The column <code>oagi.top_level_asbiep.state</code>.
      */
-    public final TableField<TopLevelAsbiepRecord, String> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "");
+    public final TableField<TopLevelAsbiepRecord, String> STATE = createField(DSL.name("state"), SQLDataType.VARCHAR(20), this, "");
 
-    /**
-     * Create a <code>oagi.top_level_asbiep</code> table reference
-     */
-    public TopLevelAsbiep() {
-        this(DSL.name("top_level_asbiep"), null);
+    private TopLevelAsbiep(Name alias, Table<TopLevelAsbiepRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private TopLevelAsbiep(Name alias, Table<TopLevelAsbiepRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table indexes the ASBIEP which is a top-level ASBIEP. This table and the owner_top_level_asbiep_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions."), TableOptions.table());
     }
 
     /**
@@ -116,12 +118,11 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
         this(alias, TOP_LEVEL_ASBIEP);
     }
 
-    private TopLevelAsbiep(Name alias, Table<TopLevelAsbiepRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private TopLevelAsbiep(Name alias, Table<TopLevelAsbiepRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table indexes the ASBIEP which is a top-level ASBIEP. This table and the owner_top_level_asbiep_id column in all BIE tables allow all related BIEs to be retrieved all at once speeding up the profile BOD transactions."), TableOptions.table());
+    /**
+     * Create a <code>oagi.top_level_asbiep</code> table reference
+     */
+    public TopLevelAsbiep() {
+        this(DSL.name("top_level_asbiep"), null);
     }
 
     public <O extends Record> TopLevelAsbiep(Table<O> child, ForeignKey<O, TopLevelAsbiepRecord> key) {
@@ -135,7 +136,7 @@ public class TopLevelAsbiep extends TableImpl<TopLevelAsbiepRecord> {
 
     @Override
     public Identity<TopLevelAsbiepRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_TOP_LEVEL_ASBIEP;
+        return (Identity<TopLevelAsbiepRecord, ULong>) super.getIdentity();
     }
 
     @Override

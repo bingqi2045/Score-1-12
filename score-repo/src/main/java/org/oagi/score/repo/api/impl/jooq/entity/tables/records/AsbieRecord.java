@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbie;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Record19<ULong, String, ULong, String, String, ULong, ULong, String, Integer, Integer, Byte, String, ULong, ULong, LocalDateTime, LocalDateTime, BigDecimal, Byte, ULong> {
 
-    private static final long serialVersionUID = 854413097;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.asbie.asbie_id</code>. A internal, primary database key of an ASBIE.
@@ -754,24 +754,24 @@ public class AsbieRecord extends UpdatableRecordImpl<AsbieRecord> implements Rec
     public AsbieRecord(ULong asbieId, String guid, ULong basedAsccManifestId, String path, String hashPath, ULong fromAbieId, ULong toAsbiepId, String definition, Integer cardinalityMin, Integer cardinalityMax, Byte isNillable, String remark, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, BigDecimal seqKey, Byte isUsed, ULong ownerTopLevelAsbiepId) {
         super(Asbie.ASBIE);
 
-        set(0, asbieId);
-        set(1, guid);
-        set(2, basedAsccManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, fromAbieId);
-        set(6, toAsbiepId);
-        set(7, definition);
-        set(8, cardinalityMin);
-        set(9, cardinalityMax);
-        set(10, isNillable);
-        set(11, remark);
-        set(12, createdBy);
-        set(13, lastUpdatedBy);
-        set(14, creationTimestamp);
-        set(15, lastUpdateTimestamp);
-        set(16, seqKey);
-        set(17, isUsed);
-        set(18, ownerTopLevelAsbiepId);
+        setAsbieId(asbieId);
+        setGuid(guid);
+        setBasedAsccManifestId(basedAsccManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setFromAbieId(fromAbieId);
+        setToAsbiepId(toAsbiepId);
+        setDefinition(definition);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setIsNillable(isNillable);
+        setRemark(remark);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setSeqKey(seqKey);
+        setIsUsed(isUsed);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

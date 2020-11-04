@@ -99,19 +99,20 @@ public class AsccpWriteRepository {
         asccpManifest.setAsccpId(asccp.getAsccpId());
         asccpManifest.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         asccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-
-        LogRecord logRecord =
-                logRepository.insertAsccpLog(
-                        asccp,
-                        LogAction.Added,
-                        userId, timestamp);
-        asccpManifest.setLogId(logRecord.getLogId());
-
         asccpManifest.setAsccpManifestId(
                 dslContext.insertInto(ASCCP_MANIFEST)
                         .set(asccpManifest)
                         .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne().getAsccpManifestId()
         );
+
+        LogRecord logRecord =
+                logRepository.insertAsccpLog(
+                        asccpManifest,
+                        asccp,
+                        LogAction.Added,
+                        userId, timestamp);
+        asccpManifest.setLogId(logRecord.getLogId());
+        asccpManifest.update(ASCCP_MANIFEST.LOG_ID);
 
         return new CreateAsccpRepositoryResponse(asccpManifest.getAsccpManifestId().toBigInteger());
     }
@@ -187,6 +188,7 @@ public class AsccpWriteRepository {
         // creates new log for revised record.
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         nextAsccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Revised,
                         userId, timestamp);
@@ -288,6 +290,7 @@ public class AsccpWriteRepository {
             // creates new log for updated record.
             LogRecord logRecord =
                     logRepository.insertAsccpLog(
+                            asccpManifestRecord,
                             asccpRecord, asccpManifestRecord.getLogId(),
                             LogAction.Modified,
                             userId, timestamp);
@@ -353,6 +356,7 @@ public class AsccpWriteRepository {
         // creates new log for updated record.
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         asccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -403,6 +407,7 @@ public class AsccpWriteRepository {
         // creates new log for updated record.
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         asccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -462,6 +467,7 @@ public class AsccpWriteRepository {
                 ? LogAction.Restored : LogAction.Modified;
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         asccpRecord, asccpManifestRecord.getLogId(),
                         logAction,
                         userId, timestamp);
@@ -505,6 +511,7 @@ public class AsccpWriteRepository {
         // creates new log for deleted record.
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         asccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Deleted,
                         userId, timestamp);
@@ -585,6 +592,7 @@ public class AsccpWriteRepository {
 
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         asccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Modified,
                         userId, timestamp);
@@ -619,6 +627,7 @@ public class AsccpWriteRepository {
         // creates new log for canceled record.
         LogRecord logRecord =
                 logRepository.insertAsccpLog(
+                        asccpManifestRecord,
                         prevAsccpRecord, asccpManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);

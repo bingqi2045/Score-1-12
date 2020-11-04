@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -29,12 +30,12 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtScAwdPriRecord
 /**
  * This table capture the CDT primitives allowed for a particular SC of a 
  * CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends 
- * its base (such SC is not defined in the CCTS data type catalog specification).
+ * its base (    such SC is not defined in the CCTS data type catalog specification).
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
 
-    private static final long serialVersionUID = -183384625;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.cdt_sc_awd_pri</code>
@@ -52,28 +53,29 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Internal, primary database key.
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_AWD_PRI_ID = createField(DSL.name("cdt_sc_awd_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_sc_id</code>. Foreign key pointing to the supplementary component (SC).
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
+    public final TableField<CdtScAwdPriRecord, ULong> CDT_SC_ID = createField(DSL.name("cdt_sc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to the supplementary component (SC).");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.cdt_pri_id</code>. A foreign key pointing to the CDT_Pri table. It represents a CDT primitive allowed for the suppliement component identified in the CDT_SC_ID column.
      */
-    public final TableField<CdtScAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the CDT_Pri table. It represents a CDT primitive allowed for the suppliement component identified in the CDT_SC_ID column.");
+    public final TableField<CdtScAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key pointing to the CDT_Pri table. It represents a CDT primitive allowed for the suppliement component identified in the CDT_SC_ID column.");
 
     /**
      * The column <code>oagi.cdt_sc_awd_pri.is_default</code>. Indicating whether the primitive is the default primitive of the supplementary component.
      */
-    public final TableField<CdtScAwdPriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicating whether the primitive is the default primitive of the supplementary component.");
+    public final TableField<CdtScAwdPriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false), this, "Indicating whether the primitive is the default primitive of the supplementary component.");
 
-    /**
-     * Create a <code>oagi.cdt_sc_awd_pri</code> table reference
-     */
-    public CdtScAwdPri() {
-        this(DSL.name("cdt_sc_awd_pri"), null);
+    private CdtScAwdPri(Name alias, Table<CdtScAwdPriRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CdtScAwdPri(Name alias, Table<CdtScAwdPriRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table capture the CDT primitives allowed for a particular SC of a CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends its base (such SC is not defined in the CCTS data type catalog specification)."), TableOptions.table());
     }
 
     /**
@@ -90,12 +92,11 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
         this(alias, CDT_SC_AWD_PRI);
     }
 
-    private CdtScAwdPri(Name alias, Table<CdtScAwdPriRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CdtScAwdPri(Name alias, Table<CdtScAwdPriRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table capture the CDT primitives allowed for a particular SC of a CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends its base (such SC is not defined in the CCTS data type catalog specification)."), TableOptions.table());
+    /**
+     * Create a <code>oagi.cdt_sc_awd_pri</code> table reference
+     */
+    public CdtScAwdPri() {
+        this(DSL.name("cdt_sc_awd_pri"), null);
     }
 
     public <O extends Record> CdtScAwdPri(Table<O> child, ForeignKey<O, CdtScAwdPriRecord> key) {
@@ -109,7 +110,7 @@ public class CdtScAwdPri extends TableImpl<CdtScAwdPriRecord> {
 
     @Override
     public Identity<CdtScAwdPriRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CDT_SC_AWD_PRI;
+        return (Identity<CdtScAwdPriRecord, ULong>) super.getIdentity();
     }
 
     @Override

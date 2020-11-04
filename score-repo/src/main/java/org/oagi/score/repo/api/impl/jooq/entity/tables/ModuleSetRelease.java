@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleSetReleaseR
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
-    private static final long serialVersionUID = -159909572;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_set_release</code>
@@ -51,48 +52,49 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
     /**
      * The column <code>oagi.module_set_release.module_set_release_id</code>. Primary key.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_set_release.module_set_id</code>. A foreign key of the module set.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
+    public final TableField<ModuleSetReleaseRecord, ULong> MODULE_SET_ID = createField(DSL.name("module_set_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set.");
 
     /**
      * The column <code>oagi.module_set_release.release_id</code>. A foreign key of the release.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the release.");
+    public final TableField<ModuleSetReleaseRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the release.");
 
     /**
      * The column <code>oagi.module_set_release.is_default</code>. It would be a default module set if this indicator is checked. Otherwise, it would be an optional.
      */
-    public final TableField<ModuleSetReleaseRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "It would be a default module set if this indicator is checked. Otherwise, it would be an optional.");
+    public final TableField<ModuleSetReleaseRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "It would be a default module set if this indicator is checked. Otherwise, it would be an optional.");
 
     /**
      * The column <code>oagi.module_set_release.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.");
+    public final TableField<ModuleSetReleaseRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_SET_RELEASE.");
 
     /**
      * The column <code>oagi.module_set_release.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleSetReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleSetReleaseRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_set_release.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleSetReleaseRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleSetReleaseRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_set_release.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleSetReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleSetReleaseRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_set_release</code> table reference
-     */
-    public ModuleSetRelease() {
-        this(DSL.name("module_set_release"), null);
+    private ModuleSetRelease(Name alias, Table<ModuleSetReleaseRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleSetRelease(Name alias, Table<ModuleSetReleaseRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
         this(alias, MODULE_SET_RELEASE);
     }
 
-    private ModuleSetRelease(Name alias, Table<ModuleSetReleaseRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleSetRelease(Name alias, Table<ModuleSetReleaseRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_set_release</code> table reference
+     */
+    public ModuleSetRelease() {
+        this(DSL.name("module_set_release"), null);
     }
 
     public <O extends Record> ModuleSetRelease(Table<O> child, ForeignKey<O, ModuleSetReleaseRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleSetRelease extends TableImpl<ModuleSetReleaseRecord> {
 
     @Override
     public Identity<ModuleSetReleaseRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_SET_RELEASE;
+        return (Identity<ModuleSetReleaseRecord, ULong>) super.getIdentity();
     }
 
     @Override

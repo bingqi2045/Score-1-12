@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -33,7 +34,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleAgencyIdLis
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListManifestRecord> {
 
-    private static final long serialVersionUID = -593461761;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_agency_id_list_manifest</code>
@@ -51,48 +52,49 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
     /**
      * The column <code>oagi.module_agency_id_list_manifest.module_agency_id_list_manifest_id</code>. Primary key.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("module_agency_id_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("module_agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.module_set_release_id</code>. A foreign key of the module set release record.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_SET_RELEASE_ID = createField(DSL.name("module_set_release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the module set release record.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.agency_id_list_manifest_id</code>. A foreign key of the code list manifest record.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the code list manifest record.");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> AGENCY_ID_LIST_MANIFEST_ID = createField(DSL.name("agency_id_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "A foreign key of the code list manifest record.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.module_set_assignment_id</code>.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this record.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this record.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleAgencyIdListManifestRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleAgencyIdListManifestRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_agency_id_list_manifest.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleAgencyIdListManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleAgencyIdListManifestRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_agency_id_list_manifest</code> table reference
-     */
-    public ModuleAgencyIdListManifest() {
-        this(DSL.name("module_agency_id_list_manifest"), null);
+    private ModuleAgencyIdListManifest(Name alias, Table<ModuleAgencyIdListManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleAgencyIdListManifest(Name alias, Table<ModuleAgencyIdListManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -109,12 +111,11 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
         this(alias, MODULE_AGENCY_ID_LIST_MANIFEST);
     }
 
-    private ModuleAgencyIdListManifest(Name alias, Table<ModuleAgencyIdListManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleAgencyIdListManifest(Name alias, Table<ModuleAgencyIdListManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_agency_id_list_manifest</code> table reference
+     */
+    public ModuleAgencyIdListManifest() {
+        this(DSL.name("module_agency_id_list_manifest"), null);
     }
 
     public <O extends Record> ModuleAgencyIdListManifest(Table<O> child, ForeignKey<O, ModuleAgencyIdListManifestRecord> key) {
@@ -128,7 +129,7 @@ public class ModuleAgencyIdListManifest extends TableImpl<ModuleAgencyIdListMani
 
     @Override
     public Identity<ModuleAgencyIdListManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_AGENCY_ID_LIST_MANIFEST;
+        return (Identity<ModuleAgencyIdListManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.UsageRuleExpressi
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
-    private static final long serialVersionUID = -31934703;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.usage_rule_expression</code>
@@ -52,28 +53,29 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
     /**
      * The column <code>oagi.usage_rule_expression.usage_rule_expression_id</code>. Primary key of the usage rule expression
      */
-    public final TableField<UsageRuleExpressionRecord, ULong> USAGE_RULE_EXPRESSION_ID = createField(DSL.name("usage_rule_expression_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule expression");
+    public final TableField<UsageRuleExpressionRecord, ULong> USAGE_RULE_EXPRESSION_ID = createField(DSL.name("usage_rule_expression_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key of the usage rule expression");
 
     /**
      * The column <code>oagi.usage_rule_expression.constraint_type</code>. Constraint type according to the CC spec. It represents the expression language (syntax) used in the CONSTRAINT column. It is a value list column. 0 = 'Unstructured' which is basically a description of the rule, 1 = 'Schematron'.
      */
-    public final TableField<UsageRuleExpressionRecord, Integer> CONSTRAINT_TYPE = createField(DSL.name("constraint_type"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "Constraint type according to the CC spec. It represents the expression language (syntax) used in the CONSTRAINT column. It is a value list column. 0 = 'Unstructured' which is basically a description of the rule, 1 = 'Schematron'.");
+    public final TableField<UsageRuleExpressionRecord, Integer> CONSTRAINT_TYPE = createField(DSL.name("constraint_type"), SQLDataType.INTEGER.nullable(false), this, "Constraint type according to the CC spec. It represents the expression language (syntax) used in the CONSTRAINT column. It is a value list column. 0 = 'Unstructured' which is basically a description of the rule, 1 = 'Schematron'.");
 
     /**
      * The column <code>oagi.usage_rule_expression.constraint_text</code>. This column capture the constraint expressing the usage rule. In other words, this is the expression.
      */
-    public final TableField<UsageRuleExpressionRecord, String> CONSTRAINT_TEXT = createField(DSL.name("constraint_text"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "This column capture the constraint expressing the usage rule. In other words, this is the expression.");
+    public final TableField<UsageRuleExpressionRecord, String> CONSTRAINT_TEXT = createField(DSL.name("constraint_text"), SQLDataType.CLOB.nullable(false), this, "This column capture the constraint expressing the usage rule. In other words, this is the expression.");
 
     /**
      * The column <code>oagi.usage_rule_expression.represented_usage_rule_id</code>. The usage rule which the expression represents
      */
-    public final TableField<UsageRuleExpressionRecord, ULong> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The usage rule which the expression represents");
+    public final TableField<UsageRuleExpressionRecord, ULong> REPRESENTED_USAGE_RULE_ID = createField(DSL.name("represented_usage_rule_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "The usage rule which the expression represents");
 
-    /**
-     * Create a <code>oagi.usage_rule_expression</code> table reference
-     */
-    public UsageRuleExpression() {
-        this(DSL.name("usage_rule_expression"), null);
+    private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("The USAGE_RULE_EXPRESSION provides a representation of a usage rule in a particular syntax indicated by the CONSTRAINT_TYPE column. One of the syntaxes can be unstructured, which works a description of the usage rule."), TableOptions.table());
     }
 
     /**
@@ -90,12 +92,11 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
         this(alias, USAGE_RULE_EXPRESSION);
     }
 
-    private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private UsageRuleExpression(Name alias, Table<UsageRuleExpressionRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("The USAGE_RULE_EXPRESSION provides a representation of a usage rule in a particular syntax indicated by the CONSTRAINT_TYPE column. One of the syntaxes can be unstructured, which works a description of the usage rule."), TableOptions.table());
+    /**
+     * Create a <code>oagi.usage_rule_expression</code> table reference
+     */
+    public UsageRuleExpression() {
+        this(DSL.name("usage_rule_expression"), null);
     }
 
     public <O extends Record> UsageRuleExpression(Table<O> child, ForeignKey<O, UsageRuleExpressionRecord> key) {
@@ -109,7 +110,7 @@ public class UsageRuleExpression extends TableImpl<UsageRuleExpressionRecord> {
 
     @Override
     public Identity<UsageRuleExpressionRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_USAGE_RULE_EXPRESSION;
+        return (Identity<UsageRuleExpressionRecord, ULong>) super.getIdentity();
     }
 
     @Override

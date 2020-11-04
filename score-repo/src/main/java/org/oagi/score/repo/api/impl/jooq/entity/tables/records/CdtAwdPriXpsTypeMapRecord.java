@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
  * need to be added to this table for mapping to data types in another expression.
  * 
  * If we use a separate table for each expression, then we need binding all 
- * the way to BDT (or even BBIE) for every new expression. That would be almost 
+ * the way to BDT (    or even BBIE) for every new expression. That would be almost 
  * like just store a BDT file. But using a column may not work with all kinds 
  * of expressions, particulary if it does not map well to the XML schema data 
  * types. 
@@ -31,7 +31,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -187972047;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.cdt_awd_pri_xps_type_map.cdt_awd_pri_xps_type_map_id</code>. Internal, primary database key.
@@ -186,8 +186,8 @@ public class CdtAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtAwdPriXpsT
     public CdtAwdPriXpsTypeMapRecord(ULong cdtAwdPriXpsTypeMapId, ULong cdtAwdPriId, ULong xbtId) {
         super(CdtAwdPriXpsTypeMap.CDT_AWD_PRI_XPS_TYPE_MAP);
 
-        set(0, cdtAwdPriXpsTypeMapId);
-        set(1, cdtAwdPriId);
-        set(2, xbtId);
+        setCdtAwdPriXpsTypeMapId(cdtAwdPriXpsTypeMapId);
+        setCdtAwdPriId(cdtAwdPriId);
+        setXbtId(xbtId);
     }
 }

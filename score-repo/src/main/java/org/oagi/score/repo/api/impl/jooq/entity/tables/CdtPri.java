@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtPriRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtPri extends TableImpl<CdtPriRecord> {
 
-    private static final long serialVersionUID = -925038446;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.cdt_pri</code>
@@ -50,18 +51,19 @@ public class CdtPri extends TableImpl<CdtPriRecord> {
     /**
      * The column <code>oagi.cdt_pri.cdt_pri_id</code>. Internal, primary database key.
      */
-    public final TableField<CdtPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
+    public final TableField<CdtPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Internal, primary database key.");
 
     /**
      * The column <code>oagi.cdt_pri.name</code>. Name of the CDT primitive per the CCTS datatype catalog, e.g., Decimal.
      */
-    public final TableField<CdtPriRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "Name of the CDT primitive per the CCTS datatype catalog, e.g., Decimal.");
+    public final TableField<CdtPriRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(45).nullable(false), this, "Name of the CDT primitive per the CCTS datatype catalog, e.g., Decimal.");
 
-    /**
-     * Create a <code>oagi.cdt_pri</code> table reference
-     */
-    public CdtPri() {
-        this(DSL.name("cdt_pri"), null);
+    private CdtPri(Name alias, Table<CdtPriRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CdtPri(Name alias, Table<CdtPriRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table stores the CDT primitives."), TableOptions.table());
     }
 
     /**
@@ -78,12 +80,11 @@ public class CdtPri extends TableImpl<CdtPriRecord> {
         this(alias, CDT_PRI);
     }
 
-    private CdtPri(Name alias, Table<CdtPriRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CdtPri(Name alias, Table<CdtPriRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table stores the CDT primitives."), TableOptions.table());
+    /**
+     * Create a <code>oagi.cdt_pri</code> table reference
+     */
+    public CdtPri() {
+        this(DSL.name("cdt_pri"), null);
     }
 
     public <O extends Record> CdtPri(Table<O> child, ForeignKey<O, CdtPriRecord> key) {
@@ -97,7 +98,7 @@ public class CdtPri extends TableImpl<CdtPriRecord> {
 
     @Override
     public Identity<CdtPriRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CDT_PRI;
+        return (Identity<CdtPriRecord, ULong>) super.getIdentity();
     }
 
     @Override

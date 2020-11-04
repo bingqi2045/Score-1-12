@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepRecord> implements Record9<ULong, ULong, ULong, LocalDateTime, ULong, ULong, String, String, String> {
 
-    private static final long serialVersionUID = 1814977207;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.top_level_asbiep.top_level_asbiep_id</code>. A internal, primary database key of an top-level ASBIEP.
@@ -394,14 +394,14 @@ public class TopLevelAsbiepRecord extends UpdatableRecordImpl<TopLevelAsbiepReco
     public TopLevelAsbiepRecord(ULong topLevelAsbiepId, ULong asbiepId, ULong ownerUserId, LocalDateTime lastUpdateTimestamp, ULong lastUpdatedBy, ULong releaseId, String version, String status, String state) {
         super(TopLevelAsbiep.TOP_LEVEL_ASBIEP);
 
-        set(0, topLevelAsbiepId);
-        set(1, asbiepId);
-        set(2, ownerUserId);
-        set(3, lastUpdateTimestamp);
-        set(4, lastUpdatedBy);
-        set(5, releaseId);
-        set(6, version);
-        set(7, status);
-        set(8, state);
+        setTopLevelAsbiepId(topLevelAsbiepId);
+        setAsbiepId(asbiepId);
+        setOwnerUserId(ownerUserId);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setLastUpdatedBy(lastUpdatedBy);
+        setReleaseId(releaseId);
+        setVersion(version);
+        setStatus(status);
+        setState(state);
     }
 }

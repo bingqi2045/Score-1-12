@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -231591609;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.asccp_manifest.asccp_manifest_id</code>.
@@ -390,14 +390,14 @@ public class AsccpManifestRecord extends UpdatableRecordImpl<AsccpManifestRecord
     public AsccpManifestRecord(ULong asccpManifestId, ULong releaseId, ULong asccpId, ULong roleOfAccManifestId, Byte conflict, ULong logId, ULong replacementAsccpManifestId, ULong prevAsccpManifestId, ULong nextAsccpManifestId) {
         super(AsccpManifest.ASCCP_MANIFEST);
 
-        set(0, asccpManifestId);
-        set(1, releaseId);
-        set(2, asccpId);
-        set(3, roleOfAccManifestId);
-        set(4, conflict);
-        set(5, logId);
-        set(6, replacementAsccpManifestId);
-        set(7, prevAsccpManifestId);
-        set(8, nextAsccpManifestId);
+        setAsccpManifestId(asccpManifestId);
+        setReleaseId(releaseId);
+        setAsccpId(asccpId);
+        setRoleOfAccManifestId(roleOfAccManifestId);
+        setConflict(conflict);
+        setLogId(logId);
+        setReplacementAsccpManifestId(replacementAsccpManifestId);
+        setPrevAsccpManifestId(prevAsccpManifestId);
+        setNextAsccpManifestId(nextAsccpManifestId);
     }
 }

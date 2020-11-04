@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CodeListValueMani
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord> {
 
-    private static final long serialVersionUID = -24654748;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.code_list_value_manifest</code>
@@ -50,48 +51,49 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
     /**
      * The column <code>oagi.code_list_value_manifest.code_list_value_manifest_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("code_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.code_list_value_manifest.release_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.code_list_value_manifest.code_list_value_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_VALUE_ID = createField(DSL.name("code_list_value_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.code_list_value_manifest.code_list_manifest_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> CODE_LIST_MANIFEST_ID = createField(DSL.name("code_list_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.code_list_value_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<CodeListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<CodeListValueManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.code_list_value_manifest.replacement_code_list_value_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> REPLACEMENT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_code_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<CodeListValueManifestRecord, ULong> REPLACEMENT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("replacement_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.code_list_value_manifest.prev_code_list_value_manifest_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> PREV_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_code_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> PREV_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("prev_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.code_list_value_manifest.next_code_list_value_manifest_id</code>.
      */
-    public final TableField<CodeListValueManifestRecord, ULong> NEXT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_code_list_value_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CodeListValueManifestRecord, ULong> NEXT_CODE_LIST_VALUE_MANIFEST_ID = createField(DSL.name("next_code_list_value_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.code_list_value_manifest</code> table reference
-     */
-    public CodeListValueManifest() {
-        this(DSL.name("code_list_value_manifest"), null);
+    private CodeListValueManifest(Name alias, Table<CodeListValueManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CodeListValueManifest(Name alias, Table<CodeListValueManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -108,12 +110,11 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
         this(alias, CODE_LIST_VALUE_MANIFEST);
     }
 
-    private CodeListValueManifest(Name alias, Table<CodeListValueManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CodeListValueManifest(Name alias, Table<CodeListValueManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.code_list_value_manifest</code> table reference
+     */
+    public CodeListValueManifest() {
+        this(DSL.name("code_list_value_manifest"), null);
     }
 
     public <O extends Record> CodeListValueManifest(Table<O> child, ForeignKey<O, CodeListValueManifestRecord> key) {
@@ -127,7 +128,7 @@ public class CodeListValueManifest extends TableImpl<CodeListValueManifestRecord
 
     @Override
     public Identity<CodeListValueManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CODE_LIST_VALUE_MANIFEST;
+        return (Identity<CodeListValueManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

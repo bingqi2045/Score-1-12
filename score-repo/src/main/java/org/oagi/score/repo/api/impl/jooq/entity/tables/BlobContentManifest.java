@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BlobContentManife
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
 
-    private static final long serialVersionUID = 845871785;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.blob_content_manifest</code>
@@ -50,38 +51,39 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
     /**
      * The column <code>oagi.blob_content_manifest.blob_content_manifest_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.blob_content_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BlobContentManifestRecord, ULong> BLOB_CONTENT_ID = createField(DSL.name("blob_content_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.release_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<BlobContentManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<BlobContentManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<BlobContentManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.blob_content_manifest.prev_blob_content_manifest_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> PREV_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("prev_blob_content_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BlobContentManifestRecord, ULong> PREV_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("prev_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.blob_content_manifest.next_blob_content_manifest_id</code>.
      */
-    public final TableField<BlobContentManifestRecord, ULong> NEXT_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("next_blob_content_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<BlobContentManifestRecord, ULong> NEXT_BLOB_CONTENT_MANIFEST_ID = createField(DSL.name("next_blob_content_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.blob_content_manifest</code> table reference
-     */
-    public BlobContentManifest() {
-        this(DSL.name("blob_content_manifest"), null);
+    private BlobContentManifest(Name alias, Table<BlobContentManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BlobContentManifest(Name alias, Table<BlobContentManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -98,12 +100,11 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
         this(alias, BLOB_CONTENT_MANIFEST);
     }
 
-    private BlobContentManifest(Name alias, Table<BlobContentManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BlobContentManifest(Name alias, Table<BlobContentManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.blob_content_manifest</code> table reference
+     */
+    public BlobContentManifest() {
+        this(DSL.name("blob_content_manifest"), null);
     }
 
     public <O extends Record> BlobContentManifest(Table<O> child, ForeignKey<O, BlobContentManifestRecord> key) {
@@ -117,7 +118,7 @@ public class BlobContentManifest extends TableImpl<BlobContentManifestRecord> {
 
     @Override
     public Identity<BlobContentManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BLOB_CONTENT_MANIFEST;
+        return (Identity<BlobContentManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

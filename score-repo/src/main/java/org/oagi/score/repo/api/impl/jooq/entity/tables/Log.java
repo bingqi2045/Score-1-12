@@ -22,6 +22,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
@@ -37,7 +38,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.LogRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Log extends TableImpl<LogRecord> {
 
-    private static final long serialVersionUID = -1171223288;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.log</code>
@@ -55,63 +56,64 @@ public class Log extends TableImpl<LogRecord> {
     /**
      * The column <code>oagi.log.log_id</code>.
      */
-    public final TableField<LogRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<LogRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.log.hash</code>. The unique hash to identify the log.
      */
-    public final TableField<LogRecord, String> HASH = createField(DSL.name("hash"), org.jooq.impl.SQLDataType.CHAR(40).nullable(false), this, "The unique hash to identify the log.");
+    public final TableField<LogRecord, String> HASH = createField(DSL.name("hash"), SQLDataType.CHAR(40).nullable(false), this, "The unique hash to identify the log.");
 
     /**
      * The column <code>oagi.log.revision_num</code>. This is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 1, 2, and so on.
      */
-    public final TableField<LogRecord, UInteger> REVISION_NUM = createField(DSL.name("revision_num"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGERUNSIGNED)), this, "This is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 1, 2, and so on.");
+    public final TableField<LogRecord, UInteger> REVISION_NUM = createField(DSL.name("revision_num"), SQLDataType.INTEGERUNSIGNED.nullable(false).defaultValue(DSL.inline("1", SQLDataType.INTEGERUNSIGNED)), this, "This is an incremental integer. It tracks changes in each component. If a change is made to a component after it has been published, the component receives a new revision number. Revision number can be 1, 2, and so on.");
 
     /**
      * The column <code>oagi.log.revision_tracking_num</code>. This supports the ability to undo changes during a revision (life cycle of a revision is from the component's WIP state to PUBLISHED state). REVISION_TRACKING_NUM can be 1, 2, and so on.
      */
-    public final TableField<LogRecord, UInteger> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.INTEGERUNSIGNED)), this, "This supports the ability to undo changes during a revision (life cycle of a revision is from the component's WIP state to PUBLISHED state). REVISION_TRACKING_NUM can be 1, 2, and so on.");
+    public final TableField<LogRecord, UInteger> REVISION_TRACKING_NUM = createField(DSL.name("revision_tracking_num"), SQLDataType.INTEGERUNSIGNED.nullable(false).defaultValue(DSL.inline("1", SQLDataType.INTEGERUNSIGNED)), this, "This supports the ability to undo changes during a revision (life cycle of a revision is from the component's WIP state to PUBLISHED state). REVISION_TRACKING_NUM can be 1, 2, and so on.");
 
     /**
      * The column <code>oagi.log.log_action</code>. This indicates the action associated with the record.
      */
-    public final TableField<LogRecord, String> LOG_ACTION = createField(DSL.name("log_action"), org.jooq.impl.SQLDataType.VARCHAR(20), this, "This indicates the action associated with the record.");
+    public final TableField<LogRecord, String> LOG_ACTION = createField(DSL.name("log_action"), SQLDataType.VARCHAR(20), this, "This indicates the action associated with the record.");
 
     /**
      * The column <code>oagi.log.reference</code>.
      */
-    public final TableField<LogRecord, String> REFERENCE = createField(DSL.name("reference"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<LogRecord, String> REFERENCE = createField(DSL.name("reference"), SQLDataType.VARCHAR(100).nullable(false).defaultValue(DSL.inline("", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>oagi.log.snapshot</code>.
      */
-    public final TableField<LogRecord, JSON> SNAPSHOT = createField(DSL.name("snapshot"), org.jooq.impl.SQLDataType.JSON, this, "");
+    public final TableField<LogRecord, JSON> SNAPSHOT = createField(DSL.name("snapshot"), SQLDataType.JSON, this, "");
 
     /**
      * The column <code>oagi.log.prev_log_id</code>.
      */
-    public final TableField<LogRecord, ULong> PREV_LOG_ID = createField(DSL.name("prev_log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<LogRecord, ULong> PREV_LOG_ID = createField(DSL.name("prev_log_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.log.next_log_id</code>.
      */
-    public final TableField<LogRecord, ULong> NEXT_LOG_ID = createField(DSL.name("next_log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<LogRecord, ULong> NEXT_LOG_ID = createField(DSL.name("next_log_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.log.created_by</code>.
      */
-    public final TableField<LogRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<LogRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.log.creation_timestamp</code>.
      */
-    public final TableField<LogRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+    public final TableField<LogRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
-    /**
-     * Create a <code>oagi.log</code> table reference
-     */
-    public Log() {
-        this(DSL.name("log"), null);
+    private Log(Name alias, Table<LogRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Log(Name alias, Table<LogRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -128,12 +130,11 @@ public class Log extends TableImpl<LogRecord> {
         this(alias, LOG);
     }
 
-    private Log(Name alias, Table<LogRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Log(Name alias, Table<LogRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.log</code> table reference
+     */
+    public Log() {
+        this(DSL.name("log"), null);
     }
 
     public <O extends Record> Log(Table<O> child, ForeignKey<O, LogRecord> key) {
@@ -152,7 +153,7 @@ public class Log extends TableImpl<LogRecord> {
 
     @Override
     public Identity<LogRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_LOG;
+        return (Identity<LogRecord, ULong>) super.getIdentity();
     }
 
     @Override

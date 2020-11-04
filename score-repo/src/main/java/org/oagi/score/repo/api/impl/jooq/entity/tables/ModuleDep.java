@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDepRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
-    private static final long serialVersionUID = -57676128;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_dep</code>
@@ -50,28 +51,29 @@ public class ModuleDep extends TableImpl<ModuleDepRecord> {
     /**
      * The column <code>oagi.module_dep.module_dep_id</code>. Primary, internal database key.
      */
-    public final TableField<ModuleDepRecord, ULong> MODULE_DEP_ID = createField(DSL.name("module_dep_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<ModuleDepRecord, ULong> MODULE_DEP_ID = createField(DSL.name("module_dep_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.module_dep.dependency_type</code>. This is a code list. The value tells the expression generator what to do based on this dependency type. 0 = xsd:include, 1 = xsd:import. There could be other values supporting other expressions/syntaxes.
      */
-    public final TableField<ModuleDepRecord, Integer> DEPENDENCY_TYPE = createField(DSL.name("dependency_type"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "This is a code list. The value tells the expression generator what to do based on this dependency type. 0 = xsd:include, 1 = xsd:import. There could be other values supporting other expressions/syntaxes.");
+    public final TableField<ModuleDepRecord, Integer> DEPENDENCY_TYPE = createField(DSL.name("dependency_type"), SQLDataType.INTEGER.nullable(false), this, "This is a code list. The value tells the expression generator what to do based on this dependency type. 0 = xsd:include, 1 = xsd:import. There could be other values supporting other expressions/syntaxes.");
 
     /**
      * The column <code>oagi.module_dep.depending_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.
      */
-    public final TableField<ModuleDepRecord, ULong> DEPENDING_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depending_module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.");
+    public final TableField<ModuleDepRecord, ULong> DEPENDING_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depending_module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depending module. For example, in XML schema if module A imports or includes module B, then module A is a depending module.");
 
     /**
      * The column <code>oagi.module_dep.depended_module_set_assignment_id</code>. Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.
      */
-    public final TableField<ModuleDepRecord, ULong> DEPENDED_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depended_module_set_assignment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.");
+    public final TableField<ModuleDepRecord, ULong> DEPENDED_MODULE_SET_ASSIGNMENT_ID = createField(DSL.name("depended_module_set_assignment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the MODULE_SET_ASSIGNMENT table. It identifies a depended module counterpart of the depending module. For example, in XML schema if module A imports or includes module B, then module B is a depended module.");
 
-    /**
-     * Create a <code>oagi.module_dep</code> table reference
-     */
-    public ModuleDep() {
-        this(DSL.name("module_dep"), null);
+    private ModuleDep(Name alias, Table<ModuleDepRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleDep(Name alias, Table<ModuleDepRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table carries the dependency between modules in the MODULE table."), TableOptions.table());
     }
 
     /**
@@ -88,12 +90,11 @@ public class ModuleDep extends TableImpl<ModuleDepRecord> {
         this(alias, MODULE_DEP);
     }
 
-    private ModuleDep(Name alias, Table<ModuleDepRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleDep(Name alias, Table<ModuleDepRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table carries the dependency between modules in the MODULE table."), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_dep</code> table reference
+     */
+    public ModuleDep() {
+        this(DSL.name("module_dep"), null);
     }
 
     public <O extends Record> ModuleDep(Table<O> child, ForeignKey<O, ModuleDepRecord> key) {
@@ -107,7 +108,7 @@ public class ModuleDep extends TableImpl<ModuleDepRecord> {
 
     @Override
     public Identity<ModuleDepRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_DEP;
+        return (Identity<ModuleDepRecord, ULong>) super.getIdentity();
     }
 
     @Override

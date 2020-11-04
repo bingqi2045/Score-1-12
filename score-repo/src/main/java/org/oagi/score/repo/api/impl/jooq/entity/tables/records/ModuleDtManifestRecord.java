@@ -21,7 +21,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleDtManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifestRecord> implements Record8<ULong, ULong, ULong, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = -1240457368;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.module_dt_manifest.module_dt_manifest_id</code>. Primary key.
@@ -356,13 +356,13 @@ public class ModuleDtManifestRecord extends UpdatableRecordImpl<ModuleDtManifest
     public ModuleDtManifestRecord(ULong moduleDtManifestId, ULong moduleSetReleaseId, ULong dtManifestId, ULong moduleSetAssignmentId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(ModuleDtManifest.MODULE_DT_MANIFEST);
 
-        set(0, moduleDtManifestId);
-        set(1, moduleSetReleaseId);
-        set(2, dtManifestId);
-        set(3, moduleSetAssignmentId);
-        set(4, createdBy);
-        set(5, lastUpdatedBy);
-        set(6, creationTimestamp);
-        set(7, lastUpdateTimestamp);
+        setModuleDtManifestId(moduleDtManifestId);
+        setModuleSetReleaseId(moduleSetReleaseId);
+        setDtManifestId(dtManifestId);
+        setModuleSetAssignmentId(moduleSetAssignmentId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

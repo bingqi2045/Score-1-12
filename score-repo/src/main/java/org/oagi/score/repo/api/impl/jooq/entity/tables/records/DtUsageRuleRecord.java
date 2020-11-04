@@ -23,7 +23,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> implements Record4<ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 1138242744;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.dt_usage_rule.dt_usage_rule_id</code>. Primary key of the table.
@@ -214,9 +214,9 @@ public class DtUsageRuleRecord extends UpdatableRecordImpl<DtUsageRuleRecord> im
     public DtUsageRuleRecord(ULong dtUsageRuleId, ULong assignedUsageRuleId, ULong targetDtId, ULong targetDtScId) {
         super(DtUsageRule.DT_USAGE_RULE);
 
-        set(0, dtUsageRuleId);
-        set(1, assignedUsageRuleId);
-        set(2, targetDtId);
-        set(3, targetDtScId);
+        setDtUsageRuleId(dtUsageRuleId);
+        setAssignedUsageRuleId(assignedUsageRuleId);
+        setTargetDtId(targetDtId);
+        setTargetDtScId(targetDtScId);
     }
 }

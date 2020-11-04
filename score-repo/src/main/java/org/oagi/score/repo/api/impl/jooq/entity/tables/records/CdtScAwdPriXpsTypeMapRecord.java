@@ -15,14 +15,14 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPriXpsTypeMap;
 
 /**
  * The purpose of this table is the same as that of the CDT_AWD_PRI_XPS_TYPE_MAP, 
- * but it is for the supplementary component (SC). It allows for the concrete 
+ * but it is for the supplementary component (    SC). It allows for the concrete 
  * mapping between the CDT Primitives and types in a particular expression 
  * such as XML Schema, JSON. 
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtScAwdPriXpsTypeMapRecord> implements Record3<ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = -1411811748;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.cdt_sc_awd_pri_xps_type_map.cdt_sc_awd_pri_xps_type_map_id</code>. Internal, primary database key.
@@ -177,8 +177,8 @@ public class CdtScAwdPriXpsTypeMapRecord extends UpdatableRecordImpl<CdtScAwdPri
     public CdtScAwdPriXpsTypeMapRecord(ULong cdtScAwdPriXpsTypeMapId, ULong cdtScAwdPriId, ULong xbtId) {
         super(CdtScAwdPriXpsTypeMap.CDT_SC_AWD_PRI_XPS_TYPE_MAP);
 
-        set(0, cdtScAwdPriXpsTypeMapId);
-        set(1, cdtScAwdPriId);
-        set(2, xbtId);
+        setCdtScAwdPriXpsTypeMapId(cdtScAwdPriXpsTypeMapId);
+        setCdtScAwdPriId(cdtScAwdPriId);
+        setXbtId(xbtId);
     }
 }

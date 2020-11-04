@@ -16,12 +16,12 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtScAwdPri;
 /**
  * This table capture the CDT primitives allowed for a particular SC of a 
  * CDT. It also stores the CDT primitives allowed for a SC of a BDT that extends 
- * its base (such SC is not defined in the CCTS data type catalog specification).
+ * its base (    such SC is not defined in the CCTS data type catalog specification).
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> implements Record4<ULong, ULong, ULong, Byte> {
 
-    private static final long serialVersionUID = 1988942004;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.cdt_sc_awd_pri.cdt_sc_awd_pri_id</code>. Internal, primary database key.
@@ -212,9 +212,9 @@ public class CdtScAwdPriRecord extends UpdatableRecordImpl<CdtScAwdPriRecord> im
     public CdtScAwdPriRecord(ULong cdtScAwdPriId, ULong cdtScId, ULong cdtPriId, Byte isDefault) {
         super(CdtScAwdPri.CDT_SC_AWD_PRI);
 
-        set(0, cdtScAwdPriId);
-        set(1, cdtScId);
-        set(2, cdtPriId);
-        set(3, isDefault);
+        setCdtScAwdPriId(cdtScAwdPriId);
+        setCdtScId(cdtScId);
+        setCdtPriId(cdtPriId);
+        setIsDefault(isDefault);
     }
 }

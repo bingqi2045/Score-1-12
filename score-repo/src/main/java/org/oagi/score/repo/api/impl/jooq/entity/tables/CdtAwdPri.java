@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CdtAwdPriRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
 
-    private static final long serialVersionUID = 820838459;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.cdt_awd_pri</code>
@@ -52,28 +53,29 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
     /**
      * The column <code>oagi.cdt_awd_pri.cdt_awd_pri_id</code>. Primary, internal database key.
      */
-    public final TableField<CdtAwdPriRecord, ULong> CDT_AWD_PRI_ID = createField(DSL.name("cdt_awd_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<CdtAwdPriRecord, ULong> CDT_AWD_PRI_ID = createField(DSL.name("cdt_awd_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.cdt_awd_pri.cdt_id</code>. Foreign key pointing to a CDT in the DT table.
      */
-    public final TableField<CdtAwdPriRecord, ULong> CDT_ID = createField(DSL.name("cdt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
+    public final TableField<CdtAwdPriRecord, ULong> CDT_ID = createField(DSL.name("cdt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key pointing to a CDT in the DT table.");
 
     /**
      * The column <code>oagi.cdt_awd_pri.cdt_pri_id</code>. Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. 
      */
-    public final TableField<CdtAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. ");
+    public final TableField<CdtAwdPriRecord, ULong> CDT_PRI_ID = createField(DSL.name("cdt_pri_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key from the CDT_PRI table. It indicates the primative allowed for the CDT identified in the CDT_ID column. ");
 
     /**
      * The column <code>oagi.cdt_awd_pri.is_default</code>. Indicating a default primitive for the CDT?s Content Component. True for a default primitive; False otherwise.
      */
-    public final TableField<CdtAwdPriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), org.jooq.impl.SQLDataType.TINYINT.nullable(false), this, "Indicating a default primitive for the CDT?s Content Component. True for a default primitive; False otherwise.");
+    public final TableField<CdtAwdPriRecord, Byte> IS_DEFAULT = createField(DSL.name("is_default"), SQLDataType.TINYINT.nullable(false), this, "Indicating a default primitive for the CDT?s Content Component. True for a default primitive; False otherwise.");
 
-    /**
-     * Create a <code>oagi.cdt_awd_pri</code> table reference
-     */
-    public CdtAwdPri() {
-        this(DSL.name("cdt_awd_pri"), null);
+    private CdtAwdPri(Name alias, Table<CdtAwdPriRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CdtAwdPri(Name alias, Table<CdtAwdPriRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table capture allowed primitives of the CDT?s Content Component.  The information in this table is captured from the Allowed Primitive column in each of the CDT Content Component section/table in CCTS DTC3."), TableOptions.table());
     }
 
     /**
@@ -90,12 +92,11 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
         this(alias, CDT_AWD_PRI);
     }
 
-    private CdtAwdPri(Name alias, Table<CdtAwdPriRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CdtAwdPri(Name alias, Table<CdtAwdPriRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table capture allowed primitives of the CDT?s Content Component.  The information in this table is captured from the Allowed Primitive column in each of the CDT Content Component section/table in CCTS DTC3."), TableOptions.table());
+    /**
+     * Create a <code>oagi.cdt_awd_pri</code> table reference
+     */
+    public CdtAwdPri() {
+        this(DSL.name("cdt_awd_pri"), null);
     }
 
     public <O extends Record> CdtAwdPri(Table<O> child, ForeignKey<O, CdtAwdPriRecord> key) {
@@ -109,7 +110,7 @@ public class CdtAwdPri extends TableImpl<CdtAwdPriRecord> {
 
     @Override
     public Identity<CdtAwdPriRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_CDT_AWD_PRI;
+        return (Identity<CdtAwdPriRecord, ULong>) super.getIdentity();
     }
 
     @Override

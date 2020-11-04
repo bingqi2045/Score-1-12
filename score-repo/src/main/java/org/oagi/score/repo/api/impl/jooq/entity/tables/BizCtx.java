@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BizCtxRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BizCtx extends TableImpl<BizCtxRecord> {
 
-    private static final long serialVersionUID = 1432092044;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.biz_ctx</code>
@@ -52,43 +53,44 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
     /**
      * The column <code>oagi.biz_ctx.biz_ctx_id</code>. Primary, internal database key.
      */
-    public final TableField<BizCtxRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<BizCtxRecord, ULong> BIZ_CTX_ID = createField(DSL.name("biz_ctx_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.biz_ctx.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<BizCtxRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<BizCtxRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.biz_ctx.name</code>. Short, descriptive name of the business context.
      */
-    public final TableField<BizCtxRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100), this, "Short, descriptive name of the business context.");
+    public final TableField<BizCtxRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100), this, "Short, descriptive name of the business context.");
 
     /**
      * The column <code>oagi.biz_ctx.created_by</code>. Foreign key to the APP_USER table referring to the user who creates the entity. 
      */
-    public final TableField<BizCtxRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. ");
+    public final TableField<BizCtxRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the user who creates the entity. ");
 
     /**
      * The column <code>oagi.biz_ctx.last_updated_by</code>. Foreign key to the APP_USER table  referring to the last user who has updated the business context.
      */
-    public final TableField<BizCtxRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
+    public final TableField<BizCtxRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table  referring to the last user who has updated the business context.");
 
     /**
      * The column <code>oagi.biz_ctx.creation_timestamp</code>. Timestamp when the business context record was first created. 
      */
-    public final TableField<BizCtxRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "Timestamp when the business context record was first created. ");
+    public final TableField<BizCtxRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "Timestamp when the business context record was first created. ");
 
     /**
      * The column <code>oagi.biz_ctx.last_update_timestamp</code>. The timestamp when the business context was last updated.
      */
-    public final TableField<BizCtxRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the business context was last updated.");
+    public final TableField<BizCtxRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the business context was last updated.");
 
-    /**
-     * Create a <code>oagi.biz_ctx</code> table reference
-     */
-    public BizCtx() {
-        this(DSL.name("biz_ctx"), null);
+    private BizCtx(Name alias, Table<BizCtxRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private BizCtx(Name alias, Table<BizCtxRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table represents a business context. A business context is a combination of one or more business context values."), TableOptions.table());
     }
 
     /**
@@ -105,12 +107,11 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
         this(alias, BIZ_CTX);
     }
 
-    private BizCtx(Name alias, Table<BizCtxRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private BizCtx(Name alias, Table<BizCtxRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table represents a business context. A business context is a combination of one or more business context values."), TableOptions.table());
+    /**
+     * Create a <code>oagi.biz_ctx</code> table reference
+     */
+    public BizCtx() {
+        this(DSL.name("biz_ctx"), null);
     }
 
     public <O extends Record> BizCtx(Table<O> child, ForeignKey<O, BizCtxRecord> key) {
@@ -124,7 +125,7 @@ public class BizCtx extends TableImpl<BizCtxRecord> {
 
     @Override
     public Identity<BizCtxRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_BIZ_CTX;
+        return (Identity<BizCtxRecord, ULong>) super.getIdentity();
     }
 
     @Override

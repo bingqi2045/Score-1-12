@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> implements Record9<ULong, ULong, ULong, ULong, Byte, ULong, ULong, ULong, ULong> {
 
-    private static final long serialVersionUID = 374505245;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.bccp_manifest.bccp_manifest_id</code>.
@@ -390,14 +390,14 @@ public class BccpManifestRecord extends UpdatableRecordImpl<BccpManifestRecord> 
     public BccpManifestRecord(ULong bccpManifestId, ULong releaseId, ULong bccpId, ULong bdtManifestId, Byte conflict, ULong logId, ULong replacementBccpManifestId, ULong prevBccpManifestId, ULong nextBccpManifestId) {
         super(BccpManifest.BCCP_MANIFEST);
 
-        set(0, bccpManifestId);
-        set(1, releaseId);
-        set(2, bccpId);
-        set(3, bdtManifestId);
-        set(4, conflict);
-        set(5, logId);
-        set(6, replacementBccpManifestId);
-        set(7, prevBccpManifestId);
-        set(8, nextBccpManifestId);
+        setBccpManifestId(bccpManifestId);
+        setReleaseId(releaseId);
+        setBccpId(bccpId);
+        setBdtManifestId(bdtManifestId);
+        setConflict(conflict);
+        setLogId(logId);
+        setReplacementBccpManifestId(replacementBccpManifestId);
+        setPrevBccpManifestId(prevBccpManifestId);
+        setNextBccpManifestId(nextBccpManifestId);
     }
 }

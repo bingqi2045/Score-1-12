@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asbiep;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements Record14<ULong, String, ULong, String, String, ULong, String, String, String, ULong, ULong, LocalDateTime, LocalDateTime, ULong> {
 
-    private static final long serialVersionUID = 46359075;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.asbiep.asbiep_id</code>. A internal, primary database key of an ASBIEP.
@@ -573,19 +573,19 @@ public class AsbiepRecord extends UpdatableRecordImpl<AsbiepRecord> implements R
     public AsbiepRecord(ULong asbiepId, String guid, ULong basedAsccpManifestId, String path, String hashPath, ULong roleOfAbieId, String definition, String remark, String bizTerm, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, ULong ownerTopLevelAsbiepId) {
         super(Asbiep.ASBIEP);
 
-        set(0, asbiepId);
-        set(1, guid);
-        set(2, basedAsccpManifestId);
-        set(3, path);
-        set(4, hashPath);
-        set(5, roleOfAbieId);
-        set(6, definition);
-        set(7, remark);
-        set(8, bizTerm);
-        set(9, createdBy);
-        set(10, lastUpdatedBy);
-        set(11, creationTimestamp);
-        set(12, lastUpdateTimestamp);
-        set(13, ownerTopLevelAsbiepId);
+        setAsbiepId(asbiepId);
+        setGuid(guid);
+        setBasedAsccpManifestId(basedAsccpManifestId);
+        setPath(path);
+        setHashPath(hashPath);
+        setRoleOfAbieId(roleOfAbieId);
+        setDefinition(definition);
+        setRemark(remark);
+        setBizTerm(bizTerm);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
+        setOwnerTopLevelAsbiepId(ownerTopLevelAsbiepId);
     }
 }

@@ -19,7 +19,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Oauth2AppScopeRecord extends UpdatableRecordImpl<Oauth2AppScopeRecord> implements Record3<ULong, ULong, String> {
 
-    private static final long serialVersionUID = 321065914;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.oauth2_app_scope.oauth2_app_scope_id</code>.
@@ -174,8 +174,8 @@ public class Oauth2AppScopeRecord extends UpdatableRecordImpl<Oauth2AppScopeReco
     public Oauth2AppScopeRecord(ULong oauth2AppScopeId, ULong oauth2AppId, String scope) {
         super(Oauth2AppScope.OAUTH2_APP_SCOPE);
 
-        set(0, oauth2AppScopeId);
-        set(1, oauth2AppId);
-        set(2, scope);
+        setOauth2AppScopeId(oauth2AppScopeId);
+        setOauth2AppId(oauth2AppId);
+        setScope(scope);
     }
 }

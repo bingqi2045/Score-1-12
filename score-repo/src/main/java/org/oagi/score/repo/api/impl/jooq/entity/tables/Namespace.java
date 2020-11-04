@@ -20,6 +20,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -34,7 +35,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.NamespaceRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Namespace extends TableImpl<NamespaceRecord> {
 
-    private static final long serialVersionUID = 277625556;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.namespace</code>
@@ -52,58 +53,59 @@ public class Namespace extends TableImpl<NamespaceRecord> {
     /**
      * The column <code>oagi.namespace.namespace_id</code>. Primary, internal database key.
      */
-    public final TableField<NamespaceRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<NamespaceRecord, ULong> NAMESPACE_ID = createField(DSL.name("namespace_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.namespace.uri</code>. This is the URI of the namespace.
      */
-    public final TableField<NamespaceRecord, String> URI = createField(DSL.name("uri"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "This is the URI of the namespace.");
+    public final TableField<NamespaceRecord, String> URI = createField(DSL.name("uri"), SQLDataType.VARCHAR(100).nullable(false), this, "This is the URI of the namespace.");
 
     /**
      * The column <code>oagi.namespace.prefix</code>. This is a default short name to represent the URI. It may be overridden during the expression generation. Null or empty means the same thing like the default prefix in an XML schema.
      */
-    public final TableField<NamespaceRecord, String> PREFIX = createField(DSL.name("prefix"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "This is a default short name to represent the URI. It may be overridden during the expression generation. Null or empty means the same thing like the default prefix in an XML schema.");
+    public final TableField<NamespaceRecord, String> PREFIX = createField(DSL.name("prefix"), SQLDataType.VARCHAR(45), this, "This is a default short name to represent the URI. It may be overridden during the expression generation. Null or empty means the same thing like the default prefix in an XML schema.");
 
     /**
      * The column <code>oagi.namespace.description</code>. Description or explanation about the namespace or use of the namespace.
      */
-    public final TableField<NamespaceRecord, String> DESCRIPTION = createField(DSL.name("description"), org.jooq.impl.SQLDataType.CLOB, this, "Description or explanation about the namespace or use of the namespace.");
+    public final TableField<NamespaceRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.CLOB, this, "Description or explanation about the namespace or use of the namespace.");
 
     /**
      * The column <code>oagi.namespace.is_std_nmsp</code>. This indicates whether the namespace is reserved for standard used (i.e., whether it is an OAGIS namespace). If it is true, then end users cannot user the namespace for the end user CCs.
      */
-    public final TableField<NamespaceRecord, Byte> IS_STD_NMSP = createField(DSL.name("is_std_nmsp"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates whether the namespace is reserved for standard used (i.e., whether it is an OAGIS namespace). If it is true, then end users cannot user the namespace for the end user CCs.");
+    public final TableField<NamespaceRecord, Byte> IS_STD_NMSP = createField(DSL.name("is_std_nmsp"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates whether the namespace is reserved for standard used (i.e., whether it is an OAGIS namespace). If it is true, then end users cannot user the namespace for the end user CCs.");
 
     /**
      * The column <code>oagi.namespace.owner_user_id</code>. Foreign key to the APP_USER table identifying the user who can update or delete the record.
      */
-    public final TableField<NamespaceRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
+    public final TableField<NamespaceRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who can update or delete the record.");
 
     /**
      * The column <code>oagi.namespace.created_by</code>. Foreign key to the APP_USER table identifying user who created the namespace.
      */
-    public final TableField<NamespaceRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
+    public final TableField<NamespaceRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying user who created the namespace.");
 
     /**
      * The column <code>oagi.namespace.last_updated_by</code>. Foreign key to the APP_USER table identifying the user who last updated the record.
      */
-    public final TableField<NamespaceRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
+    public final TableField<NamespaceRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table identifying the user who last updated the record.");
 
     /**
      * The column <code>oagi.namespace.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<NamespaceRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<NamespaceRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.namespace.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<NamespaceRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<NamespaceRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.namespace</code> table reference
-     */
-    public Namespace() {
-        this(DSL.name("namespace"), null);
+    private Namespace(Name alias, Table<NamespaceRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Namespace(Name alias, Table<NamespaceRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table stores information about a namespace. Namespace is the namespace as in the XML schema specification."), TableOptions.table());
     }
 
     /**
@@ -120,12 +122,11 @@ public class Namespace extends TableImpl<NamespaceRecord> {
         this(alias, NAMESPACE);
     }
 
-    private Namespace(Name alias, Table<NamespaceRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Namespace(Name alias, Table<NamespaceRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table stores information about a namespace. Namespace is the namespace as in the XML schema specification."), TableOptions.table());
+    /**
+     * Create a <code>oagi.namespace</code> table reference
+     */
+    public Namespace() {
+        this(DSL.name("namespace"), null);
     }
 
     public <O extends Record> Namespace(Table<O> child, ForeignKey<O, NamespaceRecord> key) {
@@ -139,7 +140,7 @@ public class Namespace extends TableImpl<NamespaceRecord> {
 
     @Override
     public Identity<NamespaceRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_NAMESPACE;
+        return (Identity<NamespaceRecord, ULong>) super.getIdentity();
     }
 
     @Override

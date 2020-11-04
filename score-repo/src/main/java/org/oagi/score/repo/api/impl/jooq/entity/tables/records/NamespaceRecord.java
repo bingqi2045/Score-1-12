@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implements Record10<ULong, String, String, String, Byte, ULong, ULong, ULong, LocalDateTime, LocalDateTime> {
 
-    private static final long serialVersionUID = 784082831;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.namespace.namespace_id</code>. Primary, internal database key.
@@ -429,15 +429,15 @@ public class NamespaceRecord extends UpdatableRecordImpl<NamespaceRecord> implem
     public NamespaceRecord(ULong namespaceId, String uri, String prefix, String description, Byte isStdNmsp, ULong ownerUserId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp) {
         super(Namespace.NAMESPACE);
 
-        set(0, namespaceId);
-        set(1, uri);
-        set(2, prefix);
-        set(3, description);
-        set(4, isStdNmsp);
-        set(5, ownerUserId);
-        set(6, createdBy);
-        set(7, lastUpdatedBy);
-        set(8, creationTimestamp);
-        set(9, lastUpdateTimestamp);
+        setNamespaceId(namespaceId);
+        setUri(uri);
+        setPrefix(prefix);
+        setDescription(description);
+        setIsStdNmsp(isStdNmsp);
+        setOwnerUserId(ownerUserId);
+        setCreatedBy(createdBy);
+        setLastUpdatedBy(lastUpdatedBy);
+        setCreationTimestamp(creationTimestamp);
+        setLastUpdateTimestamp(lastUpdateTimestamp);
     }
 }

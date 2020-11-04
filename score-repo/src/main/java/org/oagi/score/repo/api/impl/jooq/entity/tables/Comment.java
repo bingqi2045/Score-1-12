@@ -21,6 +21,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CommentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Comment extends TableImpl<CommentRecord> {
 
-    private static final long serialVersionUID = 1530655530;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.comment</code>
@@ -53,53 +54,54 @@ public class Comment extends TableImpl<CommentRecord> {
     /**
      * The column <code>oagi.comment.comment_id</code>.
      */
-    public final TableField<CommentRecord, ULong> COMMENT_ID = createField(DSL.name("comment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<CommentRecord, ULong> COMMENT_ID = createField(DSL.name("comment_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.comment.reference</code>.
      */
-    public final TableField<CommentRecord, String> REFERENCE = createField(DSL.name("reference"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false).defaultValue(org.jooq.impl.DSL.inline("", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<CommentRecord, String> REFERENCE = createField(DSL.name("reference"), SQLDataType.VARCHAR(100).nullable(false).defaultValue(DSL.inline("", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>oagi.comment.comment</code>.
      */
-    public final TableField<CommentRecord, String> COMMENT_ = createField(DSL.name("comment"), org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<CommentRecord, String> COMMENT_ = createField(DSL.name("comment"), SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.comment.is_hidden</code>.
      */
-    public final TableField<CommentRecord, Byte> IS_HIDDEN = createField(DSL.name("is_hidden"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<CommentRecord, Byte> IS_HIDDEN = createField(DSL.name("is_hidden"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
 
     /**
      * The column <code>oagi.comment.is_deleted</code>.
      */
-    public final TableField<CommentRecord, Byte> IS_DELETED = createField(DSL.name("is_deleted"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<CommentRecord, Byte> IS_DELETED = createField(DSL.name("is_deleted"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
 
     /**
      * The column <code>oagi.comment.prev_comment_id</code>.
      */
-    public final TableField<CommentRecord, ULong> PREV_COMMENT_ID = createField(DSL.name("prev_comment_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<CommentRecord, ULong> PREV_COMMENT_ID = createField(DSL.name("prev_comment_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.comment.created_by</code>.
      */
-    public final TableField<CommentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<CommentRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.comment.creation_timestamp</code>.
      */
-    public final TableField<CommentRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+    public final TableField<CommentRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
     /**
      * The column <code>oagi.comment.last_update_timestamp</code>.
      */
-    public final TableField<CommentRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+    public final TableField<CommentRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
-    /**
-     * Create a <code>oagi.comment</code> table reference
-     */
-    public Comment() {
-        this(DSL.name("comment"), null);
+    private Comment(Name alias, Table<CommentRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Comment(Name alias, Table<CommentRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -116,12 +118,11 @@ public class Comment extends TableImpl<CommentRecord> {
         this(alias, COMMENT);
     }
 
-    private Comment(Name alias, Table<CommentRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Comment(Name alias, Table<CommentRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.comment</code> table reference
+     */
+    public Comment() {
+        this(DSL.name("comment"), null);
     }
 
     public <O extends Record> Comment(Table<O> child, ForeignKey<O, CommentRecord> key) {
@@ -140,7 +141,7 @@ public class Comment extends TableImpl<CommentRecord> {
 
     @Override
     public Identity<CommentRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_COMMENT;
+        return (Identity<CommentRecord, ULong>) super.getIdentity();
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -37,7 +38,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.XbtRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Xbt extends TableImpl<XbtRecord> {
 
-    private static final long serialVersionUID = -956779801;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.xbt</code>
@@ -55,88 +56,89 @@ public class Xbt extends TableImpl<XbtRecord> {
     /**
      * The column <code>oagi.xbt.xbt_id</code>. Primary, internal database key.
      */
-    public final TableField<XbtRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
+    public final TableField<XbtRecord, ULong> XBT_ID = createField(DSL.name("xbt_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary, internal database key.");
 
     /**
      * The column <code>oagi.xbt.guid</code>. A globally unique identifier (GUID).
      */
-    public final TableField<XbtRecord, String> GUID = createField(DSL.name("guid"), org.jooq.impl.SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
+    public final TableField<XbtRecord, String> GUID = createField(DSL.name("guid"), SQLDataType.CHAR(32).nullable(false), this, "A globally unique identifier (GUID).");
 
     /**
      * The column <code>oagi.xbt.name</code>. Human understandable name of the built-in type.
      */
-    public final TableField<XbtRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Human understandable name of the built-in type.");
+    public final TableField<XbtRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(45), this, "Human understandable name of the built-in type.");
 
     /**
      * The column <code>oagi.xbt.builtIn_type</code>. Built-in type as it should appear in the XML schema including the namespace prefix. Namespace prefix for the XML schema namespace is assumed to be 'xsd' and a default prefix for the OAGIS built-int type.
      */
-    public final TableField<XbtRecord, String> BUILTIN_TYPE = createField(DSL.name("builtIn_type"), org.jooq.impl.SQLDataType.VARCHAR(45), this, "Built-in type as it should appear in the XML schema including the namespace prefix. Namespace prefix for the XML schema namespace is assumed to be 'xsd' and a default prefix for the OAGIS built-int type.");
+    public final TableField<XbtRecord, String> BUILTIN_TYPE = createField(DSL.name("builtIn_type"), SQLDataType.VARCHAR(45), this, "Built-in type as it should appear in the XML schema including the namespace prefix. Namespace prefix for the XML schema namespace is assumed to be 'xsd' and a default prefix for the OAGIS built-int type.");
 
     /**
      * The column <code>oagi.xbt.jbt_draft05_map</code>.
      */
-    public final TableField<XbtRecord, String> JBT_DRAFT05_MAP = createField(DSL.name("jbt_draft05_map"), org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
+    public final TableField<XbtRecord, String> JBT_DRAFT05_MAP = createField(DSL.name("jbt_draft05_map"), SQLDataType.VARCHAR(500), this, "");
 
     /**
      * The column <code>oagi.xbt.openapi30_map</code>.
      */
-    public final TableField<XbtRecord, String> OPENAPI30_MAP = createField(DSL.name("openapi30_map"), org.jooq.impl.SQLDataType.VARCHAR(500), this, "");
+    public final TableField<XbtRecord, String> OPENAPI30_MAP = createField(DSL.name("openapi30_map"), SQLDataType.VARCHAR(500), this, "");
 
     /**
      * The column <code>oagi.xbt.subtype_of_xbt_id</code>. Foreign key to the XBT table itself. It indicates a super type of this XSD built-in type.
      */
-    public final TableField<XbtRecord, ULong> SUBTYPE_OF_XBT_ID = createField(DSL.name("subtype_of_xbt_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the XBT table itself. It indicates a super type of this XSD built-in type.");
+    public final TableField<XbtRecord, ULong> SUBTYPE_OF_XBT_ID = createField(DSL.name("subtype_of_xbt_id"), SQLDataType.BIGINTUNSIGNED, this, "Foreign key to the XBT table itself. It indicates a super type of this XSD built-in type.");
 
     /**
      * The column <code>oagi.xbt.schema_definition</code>.
      */
-    public final TableField<XbtRecord, String> SCHEMA_DEFINITION = createField(DSL.name("schema_definition"), org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<XbtRecord, String> SCHEMA_DEFINITION = createField(DSL.name("schema_definition"), SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.xbt.revision_doc</code>.
      */
-    public final TableField<XbtRecord, String> REVISION_DOC = createField(DSL.name("revision_doc"), org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<XbtRecord, String> REVISION_DOC = createField(DSL.name("revision_doc"), SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>oagi.xbt.state</code>.
      */
-    public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<XbtRecord, Integer> STATE = createField(DSL.name("state"), SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>oagi.xbt.created_by</code>.
      */
-    public final TableField<XbtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.owner_user_id</code>.
      */
-    public final TableField<XbtRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, ULong> OWNER_USER_ID = createField(DSL.name("owner_user_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.last_updated_by</code>.
      */
-    public final TableField<XbtRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<XbtRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.creation_timestamp</code>.
      */
-    public final TableField<XbtRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+    public final TableField<XbtRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.last_update_timestamp</code>.
      */
-    public final TableField<XbtRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "");
+    public final TableField<XbtRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
     /**
      * The column <code>oagi.xbt.is_deprecated</code>.
      */
-    public final TableField<XbtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), org.jooq.impl.SQLDataType.TINYINT.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+    public final TableField<XbtRecord, Byte> IS_DEPRECATED = createField(DSL.name("is_deprecated"), SQLDataType.TINYINT.defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
 
-    /**
-     * Create a <code>oagi.xbt</code> table reference
-     */
-    public Xbt() {
-        this(DSL.name("xbt"), null);
+    private Xbt(Name alias, Table<XbtRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Xbt(Name alias, Table<XbtRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment("This table stores XML schema built-in types and OAGIS built-in types. OAGIS built-in types are those types defined in the XMLSchemaBuiltinType and the XMLSchemaBuiltinType Patterns schemas."), TableOptions.table());
     }
 
     /**
@@ -153,12 +155,11 @@ public class Xbt extends TableImpl<XbtRecord> {
         this(alias, XBT);
     }
 
-    private Xbt(Name alias, Table<XbtRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Xbt(Name alias, Table<XbtRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("This table stores XML schema built-in types and OAGIS built-in types. OAGIS built-in types are those types defined in the XMLSchemaBuiltinType and the XMLSchemaBuiltinType Patterns schemas."), TableOptions.table());
+    /**
+     * Create a <code>oagi.xbt</code> table reference
+     */
+    public Xbt() {
+        this(DSL.name("xbt"), null);
     }
 
     public <O extends Record> Xbt(Table<O> child, ForeignKey<O, XbtRecord> key) {
@@ -177,7 +178,7 @@ public class Xbt extends TableImpl<XbtRecord> {
 
     @Override
     public Identity<XbtRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_XBT;
+        return (Identity<XbtRecord, ULong>) super.getIdentity();
     }
 
     @Override

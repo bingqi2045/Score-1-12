@@ -21,6 +21,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
@@ -35,7 +36,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ModuleDirRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModuleDir extends TableImpl<ModuleDirRecord> {
 
-    private static final long serialVersionUID = 1291387702;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.module_dir</code>
@@ -53,48 +54,49 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
     /**
      * The column <code>oagi.module_dir.module_dir_id</code>. Primary key.
      */
-    public final TableField<ModuleDirRecord, ULong> MODULE_DIR_ID = createField(DSL.name("module_dir_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
+    public final TableField<ModuleDirRecord, ULong> MODULE_DIR_ID = createField(DSL.name("module_dir_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "Primary key.");
 
     /**
      * The column <code>oagi.module_dir.parent_module_dir_id</code>. This indicates the parent of this directory.
      */
-    public final TableField<ModuleDirRecord, ULong> PARENT_MODULE_DIR_ID = createField(DSL.name("parent_module_dir_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This indicates the parent of this directory.");
+    public final TableField<ModuleDirRecord, ULong> PARENT_MODULE_DIR_ID = createField(DSL.name("parent_module_dir_id"), SQLDataType.BIGINTUNSIGNED, this, "This indicates the parent of this directory.");
 
     /**
      * The column <code>oagi.module_dir.name</code>. This is the name of the directory.
      */
-    public final TableField<ModuleDirRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the directory.");
+    public final TableField<ModuleDirRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "This is the name of the directory.");
 
     /**
      * The column <code>oagi.module_dir.path</code>. This is a full-path of this module directory for performance.
      */
-    public final TableField<ModuleDirRecord, String> PATH = createField(DSL.name("path"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "This is a full-path of this module directory for performance.");
+    public final TableField<ModuleDirRecord, String> PATH = createField(DSL.name("path"), SQLDataType.CLOB.nullable(false), this, "This is a full-path of this module directory for performance.");
 
     /**
      * The column <code>oagi.module_dir.created_by</code>. Foreign key to the APP_USER table. It indicates the user who created this MODULE_DIR.
      */
-    public final TableField<ModuleDirRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_DIR.");
+    public final TableField<ModuleDirRecord, ULong> CREATED_BY = createField(DSL.name("created_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table. It indicates the user who created this MODULE_DIR.");
 
     /**
      * The column <code>oagi.module_dir.last_updated_by</code>. Foreign key to the APP_USER table referring to the last user who updated the record.
      */
-    public final TableField<ModuleDirRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
+    public final TableField<ModuleDirRecord, ULong> LAST_UPDATED_BY = createField(DSL.name("last_updated_by"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "Foreign key to the APP_USER table referring to the last user who updated the record.");
 
     /**
      * The column <code>oagi.module_dir.creation_timestamp</code>. The timestamp when the record was first created.
      */
-    public final TableField<ModuleDirRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was first created.");
+    public final TableField<ModuleDirRecord, LocalDateTime> CREATION_TIMESTAMP = createField(DSL.name("creation_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was first created.");
 
     /**
      * The column <code>oagi.module_dir.last_update_timestamp</code>. The timestamp when the record was last updated.
      */
-    public final TableField<ModuleDirRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false), this, "The timestamp when the record was last updated.");
+    public final TableField<ModuleDirRecord, LocalDateTime> LAST_UPDATE_TIMESTAMP = createField(DSL.name("last_update_timestamp"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "The timestamp when the record was last updated.");
 
-    /**
-     * Create a <code>oagi.module_dir</code> table reference
-     */
-    public ModuleDir() {
-        this(DSL.name("module_dir"), null);
+    private ModuleDir(Name alias, Table<ModuleDirRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private ModuleDir(Name alias, Table<ModuleDirRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -111,12 +113,11 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
         this(alias, MODULE_DIR);
     }
 
-    private ModuleDir(Name alias, Table<ModuleDirRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private ModuleDir(Name alias, Table<ModuleDirRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.module_dir</code> table reference
+     */
+    public ModuleDir() {
+        this(DSL.name("module_dir"), null);
     }
 
     public <O extends Record> ModuleDir(Table<O> child, ForeignKey<O, ModuleDirRecord> key) {
@@ -135,7 +136,7 @@ public class ModuleDir extends TableImpl<ModuleDirRecord> {
 
     @Override
     public Identity<ModuleDirRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_MODULE_DIR;
+        return (Identity<ModuleDirRecord, ULong>) super.getIdentity();
     }
 
     @Override

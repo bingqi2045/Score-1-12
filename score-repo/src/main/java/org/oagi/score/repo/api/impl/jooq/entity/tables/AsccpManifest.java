@@ -19,6 +19,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
@@ -32,7 +33,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestReco
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
-    private static final long serialVersionUID = 1452101564;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>oagi.asccp_manifest</code>
@@ -50,53 +51,54 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
     /**
      * The column <code>oagi.asccp_manifest.asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
+    public final TableField<AsccpManifestRecord, ULong> ASCCP_MANIFEST_ID = createField(DSL.name("asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.release_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, ULong> RELEASE_ID = createField(DSL.name("release_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.asccp_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> ASCCP_ID = createField(DSL.name("asccp_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, ULong> ASCCP_ID = createField(DSL.name("asccp_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.role_of_acc_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> ROLE_OF_ACC_MANIFEST_ID = createField(DSL.name("role_of_acc_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
+    public final TableField<AsccpManifestRecord, ULong> ROLE_OF_ACC_MANIFEST_ID = createField(DSL.name("role_of_acc_manifest_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.conflict</code>. This indicates that there is a conflict between self and relationship.
      */
-    public final TableField<AsccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
+    public final TableField<AsccpManifestRecord, Byte> CONFLICT = createField(DSL.name("conflict"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "This indicates that there is a conflict between self and relationship.");
 
     /**
      * The column <code>oagi.asccp_manifest.log_id</code>. A foreign key pointed to a log for the current record.
      */
-    public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
+    public final TableField<AsccpManifestRecord, ULong> LOG_ID = createField(DSL.name("log_id"), SQLDataType.BIGINTUNSIGNED, this, "A foreign key pointed to a log for the current record.");
 
     /**
      * The column <code>oagi.asccp_manifest.replacement_asccp_manifest_id</code>. This refers to a replacement manifest if the record is deprecated.
      */
-    public final TableField<AsccpManifestRecord, ULong> REPLACEMENT_ASCCP_MANIFEST_ID = createField(DSL.name("replacement_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
+    public final TableField<AsccpManifestRecord, ULong> REPLACEMENT_ASCCP_MANIFEST_ID = createField(DSL.name("replacement_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "This refers to a replacement manifest if the record is deprecated.");
 
     /**
      * The column <code>oagi.asccp_manifest.prev_asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> PREV_ASCCP_MANIFEST_ID = createField(DSL.name("prev_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AsccpManifestRecord, ULong> PREV_ASCCP_MANIFEST_ID = createField(DSL.name("prev_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
     /**
      * The column <code>oagi.asccp_manifest.next_asccp_manifest_id</code>.
      */
-    public final TableField<AsccpManifestRecord, ULong> NEXT_ASCCP_MANIFEST_ID = createField(DSL.name("next_asccp_manifest_id"), org.jooq.impl.SQLDataType.BIGINTUNSIGNED, this, "");
+    public final TableField<AsccpManifestRecord, ULong> NEXT_ASCCP_MANIFEST_ID = createField(DSL.name("next_asccp_manifest_id"), SQLDataType.BIGINTUNSIGNED, this, "");
 
-    /**
-     * Create a <code>oagi.asccp_manifest</code> table reference
-     */
-    public AsccpManifest() {
-        this(DSL.name("asccp_manifest"), null);
+    private AsccpManifest(Name alias, Table<AsccpManifestRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private AsccpManifest(Name alias, Table<AsccpManifestRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -113,12 +115,11 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
         this(alias, ASCCP_MANIFEST);
     }
 
-    private AsccpManifest(Name alias, Table<AsccpManifestRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private AsccpManifest(Name alias, Table<AsccpManifestRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>oagi.asccp_manifest</code> table reference
+     */
+    public AsccpManifest() {
+        this(DSL.name("asccp_manifest"), null);
     }
 
     public <O extends Record> AsccpManifest(Table<O> child, ForeignKey<O, AsccpManifestRecord> key) {
@@ -132,7 +133,7 @@ public class AsccpManifest extends TableImpl<AsccpManifestRecord> {
 
     @Override
     public Identity<AsccpManifestRecord, ULong> getIdentity() {
-        return Keys.IDENTITY_ASCCP_MANIFEST;
+        return (Identity<AsccpManifestRecord, ULong>) super.getIdentity();
     }
 
     @Override

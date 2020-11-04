@@ -14,7 +14,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 
 
 /**
- * This table represents the supplementary component (SC) of a DT. Revision 
+ * This table represents the supplementary component (    SC) of a DT. Revision 
  * is not tracked at the supplementary component. It is considered intrinsic 
  * part of the DT. In other words, when a new revision of a DT is created 
  * a new set of supplementary components is created along with it. 
@@ -22,7 +22,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Record14<ULong, String, String, String, String, String, ULong, Integer, Integer, ULong, String, String, Byte, ULong> {
 
-    private static final long serialVersionUID = 1384759605;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>oagi.dt_sc.dt_sc_id</code>. Internal, primary database key.
@@ -573,19 +573,19 @@ public class DtScRecord extends UpdatableRecordImpl<DtScRecord> implements Recor
     public DtScRecord(ULong dtScId, String guid, String propertyTerm, String representationTerm, String definition, String definitionSource, ULong ownerDtId, Integer cardinalityMin, Integer cardinalityMax, ULong basedDtScId, String defaultValue, String fixedValue, Byte isDeprecated, ULong replacementDtScId) {
         super(DtSc.DT_SC);
 
-        set(0, dtScId);
-        set(1, guid);
-        set(2, propertyTerm);
-        set(3, representationTerm);
-        set(4, definition);
-        set(5, definitionSource);
-        set(6, ownerDtId);
-        set(7, cardinalityMin);
-        set(8, cardinalityMax);
-        set(9, basedDtScId);
-        set(10, defaultValue);
-        set(11, fixedValue);
-        set(12, isDeprecated);
-        set(13, replacementDtScId);
+        setDtScId(dtScId);
+        setGuid(guid);
+        setPropertyTerm(propertyTerm);
+        setRepresentationTerm(representationTerm);
+        setDefinition(definition);
+        setDefinitionSource(definitionSource);
+        setOwnerDtId(ownerDtId);
+        setCardinalityMin(cardinalityMin);
+        setCardinalityMax(cardinalityMax);
+        setBasedDtScId(basedDtScId);
+        setDefaultValue(defaultValue);
+        setFixedValue(fixedValue);
+        setIsDeprecated(isDeprecated);
+        setReplacementDtScId(replacementDtScId);
     }
 }
