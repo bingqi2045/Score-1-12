@@ -1057,7 +1057,7 @@ public class AccWriteRepository {
             accManifestRecord.setBasedAccManifestId(basedAccManifest.getAccManifestId());
         }
         accManifestRecord.setAccId(accRecord.getPrevAccId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
 
         discardLogAssociations(request.getUser(), accManifestRecord, accRecord);
 
@@ -1065,16 +1065,10 @@ public class AccWriteRepository {
         prevAccRecord.setNextAccId(null);
         prevAccRecord.update(ACC.NEXT_ACC_ID);
 
-        AccManifestRecord updatedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
-
-        AccRecord updatedAccRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(updatedAccManifestRecord.getAccId())).fetchOne();
-
         // creates new revision for canceled record.
         LogRecord logRecord =
-                logRepository.insertAccLog(updatedAccManifestRecord,
-                        updatedAccRecord, accManifestRecord.getLogId(),
+                logRepository.insertAccLog(accManifestRecord,
+                        prevAccRecord, accManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);
 
