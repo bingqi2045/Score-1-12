@@ -1036,24 +1036,15 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Not found a target ACC");
         }
 
-        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())).fetchOne();
-        if (prevAccManifestRecord == null) {
-            throw new IllegalArgumentException("Not found previous revision");
-        }
-
         AccRecord accRecord = dslContext.selectFrom(ACC)
                 .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
 
         AccRecord prevAccRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(prevAccManifestRecord.getAccId())).fetchOne();
+                .where(ACC.ACC_ID.eq(accRecord.getPrevAccId())).fetchOne();
 
-        // creates new revision for canceled record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(prevAccManifestRecord,
-                        prevAccRecord, accManifestRecord.getLogId(),
-                        LogAction.Canceled,
-                        userId, timestamp);
+        if (prevAccRecord == null) {
+            throw new IllegalArgumentException("Not found previous revision");
+        }
 
         // update ACC MANIFEST's acc_id and revision_id
         if (prevAccRecord.getBasedAccId() != null) {
@@ -1066,14 +1057,29 @@ public class AccWriteRepository {
             accManifestRecord.setBasedAccManifestId(basedAccManifest.getAccManifestId());
         }
         accManifestRecord.setAccId(accRecord.getPrevAccId());
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.LOG_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
+        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
 
         discardLogAssociations(request.getUser(), accManifestRecord, accRecord);
 
         // unlink prev ACC
         prevAccRecord.setNextAccId(null);
         prevAccRecord.update(ACC.NEXT_ACC_ID);
+
+        AccManifestRecord updatedAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getAccManifestId()))).fetchOne();
+
+        AccRecord updatedAccRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(updatedAccManifestRecord.getAccId())).fetchOne();
+
+        // creates new revision for canceled record.
+        LogRecord logRecord =
+                logRepository.insertAccLog(updatedAccManifestRecord,
+                        updatedAccRecord, accManifestRecord.getLogId(),
+                        LogAction.Canceled,
+                        userId, timestamp);
+
+        accManifestRecord.setLogId(logRecord.getLogId());
+        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
 
         // delete current ACC
         accRecord.delete();
