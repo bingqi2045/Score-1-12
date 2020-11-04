@@ -18,8 +18,8 @@ import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
-import org.oagi.score.repo.api.corecomponent.seqkey.model.GetSeqKeyRequest;
-import org.oagi.score.repo.api.corecomponent.seqkey.model.SeqKey;
+import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
+import org.oagi.score.repo.api.corecomponent.seqkey.model.*;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.LogSerializer;
 import org.oagi.score.service.corecomponent.seqkey.MoveTo;
@@ -27,12 +27,8 @@ import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -1073,7 +1069,7 @@ public class AccWriteRepository {
         accManifestRecord.setLogId(logRecord.getLogId());
         accManifestRecord.update(ACC_MANIFEST.ACC_ID, ACC_MANIFEST.LOG_ID, ACC_MANIFEST.BASED_ACC_MANIFEST_ID);
 
-        discardLogAssociations(accManifestRecord, accRecord);
+        discardLogAssociations(request.getUser(), accManifestRecord, accRecord);
 
         // unlink prev ACC
         prevAccRecord.setNextAccId(null);
@@ -1085,12 +1081,25 @@ public class AccWriteRepository {
         return new CancelRevisionAccRepositoryResponse(request.getAccManifestId());
     }
 
-    private void discardLogAssociations(AccManifestRecord accManifestRecord, AccRecord accRecord) {
+    private void discardLogAssociations(AuthenticatedPrincipal user, AccManifestRecord accManifestRecord, AccRecord accRecord) {
         List<AsccManifestRecord> asccManifestRecords = dslContext.selectFrom(ASCC_MANIFEST)
                 .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
 
         List<BccManifestRecord> bccManifestRecords = dslContext.selectFrom(BCC_MANIFEST)
                 .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).fetch();
+
+        // delete SEQ_KEY for current ACC
+        dslContext.update(SEQ_KEY)
+                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
+                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
+                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.update(ASCC_MANIFEST)
+                .setNull(ASCC_MANIFEST.SEQ_KEY_ID)
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.update(BCC_MANIFEST)
+                .setNull(BCC_MANIFEST.SEQ_KEY_ID)
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
 
         for (AsccManifestRecord asccManifestRecord : asccManifestRecords) {
             AsccRecord asccRecord = dslContext.selectFrom(ASCC)
@@ -1107,7 +1116,8 @@ public class AccWriteRepository {
                 prevAsccRecord.setNextAsccId(null);
                 prevAsccRecord.update(ASCC.NEXT_ASCC_ID);
                 asccManifestRecord.setAsccId(prevAsccRecord.getAsccId());
-                asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID);
+                asccManifestRecord.setSeqKeyId(null);
+                asccManifestRecord.update(ASCC_MANIFEST.ASCC_ID, ASCC_MANIFEST.SEQ_KEY_ID);
                 asccRecord.delete();
             }
         }
@@ -1127,7 +1137,8 @@ public class AccWriteRepository {
                 prevBccRecord.setNextBccId(null);
                 prevBccRecord.update(BCC.NEXT_BCC_ID);
                 bccManifestRecord.setBccId(prevBccRecord.getBccId());
-                bccManifestRecord.update(BCC_MANIFEST.BCC_ID);
+                bccManifestRecord.setSeqKeyId(null);
+                bccManifestRecord.update(BCC_MANIFEST.BCC_ID, BCC_MANIFEST.SEQ_KEY_ID);
                 bccRecord.delete();
             }
         }
@@ -1144,12 +1155,82 @@ public class AccWriteRepository {
                 .where(ASCCP.ROLE_OF_ACC_ID.eq(accRecord.getAccId()))
                 .execute();
 
-        // delete SEQ_KEY for current ACC
-        dslContext.update(SEQ_KEY)
-                .setNull(SEQ_KEY.PREV_SEQ_KEY_ID)
-                .setNull(SEQ_KEY.NEXT_SEQ_KEY_ID)
-                .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
-        dslContext.deleteFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId())).execute();
+        insertSeqKey(user, accManifestRecord.getAccManifestId(), accRecord.getGuid());
+    }
+
+    private static class Association {
+        public final SeqKeyType type;
+        public final ULong manifestId;
+        private SeqKeyRecord seqKeyRecord;
+
+        public Association(SeqKeyType type, ULong manifestId) {
+            this.type = type;
+            this.manifestId = manifestId;
+        }
+
+        public ULong getManifestId() {
+            return manifestId;
+        }
+
+        public SeqKeyRecord getSeqKeyRecord() {
+            return seqKeyRecord;
+        }
+
+        public void setSeqKeyRecord(SeqKeyRecord seqKeyRecord) {
+            this.seqKeyRecord = seqKeyRecord;
+        }
+    }
+
+    public void insertSeqKey(AuthenticatedPrincipal user, ULong fromAccManifestId, String reference) {
+
+        HashMap<String, Association> associationMap = new HashMap<>();
+        dslContext.select(ASCC.GUID, ASCC_MANIFEST.ASCC_MANIFEST_ID)
+                .from(ASCC_MANIFEST)
+                .join(ASCC).on(ASCC_MANIFEST.ASCC_ID.eq(ASCC.ASCC_ID))
+                .where(ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId)).fetch()
+                .forEach(e -> {
+                    associationMap.put(e.get(ASCC.GUID), 
+                            new Association(SeqKeyType.ASCC, e.get(ASCC_MANIFEST.ASCC_MANIFEST_ID)));
+                });
+
+        dslContext.select(BCC.GUID, BCC_MANIFEST.BCC_MANIFEST_ID)
+                .from(BCC_MANIFEST)
+                .join(BCC).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(fromAccManifestId)).fetch()
+                .forEach(e -> {
+                    associationMap.put(e.get(BCC.GUID),
+                            new Association(SeqKeyType.BCC, e.get(BCC_MANIFEST.BCC_MANIFEST_ID)));
+                });
+
+        LogRecord log = dslContext.selectFrom(LOG)
+                .where(and(LOG.REFERENCE.eq(reference), LOG.LOG_ACTION.eq(LogAction.Revised.name())))
+                .orderBy(LOG.LOG_ID.desc())
+                .limit(1).fetchOne();
+
+        SeqKeyWriteRepository seqKeyWriteRepository = scoreRepositoryFactory.createSeqKeyWriteRepository();
+
+        JsonObject snapshot = serializer.deserialize(log.getSnapshot().toString());
+        JsonArray associations = snapshot.get("associations").getAsJsonArray();
+        SeqKey prev = null;
+        for (JsonElement obj: associations) {
+            String guid = obj.getAsJsonObject().get("guid").getAsString();
+            Association association = associationMap.get(guid);
+            if (association == null) {
+                return;
+            }
+            CreateSeqKeyRequest request = new CreateSeqKeyRequest(sessionService.asScoreUser(user));
+            request.setFromAccManifestId(fromAccManifestId.toBigInteger());
+            request.setType(association.type);
+            request.setManifestId(association.getManifestId().toBigInteger());
+            SeqKey current = seqKeyWriteRepository.createSeqKey(request).getSeqKey();
+            if (prev != null) {
+                MoveAfterRequest moveAfterRequest = new MoveAfterRequest(sessionService.asScoreUser(user));
+                moveAfterRequest.setAfter(prev);
+                moveAfterRequest.setItem(current);
+                seqKeyWriteRepository.moveAfter(moveAfterRequest);
+            }
+            prev = current;
+        }
     }
 
     public CancelRevisionAccRepositoryResponse resetRevisionAcc(CancelRevisionAccRepositoryRequest request) {
