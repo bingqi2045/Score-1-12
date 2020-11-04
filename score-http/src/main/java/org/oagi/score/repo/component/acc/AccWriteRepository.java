@@ -1040,19 +1040,21 @@ public class AccWriteRepository {
             throw new IllegalArgumentException("Not found a target ACC");
         }
 
-        AccRecord accRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
-
-        if (accRecord.getPrevAccId() == null) {
+        AccManifestRecord prevAccManifestRecord = dslContext.selectFrom(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(accManifestRecord.getPrevAccManifestId())).fetchOne();
+        if (prevAccManifestRecord == null) {
             throw new IllegalArgumentException("Not found previous revision");
         }
 
+        AccRecord accRecord = dslContext.selectFrom(ACC)
+                .where(ACC.ACC_ID.eq(accManifestRecord.getAccId())).fetchOne();
+
         AccRecord prevAccRecord = dslContext.selectFrom(ACC)
-                .where(ACC.ACC_ID.eq(accRecord.getPrevAccId())).fetchOne();
+                .where(ACC.ACC_ID.eq(prevAccManifestRecord.getAccId())).fetchOne();
 
         // creates new revision for canceled record.
         LogRecord logRecord =
-                logRepository.insertAccLog(accManifestRecord,
+                logRepository.insertAccLog(prevAccManifestRecord,
                         prevAccRecord, accManifestRecord.getLogId(),
                         LogAction.Canceled,
                         userId, timestamp);
@@ -1095,11 +1097,11 @@ public class AccWriteRepository {
                     .where(ASCC.ASCC_ID.eq(asccManifestRecord.getAsccId())).fetchOne();
 
             if (asccRecord.getPrevAsccId() == null) {
-                //delete ascc and ascc manifest which added this revision
+                // delete ascc and ascc manifest which added this revision
                 asccManifestRecord.delete();
                 asccRecord.delete();
             } else {
-                //delete ascc and update ascc manifest
+                // delete ascc and update ascc manifest
                 AsccRecord prevAsccRecord = dslContext.selectFrom(ASCC)
                         .where(ASCC.ASCC_ID.eq(asccRecord.getPrevAsccId())).fetchOne();
                 prevAsccRecord.setNextAsccId(null);
@@ -1115,11 +1117,11 @@ public class AccWriteRepository {
                     .where(BCC.BCC_ID.eq(bccManifestRecord.getBccId())).fetchOne();
 
             if (bccRecord.getPrevBccId() == null) {
-                //delete bcc and bcc manifest which added this revision
+                // delete bcc and bcc manifest which added this revision
                 bccManifestRecord.delete();
                 bccRecord.delete();
             } else {
-                //delete bcc and update bcc manifest
+                // delete bcc and update bcc manifest
                 BccRecord prevBccRecord = dslContext.selectFrom(BCC)
                         .where(BCC.BCC_ID.eq(bccRecord.getPrevBccId())).fetchOne();
                 prevBccRecord.setNextBccId(null);

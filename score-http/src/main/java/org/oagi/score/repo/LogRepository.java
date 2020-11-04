@@ -15,7 +15,6 @@ import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.log_management.data.Log;
 import org.oagi.score.gateway.http.api.log_management.data.LogListRequest;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.domain.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -312,7 +311,7 @@ public class LogRepository {
                 .fetch();
 
         List<SeqKeyRecord> seqKeyRecords = Collections.emptyList();
-        if(accManifestRecord.getAccManifestId() != null) {
+        if (accManifestRecord.getAccManifestId() != null) {
             seqKeyRecords = dslContext.selectFrom(SEQ_KEY)
                     .where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(accManifestRecord.getAccManifestId()))
                     .fetch();
