@@ -557,7 +557,7 @@ public class LogRepository {
                 .fetch();
 
         List<CodeListValueRecord> codeListValueRecords = dslContext.selectFrom(CODE_LIST_VALUE)
-                .where(CODE_LIST_VALUE.CODE_LIST_ID.in(
+                .where(CODE_LIST_VALUE.CODE_LIST_VALUE_ID.in(
                         codeListValueManifestRecords.stream().map(e -> e.getCodeListValueId()).collect(Collectors.toList())
                 ))
                 .fetch();
