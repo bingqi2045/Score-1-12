@@ -99,11 +99,9 @@ public class AsccpWriteRepository {
         asccpManifest.setAsccpId(asccp.getAsccpId());
         asccpManifest.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         asccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-        asccpManifest.setAsccpManifestId(
-                dslContext.insertInto(ASCCP_MANIFEST)
-                        .set(asccpManifest)
-                        .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne().getAsccpManifestId()
-        );
+        asccpManifest = dslContext.insertInto(ASCCP_MANIFEST)
+                .set(asccpManifest)
+                .returning(ASCCP_MANIFEST.ASCCP_MANIFEST_ID).fetchOne();
 
         LogRecord logRecord =
                 logRepository.insertAsccpLog(

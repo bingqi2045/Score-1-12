@@ -88,11 +88,9 @@ public class BccpWriteRepository {
         bccpManifest.setBccpId(bccp.getBccpId());
         bccpManifest.setBdtManifestId(bdtManifest.getDtManifestId());
         bccpManifest.setReleaseId(ULong.valueOf(request.getReleaseId()));
-        bccpManifest.setBccpManifestId(
-                dslContext.insertInto(BCCP_MANIFEST)
-                        .set(bccpManifest)
-                        .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne().getBccpManifestId()
-        );
+        bccpManifest = dslContext.insertInto(BCCP_MANIFEST)
+                .set(bccpManifest)
+                .returning(BCCP_MANIFEST.BCCP_MANIFEST_ID).fetchOne();
 
         LogRecord logRecord =
                 logRepository.insertBccpLog(

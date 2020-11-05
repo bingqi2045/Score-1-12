@@ -116,10 +116,9 @@ public class CodeListWriteRepository {
             codeListManifest.setBasedCodeListManifestId(basedCodeListManifestRecord.getCodeListManifestId());
         }
 
-        codeListManifest.setCodeListManifestId(
-                dslContext.insertInto(CODE_LIST_MANIFEST)
-                        .set(codeListManifest)
-                        .returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).fetchOne().getCodeListManifestId());
+        codeListManifest = dslContext.insertInto(CODE_LIST_MANIFEST)
+                .set(codeListManifest)
+                .returning(CODE_LIST_MANIFEST.CODE_LIST_MANIFEST_ID).fetchOne();
 
         if (basedCodeListValueManifestList != null) {
             for (CodeListValueManifestRecord basedCodeListValueManifest : basedCodeListValueManifestList) {
