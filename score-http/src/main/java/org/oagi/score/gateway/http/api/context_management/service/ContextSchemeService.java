@@ -454,7 +454,7 @@ public class ContextSchemeService {
         }
 
         for (ContextSchemeValue contextSchemeValue : contextSchemeValues.stream()
-                .filter(e -> e.getCtxSchemeValueId() != null)
+                .filter(e -> e.getCtxSchemeValueId() == null)
                 .collect(Collectors.toList())) {
             insert(ctxSchemeId, contextSchemeValue);
         }
