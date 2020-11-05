@@ -9,7 +9,6 @@ import org.oagi.score.gateway.http.api.context_management.data.*;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.gateway.http.helper.filter.ContainsFilterBuilder;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxSchemeValueRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -240,13 +240,23 @@ public class ContextSchemeService {
                 CTX_SCHEME_VALUE.GUID,
                 CTX_SCHEME_VALUE.VALUE,
                 CTX_SCHEME_VALUE.MEANING,
-                iif(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID.isNotNull(), true, false).as("used")
+                BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID
         ).from(CTX_SCHEME_VALUE)
                 .leftJoin(BIZ_CTX_VALUE)
                 .on(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID.eq(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID))
                 .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
                 .groupBy(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
-                .fetchInto(ContextSchemeValue.class);
+                .fetchStream().map(e -> {
+                    ContextSchemeValue value = new ContextSchemeValue();
+                    value.setCtxSchemeValueId(e.get(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID).toBigInteger());
+                    value.setGuid(e.get(CTX_SCHEME_VALUE.GUID));
+                    value.setValue(e.get(CTX_SCHEME_VALUE.VALUE));
+                    value.setMeaning(e.get(CTX_SCHEME_VALUE.MEANING));
+                    ULong ctxSchemeValueId = e.get(BIZ_CTX_VALUE.CTX_SCHEME_VALUE_ID);
+                    boolean used = ctxSchemeValueId != null;
+                    value.setUsed(used);
+                    return value;
+                }).collect(Collectors.toList());
     }
 
     public ContextSchemeValue getSimpleContextSchemeValueByCtxSchemeValuesId(long ctxSchemeValuesId) {
@@ -429,8 +439,8 @@ public class ContextSchemeService {
                         .where(CTX_SCHEME_VALUE.OWNER_CTX_SCHEME_ID.eq(ULong.valueOf(ctxSchemeId)))
                         .fetch(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID);
 
-        Map<Long, ContextSchemeValue> newCtxSchemeValues = contextSchemeValues.stream()
-                .filter(e -> e.getCtxSchemeValueId() > 0L)
+        Map<BigInteger, ContextSchemeValue> newCtxSchemeValues = contextSchemeValues.stream()
+                .filter(e -> e.getCtxSchemeValueId() != null)
                 .collect(Collectors.toMap(ContextSchemeValue::getCtxSchemeValueId, Function.identity()));
 
         oldCtxSchemeValueIds.removeAll(newCtxSchemeValues.keySet().stream()
@@ -444,7 +454,7 @@ public class ContextSchemeService {
         }
 
         for (ContextSchemeValue contextSchemeValue : contextSchemeValues.stream()
-                .filter(e -> e.getCtxSchemeValueId() == 0L)
+                .filter(e -> e.getCtxSchemeValueId() != null)
                 .collect(Collectors.toList())) {
             insert(ctxSchemeId, contextSchemeValue);
         }
