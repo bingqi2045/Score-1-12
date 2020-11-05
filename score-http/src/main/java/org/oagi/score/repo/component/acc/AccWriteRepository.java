@@ -27,8 +27,12 @@ import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -56,12 +60,6 @@ public class AccWriteRepository {
 
     @Autowired
     private ScoreRepositoryFactory scoreRepositoryFactory;
-
-    private String objectClassTerm(ULong accId) {
-        return dslContext.select(ACC.OBJECT_CLASS_TERM).from(ACC)
-                .where(ACC.ACC_ID.eq(accId))
-                .fetchOneInto(String.class);
-    }
 
     public CreateAccRepositoryResponse createAcc(CreateAccRepositoryRequest request) {
         ULong userId = ULong.valueOf(sessionService.userId(request.getUser()));

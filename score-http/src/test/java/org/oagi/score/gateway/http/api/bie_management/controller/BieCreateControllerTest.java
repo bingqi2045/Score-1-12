@@ -9,12 +9,12 @@ import org.junit.runner.RunWith;
 import org.oagi.score.gateway.http.ScoreHttpApplication;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateResponse;
+import org.oagi.score.gateway.http.configuration.WithMockScoreUser;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,6 +24,7 @@ import java.util.Arrays;
 import static org.jooq.impl.DSL.and;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.oagi.score.gateway.http.configuration.security.AppUserDetailsService.DEVELOPER_GRANTED_AUTHORITY;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,7 +81,7 @@ public class BieCreateControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "oagis")
+    @WithMockScoreUser(username = "oagis", password = "oagis", role = DEVELOPER_GRANTED_AUTHORITY)
     public void shouldCreateBie() throws Exception {
         BieCreateRequest request = new BieCreateRequest();
         request.setAsccpManifestId(testAsccpManifestId.toBigInteger());

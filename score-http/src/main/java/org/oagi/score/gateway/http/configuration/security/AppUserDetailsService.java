@@ -15,10 +15,10 @@ import java.util.Arrays;
 @Component
 public class AppUserDetailsService implements UserDetailsService {
 
-    public static String DEVELOPER_GRANTED_AUTHORITY = "developer";
-    public static String END_USER_GRANTED_AUTHORITY = "end-user";
-    public static String PENDING_GRANTED_AUTHORITY = "pending";
-    public static String REJECT_GRANTED_AUTHORITY = "reject";
+    public static final String DEVELOPER_GRANTED_AUTHORITY = "developer";
+    public static final String END_USER_GRANTED_AUTHORITY = "end-user";
+    public static final String PENDING_GRANTED_AUTHORITY = "pending";
+    public static final String REJECT_GRANTED_AUTHORITY = "reject";
 
     @Autowired
     private DSLContext dslContext;

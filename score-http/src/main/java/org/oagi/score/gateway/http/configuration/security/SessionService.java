@@ -5,6 +5,7 @@ import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.user.model.GetScoreUserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -67,6 +68,9 @@ public class SessionService {
     }
 
     public BigInteger userId(AuthenticatedPrincipal principal) {
+        if (principal == null) {
+            throw new ScoreDataAccessException("User does not exist.");
+        }
         if (principal instanceof User) {
             return userId((User) principal);
         } else if (principal instanceof OAuth2User) {
