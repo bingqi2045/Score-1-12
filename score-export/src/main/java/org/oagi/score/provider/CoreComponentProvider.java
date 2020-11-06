@@ -15,6 +15,6 @@ public interface CoreComponentProvider {
 
     public List<AsccRecord> getASCCs(long accId);
 
-    public List<SeqKeyRecord> getSeqKeys(long accId);
+    public List<SeqKeyRecord> getSeqKeys(long accManifestId);
 
 }

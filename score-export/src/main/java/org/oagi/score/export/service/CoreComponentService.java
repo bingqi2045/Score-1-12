@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 public class CoreComponentService {
 
     public List<SeqKeyRecord> getCoreComponents(
-            long accId, CoreComponentProvider coreComponentProvider) {
-        List<SeqKeyRecord> seqKeyList = coreComponentProvider.getSeqKeys(accId);
+            long accManifestId, CoreComponentProvider coreComponentProvider) {
+        List<SeqKeyRecord> seqKeyList = coreComponentProvider.getSeqKeys(accManifestId);
 
         return sort(seqKeyList);
     }

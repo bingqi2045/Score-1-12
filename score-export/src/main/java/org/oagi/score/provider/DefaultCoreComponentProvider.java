@@ -39,7 +39,7 @@ public class DefaultCoreComponentProvider implements CoreComponentProvider {
     }
 
     @Override
-    public List<SeqKeyRecord> getSeqKeys(long accId) {
-        return dslContext.selectFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_ID.eq(ULong.valueOf(accId))).fetchInto(SeqKeyRecord.class);
+    public List<SeqKeyRecord> getSeqKeys(long accManifestId) {
+        return dslContext.selectFrom(SEQ_KEY).where(SEQ_KEY.FROM_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId))).fetchInto(SeqKeyRecord.class);
     }
 }

@@ -43,7 +43,7 @@ public abstract class ACC implements Component {
                     AccRecord basedAcc = importedDataProvider.findACC(basedAccManifest.getAccId());
                     basedACC = newInstance(basedAcc, basedAccManifest, importedDataProvider);
                 }
-                return new ACCComplexType(acc, basedACC, importedDataProvider);
+                return new ACCComplexType(acc, basedACC, accManifest, importedDataProvider);
             case 4: // UEG
                 return new ACCGroup(acc, null, importedDataProvider);
             default:

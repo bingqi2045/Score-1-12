@@ -81,7 +81,7 @@ public interface ImportedDataProvider {
 
     public BccRecord findBCC(ULong bccId);
 
-    public BccManifestRecord findBCCManifest(ULong bccId);
+    public BccManifestRecord findBCCManifest(ULong bccManifestId);
 
     public AsccRecord findASCC(ULong asccId);
 

@@ -106,6 +106,9 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
             }
 
             ModuleCCID moduleCCID = importedDataProvider.findModuleCodeList(codeList.getCodeListId());
+            if (moduleCCID == null) {
+                continue;
+            }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             schemaModule.addCodeList(schemaCodeList);
 
@@ -213,7 +216,7 @@ public class DefaultExportContextBuilder implements ExportContextBuilder {
             }
             ModuleCCID moduleCCID = importedDataProvider.findModuleAcc(acc.getAccId());
             if (moduleCCID == null) {
-                throw new IllegalStateException();
+                continue;
             }
             SchemaModule schemaModule = moduleMap.get(moduleCCID.getModuleSetAssignmentId());
             if (schemaModule == null) {
