@@ -13,8 +13,8 @@ import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.ContextCategoryRepository;
 import org.oagi.score.repo.api.ScoreRepositoryFactory;
 import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryRequest;
-import org.oagi.score.repo.api.businesscontext.model.ListContextCategoryRequest;
-import org.oagi.score.repo.api.businesscontext.model.ListContextCategoryResponse;
+import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryListRequest;
+import org.oagi.score.repo.api.businesscontext.model.GetContextCategoryListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -54,7 +54,7 @@ public class ContextCategoryService {
     public PageResponse<ContextCategory> getContextCategoryList(
             AuthenticatedPrincipal requester, ContextCategoryListRequest request) {
 
-        ListContextCategoryRequest listRequest = new ListContextCategoryRequest(sessionService.asScoreUser(requester));
+        GetContextCategoryListRequest listRequest = new GetContextCategoryListRequest(sessionService.asScoreUser(requester));
         listRequest.setContextCategoryIds(request.getContextCategoryIds());
         listRequest.setName(request.getName());
         listRequest.setDescription(request.getDescription());
@@ -73,9 +73,9 @@ public class ContextCategoryService {
             listRequest.setSortDirection("asc".equalsIgnoreCase(pageRequest.getSortDirection()) ? ASC : DESC);
         }
 
-        ListContextCategoryResponse listResponse =
+        GetContextCategoryListResponse listResponse =
                 scoreRepositoryFactory.createContextCategoryReadRepository()
-                .listContextCategories(listRequest);
+                .getContextCategoryList(listRequest);
 
         List<ContextCategory> contextCategories =
                 listResponse.getResults().stream()

@@ -94,7 +94,7 @@ public class JooqContextCategoryReadRepository
         return new GetContextCategoryResponse(contextCategory);
     }
 
-    private Collection<Condition> getConditions(ListContextCategoryRequest request) {
+    private Collection<Condition> getConditions(GetContextCategoryListRequest request) {
         List<Condition> conditions = new ArrayList();
 
         if (!request.getContextCategoryIds().isEmpty()) {
@@ -131,7 +131,7 @@ public class JooqContextCategoryReadRepository
         return conditions;
     }
 
-    private SortField getSortField(ListContextCategoryRequest request) {
+    private SortField getSortField(GetContextCategoryListRequest request) {
         if (isEmpty(request.getSortActive())) {
             return null;
         }
@@ -159,8 +159,8 @@ public class JooqContextCategoryReadRepository
 
     @Override
     @AccessControl(requiredAnyRole = {DEVELOPER, END_USER})
-    public ListContextCategoryResponse listContextCategories(
-            ListContextCategoryRequest request) throws ScoreDataAccessException {
+    public GetContextCategoryListResponse getContextCategoryList(
+            GetContextCategoryListRequest request) throws ScoreDataAccessException {
 
         Collection<Condition> conditions = getConditions(request);
         SelectConditionStep conditionStep = select().where(conditions);
@@ -181,7 +181,7 @@ public class JooqContextCategoryReadRepository
             }
         }
 
-        return new ListContextCategoryResponse(
+        return new GetContextCategoryListResponse(
                 finalStep.fetch(mapper()),
                 request.getPageIndex(),
                 request.getPageSize(),

@@ -82,8 +82,8 @@ public class ContextCategoryReadRepositoryTest
 
         ContextCategoryReadRepository repository =
                 scoreRepositoryFactory().createContextCategoryReadRepository();
-        ListContextCategoryRequest request = new ListContextCategoryRequest(requester);
-        ListContextCategoryResponse response = repository.listContextCategories(request);
+        GetContextCategoryListRequest request = new GetContextCategoryListRequest(requester);
+        GetContextCategoryListResponse response = repository.getContextCategoryList(request);
         assertNotNull(response);
         assertTrue(!response.getResults().isEmpty());
         assertEquals(PaginationRequest.DEFAULT_PAGE_INDEX, response.getPage());

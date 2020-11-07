@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ListContextCategoryRequest extends PaginationRequest<ContextCategory> {
+public class GetContextCategoryListRequest extends PaginationRequest<ContextCategory> {
 
     private Collection<BigInteger> contextCategoryIds;
     private String name;
@@ -17,7 +17,7 @@ public class ListContextCategoryRequest extends PaginationRequest<ContextCategor
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
 
-    public ListContextCategoryRequest(ScoreUser requester) {
+    public GetContextCategoryListRequest(ScoreUser requester) {
         super(requester, ContextCategory.class);
     }
 
