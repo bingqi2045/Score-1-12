@@ -10,5 +10,6 @@ public class CcAsccpCreateRequest {
     private BigInteger releaseId;
     private BigInteger roleOfAccManifestId;
     private String asccpType;
+    private String initialPropertyTerm;
 
 }

@@ -63,14 +63,9 @@ public class AsccpWriteRepository {
                 .where(ACC_MANIFEST.ACC_MANIFEST_ID.eq(ULong.valueOf(request.getRoleOfAccManifestId())))
                 .fetchOne();
 
-        String objectClassTerm = dslContext.select(ACC.OBJECT_CLASS_TERM)
-                .from(ACC)
-                .where(ACC.ACC_ID.eq(roleOfAccManifest.getAccId()))
-                .fetchOneInto(String.class);
-
         AsccpRecord asccp = new AsccpRecord();
         asccp.setGuid(ScoreGuid.randomGuid());
-        asccp.setPropertyTerm(objectClassTerm);
+        asccp.setPropertyTerm(request.getInitialPropertyTerm());
         asccp.setRoleOfAccId(roleOfAccManifest.getAccId());
         asccp.setDen(asccp.getPropertyTerm() + ". " + objectClassTerm(asccp.getRoleOfAccId()));
         asccp.setState(request.getInitialState().name());

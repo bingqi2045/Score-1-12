@@ -1,5 +1,6 @@
 package org.oagi.score.gateway.http.api.cc_management.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;
@@ -177,6 +178,10 @@ public class CcNodeService extends EventHandler {
         CreateAsccpRepositoryRequest repositoryRequest =
                 new CreateAsccpRepositoryRequest(user,
                         request.getRoleOfAccManifestId(), request.getReleaseId());
+
+        if (!StringUtils.isEmpty(repositoryRequest.getInitialPropertyTerm())) {
+            repositoryRequest.setInitialPropertyTerm(request.getInitialPropertyTerm());
+        }
 
         if (request.getAsccpType() != null) {
             repositoryRequest.setInitialType(CcASCCPType.valueOf(request.getAsccpType()));
