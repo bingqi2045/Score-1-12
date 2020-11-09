@@ -25,6 +25,11 @@ public class UpdateContextCategoryRequest extends Request {
         this.contextCategoryId = contextCategoryId;
     }
 
+    public UpdateContextCategoryRequest withContextCategoryId(BigInteger contextCategoryId) {
+        this.setContextCategoryId(contextCategoryId);
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -33,11 +38,21 @@ public class UpdateContextCategoryRequest extends Request {
         this.name = name;
     }
 
+    public UpdateContextCategoryRequest withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public UpdateContextCategoryRequest withDescription(String description) {
+        this.setDescription(description);
+        return this;
     }
 }

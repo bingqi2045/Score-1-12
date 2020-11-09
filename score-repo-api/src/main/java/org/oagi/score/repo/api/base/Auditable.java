@@ -2,17 +2,18 @@ package org.oagi.score.repo.api.base;
 
 import org.oagi.score.repo.api.user.model.ScoreUser;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.util.Date;
 
-public class Auditable {
+public class Auditable implements Serializable {
 
     private ScoreUser createdBy;
 
     private ScoreUser lastUpdatedBy;
 
-    private LocalDateTime creationTimestamp;
+    private Date creationTimestamp;
 
-    private LocalDateTime lastUpdateTimestamp;
+    private Date lastUpdateTimestamp;
 
     public ScoreUser getCreatedBy() {
         return createdBy;
@@ -30,19 +31,19 @@ public class Auditable {
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
-    public LocalDateTime getCreationTimestamp() {
+    public Date getCreationTimestamp() {
         return creationTimestamp;
     }
 
-    public void setCreationTimestamp(LocalDateTime creationTimestamp) {
+    public void setCreationTimestamp(Date creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
     }
 
-    public LocalDateTime getLastUpdateTimestamp() {
+    public Date getLastUpdateTimestamp() {
         return lastUpdateTimestamp;
     }
 
-    public void setLastUpdateTimestamp(LocalDateTime lastUpdateTimestamp) {
+    public void setLastUpdateTimestamp(Date lastUpdateTimestamp) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
     }
 }

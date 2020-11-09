@@ -107,8 +107,8 @@ public class ContextSchemeReadRepositoryTest
                 .orderBy(CTX_SCHEME_VALUE.CTX_SCHEME_VALUE_ID)
                 .fetchStream().collect(Collectors.toMap(CtxSchemeValueRecord::getValue, Function.identity()));
 
-        assertEquals(contextScheme.getContextSchemeValues().size(), valueRecords.size());
-        for (ContextSchemeValue contextSchemeValue : contextScheme.getContextSchemeValues()) {
+        assertEquals(contextScheme.getContextSchemeValueList().size(), valueRecords.size());
+        for (ContextSchemeValue contextSchemeValue : contextScheme.getContextSchemeValueList()) {
             CtxSchemeValueRecord valueRecord = valueRecords.get(contextSchemeValue.getValue());
             assertEquals(valueRecord.getCtxSchemeValueId().toBigInteger(), contextSchemeValue.getContextSchemeValueId());
             assertEquals(valueRecord.getGuid(), contextSchemeValue.getGuid());

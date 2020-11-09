@@ -3,27 +3,25 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 import org.jooq.*;
 import org.jooq.types.ULong;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryReadRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.JooqScoreRepository;
 import org.oagi.score.repo.api.security.AccessControl;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
-import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 import static org.oagi.score.repo.api.base.SortDirection.ASC;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.contains;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.trim;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
+import static org.oagi.score.repo.api.user.model.ScoreRole.END_USER;
 
 public class JooqContextCategoryReadRepository
         extends JooqScoreRepository
@@ -72,8 +70,10 @@ public class JooqContextCategoryReadRepository
                     record.get(APP_USER.as("updater").LOGIN_ID.as("updater_login_id")),
                     (byte) 1 == record.get(APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer")) ? DEVELOPER : END_USER
             ));
-            contextCategory.setCreationTimestamp(record.get(CTX_CATEGORY.CREATION_TIMESTAMP));
-            contextCategory.setLastUpdateTimestamp(record.get(CTX_CATEGORY.LAST_UPDATE_TIMESTAMP));
+            contextCategory.setCreationTimestamp(
+                    Date.from(record.get(CTX_CATEGORY.CREATION_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
+            contextCategory.setLastUpdateTimestamp(
+                    Date.from(record.get(CTX_CATEGORY.LAST_UPDATE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
             return contextCategory;
         };
     }
@@ -115,9 +115,9 @@ public class JooqContextCategoryReadRepository
         if (!isEmpty(request.getDescription())) {
             conditions.addAll(contains(request.getDescription(), CTX_CATEGORY.DESCRIPTION));
         }
-        if (!request.getUpdaterUsernames().isEmpty()) {
+        if (!request.getUpdaterUsernameList().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(
-                    new HashSet<>(request.getUpdaterUsernames()).stream()
+                    new HashSet<>(request.getUpdaterUsernameList()).stream()
                             .filter(e -> !isEmpty(e)).map(e -> trim(e)).collect(Collectors.toList())
             ));
         }
@@ -151,7 +151,7 @@ public class JooqContextCategoryReadRepository
                 break;
 
             default:
-                throw new UnsupportedOperationException();
+                return null;
         }
 
         return (request.getSortDirection() == ASC) ? field.asc() : field.desc();

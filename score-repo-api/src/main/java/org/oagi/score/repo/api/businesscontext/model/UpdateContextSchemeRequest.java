@@ -1,23 +1,19 @@
 package org.oagi.score.repo.api.businesscontext.model;
 
-import org.oagi.score.repo.api.base.Auditable;
+import org.oagi.score.repo.api.base.Request;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Collections;
 
-public class ContextScheme extends Auditable {
+public class UpdateContextSchemeRequest extends Request {
 
     private BigInteger contextSchemeId;
 
     private BigInteger contextCategoryId;
 
-    private String contextCategoryName;
-
     private BigInteger codeListId;
-
-    private String codeListName;
-
-    private String guid;
 
     private String schemeId;
 
@@ -29,11 +25,11 @@ public class ContextScheme extends Auditable {
 
     private String schemeVersionId;
 
-    private boolean imported;
-
-    private boolean used;
-
     private Collection<ContextSchemeValue> contextSchemeValueList;
+
+    public UpdateContextSchemeRequest(ScoreUser requester) {
+        super(requester);
+    }
 
     public BigInteger getContextSchemeId() {
         return contextSchemeId;
@@ -41,6 +37,11 @@ public class ContextScheme extends Auditable {
 
     public void setContextSchemeId(BigInteger contextSchemeId) {
         this.contextSchemeId = contextSchemeId;
+    }
+
+    public UpdateContextSchemeRequest withContextSchemeId(BigInteger contextSchemeId) {
+        this.setContextSchemeId(contextSchemeId);
+        return this;
     }
 
     public BigInteger getContextCategoryId() {
@@ -51,12 +52,9 @@ public class ContextScheme extends Auditable {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public String getContextCategoryName() {
-        return contextCategoryName;
-    }
-
-    public void setContextCategoryName(String contextCategoryName) {
-        this.contextCategoryName = contextCategoryName;
+    public UpdateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+        this.setContextCategoryId(contextCategoryId);
+        return this;
     }
 
     public BigInteger getCodeListId() {
@@ -67,20 +65,9 @@ public class ContextScheme extends Auditable {
         this.codeListId = codeListId;
     }
 
-    public String getCodeListName() {
-        return codeListName;
-    }
-
-    public void setCodeListName(String codeListName) {
-        this.codeListName = codeListName;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public UpdateContextSchemeRequest withCodeListId(BigInteger codeListId) {
+        this.setCodeListId(codeListId);
+        return this;
     }
 
     public String getSchemeId() {
@@ -91,6 +78,11 @@ public class ContextScheme extends Auditable {
         this.schemeId = schemeId;
     }
 
+    public UpdateContextSchemeRequest withSchemeId(String schemeId) {
+        this.setSchemeId(schemeId);
+        return this;
+    }
+
     public String getSchemeName() {
         return schemeName;
     }
@@ -99,12 +91,9 @@ public class ContextScheme extends Auditable {
         this.schemeName = schemeName;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public UpdateContextSchemeRequest withSchemeName(String schemeName) {
+        this.setSchemeName(schemeName);
+        return this;
     }
 
     public String getSchemeAgencyId() {
@@ -115,6 +104,11 @@ public class ContextScheme extends Auditable {
         this.schemeAgencyId = schemeAgencyId;
     }
 
+    public UpdateContextSchemeRequest withSchemeAgencyId(String schemeAgencyId) {
+        this.setSchemeAgencyId(schemeAgencyId);
+        return this;
+    }
+
     public String getSchemeVersionId() {
         return schemeVersionId;
     }
@@ -123,27 +117,34 @@ public class ContextScheme extends Auditable {
         this.schemeVersionId = schemeVersionId;
     }
 
-    public boolean isImported() {
-        return imported;
+    public UpdateContextSchemeRequest withSchemeVersionId(String schemeVersionId) {
+        this.setSchemeVersionId(schemeVersionId);
+        return this;
     }
 
-    public void setImported(boolean imported) {
-        this.imported = imported;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean isUsed() {
-        return used;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setUsed(boolean used) {
-        this.used = used;
+    public UpdateContextSchemeRequest withDescription(String description) {
+        this.setDescription(description);
+        return this;
     }
 
     public Collection<ContextSchemeValue> getContextSchemeValueList() {
-        return contextSchemeValueList;
+        return (contextSchemeValueList == null) ? Collections.emptyList() : contextSchemeValueList;
     }
 
     public void setContextSchemeValueList(Collection<ContextSchemeValue> contextSchemeValueList) {
         this.contextSchemeValueList = contextSchemeValueList;
+    }
+
+    public UpdateContextSchemeRequest withContextSchemeValueList(Collection<ContextSchemeValue> contextSchemeValueList) {
+        this.setContextSchemeValueList(contextSchemeValueList);
+        return this;
     }
 }

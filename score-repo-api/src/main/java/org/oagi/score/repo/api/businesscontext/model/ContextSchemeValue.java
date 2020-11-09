@@ -1,8 +1,9 @@
 package org.oagi.score.repo.api.businesscontext.model;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class ContextSchemeValue {
+public class ContextSchemeValue implements Serializable {
 
     private BigInteger contextSchemeValueId;
 
@@ -12,19 +13,9 @@ public class ContextSchemeValue {
 
     private String meaning;
 
-    public ContextSchemeValue() {
-    }
+    private boolean used;
 
-    public ContextSchemeValue(BigInteger contextSchemeValueId, String guid, String value) {
-        this(contextSchemeValueId, guid, value, null);
-    }
-
-    public ContextSchemeValue(BigInteger contextSchemeValueId, String guid, String value, String meaning) {
-        this.contextSchemeValueId = contextSchemeValueId;
-        this.guid = guid;
-        this.value = value;
-        this.meaning = meaning;
-    }
+    private BigInteger ownerContextSchemeId;
 
     public BigInteger getContextSchemeValueId() {
         return contextSchemeValueId;
@@ -56,5 +47,21 @@ public class ContextSchemeValue {
 
     public void setMeaning(String meaning) {
         this.meaning = meaning;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
+
+    public BigInteger getOwnerContextSchemeId() {
+        return ownerContextSchemeId;
+    }
+
+    public void setOwnerContextSchemeId(BigInteger ownerContextSchemeId) {
+        this.ownerContextSchemeId = ownerContextSchemeId;
     }
 }

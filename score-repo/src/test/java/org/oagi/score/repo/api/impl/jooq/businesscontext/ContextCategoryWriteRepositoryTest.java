@@ -3,19 +3,18 @@ package org.oagi.score.repo.api.impl.jooq.businesscontext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jooq.types.ULong;
 import org.junit.jupiter.api.*;
-import org.oagi.score.repo.api.user.model.ScoreUser;
 import org.oagi.score.repo.api.businesscontext.ContextCategoryWriteRepository;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.repo.api.impl.jooq.AbstractJooqScoreRepositoryTest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.CtxCategoryRecord;
+import org.oagi.score.repo.api.user.model.ScoreUser;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
+import static org.oagi.score.repo.api.user.model.ScoreRole.DEVELOPER;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ContextCategoryWriteRepositoryTest
@@ -97,42 +96,14 @@ public class ContextCategoryWriteRepositoryTest
 
         DeleteContextCategoryResponse response = repository.deleteContextCategory(request);
         assertNotNull(response);
-        assertNotNull(response.getContextCategoryId());
-        assertEquals(request.getContextCategoryId(), response.getContextCategoryId());
+        assertNotNull(response.getContextCategoryIdList());
+        assertTrue(response.contains(request.getContextCategoryIdList().get(0)));
 
         record = dslContext().selectFrom(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryId())))
+                .where(CTX_CATEGORY.CTX_CATEGORY_ID.eq(ULong.valueOf(response.getContextCategoryIdList().get(0))))
                 .fetchOptional().orElse(null);
 
         assertNull(record);
-    }
-
-    @Test
-    @Order(4)
-    public void deleteContextCategoriesTest() {
-        DeleteContextCategoriesRequest request = new DeleteContextCategoriesRequest(requester);
-        int cnt = 10;
-        for (int i = 0; i < cnt; ++i) {
-            request.addContextCategoryId(createContextCategory().getContextCategoryId());
-        }
-
-        Assumptions.assumeTrue(cnt == dslContext().selectCount()
-                .from(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.in(request.getContextCategoryIds().stream()
-                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                .fetchOneInto(Integer.class));
-
-        DeleteContextCategoriesResponse response = repository.deleteContextCategories(request);
-        assertNotNull(response);
-        for (BigInteger contextCategoryId : request.getContextCategoryIds()) {
-            assertTrue(response.getContextCategoryIds().contains(contextCategoryId));
-        }
-
-        assertEquals(0, dslContext().selectCount()
-                .from(CTX_CATEGORY)
-                .where(CTX_CATEGORY.CTX_CATEGORY_ID.in(request.getContextCategoryIds().stream()
-                        .map(e -> ULong.valueOf(e)).collect(Collectors.toList())))
-                .fetchOneInto(Integer.class));
     }
 
     private CreateContextCategoryResponse createContextCategory() {

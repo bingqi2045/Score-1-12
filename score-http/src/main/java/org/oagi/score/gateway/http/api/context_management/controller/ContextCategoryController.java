@@ -1,27 +1,36 @@
 package org.oagi.score.gateway.http.api.context_management.controller;
 
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.context_management.data.*;
-import org.oagi.score.gateway.http.api.context_management.service.ContextCategoryService;
+import org.oagi.score.repo.api.businesscontext.model.*;
+import org.oagi.score.service.authentication.AuthenticationService;
+import org.oagi.score.service.context_management.ContextCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.oagi.score.repo.api.base.SortDirection.ASC;
+import static org.oagi.score.repo.api.base.SortDirection.DESC;
 
 @RestController
 public class ContextCategoryController {
 
     @Autowired
-    private ContextCategoryService service;
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private ContextCategoryService contextCategoryService;
 
     @RequestMapping(value = "/context_categories", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,7 +38,7 @@ public class ContextCategoryController {
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "description", required = false) String description,
-            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
+            @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "sortActive") String sortActive,
@@ -37,83 +46,161 @@ public class ContextCategoryController {
             @RequestParam(name = "pageIndex") int pageIndex,
             @RequestParam(name = "pageSize") int pageSize) {
 
-        ContextCategoryListRequest request = new ContextCategoryListRequest();
-
+        GetContextCategoryListRequest request = new GetContextCategoryListRequest(
+                authenticationService.asScoreUser(requester));
         request.setName(name);
         request.setDescription(description);
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-
+        request.setUpdaterUsernameList(StringUtils.isEmpty(updaterUsernameList) ? Collections.emptyList() :
+                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         if (!StringUtils.isEmpty(updateStart)) {
-            request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
+            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
         }
         if (!StringUtils.isEmpty(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);
-            request.setUpdateEndDate(calendar.getTime());
+            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
         }
 
-        PageRequest pageRequest = new PageRequest();
-        pageRequest.setSortActive(sortActive);
-        pageRequest.setSortDirection(sortDirection);
-        pageRequest.setPageIndex(pageIndex);
-        pageRequest.setPageSize(pageSize);
-        request.setPageRequest(pageRequest);
+        request.setPageIndex(pageIndex);
+        request.setPageSize(pageSize);
+        request.setSortActive(sortActive);
+        request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
 
-        return service.getContextCategoryList(requester, request);
+        GetContextCategoryListResponse response = contextCategoryService.getContextCategoryList(request);
+
+        PageResponse<ContextCategory> pageResponse = new PageResponse<>();
+        pageResponse.setList(response.getResults());
+        pageResponse.setPage(response.getPage());
+        pageResponse.setSize(response.getSize());
+        pageResponse.setLength(response.getLength());
+        return pageResponse;
     }
 
     @RequestMapping(value = "/simple_context_categories", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleContextCategory> getSimpleContextCategoryList() {
-        return service.getSimpleContextCategoryList();
-    }
+    public List<ContextCategory> getSimpleContextCategoryList(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester) {
+        GetContextCategoryListRequest request = new GetContextCategoryListRequest(
+                authenticationService.asScoreUser(requester));
 
+        GetContextCategoryListResponse response =
+                contextCategoryService.getContextCategoryList(request);
+        return response.getResults();
+    }
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ContextCategory getContextCategory(
             @AuthenticationPrincipal AuthenticatedPrincipal requester,
-            @PathVariable("id") BigInteger id) {
-        return service.getContextCategory(requester, id);
+            @PathVariable("id") BigInteger contextCategoryId) {
+
+        GetContextCategoryRequest request =
+                new GetContextCategoryRequest(authenticationService.asScoreUser(requester))
+                        .withContextCategoryId(contextCategoryId);
+
+        GetContextCategoryResponse response =
+                contextCategoryService.getContextCategory(request);
+
+        return response.getContextCategory();
     }
 
     @RequestMapping(value = "/context_schemes_from_ctg/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ContextScheme> getContextSchemeListFromCtxCategory(@PathVariable("id") BigInteger id) {
-        return service.getContextSchemeByCategoryId(id);
+        return contextCategoryService.getContextSchemeByCategoryId(id);
     }
 
     @RequestMapping(value = "/context_category", method = RequestMethod.PUT)
     public ResponseEntity create(
-            @AuthenticationPrincipal User requester,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody ContextCategory contextCategory) {
-        service.insert(requester, contextCategory);
-        return ResponseEntity.noContent().build();
+
+        CreateContextCategoryRequest request =
+                new CreateContextCategoryRequest(authenticationService.asScoreUser(requester))
+                        .withName(contextCategory.getName())
+                        .withDescription(contextCategory.getDescription());
+
+        CreateContextCategoryResponse response =
+                contextCategoryService.createContextCategory(request);
+
+        if (response.getContextCategoryId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @AuthenticationPrincipal User requester,
-            @PathVariable("id") BigInteger id,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger contextCategoryId,
             @RequestBody ContextCategory contextCategory) {
-        contextCategory.setCtxCategoryId(id);
-        service.update(requester, contextCategory);
-        return ResponseEntity.noContent().build();
+
+        UpdateContextCategoryRequest request =
+                new UpdateContextCategoryRequest(authenticationService.asScoreUser(requester))
+                        .withContextCategoryId(contextCategoryId)
+                        .withName(contextCategory.getName())
+                        .withDescription(contextCategory.getDescription());
+
+        UpdateContextCategoryResponse response =
+                contextCategoryService.updateContextCategory(request);
+
+        if (response.getContextCategoryId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value = "/context_category/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @PathVariable("id") BigInteger id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger contextCategoryId) {
+
+        DeleteContextCategoryRequest request =
+                new DeleteContextCategoryRequest(authenticationService.asScoreUser(requester))
+                        .withContextCategoryId(contextCategoryId);
+
+        DeleteContextCategoryResponse response =
+                contextCategoryService.deleteContextCategory(request);
+
+        if (response.contains(contextCategoryId)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    public static class DeleteContextCategoryRequestData {
+        private List<BigInteger> contextCategoryIdList = Collections.emptyList();
+
+        public List<BigInteger> getContextCategoryIdList() {
+            return contextCategoryIdList;
+        }
+
+        public void setContextCategoryIdList(List<BigInteger> contextCategoryIdList) {
+            this.contextCategoryIdList = contextCategoryIdList;
+        }
     }
 
     @RequestMapping(value = "/context_category/delete", method = RequestMethod.POST)
-    public ResponseEntity deletes(@RequestBody DeleteContextCategoryRequest request) {
-        service.delete(request.getCtxCategoryIds());
-        return ResponseEntity.noContent().build();
+    public ResponseEntity deletes(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody DeleteContextCategoryRequestData requestData) {
+
+        DeleteContextCategoryRequest request =
+                new DeleteContextCategoryRequest(authenticationService.asScoreUser(requester))
+                        .withContextCategoryIdList(requestData.getContextCategoryIdList());
+
+        DeleteContextCategoryResponse response =
+                contextCategoryService.deleteContextCategory(request);
+
+        if (response.containsAll(requestData.getContextCategoryIdList())) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

@@ -3,7 +3,7 @@ package org.oagi.score.gateway.http.api.bie_management.data;
 import lombok.Data;
 import org.oagi.score.data.BieState;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
-import org.oagi.score.gateway.http.api.context_management.data.BusinessContext;
+import org.oagi.score.repo.api.businesscontext.model.BusinessContext;
 
 import java.math.BigInteger;
 import java.util.Date;

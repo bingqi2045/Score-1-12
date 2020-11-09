@@ -14,7 +14,4 @@ public interface ContextCategoryWriteRepository {
     DeleteContextCategoryResponse deleteContextCategory(
             DeleteContextCategoryRequest request) throws ScoreDataAccessException;
 
-    DeleteContextCategoriesResponse deleteContextCategories(
-            DeleteContextCategoriesRequest request) throws ScoreDataAccessException;
-
 }

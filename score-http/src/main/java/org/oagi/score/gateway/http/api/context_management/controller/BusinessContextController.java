@@ -1,9 +1,9 @@
 package org.oagi.score.gateway.http.api.context_management.controller;
 
-import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
-import org.oagi.score.gateway.http.api.context_management.data.*;
-import org.oagi.score.gateway.http.api.context_management.service.BusinessContextService;
+import org.oagi.score.repo.api.businesscontext.model.*;
+import org.oagi.score.service.authentication.AuthenticationService;
+import org.oagi.score.service.context_management.BusinessContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,22 +13,33 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.oagi.score.repo.api.base.SortDirection.ASC;
+import static org.oagi.score.repo.api.base.SortDirection.DESC;
 
 @RestController
 public class BusinessContextController {
 
     @Autowired
-    private BusinessContextService service;
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private BusinessContextService businessContextService;
 
     @RequestMapping(value = "/business_contexts", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<BusinessContext> getBusinessContextList(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "bizCtxIds", required = false) String bizCtxIds,
+            @RequestParam(name = "businessContextIdList", required = false) String businessContextIdList,
             @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId,
-            @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
+            @RequestParam(name = "updaterUsernameList", required = false) String updaterUsernameList,
             @RequestParam(name = "updateStart", required = false) String updateStart,
             @RequestParam(name = "updateEnd", required = false) String updateEnd,
             @RequestParam(name = "sortActive", required = false) String sortActive,
@@ -36,102 +47,197 @@ public class BusinessContextController {
             @RequestParam(name = "pageIndex", defaultValue = "-1") int pageIndex,
             @RequestParam(name = "pageSize", defaultValue = "-1") int pageSize) {
 
-        BusinessContextListRequest request = new BusinessContextListRequest();
+        GetBusinessContextListRequest request = new GetBusinessContextListRequest(
+                authenticationService.asScoreUser(requester));
 
         request.setName(name);
-        request.setTopLevelAsbiepId(topLevelAsbiepId);
-        request.setBizCtxIds(StringUtils.isEmpty(bizCtxIds) ? Collections.emptyList() :
-                Arrays.asList(bizCtxIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> Long.valueOf(e)).collect(Collectors.toList()));
-        request.setUpdaterLoginIds(StringUtils.isEmpty(updaterLoginIds) ? Collections.emptyList() :
-                Arrays.asList(updaterLoginIds.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
-
+        request.setBusinessContextIdList(StringUtils.isEmpty(businessContextIdList) ? Collections.emptyList() :
+                Arrays.asList(businessContextIdList.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).map(e -> new BigInteger(e)).collect(Collectors.toList()));
+        if (topLevelAsbiepId != null) {
+            request.setTopLevelAsbiepIdList(Arrays.asList(topLevelAsbiepId));
+        }
+        request.setUpdaterUsernameList(StringUtils.isEmpty(updaterUsernameList) ? Collections.emptyList() :
+                Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         if (!StringUtils.isEmpty(updateStart)) {
-            request.setUpdateStartDate(new Date(Long.valueOf(updateStart)));
+            request.setUpdateStartDate(new Timestamp(Long.valueOf(updateStart)).toLocalDateTime());
         }
         if (!StringUtils.isEmpty(updateEnd)) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(Long.valueOf(updateEnd));
             calendar.add(Calendar.DATE, 1);
-            request.setUpdateEndDate(calendar.getTime());
+            request.setUpdateEndDate(new Timestamp(calendar.getTimeInMillis()).toLocalDateTime());
         }
 
-        PageRequest pageRequest = new PageRequest();
-        pageRequest.setSortActive(sortActive);
-        pageRequest.setSortDirection(sortDirection);
-        pageRequest.setPageIndex(pageIndex);
-        pageRequest.setPageSize(pageSize);
-        request.setPageRequest(pageRequest);
+        request.setPageIndex(pageIndex);
+        request.setPageSize(pageSize);
+        request.setSortActive(sortActive);
+        request.setSortDirection("asc".equalsIgnoreCase(sortDirection) ? ASC : DESC);
 
-        return service.getBusinessContextList(request);
+        GetBusinessContextListResponse response = businessContextService.getBusinessContextList(request);
+
+        PageResponse<BusinessContext> pageResponse = new PageResponse<>();
+        pageResponse.setList(response.getResults());
+        pageResponse.setPage(response.getPage());
+        pageResponse.setSize(response.getSize());
+        pageResponse.setLength(response.getLength());
+        return pageResponse;
     }
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public BusinessContext getBusinessContext(@PathVariable("id") BigInteger id) {
-        return service.getBusinessContext(id);
+    public BusinessContext getBusinessContext(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger businessContextId) {
+
+        GetBusinessContextRequest request =
+                new GetBusinessContextRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessContextId(businessContextId);
+
+        GetBusinessContextResponse response =
+                businessContextService.getBusinessContext(request);
+
+        return response.getBusinessContext();
     }
 
     @RequestMapping(value = "/business_context_values", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BusinessContextValue> getBusinessContextValues() {
-        return service.getBusinessContextValues();
-    }
+    public List<BusinessContextValue> getBusinessContextValues(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester) {
 
-    @RequestMapping(value = "/context_scheme/{id}/simple_context_scheme_values", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<SimpleContextSchemeValue> getSimpleContextSchemeValueList(@PathVariable("id") BigInteger ctxSchemeId) {
-        return service.getSimpleContextSchemeValueList(ctxSchemeId);
+        GetBusinessContextListRequest request =
+                new GetBusinessContextListRequest(authenticationService.asScoreUser(requester));
+        request.setPageIndex(-1);
+        request.setPageSize(-1);
+
+        GetBusinessContextListResponse response = businessContextService.getBusinessContextList(request);
+        return response.getResults().stream()
+                .flatMap(e -> e.getBusinessContextValueList().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/business_context_values_from_biz_ctx/{id}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(@PathVariable("id") BigInteger businessCtxID) {
-        return service.getBusinessContextValuesByBusinessCtxId(businessCtxID);
+    public List<BusinessContextValue> getBusinessCtxValuesFromBizCtx(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger businessContextId) {
+
+        GetBusinessContextRequest request =
+                new GetBusinessContextRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessContextId(businessContextId);
+
+        GetBusinessContextResponse response =
+                businessContextService.getBusinessContext(request);
+
+        return response.getBusinessContext().getBusinessContextValueList();
     }
 
     @RequestMapping(value = "/business_context", method = RequestMethod.PUT)
     public ResponseEntity create(
-            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessContext businessContext) {
-        service.insert(user, businessContext);
-        return ResponseEntity.noContent().build();
+
+        CreateBusinessContextRequest request =
+                new CreateBusinessContextRequest(authenticationService.asScoreUser(requester));
+        request.setName(businessContext.getName());
+        request.setBusinessContextValueList(businessContext.getBusinessContextValueList());
+
+        CreateBusinessContextResponse response =
+                businessContextService.createBusinessContext(request);
+
+        if (response.getBusinessContextId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.POST)
     public ResponseEntity update(
-            @PathVariable("id") BigInteger id,
-            @AuthenticationPrincipal AuthenticatedPrincipal user,
+            @PathVariable("id") BigInteger businessContextId,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
             @RequestBody BusinessContext businessContext) {
-        businessContext.setBizCtxId(id);
-        service.update(user, businessContext);
-        return ResponseEntity.noContent().build();
+
+        UpdateBusinessContextRequest request =
+                new UpdateBusinessContextRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessContextId(businessContextId)
+                        .withName(businessContext.getName())
+                        .withBusinessContextValueList(businessContext.getBusinessContextValueList());
+
+        UpdateBusinessContextResponse response =
+                businessContextService.updateBusinessContext(request);
+
+        if (response.getBusinessContextId() != null) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.PUT)
     public ResponseEntity assign(
-            @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("id") BigInteger id,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger businessContextId,
             @RequestParam(name = "topLevelAsbiepId", required = true) BigInteger topLevelAsbiepId) {
-        service.assign(id, topLevelAsbiepId);
+
+        businessContextService.assign(businessContextId, topLevelAsbiepId);
         return ResponseEntity.noContent().build();
     }
 
     @RequestMapping(value = "/business_context/{id}", method = RequestMethod.DELETE)
     public ResponseEntity delete(
-            @AuthenticationPrincipal AuthenticatedPrincipal user,
-            @PathVariable("id") BigInteger id,
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @PathVariable("id") BigInteger businessContextId,
             @RequestParam(name = "topLevelAsbiepId", required = false) BigInteger topLevelAsbiepId) {
+
         if (topLevelAsbiepId != null) {
-            service.dismiss(id, topLevelAsbiepId);
+            businessContextService.dismiss(businessContextId, topLevelAsbiepId);
+            return ResponseEntity.noContent().build();
         } else {
-            service.delete(id);
+            DeleteBusinessContextRequest request =
+                    new DeleteBusinessContextRequest(authenticationService.asScoreUser(requester))
+                            .withBusinessContextIdList(Arrays.asList(businessContextId));
+
+            DeleteBusinessContextResponse response =
+                    businessContextService.deleteBusinessContext(request);
+
+            if (response.contains(businessContextId)) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
         }
-        return ResponseEntity.noContent().build();
+
+    }
+
+    public static class DeleteBusinessContextRequestData {
+        private List<BigInteger> businessContextIdList = Collections.emptyList();
+
+        public List<BigInteger> getBusinessContextIdList() {
+            return businessContextIdList;
+        }
+
+        public void setBusinessContextIdList(List<BigInteger> businessContextIdList) {
+            this.businessContextIdList = businessContextIdList;
+        }
     }
 
     @RequestMapping(value = "/business_context/delete", method = RequestMethod.POST)
-    public ResponseEntity deletes(@RequestBody DeleteBusinessContextRequest request) {
-        service.delete(request.getBizCtxIds());
-        return ResponseEntity.noContent().build();
+    public ResponseEntity deletes(
+            @AuthenticationPrincipal AuthenticatedPrincipal requester,
+            @RequestBody DeleteBusinessContextRequestData requestData) {
+        DeleteBusinessContextRequest request =
+                new DeleteBusinessContextRequest(authenticationService.asScoreUser(requester))
+                        .withBusinessContextIdList(requestData.getBusinessContextIdList());
+
+        DeleteBusinessContextResponse response =
+                businessContextService.deleteBusinessContext(request);
+
+        if (response.containsAll(requestData.getBusinessContextIdList())) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
+
 }

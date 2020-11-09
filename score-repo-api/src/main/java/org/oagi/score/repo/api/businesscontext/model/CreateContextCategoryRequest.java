@@ -21,11 +21,21 @@ public class CreateContextCategoryRequest extends Request {
         this.name = name;
     }
 
+    public CreateContextCategoryRequest withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public CreateContextCategoryRequest withDescription(String description) {
+        this.setDescription(description);
+        return this;
     }
 }

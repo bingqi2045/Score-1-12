@@ -6,10 +6,7 @@ import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.businesscontext.*;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyReadRepository;
 import org.oagi.score.repo.api.corecomponent.seqkey.SeqKeyWriteRepository;
-import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryReadRepository;
-import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextCategoryWriteRepository;
-import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeReadRepository;
-import org.oagi.score.repo.api.impl.jooq.businesscontext.JooqContextSchemeWriteRepository;
+import org.oagi.score.repo.api.impl.jooq.businesscontext.*;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyReadRepository;
 import org.oagi.score.repo.api.impl.jooq.corecomponent.JooqSeqKeyWriteRepository;
 import org.oagi.score.repo.api.impl.jooq.user.JooqScoreUserReadRepository;
@@ -54,12 +51,12 @@ public class JooqScoreRepositoryFactory implements ScoreRepositoryFactory {
 
     @Override
     public BusinessContextReadRepository createBusinessContextReadRepository() throws ScoreDataAccessException {
-        throw new UnsupportedOperationException();
+        return new JooqBusinessContextReadRepository(this.dslContext);
     }
 
     @Override
     public BusinessContextWriteRepository createBusinessContextWriteRepository() throws ScoreDataAccessException {
-        throw new UnsupportedOperationException();
+        return new JooqBusinessContextWriteRepository(this.dslContext);
     }
 
     @Override

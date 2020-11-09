@@ -8,25 +8,34 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
-public class GetContextCategoryListRequest extends PaginationRequest<ContextCategory> {
+public class GetContextSchemeListRequest extends PaginationRequest<ContextScheme> {
 
-    private Collection<BigInteger> contextCategoryIds;
+    private Collection<BigInteger> contextSchemeIdList;
+    private Collection<BigInteger> contextCategoryIdList;
     private String name;
     private String description;
     private Collection<String> updaterUsernameList;
     private LocalDateTime updateStartDate;
     private LocalDateTime updateEndDate;
 
-    public GetContextCategoryListRequest(ScoreUser requester) {
-        super(requester, ContextCategory.class);
+    public GetContextSchemeListRequest(ScoreUser requester) {
+        super(requester, ContextScheme.class);
     }
 
-    public Collection<BigInteger> getContextCategoryIds() {
-        return (contextCategoryIds == null) ? Collections.emptyList() : contextCategoryIds;
+    public Collection<BigInteger> getContextSchemeIdList() {
+        return (contextSchemeIdList == null) ? Collections.emptyList() : contextSchemeIdList;
     }
 
-    public void setContextCategoryIds(Collection<BigInteger> contextCategoryIds) {
-        this.contextCategoryIds = contextCategoryIds;
+    public void setContextSchemeIdList(Collection<BigInteger> contextSchemeIdList) {
+        this.contextSchemeIdList = contextSchemeIdList;
+    }
+
+    public Collection<BigInteger> getContextCategoryIdList() {
+        return (contextCategoryIdList == null) ? Collections.emptyList() : contextCategoryIdList;
+    }
+
+    public void setContextCategoryIdList(Collection<BigInteger> contextCategoryIdList) {
+        this.contextCategoryIdList = contextCategoryIdList;
     }
 
     public String getName() {

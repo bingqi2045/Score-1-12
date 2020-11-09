@@ -14,18 +14,21 @@ import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
 import org.oagi.score.gateway.http.api.common.data.PageRequest;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.gateway.http.api.context_management.data.BizCtxAssignment;
-import org.oagi.score.gateway.http.api.context_management.data.BusinessContext;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
-import org.oagi.score.repo.BusinessContextRepository;
 import org.oagi.score.repo.BusinessInformationEntityRepository;
 import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.PaginationResponse;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListRequest;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListResponse;
+import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextRequest;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestRecord;
 import org.oagi.score.repository.ABIERepository;
 import org.oagi.score.repository.BizCtxRepository;
+import org.oagi.score.service.authentication.AuthenticationService;
+import org.oagi.score.service.context_management.BusinessContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -61,7 +64,10 @@ public class BieService {
     private BusinessInformationEntityRepository bieRepository;
 
     @Autowired
-    private BusinessContextRepository businessContextRepository;
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private BusinessContextService businessContextService;
 
     @Autowired
     private DSLContext dslContext;
@@ -159,11 +165,19 @@ public class BieService {
 
         List<BieList> bieLists = result.getResult();
         bieLists.forEach(bieList -> {
-            bieList.setBusinessContexts(businessContextRepository.selectBusinessContexts()
-                    .setTopLevelAsbiepId(bieList.getTopLevelAsbiepId())
-                    .setName(request.getBusinessContext())
-                    .fetchInto(BusinessContext.class).getResult());
 
+            GetBusinessContextListRequest getBusinessContextListRequest =
+                    new GetBusinessContextListRequest(authenticationService.asScoreUser(user))
+                            .withTopLevelAsbiepIdList(Arrays.asList(bieList.getTopLevelAsbiepId()))
+                            .withName(request.getBusinessContext());
+
+            getBusinessContextListRequest.setPageIndex(-1);
+            getBusinessContextListRequest.setPageSize(-1);
+
+            GetBusinessContextListResponse getBusinessContextListResponse = businessContextService
+                    .getBusinessContextList(getBusinessContextListRequest);
+
+            bieList.setBusinessContexts(getBusinessContextListResponse.getResults());
             bieList.setAccess(
                     AccessPrivilege.toAccessPrivilege(requester, bieList.getOwnerUserId(), bieList.getState())
             );

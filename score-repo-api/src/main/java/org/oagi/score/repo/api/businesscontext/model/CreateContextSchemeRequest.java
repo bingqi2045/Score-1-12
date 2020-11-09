@@ -22,7 +22,7 @@ public class CreateContextSchemeRequest extends Request {
 
     private BigInteger contextCategoryId;
 
-    private Collection<ContextSchemeValue> contextSchemeValues;
+    private Collection<ContextSchemeValue> contextSchemeValueList;
 
     public CreateContextSchemeRequest(ScoreUser requester) {
         super(requester);
@@ -76,20 +76,24 @@ public class CreateContextSchemeRequest extends Request {
         this.contextCategoryId = contextCategoryId;
     }
 
-    public Collection<ContextSchemeValue> getContextSchemeValues() {
-        return (contextSchemeValues == null) ? Collections.emptyList() : contextSchemeValues;
+    public Collection<ContextSchemeValue> getContextSchemeValueList() {
+        return (contextSchemeValueList == null) ? Collections.emptyList() : contextSchemeValueList;
+    }
+
+    public void setContextSchemeValueList(Collection<ContextSchemeValue> contextSchemeValueList) {
+        this.contextSchemeValueList = contextSchemeValueList;
     }
 
     public void addContextSchemeValue(String value, String meaning) {
         if (value != null) {
-            if (this.contextSchemeValues == null) {
-                this.contextSchemeValues = new ArrayList();
+            if (this.contextSchemeValueList == null) {
+                this.contextSchemeValueList = new ArrayList();
             }
 
             ContextSchemeValue contextSchemeValue = new ContextSchemeValue();
             contextSchemeValue.setValue(value);
             contextSchemeValue.setMeaning(meaning);
-            this.contextSchemeValues.add(contextSchemeValue);
+            this.contextSchemeValueList.add(contextSchemeValue);
         }
     }
 }
