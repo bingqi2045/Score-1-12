@@ -216,6 +216,14 @@ public class CcNodeService extends EventHandler {
         BigInteger releaseId = accManifestRecord.getReleaseId().toBigInteger();
         AccRecord accRecord = accReadRepository.getAccByManifestId(request.getAccManifestId());
 
+        if (StringUtils.isEmpty(accRecord.getObjectClassTerm())) {
+            throw new IllegalArgumentException("Object Class Term is required.");
+        }
+
+        if (accRecord.getNamespaceId() == null) {
+            throw new IllegalArgumentException("Namespace is required.");
+        }
+
         AccManifestRecord allExtension
                 = accReadRepository.getAllExtensionAccManifest(releaseId);
 
@@ -943,41 +951,42 @@ public class CcNodeService extends EventHandler {
             throw new IllegalArgumentException();
         }
 
+        AsccpManifestRecord verbManifestRecord = asccpReadRepository.getAsccpManifestById(request.getVerbManifestId());
+        BigInteger releaseId = verbManifestRecord.getReleaseId().toBigInteger();
         AsccpRecord verb = asccpReadRepository.getAsccpByManifestId(request.getVerbManifestId());
         AsccpRecord noun = asccpReadRepository.getAsccpByManifestId(request.getNounManifestId());
 
-        NamespaceRecord namespace = dslContext.selectFrom(NAMESPACE)
-                .where(and(
-                        NAMESPACE.PREFIX.eq(""),
-                        NAMESPACE.IS_STD_NMSP.eq((byte) 1)
-                ))
-                .fetchAny();
+        if(verb.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + verb.getPropertyTerm() + "' dose not have Namespace Id.");
+        }
 
-        ReleaseRecord release = dslContext.selectFrom(RELEASE)
-                .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchAny();
+        if(noun.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + noun.getPropertyTerm() + "' dose not have Namespace Id.");
+        }
 
-        CreateAccRepositoryRequest dataAreaAccRequest = new CreateAccRepositoryRequest(user, release.getReleaseId().toBigInteger());
+        BigInteger namespaceId = verb.getNamespaceId().toBigInteger();
+
+        CreateAccRepositoryRequest dataAreaAccRequest = new CreateAccRepositoryRequest(user, releaseId);
         dataAreaAccRequest.setInitialComponentType(OagisComponentType.Semantics);
         dataAreaAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm(), "Data Area")));
-        dataAreaAccRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        dataAreaAccRequest.setNamespaceId(namespaceId);
         BigInteger dataAreaAccManifestId = accWriteRepository.createAcc(dataAreaAccRequest).getAccManifestId();
 
-        CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, release.getReleaseId().toBigInteger(),
+        CreateAsccRepositoryRequest verbAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
                 dataAreaAccManifestId, request.getVerbManifestId());
         verbAsccRequest.setCardinalityMin(1);
         verbAsccRequest.setCardinalityMax(1);
         asccWriteRepository.createAscc(verbAsccRequest);
 
-        CreateAsccRepositoryRequest nounAsccRequest = new CreateAsccRepositoryRequest(user, release.getReleaseId().toBigInteger(),
+        CreateAsccRepositoryRequest nounAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
                 dataAreaAccManifestId, request.getNounManifestId());
         nounAsccRequest.setCardinalityMin(1);
         nounAsccRequest.setCardinalityMax(-1);
         asccWriteRepository.createAscc(nounAsccRequest);
 
-        CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, release.getReleaseId().toBigInteger());
+        CreateAsccpRepositoryRequest dataAreaAsccpRequest = new CreateAsccpRepositoryRequest(user, dataAreaAccManifestId, releaseId);
         dataAreaAsccpRequest.setInitialPropertyTerm("Data Area");
-        dataAreaAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        dataAreaAsccpRequest.setNamespaceId(namespaceId);
         dataAreaAsccpRequest.setReusable(false);
         String name = String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm()))
                 .replaceAll(" ", "");
@@ -990,19 +999,19 @@ public class CcNodeService extends EventHandler {
                 .from(ACC_MANIFEST)
                 .join(ACC).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
                 .where(and(
-                        ACC_MANIFEST.RELEASE_ID.eq(release.getReleaseId()),
+                        ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseId)),
                         ACC.OBJECT_CLASS_TERM.eq("Business Object Document")
                 ))
                 .fetchOneInto(ULong.class);
 
-        CreateAccRepositoryRequest bodAccRequest = new CreateAccRepositoryRequest(user, release.getReleaseId().toBigInteger());
+        CreateAccRepositoryRequest bodAccRequest = new CreateAccRepositoryRequest(user, releaseId);
         bodAccRequest.setBasedAccManifestId(bodBasedAccManifestId.toBigInteger());
         bodAccRequest.setInitialComponentType(OagisComponentType.Semantics);
         bodAccRequest.setInitialObjectClassTerm(String.join(" ", Arrays.asList(verb.getPropertyTerm(), noun.getPropertyTerm())));
-        bodAccRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        bodAccRequest.setNamespaceId(namespaceId);
         BigInteger bodAccManifestId = accWriteRepository.createAcc(bodAccRequest).getAccManifestId();
 
-        CreateAsccRepositoryRequest dataAreaAsccRequest = new CreateAsccRepositoryRequest(user, release.getReleaseId().toBigInteger(),
+        CreateAsccRepositoryRequest dataAreaAsccRequest = new CreateAsccRepositoryRequest(user, releaseId,
                 bodAccManifestId, dataAreaAsccpManifestId);
         dataAreaAsccRequest.setCardinalityMin(1);
         dataAreaAsccRequest.setCardinalityMax(1);
@@ -1010,9 +1019,9 @@ public class CcNodeService extends EventHandler {
 //        dataAreaAsccRequest.setDefinitionSource(dataAreaAsccpRequest.getDefinitionSoruce());
         asccWriteRepository.createAscc(dataAreaAsccRequest);
 
-        CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, release.getReleaseId().toBigInteger());
+        CreateAsccpRepositoryRequest bodAsccpRequest = new CreateAsccpRepositoryRequest(user, bodAccManifestId, releaseId);
         bodAsccpRequest.setInitialPropertyTerm(bodAccRequest.getInitialObjectClassTerm());
-        bodAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        bodAsccpRequest.setNamespaceId(namespaceId);
         BigInteger bodAsccpManifestId = asccpWriteRepository.createAsccp(bodAsccpRequest).getAsccpManifestId();
 
         return bodAsccpManifestId;
@@ -1038,27 +1047,26 @@ public class CcNodeService extends EventHandler {
             throw new IllegalArgumentException();
         }
 
-        NamespaceRecord namespace = dslContext.selectFrom(NAMESPACE)
-                .where(and(
-                        NAMESPACE.PREFIX.eq(""),
-                        NAMESPACE.IS_STD_NMSP.eq((byte) 1)
-                ))
-                .fetchAny();
+        AccManifestRecord verbManifestRecord = accReadRepository.getAccManifest(request.getBasedVerbAccManifestId());
+        AccRecord verbRecord = accReadRepository.getAccByManifestId(verbManifestRecord.getAccManifestId().toBigInteger());
 
-        ReleaseRecord release = dslContext.selectFrom(RELEASE)
-                .where(RELEASE.RELEASE_NUM.eq("Working"))
-                .fetchAny();
+        BigInteger releaseId = verbManifestRecord.getReleaseId().toBigInteger();
+        if (verbRecord.getNamespaceId() == null) {
+            throw new IllegalArgumentException("'" + verbRecord.getObjectClassTerm() + "' dose not have Namespace Id.");
+        }
+        BigInteger namespaceId = verbRecord.getNamespaceId().toBigInteger();
 
-        CreateAccRepositoryRequest verbAccRequest = new CreateAccRepositoryRequest(user, release.getReleaseId().toBigInteger());
+
+        CreateAccRepositoryRequest verbAccRequest = new CreateAccRepositoryRequest(user, releaseId);
         verbAccRequest.setBasedAccManifestId(request.getBasedVerbAccManifestId());
         verbAccRequest.setInitialComponentType(OagisComponentType.Semantics);
         verbAccRequest.setInitialObjectClassTerm(request.getInitialObjectClassTerm());
-        verbAccRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        verbAccRequest.setNamespaceId(namespaceId);
         BigInteger verbAccManifestId = accWriteRepository.createAcc(verbAccRequest).getAccManifestId();
 
-        CreateAsccpRepositoryRequest verbAsccpRequest = new CreateAsccpRepositoryRequest(user, verbAccManifestId, release.getReleaseId().toBigInteger());
+        CreateAsccpRepositoryRequest verbAsccpRequest = new CreateAsccpRepositoryRequest(user, verbAccManifestId, releaseId);
         verbAsccpRequest.setInitialPropertyTerm(request.getInitialPrpertyTerm());
-        verbAsccpRequest.setNamespaceId(namespace.getNamespaceId().toBigInteger());
+        verbAsccpRequest.setNamespaceId(namespaceId);
         BigInteger verbAsccpManifestId = asccpWriteRepository.createAsccp(verbAsccpRequest).getAsccpManifestId();
 
         return verbAsccpManifestId;
