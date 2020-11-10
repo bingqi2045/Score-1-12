@@ -80,21 +80,15 @@ public class ExtensionService {
     public CcAccNode getExtensionNode(AuthenticatedPrincipal user, BigInteger manifestId) {
         AccManifestRecord extensionAcc = getExtensionAcc(manifestId);
         CcAccNode ueAcc = repository.getAccNodeByAccManifestId(user, extensionAcc.getAccManifestId().toBigInteger());
-        CcAsccpNode asccpNode = repository.getAsccpNodeByRoleOfAccId(ueAcc.getAccId(), extensionAcc.getReleaseId());
-        if (asccpNode == null) {
-            return null;
-        }
-        CcAccNode eAcc = repository.getAccNodeFromAsccByAsccpId(user, asccpNode.getAsccpId(), extensionAcc.getReleaseId());
-        eAcc.setState(ueAcc.getState());
 
         AppUser requester = sessionService.getAppUser(user);
         BigInteger ownerUserId = dslContext.select(ACC.OWNER_USER_ID).from(ACC)
                 .where(ACC.ACC_ID.eq(ULong.valueOf(ueAcc.getAccId()))).fetchOneInto(BigInteger.class);
         AppUser owner = sessionService.getAppUser(ownerUserId);
-        boolean isWorkingRelease = eAcc.getReleaseNum().equals("Working");
-        AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, owner, eAcc.getState(), isWorkingRelease);
-        eAcc.setAccess(accessPrivilege);
-        return eAcc;
+        boolean isWorkingRelease = ueAcc.getReleaseNum().equals("Working");
+        AccessPrivilege accessPrivilege = AccessPrivilege.toAccessPrivilege(requester, owner, ueAcc.getState(), isWorkingRelease);
+        ueAcc.setAccess(accessPrivilege);
+        return ueAcc;
     }
 
     public ACC getExistsUserExtension(BigInteger accManifestId) {

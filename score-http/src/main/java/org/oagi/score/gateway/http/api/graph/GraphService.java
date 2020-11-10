@@ -89,10 +89,6 @@ public class GraphService {
         return getAsccpGraph(asccpManifestId, excludeUEG);
     }
 
-    public Graph getExtensionGraph(BigInteger extensionAccManifestId) {
-        return getAccGraph(extensionAccManifestId);
-    }
-
     public Graph getCodeListGraph(BigInteger codeListManifestId) {
         CodeListManifestRecord codeListManifestRecord =
                 codeListReadRepository.getCodeListManifestByManifestId(codeListManifestId);

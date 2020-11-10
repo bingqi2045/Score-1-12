@@ -30,6 +30,7 @@ public class GraphController {
         Graph graph;
         switch (type.toLowerCase()) {
             case "acc":
+            case "extension":
                 graph = graphService.getAccGraph(id);
                 break;
 
@@ -43,11 +44,6 @@ public class GraphController {
 
             case "abie":
                 graph = graphService.getBieGraph(user, id);
-                break;
-
-            // This is only for UI to draw 'All Extension' as a based ACC.
-            case "extension":
-                graph = graphService.getExtensionGraph(id);
                 break;
 
             case "code_list":
