@@ -42,7 +42,7 @@ public class GraphController {
                 graph = graphService.getBccpGraph(id);
                 break;
 
-            case "abie":
+            case "top_level_asbiep":
                 graph = graphService.getBieGraph(user, id);
                 break;
 
