@@ -127,11 +127,9 @@ public class ExtensionService {
                 ReviseAccRepositoryResponse reviseAccRepositoryResponse =
                         accWriteRepository.reviseAcc(reviseAccRepositoryRequest);
                 return reviseAccRepositoryResponse.getAccManifestId();
-            } else if (ueAcc.getState() == CcState.WIP || ueAcc.getState() == CcState.QA) {
+            } else {
                 AccManifestRecord ueAccManifest = repository.getAccManifestByAcc(ueAcc.getAccId(), releaseId);
                 return ueAccManifest.getAccManifestId().toBigInteger();
-            } else {
-                throw new IllegalArgumentException("Invalid State.");
             }
         } else {
             return createNewUserExtensionGroupACC(ccListService.getAcc(eAcc.getAccManifestId()), releaseId, user);
