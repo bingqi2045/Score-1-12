@@ -1,4 +1,4 @@
-package org.oagi.score.service.context_management;
+package org.oagi.score.service.businesscontext;
 
 import org.jooq.DSLContext;
 import org.jooq.types.ULong;

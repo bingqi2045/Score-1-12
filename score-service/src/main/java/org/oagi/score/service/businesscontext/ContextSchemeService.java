@@ -1,4 +1,4 @@
-package org.oagi.score.service.context_management;
+package org.oagi.score.service.businesscontext;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;

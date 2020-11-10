@@ -3,7 +3,7 @@ package org.oagi.score.gateway.http.api.context_management.controller;
 import org.oagi.score.gateway.http.api.common.data.PageResponse;
 import org.oagi.score.repo.api.businesscontext.model.*;
 import org.oagi.score.service.authentication.AuthenticationService;
-import org.oagi.score.service.context_management.ContextCategoryService;
+import org.oagi.score.service.businesscontext.ContextCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

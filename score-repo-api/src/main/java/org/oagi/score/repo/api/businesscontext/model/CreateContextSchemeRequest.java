@@ -36,12 +36,22 @@ public class CreateContextSchemeRequest extends Request {
         this.schemeId = schemeId;
     }
 
+    public CreateContextSchemeRequest withSchemeId(String schemeId) {
+        this.setSchemeId(schemeId);
+        return this;
+    }
+
     public String getSchemeName() {
         return schemeName;
     }
 
     public void setSchemeName(String schemeName) {
         this.schemeName = schemeName;
+    }
+
+    public CreateContextSchemeRequest withSchemeName(String schemeName) {
+        this.setSchemeName(schemeName);
+        return this;
     }
 
     public String getDescription() {
@@ -52,12 +62,22 @@ public class CreateContextSchemeRequest extends Request {
         this.description = description;
     }
 
+    public CreateContextSchemeRequest withDescription(String description) {
+        this.setDescription(description);
+        return this;
+    }
+
     public String getSchemeAgencyId() {
         return schemeAgencyId;
     }
 
     public void setSchemeAgencyId(String schemeAgencyId) {
         this.schemeAgencyId = schemeAgencyId;
+    }
+
+    public CreateContextSchemeRequest withSchemeAgencyId(String schemeAgencyId) {
+        this.setSchemeAgencyId(schemeAgencyId);
+        return this;
     }
 
     public String getSchemeVersionId() {
@@ -68,12 +88,22 @@ public class CreateContextSchemeRequest extends Request {
         this.schemeVersionId = schemeVersionId;
     }
 
+    public CreateContextSchemeRequest withSchemeVersionId(String schemeVersionId) {
+        this.setSchemeVersionId(schemeVersionId);
+        return this;
+    }
+
     public BigInteger getContextCategoryId() {
         return contextCategoryId;
     }
 
     public void setContextCategoryId(BigInteger contextCategoryId) {
         this.contextCategoryId = contextCategoryId;
+    }
+
+    public CreateContextSchemeRequest withContextCategoryId(BigInteger contextCategoryId) {
+        this.setContextCategoryId(contextCategoryId);
+        return this;
     }
 
     public Collection<ContextSchemeValue> getContextSchemeValueList() {

@@ -20,7 +20,6 @@ import org.oagi.score.repo.CoreComponentRepository;
 import org.oagi.score.repo.PaginationResponse;
 import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListRequest;
 import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextListResponse;
-import org.oagi.score.repo.api.businesscontext.model.GetBusinessContextRequest;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccManifestRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
@@ -28,7 +27,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpManifestReco
 import org.oagi.score.repository.ABIERepository;
 import org.oagi.score.repository.BizCtxRepository;
 import org.oagi.score.service.authentication.AuthenticationService;
-import org.oagi.score.service.context_management.BusinessContextService;
+import org.oagi.score.service.businesscontext.BusinessContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
