@@ -30,7 +30,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -409,12 +410,12 @@ public class CcNodeService extends EventHandler {
             CcAccNode ccAccNode = updateAccDetail(user, timestamp, detail);
             updatedAccNodeDetails.add(getAccNodeDetail(user, ccAccNode));
             // Do not sync data b/w ACC and Extension components #916
-//            if(hasExtensionAssociation(user, ccAccNode.getManifestId())) {
+//            if (hasExtensionAssociation(user, ccAccNode.getManifestId())) {
 //                updateExtensionComponentProperties(user, detail);
 //            }
-//            if(isUserExtensionGroup(user, ccAccNode.getManifestId())) {
-//                updateUserExtensionNamespace(user, detail);
-//            }
+            if (isUserExtensionGroup(user, ccAccNode.getManifestId())) {
+                updateUserExtensionNamespace(user, detail);
+            }
         }
         return updatedAccNodeDetails;
     }
