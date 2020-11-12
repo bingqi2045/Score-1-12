@@ -364,8 +364,8 @@ public class CodeListService extends EventHandler {
         if (!StringUtils.isEmpty(codeList.getState())) {
             updateCodeListState(user, timestamp, codeList.getCodeListManifestId(), CcState.valueOf(codeList.getState()));
         } else {
-            updateCodeListProperties(user, timestamp, codeList);
             updateCodeListValues(user, timestamp, codeList);
+            updateCodeListProperties(user, timestamp, codeList);
         }
     }
 
