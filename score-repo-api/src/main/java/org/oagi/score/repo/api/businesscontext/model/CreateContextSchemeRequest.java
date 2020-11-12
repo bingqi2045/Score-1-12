@@ -114,6 +114,11 @@ public class CreateContextSchemeRequest extends Request {
         this.contextSchemeValueList = contextSchemeValueList;
     }
 
+    public CreateContextSchemeRequest withContextSchemeValueList(Collection<ContextSchemeValue> contextSchemeValueList) {
+        this.setContextSchemeValueList(contextSchemeValueList);
+        return this;
+    }
+
     public void addContextSchemeValue(String value, String meaning) {
         if (value != null) {
             if (this.contextSchemeValueList == null) {
@@ -125,5 +130,10 @@ public class CreateContextSchemeRequest extends Request {
             contextSchemeValue.setMeaning(meaning);
             this.contextSchemeValueList.add(contextSchemeValue);
         }
+    }
+
+    public CreateContextSchemeRequest withContextSchemeValue(String value, String meaning) {
+        this.addContextSchemeValue(value, meaning);
+        return this;
     }
 }

@@ -12,6 +12,7 @@ import org.oagi.score.service.AbstractServiceTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.CTX_CATEGORY;
@@ -157,5 +158,87 @@ public class ContextCategoryServiceTest extends AbstractServiceTest {
         assertEquals(ctxCategoryRecord.getDescription(), contextCategory.getDescription());
         assertEquals(ctxCategoryRecord.getCreatedBy().toBigInteger(), contextCategory.getCreatedBy().getUserId());
         assertEquals(ctxCategoryRecord.getLastUpdatedBy().toBigInteger(), contextCategory.getLastUpdatedBy().getUserId());
+    }
+
+    @Test
+    public void testGetContextCategoryListWithNameFilter() {
+        ContextCategory contextCategory;
+        {
+            CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
+                    .withName(RandomStringUtils.randomAlphanumeric(45))
+                    .withDescription(RandomStringUtils.randomAlphanumeric(200));
+
+            CreateContextCategoryResponse response =
+                    contextCategoryService.createContextCategory(request);
+
+            BigInteger contextCategoryId = response.getContextCategoryId();
+
+            contextCategory =
+                    contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)
+                            .withContextCategoryId(contextCategoryId))
+                            .getContextCategory();
+        }
+
+        GetContextCategoryListRequest request = new GetContextCategoryListRequest(requester)
+                .withName(contextCategory.getName());
+
+        GetContextCategoryListResponse response =
+                contextCategoryService.getContextCategoryList(request);
+        assertNotNull(response);
+
+        List<ContextCategory> results = response.getResults();
+        assertNotNull(results);
+        assertTrue(results.size() == 1);
+
+        ContextCategory resultContextCategory = results.get(0);
+        assertEquals(contextCategory.getContextCategoryId(), resultContextCategory.getContextCategoryId());
+        assertEquals(contextCategory.getGuid(), resultContextCategory.getGuid());
+        assertEquals(contextCategory.getName(), resultContextCategory.getName());
+        assertEquals(contextCategory.getDescription(), resultContextCategory.getDescription());
+        assertEquals(contextCategory.getCreatedBy(), resultContextCategory.getCreatedBy());
+        assertEquals(contextCategory.getCreationTimestamp(), resultContextCategory.getCreationTimestamp());
+        assertEquals(contextCategory.getLastUpdatedBy(), resultContextCategory.getLastUpdatedBy());
+        assertEquals(contextCategory.getLastUpdateTimestamp(), resultContextCategory.getLastUpdateTimestamp());
+    }
+
+    @Test
+    public void testGetContextCategoryListWithDescriptionFilter() {
+        ContextCategory contextCategory;
+        {
+            CreateContextCategoryRequest request = new CreateContextCategoryRequest(requester)
+                    .withName(RandomStringUtils.randomAlphanumeric(45))
+                    .withDescription(RandomStringUtils.randomAlphanumeric(200));
+
+            CreateContextCategoryResponse response =
+                    contextCategoryService.createContextCategory(request);
+
+            BigInteger contextCategoryId = response.getContextCategoryId();
+
+            contextCategory =
+                    contextCategoryService.getContextCategory(new GetContextCategoryRequest(requester)
+                            .withContextCategoryId(contextCategoryId))
+                            .getContextCategory();
+        }
+
+        GetContextCategoryListRequest request = new GetContextCategoryListRequest(requester)
+                .withDescription(contextCategory.getDescription());
+
+        GetContextCategoryListResponse response =
+                contextCategoryService.getContextCategoryList(request);
+        assertNotNull(response);
+
+        List<ContextCategory> results = response.getResults();
+        assertNotNull(results);
+        assertTrue(results.size() == 1);
+
+        ContextCategory resultContextCategory = results.get(0);
+        assertEquals(contextCategory.getContextCategoryId(), resultContextCategory.getContextCategoryId());
+        assertEquals(contextCategory.getGuid(), resultContextCategory.getGuid());
+        assertEquals(contextCategory.getName(), resultContextCategory.getName());
+        assertEquals(contextCategory.getDescription(), resultContextCategory.getDescription());
+        assertEquals(contextCategory.getCreatedBy(), resultContextCategory.getCreatedBy());
+        assertEquals(contextCategory.getCreationTimestamp(), resultContextCategory.getCreationTimestamp());
+        assertEquals(contextCategory.getLastUpdatedBy(), resultContextCategory.getLastUpdatedBy());
+        assertEquals(contextCategory.getLastUpdateTimestamp(), resultContextCategory.getLastUpdateTimestamp());
     }
 }

@@ -37,12 +37,22 @@ public class GetContextCategoryListRequest extends PaginationRequest<ContextCate
         this.name = name;
     }
 
+    public GetContextCategoryListRequest withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public GetContextCategoryListRequest withDescription(String description) {
+        this.setDescription(description);
+        return this;
     }
 
     public Collection<String> getUpdaterUsernameList() {
@@ -53,6 +63,11 @@ public class GetContextCategoryListRequest extends PaginationRequest<ContextCate
         this.updaterUsernameList = updaterUsernameList;
     }
 
+    public GetContextCategoryListRequest withUpdaterUsernameList(Collection<String> updaterUsernameList) {
+        this.setUpdaterUsernameList(updaterUsernameList);
+        return this;
+    }
+
     public LocalDateTime getUpdateStartDate() {
         return updateStartDate;
     }
@@ -61,12 +76,22 @@ public class GetContextCategoryListRequest extends PaginationRequest<ContextCate
         this.updateStartDate = updateStartDate;
     }
 
+    public GetContextCategoryListRequest withUpdateStartDate(LocalDateTime updateStartDate) {
+        this.setUpdateStartDate(updateStartDate);
+        return this;
+    }
+
     public LocalDateTime getUpdateEndDate() {
         return updateEndDate;
     }
 
     public void setUpdateEndDate(LocalDateTime updateEndDate) {
         this.updateEndDate = updateEndDate;
+    }
+
+    public GetContextCategoryListRequest withUpdateEndDate(LocalDateTime updateEndDate) {
+        this.setUpdateEndDate(updateEndDate);
+        return this;
     }
 
 }

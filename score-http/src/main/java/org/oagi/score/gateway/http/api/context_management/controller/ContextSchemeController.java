@@ -45,7 +45,7 @@ public class ContextSchemeController {
         GetContextSchemeListRequest request = new GetContextSchemeListRequest(
                 authenticationService.asScoreUser(requester));
 
-        request.setName(name);
+        request.setSchemeName(name);
         request.setUpdaterUsernameList(StringUtils.isEmpty(updaterUsernameList) ? Collections.emptyList() :
                 Arrays.asList(updaterUsernameList.split(",")).stream().map(e -> e.trim()).filter(e -> !StringUtils.isEmpty(e)).collect(Collectors.toList()));
         if (!StringUtils.isEmpty(updateStart)) {

@@ -184,8 +184,8 @@ public class JooqContextSchemeReadRepository
                 ));
             }
         }
-        if (!isEmpty(request.getName())) {
-            conditions.addAll(contains(request.getName(), CTX_SCHEME.SCHEME_NAME));
+        if (!isEmpty(request.getSchemeName())) {
+            conditions.addAll(contains(request.getSchemeName(), CTX_SCHEME.SCHEME_NAME));
         }
         if (!isEmpty(request.getDescription())) {
             conditions.addAll(contains(request.getDescription(), CTX_SCHEME.DESCRIPTION));

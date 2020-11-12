@@ -2,10 +2,7 @@ package org.oagi.score.repo.api.user.model;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public final class ScoreUser implements Serializable {
 
@@ -103,5 +100,20 @@ public final class ScoreUser implements Serializable {
 
     public void setRoles(Collection<ScoreRole> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScoreUser scoreUser = (ScoreUser) o;
+        return Objects.equals(userId, scoreUser.userId) &&
+                Objects.equals(username, scoreUser.username) &&
+                Objects.equals(roles, scoreUser.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, roles);
     }
 }
