@@ -13,6 +13,7 @@ import org.oagi.score.gateway.http.api.cc_management.data.CcState;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
 import org.oagi.score.repo.LogRepository;
+import org.oagi.score.repo.api.base.SortDirection;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.bcc.BccWriteRepository;
 import org.oagi.score.repo.component.bcc.UpdateBccPropertiesRepositoryRequest;
@@ -533,15 +534,7 @@ public class BccpWriteRepository {
         BccpRecord prevBccpRecord = dslContext.selectFrom(BCCP)
                 .where(BCCP.BCCP_ID.eq(bccpRecord.getPrevBccpId())).fetchOne();
 
-        // creates new log for canceled record.
-        LogRecord logRecord =
-                logRepository.insertBccpLog(
-                        bccpManifestRecord,
-                        prevBccpRecord, bccpManifestRecord.getLogId(),
-                        LogAction.Canceled,
-                        userId, timestamp);
-
-        // update BCCP MANIFEST's bccp_id and log_id
+        // update BCCP MANIFEST's bccp_id
         if (prevBccpRecord.getBdtId() != null) {
             String prevBdtGuid = dslContext.select(DT.GUID)
                     .from(DT).where(DT.DT_ID.eq(prevBccpRecord.getBdtId())).fetchOneInto(String.class);
@@ -552,8 +545,7 @@ public class BccpWriteRepository {
             bccpManifestRecord.setBdtManifestId(bdtManifest.getDtManifestId());
         }
         bccpManifestRecord.setBccpId(bccpRecord.getPrevBccpId());
-        bccpManifestRecord.setLogId(logRecord.getLogId());
-        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.LOG_ID, BCCP_MANIFEST.BDT_MANIFEST_ID);
+        bccpManifestRecord.update(BCCP_MANIFEST.BCCP_ID, BCCP_MANIFEST.BDT_MANIFEST_ID);
 
         // update BCCs which using current BCCP
         dslContext.update(BCC)
@@ -564,6 +556,9 @@ public class BccpWriteRepository {
         // unlink prev BCCP
         prevBccpRecord.setNextBccpId(null);
         prevBccpRecord.update(BCCP.NEXT_BCCP_ID);
+
+        // clean logs up
+        logRepository.revertToStableState(bccpManifestRecord);
 
         // delete current BCCP
         bccpRecord.delete();

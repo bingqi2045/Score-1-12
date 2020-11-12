@@ -649,24 +649,18 @@ public class CodeListWriteRepository {
         CodeListRecord prevCodeListRecord = dslContext.selectFrom(CODE_LIST)
                 .where(CODE_LIST.CODE_LIST_ID.eq(codeListRecord.getPrevCodeListId())).fetchOne();
 
-        // creates new revision for canceled record.
-        LogRecord logRecord =
-                logRepository.insertCodeListLog(
-                        codeListManifestRecord,
-                        prevCodeListRecord, codeListManifestRecord.getLogId(),
-                        LogAction.Canceled,
-                        userId, timestamp);
-
         // update CODE LIST MANIFEST's codeList_id and revision_id
         codeListManifestRecord.setCodeListId(codeListRecord.getPrevCodeListId());
-        codeListManifestRecord.setLogId(logRecord.getLogId());
-        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID, CODE_LIST_MANIFEST.LOG_ID);
+        codeListManifestRecord.update(CODE_LIST_MANIFEST.CODE_LIST_ID);
 
         discardLogCodeListValues(codeListManifestRecord, codeListRecord);
 
         // unlink prev CODE_LIST
         prevCodeListRecord.setNextCodeListId(null);
         prevCodeListRecord.update(CODE_LIST.NEXT_CODE_LIST_ID);
+
+        // clean logs up
+        logRepository.revertToStableState(codeListManifestRecord);
 
         // delete current CODE_LIST
         codeListRecord.delete();

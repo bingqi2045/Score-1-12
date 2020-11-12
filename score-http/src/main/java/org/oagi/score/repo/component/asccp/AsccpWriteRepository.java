@@ -617,15 +617,7 @@ public class AsccpWriteRepository {
         AsccpRecord prevAsccpRecord = dslContext.selectFrom(ASCCP)
                 .where(ASCCP.ASCCP_ID.eq(asccpRecord.getPrevAsccpId())).fetchOne();
 
-        // creates new log for canceled record.
-        LogRecord logRecord =
-                logRepository.insertAsccpLog(
-                        asccpManifestRecord,
-                        prevAsccpRecord, asccpManifestRecord.getLogId(),
-                        LogAction.Canceled,
-                        userId, timestamp);
-
-        // update ASCCP MANIFEST's asccp_id and log_id
+        // update ASCCP MANIFEST's asccp_id
         if (prevAsccpRecord.getRoleOfAccId() != null) {
             String prevRoleOfAccGuid = dslContext.select(ACC.GUID)
                     .from(ACC).where(ACC.ACC_ID.eq(prevAsccpRecord.getRoleOfAccId())).fetchOneInto(String.class);
@@ -636,8 +628,7 @@ public class AsccpWriteRepository {
             asccpManifestRecord.setRoleOfAccManifestId(roleOfAccManifest.getAccManifestId());
         }
         asccpManifestRecord.setAsccpId(asccpRecord.getPrevAsccpId());
-        asccpManifestRecord.setLogId(logRecord.getLogId());
-        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID, ASCCP_MANIFEST.LOG_ID,
+        asccpManifestRecord.update(ASCCP_MANIFEST.ASCCP_ID,
                 ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID);
 
         // update ASCCs which using current ASCCP
@@ -649,6 +640,9 @@ public class AsccpWriteRepository {
         // unlink prev ASCCP
         prevAsccpRecord.setNextAsccpId(null);
         prevAsccpRecord.update(ASCCP.NEXT_ASCCP_ID);
+
+        // clean logs up
+        logRepository.revertToStableState(asccpManifestRecord);
 
         // delete current ASCCP
         asccpRecord.delete();

@@ -1063,15 +1063,8 @@ public class AccWriteRepository {
         prevAccRecord.setNextAccId(null);
         prevAccRecord.update(ACC.NEXT_ACC_ID);
 
-        // creates new revision for canceled record.
-        LogRecord logRecord =
-                logRepository.insertAccLog(accManifestRecord,
-                        prevAccRecord, accManifestRecord.getLogId(),
-                        LogAction.Canceled,
-                        userId, timestamp);
-
-        accManifestRecord.setLogId(logRecord.getLogId());
-        accManifestRecord.update(ACC_MANIFEST.LOG_ID);
+        // clean logs up
+        logRepository.revertToStableState(accManifestRecord);
 
         // delete current ACC
         accRecord.delete();
