@@ -111,12 +111,12 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         if (option.isIncludeMetaHeaderForJson()) {
             TopLevelAsbiep metaHeaderTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getMetaHeaderTopLevelAsbiepId());
-            fillProperties(root, definitions, metaHeaderTopLevelAsbiep, generationContext);
+            fillProperties(root, definitions, metaHeaderTopLevelAsbiep, generationContext, false);
         }
         if (option.isIncludePaginationResponseForJson()) {
             TopLevelAsbiep paginationResponseTopLevelAsbiep =
                     topLevelAsbiepRepository.findById(option.getPaginationResponseTopLevelAsbiepId());
-            fillProperties(root, definitions, paginationResponseTopLevelAsbiep, generationContext);
+            fillProperties(root, definitions, paginationResponseTopLevelAsbiep, generationContext, false);
         }
 
         fillProperties(root, definitions, asbiep, typeAbie, generationContext);
@@ -150,7 +150,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
 
     private void fillProperties(Map<String, Object> parent, Map<String, Object> definitions,
                                 TopLevelAsbiep topLevelAsbiep,
-                                GenerationContext generationContext) {
+                                GenerationContext generationContext,
+                                boolean isArray) {
 
         ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
         ASBIEP asbiep = generationContext.receiveASBIEP(abie);
@@ -236,6 +237,14 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
                                 Map<String, Object> definitions,
                                 ASBIEP asbiep, ABIE abie,
                                 GenerationContext generationContext) {
+        fillProperties(parent, definitions, asbiep, abie, generationContext, option.isArrayForJsonExpression());
+    }
+
+    private void fillProperties(Map<String, Object> parent,
+                                Map<String, Object> definitions,
+                                ASBIEP asbiep, ABIE abie,
+                                GenerationContext generationContext,
+                                boolean isArray) {
 
         ASCCP asccp = generationContext.queryBasedASCCP(asbiep);
         String name = camelCase(asccp.getPropertyTerm());
@@ -258,7 +267,6 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
         /*
          * Issue #550
          */
-        boolean isArray = option.isArrayForJsonExpression();
         if (!isArray) {
             properties.put("type", "object");
         }
