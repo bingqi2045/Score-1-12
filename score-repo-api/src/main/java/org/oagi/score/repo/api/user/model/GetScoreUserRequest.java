@@ -10,6 +10,8 @@ public class GetScoreUserRequest extends Request {
 
     private String username;
 
+    private String oidcSub;
+
     public GetScoreUserRequest() {
         super();
     }
@@ -37,6 +39,19 @@ public class GetScoreUserRequest extends Request {
 
     public GetScoreUserRequest withUserName(String username) {
         setUsername(username);
+        return this;
+    }
+
+    public String getOidcSub() {
+        return oidcSub;
+    }
+
+    public void setOidcSub(String oidcSub) {
+        this.oidcSub = oidcSub;
+    }
+
+    public GetScoreUserRequest withOidcSub(String oidcSub) {
+        this.setOidcSub(oidcSub);
         return this;
     }
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_OAUTH2_USER;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.APP_USER;
 import static org.oagi.score.repo.api.impl.jooq.utils.DSLUtils.isNull;
 import static org.oagi.score.repo.api.impl.utils.StringUtils.isEmpty;
@@ -34,7 +35,8 @@ public class JooqScoreUserReadRepository
                 APP_USER.APP_USER_ID,
                 APP_USER.LOGIN_ID,
                 APP_USER.IS_DEVELOPER)
-                .from(APP_USER);
+                .from(APP_USER)
+                .leftJoin(APP_OAUTH2_USER).on(APP_USER.APP_USER_ID.eq(APP_OAUTH2_USER.APP_USER_ID));
     }
 
     private RecordMapper<Record, ScoreUser> mapper() {
@@ -57,10 +59,13 @@ public class JooqScoreUserReadRepository
         if (!isNull(userId)) {
             conds.add(APP_USER.APP_USER_ID.eq(ULong.valueOf(userId)));
         }
-
         String username = request.getUsername();
         if (!isEmpty(username)) {
             conds.add(APP_USER.LOGIN_ID.eq(username));
+        }
+        String oidcSub = request.getOidcSub();
+        if (!isEmpty(oidcSub)) {
+            conds.add(APP_OAUTH2_USER.SUB.eq(oidcSub));
         }
 
         if (conds.isEmpty()) {

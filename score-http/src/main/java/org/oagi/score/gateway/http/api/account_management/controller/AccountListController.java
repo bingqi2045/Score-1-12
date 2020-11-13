@@ -9,6 +9,7 @@ import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class AccountListController {
     @RequestMapping(value = "/accounts_list", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public PageResponse<AppUser> getAccounts(
-            @AuthenticationPrincipal User requester,
+            @AuthenticationPrincipal AuthenticatedPrincipal user,
             @RequestParam(name = "loginId", required = false) String loginId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "organization", required = false) String organization,
@@ -62,7 +63,7 @@ public class AccountListController {
         pageRequest.setPageSize(pageSize);
         request.setPageRequest(pageRequest);
 
-        return service.getAccounts(requester, request);
+        return service.getAccounts(user, request);
     }
 
     @RequestMapping(value = "/account/{appUserId}", method = RequestMethod.GET,
