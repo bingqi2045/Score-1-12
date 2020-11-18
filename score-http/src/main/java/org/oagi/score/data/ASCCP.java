@@ -12,6 +12,7 @@ import java.util.Date;
 public class ASCCP implements CoreComponent {
 
     private BigInteger asccpManifestId = BigInteger.ZERO;
+    private BigInteger roleOfAccManifestId = BigInteger.ZERO;
     private BigInteger asccpId = BigInteger.ZERO;
     private String guid;
     private String propertyTerm;

@@ -12,6 +12,7 @@ import java.util.Date;
 public class BCC implements CoreComponent {
 
     private BigInteger bccManifestId = BigInteger.ZERO;
+    private BigInteger fromAccManifestId = BigInteger.ZERO;
     private BigInteger bccId = BigInteger.ZERO;
     private String guid;
     private int cardinalityMin;
@@ -36,6 +37,9 @@ public class BCC implements CoreComponent {
     private int revisionTrackingNum;
     private boolean deprecated;
     private boolean nillable;
+    private BigInteger seqKeyId = BigInteger.ZERO;
+    private BigInteger prevSeqKeyId = BigInteger.ZERO;
+    private BigInteger nextSeqKeyId = BigInteger.ZERO;
 
     public BigInteger getId() {
         return getBccId();

@@ -1,10 +1,14 @@
 package org.oagi.score.gateway.http.api.bie_management.service.generate_expression;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.oagi.score.data.*;
 import org.oagi.score.repo.component.asbiep.AsbiepReadRepository;
 import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.top_level_asbiep.TopLevelAsbiepReadRepository;
 import org.oagi.score.repository.*;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeyHandler;
+import org.oagi.score.service.corecomponent.seqkey.SeqKeySupportable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -129,8 +133,10 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, ACC> findACCMap;
     private Map<BigInteger, BCC> findBCCMap;
     private Map<BigInteger, BCCP> findBCCPMap;
+    private Map<BigInteger, List<BCC>> findBCCByFromAccIdMap;
     private Map<BigInteger, BCCP> findBccpByBccpIdMap;
     private Map<BigInteger, ASCC> findASCCMap;
+    private Map<BigInteger, List<ASCC>> findASCCByFromAccIdMap;
     private Map<BigInteger, ASCCP> findASCCPMap;
     private Map<BigInteger, DT> findDTMap;
     private Map<BigInteger, DTSC> findDtScMap;
@@ -149,6 +155,17 @@ public class GenerationContext implements InitializingBean {
     private Map<BigInteger, String> findReleaseNumberMap;
     private Map<BigInteger, ContextScheme> findContextSchemeMap;
     private Map<BigInteger, ContextCategory> findContextCategoryMap;
+
+    @Data
+    @AllArgsConstructor
+    public static class SeqKey implements SeqKeySupportable {
+        private String key;
+        private String state;
+        private BigInteger seqKeyId;
+        private BigInteger prevSeqKeyId;
+        private BigInteger nextSeqKeyId;
+        private BigInteger toAsccpManifestId;
+    }
 
     public GenerationContext(TopLevelAsbiep topLevelAsbiep) {
         this(Arrays.asList(topLevelAsbiep));
@@ -245,6 +262,9 @@ public class GenerationContext implements InitializingBean {
         List<ASCC> asccList = asccRepository.findAllByReleaseId(releaseId);
         findASCCMap = asccList.stream()
                 .collect(Collectors.toMap(e -> e.getAsccManifestId(), Function.identity()));
+
+        findASCCByFromAccIdMap = asccList.stream().collect(Collectors.groupingBy(e -> e.getFromAccManifestId()));
+        findBCCByFromAccIdMap = bccList.stream().collect(Collectors.groupingBy(e -> e.getFromAccManifestId()));
 
         List<ASCCP> asccpList = asccpRepository.findAllByReleaseId(releaseId);
         findASCCPMap = asccpList.stream()
@@ -440,21 +460,69 @@ public class GenerationContext implements InitializingBean {
         return (abie != null) ? findACC(abie.getBasedAccManifestId()) : null;
     }
 
-    private double getSeqkey(BIE bie) {
-        if (bie instanceof BBIE) {
-            return ((BBIE) bie).getSeqKey();
-        } else {
-            return ((ASBIE) bie).getSeqKey();
+    private List<SeqKey> findChildren(BigInteger accManifestId) {
+        ACC acc = findACCMap.get(accManifestId);
+        List<SeqKey> sorted = new ArrayList();
+        if (acc == null) {
+            throw new IllegalArgumentException();
         }
+        if (acc.getBasedAccManifestId() != null) {
+            sorted.addAll(findChildren(acc.getBasedAccManifestId()));
+        }
+
+        List<SeqKeySupportable> asso = new ArrayList();
+
+        List<ASCC> asccs = findASCCByFromAccIdMap.get(acc.getAccManifestId());
+        if (asccs != null) {
+            asccs.forEach(e -> asso.add(
+                    new SeqKey("ASCC-" + e.getAsccManifestId(), e.getState().name(), e.getSeqKeyId(),
+                            e.getPrevSeqKeyId(), e.getNextSeqKeyId(), e.getToAsccpManifestId())));
+        }
+
+        List<BCC> bccs = findBCCByFromAccIdMap.get(acc.getAccManifestId());
+        if (bccs != null) {
+            bccs.forEach(e -> asso.add(
+                    new SeqKey("BCC-" + e.getBccManifestId(), e.getState().name(), e.getSeqKeyId(),
+                            e.getPrevSeqKeyId(), e.getNextSeqKeyId(), null)
+            ));
+        }
+
+        SeqKeyHandler.sort(asso).forEach(e -> sorted.add((SeqKey) e));
+
+        return sorted;
     }
 
-    private List<BIE> sorted(List<ASBIE> asbieList, List<BBIE> bbieList) {
-        List<BIE> bieList = new ArrayList();
-        bieList.addAll(asbieList);
-        bieList.addAll(bbieList);
+    private List<SeqKey> getGroupAssociations(SeqKey seqKey) {
+        ASCCP asccp = findASCCP(seqKey.getToAsccpManifestId());
+        if (asccp != null) {
+            ACC acc = findACC(asccp.getRoleOfAccManifestId());
+            if (OagisComponentType.valueOf(acc.getOagisComponentType()).isGroup()) {
+                return findChildren(acc.getAccManifestId());
+            }
+        }
+        return Collections.singletonList(seqKey);
+    }
 
-        Collections.sort(bieList, Comparator.comparingDouble(this::getSeqkey));
-        return bieList;
+    private List<BIE> sorted(ABIE abie, List<ASBIE> asbieList, List<BBIE> bbieList) {
+
+        List<BIE> sorted = new ArrayList();
+        List<SeqKey> assocs = findChildren(abie.getBasedAccManifestId());
+
+        Map<String, BIE> bieMap = asbieList.stream().collect(Collectors.toMap(e -> "ASCC-" + e.getBasedAsccManifestId(), Function.identity()));
+        bieMap.putAll(bbieList.stream().collect(Collectors.toMap(e -> "BCC-" + e.getBasedBccManifestId(), Function.identity())));
+
+        List<SeqKey> groupAssociations = new ArrayList();
+        assocs.forEach(e -> {
+            groupAssociations.addAll(getGroupAssociations(e));
+        });
+
+        groupAssociations.forEach(e -> {
+            BIE bie = bieMap.get(e.key);
+            if (bie != null) {
+                sorted.add(bie);
+            }
+        });
+        return sorted;
     }
 
     // Get only Child BIEs whose is_used flag is true
@@ -467,7 +535,7 @@ public class GenerationContext implements InitializingBean {
         List<BBIE> bbieList = findBbieByFromAbieIdAndUsedIsTrue(abie.getAbieId());
 
         List<BIE> result = new ArrayList();
-        for (BIE bie : sorted(asbieList, bbieList)) {
+        for (BIE bie : sorted(abie, asbieList, bbieList)) {
             if (bie instanceof BBIE) {
                 BBIE bbie = (BBIE) bie;
                 if (bbie.getCardinalityMax() != 0) {

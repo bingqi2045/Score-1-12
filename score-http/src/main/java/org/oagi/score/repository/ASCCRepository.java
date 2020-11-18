@@ -1,7 +1,7 @@
 package org.oagi.score.repository;
 
 import org.jooq.DSLContext;
-import org.jooq.Record20;
+import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ASCC;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -19,13 +18,11 @@ public class ASCCRepository implements ScoreRepository<ASCC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record20<
-            ULong, ULong, String, Integer, Integer,
-            Integer, ULong, ULong, String, String,
-            String, ULong, ULong, ULong, LocalDateTime,
-            LocalDateTime, String, ULong, String, Byte>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record> getSelectJoinStep() {
         return dslContext.select(
                 Tables.ASCC_MANIFEST.ASCC_MANIFEST_ID,
+                Tables.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID,
+                Tables.ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID,
                 Tables.ASCC.ASCC_ID,
                 Tables.ASCC.GUID,
                 Tables.ASCC.CARDINALITY_MIN,
@@ -44,12 +41,16 @@ public class ASCCRepository implements ScoreRepository<ASCC> {
                 Tables.ASCC.STATE,
                 Tables.ASCC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
-                Tables.ASCC.IS_DEPRECATED.as("deprecated"))
+                Tables.ASCC.IS_DEPRECATED.as("deprecated"),
+                Tables.ASCC_MANIFEST.SEQ_KEY_ID,
+                Tables.SEQ_KEY.PREV_SEQ_KEY_ID,
+                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID)
                 .from(Tables.ASCC)
                 .join(Tables.ASCC_MANIFEST)
                 .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_MANIFEST.ASCC_ID))
                 .join(Tables.RELEASE)
-                .on(Tables.ASCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID));
+                .on(Tables.ASCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.ASCC_MANIFEST.SEQ_KEY_ID));
     }
 
     @Override

@@ -12,6 +12,7 @@ import java.util.Date;
 public class ACC implements CoreComponent {
 
     private BigInteger accManifestId = BigInteger.ZERO;
+    private BigInteger basedAccManifestId = BigInteger.ZERO;
     private BigInteger accId = BigInteger.ZERO;
     private String guid;
     private String objectClassTerm;

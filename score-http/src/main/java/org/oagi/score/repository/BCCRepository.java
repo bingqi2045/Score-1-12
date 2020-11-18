@@ -21,6 +21,7 @@ public class BCCRepository implements ScoreRepository<BCC> {
     private SelectOnConditionStep<Record> getSelectJoinStep() {
         return dslContext.select(
                 Tables.BCC_MANIFEST.BCC_MANIFEST_ID,
+                Tables.BCC_MANIFEST.FROM_ACC_MANIFEST_ID,
                 Tables.BCC.BCC_ID,
                 Tables.BCC.GUID,
                 Tables.BCC.CARDINALITY_MIN,
@@ -42,12 +43,16 @@ public class BCCRepository implements ScoreRepository<BCC> {
                 Tables.BCC_MANIFEST.RELEASE_ID,
                 Tables.RELEASE.RELEASE_NUM,
                 Tables.BCC.IS_DEPRECATED.as("deprecated"),
-                Tables.BCC.IS_NILLABLE.as("nillable"))
+                Tables.BCC.IS_NILLABLE.as("nillable"),
+                Tables.BCC_MANIFEST.SEQ_KEY_ID,
+                Tables.SEQ_KEY.PREV_SEQ_KEY_ID,
+                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID)
                 .from(Tables.BCC)
                 .join(Tables.BCC_MANIFEST)
                 .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID))
                 .join(Tables.RELEASE)
-                .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID));
+                .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
+                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.BCC_MANIFEST.SEQ_KEY_ID));
     }
 
     @Override

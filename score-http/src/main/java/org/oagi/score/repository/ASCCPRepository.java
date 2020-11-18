@@ -21,6 +21,7 @@ public class ASCCPRepository implements ScoreRepository<ASCCP> {
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ASCCP_MANIFEST.ASCCP_MANIFEST_ID,
+                Tables.ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID,
                 Tables.ASCCP.ASCCP_ID,
                 Tables.ASCCP.GUID,
                 Tables.ASCCP.PROPERTY_TERM,

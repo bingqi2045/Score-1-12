@@ -21,6 +21,7 @@ public class ACCRepository implements ScoreRepository<ACC> {
     private SelectOnConditionStep<Record> getSelectOnConditionStep() {
         return dslContext.select(
                 Tables.ACC_MANIFEST.ACC_MANIFEST_ID,
+                Tables.ACC_MANIFEST.BASED_ACC_MANIFEST_ID,
                 Tables.ACC.ACC_ID,
                 Tables.ACC.GUID,
                 Tables.ACC.OBJECT_CLASS_TERM,

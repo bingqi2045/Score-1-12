@@ -12,6 +12,8 @@ import java.util.Date;
 public class ASCC implements CoreComponent {
 
     private BigInteger asccManifestId = BigInteger.ZERO;
+    private BigInteger fromAccManifestId = BigInteger.ZERO;
+    private BigInteger toAsccpManifestId = BigInteger.ZERO;
     private BigInteger asccId = BigInteger.ZERO;
     private String guid;
     private int cardinalityMin;
@@ -34,6 +36,9 @@ public class ASCC implements CoreComponent {
     private int revisionNum;
     private int revisionTrackingNum;
     private boolean deprecated;
+    private BigInteger seqKeyId = BigInteger.ZERO;
+    private BigInteger prevSeqKeyId = BigInteger.ZERO;
+    private BigInteger nextSeqKeyId = BigInteger.ZERO;
 
     public BigInteger getId() {
         return getAsccId();
