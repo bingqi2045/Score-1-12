@@ -106,13 +106,13 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
     }
 
     private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
-        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
-        ASBIEP asbiep = generationContext.receiveASBIEP(abie);
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
+
         logger.debug("Generating Top Level ABIE w/ given ASBIEP Id: " + asbiep.getAsbiepId());
 
         rootElementNode = generateTopLevelASBIEP(asbiep, topLevelAsbiep);
 
-        abie = generationContext.queryTargetABIE(asbiep);
+        ABIE abie = generationContext.queryTargetABIE(asbiep);
         Element rootSeqNode = generateABIE(abie, rootElementNode);
         generateBIEs(abie, rootSeqNode);
     }

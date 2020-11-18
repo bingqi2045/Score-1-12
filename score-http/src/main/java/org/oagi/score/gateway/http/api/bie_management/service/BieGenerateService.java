@@ -168,7 +168,7 @@ public class BieGenerateService {
         Record2<String, ULong> result = dslContext.select(ASBIEP.GUID, ASBIEP.BASED_ASCCP_MANIFEST_ID)
                 .from(ASBIEP)
                 .join(ASCCP_MANIFEST).on(ASBIEP.BASED_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                .where(and(ASBIEP.ROLE_OF_ABIE_ID
+                .where(and(ASBIEP.ASBIEP_ID
                                 .eq(ULong.valueOf(rootAsbiepId)),
                         ASBIEP.OWNER_TOP_LEVEL_ASBIEP_ID
                                 .eq(ULong.valueOf(topLevelAsbiep.getTopLevelAsbiepId()))))
