@@ -112,9 +112,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
     }
 
     private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
-        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
-
-        ASBIEP asbiep = generationContext.receiveASBIEP(abie);
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 
         Map<String, Object> paths;
@@ -154,7 +152,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         path.put("description", "");
 
         if (option.isOpenAPI30GetTemplate()) {
-            String schemaName = "get-" + bieName + "-" + abie.getGuid();
+            String schemaName = "get-" + bieName + "-" + typeAbie.getGuid();
             path.put("get", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")
@@ -198,7 +196,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         if (option.isOpenAPI30PostTemplate()) {
-            String schemaName = "post-" + bieName + "-" + abie.getGuid();
+            String schemaName = "post-" + bieName + "-" + typeAbie.getGuid();
             path.put("post", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")

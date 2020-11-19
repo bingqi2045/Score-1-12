@@ -44,13 +44,18 @@ public class ASCCRepository implements ScoreRepository<ASCC> {
                 Tables.ASCC.IS_DEPRECATED.as("deprecated"),
                 Tables.ASCC_MANIFEST.SEQ_KEY_ID,
                 Tables.SEQ_KEY.PREV_SEQ_KEY_ID,
-                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID)
+                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID,
+                Tables.LOG.REVISION_NUM,
+                Tables.LOG.REVISION_TRACKING_NUM)
                 .from(Tables.ASCC)
                 .join(Tables.ASCC_MANIFEST)
                 .on(Tables.ASCC.ASCC_ID.eq(Tables.ASCC_MANIFEST.ASCC_ID))
                 .join(Tables.RELEASE)
                 .on(Tables.ASCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
-                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.ASCC_MANIFEST.SEQ_KEY_ID));
+                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.ASCC_MANIFEST.SEQ_KEY_ID))
+                .join(Tables.ACC_MANIFEST)
+                .on(Tables.ASCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(Tables.ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(Tables.LOG).on(Tables.ACC_MANIFEST.LOG_ID.eq(Tables.LOG.LOG_ID));
     }
 
     @Override

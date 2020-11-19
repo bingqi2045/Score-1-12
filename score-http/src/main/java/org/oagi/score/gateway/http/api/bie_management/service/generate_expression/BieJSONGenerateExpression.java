@@ -84,9 +84,8 @@ public class BieJSONGenerateExpression implements BieGenerateExpression, Initial
     }
 
     private void generateTopLevelAsbiep(TopLevelAsbiep topLevelAsbiep) {
-        ABIE abie = generationContext.findAbie(topLevelAsbiep.getAsbiepId());
+        ASBIEP asbiep = generationContext.findASBIEP(topLevelAsbiep.getAsbiepId());
 
-        ASBIEP asbiep = generationContext.receiveASBIEP(abie);
         ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
 
         Map<String, Object> definitions;

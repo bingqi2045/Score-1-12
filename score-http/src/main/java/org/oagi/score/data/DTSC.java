@@ -21,6 +21,7 @@ public class DTSC implements Serializable {
     private int cardinalityMin;
     private int cardinalityMax;
     private BigInteger basedDtScId = BigInteger.ZERO;
+    private int revisionNum;
 
     public String getDen() {
         return getPropertyTerm() + ". " + getRepresentationTerm();

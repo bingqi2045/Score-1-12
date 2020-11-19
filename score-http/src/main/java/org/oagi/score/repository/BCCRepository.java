@@ -3,6 +3,7 @@ package org.oagi.score.repository;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectOnConditionStep;
+import org.jooq.Table;
 import org.jooq.types.ULong;
 import org.oagi.score.data.BCC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
@@ -46,13 +47,18 @@ public class BCCRepository implements ScoreRepository<BCC> {
                 Tables.BCC.IS_NILLABLE.as("nillable"),
                 Tables.BCC_MANIFEST.SEQ_KEY_ID,
                 Tables.SEQ_KEY.PREV_SEQ_KEY_ID,
-                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID)
+                Tables.SEQ_KEY.NEXT_SEQ_KEY_ID,
+                Tables.LOG.REVISION_NUM,
+                Tables.LOG.REVISION_TRACKING_NUM)
                 .from(Tables.BCC)
                 .join(Tables.BCC_MANIFEST)
                 .on(Tables.BCC.BCC_ID.eq(Tables.BCC_MANIFEST.BCC_ID))
                 .join(Tables.RELEASE)
                 .on(Tables.BCC_MANIFEST.RELEASE_ID.eq(Tables.RELEASE.RELEASE_ID))
-                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.BCC_MANIFEST.SEQ_KEY_ID));
+                .join(Tables.SEQ_KEY).on(Tables.SEQ_KEY.SEQ_KEY_ID.eq(Tables.BCC_MANIFEST.SEQ_KEY_ID))
+                .join(Tables.ACC_MANIFEST)
+                .on(Tables.BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(Tables.ACC_MANIFEST.ACC_MANIFEST_ID))
+                .join(Tables.LOG).on(Tables.ACC_MANIFEST.LOG_ID.eq(Tables.LOG.LOG_ID));
     }
 
     @Override

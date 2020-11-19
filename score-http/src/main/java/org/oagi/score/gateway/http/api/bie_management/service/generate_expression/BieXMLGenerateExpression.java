@@ -1939,6 +1939,11 @@ public class BieXMLGenerateExpression implements BieGenerateExpression, Initiali
         }
 
         @Override
+        public int getRevisionNumber() {
+            return dtSc.getRevisionNum();
+        }
+
+        @Override
         public Collection<Definition> getCoreComponentDefinitions() {
             return Arrays.asList(new Definition(dtSc.getDefinition(), dtSc.getDefinitionSource()));
         }

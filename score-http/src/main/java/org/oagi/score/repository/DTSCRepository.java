@@ -1,8 +1,7 @@
 package org.oagi.score.repository;
 
-import org.jooq.DSLContext;
-import org.jooq.Record11;
-import org.jooq.SelectOnConditionStep;
+import org.jooq.*;
+import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.data.DTSC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
@@ -18,10 +17,8 @@ public class DTSCRepository implements ScoreRepository<DTSC> {
     @Autowired
     private DSLContext dslContext;
 
-    private SelectOnConditionStep<Record11<
-            ULong, ULong, String, String, String,
-            String, String, ULong, Integer, Integer,
-            ULong>> getSelectJoinStep() {
+    private SelectOnConditionStep<Record12<ULong, ULong, String, String, String, String, String, ULong, Integer,
+            Integer, ULong, UInteger>> getSelectJoinStep() {
         return dslContext.select(
                 Tables.DT_SC_MANIFEST.DT_SC_MANIFEST_ID,
                 Tables.DT_SC.DT_SC_ID,
@@ -33,9 +30,12 @@ public class DTSCRepository implements ScoreRepository<DTSC> {
                 Tables.DT_SC.OWNER_DT_ID,
                 Tables.DT_SC.CARDINALITY_MIN,
                 Tables.DT_SC.CARDINALITY_MAX,
-                Tables.DT_SC.BASED_DT_SC_ID)
+                Tables.DT_SC.BASED_DT_SC_ID,
+                Tables.LOG.REVISION_NUM)
                 .from(Tables.DT_SC)
-                .join(Tables.DT_SC_MANIFEST).on(Tables.DT_SC.DT_SC_ID.eq(Tables.DT_SC_MANIFEST.DT_SC_ID));
+                .join(Tables.DT_SC_MANIFEST).on(Tables.DT_SC.DT_SC_ID.eq(Tables.DT_SC_MANIFEST.DT_SC_ID))
+                .join(Tables.DT_MANIFEST).on(Tables.DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID.eq(Tables.DT_MANIFEST.DT_MANIFEST_ID))
+                .join(Tables.LOG).on(Tables.DT_MANIFEST.LOG_ID.eq(Tables.LOG.LOG_ID));
     }
 
     @Override
