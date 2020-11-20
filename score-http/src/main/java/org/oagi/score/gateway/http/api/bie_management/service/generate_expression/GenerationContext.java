@@ -492,6 +492,19 @@ public class GenerationContext implements InitializingBean {
         return sorted;
     }
 
+    private List<SeqKey> loadGroupAssociations(List<SeqKey> seqKeyList) {
+        List<SeqKey> assocs = new ArrayList();
+        seqKeyList.forEach(seqKey -> {
+            List<SeqKey> groupAsso = getGroupAssociations(seqKey);
+            if (groupAsso.size() > 1) {
+                assocs.addAll(loadGroupAssociations(groupAsso));
+            } else {
+                assocs.addAll(groupAsso);
+            }
+        });
+        return assocs;
+    }
+
     private List<SeqKey> getGroupAssociations(SeqKey seqKey) {
         ASCCP asccp = findASCCP(seqKey.getToAsccpManifestId());
         if (asccp != null) {
@@ -511,12 +524,7 @@ public class GenerationContext implements InitializingBean {
         Map<String, BIE> bieMap = asbieList.stream().collect(Collectors.toMap(e -> "ASCC-" + e.getBasedAsccManifestId(), Function.identity()));
         bieMap.putAll(bbieList.stream().collect(Collectors.toMap(e -> "BCC-" + e.getBasedBccManifestId(), Function.identity())));
 
-        List<SeqKey> groupAssociations = new ArrayList();
-        assocs.forEach(e -> {
-            groupAssociations.addAll(getGroupAssociations(e));
-        });
-
-        groupAssociations.forEach(e -> {
+        loadGroupAssociations(assocs).forEach(e -> {
             BIE bie = bieMap.get(e.key);
             if (bie != null) {
                 sorted.add(bie);
