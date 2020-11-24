@@ -7,6 +7,7 @@ import org.jooq.types.ULong;
 import org.oagi.score.data.AppUser;
 import org.oagi.score.data.BCCEntityType;
 import org.oagi.score.data.OagisComponentType;
+import org.oagi.score.data.Release;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.repository.CcNodeRepository;
@@ -20,6 +21,7 @@ import org.oagi.score.repo.component.ascc.*;
 import org.oagi.score.repo.component.asccp.*;
 import org.oagi.score.repo.component.bcc.*;
 import org.oagi.score.repo.component.bccp.*;
+import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -62,16 +64,13 @@ public class CcNodeService extends EventHandler {
     private AsccWriteRepository asccWriteRepository;
 
     @Autowired
-    private AsccReadRepository asccReadRepository;
-
-    @Autowired
     private BccWriteRepository bccWriteRepository;
 
     @Autowired
-    private LogRepository logRepository;
+    private SessionService sessionService;
 
     @Autowired
-    private SessionService sessionService;
+    private ReleaseRepository releaseRepository;
 
     @Autowired
     private DSLContext dslContext;
@@ -163,6 +162,7 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public BigInteger createAcc(AuthenticatedPrincipal user, CcAccCreateRequest request) {
+        isPublishedRelease(request.getReleaseId());
         CreateAccRepositoryRequest repositoryRequest =
                 new CreateAccRepositoryRequest(user, request.getReleaseId());
 
@@ -176,6 +176,7 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public BigInteger createAsccp(AuthenticatedPrincipal user, CcAsccpCreateRequest request) {
+        isPublishedRelease(request.getReleaseId());
         CreateAsccpRepositoryRequest repositoryRequest =
                 new CreateAsccpRepositoryRequest(user,
                         request.getRoleOfAccManifestId(), request.getReleaseId());
@@ -198,6 +199,7 @@ public class CcNodeService extends EventHandler {
 
     @Transactional
     public BigInteger createBccp(AuthenticatedPrincipal user, CcBccpCreateRequest request) {
+        isPublishedRelease(request.getReleaseId());
         CreateBccpRepositoryRequest repositoryRequest =
                 new CreateBccpRepositoryRequest(user,
                         request.getBdtManifestId(), request.getReleaseId());
@@ -1071,6 +1073,14 @@ public class CcNodeService extends EventHandler {
         BigInteger verbAsccpManifestId = asccpWriteRepository.createAsccp(verbAsccpRequest).getAsccpManifestId();
 
         return verbAsccpManifestId;
+    }
+
+    boolean isPublishedRelease(BigInteger releaseId) {
+        Release release = releaseRepository.findById(releaseId);
+        if(!release.getState().equals(CcState.Published.name())) {
+            throw new IllegalStateException("'" + release.getState() + "' Release cannot be modified.");
+        }
+        return true;
     }
 }
 
