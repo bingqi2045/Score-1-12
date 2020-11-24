@@ -43,7 +43,7 @@ public class BieListController {
                                             @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                             @RequestParam(name = "updateStart", required = false) String updateStart,
                                             @RequestParam(name = "updateEnd", required = false) String updateEnd,
-                                            @RequestParam(name = "ownedByDeveloper", required = false) boolean ownedByDeveloper,
+                                            @RequestParam(name = "ownedByDeveloper", required = false) Boolean ownedByDeveloper,
                                             @RequestParam(name = "releaseId", required = false) BigInteger releaseId,
                                             @RequestParam(name = "sortActive") String sortActive,
                                             @RequestParam(name = "sortDirection") String sortDirection,

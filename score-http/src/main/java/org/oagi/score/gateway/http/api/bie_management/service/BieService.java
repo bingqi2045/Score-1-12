@@ -158,6 +158,7 @@ public class BieService {
                 .setUpdaterLoginIds(request.getUpdaterLoginIds())
                 .setUpdateDate(request.getUpdateStartDate(), request.getUpdateEndDate())
                 .setAccess(ULong.valueOf(requester.getAppUserId()), request.getAccess())
+                .setOwnedByDeveloper(request.getOwnedByDeveloper())
                 .setSort(pageRequest.getSortActive(), pageRequest.getSortDirection())
                 .setOffset(pageRequest.getOffset(), pageRequest.getPageSize())
                 .fetchInto(BieList.class);
