@@ -1348,6 +1348,12 @@ public class ReleaseRepository implements ScoreRepository<Release> {
                 dslContext.deleteFrom(CODE_LIST_MANIFEST)
                         .where(CODE_LIST_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
                         .execute();
+                dslContext.deleteFrom(AGENCY_ID_LIST_VALUE_MANIFEST)
+                        .where(AGENCY_ID_LIST_VALUE_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
+                dslContext.deleteFrom(AGENCY_ID_LIST_MANIFEST)
+                        .where(AGENCY_ID_LIST_MANIFEST.RELEASE_ID.eq(releaseRecord.getReleaseId()))
+                        .execute();
 
             } else if (toCcState == CcState.Published) {
                 updateCCStates(user, fromCcState, toCcState, timestamp);
