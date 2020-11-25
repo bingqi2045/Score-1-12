@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.oagi.score.gateway.http.helper.ScoreGuid.getGuidWithPrefix;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @Component
@@ -152,7 +153,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         path.put("description", "");
 
         if (option.isOpenAPI30GetTemplate()) {
-            String schemaName = "get-" + bieName + "-" + typeAbie.getGuid();
+            String schemaName = "get-" + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
             path.put("get", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")
@@ -196,7 +197,7 @@ public class BieOpenAPIGenerateExpression implements BieGenerateExpression, Init
         }
 
         if (option.isOpenAPI30PostTemplate()) {
-            String schemaName = "post-" + bieName + "-" + typeAbie.getGuid();
+            String schemaName = "post-" + bieName + "-" + getGuidWithPrefix(typeAbie.getGuid());
             path.put("post", ImmutableMap.<String, Object>builder()
                     .put("summary", "")
                     .put("description", "")
