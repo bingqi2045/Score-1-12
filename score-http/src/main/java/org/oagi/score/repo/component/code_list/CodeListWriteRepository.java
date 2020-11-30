@@ -246,7 +246,7 @@ public class CodeListWriteRepository {
             throw new IllegalArgumentException("The core component in '" + prevState + "' state cannot move to '" + nextState + "' state.");
         }
 
-        if (!codeListRecord.getOwnerUserId().equals(userId)) {
+        if (!codeListRecord.getOwnerUserId().equals(userId) && !prevState.canForceMove(request.getState())) {
             throw new IllegalArgumentException("It only allows to modify the core component by the owner.");
         }
 
