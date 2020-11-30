@@ -243,6 +243,7 @@ public class JooqContextSchemeReadRepository
         Collection<Condition> conditions = getConditions(request);
         SelectConditionStep conditionStep = select().where(conditions);
         SortField sortField = getSortField(request);
+        int length = dslContext().fetchCount(conditionStep);
         SelectFinalStep finalStep;
         if (sortField == null) {
             if (request.isPagination()) {
@@ -282,7 +283,7 @@ public class JooqContextSchemeReadRepository
                 results,
                 request.getPageIndex(),
                 request.getPageSize(),
-                dslContext().fetchCount(conditionStep)
+                length
         );
     }
 

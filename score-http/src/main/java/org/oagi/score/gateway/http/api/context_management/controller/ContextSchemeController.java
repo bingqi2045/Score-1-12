@@ -125,6 +125,8 @@ public class ContextSchemeController {
 
         GetContextSchemeListRequest request = new GetContextSchemeListRequest(
                 authenticationService.asScoreUser(requester));
+        request.setPageIndex(-1);
+        request.setPageSize(-1);
 
         GetContextSchemeListResponse response = contextSchemeService.getContextSchemeList(request);
         return response.getResults();
@@ -139,6 +141,8 @@ public class ContextSchemeController {
         GetContextSchemeListRequest request = new GetContextSchemeListRequest(
                 authenticationService.asScoreUser(requester));
         request.setContextCategoryIdList(Arrays.asList(contextCategoryId));
+        request.setPageIndex(-1);
+        request.setPageSize(-1);
 
         GetContextSchemeListResponse response = contextSchemeService.getContextSchemeList(request);
         return response.getResults();

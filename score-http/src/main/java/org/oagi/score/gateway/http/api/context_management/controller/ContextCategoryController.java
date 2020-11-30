@@ -83,6 +83,8 @@ public class ContextCategoryController {
             @AuthenticationPrincipal AuthenticatedPrincipal requester) {
         GetContextCategoryListRequest request = new GetContextCategoryListRequest(
                 authenticationService.asScoreUser(requester));
+        request.setPageIndex(-1);
+        request.setPageSize(-1);
 
         GetContextCategoryListResponse response =
                 contextCategoryService.getContextCategoryList(request);
