@@ -6,11 +6,18 @@ public class UpdateBccpBdtRepositoryResponse {
 
     private final BigInteger bccpManifestId;
 
-    public UpdateBccpBdtRepositoryResponse(BigInteger bccpManifestId) {
+    private final String den;
+
+    public UpdateBccpBdtRepositoryResponse(BigInteger bccpManifestId, String den) {
         this.bccpManifestId = bccpManifestId;
+        this.den = den;
     }
 
     public BigInteger getBccpManifestId() {
         return bccpManifestId;
+    }
+
+    public String getDen() {
+        return den;
     }
 }

@@ -11,4 +11,5 @@ public class CcNodeUpdateResponse {
     private BigInteger manifestId;
     private String state;
     private String access;
+    private String den;
 }

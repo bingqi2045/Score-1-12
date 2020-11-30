@@ -612,7 +612,7 @@ public class CcNodeService extends EventHandler {
     }
 
     @Transactional
-    public BigInteger updateAsccpRoleOfAcc(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger roleOfAccManifestId) {
+    public UpdateAsccpRoleOfAccRepositoryResponse updateAsccpRoleOfAcc(AuthenticatedPrincipal user, BigInteger asccpManifestId, BigInteger roleOfAccManifestId) {
         UpdateAsccpRoleOfAccRepositoryRequest repositoryRequest =
                 new UpdateAsccpRoleOfAccRepositoryRequest(user, asccpManifestId, roleOfAccManifestId);
 
@@ -621,11 +621,11 @@ public class CcNodeService extends EventHandler {
 
         fireEvent(new UpdatedAsccpRoleOfAccEvent());
 
-        return repositoryResponse.getAsccpManifestId();
+        return repositoryResponse;
     }
 
     @Transactional
-    public BigInteger updateBccpBdt(AuthenticatedPrincipal user, BigInteger bccpManifestId, BigInteger bdtManifestId) {
+    public UpdateBccpBdtRepositoryResponse updateBccpBdt(AuthenticatedPrincipal user, BigInteger bccpManifestId, BigInteger bdtManifestId) {
         UpdateBccpBdtRepositoryRequest repositoryRequest =
                 new UpdateBccpBdtRepositoryRequest(user, bccpManifestId, bdtManifestId);
 
@@ -634,7 +634,7 @@ public class CcNodeService extends EventHandler {
 
         fireEvent(new UpdatedBccpBdtEvent());
 
-        return repositoryResponse.getBccpManifestId();
+        return repositoryResponse;
     }
 
     @Transactional

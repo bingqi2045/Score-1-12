@@ -6,6 +6,8 @@ import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
 import org.oagi.score.gateway.http.api.common.data.AccessPrivilege;
+import org.oagi.score.repo.component.asccp.UpdateAsccpRoleOfAccRepositoryResponse;
+import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -83,15 +85,17 @@ public class CcNodeController {
 
         switch (resp.getType()) {
             case ASCCP:
-                resp.setManifestId(
-                        service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId())
-                );
+                UpdateAsccpRoleOfAccRepositoryResponse asccpResp =
+                        service.updateAsccpRoleOfAcc(user, manifestId, ccUpdateManifestRequest.getAccManifestId());
+                resp.setManifestId(asccpResp.getAsccpManifestId());
+                resp.setDen(asccpResp.getDen());
                 break;
 
             case BCCP:
-                resp.setManifestId(
-                        service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId())
-                );
+                UpdateBccpBdtRepositoryResponse bccpResp =
+                        service.updateBccpBdt(user, manifestId, ccUpdateManifestRequest.getBdtManifestId());
+                resp.setManifestId(bccpResp.getBccpManifestId());
+                resp.setDen(bccpResp.getDen());
                 break;
 
             default:
