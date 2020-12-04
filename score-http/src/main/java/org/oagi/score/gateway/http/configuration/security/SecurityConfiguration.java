@@ -73,6 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         HttpMethod.DELETE.name())
         );
         corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
